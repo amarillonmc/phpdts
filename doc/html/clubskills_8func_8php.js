@@ -1,0 +1,28 @@
+var clubskills_8func_8php =
+[
+    [ "calcskills", "clubskills_8func_8php.html#aab3fe95506169112b81d496c09b62709", null ],
+    [ "get_clubskill_bonus", "clubskills_8func_8php.html#a5c57c2cc276b45bdddccf7f853f4bd42", null ],
+    [ "get_clubskill_bonus_active", "clubskills_8func_8php.html#a1f78342d7f7c0cd69073e0262b71e109", null ],
+    [ "get_clubskill_bonus_counter", "clubskills_8func_8php.html#a68c08f01b58e32451f25d17a76193e37", null ],
+    [ "get_clubskill_bonus_dmg_rate", "clubskills_8func_8php.html#abd8e6de2b485ef460ffe5d8c4f3a75f6", null ],
+    [ "get_clubskill_bonus_dmg_val", "clubskills_8func_8php.html#abfc71371560169532d805e104a0b8a46", null ],
+    [ "get_clubskill_bonus_escrate", "clubskills_8func_8php.html#ac953bbaf41b71a8bbfb21eaeae39986a", null ],
+    [ "get_clubskill_bonus_fluc", "clubskills_8func_8php.html#af47509df9b34679b4c7a208aca3db7d8", null ],
+    [ "get_clubskill_bonus_hide", "clubskills_8func_8php.html#abd6b2c743df0559ee5a7d9953d9d4fec", null ],
+    [ "get_clubskill_bonus_hitrate", "clubskills_8func_8php.html#a0e6179bdbac634080529b04499809deb", null ],
+    [ "get_clubskill_bonus_imfrate", "clubskills_8func_8php.html#a8e72c54efc620445ea3e4b27d2f1ee82", null ],
+    [ "get_clubskill_bonus_imftime", "clubskills_8func_8php.html#ab89040eadae129815cdf51bc71ce1ccd", null ],
+    [ "get_clubskill_bonus_imprate", "clubskills_8func_8php.html#a33a3c011acd237cb0b66c2a5173de274", null ],
+    [ "get_clubskill_bonus_p", "clubskills_8func_8php.html#aff3280cc43f99dc38729d40c5339adb9", null ],
+    [ "get_clubskill_bonus_reuse", "clubskills_8func_8php.html#a750f574b0aedeb2d39715fbdab5a3761", null ],
+    [ "get_clubskill_bonus_spd", "clubskills_8func_8php.html#a0f0ecd9fbeb537aae66484dd6e23939f", null ],
+    [ "get_clubskill_rp_dec", "clubskills_8func_8php.html#af956bd2d0bd5011bd73c78da3e6f908d", null ],
+    [ "get_research_cost", "clubskills_8func_8php.html#af5eecc29dfb8268f6adfa1b229b3cff1", null ],
+    [ "getck", "clubskills_8func_8php.html#aeb4f46a5f97ffd6475d662b75f116c30", null ],
+    [ "getclubavd", "clubskills_8func_8php.html#ac158bc5c5b4a427cafab1536de423e30", null ],
+    [ "getlearnt", "clubskills_8func_8php.html#a9c0a722e16e2c1edadf99e631599d544", null ],
+    [ "getskills", "clubskills_8func_8php.html#a74138908b8c6b68733f93cf65dd5f7cb", null ],
+    [ "getskills2", "clubskills_8func_8php.html#afc152f422903222f2ffba03cf5cf0b48", null ],
+    [ "gskill", "clubskills_8func_8php.html#a9f2154e4b2b059edfd84191574862890", null ],
+    [ "upgradeclubskills", "clubskills_8func_8php.html#a2273bcb3aabde7c447eef97539f53b67", null ]
+];

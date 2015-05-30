@@ -1,0 +1,56 @@
+\hypertarget{winner_8php}{\section{winner.\+php File Reference}
+\label{winner_8php}\index{winner.\+php@{winner.\+php}}
+}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const \hyperlink{winner_8php_a39c39f525eceb86cabc338804f230e80}{C\+U\+R\+S\+C\+R\+I\+P\+T} 'winner'
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!isset(\$command)) \hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(\$command== \\*
+'info') \hyperlink{urlist_8php_a77f52b43f81ed05a41b68c2161789055}{elseif}(\$command== \\*
+'news') \hyperlink{winner_8php_a7529bad1896bee85fa46286e36d1abeb}{else}
+\item 
+\hyperlink{winner_8php_a2059cdc4b75f7f57f2eadd00aaa9ffbe}{for} (\$i=0;\$i$<$\$listnum;\$i++)
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{winner_8php_a39c39f525eceb86cabc338804f230e80}{\index{winner.\+php@{winner.\+php}!C\+U\+R\+S\+C\+R\+I\+P\+T@{C\+U\+R\+S\+C\+R\+I\+P\+T}}
+\index{C\+U\+R\+S\+C\+R\+I\+P\+T@{C\+U\+R\+S\+C\+R\+I\+P\+T}!winner.\+php@{winner.\+php}}
+\subsubsection[{C\+U\+R\+S\+C\+R\+I\+P\+T}]{\setlength{\rightskip}{0pt plus 5cm}const C\+U\+R\+S\+C\+R\+I\+P\+T 'winner'}}\label{winner_8php_a39c39f525eceb86cabc338804f230e80}
+
+
+Definition at line 3 of file winner.\+php.
+
+\hypertarget{winner_8php_a7529bad1896bee85fa46286e36d1abeb}{\index{winner.\+php@{winner.\+php}!else@{else}}
+\index{else@{else}!winner.\+php@{winner.\+php}}
+\subsubsection[{else}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (!isset(\$command)) {\bf if} (\$command== 'info') {\bf elseif} (\$command== 'news') else}}\label{winner_8php_a7529bad1896bee85fa46286e36d1abeb}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+\{
+    \textcolor{keywordflow}{if}(!isset(\hyperlink{npcmng_8php_a50a00e7de77365e00b117e73aa82fb9b}{$start}) || !\hyperlink{npcmng_8php_a50a00e7de77365e00b117e73aa82fb9b}{$start})\{
+        \hyperlink{admin_8php_aa26a75c10464e039aa68f93507070136}{$result} = \hyperlink{clear_8php_a1fa3127fc82f96b1436d871ef02be319}{$db}->query(\textcolor{stringliteral}{"SELECT gid,name,icon,gd,wep,wmode,getime,motto,hdp,hdmg,hkp,hkill
+       FROM \{$tablepre\}winners ORDER BY gid desc LIMIT $winlimit"});
+    \} \textcolor{keywordflow}{else} \{
+        \hyperlink{admin_8php_aa26a75c10464e039aa68f93507070136}{$result} = \hyperlink{clear_8php_a1fa3127fc82f96b1436d871ef02be319}{$db}->query(\textcolor{stringliteral}{"SELECT gid,name,icon,gd,wep,wmode,getime,motto,hdp,hdmg,hkp,hkill
+       FROM \{$tablepre\}winners WHERE gid<='$start' ORDER BY gid desc LIMIT $winlimit"});
+    \}
+    \textcolor{keywordflow}{while}($wdata = \hyperlink{clear_8php_a1fa3127fc82f96b1436d871ef02be319}{$db}->fetch\_array(\hyperlink{admin_8php_aa26a75c10464e039aa68f93507070136}{$result})) \{
+        $wdata[\textcolor{stringliteral}{'date'}] = date(\textcolor{stringliteral}{"Y-m-d"},$wdata[\textcolor{stringliteral}{'getime'}]);
+        $wdata[\textcolor{stringliteral}{'time'}] = date(\textcolor{stringliteral}{"H:i:s"},$wdata[\textcolor{stringliteral}{'getime'}]);
+        $wdata[\textcolor{stringliteral}{'iconImg'}] = $wdata[\textcolor{stringliteral}{'gd'}] == \textcolor{charliteral}{'f'} ? \textcolor{stringliteral}{'f\_'}.$wdata[\textcolor{stringliteral}{'icon'}].\textcolor{stringliteral}{'.gif'} : \textcolor{stringliteral}{'m\_'}.$wdata[\textcolor{stringliteral}{'icon'}].\textcolor{stringliteral}{'.gif'};
+        $winfo[$wdata[\textcolor{stringliteral}{'gid'}]] = $wdata;
+    \}
+    $listnum = floor(\hyperlink{gamedata_2gameinfo_8php_a98c5bf2ec517c70a0b24d0486da99fbf}{$gamenum}/\hyperlink{system_8php_a01e2b9fb5d1ed424d631e4e3359f5c51}{$winlimit})
+\end{DoxyCode}
+
+
+Definition at line 23 of file winner.\+php.
+
+\hypertarget{winner_8php_a2059cdc4b75f7f57f2eadd00aaa9ffbe}{\index{winner.\+php@{winner.\+php}!for@{for}}
+\index{for@{for}!winner.\+php@{winner.\+php}}
+\subsubsection[{for}]{\setlength{\rightskip}{0pt plus 5cm}for(\$i=0;\$i$<$\$listnum;\$i++)}}\label{winner_8php_a2059cdc4b75f7f57f2eadd00aaa9ffbe}
+
+
+Definition at line 37 of file winner.\+php.
+

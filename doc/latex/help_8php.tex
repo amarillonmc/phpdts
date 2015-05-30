@@ -1,0 +1,187 @@
+\hypertarget{help_8php}{\section{help.\+php File Reference}
+\label{help_8php}\index{help.\+php@{help.\+php}}
+}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const \hyperlink{help_8php_a39c39f525eceb86cabc338804f230e80}{C\+U\+R\+S\+C\+R\+I\+P\+T} 'help'
+\item 
+\hyperlink{help_8php_affc0dbcabcc950d3d33132839350597f}{\$mixfile} = \hyperlink{global_8func_8php_a239de3ed26da8daceb8acacdcb03325d}{config}('mixitem',\$gamecfg)
+\item 
+\hyperlink{help_8php_afee43b66e7c378972cdfd311256e4bdc}{\$shopfile} = \hyperlink{global_8func_8php_a239de3ed26da8daceb8acacdcb03325d}{config}('shopitem',\$gamecfg)
+\item 
+\hyperlink{help_8php_a7d4a07d88fbf7598d1afe480b8e49aff}{\$mapitemfile} = \hyperlink{global_8func_8php_a239de3ed26da8daceb8acacdcb03325d}{config}('mapitem',\$gamecfg)
+\item 
+\hyperlink{help_8php_a9d7789f6dc6b5b0f0b0886cddef59993}{\$synfile} = \hyperlink{global_8func_8php_a239de3ed26da8daceb8acacdcb03325d}{config}('synitem',\$gamecfg)
+\item 
+\hyperlink{help_8php_adde37beebc46284ae993bf4053074066}{\$ovlfile} = \hyperlink{global_8func_8php_a239de3ed26da8daceb8acacdcb03325d}{config}('overlay',\$gamecfg)
+\item 
+\hyperlink{help_8php_a9294d83ef6d001ede9b5e9dc96eb2a62}{\$presentfile} = \hyperlink{global_8func_8php_a239de3ed26da8daceb8acacdcb03325d}{config}('present',\$gamecfg)
+\item 
+\hyperlink{help_8php_a185669cf7ba3b84b38b578700ea1ef04}{\$boxfile} = \hyperlink{global_8func_8php_a239de3ed26da8daceb8acacdcb03325d}{config}('box',\$gamecfg)
+\item 
+\hyperlink{help_8php_a7f36146362433df71ca7f7102705501a}{\$writefile} = G\+A\+M\+E\+\_\+\+R\+O\+O\+T.\+T\+P\+L\+D\+I\+R.'/mixhelp.\+htm'
+\item 
+\hyperlink{help_8php_a69efb4615ba59410b71c65f9e9257768}{\$ty1} \mbox{[}1\mbox{]} =6
+\item 
+\hyperlink{help_8php_a1f878b8e6b252d143bca0b8db51dbc7a}{\$ty1} \mbox{[}2\mbox{]} =5
+\item 
+\hyperlink{help_8php_ad18d4358b281e06cd618cfb90f9d8fe3}{\$ty1} \mbox{[}3\mbox{]} =1
+\item 
+\hyperlink{help_8php_af76e33f9212a07c65cf094d63e549fad}{\$ty1} \mbox{[}4\mbox{]} =9
+\item 
+\hyperlink{help_8php_a2051398f6d528e7c7b22d89a4c2ae2f3}{\$ty1} \mbox{[}5\mbox{]} =88
+\item 
+\hyperlink{help_8php_ac8b6921c3d88fe34ad63434936e52e6e}{\$ty2} \mbox{[}1\mbox{]} =11
+\item 
+\hyperlink{help_8php_a79fba54c84cf5e4b2c89acc1f48ca463}{\$ty3} \mbox{[}1\mbox{]} =2
+\item 
+\hyperlink{help_8php_a3ebbddd85765b13f189184dda9c40694}{\$ty3} \mbox{[}2\mbox{]} =90
+\item 
+\hyperlink{help_8php_ad9c88705cd45e48b65d5c2aa4d6d54be}{\$ty4} \mbox{[}1\mbox{]} =14
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(filemtime(\$mixfile) $>$\\*
+ filemtime(\$writefile)$\vert$$\vert$filemtime(\$shopfile) $>$\\*
+ filemtime(\$writefile)$\vert$$\vert$filemtime(\$mapitemfile) $>$\\*
+ filemtime(\$writefile)$\vert$$\vert$filemtime(\$synfile) $>$\\*
+ filemtime(\$writefile)$\vert$$\vert$filemtime(\$ovlfile) $>$\\*
+ filemtime(\$writefile)$\vert$$\vert$filemtime(\$presentfile) $>$\\*
+ filemtime(\$writefile)$\vert$$\vert$filemtime(\$boxfile) $>$\\*
+ filemtime(\$writefile)) \hyperlink{help_8php_a25b60a75d1998e24b8be08f5191f731f}{\$extrahead}
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{help_8php_a185669cf7ba3b84b38b578700ea1ef04}{\index{help.\+php@{help.\+php}!\$boxfile@{\$boxfile}}
+\index{\$boxfile@{\$boxfile}!help.\+php@{help.\+php}}
+\subsubsection[{\$boxfile}]{\setlength{\rightskip}{0pt plus 5cm}\$boxfile = {\bf config}('box',\$gamecfg)}}\label{help_8php_a185669cf7ba3b84b38b578700ea1ef04}
+
+
+Definition at line 13 of file help.\+php.
+
+\hypertarget{help_8php_a25b60a75d1998e24b8be08f5191f731f}{\index{help.\+php@{help.\+php}!\$extrahead@{\$extrahead}}
+\index{\$extrahead@{\$extrahead}!help.\+php@{help.\+php}}
+\subsubsection[{\$extrahead}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (filemtime(\$mixfile) $>$ filemtime(\$writefile)$\vert$$\vert$filemtime(\$shopfile) $>$ filemtime(\$writefile)$\vert$$\vert$filemtime(\$mapitemfile) $>$ filemtime(\$writefile)$\vert$$\vert$filemtime(\$synfile) $>$ filemtime(\$writefile)$\vert$$\vert$filemtime(\$ovlfile) $>$ filemtime(\$writefile)$\vert$$\vert$filemtime(\$presentfile) $>$ filemtime(\$writefile)$\vert$$\vert$filemtime(\$boxfile) $>$ filemtime(\$writefile)) \$extrahead}}\label{help_8php_a25b60a75d1998e24b8be08f5191f731f}
+
+
+Definition at line 110 of file help.\+php.
+
+\hypertarget{help_8php_a7d4a07d88fbf7598d1afe480b8e49aff}{\index{help.\+php@{help.\+php}!\$mapitemfile@{\$mapitemfile}}
+\index{\$mapitemfile@{\$mapitemfile}!help.\+php@{help.\+php}}
+\subsubsection[{\$mapitemfile}]{\setlength{\rightskip}{0pt plus 5cm}\$mapitemfile = {\bf config}('mapitem',\$gamecfg)}}\label{help_8php_a7d4a07d88fbf7598d1afe480b8e49aff}
+
+
+Definition at line 9 of file help.\+php.
+
+\hypertarget{help_8php_affc0dbcabcc950d3d33132839350597f}{\index{help.\+php@{help.\+php}!\$mixfile@{\$mixfile}}
+\index{\$mixfile@{\$mixfile}!help.\+php@{help.\+php}}
+\subsubsection[{\$mixfile}]{\setlength{\rightskip}{0pt plus 5cm}\$mixfile = {\bf config}('mixitem',\$gamecfg)}}\label{help_8php_affc0dbcabcc950d3d33132839350597f}
+
+
+Definition at line 7 of file help.\+php.
+
+\hypertarget{help_8php_adde37beebc46284ae993bf4053074066}{\index{help.\+php@{help.\+php}!\$ovlfile@{\$ovlfile}}
+\index{\$ovlfile@{\$ovlfile}!help.\+php@{help.\+php}}
+\subsubsection[{\$ovlfile}]{\setlength{\rightskip}{0pt plus 5cm}\$ovlfile = {\bf config}('overlay',\$gamecfg)}}\label{help_8php_adde37beebc46284ae993bf4053074066}
+
+
+Definition at line 11 of file help.\+php.
+
+\hypertarget{help_8php_a9294d83ef6d001ede9b5e9dc96eb2a62}{\index{help.\+php@{help.\+php}!\$presentfile@{\$presentfile}}
+\index{\$presentfile@{\$presentfile}!help.\+php@{help.\+php}}
+\subsubsection[{\$presentfile}]{\setlength{\rightskip}{0pt plus 5cm}\$presentfile = {\bf config}('present',\$gamecfg)}}\label{help_8php_a9294d83ef6d001ede9b5e9dc96eb2a62}
+
+
+Definition at line 12 of file help.\+php.
+
+\hypertarget{help_8php_afee43b66e7c378972cdfd311256e4bdc}{\index{help.\+php@{help.\+php}!\$shopfile@{\$shopfile}}
+\index{\$shopfile@{\$shopfile}!help.\+php@{help.\+php}}
+\subsubsection[{\$shopfile}]{\setlength{\rightskip}{0pt plus 5cm}\$shopfile = {\bf config}('shopitem',\$gamecfg)}}\label{help_8php_afee43b66e7c378972cdfd311256e4bdc}
+
+
+Definition at line 8 of file help.\+php.
+
+\hypertarget{help_8php_a9d7789f6dc6b5b0f0b0886cddef59993}{\index{help.\+php@{help.\+php}!\$synfile@{\$synfile}}
+\index{\$synfile@{\$synfile}!help.\+php@{help.\+php}}
+\subsubsection[{\$synfile}]{\setlength{\rightskip}{0pt plus 5cm}\$synfile = {\bf config}('synitem',\$gamecfg)}}\label{help_8php_a9d7789f6dc6b5b0f0b0886cddef59993}
+
+
+Definition at line 10 of file help.\+php.
+
+\hypertarget{help_8php_a69efb4615ba59410b71c65f9e9257768}{\index{help.\+php@{help.\+php}!\$ty1@{\$ty1}}
+\index{\$ty1@{\$ty1}!help.\+php@{help.\+php}}
+\subsubsection[{\$ty1}]{\setlength{\rightskip}{0pt plus 5cm}\$ty1\mbox{[}1\mbox{]} =6}}\label{help_8php_a69efb4615ba59410b71c65f9e9257768}
+
+
+Definition at line 20 of file help.\+php.
+
+\hypertarget{help_8php_a1f878b8e6b252d143bca0b8db51dbc7a}{\index{help.\+php@{help.\+php}!\$ty1@{\$ty1}}
+\index{\$ty1@{\$ty1}!help.\+php@{help.\+php}}
+\subsubsection[{\$ty1}]{\setlength{\rightskip}{0pt plus 5cm}\$ty1\mbox{[}2\mbox{]} =5}}\label{help_8php_a1f878b8e6b252d143bca0b8db51dbc7a}
+
+
+Definition at line 20 of file help.\+php.
+
+\hypertarget{help_8php_ad18d4358b281e06cd618cfb90f9d8fe3}{\index{help.\+php@{help.\+php}!\$ty1@{\$ty1}}
+\index{\$ty1@{\$ty1}!help.\+php@{help.\+php}}
+\subsubsection[{\$ty1}]{\setlength{\rightskip}{0pt plus 5cm}\$ty1\mbox{[}3\mbox{]} =1}}\label{help_8php_ad18d4358b281e06cd618cfb90f9d8fe3}
+
+
+Definition at line 20 of file help.\+php.
+
+\hypertarget{help_8php_af76e33f9212a07c65cf094d63e549fad}{\index{help.\+php@{help.\+php}!\$ty1@{\$ty1}}
+\index{\$ty1@{\$ty1}!help.\+php@{help.\+php}}
+\subsubsection[{\$ty1}]{\setlength{\rightskip}{0pt plus 5cm}\$ty1\mbox{[}4\mbox{]} =9}}\label{help_8php_af76e33f9212a07c65cf094d63e549fad}
+
+
+Definition at line 20 of file help.\+php.
+
+\hypertarget{help_8php_a2051398f6d528e7c7b22d89a4c2ae2f3}{\index{help.\+php@{help.\+php}!\$ty1@{\$ty1}}
+\index{\$ty1@{\$ty1}!help.\+php@{help.\+php}}
+\subsubsection[{\$ty1}]{\setlength{\rightskip}{0pt plus 5cm}\$ty1\mbox{[}5\mbox{]} =88}}\label{help_8php_a2051398f6d528e7c7b22d89a4c2ae2f3}
+
+
+Definition at line 20 of file help.\+php.
+
+\hypertarget{help_8php_ac8b6921c3d88fe34ad63434936e52e6e}{\index{help.\+php@{help.\+php}!\$ty2@{\$ty2}}
+\index{\$ty2@{\$ty2}!help.\+php@{help.\+php}}
+\subsubsection[{\$ty2}]{\setlength{\rightskip}{0pt plus 5cm}\$ty2\mbox{[}1\mbox{]} =11}}\label{help_8php_ac8b6921c3d88fe34ad63434936e52e6e}
+
+
+Definition at line 21 of file help.\+php.
+
+\hypertarget{help_8php_a79fba54c84cf5e4b2c89acc1f48ca463}{\index{help.\+php@{help.\+php}!\$ty3@{\$ty3}}
+\index{\$ty3@{\$ty3}!help.\+php@{help.\+php}}
+\subsubsection[{\$ty3}]{\setlength{\rightskip}{0pt plus 5cm}\$ty3\mbox{[}1\mbox{]} =2}}\label{help_8php_a79fba54c84cf5e4b2c89acc1f48ca463}
+
+
+Definition at line 22 of file help.\+php.
+
+\hypertarget{help_8php_a3ebbddd85765b13f189184dda9c40694}{\index{help.\+php@{help.\+php}!\$ty3@{\$ty3}}
+\index{\$ty3@{\$ty3}!help.\+php@{help.\+php}}
+\subsubsection[{\$ty3}]{\setlength{\rightskip}{0pt plus 5cm}\$ty3\mbox{[}2\mbox{]} =90}}\label{help_8php_a3ebbddd85765b13f189184dda9c40694}
+
+
+Definition at line 22 of file help.\+php.
+
+\hypertarget{help_8php_ad9c88705cd45e48b65d5c2aa4d6d54be}{\index{help.\+php@{help.\+php}!\$ty4@{\$ty4}}
+\index{\$ty4@{\$ty4}!help.\+php@{help.\+php}}
+\subsubsection[{\$ty4}]{\setlength{\rightskip}{0pt plus 5cm}\$ty4\mbox{[}1\mbox{]} =14}}\label{help_8php_ad9c88705cd45e48b65d5c2aa4d6d54be}
+
+
+Definition at line 23 of file help.\+php.
+
+\hypertarget{help_8php_a7f36146362433df71ca7f7102705501a}{\index{help.\+php@{help.\+php}!\$writefile@{\$writefile}}
+\index{\$writefile@{\$writefile}!help.\+php@{help.\+php}}
+\subsubsection[{\$writefile}]{\setlength{\rightskip}{0pt plus 5cm}\$writefile = G\+A\+M\+E\+\_\+\+R\+O\+O\+T.\+T\+P\+L\+D\+I\+R.'/mixhelp.\+htm'}}\label{help_8php_a7f36146362433df71ca7f7102705501a}
+
+
+Definition at line 15 of file help.\+php.
+
+\hypertarget{help_8php_a39c39f525eceb86cabc338804f230e80}{\index{help.\+php@{help.\+php}!C\+U\+R\+S\+C\+R\+I\+P\+T@{C\+U\+R\+S\+C\+R\+I\+P\+T}}
+\index{C\+U\+R\+S\+C\+R\+I\+P\+T@{C\+U\+R\+S\+C\+R\+I\+P\+T}!help.\+php@{help.\+php}}
+\subsubsection[{C\+U\+R\+S\+C\+R\+I\+P\+T}]{\setlength{\rightskip}{0pt plus 5cm}const C\+U\+R\+S\+C\+R\+I\+P\+T 'help'}}\label{help_8php_a39c39f525eceb86cabc338804f230e80}
+
+
+Definition at line 3 of file help.\+php.
+

@@ -1,0 +1,37 @@
+\hypertarget{gmlist_8php}{\section{include/admin/gmlist.php File Reference}
+\label{gmlist_8php}\index{include/admin/gmlist.\+php@{include/admin/gmlist.\+php}}
+}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!defined('\hyperlink{admin_8php_ad49472b0cdee543164375bf133a537f1}{I\+N\+\_\+\+A\+D\+M\+I\+N}')) \hyperlink{gmlist_8php_a3d355e0c1f1851fe7486bca611550a5f}{\$result} = \$db-\/$>$query(\char`\"{}S\+E\+L\+E\+C\+T uid,username,groupid F\+R\+O\+M \{\$tablepre\}users W\+H\+E\+R\+E groupid $>$ 1 O\+R\+D\+E\+R B\+Y groupid D\+E\+S\+C\char`\"{})
+\item 
+\hyperlink{stat_8php_ab54633a8fada54bedd1fe3c2635cfaeb}{while}(\$gm=\$db-\/$>$fetch\+\_\+array(\$\hyperlink{templates_2install_8php_abdecde238169a1e34f68354fc9968af0}{result})) \hyperlink{gmlist_8php_add3dadbfc82133e0ffb055d6f5111e57}{\$cmd\+\_\+info} = ''
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(\$command== 'add') elseif(\$command== \\*
+'del') \hyperlink{gmlist_8php_a311ef487b52409c05de3e8386f968240}{elseif} (\$command== 'edit')
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{gmlist_8php_add3dadbfc82133e0ffb055d6f5111e57}{\index{gmlist.\+php@{gmlist.\+php}!\$cmd\+\_\+info@{\$cmd\+\_\+info}}
+\index{\$cmd\+\_\+info@{\$cmd\+\_\+info}!gmlist.\+php@{gmlist.\+php}}
+\subsubsection[{\$cmd\+\_\+info}]{\setlength{\rightskip}{0pt plus 5cm}{\bf while} (\$gm=\$db-\/$>$fetch\+\_\+array(\${\bf result})) \$cmd\+\_\+info = ''}}\label{gmlist_8php_add3dadbfc82133e0ffb055d6f5111e57}
+
+
+Definition at line 10 of file gmlist.\+php.
+
+\hypertarget{gmlist_8php_a3d355e0c1f1851fe7486bca611550a5f}{\index{gmlist.\+php@{gmlist.\+php}!\$result@{\$result}}
+\index{\$result@{\$result}!gmlist.\+php@{gmlist.\+php}}
+\subsubsection[{\$result}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (!defined('{\bf I\+N\+\_\+\+A\+D\+M\+I\+N}')) \${\bf result} = \$db-\/$>$query(\char`\"{}S\+E\+L\+E\+C\+T uid,username,groupid F\+R\+O\+M \{\$tablepre\}users W\+H\+E\+R\+E groupid $>$ 1 O\+R\+D\+E\+R B\+Y groupid D\+E\+S\+C\char`\"{})}}\label{gmlist_8php_a3d355e0c1f1851fe7486bca611550a5f}
+
+
+Definition at line 6 of file gmlist.\+php.
+
+\hypertarget{gmlist_8php_a311ef487b52409c05de3e8386f968240}{\index{gmlist.\+php@{gmlist.\+php}!elseif@{elseif}}
+\index{elseif@{elseif}!gmlist.\+php@{gmlist.\+php}}
+\subsubsection[{elseif}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (\$command== 'add') elseif (\$command== 'del') elseif(\$command== 'edit')}}\label{gmlist_8php_a311ef487b52409c05de3e8386f968240}
+
+
+Definition at line 52 of file gmlist.\+php.
+

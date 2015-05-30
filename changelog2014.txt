@@ -1,0 +1,8 @@
+2014-03-02
+添加了造成随机伤害的武器属性R {resources_1; combat.func;}
+添加了能按指定概率随机得到一般道具、神装等物品的道具类型ps {resources_1; item.func; randomitem_1;}
+添加了能随机切换女主NPC位置的道具"群青多面体" {item.func; news.func;}
+添加了能给非特殊道具改名的道具"残响兵器" {item.func; item2.func; nametag.htm;}
+修改了RP增加的规则：1.玩家杀人时将对方RP加在自己身上；2.玩家每次RP增长都判定RP称号和技能是否存在 {combat.func; event.func;}
+添加了针对RP的特殊称号“晶莹剔透”：1.称号特长是RP增长减少；2.称号的两个技能 {clubskills.func; clubslct.func; valid.func; combat.func; event.func; sp_skpts.htm;}
+添加了AI静流：1.静流卖萌和提示道具地点功能；2.静流攻击和回避玩家的功能；3.静流入场和存活的全局判断 {system.func; global.func; db_mysql.class; state.func; aievent.func; search.func; npc_1; addnpc_1; reset.sql; gamecfg_1; resources_1;}

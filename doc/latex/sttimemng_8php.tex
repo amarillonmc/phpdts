@@ -1,0 +1,52 @@
+\hypertarget{sttimemng_8php}{\section{include/admin/sttimemng.php File Reference}
+\label{sttimemng_8php}\index{include/admin/sttimemng.\+php@{include/admin/sttimemng.\+php}}
+}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!defined('\hyperlink{admin_8php_ad49472b0cdee543164375bf133a537f1}{I\+N\+\_\+\+A\+D\+M\+I\+N}')) \hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(\$subcmd=='edit'\&\&!\$gamestate) \\*
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(\$gamestate) \hyperlink{urlist_8php_a77f52b43f81ed05a41b68c2161789055}{elseif}(\$starttime) \hyperlink{sttimemng_8php_a5c2bdee9de438407c0bb5438c59f288a}{else}
+\item 
+\hyperlink{sttimemng_8php_a673bc1547456f6d21e386b6d3add1b91}{\$stmin} = \$startmin
+\item 
+\hyperlink{sttimemng_8php_a006358beabddbdb9061eb2079213a082}{\$stmonth}
+\item 
+\hyperlink{sttimemng_8php_a9cfaedc526b9ac44dbc3a05ef88916ed}{\$styear} = 1900
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{sttimemng_8php_a673bc1547456f6d21e386b6d3add1b91}{\index{sttimemng.\+php@{sttimemng.\+php}!\$stmin@{\$stmin}}
+\index{\$stmin@{\$stmin}!sttimemng.\+php@{sttimemng.\+php}}
+\subsubsection[{\$stmin}]{\setlength{\rightskip}{0pt plus 5cm}\$stmin = \$startmin}}\label{sttimemng_8php_a673bc1547456f6d21e386b6d3add1b91}
+
+
+Definition at line 25 of file sttimemng.\+php.
+
+\hypertarget{sttimemng_8php_a006358beabddbdb9061eb2079213a082}{\index{sttimemng.\+php@{sttimemng.\+php}!\$stmonth@{\$stmonth}}
+\index{\$stmonth@{\$stmonth}!sttimemng.\+php@{sttimemng.\+php}}
+\subsubsection[{\$stmonth}]{\setlength{\rightskip}{0pt plus 5cm}\$stmonth}}\label{sttimemng_8php_a006358beabddbdb9061eb2079213a082}
+
+
+Definition at line 26 of file sttimemng.\+php.
+
+\hypertarget{sttimemng_8php_a9cfaedc526b9ac44dbc3a05ef88916ed}{\index{sttimemng.\+php@{sttimemng.\+php}!\$styear@{\$styear}}
+\index{\$styear@{\$styear}!sttimemng.\+php@{sttimemng.\+php}}
+\subsubsection[{\$styear}]{\setlength{\rightskip}{0pt plus 5cm}\$styear = 1900}}\label{sttimemng_8php_a9cfaedc526b9ac44dbc3a05ef88916ed}
+
+
+Definition at line 27 of file sttimemng.\+php.
+
+\hypertarget{sttimemng_8php_a5c2bdee9de438407c0bb5438c59f288a}{\index{sttimemng.\+php@{sttimemng.\+php}!else@{else}}
+\index{else@{else}!sttimemng.\+php@{sttimemng.\+php}}
+\subsubsection[{else}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (!defined('{\bf I\+N\+\_\+\+A\+D\+M\+I\+N}')) {\bf if} (\$subcmd=='edit'\&\&!\$gamestate) {\bf if} (\$gamestate) {\bf elseif} (\$starttime) else}}\label{sttimemng_8php_a5c2bdee9de438407c0bb5438c59f288a}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+\{
+    list($stsec,\hyperlink{sttimemng_8php_a673bc1547456f6d21e386b6d3add1b91}{$stmin},$sthour,$stday,\hyperlink{sttimemng_8php_a006358beabddbdb9061eb2079213a082}{$stmonth},\hyperlink{sttimemng_8php_a9cfaedc526b9ac44dbc3a05ef88916ed}{$styear},$stwday,$styday,$stisdst) = 
+      localtime(\hyperlink{clear_8php_af1d5ccdee975b8f4d20aaffc5b28557c}{$now}+3600)
+\end{DoxyCode}
+
+
+Definition at line 23 of file sttimemng.\+php.
+

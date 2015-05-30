@@ -1,0 +1,114 @@
+\hypertarget{common_8inc_8php}{\section{include/common.inc.\+php File Reference}
+\label{common_8inc_8php}\index{include/common.\+inc.\+php@{include/common.\+inc.\+php}}
+}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const \hyperlink{common_8inc_8php_a12c82f3d28569a3f80804f1e72cef14c}{I\+N\+\_\+\+G\+A\+M\+E} T\+R\+U\+E
+\item 
+const \hyperlink{common_8inc_8php_a8e43cd27c8e744fff590983bc396aba3}{G\+A\+M\+E\+\_\+\+R\+O\+O\+T} substr(dirname(\+\_\+\+\_\+\+F\+I\+L\+E\+\_\+\+\_\+), 0, -\/7)
+\item 
+const \hyperlink{common_8inc_8php_a3cd7223880b2f6a1d0bcb325ce43c606}{G\+A\+M\+E\+N\+A\+M\+E} 'bra'
+\item 
+\hyperlink{common_8inc_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if} (P\+H\+P\+\_\+\+V\+E\+R\+S\+I\+O\+N$<$  '4.\+3.\+0')
+\item 
+\hyperlink{common_8inc_8php_a3bf6a6f8faa278d5cceb69655ecdb782}{\$magic\+\_\+quotes\+\_\+gpc} = get\+\_\+magic\+\_\+quotes\+\_\+gpc()
+\item 
+\hyperlink{common_8inc_8php_a0e4b7f3b6c609258c08660a1ec52b89b}{\$\+\_\+\+R\+E\+Q\+U\+E\+S\+T} = \hyperlink{global_8func_8php_a2b7ece9137321f3300ce816cab600087}{gstrfilter}(\$\+\_\+\+R\+E\+Q\+U\+E\+S\+T)
+\item 
+\hyperlink{common_8inc_8php_a797c40bb61689e5072487a9a8d66843c}{\$\+\_\+\+F\+I\+L\+E\+S} = \hyperlink{global_8func_8php_a2b7ece9137321f3300ce816cab600087}{gstrfilter}(\$\+\_\+\+F\+I\+L\+E\+S)
+\item 
+\hyperlink{common_8inc_8php_af1d5ccdee975b8f4d20aaffc5b28557c}{\$now} = time() + \$moveut$\ast$3600 + \$moveutmin$\ast$60
+\item 
+\hyperlink{common_8inc_8php_a1fa3127fc82f96b1436d871ef02be319}{\$db} = new \hyperlink{classdbstuff}{dbstuff}
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(C\+U\+R\+S\+C\+R\+I\+P\+T!== '\hyperlink{game20130526_8js_aa57ded7cb1d22494c754d847f821e5cf}{chat}') \hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(\hyperlink{winner_8php_a39c39f525eceb86cabc338804f230e80}{C\+U\+R\+S\+C\+R\+I\+P\+T}== \\*
+'botservice') \hyperlink{common_8inc_8php_aa917bbe088c28b1850023f42d190b240}{else}
+\item 
+\hyperlink{common_8inc_8php_a6b49904a5083a3eee734e64e8a57e763}{\$cpass} = \& \$\{\$tablepre.'pass'\}
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{common_8inc_8php_a797c40bb61689e5072487a9a8d66843c}{\index{common.\+inc.\+php@{common.\+inc.\+php}!\$\+\_\+\+F\+I\+L\+E\+S@{\$\+\_\+\+F\+I\+L\+E\+S}}
+\index{\$\+\_\+\+F\+I\+L\+E\+S@{\$\+\_\+\+F\+I\+L\+E\+S}!common.\+inc.\+php@{common.\+inc.\+php}}
+\subsubsection[{\$\+\_\+\+F\+I\+L\+E\+S}]{\setlength{\rightskip}{0pt plus 5cm}\$\+\_\+\+F\+I\+L\+E\+S = {\bf gstrfilter}(\$\+\_\+\+F\+I\+L\+E\+S)}}\label{common_8inc_8php_a797c40bb61689e5072487a9a8d66843c}
+
+
+Definition at line 21 of file common.\+inc.\+php.
+
+\hypertarget{common_8inc_8php_a0e4b7f3b6c609258c08660a1ec52b89b}{\index{common.\+inc.\+php@{common.\+inc.\+php}!\$\+\_\+\+R\+E\+Q\+U\+E\+S\+T@{\$\+\_\+\+R\+E\+Q\+U\+E\+S\+T}}
+\index{\$\+\_\+\+R\+E\+Q\+U\+E\+S\+T@{\$\+\_\+\+R\+E\+Q\+U\+E\+S\+T}!common.\+inc.\+php@{common.\+inc.\+php}}
+\subsubsection[{\$\+\_\+\+R\+E\+Q\+U\+E\+S\+T}]{\setlength{\rightskip}{0pt plus 5cm}\$\+\_\+\+R\+E\+Q\+U\+E\+S\+T = {\bf gstrfilter}(\$\+\_\+\+R\+E\+Q\+U\+E\+S\+T)}}\label{common_8inc_8php_a0e4b7f3b6c609258c08660a1ec52b89b}
+
+
+Definition at line 20 of file common.\+inc.\+php.
+
+\hypertarget{common_8inc_8php_a6b49904a5083a3eee734e64e8a57e763}{\index{common.\+inc.\+php@{common.\+inc.\+php}!\$cpass@{\$cpass}}
+\index{\$cpass@{\$cpass}!common.\+inc.\+php@{common.\+inc.\+php}}
+\subsubsection[{\$cpass}]{\setlength{\rightskip}{0pt plus 5cm}\$cpass = \& \$\{\$tablepre.'pass'\}}}\label{common_8inc_8php_a6b49904a5083a3eee734e64e8a57e763}
+
+
+Definition at line 207 of file common.\+inc.\+php.
+
+\hypertarget{common_8inc_8php_a1fa3127fc82f96b1436d871ef02be319}{\index{common.\+inc.\+php@{common.\+inc.\+php}!\$db@{\$db}}
+\index{\$db@{\$db}!common.\+inc.\+php@{common.\+inc.\+php}}
+\subsubsection[{\$db}]{\setlength{\rightskip}{0pt plus 5cm}\$db = new {\bf dbstuff}}}\label{common_8inc_8php_a1fa3127fc82f96b1436d871ef02be319}
+
+
+Definition at line 39 of file common.\+inc.\+php.
+
+\hypertarget{common_8inc_8php_a3bf6a6f8faa278d5cceb69655ecdb782}{\index{common.\+inc.\+php@{common.\+inc.\+php}!\$magic\+\_\+quotes\+\_\+gpc@{\$magic\+\_\+quotes\+\_\+gpc}}
+\index{\$magic\+\_\+quotes\+\_\+gpc@{\$magic\+\_\+quotes\+\_\+gpc}!common.\+inc.\+php@{common.\+inc.\+php}}
+\subsubsection[{\$magic\+\_\+quotes\+\_\+gpc}]{\setlength{\rightskip}{0pt plus 5cm}\$magic\+\_\+quotes\+\_\+gpc = get\+\_\+magic\+\_\+quotes\+\_\+gpc()}}\label{common_8inc_8php_a3bf6a6f8faa278d5cceb69655ecdb782}
+
+
+Definition at line 15 of file common.\+inc.\+php.
+
+\hypertarget{common_8inc_8php_af1d5ccdee975b8f4d20aaffc5b28557c}{\index{common.\+inc.\+php@{common.\+inc.\+php}!\$now@{\$now}}
+\index{\$now@{\$now}!common.\+inc.\+php@{common.\+inc.\+php}}
+\subsubsection[{\$now}]{\setlength{\rightskip}{0pt plus 5cm}\$now = time() + \$moveut$\ast$3600 + \$moveutmin$\ast$60}}\label{common_8inc_8php_af1d5ccdee975b8f4d20aaffc5b28557c}
+
+
+Definition at line 30 of file common.\+inc.\+php.
+
+\hypertarget{common_8inc_8php_aa917bbe088c28b1850023f42d190b240}{\index{common.\+inc.\+php@{common.\+inc.\+php}!else@{else}}
+\index{else@{else}!common.\+inc.\+php@{common.\+inc.\+php}}
+\subsubsection[{else}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (C\+U\+R\+S\+C\+R\+I\+P\+T!== '{\bf chat}') {\bf if} ({\bf C\+U\+R\+S\+C\+R\+I\+P\+T}== 'botservice') else}}\label{common_8inc_8php_aa917bbe088c28b1850023f42d190b240}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+\{
+    $cuser = & $\{\hyperlink{config_8inc_8php_a5a76c9cbb459a1ffe1e4f5c7cfde4b3b}{$tablepre}.\textcolor{stringliteral}{'user'}\}
+\end{DoxyCode}
+
+
+Definition at line 205 of file common.\+inc.\+php.
+
+\hypertarget{common_8inc_8php_a8e43cd27c8e744fff590983bc396aba3}{\index{common.\+inc.\+php@{common.\+inc.\+php}!G\+A\+M\+E\+\_\+\+R\+O\+O\+T@{G\+A\+M\+E\+\_\+\+R\+O\+O\+T}}
+\index{G\+A\+M\+E\+\_\+\+R\+O\+O\+T@{G\+A\+M\+E\+\_\+\+R\+O\+O\+T}!common.\+inc.\+php@{common.\+inc.\+php}}
+\subsubsection[{G\+A\+M\+E\+\_\+\+R\+O\+O\+T}]{\setlength{\rightskip}{0pt plus 5cm}const G\+A\+M\+E\+\_\+\+R\+O\+O\+T substr(dirname(\+\_\+\+\_\+\+F\+I\+L\+E\+\_\+\+\_\+), 0, -\/7)}}\label{common_8inc_8php_a8e43cd27c8e744fff590983bc396aba3}
+
+
+Definition at line 6 of file common.\+inc.\+php.
+
+\hypertarget{common_8inc_8php_a3cd7223880b2f6a1d0bcb325ce43c606}{\index{common.\+inc.\+php@{common.\+inc.\+php}!G\+A\+M\+E\+N\+A\+M\+E@{G\+A\+M\+E\+N\+A\+M\+E}}
+\index{G\+A\+M\+E\+N\+A\+M\+E@{G\+A\+M\+E\+N\+A\+M\+E}!common.\+inc.\+php@{common.\+inc.\+php}}
+\subsubsection[{G\+A\+M\+E\+N\+A\+M\+E}]{\setlength{\rightskip}{0pt plus 5cm}const G\+A\+M\+E\+N\+A\+M\+E 'bra'}}\label{common_8inc_8php_a3cd7223880b2f6a1d0bcb325ce43c606}
+
+
+Definition at line 7 of file common.\+inc.\+php.
+
+\hypertarget{common_8inc_8php_a4ac1118c2e44c513a674bc1793ba6c90}{\index{common.\+inc.\+php@{common.\+inc.\+php}!if@{if}}
+\index{if@{if}!common.\+inc.\+php@{common.\+inc.\+php}}
+\subsubsection[{if}]{\setlength{\rightskip}{0pt plus 5cm}if(P\+H\+P\+\_\+\+V\+E\+R\+S\+I\+O\+N$<$  '4.\+3.\+0')}}\label{common_8inc_8php_a4ac1118c2e44c513a674bc1793ba6c90}
+
+
+Definition at line 9 of file common.\+inc.\+php.
+
+\hypertarget{common_8inc_8php_a12c82f3d28569a3f80804f1e72cef14c}{\index{common.\+inc.\+php@{common.\+inc.\+php}!I\+N\+\_\+\+G\+A\+M\+E@{I\+N\+\_\+\+G\+A\+M\+E}}
+\index{I\+N\+\_\+\+G\+A\+M\+E@{I\+N\+\_\+\+G\+A\+M\+E}!common.\+inc.\+php@{common.\+inc.\+php}}
+\subsubsection[{I\+N\+\_\+\+G\+A\+M\+E}]{\setlength{\rightskip}{0pt plus 5cm}const I\+N\+\_\+\+G\+A\+M\+E T\+R\+U\+E}}\label{common_8inc_8php_a12c82f3d28569a3f80804f1e72cef14c}
+
+
+Definition at line 5 of file common.\+inc.\+php.
+

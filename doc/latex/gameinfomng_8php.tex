@@ -1,0 +1,110 @@
+\hypertarget{gameinfomng_8php}{\section{include/admin/gameinfomng.php File Reference}
+\label{gameinfomng_8php}\index{include/admin/gameinfomng.\+php@{include/admin/gameinfomng.\+php}}
+}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!defined('\hyperlink{admin_8php_ad49472b0cdee543164375bf133a537f1}{I\+N\+\_\+\+A\+D\+M\+I\+N}')) \hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(\$command== \\*
+'wthedit') \hyperlink{urlist_8php_a77f52b43f81ed05a41b68c2161789055}{elseif}(\$command== \\*
+'hackedit') \hyperlink{urlist_8php_a77f52b43f81ed05a41b68c2161789055}{elseif}(strpos(\$command, \\*
+'gsedit')===0) \hyperlink{urlist_8php_a77f52b43f81ed05a41b68c2161789055}{elseif}(\$command== \\*
+'sttimeedit') \hyperlink{urlist_8php_a77f52b43f81ed05a41b68c2161789055}{elseif}(\$command== \\*
+'areaadd') \hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(\$starttime) \hyperlink{gameinfomng_8php_a9934db7a41333980f5074d52a5a87346}{else}
+\item 
+\hyperlink{gameinfomng_8php_a673bc1547456f6d21e386b6d3add1b91}{\$stmin} = \$startmin
+\item 
+\hyperlink{gameinfomng_8php_a006358beabddbdb9061eb2079213a082}{\$stmonth}
+\item 
+\hyperlink{gameinfomng_8php_a9cfaedc526b9ac44dbc3a05ef88916ed}{\$styear} = 1900
+\item 
+\hyperlink{gameinfomng_8php_af92280f6ec8d2edeac2e7ace4f318b09}{\$arealiststr} = \$nextarealiststr = ''
+\item 
+\hyperlink{gameinfomng_8php_a6c0dccc8b4507bd8513a8f436e16e39c}{\$col} = 0
+\item 
+\hyperlink{gameinfomng_8php_acc2cd2dba20d325f25b899c214051046}{\$areaarr} = array\+\_\+slice(\$arealist,0,\$areanum+1)
+\item 
+\hyperlink{gameinfomng_8php_aae0e687b9aec3ddcaa1da1750caa671e}{\$nareaarr} = array\+\_\+slice(\$arealist,0,\$areanum+\$areaadd)
+\item 
+\hyperlink{gameinfomng_8php_a1576525095834b13ef0a2a4ce56f5109}{\$armonth}
+\item 
+\hyperlink{gameinfomng_8php_a6cb5127bd6798b74e88f6dd74bc5ef67}{\$aryear} = 1900
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{gameinfomng_8php_acc2cd2dba20d325f25b899c214051046}{\index{gameinfomng.\+php@{gameinfomng.\+php}!\$areaarr@{\$areaarr}}
+\index{\$areaarr@{\$areaarr}!gameinfomng.\+php@{gameinfomng.\+php}}
+\subsubsection[{\$areaarr}]{\setlength{\rightskip}{0pt plus 5cm}\$areaarr = array\+\_\+slice(\$arealist,0,\$areanum+1)}}\label{gameinfomng_8php_acc2cd2dba20d325f25b899c214051046}
+
+
+Definition at line 113 of file gameinfomng.\+php.
+
+\hypertarget{gameinfomng_8php_af92280f6ec8d2edeac2e7ace4f318b09}{\index{gameinfomng.\+php@{gameinfomng.\+php}!\$arealiststr@{\$arealiststr}}
+\index{\$arealiststr@{\$arealiststr}!gameinfomng.\+php@{gameinfomng.\+php}}
+\subsubsection[{\$arealiststr}]{\setlength{\rightskip}{0pt plus 5cm}\$arealiststr = \$nextarealiststr = ''}}\label{gameinfomng_8php_af92280f6ec8d2edeac2e7ace4f318b09}
+
+
+Definition at line 111 of file gameinfomng.\+php.
+
+\hypertarget{gameinfomng_8php_a1576525095834b13ef0a2a4ce56f5109}{\index{gameinfomng.\+php@{gameinfomng.\+php}!\$armonth@{\$armonth}}
+\index{\$armonth@{\$armonth}!gameinfomng.\+php@{gameinfomng.\+php}}
+\subsubsection[{\$armonth}]{\setlength{\rightskip}{0pt plus 5cm}\$armonth}}\label{gameinfomng_8php_a1576525095834b13ef0a2a4ce56f5109}
+
+
+Definition at line 135 of file gameinfomng.\+php.
+
+\hypertarget{gameinfomng_8php_a6cb5127bd6798b74e88f6dd74bc5ef67}{\index{gameinfomng.\+php@{gameinfomng.\+php}!\$aryear@{\$aryear}}
+\index{\$aryear@{\$aryear}!gameinfomng.\+php@{gameinfomng.\+php}}
+\subsubsection[{\$aryear}]{\setlength{\rightskip}{0pt plus 5cm}\$aryear = 1900}}\label{gameinfomng_8php_a6cb5127bd6798b74e88f6dd74bc5ef67}
+
+
+Definition at line 136 of file gameinfomng.\+php.
+
+\hypertarget{gameinfomng_8php_a6c0dccc8b4507bd8513a8f436e16e39c}{\index{gameinfomng.\+php@{gameinfomng.\+php}!\$col@{\$col}}
+\index{\$col@{\$col}!gameinfomng.\+php@{gameinfomng.\+php}}
+\subsubsection[{\$col}]{\setlength{\rightskip}{0pt plus 5cm}{\bf foreach} (\$areaarr as \$val) \$col = 0}}\label{gameinfomng_8php_a6c0dccc8b4507bd8513a8f436e16e39c}
+
+
+Definition at line 112 of file gameinfomng.\+php.
+
+\hypertarget{gameinfomng_8php_aae0e687b9aec3ddcaa1da1750caa671e}{\index{gameinfomng.\+php@{gameinfomng.\+php}!\$nareaarr@{\$nareaarr}}
+\index{\$nareaarr@{\$nareaarr}!gameinfomng.\+php@{gameinfomng.\+php}}
+\subsubsection[{\$nareaarr}]{\setlength{\rightskip}{0pt plus 5cm}\$nareaarr = array\+\_\+slice(\$arealist,0,\$areanum+\$areaadd)}}\label{gameinfomng_8php_aae0e687b9aec3ddcaa1da1750caa671e}
+
+
+Definition at line 124 of file gameinfomng.\+php.
+
+\hypertarget{gameinfomng_8php_a673bc1547456f6d21e386b6d3add1b91}{\index{gameinfomng.\+php@{gameinfomng.\+php}!\$stmin@{\$stmin}}
+\index{\$stmin@{\$stmin}!gameinfomng.\+php@{gameinfomng.\+php}}
+\subsubsection[{\$stmin}]{\setlength{\rightskip}{0pt plus 5cm}\$stmin = \$startmin}}\label{gameinfomng_8php_a673bc1547456f6d21e386b6d3add1b91}
+
+
+Definition at line 106 of file gameinfomng.\+php.
+
+\hypertarget{gameinfomng_8php_a006358beabddbdb9061eb2079213a082}{\index{gameinfomng.\+php@{gameinfomng.\+php}!\$stmonth@{\$stmonth}}
+\index{\$stmonth@{\$stmonth}!gameinfomng.\+php@{gameinfomng.\+php}}
+\subsubsection[{\$stmonth}]{\setlength{\rightskip}{0pt plus 5cm}\$stmonth}}\label{gameinfomng_8php_a006358beabddbdb9061eb2079213a082}
+
+
+Definition at line 107 of file gameinfomng.\+php.
+
+\hypertarget{gameinfomng_8php_a9cfaedc526b9ac44dbc3a05ef88916ed}{\index{gameinfomng.\+php@{gameinfomng.\+php}!\$styear@{\$styear}}
+\index{\$styear@{\$styear}!gameinfomng.\+php@{gameinfomng.\+php}}
+\subsubsection[{\$styear}]{\setlength{\rightskip}{0pt plus 5cm}\$styear = 1900}}\label{gameinfomng_8php_a9cfaedc526b9ac44dbc3a05ef88916ed}
+
+
+Definition at line 108 of file gameinfomng.\+php.
+
+\hypertarget{gameinfomng_8php_a9934db7a41333980f5074d52a5a87346}{\index{gameinfomng.\+php@{gameinfomng.\+php}!else@{else}}
+\index{else@{else}!gameinfomng.\+php@{gameinfomng.\+php}}
+\subsubsection[{else}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (!defined('{\bf I\+N\+\_\+\+A\+D\+M\+I\+N}')) {\bf if} (\$command== 'wthedit') {\bf elseif} (\$command== 'hackedit') {\bf elseif} (strpos(\$command, 'gsedit')===0) {\bf elseif} (\$command== 'sttimeedit') {\bf elseif} (\$command== 'areaadd') {\bf if} (\$starttime) else}}\label{gameinfomng_8php_a9934db7a41333980f5074d52a5a87346}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+\{
+    list($stsec,\hyperlink{gameinfomng_8php_a673bc1547456f6d21e386b6d3add1b91}{$stmin},$sthour,$stday,\hyperlink{gameinfomng_8php_a006358beabddbdb9061eb2079213a082}{$stmonth},\hyperlink{gameinfomng_8php_a9cfaedc526b9ac44dbc3a05ef88916ed}{$styear},$stwday,$styday,$stisdst) = 
+      localtime(\hyperlink{clear_8php_af1d5ccdee975b8f4d20aaffc5b28557c}{$now}+3600)
+\end{DoxyCode}
+
+
+Definition at line 104 of file gameinfomng.\+php.
+

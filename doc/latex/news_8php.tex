@@ -1,0 +1,63 @@
+\hypertarget{news_8php}{\section{news.\+php File Reference}
+\label{news_8php}\index{news.\+php@{news.\+php}}
+}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const \hyperlink{news_8php_a39c39f525eceb86cabc338804f230e80}{C\+U\+R\+S\+C\+R\+I\+P\+T} 'news'
+\item 
+\hyperlink{news_8php_a3636c8bd5fc9a90bdbcea8dca02021f0}{\$newsfile} = G\+A\+M\+E\+\_\+\+R\+O\+O\+T.'./gamedata/newsinfo.\+php'
+\item 
+\hyperlink{news_8php_a1070e769e4c48f32dfd487e7f0c564c5}{\$newshtm} = G\+A\+M\+E\+\_\+\+R\+O\+O\+T.\+T\+P\+L\+D\+I\+R.'/newsinfo.\+htm'
+\item 
+\hyperlink{news_8php_a7348d31c98203258eba09d81edd0d7e1}{\$lnewshtm} = G\+A\+M\+E\+\_\+\+R\+O\+O\+T.\+T\+P\+L\+D\+I\+R.'/lastnews.\+htm'
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(filemtime(\$newsfile) $>$\\*
+ filemtime(\$lnewshtm)) \hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!isset(\$newsmode)) \\*
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(\$newsmode== 'last') \hyperlink{urlist_8php_a77f52b43f81ed05a41b68c2161789055}{elseif}(\$newsmode== \\*
+'all') \hyperlink{urlist_8php_a77f52b43f81ed05a41b68c2161789055}{elseif}(\$newsmode== \\*
+'\hyperlink{game20130526_8js_aa57ded7cb1d22494c754d847f821e5cf}{chat}') \hyperlink{news_8php_a58f16d0fd6e3252121ff2eb2fa21b99d}{else}
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{news_8php_a7348d31c98203258eba09d81edd0d7e1}{\index{news.\+php@{news.\+php}!\$lnewshtm@{\$lnewshtm}}
+\index{\$lnewshtm@{\$lnewshtm}!news.\+php@{news.\+php}}
+\subsubsection[{\$lnewshtm}]{\setlength{\rightskip}{0pt plus 5cm}\$lnewshtm = G\+A\+M\+E\+\_\+\+R\+O\+O\+T.\+T\+P\+L\+D\+I\+R.'/lastnews.\+htm'}}\label{news_8php_a7348d31c98203258eba09d81edd0d7e1}
+
+
+Definition at line 13 of file news.\+php.
+
+\hypertarget{news_8php_a3636c8bd5fc9a90bdbcea8dca02021f0}{\index{news.\+php@{news.\+php}!\$newsfile@{\$newsfile}}
+\index{\$newsfile@{\$newsfile}!news.\+php@{news.\+php}}
+\subsubsection[{\$newsfile}]{\setlength{\rightskip}{0pt plus 5cm}\$newsfile = G\+A\+M\+E\+\_\+\+R\+O\+O\+T.'./gamedata/newsinfo.\+php'}}\label{news_8php_a3636c8bd5fc9a90bdbcea8dca02021f0}
+
+
+Definition at line 11 of file news.\+php.
+
+\hypertarget{news_8php_a1070e769e4c48f32dfd487e7f0c564c5}{\index{news.\+php@{news.\+php}!\$newshtm@{\$newshtm}}
+\index{\$newshtm@{\$newshtm}!news.\+php@{news.\+php}}
+\subsubsection[{\$newshtm}]{\setlength{\rightskip}{0pt plus 5cm}\$newshtm = G\+A\+M\+E\+\_\+\+R\+O\+O\+T.\+T\+P\+L\+D\+I\+R.'/newsinfo.\+htm'}}\label{news_8php_a1070e769e4c48f32dfd487e7f0c564c5}
+
+
+Definition at line 12 of file news.\+php.
+
+\hypertarget{news_8php_a39c39f525eceb86cabc338804f230e80}{\index{news.\+php@{news.\+php}!C\+U\+R\+S\+C\+R\+I\+P\+T@{C\+U\+R\+S\+C\+R\+I\+P\+T}}
+\index{C\+U\+R\+S\+C\+R\+I\+P\+T@{C\+U\+R\+S\+C\+R\+I\+P\+T}!news.\+php@{news.\+php}}
+\subsubsection[{C\+U\+R\+S\+C\+R\+I\+P\+T}]{\setlength{\rightskip}{0pt plus 5cm}const C\+U\+R\+S\+C\+R\+I\+P\+T 'news'}}\label{news_8php_a39c39f525eceb86cabc338804f230e80}
+
+
+Definition at line 3 of file news.\+php.
+
+\hypertarget{news_8php_a58f16d0fd6e3252121ff2eb2fa21b99d}{\index{news.\+php@{news.\+php}!else@{else}}
+\index{else@{else}!news.\+php@{news.\+php}}
+\subsubsection[{else}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (filemtime(\$newsfile) $>$ filemtime(\$lnewshtm)) {\bf if} (!isset(\$newsmode)) {\bf if} (\$newsmode== 'last') {\bf elseif} (\$newsmode== 'all') {\bf elseif} (\$newsmode== '{\bf chat}') else}}\label{news_8php_a58f16d0fd6e3252121ff2eb2fa21b99d}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+\{
+    include \textcolor{keyword}{template}(\textcolor{stringliteral}{'news'})
+\end{DoxyCode}
+
+
+Definition at line 62 of file news.\+php.
+

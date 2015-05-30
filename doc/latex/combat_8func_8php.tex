@@ -1,0 +1,426 @@
+\hypertarget{combat_8func_8php}{\section{include/game/combat.func.\+php File Reference}
+\label{combat_8func_8php}\index{include/game/combat.\+func.\+php@{include/game/combat.\+func.\+php}}
+}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!defined( '\hyperlink{templates_2install_8php_a12c82f3d28569a3f80804f1e72cef14c}{I\+N\+\_\+\+G\+A\+M\+E}')) \hyperlink{combat_8func_8php_ab0ece1bbb552fc6f5fad756e3dbebde1}{combat} (\$active=1, \$wep\+\_\+kind= '')
+\item 
+\hyperlink{combat_8func_8php_a04f372351a98edf04e2697b24bd0bb60}{attack} (\$wep\+\_\+kind= 'N', \$active=0)
+\item 
+\hyperlink{combat_8func_8php_a360906058274b6758cdd6ca70eef08db}{defend} (\$w\+\_\+wep\+\_\+kind= 'N', \$active=0)
+\item 
+\hyperlink{combat_8func_8php_a3859b3ab13abb14a7237e0a913f8dd58}{get\+\_\+original\+\_\+dmg} (\$w1, \$w2, \$att, \$def, \$ws, \$wp\+\_\+kind)
+\item 
+\hyperlink{combat_8func_8php_ae04a8ab670fcf1103ba43934620a28fb}{get\+\_\+damage\+\_\+p} (\&\$rg, \$atkcdt, \$type, \$nm, \$cl=0, \$msg= '')
+\item 
+\hyperlink{combat_8func_8php_a8c1fd08a0c1e8c56dca6144e211a6914}{checkdmg} (\$p1, \$p2, \$d)
+\item 
+\hyperlink{combat_8func_8php_a5204fe63006c4dfe97cc0ad9d482d401}{checkdef} (\$def, \$ardef, \$aky, \$active=0)
+\item 
+\hyperlink{combat_8func_8php_a3020c6aafbe122567f23e9fd2866324e}{checkarb} (\&\$dmg, \$w, \$aky, \$dky, \$active=0)
+\item 
+\hyperlink{combat_8func_8php_a54da043b0db510597b12a48963edeffa}{checkdmgdef} (\$dmg, \$aky, \$dky, \$active)
+\item 
+\hyperlink{combat_8func_8php_a3e7dc8a97465663fbb158bd529d9b255}{checkdmgreflex} (\&\$dmg, \$ar)
+\item 
+\hyperlink{combat_8func_8php_a1ea081dabaf1b019eaecd5c31a023d53}{getatkkey} (\$w, \$ah, \$ab, \$aa, \$af, \$at, \$atkind, \$is\+\_\+wpg)
+\item 
+\hyperlink{combat_8func_8php_a1e377ee46415a5395f86fc560f848386}{get\+\_\+hit\+\_\+time} (\$ky, \$ws, \$htr, \$wk, \$lmt, \$infr, \$inft, \$wimpr, \$is\+\_\+wpg=\hyperlink{1__chat_8tpl_8php_a5df37b7f02e5cdc7d9412b7f872b8e01}{false}, \$hitratebonus)
+\item 
+\hyperlink{combat_8func_8php_a2d69527972c1cfd87b597db32ca756ef}{getdefkey} (\$w, \$ah, \$ab, \$aa, \$af, \$at, \$atkind)
+\item 
+\hyperlink{combat_8func_8php_ab67f6afe7c5805c0e52d1a42abc46b28}{get\+\_\+ex\+\_\+dmg} (\$nm, \$sd, \$clb, \&\$inf, \$ky, \$wk, \$we, \$ws, \$dky)
+\item 
+\hyperlink{combat_8func_8php_abffdd2bf66528baeeabdb9643d5299e0}{get\+\_\+\+W\+F\+\_\+p} (\$w, \$clb, \$we)
+\item 
+\hyperlink{combat_8func_8php_a2a624591ca80156bf6bc72a85737eb7c}{check\+\_\+\+K\+P\+\_\+wep} (\$nm, \$ht, \&\$wp, \&\$wk, \&\$we, \&\$ws, \&\$wsk)
+\item 
+\hyperlink{combat_8func_8php_a3e6702aca006e9cd4800f503badf5f5d}{check\+\_\+\+G\+C\+D\+F\+\_\+wep} (\$nm, \$ht, \&\$wp, \$wp\+\_\+kind, \&\$wk, \&\$we, \&\$ws, \&\$wsk)
+\item 
+\hyperlink{combat_8func_8php_a8000f1ffc6ec8b5679d67cf003cd037c}{get\+\_\+inf} (\$nm, \$ht, \$wp\+\_\+kind)
+\item 
+\hyperlink{combat_8func_8php_a215852208faf54b9216907f090058b4f}{get\+\_\+dmg\+\_\+punish} (\$nm, \$dmg, \&\$hp, \$a\+\_\+ky)
+\item 
+\hyperlink{combat_8func_8php_a22d545565de904e187ae4bf9fc087b8a}{exprgup} (\&\$lv\+\_\+a, \$lv\+\_\+d, \&\$exp, \$isplayer, \&\$rg)
+\item 
+\hyperlink{combat_8func_8php_aea341f2375962bf9859911e269f3a7c3}{addnoise} (\$wp\+\_\+kind, \$wsk, \$ntime, \$npls, \$nid1, \$nid2, \$nmode)
+\item 
+\hyperlink{combat_8func_8php_a578f3cb38d83e0bc71638578d0142ae0}{check\+\_\+gender} (\$nm\+\_\+a, \$nm\+\_\+d, \$gd\+\_\+a, \$gd\+\_\+d, \$a\+\_\+ky)
+\item 
+\hyperlink{combat_8func_8php_a9efb23dd3a2b37dc893af1facac62ab1}{npc\+\_\+changewep} (\$active=0)
+\item 
+\hyperlink{combat_8func_8php_af6fcc6c379a36fa1ebe3070d3b50d2aa}{npc\+\_\+chat} (\$type, \$nm, \$mode)
+\item 
+\hyperlink{combat_8func_8php_accb7038d440fcc9fd6edde10e2f5bc2c}{count\+\_\+good\+\_\+man\+\_\+card} (\$active)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{combat_8func_8php_aea341f2375962bf9859911e269f3a7c3}{\index{combat.\+func.\+php@{combat.\+func.\+php}!addnoise@{addnoise}}
+\index{addnoise@{addnoise}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{addnoise}]{\setlength{\rightskip}{0pt plus 5cm}addnoise (
+\begin{DoxyParamCaption}
+\item[{}]{\$wp\+\_\+kind, }
+\item[{}]{\$wsk, }
+\item[{}]{\$ntime, }
+\item[{}]{\$npls, }
+\item[{}]{\$nid1, }
+\item[{}]{\$nid2, }
+\item[{}]{\$nmode}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_aea341f2375962bf9859911e269f3a7c3}
+
+
+Definition at line 1435 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a04f372351a98edf04e2697b24bd0bb60}{\index{combat.\+func.\+php@{combat.\+func.\+php}!attack@{attack}}
+\index{attack@{attack}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{attack}]{\setlength{\rightskip}{0pt plus 5cm}attack (
+\begin{DoxyParamCaption}
+\item[{}]{\$wep\+\_\+kind = {\ttfamily 'N'}, }
+\item[{}]{\$active = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a04f372351a98edf04e2697b24bd0bb60}
+
+
+Definition at line 294 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a3e6702aca006e9cd4800f503badf5f5d}{\index{combat.\+func.\+php@{combat.\+func.\+php}!check\+\_\+\+G\+C\+D\+F\+\_\+wep@{check\+\_\+\+G\+C\+D\+F\+\_\+wep}}
+\index{check\+\_\+\+G\+C\+D\+F\+\_\+wep@{check\+\_\+\+G\+C\+D\+F\+\_\+wep}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{check\+\_\+\+G\+C\+D\+F\+\_\+wep}]{\setlength{\rightskip}{0pt plus 5cm}check\+\_\+\+G\+C\+D\+F\+\_\+wep (
+\begin{DoxyParamCaption}
+\item[{}]{\$nm, }
+\item[{}]{\$ht, }
+\item[{\&}]{\$wp, }
+\item[{}]{\$wp\+\_\+kind, }
+\item[{\&}]{\$wk, }
+\item[{\&}]{\$we, }
+\item[{\&}]{\$ws, }
+\item[{\&}]{\$wsk}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a3e6702aca006e9cd4800f503badf5f5d}
+
+
+Definition at line 1314 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a578f3cb38d83e0bc71638578d0142ae0}{\index{combat.\+func.\+php@{combat.\+func.\+php}!check\+\_\+gender@{check\+\_\+gender}}
+\index{check\+\_\+gender@{check\+\_\+gender}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{check\+\_\+gender}]{\setlength{\rightskip}{0pt plus 5cm}check\+\_\+gender (
+\begin{DoxyParamCaption}
+\item[{}]{\$nm\+\_\+a, }
+\item[{}]{\$nm\+\_\+d, }
+\item[{}]{\$gd\+\_\+a, }
+\item[{}]{\$gd\+\_\+d, }
+\item[{}]{\$a\+\_\+ky}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a578f3cb38d83e0bc71638578d0142ae0}
+
+
+Definition at line 1466 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a2a624591ca80156bf6bc72a85737eb7c}{\index{combat.\+func.\+php@{combat.\+func.\+php}!check\+\_\+\+K\+P\+\_\+wep@{check\+\_\+\+K\+P\+\_\+wep}}
+\index{check\+\_\+\+K\+P\+\_\+wep@{check\+\_\+\+K\+P\+\_\+wep}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{check\+\_\+\+K\+P\+\_\+wep}]{\setlength{\rightskip}{0pt plus 5cm}check\+\_\+\+K\+P\+\_\+wep (
+\begin{DoxyParamCaption}
+\item[{}]{\$nm, }
+\item[{}]{\$ht, }
+\item[{\&}]{\$wp, }
+\item[{\&}]{\$wk, }
+\item[{\&}]{\$we, }
+\item[{\&}]{\$ws, }
+\item[{\&}]{\$wsk}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a2a624591ca80156bf6bc72a85737eb7c}
+
+
+Definition at line 1282 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a3020c6aafbe122567f23e9fd2866324e}{\index{combat.\+func.\+php@{combat.\+func.\+php}!checkarb@{checkarb}}
+\index{checkarb@{checkarb}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{checkarb}]{\setlength{\rightskip}{0pt plus 5cm}checkarb (
+\begin{DoxyParamCaption}
+\item[{\&}]{\$dmg, }
+\item[{}]{\$w, }
+\item[{}]{\$aky, }
+\item[{}]{\$dky, }
+\item[{}]{\$active = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a3020c6aafbe122567f23e9fd2866324e}
+
+
+Definition at line 889 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a5204fe63006c4dfe97cc0ad9d482d401}{\index{combat.\+func.\+php@{combat.\+func.\+php}!checkdef@{checkdef}}
+\index{checkdef@{checkdef}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{checkdef}]{\setlength{\rightskip}{0pt plus 5cm}checkdef (
+\begin{DoxyParamCaption}
+\item[{}]{\$def, }
+\item[{}]{\$ardef, }
+\item[{}]{\$aky, }
+\item[{}]{\$active = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a5204fe63006c4dfe97cc0ad9d482d401}
+
+
+Definition at line 876 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a8c1fd08a0c1e8c56dca6144e211a6914}{\index{combat.\+func.\+php@{combat.\+func.\+php}!checkdmg@{checkdmg}}
+\index{checkdmg@{checkdmg}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{checkdmg}]{\setlength{\rightskip}{0pt plus 5cm}checkdmg (
+\begin{DoxyParamCaption}
+\item[{}]{\$p1, }
+\item[{}]{\$p2, }
+\item[{}]{\$d}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a8c1fd08a0c1e8c56dca6144e211a6914}
+
+
+Definition at line 836 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a54da043b0db510597b12a48963edeffa}{\index{combat.\+func.\+php@{combat.\+func.\+php}!checkdmgdef@{checkdmgdef}}
+\index{checkdmgdef@{checkdmgdef}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{checkdmgdef}]{\setlength{\rightskip}{0pt plus 5cm}checkdmgdef (
+\begin{DoxyParamCaption}
+\item[{}]{\$dmg, }
+\item[{}]{\$aky, }
+\item[{}]{\$dky, }
+\item[{}]{\$active}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a54da043b0db510597b12a48963edeffa}
+
+
+Definition at line 922 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a3e7dc8a97465663fbb158bd529d9b255}{\index{combat.\+func.\+php@{combat.\+func.\+php}!checkdmgreflex@{checkdmgreflex}}
+\index{checkdmgreflex@{checkdmgreflex}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{checkdmgreflex}]{\setlength{\rightskip}{0pt plus 5cm}checkdmgreflex (
+\begin{DoxyParamCaption}
+\item[{\&}]{\$dmg, }
+\item[{}]{\$ar}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a3e7dc8a97465663fbb158bd529d9b255}
+
+
+Definition at line 948 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_ab0ece1bbb552fc6f5fad756e3dbebde1}{\index{combat.\+func.\+php@{combat.\+func.\+php}!combat@{combat}}
+\index{combat@{combat}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{combat}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (!defined( '{\bf I\+N\+\_\+\+G\+A\+M\+E}')) combat (
+\begin{DoxyParamCaption}
+\item[{}]{\$active = {\ttfamily 1}, }
+\item[{}]{\$wep\+\_\+kind = {\ttfamily ''}}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_ab0ece1bbb552fc6f5fad756e3dbebde1}
+
+
+Definition at line 7 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_accb7038d440fcc9fd6edde10e2f5bc2c}{\index{combat.\+func.\+php@{combat.\+func.\+php}!count\+\_\+good\+\_\+man\+\_\+card@{count\+\_\+good\+\_\+man\+\_\+card}}
+\index{count\+\_\+good\+\_\+man\+\_\+card@{count\+\_\+good\+\_\+man\+\_\+card}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{count\+\_\+good\+\_\+man\+\_\+card}]{\setlength{\rightskip}{0pt plus 5cm}count\+\_\+good\+\_\+man\+\_\+card (
+\begin{DoxyParamCaption}
+\item[{}]{\$active}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_accb7038d440fcc9fd6edde10e2f5bc2c}
+
+
+Definition at line 1617 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a360906058274b6758cdd6ca70eef08db}{\index{combat.\+func.\+php@{combat.\+func.\+php}!defend@{defend}}
+\index{defend@{defend}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{defend}]{\setlength{\rightskip}{0pt plus 5cm}defend (
+\begin{DoxyParamCaption}
+\item[{}]{\$w\+\_\+wep\+\_\+kind = {\ttfamily 'N'}, }
+\item[{}]{\$active = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a360906058274b6758cdd6ca70eef08db}
+
+
+Definition at line 508 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a22d545565de904e187ae4bf9fc087b8a}{\index{combat.\+func.\+php@{combat.\+func.\+php}!exprgup@{exprgup}}
+\index{exprgup@{exprgup}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{exprgup}]{\setlength{\rightskip}{0pt plus 5cm}exprgup (
+\begin{DoxyParamCaption}
+\item[{\&}]{\$lv\+\_\+a, }
+\item[{}]{\$lv\+\_\+d, }
+\item[{\&}]{\$exp, }
+\item[{}]{\$isplayer, }
+\item[{\&}]{\$rg}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a22d545565de904e187ae4bf9fc087b8a}
+
+
+Definition at line 1413 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_ae04a8ab670fcf1103ba43934620a28fb}{\index{combat.\+func.\+php@{combat.\+func.\+php}!get\+\_\+damage\+\_\+p@{get\+\_\+damage\+\_\+p}}
+\index{get\+\_\+damage\+\_\+p@{get\+\_\+damage\+\_\+p}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{get\+\_\+damage\+\_\+p}]{\setlength{\rightskip}{0pt plus 5cm}get\+\_\+damage\+\_\+p (
+\begin{DoxyParamCaption}
+\item[{\&}]{\$rg, }
+\item[{}]{\$atkcdt, }
+\item[{}]{\$type, }
+\item[{}]{\$nm, }
+\item[{}]{\$cl = {\ttfamily 0}, }
+\item[{}]{\$msg = {\ttfamily ''}}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_ae04a8ab670fcf1103ba43934620a28fb}
+
+
+Definition at line 755 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a215852208faf54b9216907f090058b4f}{\index{combat.\+func.\+php@{combat.\+func.\+php}!get\+\_\+dmg\+\_\+punish@{get\+\_\+dmg\+\_\+punish}}
+\index{get\+\_\+dmg\+\_\+punish@{get\+\_\+dmg\+\_\+punish}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{get\+\_\+dmg\+\_\+punish}]{\setlength{\rightskip}{0pt plus 5cm}get\+\_\+dmg\+\_\+punish (
+\begin{DoxyParamCaption}
+\item[{}]{\$nm, }
+\item[{}]{\$dmg, }
+\item[{\&}]{\$hp, }
+\item[{}]{\$a\+\_\+ky}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a215852208faf54b9216907f090058b4f}
+
+
+Definition at line 1394 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_ab67f6afe7c5805c0e52d1a42abc46b28}{\index{combat.\+func.\+php@{combat.\+func.\+php}!get\+\_\+ex\+\_\+dmg@{get\+\_\+ex\+\_\+dmg}}
+\index{get\+\_\+ex\+\_\+dmg@{get\+\_\+ex\+\_\+dmg}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{get\+\_\+ex\+\_\+dmg}]{\setlength{\rightskip}{0pt plus 5cm}get\+\_\+ex\+\_\+dmg (
+\begin{DoxyParamCaption}
+\item[{}]{\$nm, }
+\item[{}]{\$sd, }
+\item[{}]{\$clb, }
+\item[{\&}]{\$inf, }
+\item[{}]{\$ky, }
+\item[{}]{\$wk, }
+\item[{}]{\$we, }
+\item[{}]{\$ws, }
+\item[{}]{\$dky}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_ab67f6afe7c5805c0e52d1a42abc46b28}
+
+
+Definition at line 1083 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a1e377ee46415a5395f86fc560f848386}{\index{combat.\+func.\+php@{combat.\+func.\+php}!get\+\_\+hit\+\_\+time@{get\+\_\+hit\+\_\+time}}
+\index{get\+\_\+hit\+\_\+time@{get\+\_\+hit\+\_\+time}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{get\+\_\+hit\+\_\+time}]{\setlength{\rightskip}{0pt plus 5cm}get\+\_\+hit\+\_\+time (
+\begin{DoxyParamCaption}
+\item[{}]{\$ky, }
+\item[{}]{\$ws, }
+\item[{}]{\$htr, }
+\item[{}]{\$wk, }
+\item[{}]{\$lmt, }
+\item[{}]{\$infr, }
+\item[{}]{\$inft, }
+\item[{}]{\$wimpr, }
+\item[{}]{\$is\+\_\+wpg = {\ttfamily {\bf false}}, }
+\item[{}]{\$hitratebonus}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a1e377ee46415a5395f86fc560f848386}
+
+
+Definition at line 987 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a8000f1ffc6ec8b5679d67cf003cd037c}{\index{combat.\+func.\+php@{combat.\+func.\+php}!get\+\_\+inf@{get\+\_\+inf}}
+\index{get\+\_\+inf@{get\+\_\+inf}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{get\+\_\+inf}]{\setlength{\rightskip}{0pt plus 5cm}get\+\_\+inf (
+\begin{DoxyParamCaption}
+\item[{}]{\$nm, }
+\item[{}]{\$ht, }
+\item[{}]{\$wp\+\_\+kind}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a8000f1ffc6ec8b5679d67cf003cd037c}
+
+
+Definition at line 1342 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a3859b3ab13abb14a7237e0a913f8dd58}{\index{combat.\+func.\+php@{combat.\+func.\+php}!get\+\_\+original\+\_\+dmg@{get\+\_\+original\+\_\+dmg}}
+\index{get\+\_\+original\+\_\+dmg@{get\+\_\+original\+\_\+dmg}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{get\+\_\+original\+\_\+dmg}]{\setlength{\rightskip}{0pt plus 5cm}get\+\_\+original\+\_\+dmg (
+\begin{DoxyParamCaption}
+\item[{}]{\$w1, }
+\item[{}]{\$w2, }
+\item[{}]{\$att, }
+\item[{}]{\$def, }
+\item[{}]{\$ws, }
+\item[{}]{\$wp\+\_\+kind}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a3859b3ab13abb14a7237e0a913f8dd58}
+
+
+Definition at line 730 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_abffdd2bf66528baeeabdb9643d5299e0}{\index{combat.\+func.\+php@{combat.\+func.\+php}!get\+\_\+\+W\+F\+\_\+p@{get\+\_\+\+W\+F\+\_\+p}}
+\index{get\+\_\+\+W\+F\+\_\+p@{get\+\_\+\+W\+F\+\_\+p}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{get\+\_\+\+W\+F\+\_\+p}]{\setlength{\rightskip}{0pt plus 5cm}get\+\_\+\+W\+F\+\_\+p (
+\begin{DoxyParamCaption}
+\item[{}]{\$w, }
+\item[{}]{\$clb, }
+\item[{}]{\$we}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_abffdd2bf66528baeeabdb9643d5299e0}
+
+
+Definition at line 1257 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a1ea081dabaf1b019eaecd5c31a023d53}{\index{combat.\+func.\+php@{combat.\+func.\+php}!getatkkey@{getatkkey}}
+\index{getatkkey@{getatkkey}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{getatkkey}]{\setlength{\rightskip}{0pt plus 5cm}getatkkey (
+\begin{DoxyParamCaption}
+\item[{}]{\$w, }
+\item[{}]{\$ah, }
+\item[{}]{\$ab, }
+\item[{}]{\$aa, }
+\item[{}]{\$af, }
+\item[{}]{\$at, }
+\item[{}]{\$atkind, }
+\item[{}]{\$is\+\_\+wpg}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a1ea081dabaf1b019eaecd5c31a023d53}
+
+
+Definition at line 962 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a2d69527972c1cfd87b597db32ca756ef}{\index{combat.\+func.\+php@{combat.\+func.\+php}!getdefkey@{getdefkey}}
+\index{getdefkey@{getdefkey}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{getdefkey}]{\setlength{\rightskip}{0pt plus 5cm}getdefkey (
+\begin{DoxyParamCaption}
+\item[{}]{\$w, }
+\item[{}]{\$ah, }
+\item[{}]{\$ab, }
+\item[{}]{\$aa, }
+\item[{}]{\$af, }
+\item[{}]{\$at, }
+\item[{}]{\$atkind}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a2d69527972c1cfd87b597db32ca756ef}
+
+
+Definition at line 1054 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_a9efb23dd3a2b37dc893af1facac62ab1}{\index{combat.\+func.\+php@{combat.\+func.\+php}!npc\+\_\+changewep@{npc\+\_\+changewep}}
+\index{npc\+\_\+changewep@{npc\+\_\+changewep}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{npc\+\_\+changewep}]{\setlength{\rightskip}{0pt plus 5cm}npc\+\_\+changewep (
+\begin{DoxyParamCaption}
+\item[{}]{\$active = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_a9efb23dd3a2b37dc893af1facac62ab1}
+
+
+Definition at line 1480 of file combat.\+func.\+php.
+
+\hypertarget{combat_8func_8php_af6fcc6c379a36fa1ebe3070d3b50d2aa}{\index{combat.\+func.\+php@{combat.\+func.\+php}!npc\+\_\+chat@{npc\+\_\+chat}}
+\index{npc\+\_\+chat@{npc\+\_\+chat}!combat.\+func.\+php@{combat.\+func.\+php}}
+\subsubsection[{npc\+\_\+chat}]{\setlength{\rightskip}{0pt plus 5cm}npc\+\_\+chat (
+\begin{DoxyParamCaption}
+\item[{}]{\$type, }
+\item[{}]{\$nm, }
+\item[{}]{\$mode}
+\end{DoxyParamCaption}
+)}}\label{combat_8func_8php_af6fcc6c379a36fa1ebe3070d3b50d2aa}
+
+
+Definition at line 1550 of file combat.\+func.\+php.
+

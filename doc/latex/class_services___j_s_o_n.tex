@@ -1,0 +1,222 @@
+\hypertarget{class_services___j_s_o_n}{\section{Services\+\_\+\+J\+S\+O\+N Class Reference}
+\label{class_services___j_s_o_n}\index{Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_services___j_s_o_n_abc84bd855fe129a4c68bcb68b4d17108}{Services\+\_\+\+J\+S\+O\+N} (\$use=0)
+\item 
+\hyperlink{class_services___j_s_o_n_aa7b1b36cd3a4995bbb60f5def6a216e2}{utf162utf8} (\$utf16)
+\item 
+\hyperlink{class_services___j_s_o_n_af9687bbf6bcddc9c847d608f9a1fa4c0}{utf82utf16} (\$utf8)
+\item 
+\hyperlink{class_services___j_s_o_n_acdf1c85111e34b3048d436228bf39819}{encode} (\$var)
+\item 
+\hyperlink{class_services___j_s_o_n_aa7f3e18209717e584f01f53a0325e9ff}{name\+\_\+value} (\$name, \$\hyperlink{1__chat_8tpl_8php_afcc7a4b78ecd8fa7e713f8cfa0f51017}{value})
+\item 
+\hyperlink{class_services___j_s_o_n_ae463a3baa44e95fa5b5151ab2334df1c}{reduce\+\_\+string} (\$str)
+\item 
+\hyperlink{class_services___j_s_o_n_a4afbb486f4a5ff5a8170c832f5997986}{decode} (\$str)
+\item 
+\hyperlink{class_services___j_s_o_n_a55ae0955466c3970507b122f3f5d1b38}{is\+Error} (\$data, \$code=null)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Converts to and from J\+S\+O\+N format.
+
+Brief example of use\+:
+
+{\ttfamily  // create a new instance of \hyperlink{class_services___j_s_o_n}{Services\+\_\+\+J\+S\+O\+N} \$json = new \hyperlink{class_services___j_s_o_n_abc84bd855fe129a4c68bcb68b4d17108}{Services\+\_\+\+J\+S\+O\+N()};}
+
+{\ttfamily // convert a complexe value to J\+S\+O\+N notation, and send it to the browser \$value = array('foo', 'bar', array(1, 2, 'baz'), array(3, array(4))); \$output = \$json-\/$>$encode(\$value);}
+
+{\ttfamily print(\$output); // prints\+: \mbox{[}\char`\"{}foo\char`\"{},\char`\"{}bar\char`\"{},\mbox{[}1,2,\char`\"{}baz\char`\"{}\mbox{]},\mbox{[}3,\mbox{[}4\mbox{]}\mbox{]}\mbox{]}}
+
+{\ttfamily // accept incoming P\+O\+S\+T data, assumed to be in J\+S\+O\+N notation \$input = file\+\_\+get\+\_\+contents('php\+://input', 1000000); \$value = \$json-\/$>$decode(\$input); } 
+
+Definition at line 115 of file J\+S\+O\+N.\+php.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_services___j_s_o_n_a4afbb486f4a5ff5a8170c832f5997986}{\index{Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}!decode@{decode}}
+\index{decode@{decode}!Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}}
+\subsubsection[{decode}]{\setlength{\rightskip}{0pt plus 5cm}decode (
+\begin{DoxyParamCaption}
+\item[{}]{\$str}
+\end{DoxyParamCaption}
+)}}\label{class_services___j_s_o_n_a4afbb486f4a5ff5a8170c832f5997986}
+decodes a J\+S\+O\+N string into appropriate variable
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$str} & J\+S\+O\+N-\/formatted string\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+mixed number, boolean, string, array, or object corresponding to given J\+S\+O\+N input string. See argument 1 to \hyperlink{class_services___j_s_o_n_abc84bd855fe129a4c68bcb68b4d17108}{Services\+\_\+\+J\+S\+O\+N()} above for object-\/output behavior. Note that \hyperlink{class_services___j_s_o_n_a4afbb486f4a5ff5a8170c832f5997986}{decode()} always returns strings in A\+S\+C\+I\+I or U\+T\+F-\/8 format!  public 
+\end{DoxyReturn}
+
+
+Definition at line 484 of file J\+S\+O\+N.\+php.
+
+\hypertarget{class_services___j_s_o_n_acdf1c85111e34b3048d436228bf39819}{\index{Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}!encode@{encode}}
+\index{encode@{encode}!Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}}
+\subsubsection[{encode}]{\setlength{\rightskip}{0pt plus 5cm}encode (
+\begin{DoxyParamCaption}
+\item[{}]{\$var}
+\end{DoxyParamCaption}
+)}}\label{class_services___j_s_o_n_acdf1c85111e34b3048d436228bf39819}
+encodes an arbitrary variable into J\+S\+O\+N format
+
+
+\begin{DoxyParams}[1]{Parameters}
+mixed & {\em \$var} & any number, boolean, string, array, or object to be encoded. see argument 1 to \hyperlink{class_services___j_s_o_n_abc84bd855fe129a4c68bcb68b4d17108}{Services\+\_\+\+J\+S\+O\+N()} above for array-\/parsing behavior. if var is a strng, note that \hyperlink{class_services___j_s_o_n_acdf1c85111e34b3048d436228bf39819}{encode()} always expects it to be in A\+S\+C\+I\+I or U\+T\+F-\/8 format!\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+mixed J\+S\+O\+N string representation of input var or an error if a problem occurs  public 
+\end{DoxyReturn}
+
+
+Definition at line 237 of file J\+S\+O\+N.\+php.
+
+\hypertarget{class_services___j_s_o_n_a55ae0955466c3970507b122f3f5d1b38}{\index{Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}!is\+Error@{is\+Error}}
+\index{is\+Error@{is\+Error}!Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}}
+\subsubsection[{is\+Error}]{\setlength{\rightskip}{0pt plus 5cm}is\+Error (
+\begin{DoxyParamCaption}
+\item[{}]{\$data, }
+\item[{}]{\$code = {\ttfamily null}}
+\end{DoxyParamCaption}
+)}}\label{class_services___j_s_o_n_a55ae0955466c3970507b122f3f5d1b38}
+\begin{DoxyRefDesc}{Todo}
+\item[\hyperlink{todo__todo000001}{Todo}]Ultimately, this should just call P\+E\+A\+R\+::is\+Error() \end{DoxyRefDesc}
+
+
+Definition at line 766 of file J\+S\+O\+N.\+php.
+
+\hypertarget{class_services___j_s_o_n_aa7f3e18209717e584f01f53a0325e9ff}{\index{Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}!name\+\_\+value@{name\+\_\+value}}
+\index{name\+\_\+value@{name\+\_\+value}!Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}}
+\subsubsection[{name\+\_\+value}]{\setlength{\rightskip}{0pt plus 5cm}name\+\_\+value (
+\begin{DoxyParamCaption}
+\item[{}]{\$name, }
+\item[{}]{\$value}
+\end{DoxyParamCaption}
+)}}\label{class_services___j_s_o_n_aa7f3e18209717e584f01f53a0325e9ff}
+array-\/walking function for use in generating J\+S\+O\+N-\/formatted name-\/value pairs
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$name} & name of key to use \\
+\hline
+mixed & {\em \$value} & reference to an array element to be encoded\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+string J\+S\+O\+N-\/formatted name-\/value pair, like '\char`\"{}name\char`\"{}\+:value'  private 
+\end{DoxyReturn}
+
+
+Definition at line 434 of file J\+S\+O\+N.\+php.
+
+\hypertarget{class_services___j_s_o_n_ae463a3baa44e95fa5b5151ab2334df1c}{\index{Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}!reduce\+\_\+string@{reduce\+\_\+string}}
+\index{reduce\+\_\+string@{reduce\+\_\+string}!Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}}
+\subsubsection[{reduce\+\_\+string}]{\setlength{\rightskip}{0pt plus 5cm}reduce\+\_\+string (
+\begin{DoxyParamCaption}
+\item[{}]{\$str}
+\end{DoxyParamCaption}
+)}}\label{class_services___j_s_o_n_ae463a3baa44e95fa5b5151ab2334df1c}
+reduce a string by removing leading and trailing comments and whitespace
+
+
+\begin{DoxyParams}{Parameters}
+{\em \$str} & string string value to strip of comments and whitespace\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+string string value stripped of comments and whitespace  private 
+\end{DoxyReturn}
+
+
+Definition at line 453 of file J\+S\+O\+N.\+php.
+
+\hypertarget{class_services___j_s_o_n_abc84bd855fe129a4c68bcb68b4d17108}{\index{Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}!Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}}
+\index{Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}!Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}}
+\subsubsection[{Services\+\_\+\+J\+S\+O\+N}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Services\+\_\+\+J\+S\+O\+N} (
+\begin{DoxyParamCaption}
+\item[{}]{\$use = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}\label{class_services___j_s_o_n_abc84bd855fe129a4c68bcb68b4d17108}
+constructs a new J\+S\+O\+N instance
+
+
+\begin{DoxyParams}[1]{Parameters}
+int & {\em \$use} & object behavior flags; combine with boolean-\/\+O\+R \begin{DoxyVerb}                      possible values:
+                      - SERVICES_JSON_LOOSE_TYPE:  loose typing.
+                              "{...}" syntax creates associative arrays
+                              instead of objects in decode().
+                      - SERVICES_JSON_SUPPRESS_ERRORS:  error suppression.
+                              Values which can't be encoded (e.g. resources)
+                              appear as NULL instead of throwing errors.
+                              By default, a deeply-nested resource will
+                              bubble up with an error, so all return values
+                              from encode() should be checked with isError()\end{DoxyVerb}
+ \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 133 of file J\+S\+O\+N.\+php.
+
+\hypertarget{class_services___j_s_o_n_aa7b1b36cd3a4995bbb60f5def6a216e2}{\index{Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}!utf162utf8@{utf162utf8}}
+\index{utf162utf8@{utf162utf8}!Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}}
+\subsubsection[{utf162utf8}]{\setlength{\rightskip}{0pt plus 5cm}utf162utf8 (
+\begin{DoxyParamCaption}
+\item[{}]{\$utf16}
+\end{DoxyParamCaption}
+)}}\label{class_services___j_s_o_n_aa7b1b36cd3a4995bbb60f5def6a216e2}
+convert a string from one U\+T\+F-\/16 char to one U\+T\+F-\/8 char
+
+Normally should be handled by mb\+\_\+convert\+\_\+encoding, but provides a slower P\+H\+P-\/only method for installations that lack the multibye string extension.
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$utf16} & U\+T\+F-\/16 character \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+string U\+T\+F-\/8 character  private 
+\end{DoxyReturn}
+
+
+Definition at line 149 of file J\+S\+O\+N.\+php.
+
+\hypertarget{class_services___j_s_o_n_af9687bbf6bcddc9c847d608f9a1fa4c0}{\index{Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}!utf82utf16@{utf82utf16}}
+\index{utf82utf16@{utf82utf16}!Services\+\_\+\+J\+S\+O\+N@{Services\+\_\+\+J\+S\+O\+N}}
+\subsubsection[{utf82utf16}]{\setlength{\rightskip}{0pt plus 5cm}utf82utf16 (
+\begin{DoxyParamCaption}
+\item[{}]{\$utf8}
+\end{DoxyParamCaption}
+)}}\label{class_services___j_s_o_n_af9687bbf6bcddc9c847d608f9a1fa4c0}
+convert a string from one U\+T\+F-\/8 char to one U\+T\+F-\/16 char
+
+Normally should be handled by mb\+\_\+convert\+\_\+encoding, but provides a slower P\+H\+P-\/only method for installations that lack the multibye string extension.
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$utf8} & U\+T\+F-\/8 character \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+string U\+T\+F-\/16 character  private 
+\end{DoxyReturn}
+
+
+Definition at line 193 of file J\+S\+O\+N.\+php.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/\hyperlink{_j_s_o_n_8php}{J\+S\+O\+N.\+php}\end{DoxyCompactItemize}

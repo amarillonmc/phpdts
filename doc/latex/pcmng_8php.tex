@@ -1,0 +1,70 @@
+\hypertarget{pcmng_8php}{\section{include/admin/pcmng.php File Reference}
+\label{pcmng_8php}\index{include/admin/pcmng.\+php@{include/admin/pcmng.\+php}}
+}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{pcmng_8php_ab73b2f52f5b37f4e82c009aa977ce5b5}{dbsearch} (\$start, \$checkmode, \$checkinfo)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!defined('\hyperlink{admin_8php_ad49472b0cdee543164375bf133a537f1}{I\+N\+\_\+\+A\+D\+M\+I\+N}')) \hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!isset(\$command)) \\*
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!isset(\$start)) \hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!isset(\$checkmode)) \\*
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!isset(\$checkinfo)) \hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!isset(\$pagemode)) \hyperlink{pcmng_8php_abeffdbe990926c69b5d0bdb6505e39c3}{\$cmd\+\_\+info} = ''
+\item 
+\hyperlink{pcmng_8php_a50a00e7de77365e00b117e73aa82fb9b}{\$start} = \hyperlink{admin_8php_a774c9803a78dae80dd7b9a2301393b4a}{getstart}(\$start,\$pagemode)
+\item 
+\hyperlink{pcmng_8php_a65157e6920113390d5fb39352a29157d}{\$resultinfo} = ''
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(\$command!= 'submitedit') \hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(\$command== \\*
+'\hyperlink{state_8func_8php_a2fedf1cfccaaaef7e5fff0033ded8dfc}{kill}'$\vert$$\vert$\$command== 'live'$\vert$$\vert$\$command== \\*
+'del') elseif(strpos(\$command,'edit')===0) \hyperlink{pcmng_8php_aebac72f4767ff39b22abc0d8f2793660}{elseif} (\$command== 'submitedit')
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{pcmng_8php_ab73b2f52f5b37f4e82c009aa977ce5b5}{\index{pcmng.\+php@{pcmng.\+php}!dbsearch@{dbsearch}}
+\index{dbsearch@{dbsearch}!pcmng.\+php@{pcmng.\+php}}
+\subsubsection[{dbsearch}]{\setlength{\rightskip}{0pt plus 5cm}dbsearch (
+\begin{DoxyParamCaption}
+\item[{}]{\$start, }
+\item[{}]{\$checkmode, }
+\item[{}]{\$checkinfo}
+\end{DoxyParamCaption}
+)}}\label{pcmng_8php_ab73b2f52f5b37f4e82c009aa977ce5b5}
+
+
+Definition at line 137 of file pcmng.\+php.
+
+
+
+\subsection{Variable Documentation}
+\hypertarget{pcmng_8php_abeffdbe990926c69b5d0bdb6505e39c3}{\index{pcmng.\+php@{pcmng.\+php}!\$cmd\+\_\+info@{\$cmd\+\_\+info}}
+\index{\$cmd\+\_\+info@{\$cmd\+\_\+info}!pcmng.\+php@{pcmng.\+php}}
+\subsubsection[{\$cmd\+\_\+info}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (!defined('{\bf I\+N\+\_\+\+A\+D\+M\+I\+N}')) {\bf if} (!isset(\$command)) {\bf if} (!isset(\$start)) {\bf if} (!isset(\$checkmode)) {\bf if} (!isset(\$checkinfo)) {\bf if} (!isset(\$pagemode)) \$cmd\+\_\+info = ''}}\label{pcmng_8php_abeffdbe990926c69b5d0bdb6505e39c3}
+
+
+Definition at line 11 of file pcmng.\+php.
+
+\hypertarget{pcmng_8php_a65157e6920113390d5fb39352a29157d}{\index{pcmng.\+php@{pcmng.\+php}!\$resultinfo@{\$resultinfo}}
+\index{\$resultinfo@{\$resultinfo}!pcmng.\+php@{pcmng.\+php}}
+\subsubsection[{\$resultinfo}]{\setlength{\rightskip}{0pt plus 5cm}\$resultinfo = ''}}\label{pcmng_8php_a65157e6920113390d5fb39352a29157d}
+
+
+Definition at line 13 of file pcmng.\+php.
+
+\hypertarget{pcmng_8php_a50a00e7de77365e00b117e73aa82fb9b}{\index{pcmng.\+php@{pcmng.\+php}!\$start@{\$start}}
+\index{\$start@{\$start}!pcmng.\+php@{pcmng.\+php}}
+\subsubsection[{\$start}]{\setlength{\rightskip}{0pt plus 5cm}\$start = {\bf getstart}(\$start,\$pagemode)}}\label{pcmng_8php_a50a00e7de77365e00b117e73aa82fb9b}
+
+
+Definition at line 12 of file pcmng.\+php.
+
+\hypertarget{pcmng_8php_aebac72f4767ff39b22abc0d8f2793660}{\index{pcmng.\+php@{pcmng.\+php}!elseif@{elseif}}
+\index{elseif@{elseif}!pcmng.\+php@{pcmng.\+php}}
+\subsubsection[{elseif}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (\$command!= 'submitedit') {\bf if} (\$command== '{\bf kill}'$\vert$$\vert$\$command== 'live'$\vert$$\vert$\$command== 'del') elseif (strpos(\$command,'edit')===0) elseif(\$command== 'submitedit')}}\label{pcmng_8php_aebac72f4767ff39b22abc0d8f2793660}
+
+
+Definition at line 123 of file pcmng.\+php.
+

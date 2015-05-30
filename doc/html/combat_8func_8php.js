@@ -1,0 +1,28 @@
+var combat_8func_8php =
+[
+    [ "addnoise", "combat_8func_8php.html#aea341f2375962bf9859911e269f3a7c3", null ],
+    [ "attack", "combat_8func_8php.html#a04f372351a98edf04e2697b24bd0bb60", null ],
+    [ "check_GCDF_wep", "combat_8func_8php.html#a3e6702aca006e9cd4800f503badf5f5d", null ],
+    [ "check_gender", "combat_8func_8php.html#a578f3cb38d83e0bc71638578d0142ae0", null ],
+    [ "check_KP_wep", "combat_8func_8php.html#a2a624591ca80156bf6bc72a85737eb7c", null ],
+    [ "checkarb", "combat_8func_8php.html#a3020c6aafbe122567f23e9fd2866324e", null ],
+    [ "checkdef", "combat_8func_8php.html#a5204fe63006c4dfe97cc0ad9d482d401", null ],
+    [ "checkdmg", "combat_8func_8php.html#a8c1fd08a0c1e8c56dca6144e211a6914", null ],
+    [ "checkdmgdef", "combat_8func_8php.html#a54da043b0db510597b12a48963edeffa", null ],
+    [ "checkdmgreflex", "combat_8func_8php.html#a3e7dc8a97465663fbb158bd529d9b255", null ],
+    [ "combat", "combat_8func_8php.html#ab0ece1bbb552fc6f5fad756e3dbebde1", null ],
+    [ "count_good_man_card", "combat_8func_8php.html#accb7038d440fcc9fd6edde10e2f5bc2c", null ],
+    [ "defend", "combat_8func_8php.html#a360906058274b6758cdd6ca70eef08db", null ],
+    [ "exprgup", "combat_8func_8php.html#a22d545565de904e187ae4bf9fc087b8a", null ],
+    [ "get_damage_p", "combat_8func_8php.html#ae04a8ab670fcf1103ba43934620a28fb", null ],
+    [ "get_dmg_punish", "combat_8func_8php.html#a215852208faf54b9216907f090058b4f", null ],
+    [ "get_ex_dmg", "combat_8func_8php.html#ab67f6afe7c5805c0e52d1a42abc46b28", null ],
+    [ "get_hit_time", "combat_8func_8php.html#a1e377ee46415a5395f86fc560f848386", null ],
+    [ "get_inf", "combat_8func_8php.html#a8000f1ffc6ec8b5679d67cf003cd037c", null ],
+    [ "get_original_dmg", "combat_8func_8php.html#a3859b3ab13abb14a7237e0a913f8dd58", null ],
+    [ "get_WF_p", "combat_8func_8php.html#abffdd2bf66528baeeabdb9643d5299e0", null ],
+    [ "getatkkey", "combat_8func_8php.html#a1ea081dabaf1b019eaecd5c31a023d53", null ],
+    [ "getdefkey", "combat_8func_8php.html#a2d69527972c1cfd87b597db32ca756ef", null ],
+    [ "npc_changewep", "combat_8func_8php.html#a9efb23dd3a2b37dc893af1facac62ab1", null ],
+    [ "npc_chat", "combat_8func_8php.html#af6fcc6c379a36fa1ebe3070d3b50d2aa", null ]
+];

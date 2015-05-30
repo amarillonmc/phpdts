@@ -1,0 +1,116 @@
+\hypertarget{login_8php}{\section{login.\+php File Reference}
+\label{login_8php}\index{login.\+php@{login.\+php}}
+}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const \hyperlink{login_8php_a39c39f525eceb86cabc338804f230e80}{C\+U\+R\+S\+C\+R\+I\+P\+T} 'login'
+\item 
+\hyperlink{login_8php_af575261f6cefd08a3eb4b150dbd28744}{if} (\$mode== 'quit')
+\item 
+\hyperlink{login_8php_af716337f8eca2d77ca207b0c2a6adfc6}{\$name\+\_\+check} = \hyperlink{user_8func_8php_adaf7f01206cba7c1589e6abc2e7ffe3b}{name\+\_\+check}(\$username)
+\item 
+\hyperlink{login_8php_a76201d3af958e2a6795d5cfb51667399}{\$pass\+\_\+check} = \hyperlink{user_8func_8php_a45578f91359763ba2db3d48bf204f8c3}{pass\+\_\+check}(\$password,\$password)
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(\$name\+\_\+check!='name\+\_\+ok') \\*
+\hyperlink{urlist_8php_a77f52b43f81ed05a41b68c2161789055}{elseif}(\$pass\+\_\+check!='pass\+\_\+ok') \hyperlink{login_8php_a9b506b60a207d96f993a3266895cf03d}{\$onlineip} = \hyperlink{user_8func_8php_afe6aed8b974abde9ad5c14e632bbef9c}{real\+\_\+ip}()
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(strpos(\$username,'Yoshiko')!==\hyperlink{1__chat_8tpl_8php_a5df37b7f02e5cdc7d9412b7f872b8e01}{false}) \\*
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(preg\+\_\+match(\$iplimit, \\*
+\$onlineip)) \hyperlink{login_8php_a600d4d2f6f0503643a7b30e45f0d923d}{\$password} = md5(\$password)
+\item 
+\hyperlink{login_8php_acb3c80fc595983cc4ebdb2d266044fcd}{\$groupid} = 1
+\item 
+\hyperlink{login_8php_a2019a1bb67946f4716cc99e5450c1ab0}{\$credits} = 0
+\item 
+\hyperlink{login_8php_a0f1d7cfb9dc6f494b9014885205fc47e}{\$gender} = 0
+\item 
+\hyperlink{login_8php_a112ef069ddc0454086e3d1e6d8d55d07}{\$result} = \$db-\/$>$query(\char`\"{}S\+E\+L\+E\+C\+T $\ast$ F\+R\+O\+M \{\$tablepre\}users W\+H\+E\+R\+E username = '\$username'\char`\"{})
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!\$db-\/$>$num\+\_\+rows(\$\hyperlink{templates_2install_8php_abdecde238169a1e34f68354fc9968af0}{result})) \hyperlink{login_8php_a4981163641628aa512b27f602580773e}{else}
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{login_8php_a2019a1bb67946f4716cc99e5450c1ab0}{\index{login.\+php@{login.\+php}!\$credits@{\$credits}}
+\index{\$credits@{\$credits}!login.\+php@{login.\+php}}
+\subsubsection[{\$credits}]{\setlength{\rightskip}{0pt plus 5cm}\$credits = 0}}\label{login_8php_a2019a1bb67946f4716cc99e5450c1ab0}
+
+
+Definition at line 116 of file login.\+php.
+
+\hypertarget{login_8php_a0f1d7cfb9dc6f494b9014885205fc47e}{\index{login.\+php@{login.\+php}!\$gender@{\$gender}}
+\index{\$gender@{\$gender}!login.\+php@{login.\+php}}
+\subsubsection[{\$gender}]{\setlength{\rightskip}{0pt plus 5cm}\$gender = 0}}\label{login_8php_a0f1d7cfb9dc6f494b9014885205fc47e}
+
+
+Definition at line 117 of file login.\+php.
+
+\hypertarget{login_8php_acb3c80fc595983cc4ebdb2d266044fcd}{\index{login.\+php@{login.\+php}!\$groupid@{\$groupid}}
+\index{\$groupid@{\$groupid}!login.\+php@{login.\+php}}
+\subsubsection[{\$groupid}]{\setlength{\rightskip}{0pt plus 5cm}\$groupid = 1}}\label{login_8php_acb3c80fc595983cc4ebdb2d266044fcd}
+
+
+Definition at line 115 of file login.\+php.
+
+\hypertarget{login_8php_af716337f8eca2d77ca207b0c2a6adfc6}{\index{login.\+php@{login.\+php}!\$name\+\_\+check@{\$name\+\_\+check}}
+\index{\$name\+\_\+check@{\$name\+\_\+check}!login.\+php@{login.\+php}}
+\subsubsection[{\$name\+\_\+check}]{\setlength{\rightskip}{0pt plus 5cm}\${\bf name\+\_\+check} = {\bf name\+\_\+check}(\$username)}}\label{login_8php_af716337f8eca2d77ca207b0c2a6adfc6}
+
+
+Definition at line 64 of file login.\+php.
+
+\hypertarget{login_8php_a9b506b60a207d96f993a3266895cf03d}{\index{login.\+php@{login.\+php}!\$onlineip@{\$onlineip}}
+\index{\$onlineip@{\$onlineip}!login.\+php@{login.\+php}}
+\subsubsection[{\$onlineip}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (\$name\+\_\+check!='name\+\_\+ok') {\bf elseif} (\$pass\+\_\+check!='pass\+\_\+ok') \$onlineip = {\bf real\+\_\+ip}()}}\label{login_8php_a9b506b60a207d96f993a3266895cf03d}
+
+
+Definition at line 82 of file login.\+php.
+
+\hypertarget{login_8php_a76201d3af958e2a6795d5cfb51667399}{\index{login.\+php@{login.\+php}!\$pass\+\_\+check@{\$pass\+\_\+check}}
+\index{\$pass\+\_\+check@{\$pass\+\_\+check}!login.\+php@{login.\+php}}
+\subsubsection[{\$pass\+\_\+check}]{\setlength{\rightskip}{0pt plus 5cm}\${\bf pass\+\_\+check} = {\bf pass\+\_\+check}(\$password,\$password)}}\label{login_8php_a76201d3af958e2a6795d5cfb51667399}
+
+
+Definition at line 65 of file login.\+php.
+
+\hypertarget{login_8php_a600d4d2f6f0503643a7b30e45f0d923d}{\index{login.\+php@{login.\+php}!\$password@{\$password}}
+\index{\$password@{\$password}!login.\+php@{login.\+php}}
+\subsubsection[{\$password}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (strpos(\$username,'Yoshiko')!=={\bf false}) {\bf if} (preg\+\_\+match(\$iplimit, \$onlineip)) \$password = md5(\$password)}}\label{login_8php_a600d4d2f6f0503643a7b30e45f0d923d}
+
+
+Definition at line 114 of file login.\+php.
+
+\hypertarget{login_8php_a112ef069ddc0454086e3d1e6d8d55d07}{\index{login.\+php@{login.\+php}!\$result@{\$result}}
+\index{\$result@{\$result}!login.\+php@{login.\+php}}
+\subsubsection[{\$result}]{\setlength{\rightskip}{0pt plus 5cm}\${\bf result} = \$db-\/$>$query(\char`\"{}S\+E\+L\+E\+C\+T $\ast$ F\+R\+O\+M \{\$tablepre\}users W\+H\+E\+R\+E username = '\$username'\char`\"{})}}\label{login_8php_a112ef069ddc0454086e3d1e6d8d55d07}
+
+
+Definition at line 119 of file login.\+php.
+
+\hypertarget{login_8php_a39c39f525eceb86cabc338804f230e80}{\index{login.\+php@{login.\+php}!C\+U\+R\+S\+C\+R\+I\+P\+T@{C\+U\+R\+S\+C\+R\+I\+P\+T}}
+\index{C\+U\+R\+S\+C\+R\+I\+P\+T@{C\+U\+R\+S\+C\+R\+I\+P\+T}!login.\+php@{login.\+php}}
+\subsubsection[{C\+U\+R\+S\+C\+R\+I\+P\+T}]{\setlength{\rightskip}{0pt plus 5cm}const C\+U\+R\+S\+C\+R\+I\+P\+T 'login'}}\label{login_8php_a39c39f525eceb86cabc338804f230e80}
+
+
+Definition at line 3 of file login.\+php.
+
+\hypertarget{login_8php_a4981163641628aa512b27f602580773e}{\index{login.\+php@{login.\+php}!else@{else}}
+\index{else@{else}!login.\+php@{login.\+php}}
+\subsubsection[{else}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (!\$db-\/$>$num\+\_\+rows(\${\bf result})) else}}\label{login_8php_a4981163641628aa512b27f602580773e}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+\{
+    $userdata = \hyperlink{clear_8php_a1fa3127fc82f96b1436d871ef02be319}{$db}->fetch\_array(\hyperlink{login_8php_a112ef069ddc0454086e3d1e6d8d55d07}{$result})
+\end{DoxyCode}
+
+
+Definition at line 124 of file login.\+php.
+
+\hypertarget{login_8php_af575261f6cefd08a3eb4b150dbd28744}{\index{login.\+php@{login.\+php}!if@{if}}
+\index{if@{if}!login.\+php@{login.\+php}}
+\subsubsection[{if}]{\setlength{\rightskip}{0pt plus 5cm}if(\$mode== 'quit')}}\label{login_8php_af575261f6cefd08a3eb4b150dbd28744}
+
+
+Definition at line 32 of file login.\+php.
+

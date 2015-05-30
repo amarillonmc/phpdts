@@ -1,0 +1,139 @@
+\hypertarget{botservice_8php}{\section{botservice.\+php File Reference}
+\label{botservice_8php}\index{botservice.\+php@{botservice.\+php}}
+}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const \hyperlink{botservice_8php_a39c39f525eceb86cabc338804f230e80}{C\+U\+R\+S\+C\+R\+I\+P\+T} 'botservice'
+\item 
+\hyperlink{botservice_8php_ad72f7f7d7fd8794ce58b3da8977b8555}{\$result} = \$db-\/$>$query(\char`\"{}S\+E\+L\+E\+C\+T $\ast$ F\+R\+O\+M \{\$tablepre\}players W\+H\+E\+R\+E name = '\$cuser' A\+N\+D type = 0\char`\"{})
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!\$db-\/$>$num\+\_\+rows(\$\hyperlink{templates_2install_8php_abdecde238169a1e34f68354fc9968af0}{result})) \hyperlink{botservice_8php_a6378350bbbdfdf1fdd8c8e1cd0607a8d}{\$pdata} = \$db-\/$>$fetch\+\_\+array(\$\hyperlink{templates_2install_8php_abdecde238169a1e34f68354fc9968af0}{result})
+\item 
+\hyperlink{botservice_8php_a9a2cf15a653aee8be437f7ae474cd494}{\$log} = ''
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(\$hp $>$ 0) \hyperlink{botservice_8php_a0b84dc7d8563744402546248257bb26a}{else}
+\item 
+\hyperlink{botservice_8php_ae2c1d0ffaf2c5f005f5b9a540e8a926f}{\$inf} =''
+\item 
+\hyperlink{botservice_8php_a9c87033fa49b61f753e3c263da5edeab}{\$cmd} = \$main = ''
+\item 
+\hyperlink{botservice_8php_ade2ba55b59e890fd631c6600a0b25bbe}{\$corpseflag} =0
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}((strpos(\$action,'corpse')===0$\vert$$\vert$strpos(\$action,'pacorpse')===0)\&\&\$gamestate\\*
+$<$ 40 \&\&\$command!='\hyperlink{itemmain_8func_8php_a88e57f5fcf96fbf8ba3f16b712c76d61}{getcorpse}') \\*
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(isset(\$command)\&\&(!\$corpseflag$\vert$$\vert$\$command=='\hyperlink{itemmain_8func_8php_a88e57f5fcf96fbf8ba3f16b712c76d61}{getcorpse}')) \\*
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(\$itms0) \hyperlink{botservice_8php_a38ecd1c3a346f8a22ecd29f0de0cc1dc}{foreach} (Array('wep','arb','arh','ara','arf','art') as \$\hyperlink{1__chat_8tpl_8php_afcc7a4b78ecd8fa7e713f8cfa0f51017}{value}) \hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(\$
+\item 
+\hyperlink{botservice_8php_ace2ec39e7df3899fa8df9640ec274b03}{\$rows} =\$db-\/$>$num\+\_\+rows(\$\hyperlink{templates_2install_8php_abdecde238169a1e34f68354fc9968af0}{result})
+\item 
+\hyperlink{botservice_8php_a83018d9153d17d91fbcf3bc10158d34f}{\$i} =0
+\item 
+\hyperlink{botservice_8php_a9397939c237959113b21e7e4a5de37cb}{while} (\$data=\$db-\/$>$fetch\+\_\+array(\$\hyperlink{templates_2install_8php_abdecde238169a1e34f68354fc9968af0}{result})) = \$db-\/$>$query(\char`\"{}S\+E\+L\+E\+C\+T s\+No,pls,name,state,bid F\+R\+O\+M \{\$tablepre\}players W\+H\+E\+R\+E type = 0 A\+N\+D state $>$= 10 A\+N\+D deathtime $>$= \$endtime\char`\"{})
+\item 
+\hyperlink{botservice_8php_a4de03a8ac30b9635a8a8ea4a995be9ec}{\$endtime} = \$now
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{botservice_8php_a9c87033fa49b61f753e3c263da5edeab}{\index{botservice.\+php@{botservice.\+php}!\$cmd@{\$cmd}}
+\index{\$cmd@{\$cmd}!botservice.\+php@{botservice.\+php}}
+\subsubsection[{\$cmd}]{\setlength{\rightskip}{0pt plus 5cm}\$cmd = \$main = ''}}\label{botservice_8php_a9c87033fa49b61f753e3c263da5edeab}
+
+
+Definition at line 51 of file botservice.\+php.
+
+\hypertarget{botservice_8php_ade2ba55b59e890fd631c6600a0b25bbe}{\index{botservice.\+php@{botservice.\+php}!\$corpseflag@{\$corpseflag}}
+\index{\$corpseflag@{\$corpseflag}!botservice.\+php@{botservice.\+php}}
+\subsubsection[{\$corpseflag}]{\setlength{\rightskip}{0pt plus 5cm}\$corpseflag =0}}\label{botservice_8php_ade2ba55b59e890fd631c6600a0b25bbe}
+
+
+Definition at line 51 of file botservice.\+php.
+
+\hypertarget{botservice_8php_a4de03a8ac30b9635a8a8ea4a995be9ec}{\index{botservice.\+php@{botservice.\+php}!\$endtime@{\$endtime}}
+\index{\$endtime@{\$endtime}!botservice.\+php@{botservice.\+php}}
+\subsubsection[{\$endtime}]{\setlength{\rightskip}{0pt plus 5cm}\$endtime = \$now}}\label{botservice_8php_a4de03a8ac30b9635a8a8ea4a995be9ec}
+
+
+Definition at line 321 of file botservice.\+php.
+
+\hypertarget{botservice_8php_a83018d9153d17d91fbcf3bc10158d34f}{\index{botservice.\+php@{botservice.\+php}!\$i@{\$i}}
+\index{\$i@{\$i}!botservice.\+php@{botservice.\+php}}
+\subsubsection[{\$i}]{\setlength{\rightskip}{0pt plus 5cm}\$i =0}}\label{botservice_8php_a83018d9153d17d91fbcf3bc10158d34f}
+
+
+Definition at line 267 of file botservice.\+php.
+
+\hypertarget{botservice_8php_ae2c1d0ffaf2c5f005f5b9a540e8a926f}{\index{botservice.\+php@{botservice.\+php}!\$inf@{\$inf}}
+\index{\$inf@{\$inf}!botservice.\+php@{botservice.\+php}}
+\subsubsection[{\$inf}]{\setlength{\rightskip}{0pt plus 5cm}\$inf =''}}\label{botservice_8php_ae2c1d0ffaf2c5f005f5b9a540e8a926f}
+
+
+Definition at line 49 of file botservice.\+php.
+
+\hypertarget{botservice_8php_a9a2cf15a653aee8be437f7ae474cd494}{\index{botservice.\+php@{botservice.\+php}!\$log@{\$log}}
+\index{\$log@{\$log}!botservice.\+php@{botservice.\+php}}
+\subsubsection[{\$log}]{\setlength{\rightskip}{0pt plus 5cm}\$log = ''}}\label{botservice_8php_a9a2cf15a653aee8be437f7ae474cd494}
+
+
+Definition at line 34 of file botservice.\+php.
+
+\hypertarget{botservice_8php_a6378350bbbdfdf1fdd8c8e1cd0607a8d}{\index{botservice.\+php@{botservice.\+php}!\$pdata@{\$pdata}}
+\index{\$pdata@{\$pdata}!botservice.\+php@{botservice.\+php}}
+\subsubsection[{\$pdata}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (!\$db-\/$>$num\+\_\+rows(\${\bf result})) \$pdata = \$db-\/$>$fetch\+\_\+array(\${\bf result})}}\label{botservice_8php_a6378350bbbdfdf1fdd8c8e1cd0607a8d}
+
+
+Definition at line 18 of file botservice.\+php.
+
+\hypertarget{botservice_8php_ad72f7f7d7fd8794ce58b3da8977b8555}{\index{botservice.\+php@{botservice.\+php}!\$result@{\$result}}
+\index{\$result@{\$result}!botservice.\+php@{botservice.\+php}}
+\subsubsection[{\$result}]{\setlength{\rightskip}{0pt plus 5cm}{\bf while} (\$data=\$db-\/$>$fetch\+\_\+array(\${\bf result})) \${\bf result} = \$db-\/$>$query(\char`\"{}S\+E\+L\+E\+C\+T $\ast$ F\+R\+O\+M \{\$tablepre\}players W\+H\+E\+R\+E name = '\$cuser' A\+N\+D type = 0\char`\"{})}}\label{botservice_8php_ad72f7f7d7fd8794ce58b3da8977b8555}
+
+
+Definition at line 8 of file botservice.\+php.
+
+\hypertarget{botservice_8php_ace2ec39e7df3899fa8df9640ec274b03}{\index{botservice.\+php@{botservice.\+php}!\$rows@{\$rows}}
+\index{\$rows@{\$rows}!botservice.\+php@{botservice.\+php}}
+\subsubsection[{\$rows}]{\setlength{\rightskip}{0pt plus 5cm}\$rows =\$db-\/$>$num\+\_\+rows(\${\bf result})}}\label{botservice_8php_ace2ec39e7df3899fa8df9640ec274b03}
+
+
+Definition at line 263 of file botservice.\+php.
+
+\hypertarget{botservice_8php_a39c39f525eceb86cabc338804f230e80}{\index{botservice.\+php@{botservice.\+php}!C\+U\+R\+S\+C\+R\+I\+P\+T@{C\+U\+R\+S\+C\+R\+I\+P\+T}}
+\index{C\+U\+R\+S\+C\+R\+I\+P\+T@{C\+U\+R\+S\+C\+R\+I\+P\+T}!botservice.\+php@{botservice.\+php}}
+\subsubsection[{C\+U\+R\+S\+C\+R\+I\+P\+T}]{\setlength{\rightskip}{0pt plus 5cm}const C\+U\+R\+S\+C\+R\+I\+P\+T 'botservice'}}\label{botservice_8php_a39c39f525eceb86cabc338804f230e80}
+
+
+Definition at line 3 of file botservice.\+php.
+
+\hypertarget{botservice_8php_a0b84dc7d8563744402546248257bb26a}{\index{botservice.\+php@{botservice.\+php}!else@{else}}
+\index{else@{else}!botservice.\+php@{botservice.\+php}}
+\subsubsection[{else}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (\$hp $>$ 0) else}}\label{botservice_8php_a0b84dc7d8563744402546248257bb26a}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+\{
+    echo \textcolor{stringliteral}{"dead=1\(\backslash\)n"}
+\end{DoxyCode}
+
+
+Definition at line 44 of file botservice.\+php.
+
+\hypertarget{botservice_8php_a38ecd1c3a346f8a22ecd29f0de0cc1dc}{\index{botservice.\+php@{botservice.\+php}!foreach@{foreach}}
+\index{foreach@{foreach}!botservice.\+php@{botservice.\+php}}
+\subsubsection[{foreach}]{\setlength{\rightskip}{0pt plus 5cm}foreach}}\label{botservice_8php_a38ecd1c3a346f8a22ecd29f0de0cc1dc}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+\{
+        echo \textcolor{stringliteral}{"\{$value\}="}.$\{$value\}.\textcolor{stringliteral}{"\(\backslash\)n"}
+\end{DoxyCode}
+
+
+Definition at line 216 of file botservice.\+php.
+
+\hypertarget{botservice_8php_a9397939c237959113b21e7e4a5de37cb}{\index{botservice.\+php@{botservice.\+php}!while@{while}}
+\index{while@{while}!botservice.\+php@{botservice.\+php}}
+\subsubsection[{while}]{\setlength{\rightskip}{0pt plus 5cm}while = \$db-\/$>$query(\char`\"{}S\+E\+L\+E\+C\+T s\+No,pls,name,state,bid F\+R\+O\+M \{\$tablepre\}players W\+H\+E\+R\+E type = 0 A\+N\+D state $>$= 10 A\+N\+D deathtime $>$= \$endtime\char`\"{})}}\label{botservice_8php_a9397939c237959113b21e7e4a5de37cb}
+
+
+Definition at line 294 of file botservice.\+php.
+

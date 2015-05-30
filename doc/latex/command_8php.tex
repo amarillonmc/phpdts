@@ -1,0 +1,142 @@
+\hypertarget{command_8php}{\section{command.\+php File Reference}
+\label{command_8php}\index{command.\+php@{command.\+php}}
+}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const \hyperlink{command_8php_a39c39f525eceb86cabc338804f230e80}{C\+U\+R\+S\+C\+R\+I\+P\+T} 'game'
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!\$cuser$\vert$$\vert$!\$cpass) \hyperlink{command_8php_a112ef069ddc0454086e3d1e6d8d55d07}{\$result} = \$db-\/$>$query(\char`\"{}S\+E\+L\+E\+C\+T $\ast$ F\+R\+O\+M \{\$tablepre\}players W\+H\+E\+R\+E name = '\$cuser' A\+N\+D type = 0\char`\"{})
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(!\$db-\/$>$num\+\_\+rows(\$\hyperlink{templates_2install_8php_abdecde238169a1e34f68354fc9968af0}{result})) \hyperlink{command_8php_a6378350bbbdfdf1fdd8c8e1cd0607a8d}{\$pdata} = \$db-\/$>$fetch\+\_\+array(\$\hyperlink{templates_2install_8php_abdecde238169a1e34f68354fc9968af0}{result})
+\item 
+\hyperlink{command_8php_a9a2cf15a653aee8be437f7ae474cd494}{\$log} = \$cmd = \$main = ''
+\item 
+\hyperlink{command_8php_a2c99f4f40b60cc6b3b312c14ee101085}{\$gamedata} = array()
+\item 
+\hyperlink{command_8php_a5d54a0278e200a0ff8007926c5dd2a10}{\$llist} = ''
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(\$hp$<$=0) \hyperlink{urlist_8php_a77f52b43f81ed05a41b68c2161789055}{elseif}(\$cmd) \hyperlink{urlist_8php_a77f52b43f81ed05a41b68c2161789055}{elseif}(\$itms0) \\*
+\hyperlink{urlist_8php_a77f52b43f81ed05a41b68c2161789055}{elseif}(\$state==1$\vert$$\vert$\$state==2$\vert$$\vert$\$state==3) \\*
+\hyperlink{urlist_8php_a77f52b43f81ed05a41b68c2161789055}{elseif}(!\$cmd) \hyperlink{command_8php_a3b5760e545e497c5b3121939c8315e0e}{else}
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(isset(\$url)) \hyperlink{command_8php_ac9b663b3bbed4178f8fa8fec9a95a6af}{\$gamedata} \mbox{[}'inner\+H\+T\+M\+L'\mbox{]}\mbox{[}'pls'\mbox{]} = \$plsinfo\mbox{[}\$pls\mbox{]}
+\item 
+\hyperlink{command_8php_abc840bb3aade3c2e5c654f8d16a93a01}{\$gamedata} \mbox{[}'inner\+H\+T\+M\+L'\mbox{]}\mbox{[}'anum'\mbox{]} = \$alivenum
+\item 
+\hyperlink{command_8php_a67a14860123d3f27f92196239b0a5b46}{\$main}
+\item 
+\hyperlink{command_8php_aea43421c223abcfe0f87eba2ed1a9c96}{\$gamedata} \mbox{[}'inner\+H\+T\+M\+L'\mbox{]}\mbox{[}'main'\mbox{]} = ob\+\_\+get\+\_\+contents()
+\item 
+\hyperlink{command_8php_ac0c8e341e5b5c1499ae39285ff039122}{\$gamedata} \mbox{[}'inner\+H\+T\+M\+L'\mbox{]}\mbox{[}'log'\mbox{]} = \$log
+\item 
+\hyperlink{login__old_8php_a4ac1118c2e44c513a674bc1793ba6c90}{if}(isset(\$error)) \hyperlink{command_8php_a3bb7e13ced7e0a1819da876e71142b64}{\$gamedata} \mbox{[}'\hyperlink{1__chat_8tpl_8php_afcc7a4b78ecd8fa7e713f8cfa0f51017}{value}'\mbox{]}\mbox{[}'team\+I\+D'\mbox{]} = \$team\+I\+D
+\item 
+\hyperlink{command_8php_ad8ad32ee4a34333c6c5c5b4379a80cf2}{\$jgamedata} = \hyperlink{global_8func_8php_a90ee856f9044b751e8c137763608fba4}{compatible\+\_\+json\+\_\+encode}(\$gamedata)
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{command_8php_a2c99f4f40b60cc6b3b312c14ee101085}{\index{command.\+php@{command.\+php}!\$gamedata@{\$gamedata}}
+\index{\$gamedata@{\$gamedata}!command.\+php@{command.\+php}}
+\subsubsection[{\$gamedata}]{\setlength{\rightskip}{0pt plus 5cm}\$gamedata = array()}}\label{command_8php_a2c99f4f40b60cc6b3b312c14ee101085}
+
+
+Definition at line 45 of file command.\+php.
+
+\hypertarget{command_8php_ac9b663b3bbed4178f8fa8fec9a95a6af}{\index{command.\+php@{command.\+php}!\$gamedata@{\$gamedata}}
+\index{\$gamedata@{\$gamedata}!command.\+php@{command.\+php}}
+\subsubsection[{\$gamedata}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (isset(\$url)) \$gamedata\mbox{[}'inner\+H\+T\+M\+L'\mbox{]}\mbox{[}'pls'\mbox{]} = \$plsinfo\mbox{[}\$pls\mbox{]}}}\label{command_8php_ac9b663b3bbed4178f8fa8fec9a95a6af}
+
+
+Definition at line 453 of file command.\+php.
+
+\hypertarget{command_8php_abc840bb3aade3c2e5c654f8d16a93a01}{\index{command.\+php@{command.\+php}!\$gamedata@{\$gamedata}}
+\index{\$gamedata@{\$gamedata}!command.\+php@{command.\+php}}
+\subsubsection[{\$gamedata}]{\setlength{\rightskip}{0pt plus 5cm}\$gamedata\mbox{[}'inner\+H\+T\+M\+L'\mbox{]}\mbox{[}'anum'\mbox{]} = \$alivenum}}\label{command_8php_abc840bb3aade3c2e5c654f8d16a93a01}
+
+
+Definition at line 454 of file command.\+php.
+
+\hypertarget{command_8php_aea43421c223abcfe0f87eba2ed1a9c96}{\index{command.\+php@{command.\+php}!\$gamedata@{\$gamedata}}
+\index{\$gamedata@{\$gamedata}!command.\+php@{command.\+php}}
+\subsubsection[{\$gamedata}]{\setlength{\rightskip}{0pt plus 5cm}\$gamedata\mbox{[}'inner\+H\+T\+M\+L'\mbox{]}\mbox{[}'main'\mbox{]} = ob\+\_\+get\+\_\+contents()}}\label{command_8php_aea43421c223abcfe0f87eba2ed1a9c96}
+
+
+Definition at line 458 of file command.\+php.
+
+\hypertarget{command_8php_ac0c8e341e5b5c1499ae39285ff039122}{\index{command.\+php@{command.\+php}!\$gamedata@{\$gamedata}}
+\index{\$gamedata@{\$gamedata}!command.\+php@{command.\+php}}
+\subsubsection[{\$gamedata}]{\setlength{\rightskip}{0pt plus 5cm}\$gamedata\mbox{[}'inner\+H\+T\+M\+L'\mbox{]}\mbox{[}'log'\mbox{]} = \$log}}\label{command_8php_ac0c8e341e5b5c1499ae39285ff039122}
+
+
+Definition at line 459 of file command.\+php.
+
+\hypertarget{command_8php_a3bb7e13ced7e0a1819da876e71142b64}{\index{command.\+php@{command.\+php}!\$gamedata@{\$gamedata}}
+\index{\$gamedata@{\$gamedata}!command.\+php@{command.\+php}}
+\subsubsection[{\$gamedata}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (isset(\$error)) \$gamedata\mbox{[}'{\bf value}'\mbox{]}\mbox{[}'team\+I\+D'\mbox{]} = \$team\+I\+D}}\label{command_8php_a3bb7e13ced7e0a1819da876e71142b64}
+
+
+Definition at line 461 of file command.\+php.
+
+\hypertarget{command_8php_ad8ad32ee4a34333c6c5c5b4379a80cf2}{\index{command.\+php@{command.\+php}!\$jgamedata@{\$jgamedata}}
+\index{\$jgamedata@{\$jgamedata}!command.\+php@{command.\+php}}
+\subsubsection[{\$jgamedata}]{\setlength{\rightskip}{0pt plus 5cm}\$jgamedata = {\bf compatible\+\_\+json\+\_\+encode}(\$gamedata)}}\label{command_8php_ad8ad32ee4a34333c6c5c5b4379a80cf2}
+
+
+Definition at line 472 of file command.\+php.
+
+\hypertarget{command_8php_a5d54a0278e200a0ff8007926c5dd2a10}{\index{command.\+php@{command.\+php}!\$llist@{\$llist}}
+\index{\$llist@{\$llist}!command.\+php@{command.\+php}}
+\subsubsection[{\$llist}]{\setlength{\rightskip}{0pt plus 5cm}\$llist = ''}}\label{command_8php_a5d54a0278e200a0ff8007926c5dd2a10}
+
+
+Definition at line 50 of file command.\+php.
+
+\hypertarget{command_8php_a9a2cf15a653aee8be437f7ae474cd494}{\index{command.\+php@{command.\+php}!\$log@{\$log}}
+\index{\$log@{\$log}!command.\+php@{command.\+php}}
+\subsubsection[{\$log}]{\setlength{\rightskip}{0pt plus 5cm}\$log = \$cmd = \$main = ''}}\label{command_8php_a9a2cf15a653aee8be437f7ae474cd494}
+
+
+Definition at line 44 of file command.\+php.
+
+\hypertarget{command_8php_a67a14860123d3f27f92196239b0a5b46}{\index{command.\+php@{command.\+php}!\$main@{\$main}}
+\index{\$main@{\$main}!command.\+php@{command.\+php}}
+\subsubsection[{\$main}]{\setlength{\rightskip}{0pt plus 5cm}\$main}}\label{command_8php_a67a14860123d3f27f92196239b0a5b46}
+
+
+Definition at line 457 of file command.\+php.
+
+\hypertarget{command_8php_a6378350bbbdfdf1fdd8c8e1cd0607a8d}{\index{command.\+php@{command.\+php}!\$pdata@{\$pdata}}
+\index{\$pdata@{\$pdata}!command.\+php@{command.\+php}}
+\subsubsection[{\$pdata}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (!\$db-\/$>$num\+\_\+rows(\${\bf result})) \$pdata = \$db-\/$>$fetch\+\_\+array(\${\bf result})}}\label{command_8php_a6378350bbbdfdf1fdd8c8e1cd0607a8d}
+
+
+Definition at line 18 of file command.\+php.
+
+\hypertarget{command_8php_a112ef069ddc0454086e3d1e6d8d55d07}{\index{command.\+php@{command.\+php}!\$result@{\$result}}
+\index{\$result@{\$result}!command.\+php@{command.\+php}}
+\subsubsection[{\$result}]{\setlength{\rightskip}{0pt plus 5cm}\${\bf result} = \$db-\/$>$query(\char`\"{}S\+E\+L\+E\+C\+T $\ast$ F\+R\+O\+M \{\$tablepre\}players W\+H\+E\+R\+E name = '\$cuser' A\+N\+D type = 0\char`\"{})}}\label{command_8php_a112ef069ddc0454086e3d1e6d8d55d07}
+
+
+Definition at line 14 of file command.\+php.
+
+\hypertarget{command_8php_a39c39f525eceb86cabc338804f230e80}{\index{command.\+php@{command.\+php}!C\+U\+R\+S\+C\+R\+I\+P\+T@{C\+U\+R\+S\+C\+R\+I\+P\+T}}
+\index{C\+U\+R\+S\+C\+R\+I\+P\+T@{C\+U\+R\+S\+C\+R\+I\+P\+T}!command.\+php@{command.\+php}}
+\subsubsection[{C\+U\+R\+S\+C\+R\+I\+P\+T}]{\setlength{\rightskip}{0pt plus 5cm}const C\+U\+R\+S\+C\+R\+I\+P\+T 'game'}}\label{command_8php_a39c39f525eceb86cabc338804f230e80}
+
+
+Definition at line 3 of file command.\+php.
+
+\hypertarget{command_8php_a3b5760e545e497c5b3121939c8315e0e}{\index{command.\+php@{command.\+php}!else@{else}}
+\index{else@{else}!command.\+php@{command.\+php}}
+\subsubsection[{else}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (\$team\+I\+D) else}}\label{command_8php_a3b5760e545e497c5b3121939c8315e0e}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+\{
+    \hyperlink{command_8php_a9a2cf15a653aee8be437f7ae474cd494}{$log} .= \textcolor{stringliteral}{'游戏流程故障，请联系管理员<br>'}
+\end{DoxyCode}
+
+
+Definition at line 445 of file command.\+php.
+
