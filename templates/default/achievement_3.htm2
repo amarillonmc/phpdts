@@ -1,0 +1,12 @@
+<table><tr>
+<td>
+<!--{if ($cpl[3]) }--><img src="img/achievement_0.gif"><!--{else}--><img src="img/achievement_not_done.gif"><!--{/if}-->
+</td>
+<td valign="top" align="left">
+<b>NPC杀手</b>
+<!--{if ($cpl[3]) }--><span class="lime">[完成]</span><!--{else}--><span class="red">[未完成]</span><!--{/if}--><br>
+<font color="yellow">击杀总数： $prc[3]名<br></font>
+<font color="olive">奖励： 积分100 切糕50<br></font> 
+击杀1500名NPC。<br>
+</td>
+</tr></table>

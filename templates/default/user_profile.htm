@@ -1,0 +1,38 @@
+{template header}
+<div class="subtitle" align="center">{lang user}</div>
+<center>
+	<table style="text-align: center">
+	<tr>
+		<td>{template user_profile_basicdata}</td>
+		<td><pre>&#9;</pre></td>
+		<td>
+			<table>
+			<tr><td>
+				<div id="userIconImg" class="iconImg" >
+					<img src="img/<!--{if $gender != 'f'}-->m<!--{else}-->f<!--{/if}-->_{$select_icon}.gif" alt="$select_icon">
+				</div>	
+			</td></tr>
+			<tr><td>
+				<!--{if ($curuser) }--><button type="button" onclick="window.location.href='user.php'">编辑我的账户资料</button><!--{/if}-->
+			</td></tr>
+			</table>
+		</td>
+	</tr>
+	</table>
+	<table>
+	<tr><td>
+		{template user_end_achievement}
+	</td></tr>
+	<tr><td>
+		{template user_battle_achievement}
+	</td></tr>
+	<tr><td>
+		{template user_mixitem_achievement}
+	</td></tr>
+	<tr><td>
+		{template user_other_achievement}
+	</td></tr>
+	</table>
+</center>
+{template footer}
+

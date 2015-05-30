@@ -1,0 +1,19 @@
+<table><tr>
+<td>
+<!--{if ($cpl[3]) }--><img src="img/achievement_0.gif"><!--{else}--><img src="img/achievement_not_done.gif"><!--{/if}-->
+</td>
+<td valign="top" align="left">
+<b>
+<!--{if ($cpl[3]=='0') }-->脚本小子<!--{/if}-->
+<!--{if ($cpl[3]=='1') }-->黑客<!--{/if}-->
+<!--{if ($cpl[3]=='2') }-->幻境解离者？<!--{/if}-->
+<!--{if ($cpl[3]=='999') }-->幻境解离者？<!--{/if}-->
+</b>
+<!--{if ($cpl[3]=='999') }--><span class="lime">[完成]</span><!--{else}--><!--{if ($cpl[3]==0) }--><span class="red">[未完成]</span><!--{else}--><span class="clan">[进行中]</span><!--{/if}--><!--{/if}--><br>
+<font color="yellow">击杀总数： {$prc[3]}名<br></font>
+<!--{if ($cpl[3]=='0') }--><font color="olive">奖励： 切糕5<br></font> 击杀100名NPC<br><!--{/if}-->
+<!--{if ($cpl[3]=='1') }--><font color="olive">奖励： 积分200 <span class="evergreen">称号 黑客</span><br></font> 击杀500名NPC<br><!--{/if}-->
+<!--{if ($cpl[3]=='2') }--><font color="olive">奖励： 积分500 切糕15  <span class="evergreen">称号 最后一步</span><br></font> 击杀10000名NPC<br><!--{/if}-->
+<!--{if ($cpl[3]=='999') }--><font color="olive">奖励： 积分500 切糕15 <span class="evergreen">称号 最后一步</span><br></font> 击杀10000名NPC<br><!--{/if}-->
+</td>
+</tr></table>

@@ -1,0 +1,319 @@
+<!--{loop $p $key $valuekey}-->
+<!--{if isset($npcdescription[$kind]['sub'][$key]['description'])}-->
+<table border="1" cellspacing="0" cellpadding="0" valign="middle">
+	<tr>
+		<td>
+			<table border="1" cellspacing="0" cellpadding="0" valign="middle">
+				<tr>
+					<td>
+						<IMG width=140px src="img/n_$npcinfo[$kind]['sub'][$key]['icon'].gif" border="0" valign="middle"/>
+					</td>
+					<td>
+						<table border="1" height=100% width=100% cellspacing="0" cellpadding="0">
+							<tr>
+								<td width=100px align="center" class="b1">
+									NPC类别
+								</td>
+								<td width=100px align="center" class="b3">
+									$typeinfo[$kind]
+								</td>
+								<td width=100px align="center" class="b1">
+									数目
+								</td>
+								<td width=100px align="center" class="b3">
+									$npcdescription[$kind]['sub'][$key]['count']
+								</td>
+								<td width=100px align="center" class="b1">
+									所处地点
+								</td>
+								<td width=100px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['pls'])}-->
+									<!--{if $npcinfo[$kind]['sub'][$key]['pls']==99}-->
+									随机
+									<!--{else}-->
+									<span class="yellow">
+									$plsinfo[$npcinfo[$kind]['sub'][$key]['pls']]
+									</span>
+									<!--{/if}-->
+									<!--{else}-->
+									<!--{if $npcinfo[$kind]['pls']==99}-->
+									随机
+									<!--{else}-->
+									<span class="yellow">
+									$plsinfo[$npcinfo[$kind]['pls']]
+									</span>
+									<!--{/if}-->
+									<!--{/if}-->
+								</td>
+							</tr>
+							<tr>
+								<td width=100px align="center" class="b1">
+									NPC等级
+								</td>
+								<td width=100px align="center" class="b3">
+									<span>
+									Lv. 
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['lvl'])}-->
+									$npcinfo[$kind]['sub'][$key]['lvl']
+									<!--{else}-->			
+									$npcinfo[$kind]['lvl']
+									<!--{/if}-->
+									</span>
+								</td>
+								<td width=100px align="center" class="b1">
+									NPC名称
+								</td>	
+								<td width=100px align="center" class="b3">
+									<span class="lime">
+									$npcinfo[$kind]['sub'][$key]['name']
+									</span>
+								</td>
+								<td width=100px align="center" class="b1">
+									性别
+								</td>
+								<td width=100px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['gd'])}-->
+									<!--{if $npcinfo[$kind]['sub'][$key]['gd']=='m'}-->
+									男
+									<!--{else}-->
+									<!--{if $npcinfo[$kind]['sub'][$key]['gd']=='f'}-->
+									女
+									<!--{else}-->
+									随机
+									<!--{/if}-->
+									<!--{/if}-->
+									<!--{else}-->
+									<!--{if $npcinfo[$kind]['gd']=='m'}-->
+									男
+									<!--{else}-->
+									<!--{if $npcinfo[$kind]['gd']=='f'}-->
+									女
+									<!--{else}-->
+									随机
+									<!--{/if}-->
+									<!--{/if}-->
+									<!--{/if}-->
+								</td>
+							</tr>					
+							<tr>
+								<td width=100px align="center" class="b1">
+									内定称号
+								</td>					
+								<td width=100px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['club'])}-->
+									<!--{if $npcinfo[$kind]['sub'][$key]['club']==99}-->
+									第一形态
+									<!--{else}-->
+									$clubinfo[$npcinfo[$kind]['sub'][$key]['club']]
+									<!--{/if}-->
+									<!--{else}-->
+									<!--{if isset($npcinfo[$kind]['club'])}-->
+									<!--{if $npcinfo[$kind]['club']==99}-->
+									第一形态
+									<!--{else}-->
+									$clubinfo[$npcinfo[$kind]['club']]
+									<!--{/if}-->
+									<!--{else}-->
+									无
+									<!--{/if}-->
+									<!--{/if}-->
+								</td>
+								<td width=100px align="center" class="b1">
+									{lang pose}
+								</td>
+								<td width=100px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['pose'])}-->
+									$poseinfo[$npcinfo[$kind]['sub'][$key]['pose']]
+									<!--{else}-->
+									$poseinfo[$npcinfo[$kind]['pose']]
+									<!--{/if}-->
+								</td>
+								<td width=100px align="center" class="b1">
+									{lang tactic}
+								</td>
+								<td width=100px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['tactic'])}-->
+									$tacinfo[$npcinfo[$kind]['sub'][$key]['tactic']]
+									<!--{else}-->
+									$tacinfo[$npcinfo[$kind]['tactic']]
+									<!--{/if}-->
+								</td>
+							</tr>
+							<tr>
+								<td width=100px align="center" class="b1">
+									生命上限
+								</td>
+								<td width=100px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['mhp'])}-->
+									$npcinfo[$kind]['sub'][$key]['mhp']
+									<!--{else}-->
+									$npcinfo[$kind]['mhp']
+									<!--{/if}-->
+								</td>
+								<td width=100px align="center" class="b1">
+									熟练度
+								</td>
+								<td width=100px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['skill'])}-->
+									$npcinfo[$kind]['sub'][$key]['skill']
+									<!--{else}-->
+									$npcinfo[$kind]['skill']
+									<!--{/if}-->
+								</td>
+								<td width=100px align="center" class="b1">
+									怒气值
+								</td>
+								<td width=100px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['rage'])}-->
+									$npcinfo[$kind]['sub'][$key]['rage']
+									<!--{else}-->
+									$npcinfo[$kind]['rage']
+									<!--{/if}-->
+								</td>
+							</tr>
+							<tr>
+								<td width=100px align="center" class="b1">
+									基础攻击
+								</td>
+								<td width=100px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['att'])}-->
+									$npcinfo[$kind]['sub'][$key]['att']
+									<!--{else}-->
+									$npcinfo[$kind]['att']
+									<!--{/if}-->
+								</td>
+								<td width=100px align="center" class="b1">
+									基础防御
+								</td>
+								<td width=100px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['def'])}-->
+									$npcinfo[$kind]['sub'][$key]['def']
+									<!--{else}-->
+									$npcinfo[$kind]['def']
+									<!--{/if}-->
+								</td>
+								<td width=100px align="center" class="b1">
+									掉落金钱
+								</td>
+								<td width=100px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['money'])}-->
+									$npcinfo[$kind]['sub'][$key]['money']
+									<!--{else}-->
+									$npcinfo[$kind]['money']
+									<!--{/if}-->
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<table border="1" cellspacing="0" cellpadding="0" valign="middle">
+				<tr>
+					<td width=140px>
+						$npcdescription[$kind]['sub'][$key]['description']
+					</td>
+					<td>
+						<table border="1" cellspacing="0" cellpadding="0" valign="middle">
+							<tr>
+								<td width=100px align="center" class="b1">
+									武器名称
+								</td>
+								<td width=505px align="center" class="b3">
+									$npcinfo[$kind]['sub'][$key]['wep']/$iteminfo[$npcinfo[$kind]['sub'][$key]['wepk']]/$npcinfo[$kind]['sub'][$key]['wepe']/$npcinfo[$kind]['sub'][$key]['weps']<!--{if isset($npcinfo[$kind]['sub'][$key]['wepsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['wepsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['wepsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['wepsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['wepsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+								</td>
+							</tr>
+							<tr>
+								<td width=100px align="center" class="b1">
+									身体装备
+								</td>
+								<td width=505px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['arb'])}-->
+									$npcinfo[$kind]['sub'][$key]['arb']/$npcinfo[$kind]['sub'][$key]['arbe']/$npcinfo[$kind]['sub'][$key]['arbs']<!--{if isset($npcinfo[$kind]['sub'][$key]['arbsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arbsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arbsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arbsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arbsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									<!--{else}-->
+									$npcinfo[$kind]['arb']/$npcinfo[$kind]['arbe']/$npcinfo[$kind]['arbs']<!--{if isset($npcinfo[$kind]['arbsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arbsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arbsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arbsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arbsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									<!--{/if}-->
+								</td>
+							</tr>
+							<tr>
+								<td width=100px align="center" class="b1">
+									头部装备
+								</td>
+								<td width=505px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['arh'])}-->
+									$npcinfo[$kind]['sub'][$key]['arh']/$npcinfo[$kind]['sub'][$key]['arhe']/$npcinfo[$kind]['sub'][$key]['arhs']<!--{if isset($npcinfo[$kind]['sub'][$key]['arhsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arhsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arhsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arhsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arhsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									<!--{else}-->
+									$npcinfo[$kind]['arh']/$npcinfo[$kind]['arhe']/$npcinfo[$kind]['arhs']<!--{if isset($npcinfo[$kind]['arhsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arhsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arhsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arhsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arhsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									<!--{/if}-->
+								</td>
+							</tr>
+							<tr>
+								<td width=100px align="center" class="b1">
+									手臂装备
+								</td>
+								<td width=505px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['ara'])}-->
+									$npcinfo[$kind]['sub'][$key]['ara']/$npcinfo[$kind]['sub'][$key]['arae']/$npcinfo[$kind]['sub'][$key]['aras']<!--{if isset($npcinfo[$kind]['sub'][$key]['arask'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arask'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arask'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arask'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arask'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									<!--{else}-->
+									$npcinfo[$kind]['ara']/$npcinfo[$kind]['arae']/$npcinfo[$kind]['aras']<!--{if isset($npcinfo[$kind]['arask'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arask'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arask'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arask'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arask'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									<!--{/if}-->
+								</td>
+							</tr>
+							<tr>
+								<td width=100px align="center" class="b1">
+									腿部装备
+								</td>
+								<td width=505px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['arf'])}-->
+									$npcinfo[$kind]['sub'][$key]['arf']/$npcinfo[$kind]['sub'][$key]['arfe']/$npcinfo[$kind]['sub'][$key]['arfs']<!--{if isset($npcinfo[$kind]['sub'][$key]['arfsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arfsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arfsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arfsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arfsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									<!--{else}-->
+									$npcinfo[$kind]['arf']/$npcinfo[$kind]['arfe']/$npcinfo[$kind]['arfs']<!--{if isset($npcinfo[$kind]['arfsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arfsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arfsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arfsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arfsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									<!--{/if}-->
+								</td>
+							</tr>
+							<tr>
+								<td width=100px align="center" class="b1">
+									饰品 
+								</td>
+								<td width=505px align="center" class="b3">
+									<!--{if isset($npcinfo[$kind]['sub'][$key]['art'])}-->
+									$npcinfo[$kind]['sub'][$key]['art']/$iteminfo[$npcinfo[$kind]['sub'][$key]['artk']]<!--{if isset($npcinfo[$kind]['sub'][$key]['artsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['artsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['artsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['artsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['artsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									<!--{else}-->
+									$npcinfo[$kind]['art']/$iteminfo[$npcinfo[$kind]['artk']]<!--{if isset($npcinfo[$kind]['artsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['artsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['artsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['artsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['artsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									<!--{/if}-->
+								</td>
+							</tr>
+							<!--{loop $itemlst $id $vid}-->
+							<!--{if isset($npcinfo[$kind]['sub'][$key]['itm'.$id])}-->
+							<tr>
+								<td width=100px align="center" class="b1">
+									掉落物品
+								</td>
+								<td width=505px align="center" class="b3">
+									$npcinfo[$kind]['sub'][$key]['itm'.$id]/$iteminfo[$npcinfo[$kind]['sub'][$key]['itmk'.$id]]/$npcinfo[$kind]['sub'][$key]['itme'.$id]/$npcinfo[$kind]['sub'][$key]['itms'.$id]<!--{if isset($npcinfo[$kind]['sub'][$key]['itmsk'.$id])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['itmsk'.$id],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['itmsk'.$id],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['itmsk'.$id],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['itmsk'.$id],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+								</td>
+							</tr>
+							<!--{elseif isset($npcinfo[$kind]['itm'.$id])}-->
+							<tr>
+								<td width=100px align="center" class="b1">
+									掉落物品
+								</td>
+								<td width=505px align="center" class="b3">
+									$npcinfo[$kind]['itm'.$id]/$iteminfo[$npcinfo[$kind]['itmk'.$id]]/$npcinfo[$kind]['itme'.$id]/$npcinfo[$kind]['itms'.$id]<!--{if isset($npcinfo[$kind]['itmsk'.$id])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['itmsk'.$id],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['itmsk'.$id],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['itmsk'.$id],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['itmsk'.$id],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+								</td>
+							</tr>
+							<!--{/if}-->
+							<!--{/loop}-->
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<br>
+<!--{/if}-->
+<!--{/loop}-->

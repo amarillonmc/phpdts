@@ -1,0 +1,19 @@
+<table><tr>
+<td>
+<!--{if ($cpl[13]=='999') }--><img src="img/ach/13_1.gif"><!--{/if}-->
+<!--{if ($cpl[13]=='0') }--><img src="img/ach/N.gif"><!--{/if}-->
+<!--{if (($cpl[13]!='999')&&($cpl[13]!='0')) }--><img src="img/ach/D.gif"><!--{/if}-->
+</td>
+<td valign="top" align="left">
+<b>
+<!--{if ($cpl[13]=='0') }-->深度冻结<!--{/if}-->
+<!--{if ($cpl[13]=='1') }-->跨过彩虹<!--{/if}-->
+<!--{if ($cpl[13]=='999') }-->跨过彩虹<!--{/if}-->
+</b>
+<!--{if ($cpl[13]=='999') }--><span class="lime">[完成]</span><!--{else}--><!--{if ($cpl[13]==0) }--><span class="red">[未完成]</span><!--{else}--><span class="clan">[进行中]</span><!--{/if}--><!--{/if}--><br>
+<font color="yellow">推倒次数： {$prc[13]}次<br></font>
+<!--{if ($cpl[13]=='0') }--><font color="olive">奖励： 积分150 切糕250<br></font> 推倒蓝凝1次<br><!--{/if}-->
+<!--{if ($cpl[13]=='1') }--><font color="olive">奖励： <span class="evergreen">称号 跨过彩虹</span><br></font> 推倒蓝凝3次<br><!--{/if}-->
+<!--{if ($cpl[13]=='999') }--><font color="olive">奖励： <span class="evergreen">称号 跨过彩虹</span><br></font> 推倒蓝凝3次<br><!--{/if}-->
+</td>
+</tr></table>

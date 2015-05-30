@@ -1,0 +1,26 @@
+<input type="hidden" name="mode" value="command">
+<input type="hidden" name="command" value="special">
+<input type="hidden" name="sp_cmd" value="sp_trapadtskselected">
+<input type="hidden" id="choice" name="choice" value="menu">
+你想改造哪个陷阱？<br>
+<br>
+<!--{if (strpos ( $itmk1, 'T' ) === 0)}-->
+<input type="button" onclick="$('choice').value='1';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm1/$itme1/$itms1"><br>
+<!--{/if}-->
+<!--{if (strpos ( $itmk2, 'T' ) === 0)}-->
+<input type="button" onclick="$('choice').value='2';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm2/$itme2/$itms2"><br>
+<!--{/if}-->
+<!--{if (strpos ( $itmk3, 'T' ) === 0)}-->
+<input type="button" onclick="$('choice').value='3';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm3/$itme3/$itms3"><br>
+<!--{/if}-->
+<!--{if (strpos ( $itmk4, 'T' ) === 0)}-->
+<input type="button" onclick="$('choice').value='4';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm4/$itme4/$itms4"><br>
+<!--{/if}-->
+<!--{if (strpos ( $itmk5, 'T' ) === 0)}-->
+<input type="button" onclick="$('choice').value='5';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm5/$itme5/$itms5"><br>
+<!--{/if}-->
+<!--{if (strpos ( $itmk6, 'T' ) === 0)}-->
+<input type="button" onclick="$('choice').value='6';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm6/$itme6/$itms6"><br>
+<!--{/if}-->
+<br>
+<input type="button" class="cmdbutton" onclick="postCmd('gamecmd','command.php');this.disabled=true;" value="放弃">

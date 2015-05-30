@@ -1,0 +1,36 @@
+
+2010.12.17
+//对combat.func.php作了简化
+//伤害惩罚加重，现在如果伤害超过2000会扣除2/3的HP，而伤害超过5000则扣除4/5的HP
+//内定称号、地图物品、商店道具、NPC资料修改。现在安装钉子方便一些了，反正不能超量购买，对吧。
+//增加了物品名称的限制长度，修正了物品耐久改为整数以后导致的与无限耐不兼容的问题
+//解毒剂种类改为“药剂”
+
+1217 改动的文件:
+/gamedata/
+		system.php 						//改动内定称号、枪械弹药种类
+		player.sql  					//增加了物品名称的限制长度，修正了物品耐久改为整数以后导致的与无限耐不兼容的问题
+/gamedata/cache/
+		gamecfg_1.php					//去除了跟combatcfg重复的部分
+		combatcfg_1.php				//添加数种属性
+		mapitem_1.php 					//地图物品略改
+		shopitem_1.php 					//商店道具略改
+		npc_1.php						//NPC资料略改
+/img/
+/include/
+		game.func.php 				//增加烧伤和冰冻状态显示
+/include/admin/
+		pcmng.php 						//增加物品名长度
+/include/game/
+		attr.func.php					//烧伤状态影响攻击力，冻伤减防御力
+		combat.func.php 			//去除了冗余部分，增加了火焰和冰冻两种属性
+		item.func.php					//添加解冻药水和烧伤药剂，枪械弹药种类增加
+		itemmain.func.php 		//灵符武器可以正确合并了
+		search.func.php				//冻伤状态影响移动和探索消耗的体力
+/install/
+		bra.sql 						  //增加了物品名称的限制长度，修正了物品耐久改为整数以后导致的与无限耐不兼容的问题
+/templates/default/
+		sp_shop.htm 					//修改文字
+	
+/根目录
+   valid.php 						//初始经验改动

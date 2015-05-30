@@ -1,0 +1,23 @@
+﻿
+<!--{if $gbnum}-->当前奖池：{$gbpool}。<!--{else}-->当前还未开设赌局。<!--{/if}-->当前分成系数：{$nowodds}
+<span class="yellow" id="gbinfo">
+	$gbinfo
+</span>
+<!--{if $cuser && isset($credits2)}-->
+	你的{lang credits2}：<span id="credits2" class="yellow">$credits2</span>
+	<!--{if $gbact == 1}-->
+	<input type="hidden" name="bet" value="{$gbudata['bid']}">
+	
+	<!--{else}-->
+	选择：
+	<select name="bet">
+		<option value="none">不选择
+		<!--{loop $alivedata $alive}--><option value="{$alive['pid']}">{$alive['name']}<!--{/loop}-->
+	</select>
+	<!--{/if}-->
+	
+	
+	赌注：<input type="text" name="wager" value="1" size="4" maxlength="6">	
+	
+	<input type="button" <!--{if $gbact == 1}-->value="追加"<!--{else}-->value="下注"<!--{/if}--> onClick="$('gbmode').value='gamble';postCmd('alive','alive.php');">
+<!--{/if}-->

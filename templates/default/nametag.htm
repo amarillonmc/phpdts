@@ -1,0 +1,45 @@
+你想修改哪个道具的名字？<br><br>
+<input type="hidden" name="mode" value="item">
+<input type="hidden" name="usemode" value="nametag">
+<input type="hidden" name="ntitm" value="$itmn">
+<input type="hidden" id="command" name="command" value="menu">
+<input type="radio" name="command" id="menu" value="menu" checked><a onclick=sl('menu'); href="javascript:void(0);" >返回</a><br><br>
+<!--{if $weps && $wepe}-->
+<input type="radio" name="command" id="wep" value="renwep"><a onclick=sl('wep'); href="javascript:void(0);" >$wep/$wepe/$weps </a><br>
+<!--{/if}-->
+<!--{if $arbs && $arbe}-->
+<input type="radio" name="command" id="arb" value="renarb"><a onclick=sl('arb'); href="javascript:void(0);" >$arb/$arbe/$arbs </a><br>
+<!--{/if}-->
+<!--{if $arhs}-->
+<input type="radio" name="command" id="arh" value="renarh"><a onclick=sl('arh'); href="javascript:void(0);" >$arh/$arhe/$arhs </a><br>
+<!--{/if}-->
+<!--{if $aras}-->
+<input type="radio" name="command" id="ara" value="renara"><a onclick=sl('ara'); href="javascript:void(0);" >$ara/$arae/$aras </a><br>
+<!--{/if}-->
+<!--{if $arfs}-->
+<input type="radio" name="command" id="arf" value="renarf"><a onclick=sl('arf'); href="javascript:void(0);" >$arf/$arfe/$arfs </a><br>
+<!--{/if}-->
+<!--{if $arts}-->
+<input type="radio" name="command" id="art" value="renart"><a onclick=sl('art'); href="javascript:void(0);" >$art/$arte/$arts </a><br>
+<!--{/if}-->
+<!--{if $itms1 && (strpos($itmk1,'Y')!==0 && strpos($itmk1,'Z')!==0)}-->
+<input type="radio" name="command" id="itm1" value="renitm1"><a onclick=sl('itm1'); href="javascript:void(0);" >$itm1/$itme1/$itms1 </a><br>
+<!--{/if}-->
+<!--{if $itms2 && (strpos($itmk2,'Y')!==0 && strpos($itmk2,'Z')!==0)}-->
+<input type="radio" name="command" id="itm2" value="renitm2"><a onclick=sl('itm2'); href="javascript:void(0);" >$itm2/$itme2/$itms2 </a><br>
+<!--{/if}-->
+<!--{if $itms3 && (strpos($itmk3,'Y')!==0 && strpos($itmk3,'Z')!==0)}-->
+<input type="radio" name="command" id="itm3" value="renitm3"><a onclick=sl('itm3'); href="javascript:void(0);" >$itm3/$itme3/$itms3 </a><br>
+<!--{/if}-->
+<!--{if $itms4 && (strpos($itmk4,'Y')!==0 && strpos($itmk4,'Z')!==0)}-->
+<input type="radio" name="command" id="itm4" value="renitm4"><a onclick=sl('itm4'); href="javascript:void(0);" >$itm4/$itme4/$itms4 </a><br>
+<!--{/if}-->
+<!--{if $itms5 && (strpos($itmk5,'Y')!==0 && strpos($itmk5,'Z')!==0)}-->
+<input type="radio" name="command" id="itm5" value="renitm5"><a onclick=sl('itm5'); href="javascript:void(0);" >$itm5/$itme5/$itms5 </a><br>
+<!--{/if}-->
+<!--{if $itms6 && (strpos($itmk6,'Y')!==0 && strpos($itmk6,'Z')!==0)}-->
+<input type="radio" name="command" id="itm6" value="renitm6"><a onclick=sl('itm6'); href="javascript:void(0);" >$itm6/$itme6/$itms6 </a><br>
+<!--{/if}-->
+<br><br>
+<input type="text" name="rename" value=""><br>
+<input type="button" class="cmdbutton" name="submit" value="改名" onclick="postCmd('gamecmd','command.php');this.disabled=true;">
