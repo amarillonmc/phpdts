@@ -1,11 +1,11 @@
 <?php if(!defined('IN_GAME')) exit('Access Denied'); ?>
-想要从尸体上拾取什么？<br><br>
+What to pick up from this corpse?<br><br>
 <input type="hidden" name="mode" value="corpse">
 <input type="radio" name="command" id="menu" value="menu" 
 <?php if(!$w_money) { ?>
 checked
 <?php } ?>
-><a onclick=sl('menu'); href="javascript:void(0);" >返回</a><br><br>
+><a onclick=sl('menu'); href="javascript:void(0);" >Back</a><br><br>
 <?php if($w_weps && $w_wepe) { ?>
 <input type="radio" name="command" id="wep" value="wep"><a onclick=sl('wep'); href="javascript:void(0);" ><?php echo $w_wep?>/<?php echo $w_wepk_words?>/<?php echo $w_wepe?>/<?php echo $w_weps?>
 <?php if($w_wepsk_words) { ?>
@@ -85,6 +85,6 @@ checked
 <?php } ?>
 </a><br>
 <?php } if($w_money) { ?>
-<input type="radio" name="command" id="money" value="money" checked><a onclick=sl('money'); href="javascript:void(0);" ><?php echo $w_money?> 元 </a><br>
+<input type="radio" name="command" id="money" value="money" checked><a onclick=sl('money'); href="javascript:void(0);" ><?php echo $w_money?>  Coins </a><br>
 <?php } ?>
-<input type="button" name="submit" value="提交" onclick="postCmd('gamecmd','command.php');this.disabled=true;">
+<input type="button" name="submit" value="Okay" onclick="postCmd('gamecmd','command.php');this.disabled=true;">

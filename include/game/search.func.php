@@ -12,13 +12,13 @@ function move($moveto = 99) {
 	if ($moveto==34 && $gamestate<50) $f=true;
 	$plsnum = sizeof($plsinfo);
 	if(($moveto == 'main')||($moveto < 0 )||($moveto >= $plsnum)){
-		$log .= '请选择正确的移动地点。<br>';
+		$log .= 'Please select correct place to move.<br>';
 		return;
 	} elseif($pls == $moveto){
-		$log .= '相同地点，不需要移动。<br>';
+		$log .= 'Same location, not moving<br>';
 		return;
 	} elseif(array_search($moveto,$arealist) <= $areanum && !$hack){
-		$log .= $plsinfo[$moveto].'是禁区，还是离远点吧！<br>';
+		$log .= $plsinfo[$moveto].'is a forbidden area!<br>';
 		return;
 	}
 
@@ -43,7 +43,7 @@ function move($moveto = 99) {
 
 	
 	if($sp <= $movesp){
-		$log .= "体力不足，不能移动！<br>还是先睡会儿吧！<br>";
+		$log .= "Cannot Move<br>Not enough SP!<br>";
 		return;
 	}
 
@@ -52,12 +52,12 @@ function move($moveto = 99) {
 	if($weather == 11) {//龙卷风
 		if($hack){$pls = rand(0,sizeof($plsinfo)-1);}
 		else {$pls = rand($areanum+1,sizeof($plsinfo)-1);$pls=$arealist[$pls];}
-		$log = ($log . "龙卷风把你吹到了<span class=\"yellow\">$plsinfo[$pls]</span>！<br>");
+		$log = ($log . "Tornado blow you to <span class=\"yellow\">$plsinfo[$pls]</span>！<br>");
 		$moved = true;
 	} elseif($weather == 13) {//冰雹
 		$damage = round($mhp/12) + rand(0,20);
 		$hp -= $damage;
-		$log .= "被<span class=\"blue\">冰雹</span>击中，生命减少了<span class=\"red\">$damage</span>点！<br>";
+		$log .= "You got pelted by <span class=\"blue\">Hail</span>, your HP is decreased by <span class=\"red\">$damage</span>！<br>";
 		if($hp <= 0 ) {
 			include_once GAME_ROOT.'./include/state.func.php';
 			death('hsmove');
@@ -126,7 +126,7 @@ function move($moveto = 99) {
 	} 
 	if(!$moved) {
 		$pls = $moveto;
-		$log .= "消耗<span class=\"yellow\">{$movesp}</span>点体力，移动到了<span class=\"yellow\">$plsinfo[$pls]</span>。<br>";
+		$log .= "You spend <span class=\"yellow\">{$movesp}</span> SP， and moved to<span class=\"yellow\">$plsinfo[$pls]</span>。<br>";
 	}else{$f=false;}
 	
 	
@@ -136,7 +136,7 @@ function move($moveto = 99) {
 			if(strpos($inf,$inf_ky)!==false){
 				$damage = round($mhp * $o_dmg) + rand(0,15);
 				$hp -= $damage;
-				$log .= "{$infwords[$inf_ky]}减少了<span class=\"red\">$damage</span>点生命！<br>";
+				$log .= "{$infwords[$inf_ky]} lowed <span class=\"red\">$damage</span> HP！<br>";
 				if($hp <= 0 ){
 					include_once GAME_ROOT.'./include/state.func.php';
 					death($inf_ky.'move');
@@ -198,14 +198,14 @@ function search(){
 
 
 	if($sp <= $schsp){
-		$log .= "体力不足，不能探索！<br>还是先睡会儿吧！<br>";
+		$log .= "Cannot Search!<br>Not enough SP! (Try sleeping)<br>";
 		return;	
 	}
 
 	if($weather == 11) {//龙卷风
 		if($hack){$pls = rand(0,sizeof($plsinfo)-1);}
 		else {$pls = rand($areanum+1,sizeof($plsinfo)-1);$pls=$arealist[$pls];}
-		$log = ($log . "龙卷风把你吹到了<span class=\"yellow\">$plsinfo[$pls]</span>！<br>");
+		$log = ($log . "Tornado blown you to <span class=\"yellow\">$plsinfo[$pls]</span>！<br>");
 		$moved = true;
 	} elseif($weather == 13) {//冰雹
 		$damage = round($mhp/12) + rand(0,20);
@@ -279,14 +279,14 @@ function search(){
 	} 
 	
 	$sp -= $schsp;
-	$log .= "消耗<span class=\"yellow\">{$schsp}</span>点体力，你搜索着周围的一切。。。<br>";
+	$log .= "You spend <span class=\"yellow\">{$schsp}</span> SP， started to search the area... ...<br>";
 	if($inf){
 		global $infwords,$inf_search_hp;
 		foreach ($inf_search_hp as $inf_ky => $o_dmg) {
 			if(strpos($inf,$inf_ky)!==false){
 				$damage = round($mhp * $o_dmg) + rand(0,10);
 				$hp -= $damage;
-				$log .= "{$infwords[$inf_ky]}减少了<span class=\"red\">$damage</span>点生命！<br>";
+				$log .= "{$infwords[$inf_ky]}lowered <span class=\"red\">$damage</span> HP！<br>";
 				if($hp <= 0 ){
 					include_once GAME_ROOT.'./include/state.func.php';
 					death($inf_ky.'move');
@@ -470,7 +470,7 @@ function discover($schmode = 0) {
 //		}
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pls='$pls' AND pid!='$pid'");
 		if(!$db->num_rows($result)){
-			$log .= '<span class="yellow">周围一个人都没有。</span><br>';
+			$log .= '<span class="yellow">No one is here.</span><br>';
 			if(CURSCRIPT == 'botservice') echo "noenemy=1\n";
 			$mode = 'command';
 			return;
@@ -555,9 +555,9 @@ function discover($schmode = 0) {
 			}
 		}
 		if($hideflag == true){
-			$log .= '似乎有人隐藏着……<br>';
+			$log .= 'Someone is hiding...<br>';
 		}else{
-			$log .= '<span class="yellow">周围一个人都没有。</span><br>';
+			$log .= '<span class="yellow">No one is nearby...</span><br>';
 		}
 		$mode = 'command';
 		return;
@@ -574,7 +574,7 @@ function discover($schmode = 0) {
 			$result = $db->query("SELECT * FROM {$tablepre}mapitem WHERE pls = '$pls'");
 			$itemnum = $db->num_rows($result);
 			if($itemnum <= 0){
-				$log .= '<span class="yellow">周围找不到任何物品。</span><br>';
+				$log .= '<span class="yellow">There are no items</span><br>';
 				$mode = 'command';
 				return;
 			}
@@ -599,10 +599,10 @@ function discover($schmode = 0) {
 				itemfind();
 				return;
 			} else {
-				$log .= "但是什么都没有发现。可能是因为道具有天然呆属性。<br>";
+				$log .= "Discovered nothing.<br>";
 			}
 		} else {
-			$log .= "但是什么都没有发现。<br>";
+			$log .= "Discovered nothing. <br>";
 		}
 	}
 	$mode = 'command';

@@ -4,7 +4,7 @@
 			<table border="0" width="720" cellspacing="0" cellpadding="0"  valign="middle">
 				<tr>
 					<td width="210" colspan="3" class="b1"><span>{$nick} {$name}</span></td>
-					<td width="100" colspan="1" class="b1"><span>{$sexinfo[$gd]}{$sNo}号</span></td>
+					<td width="100" colspan="1" class="b1"><span>{$sexinfo[$gd]} No.{$sNo}</span></td>
 					<td width="95" colspan="2" class="b1"><span>{lang weather}:$wthinfo[$weather]</span></td>
 					<td width="215" colspan="1" class="b1"><span>{lang gamedate}<!--{if $gamestate == 40 }--><span class="yellow">{lang combo}</span><!--{/if}--><!--{if $gamestate == 50 }--><span class="red">{lang duel}</span><!--{/if}--></span></td>
 				</tr>
@@ -62,7 +62,7 @@
 				</tr>
 				<tr>
 					<td class="b2"><span>{lang team}</span></td>
-					<td class="b3"><span><!--{if $teamID && $gamestate < 40 }-->$teamID<!--{else}--> 无 <!--{/if}--></span></td>
+					<td class="b3"><span><!--{if $teamID && $gamestate < 40 }-->$teamID<!--{else}--> NONE <!--{/if}--></span></td>
 					<td class="b2"><span><!--{if $wg >= 100}-->{lang wg}{lang skill}<!--{else}--><span class="grey">{lang wg}{lang skill}</span><!--{/if}--></span></td>
 					<td class="b3"><span>$wg</span></td>
 				</tr>
@@ -103,7 +103,7 @@
 									<!--{/if}-->
 								<!--{/loop}-->
 							<!--{else}-->
-							无
+							NONE
 							<!--{/if}-->
 						</span>
 					</td>
@@ -116,7 +116,7 @@
 						<span>
 							<select id="pose" name="pose" onchange="$('mode').value='special';$('command').value=$('pose').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
 								<!--{loop $poseinfo $key $value}-->
-									<!--{if ($value)&&($value!='强袭姿态')}-->
+									<!--{if ($value)&&($value!='Rush Stance')}-->
 									<option value="pose$key"<!--{if $pose == $key}-->selected<!--{/if}-->>$value
 									<!--{/if}-->
 								<!--{/loop}-->
@@ -147,9 +147,9 @@
 					<td class="b3"><!--{if $skillpoint > 0}--><span class="lime">$skillpoint</span><!--{else}--><span>$skillpoint</span><!--{/if}--></td>
 				</tr>
 				<tr>
-					<td class="b2">■■：</td>
+					<td class="b2">NOTE：</td>
 					<td class="b3">
-						■■■应■回■■■。</td>
+						SPECIAL VERSION</td>
 					<td class="b2"><span>{lang ss}</span></td>
 					<td class="b3"><span class="<!--{if $ss <= $mss*0.2}-->red<!--{elseif $ss <= $mss*0.5}-->yellow<!--{else}-->clan<!--{/if}-->">$ss / $mss</span></td>
 					<td class="b2"><span>{lang killnum}</span></td>
@@ -168,16 +168,16 @@
       		<td>
 		      	<TABLE border="0" cellSpacing=0 cellPadding=0 height=100% width=100%>
   						<TR>
-          			<TD class=b1 width="60"><span>装备种类</span></TD>
-          			<TD class=b1><span>名称</span></TD>
-          			<TD class=b1 width="70"><span>属性</span></TD>
-          			<TD class=b1 width="40"><span>效</span></TD>
-          			<TD class=b1 width="40"><span>耐</span></TD>
+          			<TD class=b1 width="60"><span>Equipment</span></TD>
+          			<TD class=b1><span>Name</span></TD>
+          			<TD class=b1 width="70"><span>Type</span></TD>
+          			<TD class=b1 width="40"><span>EFF</span></TD>
+          			<TD class=b1 width="40"><span>DUR</span></TD>
           		</tr>
           		<tr>
     						<TD class=b2 height="26"><span><!--{if $wepk_words}-->$wepk_words<!--{else}-->$mltwk<!--{/if}--></span></TD>
                 <TD class=b3>
-                	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $wepe}--><span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offwep';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
+                	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $wepe}--><span><input type="button" value="REMOVE" onclick="$('mode').value='itemmain';$('command').value='offwep';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
                 	<span><!--{if $weps}-->$wep<!--{else}-->$nowep<!--{/if}--></span>
                 </TD>
                 <TD class=b3><span>$wepsk_words</span></TD>
@@ -187,7 +187,7 @@
 		          <tr>
     	          <TD class=b2 height="26"><span><!--{if $arbs}-->$iteminfo['DB']<!--{else}--><span class="grey">$iteminfo['DB']</span><!--{/if}--></span></TD>
                 <TD class=b3>
-                	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $arbe}--><span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offarb';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
+                	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $arbe}--><span><input type="button" value="REMOVE" onclick="$('mode').value='itemmain';$('command').value='offarb';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
                 	<span><!--{if $arbs}-->$arb<!--{else}-->$noarb<!--{/if}--></span>
                 </TD>
                 <TD class=b3><span>$arbsk_words</span></TD>
@@ -197,7 +197,7 @@
 		          <tr>
     						<TD class=b2 height="26"><span><!--{if $arhs}-->$iteminfo['DH']<!--{else}--><span class="grey">$iteminfo['DH']</span><!--{/if}--></span></TD>
                 <TD class=b3>
-                	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $arhs}--><span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offarh';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
+                	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $arhs}--><span><input type="button" value="REMOVE" onclick="$('mode').value='itemmain';$('command').value='offarh';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
                 	<span><!--{if $arhs}-->$arh<!--{else}-->$noitm<!--{/if}--></span>
                 </TD>
                 <TD class=b3><span>$arhsk_words</span></TD>
@@ -207,7 +207,7 @@
 		          <tr>
     			  		<TD class=b2 height="26"><span><!--{if $aras}-->$iteminfo['DA']<!--{else}--><span class="grey">$iteminfo['DA']</span><!--{/if}--></span></TD>
                 <TD class=b3>
-                	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $aras}--><span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offara';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
+                	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $aras}--><span><input type="button" value="REMOVE" onclick="$('mode').value='itemmain';$('command').value='offara';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
                 	<span><!--{if $aras}-->$ara<!--{else}-->$noitm<!--{/if}--></span>
                 </TD>
                 <TD class=b3><span>$arask_words</span></TD>
@@ -217,7 +217,7 @@
 		          <tr>
     						<TD class=b2 height="26"><span><!--{if $arfs}-->$iteminfo['DF']<!--{else}--><span class="grey">$iteminfo['DF']</span><!--{/if}--></span></TD>
                 <TD class=b3>
-                	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $arfs}--><span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offarf';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
+                	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $arfs}--><span><input type="button" value="REMOVE" onclick="$('mode').value='itemmain';$('command').value='offarf';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
                 	<span><!--{if $arfs}-->$arf<!--{else}-->$noitm<!--{/if}--></span>
                 </TD>
                 <TD class=b3><span>$arfsk_words</span></TD>
@@ -227,7 +227,7 @@
 		          <tr>
     						<TD class=b2 height="26"><span><!--{if $arts}-->$artk_words<!--{else}--><span class="grey">$iteminfo['A']</span><!--{/if}--></span></TD>
                 <TD class=b3>
-                	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $arts}--><span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offart';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
+                	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $arts}--><span><input type="button" value="REMOVE" onclick="$('mode').value='itemmain';$('command').value='offart';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
                 	<span><!--{if $arts}-->$art<!--{else}-->$noitm<!--{/if}--></span>
                 </TD>
                 <TD class=b3><span>$artsk_words</span></TD>
@@ -239,11 +239,11 @@
 					<td>
   					<TABLE border="0" cellSpacing=0 cellPadding=0 height=100% width=100%>
 		      		<tr>
-								<TD class=b1 width="60"><span>道具用途</span></TD>
-								<TD class=b1><span>名称</span></TD>
-								<TD class=b1 width="70"><span>属性</span></TD>
-								<TD class=b1 width="40"><span>效</span></TD>
-								<TD class=b1 width="40"><span>耐</span></TD>
+								<TD class=b1 width="60"><span>Item</span></TD>
+								<TD class=b1><span>Name</span></TD>
+								<TD class=b1 width="70"><span>Type</span></TD>
+								<TD class=b1 width="40"><span>EFF</span></TD>
+								<TD class=b1 width="40"><span>DUR</span></TD>
 							</TR>
 							<tr>          			  
 								<TD class=b2 height="26"><span><!--{if $itmk1_words}-->$itmk1_words<!--{else}--><span class="grey">{lang pack}1</span><!--{/if}--></span></TD>

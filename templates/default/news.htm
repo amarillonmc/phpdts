@@ -8,18 +8,18 @@
 <span>{lang newsnotice}</span>
 </div>
 <br>
-<span class="evergreen">当前时间：{lang gamedate}</span><br />
-<span class="evergreen">当前天气：{$wthinfo[$weather]}</span><br />
-<!--{if $gamestate==40}--><span class="yellow">游戏已经进入连斗阶段！</span><br /><!--{/if}-->
-<!--{if $gamestate==50}--><span class="red">游戏已经进入死斗模式！</span><br /><!--{/if}-->
-<!--{if $hack}--><span class="evergreen">（禁区已解除）</span><!--{/if}-->
+<span class="evergreen">Current Time：{lang gamedate}</span><br />
+<span class="evergreen">Current Weather：{$wthinfo[$weather]}</span><br />
+<!--{if $gamestate==40}--><span class="yellow">Game in LOCKDOWN Mode!</span><br /><!--{/if}-->
+<!--{if $gamestate==50}--><span class="red">Game in DUEL Mode!</span><br /><!--{/if}-->
+<!--{if $hack}--><span class="evergreen">（LOCKDOWN OVERRIDED for 1 Cycle）</span><!--{/if}-->
 {template areainfo}
 <br><br>
 <form method="post" name="news" onSubmit="return false;">
 	<input type="hidden" id="newsmode" name="newsmode" value="last">
-	<button onClick="$('newsmode').value='last';postCmd('news','news.php');">显示最新的{$newslimit}条消息</button>
-	<button onClick="$('newsmode').value='all';postCmd('news','news.php');">显示全部消息</button>
-	<button onClick="$('newsmode').value='chat';postCmd('news','news.php');">显示最新聊天纪录</button>
+	<button onClick="$('newsmode').value='last';postCmd('news','news.php');">Display newest {$newslimit} news</button>
+	<button onClick="$('newsmode').value='all';postCmd('news','news.php');">Display All News</button>
+	<button onClick="$('newsmode').value='chat';postCmd('news','news.php');">Display All Chatlog</button>
 </form>
 
 

@@ -5,9 +5,9 @@
 	<table class="admin">
 		<tr>
 			<th>UID</th>
-			<th width="250px">账号</th>
-			<th>权限</th>
-			<th>操作</th>
+			<th width="250px">Accounts</th>
+			<th>Permission</th>
+			<th>Actions</th>
 		</tr>
 		<!--{loop $gmdata $n $gm}-->
 		<tr>
@@ -25,13 +25,13 @@
 				<!--{/if}-->
 			</td>		
 			<td>
-			<input type="submit" value="编辑" <!--{if $gm['groupid'] >= $mygroup}-->disabled="true"<!--{/if}--> onclick="$('command').value='edit';$('adminuid').value='$gm['uid']';">
-			<input type="submit" value="删除" <!--{if $gm['groupid'] >= $mygroup}-->disabled="true"<!--{/if}--> onclick="$('command').value='del';$('adminuid').value='$gm['uid']';">
+			<input type="submit" value="EDIT" <!--{if $gm['groupid'] >= $mygroup}-->disabled="true"<!--{/if}--> onclick="$('command').value='edit';$('adminuid').value='$gm['uid']';">
+			<input type="submit" value="REMOVE" <!--{if $gm['groupid'] >= $mygroup}-->disabled="true"<!--{/if}--> onclick="$('command').value='del';$('adminuid').value='$gm['uid']';">
 			</td>
 		</tr>
 		<!--{/loop}-->
 		<tr>
-			<td>新增</td>
+			<td>Add</td>
 			<td><input type="text" name="addname" value="" size="30" maxlength="15"></td>	
 			<td>
 				<select name="addgroup">
@@ -41,7 +41,7 @@
 					<!--{/loop}-->
 				</select>
 			</td>
-			<td><input type="submit" value="新增" onclick="$('command').value='add'"></td>
+			<td><input type="submit" value="ADD" onclick="$('command').value='add'"></td>
 		</tr>
 	</table>
 </form>

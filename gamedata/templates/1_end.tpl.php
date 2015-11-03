@@ -490,7 +490,7 @@ END?
 不明错误，请返回游戏首页！
 <?php } ?>
 <form method="post" name="backindex" action="index.php">
-<input type="submit" name="enter" value="返回首页">
+<input type="submit" name="enter" value="Back to Index">
 </form>
 <?php include template('footer'); ?>
 <script language=javascript>

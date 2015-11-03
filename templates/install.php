@@ -94,7 +94,7 @@ if(!in_array($language, array('simplified_chinese_gbk', 'simplified_chinese_utf8
     <tr>
       <td valign="middle" align="center" bgcolor="#EBEBEB">
         <!-- final utf8/orig <br><b>Bra Installation Wizard</b><br><br>Please choose your prefered language<br><br><center><a href="?language=simplified_chinese_gbk">[&#31616;&#20307;&#20013;&#25991; GBK]</a> &nbsp; <a href="?language=simplified_chinese_utf8">[&#31616;&#20307;&#20013;&#25991; UTF-8]</a><br><a href="?language=traditional_chinese_big5">[&#32321;&#39636;&#20013;&#25991; BIG5]</a> &nbsp; <a href="?language=traditional_chinese_utf8">[&#32321;&#39636;&#20013;&#25991; UTF-8]</a><br><a href="?language=english">[English]</a><br><br> -->
-        <br><b>Bra Installation Wizard</b><br><br>Please choose your prefered language<br><br><center> &nbsp; <a href="?language=simplified_chinese_utf8">[&#31616;&#20307;&#20013;&#25991;]</a><br> &nbsp; <a href="?language=traditional_chinese_utf8">[&#32321;&#39636;&#20013;&#25991;]</a><br><br>
+        <br><b>Bra Installation Wizard</b><br><br>Please choose your prefered language<br><br><center> &nbsp; <a href="?language=simplified_chinese_utf8">[&#31616;&#20307;&#20013;&#25991;]</a><br> &nbsp; <a href="?language=traditional_chinese_utf8">[&#32321;&#39636;&#20013;&#25991;]</a><br>&nbsp; <a href="?language=english">[ENGLISH]</a><br><br>
       </td>
     </tr>
     </table>

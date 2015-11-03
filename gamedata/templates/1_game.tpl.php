@@ -12,7 +12,7 @@
 <tr>
 <td height="20" class="b1">
 <div>
-<span class="yellow" id="pls"><?php echo $plsinfo[$pls]?></span>【<span class="red">剩余：<span id="anum"><?php echo $alivenum?></span>人</span>】
+<span class="yellow" id="pls"><?php echo $plsinfo[$pls]?></span>【<span class="red">REMAIN：<span id="anum"><?php echo $alivenum?></span> PLAYERS</span>】
 </div>
 </td>
 </tr>

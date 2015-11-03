@@ -1,5 +1,5 @@
 <?php if(!defined('IN_GAME')) exit('Access Denied'); ?>
-<div class="subtitle" align="left">道具成就</div>
+<div class="subtitle" align="left">Item Trophy</div>
 <table border="1">
 <tr>
 <td width="300" align="left" valign="top"> 

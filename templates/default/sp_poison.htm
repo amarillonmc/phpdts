@@ -1,7 +1,7 @@
-想检查什么？<br>
+Which item do you want to check<br>
 
 <input type="hidden" name="mode" value="special">
-<input type="radio" name="command" id="menu" value="menu" checked><a onclick=sl('menu'); href="javascript:void(0);" >返回</a><br><br>
+<input type="radio" name="command" id="menu" value="menu" checked><a onclick=sl('menu'); href="javascript:void(0);" >Back</a><br><br>
 <!--{if $itms1 && ((strpos($itmk1,'P') === 0) || (strpos($itmk1,'H') === 0))}-->
 <input type="radio" name="command" id="chkp1" value="chkp1"><a onclick=sl('chkp1'); href="javascript:void(0);" >$itm1 </a><br>
 <!--{/if}-->
@@ -21,4 +21,4 @@
 <input type="radio" name="command" id="chkp6" value="chkp6"><a onclick=sl('chkp6'); href="javascript:void(0);" >$itm6 </a><br>
 <!--{/if}--><br><br>
 
-<input type="button" class="cmdbutton" name="submit" value="提交" onclick="postCmd('gamecmd','command.php');this.disabled=true;">
+<input type="button" class="cmdbutton" name="submit" value="Okay" onclick="postCmd('gamecmd','command.php');this.disabled=true;">

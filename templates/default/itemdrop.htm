@@ -1,6 +1,6 @@
-你想丢掉什么？<br><br>
+What do you want to discard?<br><br>
 <input type="hidden" name="mode" value="itemmain">
-<input type="radio" name="command" id="menu" value="menu" checked><a onclick=sl('menu'); href="javascript:void(0);" >返回</a><br><br>
+<input type="radio" name="command" id="menu" value="menu" checked><a onclick=sl('menu'); href="javascript:void(0);" >Back</a><br><br>
 <!--{if $weps && $wepe}-->
 <input type="radio" name="command" id="wep" value="dropwep"><a onclick=sl('wep'); href="javascript:void(0);" >$wep/$wepe/$weps </a><br>
 <!--{/if}-->
@@ -38,4 +38,4 @@
 <input type="radio" name="command" id="itm6" value="dropitm6"><a onclick=sl('itm6'); href="javascript:void(0);" >$itm6/$itme6/$itms6 </a><br>
 <!--{/if}-->
 <br><br>
-<input type="button" class="cmdbutton" name="submit" value="确定并丢弃" onclick="postCmd('gamecmd','command.php');this.disabled=true;">
+<input type="button" class="cmdbutton" name="submit" value="Confirm Discard" onclick="postCmd('gamecmd','command.php');this.disabled=true;">

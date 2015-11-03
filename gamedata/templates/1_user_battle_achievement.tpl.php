@@ -1,5 +1,5 @@
 <?php if(!defined('IN_GAME')) exit('Access Denied'); ?>
-<div class="subtitle" align="left">战斗成就</div>
+<div class="subtitle" align="left">Battle Trophy</div>
 <table border="1">
 <tr>
 <td width="300" align="left" valign="top">

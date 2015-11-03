@@ -20,17 +20,17 @@ style="filter:Xray()"
  /></td>
 </tr>
 <tr>
-<td class="b2" width=75px height=20px><span>怒气</span></td>
+<td class="b2" width=75px height=20px><span>Rage</span></td>
 <td class="b3" width=90px><span><?php echo $w_ragestate?></span></td>
-<td class="b2" width=75px><span>体力</span></td>
+<td class="b2" width=75px><span>SP</span></td>
 <td class="b3" width=90px><span><?php echo $w_spstate?></span></td>
-<td class="b2" width=100px><span>生命</span></td>
+<td class="b2" width=100px><span>HP</span></td>
 <td class="b3" width=145px><span><?php echo $w_hpstate?></span></td>
 </tr>
 <tr>
-<td class="b2" height=20px><span>武器攻击</span></td>
+<td class="b2" height=20px><span>WeaponsATK</span></td>
 <td class="b3"><span><?php echo $w_wepestate?></span></td>
-<td class="b2"><span>武器种类</span></td>
+<td class="b2"><span>WeaponsKinds</span></td>
 <td class="b3"><span>
 <?php if($w_wepk != '') { ?>
 <?php echo $iteminfo[$w_wepk]?>
@@ -38,11 +38,11 @@ style="filter:Xray()"
 ？？？
 <?php } ?>
 </span></td>
-<td class="b2"><span>武器</span></td>
+<td class="b2"><span>Weapons</span></td>
 <td class="b3"><span><?php echo $w_wep?></span></td>
 </tr>
 <tr>
-<td class="b2" height=20px><span>应战策略</span></td>
+<td class="b2" height=20px><span>Tactics</span></td>
 <td class="b3"><span>
 <?php if($w_tactic >= 0) { ?>
 <?php echo $tacinfo[$w_tactic]?>
@@ -50,7 +50,7 @@ style="filter:Xray()"
 ？？？
 <?php } ?>
 </span></td>
-<td class="b2"><span>基础姿态</span></td>
+<td class="b2"><span>Stance</span></td>
 <td class="b3"><span>
 <?php if($w_pose >= 0) { ?>
 <?php echo $poseinfo[$w_pose]?>
@@ -58,12 +58,12 @@ style="filter:Xray()"
 ？？？
 <?php } ?>
 </span></td>
-<td class="b2"><span>受伤部位</span></td>
+<td class="b2"><span>Wounds</span></td>
 <td class="b3"><span>
 <?php if($w_infdata) { ?>
 <?php echo $w_infdata?>
 <?php } else { ?>
-无
+NONE
 <?php } ?>
 </span></td>
 </tr>
@@ -87,16 +87,16 @@ style="filter:Xray()"
 style="filter:Xray()"
 <?php } ?>
  /></td>
-<td class="b1" colspan=2 height=20px><span><?php echo $typeinfo[$type]?>(<?php echo $sexinfo[$gd]?><?php echo $sNo?>号)</span></td>
+<td class="b1" colspan=2 height=20px><span><?php echo $typeinfo[$type]?>(<?php echo $sexinfo[$gd]?><?php echo $sNo?>)</span></td>
 <td class="b1" colspan=2><span><?php echo $name?></span></td>
 <td class="b1" colspan=2><span>Lv. <?php echo $lvl?></span></td>
 </tr>
 <tr>
-<td class="b2" width=100px height=20px><span>生命</span></td>
+<td class="b2" width=100px height=20px><span>HP</span></td>
 <td class="b3" width=145px><span><span class="<?php echo $hpcolor?>"><?php echo $hp?> / <?php echo $mhp?></span></span></td>
-<td class="b2" width=75px><span>体力</span></td>
+<td class="b2" width=75px><span>SP</span></td>
 <td class="b3" width=90px><span><?php echo $sp?> / <?php echo $msp?></span></td>
-<td class="b2" width=75px><span>怒气</span></td>
+<td class="b2" width=75px><span>Rage</span></td>
 <td class="b3" width=90px><span>
 <?php if($rage >=30) { ?>
 <span class="yellow"><?php echo $rage?></span>
@@ -106,27 +106,27 @@ style="filter:Xray()"
 </span></td>
 </tr>
 <tr>
-<td class="b2" height=20px><span>武器</span></td>
+<td class="b2" height=20px><span>Weapons</span></td>
 <td class="b3"><span><?php echo $wep?></span></td>
-<td class="b2"><span>武器种类</span></td>
+<td class="b2"><span>WeaponsKinds</span></td>
 <td class="b3"><span><?php echo $iteminfo[$wepk]?></span></td>
-<td class="b2"><span>武器攻击</span></td>
+<td class="b2"><span>WeaponsATK</span></td>
 <td class="b3"><span><?php echo $wepe?></span></td>
 </tr>
 <tr>
-<td class="b2" height=20px><span>受伤部位</span></td>
+<td class="b2" height=20px><span>Wounds</span></td>
 <td class="b3">
 <span>
 <?php if($inf) { if(is_array($infinfo)) { foreach($infinfo as $key => $val) { if(strpos($inf,$key)!==false) { ?>
 <?php echo $val?>
 <?php } } } } else { ?>
-无
+NONE
 <?php } ?>
 </span>
 </td>
-<td class="b2"><span>基础姿态</span></td>
+<td class="b2"><span>Stance</span></td>
 <td class="b3"><span><?php echo $poseinfo[$pose]?></span></td>
-<td class="b2"><span>应战策略</span></td>
+<td class="b2"><span>Tactics</span></td>
 <td class="b3"><span><?php echo $tacinfo[$tactic]?></span></td>
 </tr>
 </table>

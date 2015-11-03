@@ -1,7 +1,7 @@
 <?php if(!defined('IN_GAME')) exit('Access Denied'); ?>
 <table align="center">
 <tr>
-<td>性别</td>
+<td>Gender</td>
 <td>
 <input type="radio" id="male" name="gender" onclick="userIconMover()" value="m" 
 <?php if($gender != "f") { ?>
@@ -17,7 +17,7 @@ checked
 <td> </td>
 </tr>
 <tr>
-<td>头像</td>
+<td>Avatar</td>
 <td>
 <select id="icon" name="icon" onchange="userIconMover()">
 <?php if(is_array($iconarray)) { foreach($iconarray as $icon) { ?>

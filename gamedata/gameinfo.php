@@ -2,7 +2,7 @@
 
 $gamenum = 0;
 $gamestate = 0;
-$starttime = 1414530619;
+$starttime = 1446583116;
 $winmode = 0;
 $winner = '';
 $arealist = array();

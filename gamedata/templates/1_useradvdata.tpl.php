@@ -1,7 +1,7 @@
 <?php if(!defined('IN_GAME')) exit('Access Denied'); ?>
 <table align="center">
 <tr>
-<td>性别</td>
+<td>Gender</td>
 <td>
 <input type="radio" id="male" name="gender" onclick="userIconMover()" value="m" 
 <?php if($gender != "f") { ?>
@@ -16,7 +16,7 @@ checked
 </td>
 </tr>
 <tr>
-<td>头像</td>
+<td>Avatar</td>
 <td>
 <select id="icon" name="icon" onchange="userIconMover()">
 <?php if(is_array($iconarray)) { foreach($iconarray as $icon) { ?>
@@ -35,20 +35,20 @@ _<?php echo $select_icon?>.gif" alt="<?php echo $select_icon?>">
 </td>
 </tr>
 <tr>
-<td>口头禅</td>
-<td><input size="30" type="text" name="motto" maxlength="30" value="<?php echo $motto?>">写下彰显个性的台词，30个字以内。</td>
+<td>Motto</td>
+<td><input size="30" type="text" name="motto" maxlength="30" value="<?php echo $motto?>">Maximum 30 bytes.</td>
 </tr>
 <tr>
 <tr>
-<td>杀人宣言</td>
-<td><input size="30" type="text" name="killmsg" maxlength="30" value="<?php echo $killmsg?>">写下你杀死对手的留言，30个字以内</td>
+<td>Kill Note</td>
+<td><input size="30" type="text" name="killmsg" maxlength="30" value="<?php echo $killmsg?>">Maximum 30 bytes.</td>
 </tr>
 <tr>
-<td>遗言</td>
-<td><input size="30" type="text" name="lastword" maxlength="30" value="<?php echo $lastword?>">写下你不幸被害时的台词，30个字以内</td>
+<td>Last Note</td>
+<td><input size="30" type="text" name="lastword" maxlength="30" value="<?php echo $lastword?>">Maximum 30 bytes.</td>
 </tr>
 <tr>
-<td>头衔</td>
+<td>Title</td>
 <td>
 <select name="nick">
 <?php if(is_array($utlist)) { foreach($utlist as $key => $val) { ?>

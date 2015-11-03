@@ -22,37 +22,37 @@
 		<td colspan="2" style="vertical-align:top;">
 			<div>
 				<!--{if $gamestate > 10 }-->
-				本局游戏已经进行  <span id="timing"></span><script type="text/javascript">updateTime($timing,1);</script><br> 
+				Round Running for  <span id="timing"></span><script type="text/javascript">updateTime($timing,1);</script><br> 
 				<!--{if $hplayer}-->
-				当前最高伤害 $hplayer ($hdamage)<br>
+				Current Highest Damage $hplayer ($hdamage)<br>
 				<!--{/if}-->
 				<!--{else}-->
 					<!--{if $starttime > $now}-->
-					下局游戏开始于  <span id="timing"></span><script type="text/javascript">updateTime($timing,0);</script>   后<br>
+					Next Round Starts In  <span id="timing"></span><script type="text/javascript">updateTime($timing,0);</script>   <br>
 					<!--{else}-->
-					下局游戏开始时间  <span id="timing"></span>未定<br>
+					Next Round Starts In  <span id="timing"></span>UNDEFINED<br>
 					<!--{/if}-->
 					<!--{if $hplayer}-->
-					上局最高伤害 $hplayer ($hdamage)<br>
+					Last Round Highest Damage $hplayer ($hdamage)<br>
 					<!--{/if}-->
 				<!--{/if}-->
 				</div>
 				<div>
-				上局结果：<span id="lastwin">$gwin[$winmode]</span>
+				Last Round Result：<span id="lastwin">$gwin[$winmode]</span>
 				<!--{if $winner}-->
-				，优胜者：<span id="lastwinner">$winner</span>
+				，Winner：<span id="lastwinner">$winner</span>
 				<!--{/if}-->
 				</div>
 				
-				禁区间隔时间： $areahour 分钟 ， $arealimit 禁后停止激活<br>
-				每次增加禁区： $areaadd 个 ， 当前禁区数： $areanum<br>
-				自动逃避禁区功能：<!--{if $areaesc && $gamestate < 40}--><span class="yellow">开放</span><!--{else}--><span class="red">关闭</span><!--{/if}--><br>
-				<span class="red">注意：进入连斗后，自动逃避功能自动关闭。</span><br><br>
+				Adding Restrict Areas in $areahour minutes ， After $arealimit times, entry would be locked.<br>
+				Adding $areaadd of Areas ， Current number of Restrict Areas is $areanum<br>
+				Auto Dodge Restriction：<!--{if $areaesc && $gamestate < 40}--><span class="yellow">ENABLED</span><!--{else}--><span class="red">DISABLED</span><!--{/if}--><br>
+				<span class="red">NOTE: Auto Dodge function would be disabled when in Lock Mode</span><br><br>
 				
 				
-				激活人数：<span id="alivenum">$validnum</span>
-				生存人数：<span id="alivenum">$alivenum</span>
-				死亡总数：<span id="alivenum">$deathnum</span>
+				Players：<span id="alivenum">$validnum</span>
+				Survivors：<span id="alivenum">$alivenum</span>
+				Deaths：<span id="alivenum">$deathnum</span>
 				<br />
 				<!--{if $cuser}-->
 				
@@ -75,7 +75,7 @@
 				<input type="submit" name="enter" value="{lang login}">
 				</form>
 				<!--{/if}-->
-				<span class="evergreen2">第一次玩的，请先看 <a href="help.php" class="clit">{lang help}</a> !!!</span><br>
+				<span class="evergreen2">May the odds be ever in your favor.</span><br>
 		</td>
 	</tr>
 </table>

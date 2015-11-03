@@ -11,7 +11,7 @@
 </tr>
 <tr>
   <td><?php echo $lang['moveut']?></td>
-  <td><input type="text" name="moveut" value="<?php echo $moveut?>" size="5">小时<input type="text" name="moveutmin" value="<?php echo $moveutmin?>" size="5">分钟</td>
+  <td><input type="text" name="moveut" value="<?php echo $moveut?>" size="5">Hours<input type="text" name="moveutmin" value="<?php echo $moveutmin?>" size="5">Minutes</td>
   <td><?php echo $lang['moveut_comment']?><br><?php echo $lang['orin_time']?><?php echo $orin_time?><br><?php echo $lang['set_time']?><?php echo $set_time?></td>
 </tr>
 <tr>
@@ -61,5 +61,5 @@ checked="true"
   <td><?php echo $lang['homepage_comment']?></td>
 </tr>
 </table>
-<input type="submit" value="提交" onclick="$('command').value='edit';">
+<input type="submit" value="SUBMIT" onclick="$('command').value='edit';">
 </form>

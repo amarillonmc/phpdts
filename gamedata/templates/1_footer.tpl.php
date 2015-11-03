@@ -10,11 +10,47 @@
 <tr>
 <td colspan="4"><hr></td>
 </tr>
+<tr>
+<td colspan="4">
+<div>
+<a href="http://en.wikipedia.org/wiki/Wikipedia:CC-BY-SA"><img src="img/cc-by-sa.png" style="width:96px;height:32px;"></a>
+</div>
+</td>
+</tr>
+<tr><td style="height:15px"></td></tr>
+<tr>
+<td style="vertical-align:top;">
+<p style="text-align:left;valign:top;">
+<a>
+<!-- Histats.com  START  (standard)-->
+
+<!-- Histats.com  END  -->
+</a>
+</p>
+</td>
+<td valign="top">			
+<br>
+</td>
+<td valign="top">
+<div align = "right">
+
+</div>
+</td>
+<td valign="top">
+<div align = "right">
+
+</div>
+</td>
+</tr>
+<tr valign="top">
+<td colspan="2">
+<p style="text-align: left" id="error">
+<?php echo $error?>
+</p>
+</td>
 <td colspan="2">
 <div class="ver" style="text-align:right">
-<a href="http://www.amarilloviridian.com">DTS <?php echo $gameversion?> by 冴月 麟</a><br>
-<a href="http://www.loongyou.com">生存游戏 - BRA简体版V3.0.2 translated by azazil@loongyou.com</a><br>
-<a href="http://www.b-r-u.net/">BRU (Battle Royale Ultimate) V0.22</a>
+<a href="http://www.amarilloviridian.com">Engine DTS <?php echo $gameversion?> by 冴月 麟</a><br>
 </div>
 
 </td>

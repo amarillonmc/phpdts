@@ -3,10 +3,10 @@
 /*Game resources*/
 
 //■ 空手武器 ■
-$nowep = '拳头';
+$nowep = 'BARE HANDS';
 
 //■ 无防具 ■
-$noarb = '内衣';
+$noarb = 'UNDERWEAR';
 //■ 无道具 ■
 $noitm = '--';
 //■ 无限耐久度 ■
@@ -14,44 +14,44 @@ $nosta = '∞';
 //■ 无属性 ■
 $nospk = '--';
 //■ 多种类武器 ■
-$mltwk = '泛用兵器';
+$mltwk = 'MULTIUSE';
 //■ 多重属性 ■
 //$mltspk = '多重属性';
 
 
 //游戏状态描述
-$gstate = Array(0 => '<font color="grey">已结束</font>',10 => '即将开始',20 => '开放激活',30 => '人数已满',40=> '<font color="yellow">连斗中</font>',50=>'<font color="red">死斗中</font>');
-$gwin = Array(0 => '程序故障', 1 => '全部死亡',2 => '最后幸存',3 => '锁定解除',4 => '无人参加',5 => '核爆全灭',6 => 'GM中止');
-$week = Array('日','一','二','三','四','五','六');
+$gstate = Array(0 => '<font color="grey">ENDED</font>',10 => 'PREPARING',20 => 'OPEN',30 => 'FULL',40=> '<font color="yellow">LOCKDOWN</font>',50=>'<font color="red">DUEL</font>');
+$gwin = Array(0 => 'Program Error', 1 => 'All Dead',2 => 'Last Survivor',3 => 'Overrided',4 => 'No Players',5 => 'Nuked',6 => 'GM Override');
+$week = Array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
 $clubinfo = Array(
-	0=>'无',
-	1=>'铁拳无敌',
-	2=>'见敌必斩',
-	3=>'灌篮高手',
-	4=>'狙击鹰眼',
-	5=>'拆弹专家',
-	6=>'宛如疾风',
-	7=>'锡安成员',
-	8=>'黑衣组织',
-	9=>'超能力者',
-	10=>'高速成长',
-	11=>'富家子弟',
-	12=>'全能骑士',
-	13=>'根性兄贵',
-	14=>'肌肉兄贵',
-	15=>'<span class="L5">L5状态</span>',
-	16=>'冥土追魂',
-	17=>'走路萌物',
+	0=>'NONE',
+	1=>'IRON FISTS',
+	2=>'STEEL BLADES',
+	3=>'NATURAL HUNTER',
+	4=>'COLD SNIPER',
+	5=>'BOMB AVERTER',
+	6=>'LIGHTENING FEET',
+	7=>'ACE HACKER',
+	8=>'MASTER OF POSION',
+	9=>'EVOLVED HUMAN',
+	10=>'FAST LEARNER',
+	11=>'BLUE BLOOD',
+	12=>'JACK OF ALL TRADES',
+	13=>'STILL BOULDER',
+	14=>'RAGING STORM',
+	15=>'<span class="L5">L5</span>',
+	16=>'GODLY DOCTOR',
+	17=>'SUPER CUTE',
 	98=>'换装迷宫',
 	99=>'第一形态'
 	);
-$wthinfo = Array('晴天','大晴','多云','小雨','暴雨','台风','雷雨','下雪','起雾','浓雾','<span class="yellow">瘴气</span>','<span class="red">龙卷风</span>','<span class="clan">暴风雪</span>','<span class="blue">冰雹</span>');
-$sexinfo = Array(0=> '未定', 'm' => '男生', 'f' => '女生');
-$hpinfo = Array('并无大碍','伤痕累累','生命危险','已经死亡');
-$spinfo = Array('精力充沛','略有疲惫','精疲力尽','已经死亡');
-$rageinfo = Array('平静','愤怒','暴怒','已经死亡');
-$wepeinfo = Array('不值一提','略有威胁','威力可观','无敌神器');
-$poseinfo = Array('通常','攻击姿态','防守姿态','探索姿态','隐藏姿态','治疗姿态');
+$wthinfo = Array('Mild','Sunny','Overcast','Drizzle','Downpour','Typhoon','Thunderstorm','Snow','Flurry','Mist','<span class="yellow">Haze</span>','<span class="red">Tornado</span>','<span class="clan">Snowstorm</span>','<span class="blue">Hail</span>');
+$sexinfo = Array(0=> 'NONE', 'm' => 'Male', 'f' => 'Female');
+$hpinfo = Array('Safe','Hurt','Critical','Dead');
+$spinfo = Array('Safe','Tired','Exhausted','Dead');
+$rageinfo = Array('Calm','Rage','Fury','Dead');
+$wepeinfo = Array('Toy','Armed','Danger','Legendary');
+$poseinfo = Array('Normal Stance','Attack Stance','Defense Stance','Search Stance','Hidden Stance','Heal Stance');
 $tacinfo = Array('通常','','重视防御','重视反击','重视躲避');
 $typeinfo = Array(0=>'参战者',1=>'红杀将军',2=>'全息幻象',3=>'各路党派',4=>'非作战人员',5=>'代码聚合体',6=>'黑幕',7=>'幻影执行官',8=>'管理员',9=>'红杀菁英',10=>'',11=>'真职人',12=>'未名存在',13=>'循环使者');
 $killmsginfo = Array(0=>'',1=>'任务完结。',2=>'猎杀任务执行中。',3=>'你弱爆了！',4=>'啊……对不起！对不起！',5=>'记住，轻敌可是会死的。',6=>'忘记历史就意味着背叛，背叛就意味着……死亡。',7=>'你的实力还远远不及董事长的脚根呢。',8=>'死吧。',9=>'Let the darkness DIE!!',10=>'这是我必须做的事，给您添麻烦了……',11=>'看看职人的力量！',12=>'你要反省的事情还有很多。');

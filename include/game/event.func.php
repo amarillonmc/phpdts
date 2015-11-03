@@ -10,7 +10,8 @@ function event(){
 
 	$dice1 = rand(0,5);
 	$dice2 = rand(20,40);//原为rand(5,10)
-	if($pls == 0) { //无月之影
+	
+/* 	if($pls == 0) { //无月之影
 	} elseif($pls == 1) { //端点
 	} elseif($pls == 2) { //现RF高校
 		$log = ($log . "突然，一个戴着面具的怪人出现了！<BR>");
@@ -586,7 +587,7 @@ function event(){
 			if (CURSCRIPT !== 'botservice') $log.="<span id=\"HsUipfcGhU\"></span>";
 		}
 	}	else {
-	}
+	} */
 
 	if($hp<=0 && $state < 10){
 //		global $now,$alivenum,$deathnum,$name,$state;

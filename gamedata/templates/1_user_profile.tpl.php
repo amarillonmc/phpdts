@@ -1,5 +1,5 @@
 <?php if(!defined('IN_GAME')) exit('Access Denied'); include template('header'); ?>
-<div class="subtitle" align="center">帐号资料</div>
+<div class="subtitle" align="center">User Data</div>
 <center>
 <table style="text-align: center">
 <tr>
@@ -22,7 +22,7 @@ _<?php echo $select_icon?>.gif" alt="<?php echo $select_icon?>">
 </td></tr>
 <tr><td>
 <?php if(($curuser) ) { ?>
-<button type="button" onclick="window.location.href='user.php'">编辑我的账户资料</button>
+<button type="button" onclick="window.location.href='user.php'">Edit My Profile</button>
 <?php } ?>
 </td></tr>
 </table>

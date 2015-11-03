@@ -12,11 +12,11 @@ function findenemy(&$w_pdata) {
 	
 	if (CURSCRIPT == 'botservice') echo "mode=enemy_spotted\n";
 	
-	$battle_title = '发现敌人';
+	$battle_title = 'D I S C O V E R Y !!';
 	extract($w_pdata,EXTR_PREFIX_ALL,'w');
 	init_battle();
 	
-	$log .= "你发现了敌人<span class=\"red\">$w_name</span>！<br>对方好像完全没有注意到你！<br>";
+	$log .= "You discovered enemy <span class=\"red\">$w_name</span>！<br>They have not noticed you!<br>";
 	
 //	$cmd .= '现在想要做什么？<br><br>';
 //	$cmd .= '向对手大喊：<br><input size="30" type="text" name="message" maxlength="60"><br><br>';
@@ -52,11 +52,11 @@ function findteam(&$w_pdata){
 		$mode = 'command';
 		return;
 	}
-	$battle_title = '发现队友';
+	$battle_title = 'T E A M M A T E !';
 	extract($w_pdata,EXTR_PREFIX_ALL,'w');
 	init_battle(1);
 	
-	$log .= "你发现了队友<span class=\"yellow\">$w_name</span>！<br>";
+	$log .= "You found your teammate <span class=\"yellow\">$w_name</span>！<br>";
 	for($i = 1;$i <= 6; $i++){
 		global ${'itm'.$i},${'itme'.$i},${'itms'.$i};
 	}
@@ -81,7 +81,7 @@ function findcorpse(&$w_pdata){
 	global $log,$mode,$main,$battle_title,$cmd,$iteminfo,$itemspkinfo;
 	global $w_type,$w_name,$w_gd,$w_sNo,$w_icon,$w_hp,$w_mhp,$w_wep,$w_wepk,$w_wepe,$w_lvl,$w_pose,$w_tactic,$w_inf;//,$itmsk0;
 	
-	$battle_title = '发现尸体';
+	$battle_title = 'C O R P S E !!';
 	extract($w_pdata,EXTR_PREFIX_ALL,'w');
 	init_battle(1);
 	

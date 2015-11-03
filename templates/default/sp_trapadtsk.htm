@@ -2,7 +2,7 @@
 <input type="hidden" name="command" value="special">
 <input type="hidden" name="sp_cmd" value="sp_trapadtskselected">
 <input type="hidden" id="choice" name="choice" value="menu">
-你想改造哪个陷阱？<br>
+Which trap do you want to modify?<br>
 <br>
 <!--{if (strpos ( $itmk1, 'T' ) === 0)}-->
 <input type="button" onclick="$('choice').value='1';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm1/$itme1/$itms1"><br>
@@ -23,4 +23,4 @@
 <input type="button" onclick="$('choice').value='6';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm6/$itme6/$itms6"><br>
 <!--{/if}-->
 <br>
-<input type="button" class="cmdbutton" onclick="postCmd('gamecmd','command.php');this.disabled=true;" value="放弃">
+<input type="button" class="cmdbutton" onclick="postCmd('gamecmd','command.php');this.disabled=true;" value="Back">

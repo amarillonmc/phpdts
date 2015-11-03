@@ -2,7 +2,7 @@
 <input type="hidden" name="usemode" value="poison">
 <input type="hidden" name="itmp" value="$itmn">
 <input type="hidden" id="command" name="command" value="menu">
-你想对什么下毒？<br>
+What do you want to poison?<br>
 <br>
 <!--{if (strpos ( $itmk1, 'H' ) === 0) || (strpos ( $itmk1, 'P' ) === 0)}-->
 <input type="button" onclick="$('command').value='itm1';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm1/$itme1/$itms1"><br>
@@ -23,4 +23,4 @@
 <input type="button" onclick="$('command').value='itm6';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm6/$itme6/$itms6"><br>
 <!--{/if}-->
 <br>
-<input type="button" class="cmdbutton" onclick="postCmd('gamecmd','command.php');this.disabled=true;" value="放弃">
+<input type="button" class="cmdbutton" onclick="postCmd('gamecmd','command.php');this.disabled=true;" value="BACK">

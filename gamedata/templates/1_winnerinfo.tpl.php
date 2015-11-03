@@ -8,20 +8,20 @@
 <td>
 <table border="1" width="250" height="300" cellspacing="0" cellpadding="0" >
 <tr height="1">
-<td height="20" class="b1"><span><span class="yellow">系统状况</span></td>
+<td height="20" class="b1"><span><span class="yellow">System</span></td>
 </tr>
 <tr><td valign="top"class="b3" style="text-align: left"><div>
-第 <?php echo $gid?> 回生存游戏<br>
-参加人数： <?php echo $vnum?> 人<br>
-胜利方式： <?php echo $gwin[$wmode]?><br>
-游戏进行时间：<?php echo $gdate?><br>
-游戏开始时间：<?php echo $gsdate?><br>           
-游戏结束时间：<?php echo $gedate?><br>
-本场最高伤害者： <u><a href="user_profile.php?playerID=<?php echo $hdp?>"><?php echo $hdp?></a></u> (<?php echo $hdmg?>)<br>
-本场最多杀人者： <u><a href="user_profile.php?playerID=<?php echo $hkp?>"><?php echo $hkp?></a></u> (<?php echo $hkill?>)<br>
+Game Round <?php echo $gid?> <br>
+Players: <?php echo $vnum?> <br>
+Win Method： <?php echo $gwin[$wmode]?><br>
+Game Time：<?php echo $gdate?><br>
+Game Start Time：<?php echo $gsdate?><br>           
+Game End Time：<?php echo $gedate?><br>
+Highest Damage： <u><a href="user_profile.php?playerID=<?php echo $hdp?>"><?php echo $hdp?></a></u> (<?php echo $hdmg?>)<br>
+Highest Kills： <u><a href="user_profile.php?playerID=<?php echo $hkp?>"><?php echo $hkp?></a></u> (<?php echo $hkill?>)<br>
 <br>
 <form method="post" name="back" action="winner.php">
-<input type="submit" name="submit" value="返回">
+<input type="submit" name="submit" value="Back">
 </form>
 
 </div></td>

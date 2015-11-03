@@ -2,14 +2,14 @@
 <div id="notice"></div>
 <div id="aliveinfo">
 <center>
-<span class="subtitle">幸存者一览</span>
+<span class="subtitle">Survivors</span>
 <form method="post" name="alive" onSubmit="return false;">
 <input type="hidden" id="alivemode" name="alivemode" value="last">
 <input type="hidden" id="gbmode" name="gbmode" value="none">
 <p>
-<input type="button" value="显示前<?php echo $alivelimit?>名幸存者" onClick="$('alivemode').value='last';$('gbmode').value='none';postCmd('alive','alive.php');">
-【生存者数：<?php echo $alivenum?>人】
-<input type="button" value="显示全部幸存者" onClick="$('alivemode').value='all';$('gbmode').value='none';postCmd('alive','alive.php');">
+<input type="button" value="Display first <?php echo $alivelimit?> Survivors" onClick="$('alivemode').value='last';$('gbmode').value='none';postCmd('alive','alive.php');">
+【Survivors：<?php echo $alivenum?>】
+<input type="button" value="Display All Survivors" onClick="$('alivemode').value='all';$('gbmode').value='none';postCmd('alive','alive.php');">
 </p>
 <?php if($gamblingon && $gamestate >= 20) { ?>
 <p>
@@ -26,7 +26,7 @@
 <?php include template('alivelist'); ?>
 </div>
 <form method="post" name="backindex" action="index.php">
-<input type="submit" value="返回首页">
+<input type="submit" value="Back to Index">
 </form>
 </center>
 </div>

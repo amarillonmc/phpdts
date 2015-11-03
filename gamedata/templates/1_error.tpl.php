@@ -6,6 +6,6 @@ file=<?php echo $file?><br \>line=<?php echo $line?>
 <?php } ?>
 <br>
 <form method="post" name="backindex" action="index.php">
-<input type="submit" name="enter" value="返回首页">
+<input type="submit" name="enter" value="Back to Index">
 </form>
 <?php include template('footer'); ?>

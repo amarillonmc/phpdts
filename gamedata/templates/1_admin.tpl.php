@@ -1,6 +1,6 @@
 <?php if(!defined('IN_GAME')) exit('Access Denied'); include template('header'); ?>
 <center>
-<div class="subtitle" >游戏管理</div>
+<div class="subtitle" >Admin</div>
 <div><span class="yellow"><?php echo $lang['mygroup']?> <?php echo $mygroup?></span></div>
 <div><span class="yellow"><?php echo $cmd_info?></span></div>
 <?php if($showdata) { ?>

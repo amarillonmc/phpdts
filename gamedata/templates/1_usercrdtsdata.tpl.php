@@ -2,24 +2,24 @@
 <table align="center">
 <tr>
 <td>
-战斗力
+Power Level
 </td>
 <td>
 <span class="yellow" id="credits"><?php echo $credits?></span>
 </td>
 <td>
-战斗力兑换已关闭，每次参与的游戏结束会自动发放1切糕。<input type="hidden" id="exchg12" name="exchg12" value="0">
+Power Level Exchange has closed, you will receive 1 Gold after 1 game.<input type="hidden" id="exchg12" name="exchg12" value="0">
 </td>
 </tr>
 <tr>
 <td>
-切糕
+Gold
 </td>
 <td>
 <span class="yellow" id="credits2"><?php echo $credits2?></span>
 </td>
 <td>
-切糕兑换也已关闭<input type="hidden" id="exchg21" name="exchg21" value="0">
+Gold Exchange has closed.<input type="hidden" id="exchg21" name="exchg21" value="0">
 </td>
 </tr>
 </table> 

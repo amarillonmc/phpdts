@@ -63,10 +63,10 @@ if($hp > 0){
 	if(($now <= $noisetime+$noiselimit)&&$noisemode&&($noiseid!=$pid)&&($noiseid2!=$pid)) {
 		if(($now-$noisetime) < 60) {
 			$noisesec = $now - $noisetime;
-			$log .= "<span class=\"yellow b\">{$noisesec}秒前，{$plsinfo[$noisepls]}传来了{$noiseinfo[$noisemode]}。</span><br>";
+			$log .= "<span class=\"yellow b\">{$noisesec}seconds ago，{$plsinfo[$noisepls]} detected {$noiseinfo[$noisemode]}。</span><br>";
 		} else {
 			$noisemin = floor(($now-$noisetime)/60);
-			$log .= "<span class=\"yellow b\">{$noisemin}分钟前，{$plsinfo[$noisepls]}传来了{$noiseinfo[$noisemode]}。</span><br>";
+			$log .= "<span class=\"yellow b\">{$noisemin}seconds ago，{$plsinfo[$noisepls]} detectd {$noiseinfo[$noisemode]}。</span><br>";
 		}
 	}
 	
@@ -85,7 +85,7 @@ if($hp > 0){
 	}
 	
 	if($coldtimeon && $rmcdtime > 0 && (strpos($command,'move')===0 || strpos($command,'search')===0 || (strpos($command,'itm')===0)&&($command != 'itemget') || strpos($sp_cmd,'sp_weapon')===0 || strpos($command,'song')===0)){
-		$log .= '<span class="yellow">冷却时间尚未结束！</span><br>';
+		$log .= '<span class="yellow">CD Time Not Over!</span><br>';
 		$mode = 'command';
 	}else{
 		//进入指令判断
@@ -111,7 +111,7 @@ if($hp > 0){
 				if($coldtimeon){$cmdcdtime=$itemusecoldtime;}
 			} elseif(strpos($command,'rest') === 0) {
 				if($command=='rest3' && !in_array($pls,$hospitals)){
-					$log .= '<span class="yellow">你所在的位置并非医院，不能静养！</span><br>';
+					$log .= '<span class="yellow">Cannot Rest!</span><br>';
 				}else{
 					$state = substr($command,4,1);
 					$mode = 'rest';
@@ -143,7 +143,7 @@ if($hp > 0){
 							}
 						if (!$position) 
 						{
-							$log .= '<span class="red">你没有电池，无法改造陷阱！</span><br />';
+							$log .= '<span class="red">Cannot modify trap!</span><br />';
 							$mode = 'command';
 						}
 					}
@@ -156,13 +156,13 @@ if($hp > 0){
 							}
 						if (!$position) 
 						{
-							$log .= '<span class="red">你没有毒药，无法改造陷阱！</span><br />';
+							$log .= '<span class="red">Cannot modify trap!</span><br />';
 							$mode = 'command';
 						}
 					}
 					else  
 					{
-						$log .= '<span class="red">你不懂得如何改造陷阱！</span><br />';
+						$log .= '<span class="red">You do not know how to modify trap!</span><br />';
 						$mode = 'command';
 					}
 					if ($position)
@@ -175,7 +175,7 @@ if($hp > 0){
 							}
 						if (!$position)
 						{
-							$log .= '<span class="red">你的背包中没有陷阱，无法改造！</span><br />';
+							$log .= '<span class="red">You have no traps in your inventory!</span><br />';
 							$mode = 'command';
 						}
 						else  $mode = 'sp_trapadtsk';
@@ -189,7 +189,7 @@ if($hp > 0){
 					{
 						$choice=(int)$choice;
 						if ($choice<1 || $choice>6)
-							$log.='<span class="red">无此物品。</span><br />';
+							$log.='<span class="red">No Such Item</span><br />';
 						else
 						{
 							include_once GAME_ROOT.'./include/game/special.func.php';
@@ -276,11 +276,11 @@ if($hp > 0){
 			include_once GAME_ROOT.'./include/game/special.func.php';
 			if(strpos($command,'pose') === 0) {
 				$pose = substr($command,4,1);
-				$log .= "基础姿态变为<span class=\"yellow\">$poseinfo[$pose]</span>。<br> ";
+				$log .= "Changed Stance to <span class=\"yellow\">$poseinfo[$pose]</span>。<br> ";
 				$mode = 'command';
 			} elseif(strpos($command,'tac') === 0) {
 				$tactic = substr($command,3,1);
-				$log .= "应战策略变为<span class=\"yellow\">$tacinfo[$tactic]</span>。<br> ";
+				$log .= "Changed Tactics to <span class=\"yellow\">$tacinfo[$tactic]</span>。<br> ";
 				$mode = 'command';
 			} elseif(strpos($command,'inf') === 0) {
 				$infpos = substr($command,3,1);
@@ -296,12 +296,12 @@ if($hp > 0){
 				include_once GAME_ROOT.'./include/game/clubslct.func.php';
 				$retval=selectclub($clubchosen);
 				if ($retval==0)
-					$log.="称号选择成功。<br>";
+					$log.="Choosed new title<br>";
 				else if ($retval==1)
-					$log.="称号选择失败，称号一旦被选择便无法更改。<br>";
+					$log.="fail to choose title<br>";
 				else if ($retval==2)
-					$log.="未选择称号。<br>";
-				else  $log.="称号选择非法！<br>";
+					$log.="No Title<br>";
+				else  $log.="Invalid Title<br>";
 				$mode = 'command';
 			}
 		} elseif($mode == 'senditem') {
@@ -336,7 +336,7 @@ if($hp > 0){
 					itembuy($command,$shoptype,$buynum);
 				}
 			}else{
-				$log .= '<span class="yellow">你所在的地区没有商店。</span><br />';
+				$log .= '<span class="yellow">There is no shop in your location</span><br />';
 				$mode = 'command';
 			}
 		} elseif($mode == 'deathnote') {
@@ -344,7 +344,7 @@ if($hp > 0){
 				include_once GAME_ROOT.'./include/game/item2.func.php';
 				deathnote($item,$dnname,$dndeath,$dngender,$dnicon,$name);
 			} else {
-				$log .= '嗯，暂时还不想杀人。<br>你合上了■DeathNote■。<br>';
+				$log .= 'It is not time yet.<br>You closed ■DeathNote■。<br>';
 				$mode = 'command';
 			}
 		}elseif($mode == 'oneonone') {

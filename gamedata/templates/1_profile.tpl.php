@@ -5,13 +5,13 @@
 <table border="0" width="720" cellspacing="0" cellpadding="0"  valign="middle">
 <tr>
 <td width="210" colspan="3" class="b1"><span><?php echo $nick?> <?php echo $name?></span></td>
-<td width="100" colspan="1" class="b1"><span><?php echo $sexinfo[$gd]?><?php echo $sNo?>号</span></td>
-<td width="95" colspan="2" class="b1"><span>天气:<?php echo $wthinfo[$weather]?></span></td>
-<td width="215" colspan="1" class="b1"><span><?php echo $month?>月<?php echo $day?>日 星期<?php echo $week["$wday"]?> <?php echo $hour?>:<?php echo $min?>
+<td width="100" colspan="1" class="b1"><span><?php echo $sexinfo[$gd]?> No.<?php echo $sNo?></span></td>
+<td width="95" colspan="2" class="b1"><span>Weather:<?php echo $wthinfo[$weather]?></span></td>
+<td width="215" colspan="1" class="b1"><span><?php echo $month?>/<?php echo $day?> <?php echo $week["$wday"]?> <?php echo $hour?>:<?php echo $min?>
 <?php if($gamestate == 40 ) { ?>
-<span class="yellow">连斗</span>
+<span class="yellow">LOCKDOWN</span>
 <?php } if($gamestate == 50 ) { ?>
-<span class="red">死斗</span>
+<span class="red">DUEL</span>
 <?php } ?>
 </span></td>
 </tr>
@@ -21,13 +21,13 @@
 style="filter:Xray()"
 <?php } ?>
  /></span></td>
-<td width="70" class="b2"><span>等级</span></td>
+<td width="70" class="b2"><span>LV</span></td>
 <td width="120" class="b3"><span>Lv. <?php echo $lvl?></span></td>
 <td width="60" class="b2"><span>
 <?php if($wp >= 100) { ?>
-殴熟
+BluntMastery
 <?php } else { ?>
-<span class="grey">殴熟</span>
+<span class="grey">BluntMastery</span>
 <?php } ?>
 </span></td>
 <td width="80" class="b3"><span><?php echo $wp?></span></td>
@@ -138,37 +138,37 @@ onclick="$('mode').value='special';$('command').value='inff';postCmd('gamecmd','
 </td>
 </tr>
 <tr>
-<td class="b2"><span>经验值</span></td>
+<td class="b2"><span>EXP</span></td>
 <td class="b3"><span><?php echo $exp?> / <?php echo $upexp?></span></td>
 <td class="b2"><span>
 <?php if($wk >= 100) { ?>
-斩熟
+SlashMastery
 <?php } else { ?>
-<span class="grey">斩熟</span>
+<span class="grey">SlashMastery</span>
 <?php } ?>
 </span></td>
 <td class="b3"><span><?php echo $wk?></span></td>
 </tr>
 <tr>
-<td class="b2"><span>队伍</span></td>
+<td class="b2"><span>Team</span></td>
 <td class="b3"><span>
 <?php if($teamID && $gamestate < 40 ) { ?>
 <?php echo $teamID?>
 <?php } else { ?>
- 无 
+ NONE 
 <?php } ?>
 </span></td>
 <td class="b2"><span>
 <?php if($wg >= 100) { ?>
-射熟
+FirearmMastery
 <?php } else { ?>
-<span class="grey">射熟</span>
+<span class="grey">FirearmMastery</span>
 <?php } ?>
 </span></td>
 <td class="b3"><span><?php echo $wg?></span></td>
 </tr>
 <tr>
-<td class="b2"><span>内定称号</span></td>
+<td class="b2"><span>Club</span></td>
 <td class="b3"><span>
 <?php if($club!=0) { ?>
 <?php echo $clubinfo[$club]?>
@@ -190,51 +190,51 @@ selected
 </span></td>
 <td class="b2"><span>
 <?php if($wc >= 100) { ?>
-投熟
+ProjectileMastery
 <?php } else { ?>
-<span class="grey">投熟</span>
+<span class="grey">ProjectileMastery</span>
 <?php } ?>
 </span></td>
 <td class="b3"><span><?php echo $wc?></span></td>
 </tr>
 <tr>
-<td width="70" class="b2"><span>攻击力</span></td>
+<td width="70" class="b2"><span>ATK</span></td>
 <td width="80" class="b3"><span><?php echo $att?> + <?php echo $wepe?></span></td>
-<td class="b2"><span>金钱</span></td>
-<td class="b3"><span><?php echo $money?> 元</span></td>
+<td class="b2"><span>Coins</span></td>
+<td class="b3"><span><?php echo $money?>  Coins</span></td>
 <td class="b2"><span>
 <?php if($wd >= 100) { ?>
-爆熟
+ExplosiveMastery
 <?php } else { ?>
-<span class="grey">爆熟</span>
+<span class="grey">ExplosiveMastery</span>
 <?php } ?>
 </span></td>
 <td class="b3"><span><?php echo $wd?></span></td>
 </tr>
 <tr>
-<td class="b2"><span>防御力</span></td>
+<td class="b2"><span>DEF</span></td>
 <td class="b3"><span><?php echo $def?> + <?php echo $ardef?></span></td>
-<td class="b2"><span>受伤部位</span></td>
+<td class="b2"><span>Wounds</span></td>
 <td class="b3">
 <span>
 <?php if($inf) { if(is_array($infinfo)) { foreach($infinfo as $key => $val) { if(strpos($inf,$key)!==false) { ?>
 <?php echo $val?>
 <?php } } } } else { ?>
-无
+NONE
 <?php } ?>
 </span>
 </td>
 <td class="b2"><span>
 <?php if($wf >= 100) { ?>
-灵熟
+MagicMastery
 <?php } else { ?>
-<span class="grey">灵熟</span>
+<span class="grey">MagicMastery</span>
 <?php } ?>
 </span></td>
 <td class="b3"><span><?php echo $wf?></span></td>
 </tr>
 <tr>
-<td class="b2"><span>基础姿态</span></td>
+<td class="b2"><span>Stance</span></td>
 <td class="b3">
 <span>
 <select id="pose" name="pose" onchange="$('mode').value='special';$('command').value=$('pose').value;postCmd('gamecmd','command.php');return false;" 
@@ -242,7 +242,7 @@ selected
 disabled
 <?php } ?>
 >
-<?php if(is_array($poseinfo)) { foreach($poseinfo as $key => $value) { if(($value)&&($value!='强袭姿态')) { ?>
+<?php if(is_array($poseinfo)) { foreach($poseinfo as $key => $value) { if(($value)&&($value!='Rush Stance')) { ?>
 <option value="pose<?php echo $key?>"
 <?php if($pose == $key) { ?>
 selected
@@ -252,7 +252,7 @@ selected
 </select>
 </span>
 </td>
-<td class="b2"><span>体力</span></td>
+<td class="b2"><span>SP</span></td>
 <td class="b3"><span><span class="
 <?php if($sp <= $msp*0.2) { ?>
 grey
@@ -262,7 +262,7 @@ yellow
 clan
 <?php } ?>
 "><?php echo $sp?> / <?php echo $msp?></span></span></td>
-<td class="b2"><span>怒气</span></td>
+<td class="b2"><span>Rage</span></td>
 <td class="b3"><span>
 <?php if($rage >= 30) { ?>
 <span class="yellow"><?php echo $rage?></span>
@@ -272,7 +272,7 @@ clan
 </span></td>
 </tr>
 <tr>
-<td class="b2"><span>应战策略</span></td>
+<td class="b2"><span>Tactics</span></td>
 <td class="b3">
 <span>
 <select id="tactic" name="tactic" onchange="$('mode').value='special';$('command').value=$('tactic').value;postCmd('gamecmd','command.php');return false;" 
@@ -290,7 +290,7 @@ selected
 </select>
 </span>
 </td>
-<td class="b2"><span>生命</span></td>
+<td class="b2"><span>HP</span></td>
 <td class="b3"><span><span class="
 <?php if($hp <= $mhp*0.2) { ?>
 red
@@ -300,7 +300,7 @@ yellow
 clan
 <?php } ?>
 "><?php echo $hp?> / <?php echo $mhp?></span></span></td>
-<td class="b2"><span>技能点</span></td>
+<td class="b2"><span>Skill Points</span></td>
 <td class="b3">
 <?php if($skillpoint > 0) { ?>
 <span class="lime"><?php echo $skillpoint?></span>
@@ -310,10 +310,10 @@ clan
 </td>
 </tr>
 <tr>
-<td class="b2">■■：</td>
+<td class="b2">NOTE：</td>
 <td class="b3">
-■■■应■回■■■。</td>
-<td class="b2"><span>歌魂</span></td>
+SPECIAL VERSION</td>
+<td class="b2"><span>Song</span></td>
 <td class="b3"><span class="
 <?php if($ss <= $mss*0.2) { ?>
 red
@@ -323,7 +323,7 @@ yellow
 clan
 <?php } ?>
 "><?php echo $ss?> / <?php echo $mss?></span></td>
-<td class="b2"><span>击杀数</span></td>
+<td class="b2"><span>Kills</span></td>
 <td class="b3"><span><?php echo $killnum?></span></td>
 </tr>
 </table>
@@ -339,11 +339,11 @@ clan
       		<td>
       	<TABLE border="0" cellSpacing=0 cellPadding=0 height=100% width=100%>
   						<TR>
-          			<TD class=b1 width="60"><span>装备种类</span></TD>
-          			<TD class=b1><span>名称</span></TD>
-          			<TD class=b1 width="70"><span>属性</span></TD>
-          			<TD class=b1 width="40"><span>效</span></TD>
-          			<TD class=b1 width="40"><span>耐</span></TD>
+          			<TD class=b1 width="60"><span>Equipment</span></TD>
+          			<TD class=b1><span>Name</span></TD>
+          			<TD class=b1 width="70"><span>Type</span></TD>
+          			<TD class=b1 width="40"><span>EFF</span></TD>
+          			<TD class=b1 width="40"><span>DUR</span></TD>
           		</tr>
           		<tr>
     						<TD class=b2 height="26"><span>
@@ -356,7 +356,7 @@ clan
                 <TD class=b3>
                 
 <?php if(CURSCRIPT == 'game' && $mode == 'command' && $wepe) { ?>
-<span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offwep';postCmd('gamecmd','command.php');return false;"</span>
+<span><input type="button" value="REMOVE" onclick="$('mode').value='itemmain';$('command').value='offwep';postCmd('gamecmd','command.php');return false;"</span>
 <?php } ?>
                 	<span>
 <?php if($weps) { ?>
@@ -381,7 +381,7 @@ clan
                 <TD class=b3>
                 
 <?php if(CURSCRIPT == 'game' && $mode == 'command' && $arbe) { ?>
-<span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offarb';postCmd('gamecmd','command.php');return false;"</span>
+<span><input type="button" value="REMOVE" onclick="$('mode').value='itemmain';$('command').value='offarb';postCmd('gamecmd','command.php');return false;"</span>
 <?php } ?>
                 	<span>
 <?php if($arbs) { ?>
@@ -406,7 +406,7 @@ clan
                 <TD class=b3>
                 
 <?php if(CURSCRIPT == 'game' && $mode == 'command' && $arhs) { ?>
-<span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offarh';postCmd('gamecmd','command.php');return false;"</span>
+<span><input type="button" value="REMOVE" onclick="$('mode').value='itemmain';$('command').value='offarh';postCmd('gamecmd','command.php');return false;"</span>
 <?php } ?>
                 	<span>
 <?php if($arhs) { ?>
@@ -431,7 +431,7 @@ clan
                 <TD class=b3>
                 
 <?php if(CURSCRIPT == 'game' && $mode == 'command' && $aras) { ?>
-<span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offara';postCmd('gamecmd','command.php');return false;"</span>
+<span><input type="button" value="REMOVE" onclick="$('mode').value='itemmain';$('command').value='offara';postCmd('gamecmd','command.php');return false;"</span>
 <?php } ?>
                 	<span>
 <?php if($aras) { ?>
@@ -456,7 +456,7 @@ clan
                 <TD class=b3>
                 
 <?php if(CURSCRIPT == 'game' && $mode == 'command' && $arfs) { ?>
-<span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offarf';postCmd('gamecmd','command.php');return false;"</span>
+<span><input type="button" value="REMOVE" onclick="$('mode').value='itemmain';$('command').value='offarf';postCmd('gamecmd','command.php');return false;"</span>
 <?php } ?>
                 	<span>
 <?php if($arfs) { ?>
@@ -481,7 +481,7 @@ clan
                 <TD class=b3>
                 
 <?php if(CURSCRIPT == 'game' && $mode == 'command' && $arts) { ?>
-<span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offart';postCmd('gamecmd','command.php');return false;"</span>
+<span><input type="button" value="REMOVE" onclick="$('mode').value='itemmain';$('command').value='offart';postCmd('gamecmd','command.php');return false;"</span>
 <?php } ?>
                 	<span>
 <?php if($arts) { ?>
@@ -500,18 +500,18 @@ clan
 <td>
   					<TABLE border="0" cellSpacing=0 cellPadding=0 height=100% width=100%>
       		<tr>
-<TD class=b1 width="60"><span>道具用途</span></TD>
-<TD class=b1><span>名称</span></TD>
-<TD class=b1 width="70"><span>属性</span></TD>
-<TD class=b1 width="40"><span>效</span></TD>
-<TD class=b1 width="40"><span>耐</span></TD>
+<TD class=b1 width="60"><span>Item</span></TD>
+<TD class=b1><span>Name</span></TD>
+<TD class=b1 width="70"><span>Type</span></TD>
+<TD class=b1 width="40"><span>EFF</span></TD>
+<TD class=b1 width="40"><span>DUR</span></TD>
 </TR>
 <tr>          			  
 <TD class=b2 height="26"><span>
 <?php if($itmk1_words) { ?>
 <?php echo $itmk1_words?>
 <?php } else { ?>
-<span class="grey">包裹1</span>
+<span class="grey">Pack1</span>
 <?php } ?>
 </span></TD>
 <TD class=b3><span>
@@ -530,7 +530,7 @@ clan
 <?php if($itmk2_words) { ?>
 <?php echo $itmk2_words?>
 <?php } else { ?>
-<span class="grey">包裹2</span>
+<span class="grey">Pack2</span>
 <?php } ?>
 </span></TD>
 <TD class=b3><span>
@@ -549,7 +549,7 @@ clan
 <?php if($itmk3_words) { ?>
 <?php echo $itmk3_words?>
 <?php } else { ?>
-<span class="grey">包裹3</span>
+<span class="grey">Pack3</span>
 <?php } ?>
 </span></TD>
 <TD class=b3><span>
@@ -568,7 +568,7 @@ clan
 <?php if($itmk4_words) { ?>
 <?php echo $itmk4_words?>
 <?php } else { ?>
-<span class="grey">包裹4</span>
+<span class="grey">Pack4</span>
 <?php } ?>
 </span></TD>
 <TD class=b3><span>
@@ -587,7 +587,7 @@ clan
 <?php if($itmk5_words) { ?>
 <?php echo $itmk5_words?>
 <?php } else { ?>
-<span class="grey">包裹5</span>
+<span class="grey">Pack5</span>
 <?php } ?>
 </span></TD>
 <TD class=b3><span>
@@ -606,7 +606,7 @@ clan
 <?php if($itmk6_words) { ?>
 <?php echo $itmk6_words?>
 <?php } else { ?>
-<span class="grey">包裹6</span>
+<span class="grey">Pack6</span>
 <?php } ?>
 </span></TD>
 <TD class=b3><span>

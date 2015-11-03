@@ -1,9 +1,9 @@
 <?php if(!defined('IN_GAME')) exit('Access Denied'); include template('header'); ?>
-<div class="subtitle" align="center">帐号资料</div>
+<div class="subtitle" align="center">User Data</div>
 
 <p align="center" class="linen">
-需要修改密码则输入原密码和新密码，留空为不修改。<br />
-注意：若玩家已进入游戏，对性别和头像的修改将在下一局生效。<br />
+If you want to change password, enter original and new password below. Leave blank to ignore.<br />
+NOTE: If player is already in game, changes made to avatar and gender would take effect in next round.<br />
 <span id="notice"></span><br />
 <span id="info" class="yellow"></span>
 </p>
@@ -12,15 +12,15 @@
 <input type="hidden" name="mode" value="edit">
 <table style="text-align: center">
 <tr>
-<td style="vertical-align:top"><span class ="yellow">账户密码</span>
+<td style="vertical-align:top"><span class ="yellow">Account/Password</span>
 <?php include template('userbasicdata'); ?>
 </td>
-<td rowspan="2"style="vertical-align:top"><span class ="yellow">个性化资料</span>
+<td rowspan="2"style="vertical-align:top"><span class ="yellow">Personal Info</span>
 <?php include template('useradvdata'); ?>
 </td>
 </tr>
 <tr>
-<td><span class ="yellow">积分操作</span>
+<td><span class ="yellow">Credit Exchange</span>
 <?php include template('usercrdtsdata'); ?>
 </td>
 </tr>
@@ -28,8 +28,8 @@
 
 
 <div id="postdata">
-<input type="submit" id="post" onClick="postCmd('userdata','user.php');return false;" value="提交">
-<input type="reset" id="reset" name="reset" value="重设">
+<input type="submit" id="post" onClick="postCmd('userdata','user.php');return false;" value="Submit">
+<input type="reset" id="reset" name="reset" value="Reset">
 </div>
 </form>
 </center>

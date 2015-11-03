@@ -13,7 +13,7 @@ function combat($active = 1, $wep_kind = '') {
 	global $infinfo, $w_combat_inf;
 	global $rp,$w_rp,$action,$w_action,$achievement,$w_achievement,$skills,$w_skills,$skillpoint,$w_skillpoint;
 	
-	$battle_title = '战斗发生';
+	$battle_title = 'B A T T L E !';
 	
 	if (! $wep_kind) {
 		$w1 = substr ( $wepk, 1, 1 );
@@ -33,7 +33,7 @@ function combat($active = 1, $wep_kind = '') {
 	if ($active) {
 		
 		if ($wep_kind == 'back') {
-			$log .= "你逃跑了。";
+			$log .= "You have fled.";
 			$action = '';
 			$mode = 'command';
 			return;
@@ -57,13 +57,13 @@ function combat($active = 1, $wep_kind = '') {
 		$edata = $db->fetch_array ( $result );
 		
 		if ($edata ['pls'] != $pls) {
-			$log .= "<span class=\"yellow\">" . $edata ['name'] . "</span>已经离开了<span class=\"yellow\">$plsinfo[$pls]</span>。<br>";
+			$log .= "<span class=\"yellow\">" . $edata ['name'] . "</span> has already left <span class=\"yellow\">$plsinfo[$pls]</span>。<br>";
 			$action = '';
 			$mode = 'command';
 			return;
 		} elseif ($edata ['hp'] <= 0) {
 			global $corpseprotect,$gamestate;
-			$log .= "<span class=\"red\">" . $edata ['name'] . "</span>已经死亡，不能被攻击。<br>";
+			$log .= "<span class=\"red\">" . $edata ['name'] . "</span> has already dead.<br>";
 			if($edata['endtime'] < $now -$corpseprotect && $gamestate < 40){
 				$action = 'corpse'.$edata['pid'];
 				include_once GAME_ROOT . './include/game/battle.func.php';
@@ -90,7 +90,7 @@ function combat($active = 1, $wep_kind = '') {
 		init_battle ( 1 );
 		include_once GAME_ROOT . './include/game/attr.func.php';
 		
-		$log .= "你向<span class=\"red\">$w_name</span>发起了攻击！<br>";
+		$log .= "You attacked <span class=\"red\">$w_name</span>！<br>";
 		$att_dmg = attack ( $wep_kind, 1 );
 		global $ggflag;
 		if($ggflag){return;}
@@ -113,7 +113,7 @@ function combat($active = 1, $wep_kind = '') {
 				$counter *= get_clubskill_bonus_counter($w_club,$w_skills,'w_',$club,$skills,'');
 				$counter_dice = rand ( 0, 99 );
 				if ($counter_dice < $counter) {
-					$log .= "<span class=\"red\">{$w_name}的反击！</span><br>";
+					$log .= "<span class=\"red\">{$w_name} Counterattacked！</span><br>";
 					
 					$log .= npc_chat ( $w_type,$w_name, 'defend' );
 					
@@ -122,17 +122,17 @@ function combat($active = 1, $wep_kind = '') {
 					
 					$log .= npc_chat ( $w_type,$w_name, 'escape' );
 					
-					$log .= "<span class=\"red\">{$w_name}处于无法反击的状态，逃跑了！</span><br>";
+					$log .= "<span class=\"red\">{$w_name}Cannot counter, and fled!</span><br>";
 				}
 			} else {
 				
 				$log .= npc_chat ( $w_type,$w_name, 'cannot' );
 				
-				$log .= "<span class=\"red\">{$w_name}攻击范围不足，不能反击，逃跑了！</span><br>";
+				$log .= "<span class=\"red\">{$w_name}cannot reach you, and fled!</span><br>";
 			}
 		
 		} elseif($w_hp > 0) {
-			$log .= "<span class=\"red\">{$w_name}逃跑了！</span><br>";
+			$log .= "<span class=\"red\">{$w_name}fled！</span><br>";
 		}
 	} else {
 		$result = $db->query ( "SELECT * FROM {$tablepre}players WHERE pid='$bid'" );
@@ -141,7 +141,7 @@ function combat($active = 1, $wep_kind = '') {
 		init_battle ( 1 );
 		include_once GAME_ROOT . './include/game/attr.func.php';
 		
-		$log .= "<span class=\"red\">$w_name</span>突然向你袭来！<br>";
+		$log .= "<span class=\"red\">$w_name</span>Assaulted you!！<br>";
 		
 		
 		$log .= npc_chat ( $w_type,$w_name, 'attack' );
@@ -163,18 +163,18 @@ function combat($active = 1, $wep_kind = '') {
 				$counter *= get_clubskill_bonus_counter($club,$skills,'',$w_club,$w_skills,'w_');
 				$counter_dice = rand ( 0, 99 );
 				if ($counter_dice < $counter) {
-					$log .= "<span class=\"red\">你的反击！</span><br>";
+					$log .= "<span class=\"red\">Your counterattack！</span><br>";
 					$wep_kind = substr ( $wepk, 1, 1 );
 					$att_dmg = attack ( $wep_kind );
 					$w_hp -= $att_dmg;
 				} else {
-					$log .= "<span class=\"red\">你处于无法反击的状态，逃跑了！</span><br>";
+					$log .= "<span class=\"red\">You cannot counterattack, and fled！</span><br>";
 				}
 			} else {
-				$log .= "<span class=\"red\">你攻击范围不足，不能反击，逃跑了！</span><br>";
+				$log .= "<span class=\"red\">enemy out of your range, you cannot counterattack, and fled！</span><br>";
 			}
 		} elseif($hp > 0) {
-			$log .= "<span class=\"red\">你逃跑了！</span><br>";
+			$log .= "<span class=\"red\">You fled！</span><br>";
 		}
 	}
 
@@ -189,18 +189,18 @@ function combat($active = 1, $wep_kind = '') {
 			global $exdmginf;
 			foreach ( $exdmginf as $inf_ky => $w_inf_words ) {
 				if (strpos ( $w_combat_inf, $inf_ky ) !== false) {
-					$w_inf_log .= "敌人的攻击造成你{$w_inf_words}了！<br>";
+					$w_inf_log .= "Enemy Damaged your {$w_inf_words}！<br>";
 				}
 			}
 
 		}
 		if($active){
-			$w_log = "手持<span class=\"red\">$wep_temp</span>的<span class=\"yellow\">$name</span>向你袭击！<br>你受到其<span class=\"yellow\">$att_dmg</span>点攻击，对其做出了<span class=\"yellow\">$def_dmg</span>点反击。<br>$w_inf_log";
+			$w_log = "An enemy attacked you with <span class=\"red\">$wep_temp</span>的<span class=\"yellow\">$name</span>！<br>You suffered <span class=\"yellow\">$att_dmg</span> damage，and countered for <span class=\"yellow\">$def_dmg</span> <br>$w_inf_log";
 		}else{
-			$w_log = "你发现了手持<span class=\"red\">$wep_temp</span>的<span class=\"yellow\">$name</span>并且先发制人！<br>你对其做出<span class=\"yellow\">$def_dmg</span>点攻击，受到其<span class=\"yellow\">$att_dmg</span>点反击。<br>$w_inf_log";
+			$w_log = "You discovered an enemy <span class=\"yellow\">$name</span> with <span class=\"red\">$wep_temp</span> And attacked first!<br>Dealt <span class=\"yellow\">$def_dmg</span> damage， and they countered for <span class=\"yellow\">$att_dmg</span> damage <br>$w_inf_log";
 		}
 		if($hp == 0){
-			$w_log .= "<span class=\"yellow\">$name</span><span class=\"red\">被你杀死了！</span><br>";
+			$w_log .= "You killed <span class=\"yellow\">$name</span><span class=\"red\">!</span><br>";
 			//include_once GAME_ROOT.'./include/game/achievement.func.php';
 			//check_battle_achievement($w_achievement,$w_type,$name);
 		}
@@ -232,7 +232,7 @@ function combat($active = 1, $wep_kind = '') {
 		include_once GAME_ROOT.'./include/game/achievement.func.php';
 		check_battle_achievement($name,$w_type,$w_name,$wep_temp);
 			
-		$log .= "<span class=\"red\">{$w_name}被你杀死了！</span><br>";
+		$log .= "<span class=\"red\">You killed {$w_name}!</span><br>";
 		//$rp = $rp + 20 ;
 		
 		if(!$w_type){$rpup = $w_rp;}
@@ -246,7 +246,7 @@ function combat($active = 1, $wep_kind = '') {
 			$rp += $rpup;
 		}
 		
-		if($killmsg){$log .= "<span class=\"yellow\">你对{$w_name}说：“{$killmsg}”</span><br>";}
+		if($killmsg){$log .= "<span class=\"yellow\">You left {$w_name} a message：“{$killmsg}”</span><br>";}
 		include_once GAME_ROOT . './include/game/battle.func.php';
 		$result = $db->query ( "SELECT * FROM {$tablepre}players WHERE pid='$w_pid'" );
 		$cdata = $db->fetch_array ( $result );
@@ -260,7 +260,7 @@ function combat($active = 1, $wep_kind = '') {
 				$log .= npc_chat ( $w_type,$w_name, 'death' );
 				include_once GAME_ROOT . './include/system.func.php';
 				$npcdata = evonpc ($w_type,$w_name);
-				$log .= '<span class="yellow">'.$w_name.'却没死去，反而爆发出真正的实力！</span><br>';
+				$log .= '<span class="yellow">'.$w_name.'Did not die and revealed another form!</span><br>';
 				if($npcdata){
 					addnews($now , 'evonpc',$w_name, $npcdata['name'], $name);
 					foreach($npcdata as $key => $val){
@@ -272,7 +272,7 @@ function combat($active = 1, $wep_kind = '') {
 			{
 				include_once GAME_ROOT . './include/state.func.php';
 				$killmsg = kill ( $wep_kind, $w_name, $w_type, $w_pid, $wep_temp );
-				$log .= '<span class="yellow">'.$w_name.'由于其及时按了BOMB键而原地满血复活了！</span><br>';
+				$log .= '<span class="yellow">'.$w_name.'Pressed the Smart Bomb！</span><br>';
 			}	
 		}
 		$main = 'battle';
@@ -314,7 +314,7 @@ function attack($wep_kind = 'N', $active = 0) {
 		}
 	}
 	
-	$log .= "使用{$wep}<span class=\"yellow\">$attinfo[$wep_kind]</span>{$w_name}！<br>";
+	$log .= "Used {$wep}<span class=\"yellow\">$attinfo[$wep_kind]</span>{$w_name}！<br>";
 	
 	$att_key = getatkkey ( $wepsk, $arhsk, $arbsk, $arask, $arfsk, $artsk, $artk, $is_wpg );
 	$w_def_key = getdefkey ( $w_wepsk, $w_arhsk, $w_arbsk, $w_arask, $w_arfsk, $w_artsk, $w_artk );
@@ -327,15 +327,15 @@ function attack($wep_kind = 'N', $active = 0) {
 		list($wsk,$hsk,$bsk,$ask,$fsk,$tsk,$tk)=Array($wepsk, $arhsk, $arbsk, $arask, $arfsk, $artsk, $artk);
 		list($wwsk,$whsk,$wbsk,$wask,$wfsk,$wtsk,$wtk)=Array( $w_wepsk, $w_arhsk, $w_arbsk, $w_arask, $w_arfsk, $w_artsk, $w_artk);
 		if($mdr){
-			$log .= "<span class=\"yellow\">精神抽取使双方的防具属性全部失效！</span><br>";
+			$log .= "<span class=\"yellow\">Mind Drain has nullified your equipment stats!</span><br>";
 			$hsk = $bsk = $ask = $fsk = $whsk = $wbsk = $wask = $wfsk = '';
 		}
 		if($sldr){
-			$log .= "<span class=\"yellow\">灵魂抽取使双方的武器和饰物属性全部失效！</span><br>";
+			$log .= "<span class=\"yellow\">Soul Drain has nullified your weapon stats!</span><br>";
 			$wsk = $tsk = $tk = $wwsk = $wtsk = $wtk = '';
 		}
 		if($skdr){
-			$log .= "<span class=\"yellow\">技能抽取使双方的武器熟练度在战斗中大幅下降！</span><br>";
+			$log .= "<span class=\"yellow\">Skill Drain has decreased your mastery!</span><br>";
 			//$bsk = $ask = $fsk = $wbsk = $wask = $wfsk = '';
 		}
 		$att_key = getatkkey ( $wsk,$hsk,$bsk,$ask,$fsk,$tsk,$tk, $is_wpg );
@@ -492,7 +492,7 @@ function attack($wep_kind = 'N', $active = 0) {
 	
 	} else {
 		$damage = 0;
-		$log .= "但是没有击中！<br>";
+		$log .= "But you missed!<br>";
 	}
 	check_GCDF_wep ( '你', $hit_time [0], $wep, $wep_kind, $wepk, $wepe, $weps, $wepsk );
 	

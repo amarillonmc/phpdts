@@ -1,7 +1,7 @@
 <?php if(!defined('IN_GAME')) exit('Access Denied'); ?>
 <table id="chat" border="0" width="720" cellspacing="0" cellpadding="0" style="valign:top">
 <tr>
-<td height="20px" width="100%" class="b1"><span>消息</span></td>
+<td height="20px" width="100%" class="b1"><span>CHAT</span></td>
 </tr>
 <tr>
 <td valign="top" class="b3" style="text-align: left" height="1px">
@@ -31,8 +31,8 @@
 </select>
 </span>
 <input type="text" id="chatmsg" name="chatmsg" maxlength="60" >
-<input type="button" id="send" onClick="document['sendchat']['sendmode'].value='send';chat('send',<?php echo $chatrefresh?>);return false;" value="发送">
-<input type="button" id="ref" onClick="document['sendchat']['sendmode'].value='ref';chat('ref',<?php echo $chatrefresh?>);return false;" value="刷新">
+<input type="button" id="send" onClick="document['sendchat']['sendmode'].value='send';chat('send',<?php echo $chatrefresh?>);return false;" value="SEND">
+<input type="button" id="ref" onClick="document['sendchat']['sendmode'].value='ref';chat('ref',<?php echo $chatrefresh?>);return false;" value="REFRESH">
 </form>
 <script type="text/javascript">chat('ref',<?php echo $chatrefresh?>);</script>
 </div>

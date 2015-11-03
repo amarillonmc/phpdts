@@ -36,7 +36,7 @@
 											<td class="b2"><span>{lang pose}</span></td>
 											<td class="b3"><span><!--{if $w_pose >= 0}-->$poseinfo[$w_pose]<!--{else}-->？？？<!--{/if}--></span></td>
 											<td class="b2"><span>{lang inf}</span></td>
-											<td class="b3"><span><!--{if $w_infdata}-->$w_infdata<!--{else}-->无<!--{/if}--></span></td>
+											<td class="b3"><span><!--{if $w_infdata}-->$w_infdata<!--{else}-->NONE<!--{/if}--></span></td>
 										</tr>
 									</table>
 								</td>
@@ -54,7 +54,7 @@
 						<table border="0" width=720px cellspacing="0" cellpadding="0" valign="middle">
 							<tr>
 								<td class="b5" rowspan=4 colspan=1 width=140px height=80px><IMG src="img/$iconImg" height=80px border="0" align="middle" <!--{if $hp==0}-->style="filter:Xray()"<!--{/if}--> /></td>
-								<td class="b1" colspan=2 height=20px><span>$typeinfo[$type]({$sexinfo[$gd]}{$sNo}号)</span></td>
+								<td class="b1" colspan=2 height=20px><span>$typeinfo[$type]({$sexinfo[$gd]}{$sNo})</span></td>
 								<td class="b1" colspan=2><span>$name</span></td>
 								<td class="b1" colspan=2><span>Lv. $lvl</span></td>
 							</tr>
@@ -85,7 +85,7 @@
 												<!--{/if}-->
 											<!--{/loop}-->
 										<!--{else}-->
-										无
+										NONE
 										<!--{/if}-->
 									</span>
 								</td>

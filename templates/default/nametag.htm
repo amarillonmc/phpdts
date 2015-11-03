@@ -1,9 +1,9 @@
-你想修改哪个道具的名字？<br><br>
+Which item do you want to change name?<br><br>
 <input type="hidden" name="mode" value="item">
 <input type="hidden" name="usemode" value="nametag">
 <input type="hidden" name="ntitm" value="$itmn">
 <input type="hidden" id="command" name="command" value="menu">
-<input type="radio" name="command" id="menu" value="menu" checked><a onclick=sl('menu'); href="javascript:void(0);" >返回</a><br><br>
+<input type="radio" name="command" id="menu" value="menu" checked><a onclick=sl('menu'); href="javascript:void(0);" >Back</a><br><br>
 <!--{if $weps && $wepe}-->
 <input type="radio" name="command" id="wep" value="renwep"><a onclick=sl('wep'); href="javascript:void(0);" >$wep/$wepe/$weps </a><br>
 <!--{/if}-->
@@ -42,4 +42,4 @@
 <!--{/if}-->
 <br><br>
 <input type="text" name="rename" value=""><br>
-<input type="button" class="cmdbutton" name="submit" value="改名" onclick="postCmd('gamecmd','command.php');this.disabled=true;">
+<input type="button" class="cmdbutton" name="submit" value="CHANGE NAME" onclick="postCmd('gamecmd','command.php');this.disabled=true;">

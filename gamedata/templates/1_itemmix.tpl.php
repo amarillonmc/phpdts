@@ -1,5 +1,5 @@
 <?php if(!defined('IN_GAME')) exit('Access Denied'); ?>
-你想要合成什么？<br>
+What do you want to mix?<br>
 
 <input type="hidden" name="mode" value="itemmain">
 <input type="hidden" name="command" id="command" value="menu">
@@ -18,5 +18,5 @@
 <input type="checkbox" id="mitm6" name="mitm6" value="0"><a onclick="$('mitm6').click();" href="javascript:void(0);"><?php echo $itm6?>/<?php echo $itme6?>/<?php echo $itms6?></a><br>
 <?php } ?>
 <br>
-<input type="button" class="cmdbutton" name="submit" value="提交" onclick="$('command').value='itemmix';itemmixchooser();postCmd('gamecmd','command.php');this.disabled=true;">
-<input type="button" class="cmdbutton" name="submit" value="放弃" onclick="postCmd('gamecmd','command.php');this.disabled=true;">
+<input type="button" class="cmdbutton" name="submit" value="SUBMIT" onclick="$('command').value='itemmix';itemmixchooser();postCmd('gamecmd','command.php');this.disabled=true;">
+<input type="button" class="cmdbutton" name="submit" value="BACK" onclick="postCmd('gamecmd','command.php');this.disabled=true;">

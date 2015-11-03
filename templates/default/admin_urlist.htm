@@ -19,23 +19,23 @@
 	<!--{if $urdata}-->
 	<table class="admin">
 		<tr>
-			<th>选</th>
-			<th>账号</th>
-			<th>密码</th>
-			<th>权限</th>
-			<th>最新游戏</th>
+			<th></th>
+			<th>ACCOUNT</th>
+			<th>PASSWORD</th>
+			<th>PERMISSION</th>
+			<th>NEWEST ROUND</th>
 			<th>ip</th>
-			<th>分数1</th>
-			<th>分数2</th>
-			<th>性别</th>
-			<th>头像</th>
-			<th>社团</th>
-			<th>成就</th>
-			<th>称号表</th>
-			<th>口头禅</th>
-			<th>杀人留言</th>
-			<th>遗言</th>
-			<th>操作</th>
+			<th>SCORE 1</th>
+			<th>SCORE 2</th>
+			<th>Gender</th>
+			<th>Avatar</th>
+			<th>Club</th>
+			<th>Achievement</th>
+			<th>Titles</th>
+			<th>Comment</th>
+			<th>Kill Note</th>
+			<th>Last Note</th>
+			<th>Operations</th>
 		</tr>
 		<!--{if $urdata}-->
 		<!--{loop $urdata $n $ur}-->
@@ -43,9 +43,9 @@
 			<!--{if $ur['groupid']>$mygroup}-->
 			<td><input type="checkbox" id="user_$n" name="user_$n" value="{$ur['uid']}" disabled="true"></td>
 			<td>{$ur['username']}</td>
-			<td><input type="text" name="pass_$n" size="20" maxlength="20" value="无法修改" disabled="true"></td>
+			<td><input type="text" name="pass_$n" size="20" maxlength="20" value="CANNOT EDIT" disabled="true"></td>
 			<td>{$urgroup[$ur['groupid']]}</td>
-			<td>第{$ur['lastgame']}局</td>
+			<td>ROUND {$ur['lastgame']}</td>
 			<td>{$ur['ip']}</td>
 			<td><input type="text" name="credits_$n" size="6" maxlength="10" value="$ur['credits']" disabled="true"></td>
 			<td><input type="text" name="credits2_$n" size="6" maxlength="10" value="$ur['credits2']" disabled="true"></td>
@@ -71,7 +71,7 @@
 			<td>{$ur['username']}</td>
 			<td><input type="text" name="pass_$n" size="20" maxlength="20" value=""></td>
 			<td>{$urgroup[$ur['groupid']]}</td>
-			<td>第{$ur['lastgame']}局</td>
+			<td>ROUND {$ur['lastgame']}</td>
 			<td>{$ur['ip']}</td>
 			<td><input type="text" name="credits_$n" size="6" maxlength="10" value="$ur['credits']"></td>
 			<td><input type="text" name="credits2_$n" size="6" maxlength="10" value="$ur['credits2']"></td>
@@ -98,9 +98,9 @@
 		<tr>
 			<td colspan=2><input type="checkbox" name="user_all" onchange="for(i=0; i<=$n;i++){if(! $('user_'+i).disabled){if(this.checked==true){$('user_'+i).checked=true}else{$('user_'+i).checked=false}}}">全选</td>
 			<td colspan=12 style="text-align:center;">
-				<input type="submit" name="submit" value="封停选中玩家" onclick="$('urcmd').value='ban'">
-				<input type="submit" name="submit" value="解封选中玩家" onclick="$('urcmd').value='unban'">
-				<input type="submit" name="submit" value="删除选中玩家" onclick="$('urcmd').value='del'">
+				<input type="submit" name="submit" value="BAN PLAYER" onclick="$('urcmd').value='ban'">
+				<input type="submit" name="submit" value="UNBAN PLAYER" onclick="$('urcmd').value='unban'">
+				<input type="submit" name="submit" value="DELETE PLAYER" onclick="$('urcmd').value='del'">
 			</td>
 		</tr>
 		<!--{/if}-->
@@ -111,7 +111,7 @@
 <form method="post" name="backtolist" onsubmit="admin.php">
 	<input type="hidden" name="mode" value="urlist">
 	<input type="hidden" name="command" value="">
-	<input type="submit" name="submit" value="返回玩家帐户管理">
+	<input type="submit" name="submit" value="Back to Account Management">
 </form>
 <!--{else}-->
 <form method="post" name="urlist" onsubmit="admin.php">
@@ -120,35 +120,35 @@
 	<input type="hidden" name="urcmd" value="list">
 	<table class="admin">
 		<tr>
-			<th>搜索指定帐户</th>
-			<th>查看帐户列表</th>
+			<th>Search Account</th>
+			<th>Browse Account</th>
 		</tr>
 		<tr>
 			<td>
-				条件：
+				Search：
 				<select name="checkmode">
-					<option value="username" selected>用户名
-					<option value="ip">用户IP
+					<option value="username" selected>Username
+					<option value="ip">User IP
 				</select>
-				类似
+				LIKE
 				<input size="30" type="text" name="checkinfo" id="checkinfo" maxlength="30" />
 			</td>
 			<td>
-				按：
+				As of：
 				<select name="urorder">
-					<option value="groupid" selected>用户所属组
-					<option value="lastgame">最新游戏
-					<option value="uid">用户编号
+					<option value="groupid" selected>Usergroup
+					<option value="lastgame">Last Round
+					<option value="uid">UID
 				</select>
 				<select name="urorder2">
-					<option value="DESC" selected>降序排列
-					<option value="ASC">升序排列
+					<option value="DESC" selected>DESC
+					<option value="ASC">ASC
 				</select>
 			</td>
 		</tr>
 		<tr>
-			<td style="text-align:center;"><input style="width:100px;height:30px;" type="submit" value="搜索" onclick="$('pagecmd').value='find';"></td>
-			<td style="text-align:center;"><input style="width:100px;height:30px;" type="submit" value="查看" onclick="$('pagecmd').value='check';"></td>
+			<td style="text-align:center;"><input style="width:100px;height:30px;" type="submit" value="SEARCH" onclick="$('pagecmd').value='find';"></td>
+			<td style="text-align:center;"><input style="width:100px;height:30px;" type="submit" value="EDIT" onclick="$('pagecmd').value='check';"></td>
 		</tr>
 	</table>
 

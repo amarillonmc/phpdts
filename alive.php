@@ -61,9 +61,9 @@ if($gamblingon){
 	if($cuser && $cpass){
 		if($gamestate < 20) { $gbinfo .= $_ERROR['no_start']; }
 		//elseif($now - $starttime >= 600) { $gbinfo .= '游戏开始超过10分钟，不可进行下注！'; }
-		elseif($areanum >= $areaadd) { $gbinfo .= '游戏超过一禁，不可进行下注！'; }
-		elseif($gamestate >= 30) { $gbinfo .= '游戏已停止激活，不可进行下注！'; }
-		elseif($gbpool >= 8000 && $wager>50) { $gbinfo .= '本局总奖池已经超过8000切糕上限，此时每人最多只能下注50切糕！'; }
+		elseif($areanum >= $areaadd) { $gbinfo .= 'Game already in 2nd Cycle, cannot wager!'; }
+		elseif($gamestate >= 30) { $gbinfo .= 'Game already in lockdown, cannot wager!'; }
+		elseif($gbpool >= 8000 && $wager>50) { $gbinfo .= 'Game pool too high (over 8000 gold), you can wager 50 gold as most!'; }
 		else{
 			$uresult = $db->query("SELECT * FROM {$tablepre}users WHERE username='$cuser'");
 			if(!$db->num_rows($uresult)) { $gbinfo .= $_ERROR['login_check']; }
@@ -71,36 +71,36 @@ if($gamblingon){
 				$udata = $db->fetch_array($uresult);
 				if($udata['password'] != $cpass) { $gbinfo .= $_ERROR['wrong_pw']; }
 				elseif($udata['groupid'] <= 0) { $gbinfo .= $_ERROR['user_ban']; }
-				elseif($alivenum <= 0){ $gbinfo .= '当前生存人数为0，无法下注！';}
+				elseif($alivenum <= 0){ $gbinfo .= 'Nobody is alive, cannot wager!';}
 				else{
 					$uid = $udata['uid'];$uname = $udata['username'];
 					$credits2 = $udata['credits2'];
 					if($gbmode == 'gamble'){
 						$wager = ceil((int)$wager);
-						if(!$bet || $bet == 'none'){ $gbinfo .= '投注对象有误，请检查输入。';}
-						elseif($wager <= 0){ $gbinfo .= '投注数额有误，请检查输入。';}
-						elseif($wager > $credits2 || $wager > 1000 ){ $gbinfo .= '投注数额过大。每人每局最多只能投注总计不超过1000切糕。';}
-						elseif ($gbpool >= 8000 && $wager > 50) { $gbinfo .= '本局总奖池已经超过8000切糕上限，此时每人最多只能下注50切糕！'; }
+						if(!$bet || $bet == 'none'){ $gbinfo .= 'Invalid Target';}
+						elseif($wager <= 0){ $gbinfo .= 'Wrong amount to wager.';}
+						elseif($wager > $credits2 || $wager > 1000 ){ $gbinfo .= 'Wager too large, maximum is 1000 Gold';}
+						elseif ($gbpool >= 8000 && $wager > 50) { $gbinfo .= 'Game pool too high (over 8000 gold), you can wager 50 gold as most!'; }
 						else{
 							$bet = (int)$bet;
 							$bresult = $db->query("SELECT * FROM {$tablepre}players LEFT JOIN {$tablepre}users ON {$tablepre}players.name={$tablepre}users.username WHERE {$tablepre}players.pid='$bet'");
-							if(!$db->num_rows($bresult)) { $gbinfo .= '投注对象不存在。'; }
+							if(!$db->num_rows($bresult)) { $gbinfo .= 'Invalid Target'; }
 							else{
 								$bdata = $db->fetch_array($bresult);
 								$bname = $bdata['name'];
-								if($bdata['hp'] <= 0 || $bdata['state'] >= 10) {$gbinfo .= '投注对象已死亡，无法下注。'; }
+								if($bdata['hp'] <= 0 || $bdata['state'] >= 10) {$gbinfo .= 'Target already dead.'; }
 								elseif($bdata['type'] >=1) {$gbinfo .= '投注对象不是人类！'; }
 								elseif($gbnum && isset($gbeddata[$udata['uid']])){//已经下注
 									$gbudata = $gbeddata[$udata['uid']];
 									if ($gbudata['wager'] + $wager > 1000 ) 
 									{
-										$gbinfo .= '投注数额过大。每人每局最多只能投注总计不超过1000切糕。';
+										$gbinfo .= 'Wager too large, maximum is 1000 Gold.';
 									}
 									else if ($gbpool >= 8000 && $gbudata['wager'] + $wager > 50)
 									{
-										$gbinfo .= '本局总奖池已经超过8000切糕上限，此时每人最多只能下注50切糕！';
+										$gbinfo .= 'Game pool too high (over 8000 gold), you can wager 50 gold as most!';
 									}
-									else if($gbudata['bid'] != $bet){$gbinfo .= '追加切糕的对象必须跟之前相同。';}
+									else if($gbudata['bid'] != $bet){$gbinfo .= 'You can only add wager to the same target';}
 									else{
 										$bwager = $gbudata['wager'] + $wager;
 										$odds = ($gbudata['wager'] * $gbudata['odds'] + $nowodds * $wager)/$bwager;
@@ -116,7 +116,7 @@ if($gamblingon){
 											}
 											
 											$db->query("UPDATE {$tablepre}users SET credits2='$credits2' WHERE uid='$uid'");
-										}else{$gbinfo .= '数据库错误，请联系管理员。';}									
+										}else{$gbinfo .= 'Database Error';}									
 									}
 								}else{//未下注
 									//$odds = podds($bdata);
@@ -126,7 +126,7 @@ if($gamblingon){
 										$gbeddata[$udata['uid']]['wager']=$wager;
 										$gbeddata[$udata['uid']]['bname']=$bname;
 										//$gbeddata[$udata['uid']]['odds']=$odds;
-										$gbinfo .= '成功对'.$bname.'下注。';
+										$gbinfo .= 'Wager to '.$bname.'Successfully.';
 										$credits2 -= $wager;
 										$gbnum++;
 										if(isset($alivedata[$bet])){
@@ -136,18 +136,18 @@ if($gamblingon){
 										}
 										
 										$db->query("UPDATE {$tablepre}users SET credits2='$credits2' WHERE uid='$uid'");
-									}else{$gbinfo .= '数据库错误，请联系管理员。';}
+									}else{$gbinfo .= 'Database Error';}
 								}
 							}
 						}
 					}
 					if($gbnum && isset($gbeddata[$udata['uid']])){
 						$gbudata = $gbeddata[$udata['uid']];
-						$gbinfo .= '你已下注，对象为：'.$gbudata['bname'].'，切糕为：'.$gbudata['wager'].'；';
+						$gbinfo .= 'You have wagered on '.$gbudata['bname'].'，Ramaining Gold：'.$gbudata['wager'].'；';
 						//var_dump($gbeddata[$udata['uid']]);
 						$gbact = 1;
 					}else{
-						$gbinfo .= '你尚未下注。';
+						$gbinfo .= 'You have not wagered yet';
 						$gbact = 0;
 					}					
 				}

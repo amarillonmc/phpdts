@@ -9,7 +9,7 @@
 	$dbuser = 'root';			// database username
 						// 数据库用户名
 
-	$dbpw = 'mylittlepony';			// database password
+	$dbpw = '';			// database password
 						// 数据库密?
 
 	$dbname = 'acdts3';			// database name
