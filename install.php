@@ -1,7 +1,7 @@
 <?php
 
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
-set_magic_quotes_runtime(0);
+//set_magic_quotes_runtime(0);
 //ini_set('date.timezone','Asia/Shanghai');
 
 define('IN_GAME', TRUE);

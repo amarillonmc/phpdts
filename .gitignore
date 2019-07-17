@@ -21,6 +21,27 @@ $RECYCLE.BIN/
 config.inc.php
 install.lock
 
+# DTS Config Files
+gamedata/adminlog.php
+gamedata/adminmsg.htm
+gamedata/systemmsg.htm
+gamedata/combatinfo.php
+gamedata/newsinfo.php
+gamedata/gameinfo.php
+gamedata/system.php
+gamedata/banlist.list
+gamedata/banlist.php
+
+
+# DTS Cache Files
+gamedata/bak/
+gamedata/templates/
+templates/default/areainfo.htm
+templates/default/lastgb.htm
+templates/default/lastnews.htm
+templates/default/move.htm
+
+
 
 # =========================
 # Operating System Files
