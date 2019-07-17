@@ -31,7 +31,7 @@ gamedata/gameinfo.php
 gamedata/system.php
 gamedata/banlist.list
 gamedata/banlist.php
-
+gamedata/clearlog.php
 
 # DTS Cache Files
 gamedata/bak/
