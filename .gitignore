@@ -17,6 +17,11 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# DTS System Files
+config.inc.php
+install.lock
+
+
 # =========================
 # Operating System Files
 # =========================

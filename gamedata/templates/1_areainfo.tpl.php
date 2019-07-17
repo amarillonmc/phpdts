@@ -1,2 +1,0 @@
-<?php if(!defined('IN_GAME')) exit('Access Denied'); ?>
-<span class="evergreen"><b>现在的禁区是：</b></span>&nbsp;无月之影<br><span class="evergreen"><b>下回的禁区是：</b></span><b>12时50分：</b> &nbsp;精灵中心&nbsp;&nbsp;光坂高校&nbsp;&nbsp;守矢神社&nbsp;&nbsp;端点&nbsp;；<b>13时30分：</b> &nbsp;英灵殿&nbsp;&nbsp;秋之镇&nbsp;&nbsp;键刃墓场&nbsp;&nbsp;RF高校&nbsp;；<b>14时10分：</b> &nbsp;夏之镇&nbsp;&nbsp;圣Gradius学园&nbsp;&nbsp;雏菊之丘&nbsp;&nbsp;三体星&nbsp;
