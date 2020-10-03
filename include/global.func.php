@@ -183,7 +183,7 @@ function openfile($filename){
 }
 
 function compatible_json_encode($data){	//自动选择使用内置函数或者自定义函数，结合JSON.php可做到兼容低版本PHP
-	if(PHP_VERSION < '5.2.0'){
+	if(version_compare(PHP_VERSION, '5.2.0', '<')) {
 		require_once GAME_ROOT.'./include/JSON.php';
 		$json = new Services_JSON();
 		$jdata = $json->encode($data);
