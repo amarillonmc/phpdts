@@ -27,7 +27,7 @@ function getclub($who, &$c1, &$c2, &$c3)
 	$result = $db->query("SELECT uid FROM {$tablepre}users WHERE username='$who'");
 	$t=$db->fetch_array($result); $curuid=$t['uid']+2;
 	$result = $db->query("SELECT pid FROM {$tablepre}players WHERE name='$who' AND type=0");
-	$t=$db->fetch_array($result); $curpid=$result['pid']+3;
+	$t=$db->fetch_array($result); $curpid=$t['pid']+3;
 	
 	$c1=calc(12347,10007,$curgid,$curuid,$curpid,$starttime,$validtime);
 	$c1%=6; if ($c1==0) $c1=9;	//超能称号为9号
