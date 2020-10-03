@@ -1,97 +1,97 @@
 <?php
-//ÒÔÏÂÄÚÈÝÔÚÓÎÏ·°²×°Ê±³õÊ¼»¯£¬²»ÄÜÍ¨¹ýÓÎÏ·ºóÌ¨ÐÞ¸Ä
+//ä»¥ä¸‹å†…å®¹åœ¨æ¸¸æˆå®‰è£…æ—¶åˆå§‹åŒ–ï¼Œä¸èƒ½é€šè¿‡æ¸¸æˆåŽå°ä¿®æ”¹
 // [EN]	Set below parameters according to your account information provided by your hosting
-// [CH] ÒÔÏÂ±äÁ¿Çë¸ù¾Ý¿Õ¼äÉÌÌá¹©µÄÕËºÅ²ÎÊýÐÞ?ÈçÓÐÒÉÎÊ,ÇëÁªÏµ·þÎñÆ÷Ìá¹©?
+// [CH] ä»¥ä¸‹å˜é‡è¯·æ ¹æ®ç©ºé—´å•†æä¾›çš„è´¦å·å‚æ•°ä¿®?å¦‚æœ‰ç–‘é—®,è¯·è”ç³»æœåŠ¡å™¨æä¾›?
 
-	$dbhost = '127.0.0.1';			// database server
-						// Êý¾Ý¿â·þÎñÆ÷
+	$dbhost = 'db';			// database server
+						// æ•°æ®åº“æœåŠ¡å™¨
 
 	$dbuser = 'root';			// database username
-						// Êý¾Ý¿âÓÃ»§Ãû
+						// æ•°æ®åº“ç”¨æˆ·å
 
 	$dbpw = 'mylittlepony';			// database password
-						// Êý¾Ý¿âÃÜ?
+						// æ•°æ®åº“å¯†?
 
 	$dbname = 'acdts3';			// database name
-						// Êý¾Ý¿âÃû
+						// æ•°æ®åº“å
 
 	$dbreport = 1;				// send db error report? 1=yes
-						// ÊÇ·ñ·¢ËÍÊý¾Ý¿â´íÎó±¨¸æ? 0=? 1=?
+						// æ˜¯å¦å‘é€æ•°æ®åº“é”™è¯¯æŠ¥å‘Š? 0=? 1=?
 
 // [EN] If you have problems logging in Discuz!, then modify the following parameters, else please leave default
-// [CH] ÈçÄú?cookie ×÷ÓÃ·¶Î§ÓÐÌØÊâÒª?»òÓÎÏ·µÇÂ¼²»Õý³£,ÇëÐÞ¸ÄÏÂÃæ±ä?·ñÔòÇë±£³ÖÄ¬?
+// [CH] å¦‚æ‚¨?cookie ä½œç”¨èŒƒå›´æœ‰ç‰¹æ®Šè¦?æˆ–æ¸¸æˆç™»å½•ä¸æ­£å¸¸,è¯·ä¿®æ”¹ä¸‹é¢å˜?å¦åˆ™è¯·ä¿æŒé»˜?
 
 	$cookiedomain = ''; 			// cookie domain
-						// cookie ×÷ÓÃ?
+						// cookie ä½œç”¨?
 
 	$cookiepath = '/';			// cookie path
-						// cookie ×÷ÓÃÂ·¾¶
+						// cookie ä½œç”¨è·¯å¾„
 
 
 // [EN] Special parameters, DO NOT modify these unless you are an expert in Discuz!
-// [CH] ÒÔÏÂ±äÁ¿ÎªÌØ±ðÑ¡Ïî,Ò»°ãÇé¿öÏÂÃ»ÓÐ±ØÒªÐÞ¸Ä
+// [CH] ä»¥ä¸‹å˜é‡ä¸ºç‰¹åˆ«é€‰é¡¹,ä¸€èˆ¬æƒ…å†µä¸‹æ²¡æœ‰å¿…è¦ä¿®æ”¹
 
 	$headercharset = 0;			// force outputing charset header
-						// Ç¿ÖÆÉèÖÃ×Ö·û?Ö»ÂÒÂëÊ±Ê¹ÓÃ
+						// å¼ºåˆ¶è®¾ç½®å­—ç¬¦?åªä¹±ç æ—¶ä½¿ç”¨
 
 	$onlinehold = 900;			// time span of online recording
-						// ÔÚÏß±£³ÖÊ±¼ä,µ¥Î»?
+						// åœ¨çº¿ä¿æŒæ—¶é—´,å•ä½?
 
 	$pconnect = true;				// persistent database connection, 0=off, 1=on
-						// Êý¾Ý¿â³Ö¾ÃÁ¬?false=¹Ø±Õ, true=´ò¿ª
+						// æ•°æ®åº“æŒä¹…è¿ž?false=å…³é—­, true=æ‰“å¼€
 
 	$gamefounder = 'Amarillo_NMC';			// super administrator's UID
-						// ÓÎÏ·´´Ê¼?UID, ¿ÉÒÔÖ§³Ö¶à¸ö´´Ê¼ÈË£¬Ö®¼äÊ¹ÓÃ ??·Ö¸ô?
-						// Èç¹û²»ÉèÖÃÓÎÏ·´´Ê¼ÈË£¬Ôò¹ÜÀíÔ±Ö®¼ä¿ÉÒÔÏà»¥±à¼­£¬¾ßÌåÈ¨Á¦²î±ðÇë¼ûÓÎÏ·Ê¹ÓÃÎÄµµ
+						// æ¸¸æˆåˆ›å§‹?UID, å¯ä»¥æ”¯æŒå¤šä¸ªåˆ›å§‹äººï¼Œä¹‹é—´ä½¿ç”¨ ??åˆ†éš”?
+						// å¦‚æžœä¸è®¾ç½®æ¸¸æˆåˆ›å§‹äººï¼Œåˆ™ç®¡ç†å‘˜ä¹‹é—´å¯ä»¥ç›¸äº’ç¼–è¾‘ï¼Œå…·ä½“æƒåŠ›å·®åˆ«è¯·è§æ¸¸æˆä½¿ç”¨æ–‡æ¡£
 
-	$postinterval = 1;   //ÓÃ»§Ìá½»ÃüÁîµÄ¼ä¸ôÊ±¼ä£¬µ¥Î»?
+	$postinterval = 1;   //ç”¨æˆ·æäº¤å‘½ä»¤çš„é—´éš”æ—¶é—´ï¼Œå•ä½?
 
 	$moveut = 8; //set the difference of server time and client time
-			//Èç¹û±¾µØÊ±¼ä¸ú·þÎñÆ÷Ê±¼äÓÐÊ±²î£¬ÔÚ´Ë´¦¸ü?
+			//å¦‚æžœæœ¬åœ°æ—¶é—´è·ŸæœåŠ¡å™¨æ—¶é—´æœ‰æ—¶å·®ï¼Œåœ¨æ­¤å¤„æ›´?
 
 	$moveutmin = 0; //set the difference of server time and client time, by minutes
-	//Èç¹û±¾µØÊ±¼ä¸ú·þÎñÆ÷Ê±¼äÓÐÊ±²î£¬ÔÚ´Ë´¦¸ü?
+	//å¦‚æžœæœ¬åœ°æ—¶é—´è·ŸæœåŠ¡å™¨æ—¶é—´æœ‰æ—¶å·®ï¼Œåœ¨æ­¤å¤„æ›´?
 
 // [EN] !ATTENTION! Do NOT modify following after your board was settle down
-// [CH] ÓÎÏ·Í¶ÈëÊ¹ÓÃºó²»ÄÜÐÞ¸ÄµÄ±äÁ¿
+// [CH] æ¸¸æˆæŠ•å…¥ä½¿ç”¨åŽä¸èƒ½ä¿®æ”¹çš„å˜é‡
 
-	$tablepre = 'acbra3_';   			// ±íÃûÇ°×º, Í¬Ò»Êý¾Ý¿â°²×°¶à¸öÓÎÏ·ÇëÐÞ¸Ä´Ë´¦
+	$tablepre = 'acbra3_';   			// è¡¨åå‰ç¼€, åŒä¸€æ•°æ®åº“å®‰è£…å¤šä¸ªæ¸¸æˆè¯·ä¿®æ”¹æ­¤å¤„
 						// table prefix, modify this when you are installingmore than 1 Discuz! in the same database.
 
 	$authkey = 'bra';		//game encrypt key ,the same of plus key
-						//ÓÎÏ·¼ÓÃÜÃÜÔ¿£¬ÒªÓë²å¼þÃÜÔ¿Ïà?
+						//æ¸¸æˆåŠ å¯†å¯†é’¥ï¼Œè¦ä¸Žæ’ä»¶å¯†é’¥ç›¸?
 
 // [EN] !ATTENTION! Preservation or debugging for developing
-// [CH] ÇÐÎðÐÞ¸ÄÒÔÏÂ±äÁ¿,½ö¹©³ÌÐò¿ª·¢µ÷ÊÔÓÃ!
+// [CH] åˆ‡å‹¿ä¿®æ”¹ä»¥ä¸‹å˜é‡,ä»…ä¾›ç¨‹åºå¼€å‘è°ƒè¯•ç”¨!
 
-	$database = 'mysql';			// 'mysql' for MySQL version and 'pgsql' for PostgreSQL version
-						// MySQL °æ±¾ÇëÉè?'mysql', PgSQL °æ±¾ÇëÉè?'pgsql'
+	$database = 'mysqli';			// 'mysql' for MySQL version and 'pgsql' for PostgreSQL version
+						// MySQL ç‰ˆæœ¬è¯·è®¾?'mysql', PgSQL ç‰ˆæœ¬è¯·è®¾?'pgsql'
 
 	$charset = 'utf-8';			// default character set, 'gbk', 'big5', 'utf-8' are available
-						// ÓÎÏ·Ä¬ÈÏ×Ö·û? ¿É?'gbk', 'big5', 'utf-8'
+						// æ¸¸æˆé»˜è®¤å­—ç¬¦? å¯?'gbk', 'big5', 'utf-8'
 
 	$dbcharset = 'utf8';			// default database character set, 'gbk', 'big5', 'utf8', 'latin1' and blank are available
-						// MySQL ×Ö·û? ¿É?'gbk', 'big5', 'utf8', 'latin1', Áô¿ÕÎª°´ÕÕÓÎÏ·×Ö·û¼¯Éè¶¨
+						// MySQL å­—ç¬¦? å¯?'gbk', 'big5', 'utf8', 'latin1', ç•™ç©ºä¸ºæŒ‰ç…§æ¸¸æˆå­—ç¬¦é›†è®¾å®š
 
 	$attackevasive = 0;			// protect against attacks via common request, 0=off, 1=cookie refresh limitation, 2=deny proxy request, 3=both
-						// ·À»¤´óÁ¿Õý³£ÇëÇóÔì³ÉµÄ¾Ü¾ø·þÎñ¹¥? 0=¹Ø±Õ, 1=cookie Ë¢ÐÂÏÞÖÆ, 2=ÏÞÖÆ´úÀí·ÃÎÊ, 3=cookie+´úÀíÏÞÖÆ
+						// é˜²æŠ¤å¤§é‡æ­£å¸¸è¯·æ±‚é€ æˆçš„æ‹’ç»æœåŠ¡æ”»? 0=å…³é—­, 1=cookie åˆ·æ–°é™åˆ¶, 2=é™åˆ¶ä»£ç†è®¿é—®, 3=cookie+ä»£ç†é™åˆ¶
 
 	$tplrefresh = 1;			// auto check validation of templates, 0=off, 1=on
-						// Ä£°å×Ô¶¯Ë¢ÐÂ¿ª?0=¹Ø±Õ, 1=´ò¿ª, ÔÚ²»ÐÞ¸ÄÒ³ÃæµÄÇé¿öÏÂ¿ÉÒÔ¹Ø±Õ
+						// æ¨¡æ¿è‡ªåŠ¨åˆ·æ–°å¼€?0=å…³é—­, 1=æ‰“å¼€, åœ¨ä¸ä¿®æ”¹é¡µé¢çš„æƒ…å†µä¸‹å¯ä»¥å…³é—­
 
 	$bbsurl = 'http://76573.org/';    //the bbs url for the game plus
-									//°²×°ÓÎÏ·²å¼þµÄÂÛÌ³µØÖ·
+									//å®‰è£…æ¸¸æˆæ’ä»¶çš„è®ºå›åœ°å€
 
-	$gameurl = 'http://dts.moe/';    // the url of game program files,for the full-window mode
-									//ÓÎÏ·³ÌÐòµØÖ·£¬ÓÃÓÚÈ«ÆÁÄ£?
+	$gameurl = 'http://localhost:8080/';    // the url of game program files,for the full-window mode
+									//æ¸¸æˆç¨‹åºåœ°å€ï¼Œç”¨äºŽå…¨å±æ¨¡?
 
 	$homepage = 'http://www.amarilloviridian.com/';      // game homepage
-									//¹Ù·½ÍøÕ¾µØÖ·
+									//å®˜æ–¹ç½‘ç«™åœ°å€
 
-	$title = '´ó ÌÓ É±';     //game title
-							//ÓÎÏ·±êÌâ
+	$title = 'å¤§ é€ƒ æ€';     //game title
+							//æ¸¸æˆæ ‡é¢˜
 
-	$errorinfo = 0;				//ÊÇ·ñ¿ªÆô´íÎóÐÅÏ¢ÌáÊ¾£¬1Îª¿ªÆô£¬0Îª¹Ø±Õ¡£¿ªÆô»áÐ¹Â©ÓÎÏ·°²×°Â·¾¶
+	$errorinfo = 0;				//æ˜¯å¦å¼€å¯é”™è¯¯ä¿¡æ¯æç¤ºï¼Œ1ä¸ºå¼€å¯ï¼Œ0ä¸ºå…³é—­ã€‚å¼€å¯ä¼šæ³„æ¼æ¸¸æˆå®‰è£…è·¯å¾„
 
 
 // ============================================================================

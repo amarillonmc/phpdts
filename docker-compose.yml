@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  dts:
+    build: ./
+    volumes:
+      - dts:/mnt/dts
+      - nginx_conf:/nginx/conf.d
+  web:
+    image: nginx:1.19.2
+    ports:
+      - "8080:80"
+    depends_on:
+      - dts
+    volumes:
+      - dts:/mnt/dts
+      - nginx_conf:/etc/nginx/conf.d
+  db:
+    image: mariadb:10
+    environment:
+      MYSQL_ROOT_PASSWORD: "mylittlepony"
+      MYSQL_DATABASE: "acdts3"
+    volumes:
+      - db:/var/lib/mysql
+volumes:
+  db:
+  dts:
+  nginx_conf:
