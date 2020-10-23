@@ -103,7 +103,7 @@ CREATE TABLE bra_players (
   PRIMARY KEY  (pid),
   INDEX TYPE (type, sNo),
   INDEX NAME (name, type)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 
 

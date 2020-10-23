@@ -7,7 +7,7 @@ error_reporting(E_ERROR | E_WARNING | E_PARSE);
 define('IN_GAME', TRUE);
 define('GAME_ROOT', '');
 
-if(PHP_VERSION < '4.3.0') {
+if(version_compare(PHP_VERSION, '4.3.0', '<')) {
 	exit('PHP version must >= 4.3.0!');
 }
 
@@ -657,7 +657,7 @@ if(!$action) {
 	$curr_os = PHP_OS;
 
 	$curr_php_version = PHP_VERSION;
-	if($curr_php_version < '4.3.0') {
+  if(version_compare($curr_php_version, '4.3.0', '<')) {
 		$msg .= "<font color=\"#FF0000\">$lang[php_version_430]</font>\t";
 		$quit = TRUE;
 	}
@@ -673,7 +673,7 @@ if(!$action) {
 
 	$query = $db->query("SELECT VERSION()");
 	$curr_mysql_version = $db->result($query, 0);
-	if($curr_mysql_version < '3.23') {
+  if(version_compare($curr_mysql_version, '3.23', '<')) {
 		$msg .= "<font color=\"#FF0000\">$lang[mysql_version_323]</font>\t";
 		$quit = TRUE;
 	}
@@ -701,7 +701,7 @@ if(!$action) {
 
 	$db->select_db($dbname);
 	if($db->error()) {
-		if($db->version() > '4.1') {
+    if(version_compare($db->version(), '3.23', '<')) {
 			$db->query("CREATE DATABASE IF NOT EXISTS $dbname DEFAULT CHARACTER SET $dbcharset");
 		} else {
 			$db->query("CREATE DATABASE IF NOT EXISTS $dbname");
@@ -1231,7 +1231,7 @@ function runquery($sql) {
 			if(substr($query, 0, 12) == 'CREATE TABLE') {
 				$name = preg_replace("/CREATE TABLE ([a-z0-9_]+) .*/is", "\\1", $query);
 				echo $lang['create_table'].' '.$name.' ... <font color="#0000EE">'.$lang['succeed'].'</font><br>';
-				$db->query(createtable($query, $dbcharset));
+				$db->query(createtable($db, $query, $dbcharset));
 			} else {
 				$db->query($query);
 			}
@@ -1299,11 +1299,11 @@ function random($length) {
 	return $hash;
 }
 
-function createtable($sql, $dbcharset) {
+function createtable($db, $sql, $dbcharset) {
 	$type = strtoupper(preg_replace("/^\s*CREATE TABLE\s+.+\s+\(.+?\).*(ENGINE|TYPE)\s*=\s*([a-z]+?).*$/isU", "\\2", $sql));
 	$type = in_array($type, array('MYISAM', 'HEAP')) ? $type : 'MYISAM';
 	return preg_replace("/^\s*(CREATE TABLE\s+.+\s+\(.+?\)).*$/isU", "\\1", $sql).
-		(mysql_get_server_info() > '4.1' ? " ENGINE=$type DEFAULT CHARSET=$dbcharset" : " TYPE=$type");
+		(version_compare($db->version(), '4.1', '>') ? " ENGINE=$type DEFAULT CHARSET=$dbcharset" : " TYPE=$type");
 }
 
 function setconfig($string) {

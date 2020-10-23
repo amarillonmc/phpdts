@@ -6,7 +6,7 @@ define('IN_GAME', TRUE);
 define('GAME_ROOT', dirname(__FILE__));
 define('GAMENAME', 'bra');
 
-if(PHP_VERSION < '4.3.0') {
+if(version_compare(PHP_VERSION, '4.3.0', '<')) {
 	exit('PHP version must >= 4.3.0!');
 }
 require GAME_ROOT.'/include/global.func.php';

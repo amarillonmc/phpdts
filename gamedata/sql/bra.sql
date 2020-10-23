@@ -22,7 +22,7 @@ CREATE TABLE bra_users (
   PRIMARY KEY  (uid),
   UNIQUE KEY username (username)
 
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 --
 -- 插入初始数据 `bra_users`
@@ -142,7 +142,7 @@ CREATE TABLE bra_winners (
   hkp char(15) NOT NULL default '',
 
   UNIQUE KEY (gid)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 
 --
@@ -250,7 +250,7 @@ CREATE TABLE bra_players (
   PRIMARY KEY  (pid),
   INDEX TYPE (type, sNo),
   INDEX NAME (name, type)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 
 
@@ -269,7 +269,7 @@ CREATE TABLE bra_chat (
   msg char(60) NOT NULL default '',
 
   PRIMARY KEY  (cid)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 
 

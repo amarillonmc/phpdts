@@ -22,7 +22,7 @@ class dbstuff {
 			}
 		}
 		
-		if ($this->version () > '4.1') {
+		if(version_compare($this->version (), '4.1', '>')) {
 			global $charset, $dbcharset;
 			if (! $dbcharset && in_array ( strtolower ( $charset ), array ('gbk', 'big5', 'utf-8' ) )) {
 				$dbcharset = str_replace ( '-', '', $charset );
@@ -32,7 +32,7 @@ class dbstuff {
 				mysql_query ( "SET character_set_connection=$dbcharset, character_set_results=$dbcharset, character_set_client=$dbcharset" );
 			}
 			
-			if ($this->version () > '5.0.1') {
+			if(version_compare($this->version (), '5.0.1', '>')) {
 				mysql_query ( "SET sql_mode=''" );
 			}
 		}

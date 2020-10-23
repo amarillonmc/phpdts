@@ -13,7 +13,7 @@ CREATE TABLE bra_chat (
   msg char(60) NOT NULL default '',
 
   PRIMARY KEY  (cid)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 
 
