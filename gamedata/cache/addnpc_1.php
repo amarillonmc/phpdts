@@ -1277,7 +1277,7 @@ $anpcinfo = array
 	 0 => array
 		(
 		'name' => '✦覆唱的篝火',
-		'icon' => 301,
+		'icon' => 34,
 		'wep' => '✧覆唱之歌',
 		'wepk' => 'WF',
 		'wepe' => 1,
@@ -1290,7 +1290,7 @@ $anpcinfo = array
 	1 => array
 		(
 		'name' => '✦爱恋的埋火',
-		'icon' => 302,
+		'icon' => 35,
 		'wep' => '✧无畏之爱',
 		'wepk' => 'WF',
 		'wepe' => 1,
@@ -1303,7 +1303,7 @@ $anpcinfo = array
 	2 => array
 		(
 		'name' => '✦怜悯的永火',
-		'icon' => 303,
+		'icon' => 36,
 		'wep' => '✧怜悯之痛',
 		'wepk' => 'WF',
 		'wepe' => 1,
@@ -1316,7 +1316,7 @@ $anpcinfo = array
 	3 => array
 		(
 		'name' => '✦执念的残火',
-		'icon' => 304,
+		'icon' => 37,
 		'wep' => '✧执念之刺',
 		'wepk' => 'WF',
 		'wepe' => 1,
@@ -1329,7 +1329,7 @@ $anpcinfo = array
 	4 => array
 		(
 		'name' => '✦希望的焰火',
-		'icon' => 305,
+		'icon' => 38,
 		'wep' => '✧希望之风',
 		'wepk' => 'WF',
 		'wepe' => 1,

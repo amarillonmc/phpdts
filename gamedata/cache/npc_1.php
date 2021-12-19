@@ -1227,7 +1227,7 @@ $npcinfo = array
 			0 => array
 			(
 			'name' => '霜火协奏曲',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 6,
 			'wep' => '『看吧，你的死兆星正在天上闪耀！』',
 			'wepk' => 'WC',
@@ -1239,7 +1239,7 @@ $npcinfo = array
 			(
 			'name' => '脸骑士-菜包',
 			'club' => 98,
-			'icon' => 888,
+			'icon' => 10,
 			'wep' => '脸',
 			'wepk' => 'WP',
 			'wepe' => 300,
@@ -1249,7 +1249,7 @@ $npcinfo = array
 			2 => array
 			(
 			'name' => '枪毙的某神',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 3,
 			'wep' => '《小黄的时间球》',
 			'wepk' => 'WC',
@@ -1260,7 +1260,7 @@ $npcinfo = array
 			3 => array
 			(
 			'name' => '我是高达',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 8,
 			'wep' => '毒性凸眼鱼',
 			'wepk' => 'WF',
@@ -1271,7 +1271,7 @@ $npcinfo = array
 			4 => array
 			(
 			'name' => '一旦接受这种设定',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 10,
 			'wep' => '『一瞬千击』',
 			'wepk' => 'WP',
@@ -1282,7 +1282,7 @@ $npcinfo = array
 			5 => array
 			(
 			'name' => '一方通行',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 9,
 			'wep' => '【矢量操作】',
 			'wepk' => 'WG',
@@ -1293,7 +1293,7 @@ $npcinfo = array
 			6 => array
 			(
 			'name' => '晓魂之歌',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 2,
 			'wep' => '锋利的电气毒性晓魂之歌-改[+4]',
 			'wepk' => 'WK',
@@ -1304,7 +1304,7 @@ $npcinfo = array
 			7 => array
 			(
 			'name' => '卡',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 13,
 			'wep' => '【不屈的意志】',
 			'wepk' => 'WF',
@@ -1315,7 +1315,7 @@ $npcinfo = array
 			8 => array
 			(
 			'name' => 'Exocet',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 9,
 			'wep' => '『微型火箭加速噴射單輪車』',
 			'wepk' => 'WP',
@@ -1326,7 +1326,7 @@ $npcinfo = array
 			9 => array
 			(
 			'name' => '中西醫',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 1,
 			'wep' => '《衷中參西錄》',
 			'wepk' => 'WP',
@@ -1337,7 +1337,7 @@ $npcinfo = array
 			10 => array
 			(
 			'name' => '黑猫',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 6,
 			'wep' => '阔剑地雷吸附器',
 			'wepk' => 'WP',
@@ -1348,7 +1348,7 @@ $npcinfo = array
 			11 => array
 			(
 			'name' => '水羊',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 2,
 			'wep' => '■Darthnote■',
 			'wepk' => 'WK',
@@ -1359,7 +1359,7 @@ $npcinfo = array
 			12 => array
 			(
 			'name' => '上帝的左手',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 2,
 			'wep' => '胡来的左手',
 			'wepk' => 'WK',
@@ -1370,7 +1370,7 @@ $npcinfo = array
 			13 => array
 			(
 			'name' => '半人半灵半吊子',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 98,
 			'wep' => '楼观剑',
 			'wepk' => 'WK',
@@ -1386,7 +1386,7 @@ $npcinfo = array
 			14 => array
 			(
 			'name' => '死亡荆棘',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 7,
 			'wep' => '【荆棘式电子地雷】',
 			'wepk' => 'WK',
@@ -1397,7 +1397,7 @@ $npcinfo = array
 			15 => array
 			(
 			'name' => '超魔理沙-电子',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 14,
 			'wep' => '【荆棘式电子地雷】',
 			'wepk' => 'WP',
@@ -1408,7 +1408,7 @@ $npcinfo = array
 			16 => array
 			(
 			'name' => '东方地雷殿',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 7,
 			'wep' => '【荆棘式电子地雷】',
 			'wepk' => 'WD',
@@ -1419,7 +1419,7 @@ $npcinfo = array
 			17 => array
 			(
 			'name' => 'fossil',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 1,
 			'wep' => '大钉棍棒',
 			'wepk' => 'WP',
@@ -1430,7 +1430,7 @@ $npcinfo = array
 			18 => array
 			(
 			'name' => '流风之念',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 4,
 			'wep' => '连击烧输尿管~☆',
 			'wepk' => 'WG',
@@ -1441,7 +1441,7 @@ $npcinfo = array
 			19 => array
 			(
 			'name' => 'MESSIAH',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 4,
 			'wep' => '本格的嘴炮',
 			'wepk' => 'WG',
@@ -1452,7 +1452,7 @@ $npcinfo = array
 			20 => array
 			(
 			'name' => '帕秋莉诺蕾姬',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 9,
 			'wep' => '水&火符「Phlogistic Rain」',
 			'wepk' => 'WF',
@@ -1463,7 +1463,7 @@ $npcinfo = array
 			21 => array
 			(
 			'name' => '坂田铜时',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 1,
 			'wep' => '无毁的受王拳',
 			'wepk' => 'WP',
@@ -1473,7 +1473,7 @@ $npcinfo = array
 			22 => array
 			(
 			'name' => '耶和华',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 15,
 			'wep' => 'L5爆发！',
 			'wepk' => 'WF',
@@ -1484,7 +1484,7 @@ $npcinfo = array
 			23 => array
 			(
 			'name' => '闹球肾',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 1,
 			'wep' => '一个半角符号',
 			'wepk' => 'WF',
@@ -1495,7 +1495,7 @@ $npcinfo = array
 			24 => array
 			(
 			'name' => '初音ミク',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 4,
 			'wep' => '「Falchion Rider」模样的杏仁豆腐',
 			'wepk' => 'WG',
@@ -1511,7 +1511,7 @@ $npcinfo = array
 			25 => array
 			(
 			'name' => 'Abyss混沌',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 1,
 			'wep' => '混乱邪恶之塔',
 			'wepk' => 'WF',
@@ -1522,7 +1522,7 @@ $npcinfo = array
 			26 => array
 			(
 			'name' => '飞雪大大',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 9,
 			'wep' => '魔王の剑',
 			'wepk' => 'WK',
@@ -1533,7 +1533,7 @@ $npcinfo = array
 			27 => array
 			(
 			'name' => '微笑的疯子',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 1,
 			'wep' => '把妹の手',
 			'wepk' => 'WP',
@@ -1544,7 +1544,7 @@ $npcinfo = array
 			28 => array
 			(
 			'name' => '挂机中的灰尘',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 9,
 			'wep' => '★挂机の萌力★',
 			'wepk' => 'WF',
@@ -1555,7 +1555,7 @@ $npcinfo = array
 			29 => array
 			(
 			'name' => '西园寺世界酱',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 5,
 			'wep' => '节操炸弹G',
 			'wepk' => 'WD',
@@ -1566,7 +1566,7 @@ $npcinfo = array
 			30 => array
 			(
 			'name' => '索非亚小傻鸟',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 8,
 			'wep' => 'COCO☆酱',
 			'wepk' => 'WC',
@@ -1577,7 +1577,7 @@ $npcinfo = array
 			31 => array
 			(
 			'name' => '浮云_小坏',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 9,
 			'wep' => '向日葵妖精',
 			'wepk' => 'WG',
@@ -1592,7 +1592,7 @@ $npcinfo = array
 			32 => array
 			(
 			'name' => '人形蚂蚁α',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 9,
 			'wep' => '纸条■■■■',
 			'wepk' => 'WC',
@@ -1603,7 +1603,7 @@ $npcinfo = array
 			33 => array
 			(
 			'name' => 'tabris',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 13,
 			'wep' => '十二试炼',
 			'wepk' => 'WC',
@@ -1891,7 +1891,7 @@ $npcinfo = array
 			(
 			'name' => 'beijuzhu',
 			'gd' => 'm',
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 7,
 			'skill' => 1000,
 			'wep' => '破解的PSP-3000',
@@ -1906,7 +1906,7 @@ $npcinfo = array
 			'gd' => 'f',
 			'pose' => 4,
 			'att' => 4000,
-			'icon' => 888,
+			'icon' => 10,
 			'club' => 8,
 			'skill' => 600,
 			'wep' => '超级☆无敌辰音LILY',
@@ -2460,7 +2460,7 @@ $npcinfo = array
 	 0 => array
 		(
 		'name' => '✦覆唱的篝火',
-		'icon' => 301,
+		'icon' => 34,
 		'wep' => '✧覆唱之歌',
 		'wepk' => 'WF',
 		'wepe' => 1,
@@ -2473,7 +2473,7 @@ $npcinfo = array
 	1 => array
 		(
 		'name' => '✦爱恋的埋火',
-		'icon' => 302,
+		'icon' => 35,
 		'wep' => '✧无畏之爱',
 		'wepk' => 'WF',
 		'wepe' => 1,
@@ -2486,7 +2486,7 @@ $npcinfo = array
 	2 => array
 		(
 		'name' => '✦怜悯的永火',
-		'icon' => 303,
+		'icon' => 36,
 		'wep' => '✧怜悯之痛',
 		'wepk' => 'WF',
 		'wepe' => 1,
@@ -2499,7 +2499,7 @@ $npcinfo = array
 	3 => array
 		(
 		'name' => '✦执念的残火',
-		'icon' => 304,
+		'icon' => 37,
 		'wep' => '✧执念之刺',
 		'wepk' => 'WF',
 		'wepe' => 1,
@@ -2512,7 +2512,7 @@ $npcinfo = array
 	4 => array
 		(
 		'name' => '✦希望的焰火',
-		'icon' => 305,
+		'icon' => 38,
 		'wep' => '✧希望之风',
 		'wepk' => 'WF',
 		'wepe' => 1,
