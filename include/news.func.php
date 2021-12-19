@@ -230,7 +230,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		} elseif($news == 'editpc') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">{$a}遭到了黑幕的生化改造！</span><br>\n";
 		} elseif($news == 'suisidefail') {
-			$newsinfo .= "<li><font style=\"background:url(http://dts.acfun.tv/img/backround4.gif) repeat-x\">{$hour}时{$min}分{$sec}秒，<span class=\"red\">{$a}注射了H173，却由于RP太高进入了发狂状态！！</font></span><br>\n";
+			$newsinfo .= "<li><font style=\"background:url(img/backround4.gif) repeat-x\">{$hour}时{$min}分{$sec}秒，<span class=\"red\">{$a}注射了H173，却由于RP太高进入了发狂状态！！</font></span><br>\n";
 		} elseif($news == 'inf') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">{$a}的攻击致使{$b}</span>{$exdmginf[$c]}<span class=\"red\">了</span><br>\n";
 		} elseif($news == 'addnpc') {
@@ -245,6 +245,12 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}使用了黑色碎片，让1名未知存在加入了战场！打倒她去获得ID卡来解除游戏吧！</span><br>\n";
 		} elseif($news == 'dfsecphase') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}闯了大祸，打破了Dark Force的封印！</span><br>\n";
+		} elseif($news == 'key1'){
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}释放了第一批被封印的NPC存在！</span><br>\n";
+		} elseif($news == 'key2'){
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}释放了第二批被封印的NPC存在！</span><br>\n";
+		} elseif($news == 'key3'){
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}出于未知原因，在战场上部署了更多的种火！Ψпψтμψхλδ！</span><br>\n";
 		} elseif($news == 'evonpc') {
 			if($a == 'Dark Force幼体'){
 				$nword = "<span class=\"lime\">{$c}击杀了{$a}，却没料到这只是幻影……{$b}的封印已经被破坏了！</span>";
