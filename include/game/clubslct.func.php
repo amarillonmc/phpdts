@@ -55,16 +55,16 @@ function getclub($who, &$c1, &$c2, &$c3)
 function updateskill()
 {
 	global $club, $wp, $wk, $wc, $wg, $wd, $wf, $money, $hp, $mhp, $att, $def;
-	if ($club==1) $wp+=30;
-	if ($club==2) $wk+=30;
-	if ($club==3) $wc+=30;
-	if ($club==4) $wg+=30;
-	if ($club==5) $wd+=20;
-	if ($club==9) $wf+=20;
-	if ($club==11) $money+=480;
-	if ($club==16) { $wp+=15; $wk+=15; $wc+=15; $wg+=15; $wd+=15; $wf+=15; }
-	if ($club==13) { $mhp+=200; $hp+=200; }
-	if ($club==14) { $att+=200; $def+=200; }
+	if ($club==1) $wp+=50;
+	if ($club==2) $wk+=50;
+	if ($club==3) $wc+=50;
+	if ($club==4) $wg+=50;
+	if ($club==5) $wd+=40;
+	if ($club==9) $wf+=40;
+	if ($club==11) $money+=680;
+	if ($club==16) { $wp+=25; $wk+=25; $wc+=25; $wg+=25; $wd+=25; $wf+=25; }
+	if ($club==13) { $mhp+=250; $hp+=250; }
+	if ($club==14) { $att+=300; $def+=300; }
 }
 
 function selectclub($id)

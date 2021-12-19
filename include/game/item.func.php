@@ -1352,6 +1352,60 @@ function itemuse($itmn) {
 			
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
+		} elseif ($itm == '✦NPC钥匙·一阶段') {
+			include_once GAME_ROOT . './include/system.func.php';
+			$log .= '已解锁一阶段NPC！<br>似乎大量NPC已经部署至游戏内……<br>';
+			addnews ($now , 'key1', $name);
+			//思念体 4*4
+			addnpc ( 2, 0,4);
+			addnpc ( 2, 1,4);
+			addnpc ( 2, 2,4);
+			addnpc ( 2, 3,4);
+			//职人 1*6
+			addnpc ( 11, 0,1);
+			addnpc ( 11, 1,1);
+			addnpc ( 11, 2,1);
+			addnpc ( 11, 3,1);
+			addnpc ( 11, 4,1);
+			addnpc ( 11, 5,1);
+			//妖精幻象 1*3
+			addnpc ( 13, 0,1);
+			addnpc ( 13, 1,1);
+			addnpc ( 13, 2,1);						
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		} elseif ($itm == '✦✦NPC钥匙·二阶段') {
+			include_once GAME_ROOT . './include/system.func.php';
+			$log .= '已解锁二阶段NPC！<br>似乎凶恶NPC已经部署至游戏内……<br>';
+			addnews ($now , 'key2', $name);
+			//杏仁豆腐 2*2
+			addnpc ( 2, 0,2);
+			addnpc ( 2, 1,2);
+			//猴子 1*2
+			addnpc ( 6, 0,2);
+			//假蓝凝
+			addnpc ( 9, 0,1);						
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		} elseif ($itm == '✦种火钥匙') {
+			include_once GAME_ROOT . './include/system.func.php';
+			$log .= '虽然不知道你究竟想干啥，<br>但总之你放出了更多的种火……<br>';
+			addnews ($now , 'key3', $name);
+			// $dice = rand(0,100);
+			// if ($dice > 98){
+			// 	$log .= '似乎还有其他的什么被你放出来咯！<br>';	
+			// 	addnpc ( 89, 0,1);
+			// 	addnpc ( 89, 1,1);
+			// 	addnpc ( 89, 2,1);
+			// }
+			//种火 5*20
+			addnpc ( 92, 0,20);
+			addnpc ( 92, 1,20);
+			addnpc ( 92, 2,20);
+			addnpc ( 92, 3,20);
+			addnpc ( 92, 4,20);						
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
 		} elseif ($itm == '镣铐的碎片') {
 //			include_once GAME_ROOT . './include/system.func.php';
 //			$log .= '呜哦，看起来你闯了大祸……<br>请自己去收拾残局！<br>';

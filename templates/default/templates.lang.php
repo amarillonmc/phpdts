@@ -20,6 +20,7 @@ $language = array
 	'homepage' => '官方网站',
 	'admin' => '游戏管理',
 	'report' => '官方讨论区',
+	'vnworld' => '幻想世界',
 	
 	'now' => '当前时刻',
 	'gameversion' => '游戏版本',

@@ -1,0 +1,12 @@
+﻿2013-03-03
+为后台添加了修改歌魂的选项{admin_pcmng.htm;pcmng.php;}
+删去了恋歌{song.inc.php;mixitem_1.php;}
+
+2013-02-24
+修改了排名界面{rank.php; rank.htm;}
+修正了歌唱系统的一些问题;{song.inc.php;}
+增加了APM查看{command.php; valid.php; player.sql; alive.php; alivelist.htm; command.php; state.func.php; game.func.php;}
+
+2013-02-21
+修正了一些文件版本和兼容性问题；{command.php; game.php; global.func.php; command.htm;}
+新增赌注系统BETA；{reset.sql; dbup.php; gamecfg_1.php; resources_1.php; alive.php; user.php; gambling.php; system.func.php; urlist.php; gbresult.htm; alive.htm; alivelist.htm; userbasicdata.htm; useradvdata.htm; usercrdtsdata.htm; user.htm; admin_urlist.htm; game.js;}
