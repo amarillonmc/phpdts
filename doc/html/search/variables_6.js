@@ -1,5 +1,0 @@
-var searchData=
-[
-  ['game_5froot',['GAME_ROOT',['../clear_8php.html#a8e43cd27c8e744fff590983bc396aba3',1,'GAME_ROOT():&#160;clear.php'],['../dbup_8php.html#a8e43cd27c8e744fff590983bc396aba3',1,'GAME_ROOT():&#160;dbup.php'],['../common_8inc_8php.html#a8e43cd27c8e744fff590983bc396aba3',1,'GAME_ROOT():&#160;common.inc.php'],['../install_8php.html#a8e43cd27c8e744fff590983bc396aba3',1,'GAME_ROOT():&#160;install.php'],['../login__old_8php.html#a8e43cd27c8e744fff590983bc396aba3',1,'GAME_ROOT():&#160;login_old.php'],['../templates_2install_8php.html#a8e43cd27c8e744fff590983bc396aba3',1,'GAME_ROOT():&#160;install.php']]],
-  ['gamename',['GAMENAME',['../clear_8php.html#a3cd7223880b2f6a1d0bcb325ce43c606',1,'GAMENAME():&#160;clear.php'],['../dbup_8php.html#a3cd7223880b2f6a1d0bcb325ce43c606',1,'GAMENAME():&#160;dbup.php'],['../common_8inc_8php.html#a3cd7223880b2f6a1d0bcb325ce43c606',1,'GAMENAME():&#160;common.inc.php'],['../login__old_8php.html#a3cd7223880b2f6a1d0bcb325ce43c606',1,'GAMENAME():&#160;login_old.php']]]
-];
