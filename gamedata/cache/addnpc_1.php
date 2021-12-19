@@ -1322,7 +1322,7 @@ $anpcinfo = array
 		'wepe' => 1,
 		'weps' => 50,
 		'itm5' => '◆意念数据',
-		'itmk5' => 'MD',
+		'itmk5' => 'MH',
 		'itme5' => 1,
 		'itms5' => 10,
 		),
