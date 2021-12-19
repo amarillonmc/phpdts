@@ -18,7 +18,7 @@ $mixinfo = array
 	
 	array('class' => 'wk', 'stuff' => array('针筒','毒药'),'result' => array('毒针','WK',32,20,'p'),),	
 	array('class' => 'wk', 'stuff' => array('毒针','毒针'),'result' => array('D.毒针','WK',48,20,'p'),),
-	array('class' => 'wk', 'stuff' => array('D.毒针','D.毒针'),'result' => array('D.D.D','WK',100,20,'N'),),
+array('class' => 'wk', 'stuff' => array('D.毒针','D.毒针'),'result' => array('D.D.D','WK',100,20,'N'),),
 	array('class' => 'wk', 'stuff' => array('白色的羽毛','白色的羽毛','白色的羽毛','白色的羽毛','白色的羽毛'),'result' => array('纯白片翼','WK',150,200,'ia'),),
 	array('class' => 'wk', 'stuff' => array('白色的羽毛','闪耀的羽毛','彩虹光芒的羽毛','翼人的羽毛'),'result' => array('悲叹片翼','WK',3200,200,'ai'),),
 	array('class' => 'wk', 'stuff' => array('白色的羽毛','凤凰之羽','露琪亚之羽','绿宝石方块'),'result' => array('精灵片翼','WK',300,200,'uid'),),
@@ -96,7 +96,7 @@ $mixinfo = array
 	array('class' => 'pokemon', 'stuff' => array('《小黄的草帽》','《小黄的钓鱼竿》','《小黄的行军靴》'),'result' => array('《小黄的精灵球》','WC',386,'∞',),),
 	array('class' => 'pokemon', 'stuff' => array('《小黄的精灵球》','《小黄的收服特训》'),'result' => array('《小黄的超级球》','WC',493,'∞','r'),),
 	array('class' => 'pokemon', 'stuff' => array('白色的羽毛','金色方块'),'result' => array('凤凰之羽','WK',20,200,'u'),),
-    array('class' => 'pokemon', 'stuff' => array('《小黄的收服特训》(上)','《小黄的收服特训》(下)'),'result' => array('《小黄的收服特训》','X','1','1'),),
+        array('class' => 'pokemon', 'stuff' => array('《小黄的收服特训》(上)','《小黄的收服特训》(下)'),'result' => array('《小黄的收服特训》','X','1','1'),),
 	array('class' => 'pokemon', 'stuff' => array('白色的羽毛','银色方块'),'result' => array('露琪亚之羽','WK',50,200,'i'),),
 	array('class' => 'pokemon', 'stuff' => array('凤凰之羽','露琪亚之羽','《小黄的超级球》'),'result' => array('《小黄的大师球》','WC',649,'∞','criu'),),
 	
@@ -186,7 +186,7 @@ $mixinfo = array
 	
 	array('class' => 'ocg', 'stuff' => array('「被封印的艾克佐迪亚」','「被封印者的左腕」','「被封印者的右腕」','「被封印者的左足」','「被封印者的右足」'),'result' => array('「被封印的黑暗大法师」','WC',8192,1,),),
 	array('class' => 'ocg', 'stuff' => array('「被封印的黑暗大法师」','★神卡认证★'),'result' => array('『黑暗大法师』','WC',8192,'∞','AaZ'),),
-	array('class' => 'ocg', 'stuff' => array('「隼骑士」-仮','☆四星认证☆'),'result' => array('「隼骑士」','WC',100,'∞','rj'),),
+array('class' => 'ocg', 'stuff' => array('「隼骑士」-仮','☆四星认证☆'),'result' => array('「隼骑士」','WC',100,'∞','rj'),),
 	array('class' => 'ocg', 'stuff' => array('「V-喷气虎」-仮','☆四星认证☆'),'result' => array('「V-喷气虎」','WC',160,'180','p'),),
 	array('class' => 'ocg', 'stuff' => array('「W-弹射飞翼」-仮','☆四星认证☆'),'result' => array('「W-弹射飞翼」','WC',130,'150','u'),),
 	array('class' => 'ocg', 'stuff' => array('「X-首领加农」-仮','☆四星认证☆'),'result' => array('「X-首领加农」','WC',180,'150','i'),),
@@ -212,8 +212,8 @@ $mixinfo = array
 	array('class' => 'ocg', 'stuff' => array('「奥西里斯之天空龙」-仮','★神卡认证★'),'result' => array('『奥西里斯之天空龙』','WC',4000,'∞','AcreZ'),),
 	array('class' => 'ocg', 'stuff' => array('「欧贝利斯克之巨神兵」-仮','★神卡认证★'),'result' => array('『欧贝利斯克之巨神兵』','WC',4000,'∞','AcriZ'),),
 	array('class' => 'ocg', 'stuff' => array('「太阳神之翼神龙」-仮','★神卡认证★'),'result' => array('『太阳神之翼神龙』','WC',4000,'∞','AcruZ'),),
- 	array('class' => 'ocg', 'stuff' => array('「电子龙」-仮','☆五星认证☆'),'result' => array('「电子龙」 ★5','WC05',200,'88','ej'),),
-  	array('class' => 'hidden', 'stuff' => array('「电子龙」 ★5','「电子龙」 ★5','「电子龙」 ★5'),'result' => array('「电子终结龙」','WC10',400,'∞','Nec'),),
+ array('class' => 'ocg', 'stuff' => array('「电子龙」-仮','☆五星认证☆'),'result' => array('「电子龙」 ★5','WC05',200,'88','ej'),),
+  array('class' => 'hidden', 'stuff' => array('「电子龙」 ★5','「电子龙」 ★5','「电子龙」 ★5'),'result' => array('「电子终结龙」','WC10',400,'∞','Nec'),),
 	array('class' => 'ocg', 'stuff' => array('「骷髅指挥」-仮','☆四星认证☆'),'result' => array('「骷髅指挥」 ★4','WC04',150,'∞','rj'),),
 	array('class' => 'ocg', 'stuff' => array('「僵尸之主」-仮','☆四星认证☆'),'result' => array('「僵尸之主」 ★4','WC04',100,'180','pj'),),
 	array('class' => 'ocg', 'stuff' => array('「死灵之颜」-仮','☆四星认证☆'),'result' => array('「死灵之颜」 ★4','WC04',180,'∞','Zj'),),
@@ -237,8 +237,8 @@ $mixinfo = array
 	array('class' => 'hidden', 'stuff' => array('日&月符『Royal Diamond Ring』','梦幻『幻月』','神枪『Spear The Gungnir』','紫奥义『弹幕结界』'),'result' => array('模式『EX』','WF',72000,'∞','crdZ'),),
 	array('class' => 'hidden', 'stuff' => array('生命之源','黑色雏菊','白色雏菊'),'result' => array('红色的丝带','WK',1200,1,'N'),),
 	array('class' => 'hidden', 'stuff' => array('歌词卡片【海洋】','歌词卡片【大地】','歌词卡片【星空】'),'result' => array('破灭之诗','Y',1,1,95),),
-	array('class' => 'hidden', 'stuff' => array('面包','矿泉水','女生校服'),'result' => array('无垢的荣耀','A',1,1,'Z'),),
-	array('class' => 'hidden', 'stuff' => array('面包','矿泉水','男生校服'),'result' => array('无垢的荣耀','A',1,1,'Z'),),
-	array('class' => 'hidden', 'stuff' => array('COCO☆酱','YES♂SIR','鼓舞士气的头带'),'result' => array('FFF团集体出动','WG',233,998,'BbdcN'),),
+	array('class' => 'hidden', 'stuff' => array('面包','矿泉水','女生校服'),'result' => array('无垢的荣耀','A',1,1,Z),),
+	array('class' => 'hidden', 'stuff' => array('面包','矿泉水','男生校服'),'result' => array('无垢的荣耀','A',1,1,Z),),
+	array('class' => 'hidden', 'stuff' => array('COCO☆酱','YES♂SIR','鼓舞士气的头带'),'result' => array('FFF团集体出动','WG',233,998,BbdcN),),
 	);
 ?>
