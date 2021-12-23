@@ -71,6 +71,7 @@ if(filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemti
 		'w' => array('其他装备','yellow'),
 		'h' => array('补给品','lime'),
 		'pokemon'=> array('小黄系道具','yellow'),
+		'fseed'=> array('种火系道具','lime'),
 		'ocg'=> array('游戏王系道具','clan'),
 		'key'=> array('KEY系道具','lime'),
 		'cube'=> array('方块系道具','yellow'),

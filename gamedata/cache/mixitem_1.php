@@ -261,7 +261,76 @@ $mixinfo = array
 	array('class' => 'ocg', 'stuff' => array('救世魔龙 -仮','☆十星认证☆'),'result' => array('「救世魔龙」 ★10','WC10',950,'∞','uf'),),
 	array('class' => 'ocg', 'stuff' => array('救世星龙 -仮','☆十星认证☆','★神卡认证★'),'result' => array('『流天类星龙』 ★12','WC12',4000,'∞','mcrwZ'),),
 	
-	
+	array('class' => 'fseed', 'stuff' => array('◆篝火','◆篝火','◆篝火'),'result' => array('◆◆篝火','DB',10,1,'a'),),
+array('class' => 'fseed', 'stuff' => array('◆埋火','◆埋火','◆埋火'),'result' => array('◆◆埋火','DH',10,1,'B'),),
+array('class' => 'fseed', 'stuff' => array('◆永火','◆永火','◆永火'),'result' => array('◆◆永火','DF',10,1,'M'),),
+array('class' => 'fseed', 'stuff' => array('◆残火','◆残火','◆残火'),'result' => array('◆◆残火','DA',10,1,'b'),),
+
+array('class' => 'fseed', 'stuff' => array('◆◆篝火','◆◆篝火','◆◆篝火'),'result' => array('◆◆◆篝火','DB',50,1,'a'),),
+array('class' => 'fseed', 'stuff' => array('◆◆埋火','◆◆埋火','◆◆埋火'),'result' => array('◆◆◆埋火','DH',50,1,'B'),),
+array('class' => 'fseed', 'stuff' => array('◆◆永火','◆◆永火','◆◆永火'),'result' => array('◆◆◆永火','DF',50,1,'M'),),
+array('class' => 'fseed', 'stuff' => array('◆◆残火','◆◆残火','◆◆残火'),'result' => array('◆◆◆残火','DA',50,1,'b'),),
+
+array('class' => 'fseed', 'stuff' => array('◆愈合数据','◆愈合数据','◆愈合数据'),'result' => array('◆◆愈合数据','HB',10,'∞',),),
+array('class' => 'fseed', 'stuff' => array('◆◆愈合数据','◆◆愈合数据','◆◆愈合数据'),'result' => array('◆◆◆愈合数据','HB',20,'∞',),),
+array('class' => 'fseed', 'stuff' => array('◆熟练数据','◆熟练数据','◆熟练数据'),'result' => array('◆◆熟练数据','VV',10,5,),),
+array('class' => 'fseed', 'stuff' => array('◆◆熟练数据','◆◆熟练数据','◆◆熟练数据'),'result' => array('◆◆◆熟练数据','VV',20,5,),),
+array('class' => 'fseed', 'stuff' => array('◆生命数据','◆生命数据','◆生命数据'),'result' => array('◆◆生命数据','MH',10,5,),),
+array('class' => 'fseed', 'stuff' => array('◆◆生命数据','◆◆生命数据','◆◆生命数据'),'result' => array('◆◆◆生命数据','MH',20,5,),),
+array('class' => 'fseed', 'stuff' => array('◆意念数据','◆意念数据','◆意念数据'),'result' => array('◆◆意念数据','MD',10,5,),),
+array('class' => 'fseed', 'stuff' => array('◆◆意念数据','◆◆意念数据','◆◆意念数据'),'result' => array('◆◆◆意念数据','MD',20,5,),),
+array('class' => 'fseed', 'stuff' => array('◆焰火','◆焰火','◆焰火','◆火之碎片'),'result' => array('✦烈焰火','A',50,50,'H'),),
+
+array('class' => 'fseed', 'stuff' => array('◆◆◆愈合数据','✦烈焰火'),'result' => array('✦愈合数据','HB',50,'∞',),),
+array('class' => 'fseed', 'stuff' => array('◆◆◆熟练数据','✦烈焰火'),'result' => array('✦熟练数据','VV',50,5,),),
+array('class' => 'fseed', 'stuff' => array('◆◆◆生命数据','✦烈焰火'),'result' => array('✦生命数据','MH',50,5,),),
+array('class' => 'fseed', 'stuff' => array('◆◆◆意念数据','✦烈焰火'),'result' => array('✦意念数据','MD',50,5,),),
+
+array('class' => 'fseed', 'stuff' => array('◆◆◆篝火','✦烈焰火'),'result' => array('✦烈篝火','DB',50,50,'a'),),
+array('class' => 'fseed', 'stuff' => array('◆◆◆埋火','✦烈焰火'),'result' => array('✦烈埋火','DH',50,50,'B'),),
+array('class' => 'fseed', 'stuff' => array('◆◆◆永火','✦烈焰火'),'result' => array('✦烈永火','DF',50,50,'M'),),
+array('class' => 'fseed', 'stuff' => array('◆◆◆残火','✦烈焰火'),'result' => array('✦烈残火','DA',50,50,'b'),),
+
+array('class' => 'fseed', 'stuff' => array('✦烈篝火','✦烈篝火','✦烈篝火'),'result' => array('✦✦烈篝火','DB',100,50,'a'),),
+array('class' => 'fseed', 'stuff' => array('✦烈埋火','✦烈埋火','✦烈埋火'),'result' => array('✦✦烈埋火','DH',100,50,'B'),),
+array('class' => 'fseed', 'stuff' => array('✦烈永火','✦烈永火','✦烈永火'),'result' => array('✦✦烈永火','DF',100,50,'M'),),
+array('class' => 'fseed', 'stuff' => array('✦烈残火','✦烈残火','✦烈残火'),'result' => array('✦✦烈残火','DA',100,50,'b'),),
+
+array('class' => 'fseed', 'stuff' => array('✦✦烈篝火','✦✦烈篝火','✦✦烈篝火'),'result' => array('✦✦✦烈篝火','DB',200,50,'a'),),
+array('class' => 'fseed', 'stuff' => array('✦✦烈埋火','✦✦烈埋火','✦✦烈埋火'),'result' => array('✦✦✦烈埋火','DH',200,50,'B'),),
+array('class' => 'fseed', 'stuff' => array('✦✦烈永火','✦✦烈永火','✦✦烈永火'),'result' => array('✦✦✦烈永火','DF',200,50,'M'),),
+array('class' => 'fseed', 'stuff' => array('✦✦烈残火','✦✦烈残火','✦✦烈残火'),'result' => array('✦✦✦烈残火','DA',200,50,'b'),),
+
+array('class' => 'fseed', 'stuff' => array('✦烈焰火','✦烈焰火','◆火之碎片'),'result' => array('★华焰火★','A',200,100,'HZ'),),
+array('class' => 'fseed', 'stuff' => array('✦愈合数据','★华焰火★'),'result' => array('★愈合数据★','HB',100,'∞',),),
+array('class' => 'fseed', 'stuff' => array('✦熟练数据','★华焰火★'),'result' => array('★熟练数据★','VV',200,2,),),
+array('class' => 'fseed', 'stuff' => array('✦生命数据','★华焰火★'),'result' => array('★生命数据★','MH',200,2,),),
+array('class' => 'fseed', 'stuff' => array('✦意念数据','★华焰火★'),'result' => array('★意念数据★','MD',200,2,),),
+array('class' => 'fseed', 'stuff' => array('✦✦✦烈篝火','★华焰火★'),'result' => array('★华篝火★','DB',200,100,'aZ'),),
+array('class' => 'fseed', 'stuff' => array('✦✦✦烈埋火','★华焰火★'),'result' => array('★华埋火★','DH',200,100,'BZ'),),
+array('class' => 'fseed', 'stuff' => array('✦✦✦烈永火','★华焰火★'),'result' => array('★华永火★','DF',200,100,'MZ'),),
+array('class' => 'fseed', 'stuff' => array('✦✦✦烈残火','★华焰火★'),'result' => array('★华残火★','DA',200,100,'bZ'),),
+
+array('class' => 'fseed', 'stuff' => array('★华焰火★','◆火之碎片'),'result' => array('☾真焰火☽','A',500,500,'HZ'),),
+array('class' => 'fseed', 'stuff' => array('★愈合数据★','☾真焰火☽'),'result' => array('☾愈合数据☽','HB',300,'∞',),),
+array('class' => 'fseed', 'stuff' => array('★熟练数据★','☾真焰火☽'),'result' => array('☾熟练数据☽','VV',700,1,),),
+array('class' => 'fseed', 'stuff' => array('★生命数据★','☾真焰火☽'),'result' => array('☾生命数据☽','MH',700,1,),),
+array('class' => 'fseed', 'stuff' => array('★意念数据★','☾真焰火☽'),'result' => array('☾意念数据☽','MD',700,1,),),
+array('class' => 'fseed', 'stuff' => array('★华篝火★','☾真焰火☽'),'result' => array('☾真篝火☽','DB',500,500,'aZ'),),
+array('class' => 'fseed', 'stuff' => array('★华埋火★','☾真焰火☽'),'result' => array('☾真埋火☽','DH',500,500,'BZ'),),
+array('class' => 'fseed', 'stuff' => array('★华永火★','☾真焰火☽'),'result' => array('☾真永火☽','DF',500,500,'MZ'),),
+array('class' => 'fseed', 'stuff' => array('★华残火★','☾真焰火☽'),'result' => array('☾真残火☽','DA',500,500,'bZ'),),
+
+array('class' => 'fseed', 'stuff' => array('☾真焰火☽','☾真焰火☽'),'result' => array('☼焰火☼','A',3000,3000,'HZ'),),
+array('class' => 'fseed', 'stuff' => array('☾真篝火☽','☼焰火☼'),'result' => array('☼篝火☼','DB',3000,3000,'aZ'),),
+array('class' => 'fseed', 'stuff' => array('☾真埋火☽','☼焰火☼'),'result' => array('☼埋火☼','DH',3000,3000,'BZ'),),
+array('class' => 'fseed', 'stuff' => array('☾真永火☽','☼焰火☼'),'result' => array('☼永火☼','DF',3000,3000,'MZ'),),
+array('class' => 'fseed', 'stuff' => array('☾真残火☽','☼焰火☼'),'result' => array('☼残火☼','DA',3000,3000,'bZ'),),
+
+array('class' => 'fseed', 'stuff' => array('✦钥匙碎片','✦烈焰火'),'result' => array('✦种火钥匙','Y',1,1,),),
+array('class' => 'fseed', 'stuff' => array('✦种火钥匙','★华焰火★'),'result' => array('✦NPC钥匙·一阶段','Y',1,1,),),
+array('class' => 'fseed', 'stuff' => array('✦NPC钥匙·一阶段','☾真焰火☽'),'result' => array('✦✦NPC钥匙·二阶段','Y',1,1,),),
+//array('class' => 'hidden', 'stuff' => array('✦✦NPC钥匙·二阶段','☼焰火☼'),'result' => array('✦✦✦NPC钥匙·EX','Y',1,1,),),
 	
 	
 	array('class' => 'hidden', 'stuff' => array('红宝石方块','蓝宝石方块','绿宝石方块','非法枪械部件'),'result' => array('『宝石光束炮-试作型』','WG',1800,144,'ndo'),),

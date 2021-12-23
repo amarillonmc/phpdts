@@ -1251,7 +1251,7 @@ $anpcinfo = array
 	'arhk' => 'DH',
 	'arhe' => 1,
 	'arhs' => 1,
-	'arhsk' => 'A',
+	'arhsk' => 'B',
 	'arf' => '◆永火',
 	'arfk' => 'DF',
 	'arfe' => 1,
@@ -1261,7 +1261,7 @@ $anpcinfo = array
 	'arak' => 'DA',
 	'arae' => 1,
 	'aras' => 1,
-	'arask' => 'A',
+	'arask' => 'b',
 	'art' => '◆焰火',
 	'artk' => 'A',
 	'arte' => 1,
@@ -1269,8 +1269,8 @@ $anpcinfo = array
 	'artsk' => 'H',
 	'itm6' => '◆火之碎片',
 	'itmk6' => 'HB',
-	'itme6' => 25,
-	'itms6' => 30,
+	'itme6' => 13337,
+	'itms6' => 1,
 	
 	'sub' => array
 	(
@@ -1322,7 +1322,7 @@ $anpcinfo = array
 		'wepe' => 1,
 		'weps' => 50,
 		'itm5' => '◆意念数据',
-		'itmk5' => 'MH',
+		'itmk5' => 'MD',
 		'itme5' => 1,
 		'itms5' => 10,
 		),
