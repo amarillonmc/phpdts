@@ -1338,7 +1338,7 @@ $anpcinfo = array
 		'itmk5' => 'p',
 		'itme5' => 1,
 		'itms5' => 1,
-		'itmsk6' => 'ps',
+		'itmsk5' => 'ps',
 		),
 	),
 ),
