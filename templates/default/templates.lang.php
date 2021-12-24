@@ -21,6 +21,7 @@ $language = array
 	'admin' => '游戏管理',
 	'report' => '官方讨论区',
 	'vnworld' => '幻想世界',
+	'donate' =>'鸣谢名单',
 	
 	'now' => '当前时刻',
 	'gameversion' => '游戏版本',
