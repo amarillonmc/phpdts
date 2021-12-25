@@ -68,6 +68,7 @@ if(filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemti
 		'wc'=> array('投系武器','yellow'),
 		'wd'=> array('爆系武器','yellow'),
 		'wf'=> array('灵系武器','yellow'),
+		'wmu' => array('多重武器','yellow'),
 		'w' => array('其他装备','yellow'),
 		'h' => array('补给品','lime'),
 		'pokemon'=> array('小黄系道具','yellow'),
