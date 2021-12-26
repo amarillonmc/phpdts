@@ -1378,8 +1378,8 @@ function itemuse($itmn) {
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '已解锁二阶段NPC！<br>似乎凶恶NPC已经部署至游戏内……<br>';
 			//杏仁豆腐 2*2
-			addnpc ( 2, 0,2);
-			addnpc ( 2, 1,2);
+			addnpc ( 5, 0,2);
+			addnpc ( 5, 1,2);
 			//猴子 1*2
 			addnpc ( 6, 0,2);
 			//假蓝凝
