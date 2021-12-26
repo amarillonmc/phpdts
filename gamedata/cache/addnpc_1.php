@@ -1284,8 +1284,8 @@ $anpcinfo = array
 		'weps' => 50,
 		'itm5' => '◆愈合数据',
 		'itmk5' => 'HB',
-		'itme5' => '∞',
-		'itms5' => 5,
+		'itme5' => 5,
+		'itms5' => '∞',
 		),
 	1 => array
 		(
