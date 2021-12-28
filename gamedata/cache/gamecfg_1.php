@@ -2,13 +2,13 @@
 /*Game Config*/
 
 //禁区间隔时间,单位 小时
-$areahour = 40;
+$areahour = 35;
 //每次间隔增加的禁区数量
 $areaadd = 4;
 //聊天记录里的禁区提示时间，单位秒
 $areawarntime = 60;
 //玩家激活结束时的增加禁区的回数，相当于已经进行的小时数/间隔时间，〉0
-$arealimit = 2;
+$arealimit = 3;
 //是否自动逃避禁区 0=只有重视躲避自动躲避，1=所有玩家自动躲避，适合新手较多，不了解禁区机制
 $areaesc = 1;
 //是否开启死斗模式 0=关闭,1=开启。连斗后下次禁区，进入死斗状态，死斗后玩家只会遇到玩家，死斗后所有区域都将一次性宣布为禁区。（尚未完成）
@@ -19,7 +19,7 @@ $hotkeyon = 0;
 //开启NPC台词功能？0为不开启，1为开启
 $npcchaton = 1;
 //有台词的NPC
-$npccanchat = Array(1,5,6,7,9,10,12,13,15,21,22);
+$npccanchat = Array(1,5,6,7,9,10,12,13,15,21,22,92);
 //反挂机系统间隔时间，单位分钟
 $antiAFKertime = 20;
 //尸体保护时间，单位秒
@@ -29,11 +29,11 @@ $coldtimeon = 1;
 //是否显示冷却时间倒计时，0为不显示，1为显示；
 $showcoldtimer = 1;
 //移动的冷却时间，单位微秒
-$movecoldtime=900;
+$movecoldtime=821;
 //探索的冷却时间，单位微秒
-$searchcoldtime=900;
+$searchcoldtime=873;
 //使用物品的冷却时间，单位微秒
-$itemusecoldtime=600;
+$itemusecoldtime=555;
 
 //胜率榜最小参赛次数
 $winratemingames = 50;
