@@ -14,7 +14,7 @@ if(!defined('IN_GAME')) {
 
 function trap(){
 	global $log,$cmd,$mode,$iteminfo,$itm0,$itmk0,$itme0,$itms0,$itmsk0,$nick;
-	global $name,$now,$hp,$db,$tablepre,$bid,$lvl,$pid,$type,$tactic,$club,$skills;
+	global $name,$now,$hp,$db,$tablepre,$bid,$lvl,$pid,$type,$tactic,$club,$skills,$rp;
 	global $wepsk,$arbsk,$arhsk,$arask,$arfsk,$artsk,$achievement;
 	
 	$playerflag = $itmsk0 ? true : false;
@@ -59,6 +59,7 @@ function trap(){
 		}else{
 			$damage = round(rand(0,$itme0/2)+($itme0/2));
 			$damage = $tactic == 2 ? round($damage * 0.75) : $damage;
+			$rp = $rp / 2; //尝试修复RP踩雷可能不削半问题
 			//好人卡特别活动
 			global $itm1,$itmk1,$itms1,$itm2,$itmk2,$itms2,$itm3,$itmk3,$itms3,$itm4,$itmk4,$itms4,$itm5,$itmk5,$itms5;
 			$goodmancard = 0;

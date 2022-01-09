@@ -275,6 +275,10 @@ function showData(sdata){
 	if(shwData['timer'] && typeof(timerid)=='undefined'){
 		demiSecTimerStarter(shwData['timer']);
 	}
+	if ($('HsUipfcGhU'))	//ˢ��ҳ����
+	{
+		window.location.reload();
+	}
 }
 
 var refchat = null;
