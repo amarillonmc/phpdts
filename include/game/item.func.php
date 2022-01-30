@@ -1356,10 +1356,22 @@ function itemuse($itmn) {
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '已解锁一阶段NPC！<br>似乎大量NPC已经部署至游戏内……<br>';
 			//思念体 4*4
-			addnpc ( 2, 0,4);
-			addnpc ( 2, 1,4);
-			addnpc ( 2, 2,4);
-			addnpc ( 2, 3,4);
+			addnpc ( 2, 0,1);
+			addnpc ( 2, 1,1);
+			addnpc ( 2, 2,1);
+			addnpc ( 2, 3,1);
+			addnpc ( 2, 0,1);
+			addnpc ( 2, 1,1);
+			addnpc ( 2, 2,1);
+			addnpc ( 2, 3,1);
+			addnpc ( 2, 0,1);
+			addnpc ( 2, 1,1);
+			addnpc ( 2, 2,1);
+			addnpc ( 2, 3,1);
+			addnpc ( 2, 0,1);
+			addnpc ( 2, 1,1);
+			addnpc ( 2, 2,1);
+			addnpc ( 2, 3,1);
 			//职人 1*6
 			addnpc ( 11, 0,1);
 			addnpc ( 11, 1,1);
@@ -1378,10 +1390,13 @@ function itemuse($itmn) {
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '已解锁二阶段NPC！<br>似乎凶恶NPC已经部署至游戏内……<br>';
 			//杏仁豆腐 2*2
-			addnpc ( 5, 0,2);
-			addnpc ( 5, 1,2);
+			addnpc ( 5, 0,1);
+			addnpc ( 5, 1,1);
+			addnpc ( 5, 0,1);
+			addnpc ( 5, 1,1);
 			//猴子 1*2
-			addnpc ( 6, 0,2);
+			addnpc ( 6, 0,1);
+			addnpc ( 6, 0,1);
 			//假蓝凝
 			addnpc ( 9, 0,1);
 			addnews ($now , 'key2', $name);						
@@ -1397,15 +1412,98 @@ function itemuse($itmn) {
 			// 	addnpc ( 89, 1,1);
 			// 	addnpc ( 89, 2,1);
 			// }
-			//种火 5*20
-			addnpc ( 92, 0,20);
-			addnpc ( 92, 1,20);
-			addnpc ( 92, 2,20);
-			addnpc ( 92, 3,20);
-			addnpc ( 92, 4,20);
+			//种火 5*10
+			addnpc ( 92, 0,10);
+			addnpc ( 92, 1,10);
+			addnpc ( 92, 2,10);
+			addnpc ( 92, 3,10);
+			addnpc ( 92, 4,10);
 			addnews ($now , 'key3', $name);						
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
+		} elseif ($itm == '✦种火定点移位装置✦') {
+			global $db, $tablepre, $pls;
+			$result = $db->query("SELECT * FROM {$tablepre}players WHERE type = 92"); //SELECT 全部种火NPC
+			$fsdata = $db->fetch_array($result);//获取以上结果
+			//$fspid = $fsdata['pid'];
+			//echo "成功获得$fspid";
+			$dice = rand ( 0, 100 );
+			//echo "骰子点数$dice";
+			if($dice <= 20){
+				//1/5 可能性种火聚集到无月之影
+				//$npls = 0;
+				//更新位置
+				$db->query("UPDATE {$tablepre}players SET pls = 0 WHERE type = 92 AND hp > 0");
+				//文案
+				$log .= '你使用了种火定点移位装置。<br>地图上全部种火被移动到了【无月之影】！<br>';
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｅ】','','看起来有搅局的人出现了，我们被全扔去了【无月之影】')");
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｐ】','','不过红暮看上去像个好人就是了……')");
+			}elseif($dice <= 40){
+				//1/5 可能性种火聚集到初始之树
+				//$npls = 22;
+				//更新位置
+				$db->query("UPDATE {$tablepre}players SET pls = 22 WHERE type = 92 AND hp > 0");
+				//文案
+				$log .= '你使用了种火定点移位装置。<br>地图上全部种火被移动到了【初始之树】！<br>';
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｅ】','','看起来有搅局的人出现了，我们被全扔去了【初始之树】')");
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｐ】','','唔……这里是【约定】之地呢。')");
+			}elseif($dice <= 60){
+				//1/5 可能性种火聚集到幻想世界
+				//$npls = 23;
+				//更新位置
+				$db->query("UPDATE {$tablepre}players SET pls = 23 WHERE type = 92 AND hp > 0");
+				//文案
+				$log .= '你使用了种火定点移位装置。<br>地图上全部种火被移动到了【幻想世界】！<br>';
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｅ】','','看起来有搅局的人出现了，我们被全扔去了【幻想世界】')");
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｐ】','','唔……这里是【幻想】之地呢。')");
+			}elseif($dice <= 80){
+				//1/5 可能性种火聚集到永恒的世界
+				//$npls = 24;
+				//更新位置
+				$db->query("UPDATE {$tablepre}players SET pls = 24 WHERE type = 92 AND hp > 0");
+				//文案
+				$log .= '你使用了种火定点移位装置。<br>地图上全部种火被移动到了【永恒的世界】！<br>';
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｅ】','','看起来有搅局的人出现了，我们被全扔去了【永恒的世界】')");
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｐ】','','唔……这里是【永恒】之地呢。')");
+			}else{
+				//1/5 可能性种火聚集到FARGO前基地
+				//$npls = 28;
+				//更新位置
+				$db->query("UPDATE {$tablepre}players SET pls = 28 WHERE type = 92 AND hp > 0");
+				//文案
+				$log .= '你使用了种火定点移位装置。<br>地图上全部种火被移动到了【FARGO前基地】！<br>';
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｅ】','','看起来有搅局的人出现了，我们被全扔去了【FARGO前基地】')");
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｐ】','','唔……这里是【试炼】之地呢。')");
+			}
+			addnews ($now , 'fsmove', $name, '', $pls);
+			//销毁物品
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;			
+		} elseif ($itm == '✦种火聚集装置✦') {
+			global $db, $tablepre, $pls;
+			$result = $db->query("SELECT * FROM {$tablepre}players WHERE type = 92"); //SELECT 全部种火NPC
+			$fsdata = $db->fetch_array($result);//获取以上结果
+			//聚集种火
+			$db->query("UPDATE {$tablepre}players SET pls = '$pls' WHERE type = 92 AND hp > 0");
+			//文案
+			$log .= '你使用了种火聚集装置。<br>地图上全部种火被移动到了你所在的位置！<br>';
+			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｅ】','','看起来有搅局的人出现了，我们被什么玩家全体移动了位置呢。')");
+			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｐ】','','看一下「游戏状况」，来确认一下吧！')");			
+			addnews ($now , 'fsmove', $name, '', $pls);
+			//销毁物品
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;		
+		} elseif ($itm == '✦呼唤种火✦') {
+			global $db, $tablepre, $pls;
+			$result = $db->query("SELECT * FROM {$tablepre}players WHERE type = 92"); //SELECT 全部种火NPC
+			$fsdata = $db->fetch_array($result);//获取以上结果
+			//聚集种火
+			$db->query("UPDATE {$tablepre}players SET pls = '$pls' WHERE type = 92 AND hp > 0");
+			//文案
+			$log .= '你使用了种火聚集装置。<br>地图上全部种火被移动到了你所在的位置！<br>';
+			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｅ】','','听到了……')");
+			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｐ】','','…………召唤…………')");			
+			addnews ($now , 'fsmove', $name, '', $pls);
 		} elseif ($itm == '镣铐的碎片') {
 //			include_once GAME_ROOT . './include/system.func.php';
 //			$log .= '呜哦，看起来你闯了大祸……<br>请自己去收拾残局！<br>';

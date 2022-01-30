@@ -85,7 +85,7 @@ if($mode == 'enter') {
 	$itm[5] = '秋刀鱼罐头'; $itmk[5] = 'HB'; $itme[5] = 70; $itms[5] = 15;
 	
 	if ($wingames <=1){
-	$itm[6] = '银白盒子'; $itmk[6] = 'p'; $itme[6] = 1; $itms[6] = 1; $itmsk[6] = 'ps';
+	$itm[6] = '银白盒子'; $itmk[6] = 'ps'; $itme[6] = 1; $itms[6] = 1; $itmsk[6] = '';
 	}
 	
 	$weplist = openfile(config('stwep',$gamecfg));

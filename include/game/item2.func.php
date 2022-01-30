@@ -181,7 +181,7 @@ function newradar($m = 0){
 			return;
 		}
 	}
-	$npctplist = Array(90,2,5,6,7,11,14);
+	$npctplist = Array(90,92,2,5,6,7,11,14,89);
 	$tdheight = 20;
 	$screenheight = count($plsinfo)*$tdheight;
 	if (CURSCRIPT == 'botservice') 

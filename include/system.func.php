@@ -333,7 +333,7 @@ function add_once_area($atime) {
 					do{$pls = $arealist[rand($areanum+1,$plsnum)];}while ($pls==34);
 					$db->query("UPDATE {$tablepre}players SET pls='$pls' WHERE pid=$pid ");
 					}
-				} elseif($sub['type'] != 1 && $sub['type'] != 7 && $sub['type'] != 9 && $sub['type'] != 13 && $sub['type'] != 20 && $sub['type'] != 21 && $sub['type'] != 88 && $sub['type'] != 22) {
+				} elseif($sub['type'] != 1 && $sub['type'] != 7 && $sub['type'] != 9 && $sub['type'] != 13 && $sub['type'] != 20 && $sub['type'] != 21 && $sub['type'] != 88 && $sub['type'] != 22 && $sub['type'] != 92) {
 					do{$pls = $arealist[rand($areanum+1,$plsnum)];}while ($pls==34);
 					$db->query("UPDATE {$tablepre}players SET pls='$pls' WHERE pid=$pid");
 				}

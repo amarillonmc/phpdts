@@ -63,10 +63,11 @@ $language = array
 	'wingames' => '获胜场数',
 	'winrate' => '胜率',
 	'end_achievement' => '结局成就',
-	'mixitem_achievement' => '道具成就',
+	'mixitem_achievement' => '合成成就',
 	'battle_achievement' => '战斗成就',
 	'trap_achievement' => '陷阱成就',
 	'other_achievement' => '挑战成就',
+	'lifetime_achievement' => '生涯成就',
 	
 	
 	'valid' => '入场手续',
@@ -125,7 +126,7 @@ $language = array
 	'ss' => '歌魂',
 	'karma' => '罪业',
 	'skillpoint' => '技能点',
-	'newsnotice' => '<span class="evergreen">“各位仍在努力奋战，咱很欣慰。<br />以下是到现在为止的游戏状况。<br />请各位再接再厉。”</span>',
+	'newsnotice' => '<span class="evergreen">“各位仍在努力奋战，真不错啊。<br />就继续为了「我们」和「你们自己」战斗吧！<br />以下是到现在为止的游戏状况。<br />请各位再接再厉。”</span>',
 	'useitem' => '>>使用',
 	'end' => '游戏结束！',
 	'send' => '发送',
