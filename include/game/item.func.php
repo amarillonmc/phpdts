@@ -1072,7 +1072,54 @@ function itemuse($itmn) {
 			addnews ( $now, 'wthchange', $name, $weather );
 			$log .= "你转动了几下天候棒。<br>天气突然转变成了<span class=\"red b\">$wthinfo[$weather]</span>！<br>";
 			$itms --;
-
+		}	elseif ($itm == '天然呆四面的奖赏') {
+			global $wep, $wepk, $wepe, $weps, $wepsk;
+			if (! $weps || ! $wepe) {
+				$log .= '请先装备武器。<br>';
+				return;
+			}
+			if (strpos($wepsk,'j')!==false){
+				$log.='多重武器不能改造。<br>';
+				return;
+			}
+			if (strpos($wepsk,'O')!==false){
+				$log.='进化武器不能改造。<br>';
+				return;
+			}
+			$log .= "使用了<span class='yellow'>天然呆四面的奖赏</span>。<br>";
+			$log .= "你召唤了<span class='lime'>天然呆四面</span>对你的武器进行改造！<br>";
+			addnews ( $now, 'newwep', $name, $itm, $wep );
+			$dice=rand(0,99);
+			if ($dice<70)
+			{
+				$log.="<span class='lime'>天然呆四面</span>把你的武器弄坏了！<br>";
+				$log.="你的武器变成了一块废铁！<br>";
+				$log.="<span class='lime'>“不小心把你的武器弄坏了，还真是对不起呢……<br>";
+				$wep="一块废铁"; $wepk="WP"; $wepe=1; $weps=1; $wepsk="";
+				$log.="那么…… 给你点补偿吧，请务必收下。”<br></span>";
+				$itm=""; $itmk=""; $itme=0; $itms=0; $itmsk="";
+				$dice2=rand(0,99);
+				global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
+				$itm0='四面亲手制作的■DeathNote■'; $itmk0='Y'; $itme0=1; $itms0=1; $itmsk0='z';
+				include_once GAME_ROOT . './include/game/itemmain.func.php';
+				itemget();
+			}
+			else  if ($dice<90)
+			{
+				$log.="<span class='lime'>天然呆四面</span>把玩了一会儿你的武器。<br>";
+				$log.="你的武器的耐久似乎稍微多了一点。<br>";
+				if (strpos ( $wep, '-改' ) === false) $wep = $wep . '-改';
+				$weps += ceil ( $wepe / 200 );
+				$itm=""; $itmk=""; $itme=0; $itms=0; $itmsk="";
+			}
+			else
+			{
+				$log.="<span class='lime'>天然呆四面</span>把玩了一会儿你的武器。<br>";
+				$log.="你的武器似乎稍微变强了一点。<br>";
+				if (strpos ( $wep, '-改' ) === false) $wep = $wep . '-改';
+				$wepe += ceil ( $wepe / 200 );
+				$itm=""; $itmk=""; $itme=0; $itms=0; $itmsk="";
+			}
 		}	elseif ($itm == '武器师安雅的奖赏') {
 			global $wep, $wepk, $wepe, $weps, $wepsk, $wp, $wk, $wg, $wc, $wd, $wf;
 			if (! $weps || ! $wepe) {
