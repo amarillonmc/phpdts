@@ -200,7 +200,15 @@ function itemfind() {
 function itemget() {
 	global $log,$nosta,$mode,$itm0,$itmk0,$itme0,$itms0,$itmsk0,$cmd;
 	$log .= "获得了物品<span class=\"yellow\">$itm0</span>。<br>";
-	
+	//PORT
+	if(strpos($itmsk0,'^')!==false){
+		$keep_flag = false;
+		include_once GAME_ROOT . './include/game/itembag.func.php';
+		replace_itembag($keep_flag);
+		if(!$keep_flag){
+			return;
+		}
+	}
 	if(preg_match('/^(WC|WD|WF|Y|B|C|TN|GB|M|V)/',$itmk0) && $itms0 !== $nosta){
 		global $wep,$wepk,$wepe,$weps,$wepsk;
 		if($wep == $itm0 && $wepk == $itmk0 && $wepe == $itme0 && $wepsk == $itmsk0){
@@ -287,6 +295,25 @@ function itemdrop($item) {
 		$itme = & ${'itme'.$itmn};
 		$itms = & ${'itms'.$itmn};
 		$itmsk = & ${'itmsk'.$itmn};
+	}
+	//PORT
+	if(strpos($itmsk,'^')!==false){
+		$dflag=true;
+		for($i=1;$i<=6;$i++){
+			global ${'itm'.$i},${'itmk'.$i},${'itme'.$i},${'itms'.$i},${'itmsk'.$i};
+			if(strpos(${'itmsk'.$i},'^')!==false && ${'itms'.$i} && ${'itme'.$i}){
+				$dflag=false;
+				break;
+			}
+		}
+		global $arbsk,$arbs,$arbe;
+		if(strpos($arbsk,'^')!==false  && $arbs && $arbe){
+			$dflag=false;
+		}
+		if ($dflag){
+			include_once GAME_ROOT . './include/game/itembag.func.php';
+			drop_itembag();
+		}
 	}
 if(($itmk=='XX')||(($itmk=='XY'))){
 		$log .= '该物品不能丢弃。<br>';

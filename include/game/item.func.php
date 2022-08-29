@@ -63,6 +63,11 @@ function itemuse($itmn) {
 			$mode = 'command';
 			return;
 		}
+		//PORT
+		if(strpos($itmsk,'^')!==false){
+			global $itmnumlimit;
+			$itmnumlimit = $itme>=$itms ? $itms : $itme;
+		}
 		if (($noeqp && strpos ( ${$eqp.'k'}, $noeqp ) === 0) || ! ${$eqp.'s'}) {
 			${$eqp} = $itm;
 			${$eqp.'k'} = $itmk;
@@ -1016,6 +1021,8 @@ function itemuse($itmn) {
 			global $arb, $arbk, $arbe, $arbs, $arbsk, $noarb;
 			if (($arb == $noarb) || ! $arb) {
 				$log .= '你没有装备防具，不能使用针线包。<br>';
+			} elseif(strpos($arbsk,'^')!==false){
+				$log .= '<span class="yellow">你不能对背包使用针线包。<br>';
 			} elseif(strpos($arbsk,'Z')!==false){
 				$log .= '<span class="yellow">该防具太单薄以至于不能使用针线包。</span><br>你感到一阵蛋疼菊紧，你的蛋疼度增加了<span class="yellow">233</span>点。<br>';
 			}else {
@@ -1573,6 +1580,58 @@ function itemuse($itmn) {
 //			if($n_name){
 //				addnews($now , 'evonpc','红暮', $n_name);
 //			}
+		} elseif($itm == '【Ｄ】电子狐召唤机') {
+			include_once GAME_ROOT . './include/system.func.php';
+			addnpc(89,0,1);
+			$log.= '你成功召唤了电子狐，去测试吧。<br>';
+		} elseif($itm == '【Ｄ】百命猫召唤机') {
+			include_once GAME_ROOT . './include/system.func.php';
+			addnpc(89,1,1);
+			$log.= '你成功召唤了百命猫，去测试吧。<br>';
+		} elseif($itm == '【Ｄ】笼中鸟召唤机') {
+			include_once GAME_ROOT . './include/system.func.php';
+			addnpc(89,2,1);
+			$log.= '你成功召唤了笼中鸟，去测试吧。<br>';
+		} elseif($itm == '【Ｄ】走地羊召唤机') {
+			include_once GAME_ROOT . './include/system.func.php';
+			addnpc(89,3,1);
+			$log.= '你成功召唤了走地羊，去测试吧。<br>';
+		} elseif($itm == '【Ｄ】书中虫召唤机') {
+			include_once GAME_ROOT . './include/system.func.php';
+			addnpc(89,4,1);
+			$log.= '你成功召唤了书中虫，去测试吧。<br>';
+		} elseif($itm == '【Ｄ】迷你蜂召唤机') {
+			include_once GAME_ROOT . './include/system.func.php';
+			addnpc(89,5,1);
+			$log.= '你成功召唤了迷你蜂，去测试吧。<br>';
+		} elseif($itm == '【Ｄ】种火花召唤机') {
+			include_once GAME_ROOT . './include/system.func.php';
+			addnpc(89,6,1);
+			$log.= '你成功召唤了种火花，去测试吧。<br>';
+		} elseif($itm == '电掣召唤仪') {
+			include_once GAME_ROOT . './include/system.func.php';
+			$dice = rand(0,6);
+			if($dice==0){
+				addnpc(89,0,1);
+			}elseif($dice==1){
+				addnpc(89,1,1);
+			}elseif($dice==2){
+				addnpc(89,2,1);
+			}elseif($dice==3){
+				addnpc(89,3,1);
+			}elseif($dice==4){
+				addnpc(89,4,1);
+			}elseif($dice==5){
+				addnpc(89,5,1);
+			}elseif($dice==6){
+				addnpc(89,6,1);
+			}else{
+				addnpc(89,6,1);
+			}
+			$log.= '【电掣】公司为你服务，你点的神秘乐子已送达，祝你愉快！<br>';
+			//销毁物品
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
 		} elseif ($itm == '提示纸条A') {
 			$log .= '你读着纸条上的内容：<br>“执行官其实都是幻影，那个红暮的身上应该有召唤幻影的玩意。”<br>“用那个东西然后打倒幻影的话能用游戏解除钥匙出去吧。”<br>';
 		} elseif ($itm == '提示纸条B') {

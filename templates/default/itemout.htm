@@ -1,0 +1,10 @@
+你想从背包内取出哪件道具？<br>
+
+<input type="hidden" name="mode" value="itemmain">
+<input type="hidden" name="command" id="command" value="menu">
+<br>
+	<!--{loop array_keys($itemlist) $iid}-->
+	<input type="button" class="cmdbutton" name="submit" value="取出" onclick="$('command').value='usebagitm_$iid';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itemlist[$iid]['itm']}</span>/{$itemlist[$iid]['itme']}/{$itemlist[$iid]['itms']}<br>
+	<!--{/loop}-->
+<br>
+<input type="button" class="cmdbutton" name="submit" value="放弃" onclick="postCmd('gamecmd','command.php');this.disabled=true;">

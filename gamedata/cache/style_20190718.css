@@ -78,6 +78,24 @@ table.admin td.tdtitle {
 .linen{color:rgb(200,192,184); font: bold 10pt "微软雅黑" serif;line-height:16px}
 .L5{color: #ff0000;font: bold 10pt "微软雅黑" serif;line-height:16px;background:url("../../img/backround4.gif") repeat-x;}
 
+@keyframes blueflicker {
+	0%, 18%, 22%, 25%, 53%, 57%, 100% {
+	  text-shadow:
+		0 0 4px #fff,
+		0 0 7px #fff,
+		0 0 10px #fff,
+		0 0 15px #00ffff,
+		0 0 22px #00ffff,
+		0 0 35px #00ffff,
+		0 0 40px #0060ff,
+		0 0 50px #0060ff;
+	}
+	20%, 24%, 55% {       
+	  text-shadow: none;
+	}
+  }
+.neonblue{animation: blueflicker 1.5s infinite alternate;font: bold 10pt "微软雅黑" serif;line-height:16px}
+
 #main {
 white-space:nowrap;
 vertical-align:middle;

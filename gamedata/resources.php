@@ -1,6 +1,7 @@
 <?php
 
 /*Game resources*/
+/*UNUSED FOR NOW*/
 
 //■ 空手武器 ■
 $nowep = '拳头';

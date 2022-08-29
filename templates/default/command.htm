@@ -37,7 +37,12 @@
 	<input type="button" class="cmdbutton" id="itemdrop" name="itemdrop" value="道具移动" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='itemmove';postCmd('gamecmd','command.php');this.disabled=true;">
 	<input type="button" class="cmdbutton" id="itemdrop" name="itemdrop" value="道具丢弃" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='itemdrop';postCmd('gamecmd','command.php');this.disabled=true;">
 	<input type="button" class="cmdbutton" id="sp_weapon" name="sp_weapon" value="武器模式" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_weapon';postCmd('gamecmd','command.php');this.disabled=true;">
-
+	<!--{if strpos($arbsk,'^')!==false && $arbs && $arbe}-->
+	<br>
+	<input type="button" class="cmdbutton" id="itemencase" name="itemencase" value="存放道具" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='itemencase';postCmd('gamecmd','command.php');this.disabled=true;">
+	<input type="button" class="cmdbutton" id="itemout" name="itemout" value="取出道具" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='itemout';postCmd('gamecmd','command.php');this.disabled=true;">
+	<input type="button" class="cmdbutton" id="itemmain" name="itemmain" value="背包信息" onclick="$('mode').value='itemmain';$('command').value='iteminfo';postCmd('gamecmd','command.php');this.disabled=true;">
+	<!--{/if}-->
 	<br />
 <input type="button" class="cmdbutton" id="rest1" name="rest1" value="睡眠" onclick="$('command').value='rest1';postCmd('gamecmd','command.php');this.disabled=true;">
 <input type="button" class="cmdbutton" id="rest2" name="rest2" value="治疗" onclick="$('command').value='rest2';postCmd('gamecmd','command.php');this.disabled=true;">

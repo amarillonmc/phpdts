@@ -98,6 +98,53 @@ function death($death, $kname = '', $ktype = 0, $annex = '') {
 		$alivenum++;
 	}
 	
+	//PORT
+	//死亡时灵魂绑定的道具也会消失
+	global $wep,$arb,$arh,$ara,$arf,$art,$itm1,$itm2,$itm3,$itm4,$itm5,$itm6;
+	global $weps,$arbs,$arhs,$aras,$arfs,$arts,$itms1,$itms2,$itms3,$itms4,$itms5,$itms6;
+	global $wepe,$arbe,$arhe,$arae,$arfe,$arte,$itme1,$itme2,$itme3,$itme4,$itme5,$itme6;
+	global $wepk,$arbk,$arhk,$arak,$arfk,$artk,$itmk1,$itmk2,$itmk3,$itmk4,$itmk5,$itmk6;
+	global $wepsk,$arbsk,$arhsk,$arask,$arfsk,$artsk,$itmsk1,$itmsk2,$itmsk3,$itmsk4,$itmsk5,$itmsk6;
+	global $log;
+		for($i = 1;$i <= 6;$i++){
+			if(strpos(${'itmsk'.$i},'v')!==false){
+			$log .= "伴随着你的死亡，<span class=\"yellow\">${'itm'.$i}</span>也化作灰烬消散了。<br>";
+			${'itm'.$i} = ${'itmk'.$i} = ${'itmsk'.$i} = '';
+			${'itme'.$i} = ${'itms'.$i} = 0;
+			//return;
+			}
+			if(strpos($wepsk,'v')!==false){
+			$log .= "伴随着你的死亡，<span class=\"yellow\">{$wep}</span>也化作灰烬消散了。<br>";
+			$wep='拳头';$wepk ='WN';$wepsk ='';
+			$weps='∞';$wepe = 0;
+			}
+			if(strpos($arbsk,'v')!==false){
+			$log .= "伴随着你的死亡，<span class=\"yellow\">{$arb}</span>也化作灰烬消散了。<br>";
+			$arb='内衣';$arbk ='DN';$arbsk ='';
+			$arbs='∞';$arbe = 0;
+			}
+			if(strpos($arhsk,'v')!==false){
+			$log .= "伴随着你的死亡，<span class=\"yellow\">{$arh}</span>也化作灰烬消散了。<br>";
+			$arh=$arhk=$arhsk ='';
+			$arhs=$arhe = 0;
+			}
+			if(strpos($arask,'v')!==false){
+			$log .= "伴随着你的死亡，<span class=\"yellow\">{$ara}</span>也化作灰烬消散了。<br>";
+			$ara=$arak=$arask ='';
+			$aras=$arae = 0;
+			}
+			if(strpos($arfsk,'v')!==false){
+			$log .= "伴随着你的死亡，<span class=\"yellow\">{$arf}</span>也化作灰烬消散了。<br>";
+			$arf=$arfk=$arfsk ='';
+			$arfs=$arfe = 0;
+			}
+			if(strpos($artsk,'v')!==false){
+			$log .= "伴随着你的死亡，<span class=\"yellow\">{$art}</span>也化作灰烬消散了。<br>";
+			$art=$artk=$artsk ='';
+			$arts=$arte = 0;
+			}
+		}
+
 	$alivenum --;
 	$deathnum ++;
 	save_gameinfo ();

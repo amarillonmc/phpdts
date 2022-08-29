@@ -206,7 +206,7 @@ CREATE TABLE bra_players (
   pass char(32) NOT NULL default '',
   gd char(1) NOT NULL default 'm',
   sNo smallint unsigned NOT NULL default 0,
-  icon tinyint unsigned NOT NULL default 0,
+  icon smallint unsigned NOT NULL default 0,
   club tinyint unsigned NOT NULL default 0,
   endtime int(10) unsigned NOT NULL default 0,
   hp smallint unsigned NOT NULL default 0,

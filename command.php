@@ -76,6 +76,15 @@ if($hp > 0){
 		getclub($name,$c1,$c2,$c3);
 		$clubavl[0]=0; $clubavl[1]=$c1; $clubavl[2]=$c2; $clubavl[3]=$c3;
 	}
+
+	//PORT
+		//判断背包内道具是否超限
+		if(strpos($arbsk,'^')!==false && $arbs && $arbe){
+			global $itmnumlimit;
+			$itmnumlimit = $arbe>=$arbs ? $arbs : $arbe;
+			include_once GAME_ROOT.'./include/game/itembag.func.php';
+			overnumlimit();
+		}
 	
 	//判断冷却时间是否过去
 	if($coldtimeon){
@@ -271,6 +280,31 @@ if($hp > 0){
 						itemmix($mixlist,$itemselect);
 					else  itemmix($mixlist);
 				}
+			} elseif($command == 'itemencase') {
+				if(strpos($arbsk,'^')!==false && $arbs && $arbe){
+					$ilist = array();
+					for($i=1;$i<=6;$i++){
+						if(isset(${'mitm'.$i}) && ${'mitm'.$i} == $i){
+							$ilist[] = $i;
+						}
+					}
+					item_encase($ilist);
+				}else{
+					$log.="<span class='red'>你身上没有背包，或是没有将背包装备上！<br>";
+				}
+			} elseif($command == 'iteminfo') {
+				if(strpos($arbsk,'^')!==false && $arbs && $arbe){
+					item_info();
+				}else{
+					$log.="<span class='red'>你身上没有背包，或是没有将背包装备上！<br>";
+				}
+			} elseif(strpos($command,'usebagitm') !==false) {
+				if(strpos($arbsk,'^')!==false && $arbs && $arbe){
+					$itemid = substr($command,10);
+					item_out($itemid);
+				}else{
+					$log.="<span class='red'>你身上没有背包，或是没有将背包装备上！<br>";
+				}
 			}
 		} elseif($mode == 'special') {
 			include_once GAME_ROOT.'./include/game/special.func.php';
@@ -392,6 +426,11 @@ if($hp > 0){
 			//$psdata = Array('pid' => $pid, 'cdsec' => $cdsec, 'cdmsec' => $cdmsec, 'cdtime' => $cdtime, 'cmd' => $mode);
 			//set_pstate($psdata);
 			$rmcdtime = $cmdcdtime;
+		}
+		//读取背包内道具
+		if(strpos($arbsk,'^')!==false && $arbs && $arbe){
+			include_once GAME_ROOT.'./include/game/itembag.func.php';
+			$itemlist = item_arr();
 		}
 		$endtime = $now;
 		$cmdnum ++;

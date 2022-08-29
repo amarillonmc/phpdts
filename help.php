@@ -35,6 +35,7 @@ $ty7[1]=13;
 $ty8[1]=15;
 $ty9[1]=22;
 $ty10[1]=21;
+$ty11[1]=89;
 
 if(filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemtime($writefile) || filemtime($mapitemfile) > filemtime($writefile) || filemtime($synfile) > filemtime($writefile) || filemtime($ovlfile) > filemtime($writefile) || filemtime($presentfile) > filemtime($writefile) || filemtime($boxfile) > filemtime($writefile)){
 	$mixitem = array();

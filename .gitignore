@@ -41,7 +41,8 @@ templates/default/lastgb.htm
 templates/default/lastnews.htm
 templates/default/move.htm
 
-
+# PSD Material
+*.psd
 
 # =========================
 # Operating System Files
@@ -69,3 +70,4 @@ Temporary Items
 .apdisk
 web.config
 
+*.psd
