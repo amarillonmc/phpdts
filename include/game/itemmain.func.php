@@ -59,7 +59,7 @@ function trap(){
 		}else{
 			$damage = round(rand(0,$itme0/2)+($itme0/2));
 			$damage = $tactic == 2 ? round($damage * 0.75) : $damage;
-			$rp = $rp / 2; //尝试修复RP踩雷可能不削半问题
+			
 			//好人卡特别活动
 			global $itm1,$itmk1,$itms1,$itm2,$itmk2,$itms2,$itm3,$itmk3,$itms3,$itm4,$itmk4,$itms4,$itm5,$itmk5,$itms5;
 			$goodmancard = 0;
@@ -83,6 +83,8 @@ function trap(){
 				addnews($now,'trap',$nick.' '.$name,$trname,$itm0);
 			}
 			$log .= "糟糕，你触发了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>！受到<span class=\"dmg\">$damage</span>点伤害！<br>";
+			$rp = $rp / 2; //尝试修复RP踩雷可能不削半问题
+			//$log .= "【DEBUG】你目前的rp为<span class=\"dmg\">$rp</span>！<br>";
 			if($goodmancard){
 				$gm = ceil($goodmancard*rand(80,120)/100);
 				$log .= "在你身上的<span class=\"yellow\">好人卡</span>的作用下，你受到的伤害增加了<span class=\"red\">$gm</span>点！<br>";
@@ -325,11 +327,16 @@ if(($itmk=='XX')||(($itmk=='XY'))){
 		$mode = 'command';
 		return;
 	}
+	if(strpos($itmsk,'v')!==false){
+		$log .= "{$itm}在地上化作点点碎片，随风消逝了。<br>";
+		$log .= "你摧毁了<span class=\"red\">$itm</span>。<br>";
+	}else{
 //	$mapfile = GAME_ROOT."./gamedata/mapitem/{$pls}mapitem.php";
 //	$itemdata = "$itm,$itmk,$itme,$itms,$itmsk,\n";
 //	writeover($mapfile,$itemdata,'ab');
 	$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk ,pls) VALUES ('$itm', '$itmk', '$itme', '$itms', '$itmsk', '$pls')");
 	$log .= "你丢弃了<span class=\"red\">$itm</span>。<br>";
+	}
 	$mode = 'command';
 	if($item == 'wep'){
 	$itm = '拳头';

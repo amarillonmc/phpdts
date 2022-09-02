@@ -2409,6 +2409,11 @@ $npcinfo = array
 			'arak' => 'DA',
 			'arae' => 220,
 			'aras' => 100,
+			'wep' => '厚重的拳头',
+			'wepk' => 'WN',
+			'wepe' => 333,
+			'weps' => 9999,
+			'wepsk' => 'N',
 			),
 			4 => array
 			(
@@ -2522,8 +2527,8 @@ $npcinfo = array
 			'arae' => 500,
 			'aras' => 500,
 			'arask' => 'bZ',
-			'wep' => '魔法毒针',
-			'wepk' => 'WK',
+			'wep' => '☾ΡΑΘΘЙΨΜЙΨΑП☾',
+			'wepk' => 'WF',
 			'wepe' => 400,
 			'weps' => 9999,
 			'wepsk' => 'pv',
