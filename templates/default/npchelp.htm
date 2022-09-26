@@ -46,6 +46,7 @@
 <p><span class="lime">特殊NPC 简介</span>：</p>
 通过使用各种方式获得特殊的NPC钥匙，可以随机刷出一些具有特别机制的NPC。<br>他们会掉落一些同样提供特殊机制的物品。<br>
 此类NPC往往颇有实力，请注意自己的能力再前往挑战。由于这些NPC都拥有反常的机制，请勿过于依赖以下提供的信息，否则后果自负。<br>
+某些NPC的特殊机制可以让玩家使用，对应的物品将会<span class="spitem">标亮</span>，将鼠标悬浮在这些物品上可以查看机制说明。<br>
 下列的每一种卡池，可以刷出对应卡池的NPC。<br>
 <span class="yellow">Vol.1：电掣召唤仪</span><br>
 该物品可刷出以下NPC：<br>
@@ -92,6 +93,13 @@ AI会根据玩家目前的<span class="yellow">rp和APM</span>判定是不是目
 由於大多数武神拥有<span class="yellow">“强袭姿态”</span>，先攻率远高于其他NPC，是进军英灵殿玩家的最大威胁。<br>
 <br>
 <!--{loop $ty10 $vkind $kind}-->
+{template npcinfohelp}
+<!--{/loop}-->
+<p><span class="lime">巫师NPC 简介</span>：</p>
+巫师称号授予参与过常磐大逃杀GE900+版本后开发工作的人员。对巫师的命名与定义，请参见<a href="https://bbs.brdts.online/?thread-10.htm">这篇博文</a>的最后一段。<br>
+巫师全体坐镇在英灵殿，比英灵殿中的英雄NPC稍强一点，但装备着可以完全免疫三次伤害的饰品，请多加小心（？）<br>
+<br>
+<!--{loop $ty12 $vkind $kind}-->
 {template npcinfohelp}
 <!--{/loop}-->
 <br>

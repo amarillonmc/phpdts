@@ -361,9 +361,9 @@ $enpcinfo = array
 		),
 	),
 	89 => array(
-		'百命猫' => array
+		'是TSEROF啦！' => array
 		(
-			'name' => '百命猫',
+			'name' => '是TSEROF啦！',
 			'gd' => 'f',
 			'icon' => 152,
 			'state' => 1,
@@ -407,9 +407,9 @@ $enpcinfo = array
 			'itms4' => 1,
 			'itmsk4' => 'Z',
 		),
-		'书中虫' => array
+		'高中生·白神' => array
 		(
-			'name' => '书中虫·讨价还价',
+			'name' => '白神·讨价还价',
 			'gd' => 'f',
 			'icon' => 155,
 			'state' => 1,
@@ -449,9 +449,9 @@ $enpcinfo = array
 			'itms4' => 25,
 			'itmsk4' => '^',
 		),
-		'书中虫·讨价还价' => array
+		'白神·讨价还价' => array
 		(
-			'name' => '书中虫·接受',
+			'name' => '白神·接受',
 			'gd' => 'f',
 			'icon' => 155,
 			'state' => 1,

@@ -190,7 +190,7 @@ function check_mixitem_achievement($nn,$item)
 	if ($item=="影刀【秋岚】") 
 	{
 		update_achievement(33,$nn,((int)fetch_achievement(33,$nn))+1);
-		if ((int)fetch_achievement(33,$nn)>=1 && (check_achievement(15,$nn)<999)) {
+		if ((int)fetch_achievement(33,$nn)>=1 && (check_achievement(33,$nn)<999)) {
 		done_achievement(33,999,$nn);
 		$db->query("UPDATE {$tablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$tablepre}users SET credits2=credits2+522 WHERE username='".$nn."'" );

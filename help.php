@@ -26,7 +26,7 @@ for ($i=1; $i<=6; $i++) $itemlst[$i]=$i;
 // $ty7[1]=22;
 // $ty8[1]=21;
 $ty1[1]=1; $ty1[3]=88;
-$ty2[1]=5; $ty2[2]=6;
+$ty2[1]=5; $ty2[2]=6; $ty2[3]=19;
 $ty3[1]=11;
 $ty4[1]=90; $ty4[2]=92;
 $ty5[1]=2;
@@ -36,6 +36,7 @@ $ty8[1]=15;
 $ty9[1]=22;
 $ty10[1]=21;
 $ty11[1]=89;
+$ty12[1]=24;
 
 if(filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemtime($writefile) || filemtime($mapitemfile) > filemtime($writefile) || filemtime($synfile) > filemtime($writefile) || filemtime($ovlfile) > filemtime($writefile) || filemtime($presentfile) > filemtime($writefile) || filemtime($boxfile) > filemtime($writefile)){
 	$mixitem = array();

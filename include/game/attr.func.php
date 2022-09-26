@@ -8,7 +8,7 @@ global $gamecfg;
 include_once config('combatcfg',$gamecfg);
 
 /*
-$poseinfo = Array('通常','作战姿态','','探物姿态','偷袭姿态','治疗姿态');
+$poseinfo = Array('通常','作战姿态','强袭姿态','探物姿态','偷袭姿态','治疗姿态','狂飙姿态');
 $tacinfo = Array('通常','','重视防御','重视反击','重视躲避',);
 
 */
@@ -20,7 +20,7 @@ function get_find_r($weather = 0,$pls = 0,$pose = 0,$tactic = 0,$club = 0,$inf =
 		'weather' => array(10,20,0,-2,-3,-10,-7,5,-10,-20,0,-7,-5,-30,-5,-20,0),
 		//'weather' => array(10,20,0,-2,-3,-7,-10,-5,10,0,0,-7,-5,-30),
 		'pls' => array(10,0,0,10,-10,10,0,10,-10,0,10,0,0,-10,0,-10,-10,-10,0,10,0,10),
-		'pose' => array(0,0,0,25,-10,-25),
+		'pose' => array(0,0,0,25,-10,-25,85),
 		'tactic' => array(),
 		);
 	$find_r = 0;
@@ -38,7 +38,7 @@ function get_hide_r($weather = 0,$pls = 0,$pose = 0,$tactic = 0,$club = 0,$inf =
 		(
 		'weather' => array(),
 		'pls' => array(),
-		'pose' => array(0,-25,0,-10,10,-25),
+		'pose' => array(0,-25,0,-10,10,-25,-40,-40),
 		//'tactic' => array(),
 		//'pose' => array(),
 		'tactic' => array(0,0,0,-15,15),
@@ -55,12 +55,12 @@ function get_active_r($weather = 0,$pls = 0,$pose = 0,$tactic = 0,$club = 0,$inf
 		'weather' => array(10,20,0,-5,-10,-20,-15,0,-7,-10,-10,-5,0,-5,-20,-5,0),
 		//'weather' => array(20,10,0,-3,-5,-5,-7,10,-10,-10,-10,-5,0,-5),
 		'pls' => array(),
-		'pose' => array(0,0,0,0,25,-25),
+		'pose' => array(0,0,0,0,25,-25,5),
 		'tactic' => array(),
 		);
 	$_DACTIVE= Array
 		(
-		'pose' => array(0,0,50,0,0,0),
+		'pose' => array(0,0,50,0,0,0,0),
 		);
 	$active_r = $active_obbs;
 	$active_r += $_ACTIVE['weather'][$weather];
@@ -108,7 +108,7 @@ function get_attack_p($weather = 0,$pls = 0,$pose = 0,$tactic = 0,$club = 0,$inf
 		(
 		'weather' => array(10,10,0,-5,-10,-20,-15,0,0,7,20,-7,-20,-5,-10,-10,-10),
 		'pls' => array(0,0,0,0,0,0,10,0,0,-10,0,0,0,0,-10,0,0,0,10,0,0,0),
-		'pose' => array(0,100,0,-25,25,-50),
+		'pose' => array(0,100,0,-25,25,-50,50),
 		'tactic' => array(0,20,-25,25,-50),
 		);
 
@@ -133,7 +133,7 @@ function get_defend_p($weather = 0,$pls = 0,$pose = 0,$tactic = 0,$club = 0,$inf
 		(
 		'weather' => array(10,30,0,0,-3,-15,-10,0,-20,-30,-50,-5,-20,-3,-20,5,-30),
 		'pls' => array(0,-10,10,0,0,0,0,0,0,0,0,-10,10,0,0,0,0,0,0,0,10,0),
-		'pose' => array(0,25,0,-25,-50,-50),
+		'pose' => array(0,25,0,-25,-50,-50,-466),
 		'tactic' => array(0,-20,50,-25,0),
 		);
 

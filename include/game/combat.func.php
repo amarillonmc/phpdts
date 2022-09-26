@@ -295,11 +295,14 @@ function attack($wep_kind = 'N', $active = 0) {
 	global $now, $nosta, $log, $infobbs, $infinfo, $attinfo, $skillinfo,  $wepimprate,$specialrate;
 	global $name, $lvl, $gd, $pid, $pls, $hp, $sp, $rage, $exp, $club, $att, $inf, $message,$w_mhp;
 	global $wep, $wepk, $wepe, $weps, $wepsk;
-	global $w_arbe, $w_arbsk, $w_arhe, $w_arae, $w_arfe,$w_wepk;
-	global $artk, $arhsk, $arbsk, $arask, $arfsk, $artsk;
+	global $w_arbe, $w_arbsk, $w_arhe, $w_arae, $w_arfe, $w_wepk;
+	global $w_wep, $w_wepe, $w_wepk, $w_weps;
+	global $art, $arte, $arts, $artk, $arhsk, $arbsk, $arask, $arfsk, $artsk;
+	global $w_art, $w_arte, $w_artk, $w_arts;
 	global $w_hp, $w_rage, $w_lvl, $w_pid, $w_gd, $w_name, $w_type, $w_inf, $w_def;
 	global $w_wepsk, $w_arhsk, $w_arask, $w_arfsk, $w_artsk, $w_artk;
 	global $wp,$wk,$wc,$wg,$wd,$wf,$skills,$w_skills,$w_club,$skillpoint,$w_skillpoint,$rp,$w_rp;
+	global $db,$tablepre;
 	include_once GAME_ROOT.'./include/game/clubskills.func.php';
 	//npc_changewep();
 	$is_wpg = false;
@@ -356,6 +359,90 @@ function attack($wep_kind = 'N', $active = 0) {
 			return 0;
 		}
 	}
+
+	if(($w_type==19)&&($w_name=="红暮")&&(substr($wepk,0,2)!=$w_wepk)){
+		$log .= "<span class=\"red\">红暮身上的武器投射出了防护罩，轻松挡下了你的攻击！</span><br>";
+		return 0;
+	}
+	//数据护盾类饰品 - ARTK = AA 对玩家
+	if($w_artk=="AA"){ //主动攻击判定
+		if($w_type!=0){ // NPC 用
+			if($w_arte < 100){
+				$log .= "<span class=\"red\">对手身上的数据护盾投射出了防护罩，轻松挡下了你的攻击！</span><br>";
+				$w_arte = $w_arte + $w_arts;
+				if($w_arte < 100){$w_arte = 100;}
+				return 0;
+			}else{
+				$log .= "<span class=\"red\">对手身上的数据护盾失效了！</span><br>";
+			}
+		}else{ // 玩家用
+			if($w_arte > 1){
+				$log .= "<span class=\"red\">对手身上的数据护盾投射出了防护罩，轻松挡下了你的攻击！</span><br>";
+				$w_arte = $w_arte - $w_arts;
+				if($w_arte > 1){$w_arte = 1;}
+				return 0;
+			}else{
+				$log .= "<span class=\"red\">对手身上的数据护盾失效了！</span><br>";
+			}
+		}
+	}
+
+
+	if($wep=="魔法蜂针"){ //迷你蜂 - 玩家用机制
+		$log .= "<span class=\"red\">你使用魔法蜂针攻击对手！</span><br>";
+		if ($w_def>65000){
+			$log .= "<span class=\"lime\">然而对手的防御力实在太高，你根本无法对其造成有效伤害！</span><br>";
+			$w_hp = $w_hp - 1;
+			if ($w_hp < 0) {$w_hp = 0;}
+		}else{
+			$log .= "<span class=\"lime\">蜂针命中了对手，对其造成了350点真实伤害！</span><br>";
+			$w_hp = $w_hp - 350;
+			if ($w_hp < 0) {$w_hp = 0;}
+		}
+		$w_inf.='p';
+		$log .= "<span class=\"lime\">蜂针还让对手中毒了！</span><br>";
+		return 0;
+	}
+
+	if($wep=="临摹装置"){ //电子狐 - 玩家用机制
+		$log .= "<span class=\"yellow\">你尝试使用临摹装置来复制对手的武器！</span><br>";
+		$dice1 = rand(1,20);
+		if($dice1 > 2){
+			$dice2 = rand(1,20);
+			if(($w_wepe > 17777) && ($dice2 <= 5)){ //对手武器过于强力则 1/4 可能失败！
+				$log .= "<span class=\"red\">因为对手的武器过于给力，临摹装置在你手上爆炸了！</span><br>";
+				if($dice2 <= 2){
+					//大失败！
+					$log .= "<span class=\"red\">你眼前一黑，感觉小命要交代在这里了！</span><br>";
+					$hp = 1;
+				}else{
+					$log .= "<span class=\"red\">你受到了巨大的伤害！</span><br>";
+					$hp = $hp * 0.3;
+				}
+			}elseif(($w_wepe > 999999) && ($dice2 >= 5)){
+				$log .= "<span class=\"red\">因为对手的武器过于给力，临摹装置在你手上爆炸了！</span><br>";
+				if($dice2 <= 4){
+					//大失败！
+					$log .= "<span class=\"red\">你眼前一黑，感觉小命要交代在这里了！</span><br>";
+					$hp = 1;
+				}else{
+					$log .= "<span class=\"red\">你受到了特别巨大的伤害！</span><br>";
+					$hp = $hp * 0.1;
+				}
+			}else{
+				$log .= "<span class=\"yellow\">你成功地复制了对手的武器！</span><br>";
+				$log .= "<span class=\"yellow\">临摹装置化作了<span class=\"red\">$w_wep</span>！</span><br><br>";
+				$wep = $w_wep;
+				$wepe = $w_wepe;
+				$wepk = $w_wepk;
+				$weps = $w_weps;
+				$wepsk = $w_wepsk;
+			}
+		}else{
+			$log .= "<span class=\"red\">但是似乎失败了！</span><br>";	
+		}
+	}
+
 		
 	//attack函数是玩家打npc专用，在这里加npc内容是没用的
 	
@@ -436,7 +523,55 @@ function attack($wep_kind = 'N', $active = 0) {
 				$damage+=round($damage*0.5);
 			}
 			
-			
+			if (($w_type==89)&&($w_name=='高中生·白神')){ // 书中虫 - 玩家攻击专用
+				global $rp;
+				$log .= "<span class=\"yellow\">“你真的愿意对这个手无寸铁的高中女生下手么？”</span><br>";
+				$dice = rand(1,444);
+				if($dice<=200){
+					$log .= "<span class=\"neonblue\">“你感觉到了罪恶感。”</span><br>";
+					//$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
+				}else{
+					$log .= "<span class=\"neonblue\">“你不该这么做的。”</span><br>";
+					//$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
+				}
+				$rp = $rp + $dice;
+				if ($damage > 400){
+				$log .= "<span class=\"yellow\">白神从裙底抽出了她的名为WIN MAX 2的微型电脑！<br>“哪能这样被你干打？”</span><br>";
+				$log .= "<span class=\"yellow\">白神的高超黑客技术大幅度降低了你造成的伤害！</span><br>";
+				$damage = $damage * 0.005;
+				}
+			}
+		
+			if (($w_type==89)&&($w_name=='白神·讨价还价')){ // 书中虫·讨价还价 - 玩家攻击专用
+				global $rp;
+				$dice = rand(1,1777);
+				$log .= "<span class=\"yellow\">“对面似乎真的没有敌意，你还是决定要下手么？”</span><br>";
+				if($dice<=200){
+					$log .= "<span class=\"neonblue\">“你感觉到了罪恶感。”</span><br>";
+					//$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
+				}elseif($dice<=400){
+					$log .= "<span class=\"neonblue\">“你不该这么做的。”</span><br>";
+					//$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
+				}else{
+					$log .= "<span class=\"neonblue\">“罪恶感爬上了你的脊梁！”</span><br>";
+					//$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
+				}
+				$rp = $rp + $dice;
+				if ($damage > 400){
+					$log .= "<span class=\"yellow\">白神从裙底抽出了她的名为DECK的微型电脑！<br>“哪能这样被你干打？”</span><br>";
+					$log .= "<span class=\"yellow\">白神的高超黑客技术大幅度降低了你造成的伤害！</span><br>";
+					$damage = $damage * 0.005;
+					}
+			}
+		
+			if (($w_type==89)&&($w_name=='白神·接受')){ // 书中虫·接受 - 玩家攻击专用
+				global $rp;
+				$dice = rand(1777,4888);
+				$log .= "<span class=\"yellow\">“你对一位毫无反抗能力，并且已经表示无敌意的女高中生横下死手。”</span><br>";
+				$log .= "<span class=\"neonblue\">“希望你的良心还能得以安生。”</span><br>";
+				//$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
+				$rp = $rp + $dice;
+			}
 			
 			if ($hit_time [1] > 1) {
 				$d_temp = $damage;
@@ -495,6 +630,28 @@ function attack($wep_kind = 'N', $active = 0) {
 		$log .= "但是没有击中！<br>";
 	}
 	check_GCDF_wep ( '你', $hit_time [0], $wep, $wep_kind, $wepk, $wepe, $weps, $wepsk );
+
+
+
+	if (($w_type==19)&&($w_name=='蓝凝')){
+		global $mhp;
+		$ttr="♪臻蓝之愿♪";
+		$ttr2="♫钴蓝之灵♫";
+		$ttr3="❀矢车菊的回忆❀";
+		//$rp=18;
+		$rp = $pls;
+		if (rand(1,100)<5) $rp=rand(1,33);
+		$le=rand(1,200)+$mhp-100;
+		if ($le>1001) $le=1001;
+		$db->query("INSERT INTO {$tablepre}maptrap (itm, itmk, itme, itms, itmsk, pls) VALUES ('$ttr', 'TO', '$le', '1', '$w_pid', '$rp')");
+		$le=rand(1,200)+$damage-100;
+		if ($le>2000) $le=2000;
+		$db->query("INSERT INTO {$tablepre}maptrap (itm, itmk, itme, itms, itmsk, pls) VALUES ('$ttr2', 'TO', '$le', '1', '$w_pid', '$rp')");
+		$le=rand(1,$hp);
+		$db->query("INSERT INTO {$tablepre}maptrap (itm, itmk, itme, itms, itmsk, pls) VALUES ('$ttr3', 'TO', '$le', '1', '$w_pid', '$rp')");
+
+		$log .= "从蓝凝的身边飞出了数个光球，散布在了战场上！<br>";
+	}
 	
 	addnoise ( $wep_kind, $wepsk, $now, $pls, $pid, $w_pid, $wep_kind );
 	if($club == 10){
@@ -618,18 +775,191 @@ function defend($w_wep_kind = 'N', $active = 0) {
 	global $itm4, $itmk4, $itme4, $itms4, $itmsk4;
 	global $itm5, $itmk5, $itme5, $itms5, $itmsk5;
 	global $itm6, $itmk6, $itme6, $itms6, $itmsk6;
+	global $w_art, $w_artk, $w_arte, $w_arts;
 	global $w_itm0, $w_itmk0, $w_itme0, $w_itms0, $w_itm1, $w_itmk1, $w_itme1, $w_itms1, $w_itm2, $w_itmk2, $w_itme2, $w_itms2, $w_itm3, $w_itmk3, $w_itme3, $w_itms3, $w_itm4, $w_itmk4, $w_itme4, $w_itms4, $w_itm5, $w_itmk5, $w_itme5, $w_itms5,$w_itm6, $w_itmk6, $w_itme6, $w_itms6, $w_wepsk, $w_arbsk, $w_arhsk, $w_arask, $w_arfsk, $w_artsk, $w_itmsk0, $w_itmsk1, $w_itmsk2, $w_itmsk3, $w_itmsk4, $w_itmsk5, $w_itmsk6;
 	global $money,$exp;
 	//global $rp;
+
+		//数据护盾类饰品 - ARTK = AA 
+		if($w_artk=="AA"){ //受击判定
+			if($w_type!=0){ // NPC 用
+				if($w_arte < 100){
+					$log .= "<span class=\"red\">对手身上的数据护盾投射出了防护罩，轻松挡下了你的攻击！</span><br>";
+					$w_arte = $w_arte + $w_arts;
+					if($w_arte < 100){$w_arte = 100;}
+					return 0;
+				}else{
+					$log .= "<span class=\"red\">对手身上的数据护盾失效了！</span><br>";
+				}
+			}else{ // 玩家用
+				if($w_arte > 1){
+					$log .= "<span class=\"red\">对手身上的数据护盾投射出了防护罩，轻松挡下了你的攻击！</span><br>";
+					$w_arte = $w_arte - $w_arts;
+					if($w_arte > 1){$w_arte = 1;}
+					return 0;
+				}else{
+					$log .= "<span class=\"red\">对手身上的数据护盾失效了！</span><br>";
+				}
+			}
+		}
+
+		if($artk=="AA"){ //受击判定 - 对己
+			if($w_type!=0){ // NPC 用
+				if($w_arte < 100){
+					$log .= "<span class=\"red\">你身上的数据护盾投射出了防护罩，轻松挡下了对手的攻击！</span><br>";
+					$w_arte = $w_arte + $w_arts;
+					if($w_arte < 100){$w_arte = 100;}
+					return 0;
+				}else{
+					$log .= "<span class=\"red\">你身上的数据护盾失效了！</span><br>";
+				}
+			}else{ // 玩家用
+				if($arte > 1){
+					$log .= "<span class=\"red\">你身上的数据护盾投射出了防护罩，轻松挡下了对手的攻击！</span><br>";
+					$arte = $arte - $arts;
+					if($arte > 1){$arte = 1;}
+					return 0;
+				}else{
+					$log .= "<span class=\"red\">你身上的数据护盾失效了！</span><br>";
+				}
+			}
+		}
+
+
+	if (($w_name=='红暮')&&($w_type==19)){
+		global $wep,$wepk,$wepe,$weps,$wepsk;
+		global $arh,$arhk,$arhe,$arhs,$arahk;
+		global $ara,$arak,$arae,$aras,$arask;
+		global $arf,$arfk,$arfe,$arfs,$arafk;
+		global $art,$artk,$arte,$arts,$artsk;
+		$log .= "<span class=\"yellow\">“那么说好了，不留手咯~”<br>红暮吐气扬声，向你袭来！</span><br>";
+			if($w_wep!='喷气式红杀重铁剑'){
+				$event_dice=rand(1,6);
+				$log .= "<span class=\"neonred\">只见红暮手上的巨大铁剑带着一条火光向你飞去。</span><br>";
+				if($event_dice==1){
+					$log .= "<span class=\"yellow\">你被赤红热风扫过，顿感头晕目眩，而且身上也起了火！</span><br>";
+					$inf.='w';
+					$inf.='u';
+				}else{
+					$log .= "<span class=\"lime\">不过你灵活地躲开了赤红热风！</span><br>";
+				}
+			}
+			if($w_wep!='绯红记忆'){
+				$event_dice=rand(1,8);
+				$log .= "<span class=\"neonred\">只见从红暮身边飞出来了一个红色的光球！</span><br>";
+				if($event_dice==1){
+				//$log .= "<span class=\"yellow\">“虽说我不是什么超能力者，但是最高级的科技也和超能力无异了！”红暮大笑。</span><br>";
+				$log .= "<span class=\"yellow\">红色的光球直击你的心脏！</span><br>";
+				$damage=round($mhp*0.5);
+				$log .= "这一发绯红锥心弹对你造成<span class=\"red\">$damage</span>点伤害！你感觉你半条命都没咯~<br>";
+				checkdmg ( $w_name, $name, $damage );
+				$hp-=$damage;
+				}else{
+					$log .= "<span class=\"lime\">你大呼不妙，连忙侧身躲过了这发绯红锥心弹！</span><br>";
+				}
+			}
+			if($w_wep!='血色强袭'){
+				$event_dice=rand(1,4);
+				$log .= "<span class=\"neonred\">红暮从背后抽出一把重炮，向你扣下了扳机！</span><br>";
+				if($event_dice==1){
+					$log .= "<span class=\"yellow\">这一发强袭追踪弹结实地打到了你手持武器的手上，你痛的龇牙咧嘴，武器也受到了损伤！</span><br>";
+					$wdamage=rand(5,40);
+					if(($weps !=0)&&($weps !='∞')){
+						$weps-=$wdamage;
+						$log .= "攻击使得<span class=\"red\">$wep</span>的耐久度下降了<span class=\"red\">$wdamage</span>点！<br>";
+						if($weps <= 0){
+					$log .= "<span class=\"red\">$wep</span>被彻底破坏了！<br>";
+					$wep = $wepk = $wepsk ='';
+					$wepe = $weps =0;
+					}
+				}
+					$inf.='a';
+				}else{
+					$log .= "<span class=\"lime\">你身形一矮，躲过了这发强袭追踪弹。</span><br>";
+				}
+			}
+			if($w_wep!='狮虎丝带'){
+				$event_dice=rand(1,4);
+				//$log .= "<span class=\"yellow\">红暮打了一个响指，从背后飞出来两条丝带！<br>“虽然这种玩意蓝凝应该用的更顺手吧……”</span><br>";
+				$log .= "<span class=\"neonred\">红暮打了一个响指，从背后飞出来两条丝带！”</span><br>";
+				if($event_dice==1){
+					$log .= "<span class=\"yellow\">丝带将你缠绕，吸收了你的体力！</span><br>";
+					$sp-=250;
+					if($sp < 0) $sp=0;
+				}else{
+					$log .= "<span class=\"lime\">你赶快腾跃躲避，两条丝带擦身而过！</span><br>";
+				}
+			}
+			if($w_wep!='落樱巨锤'){
+				$event_dice=rand(1,6);
+				//$log .= "<span class=\"yellow\">红暮高高一跃，跳到空中！<br>“询问淑女的体重固然很不礼貌，但我自然不是什么淑女！”</span><br>";
+				$log .= "<span class=\"neonred\">红暮高高一跃，跳到空中！</span><br>";
+				if($event_dice==1){
+					$log .= "<span class=\"yellow\">巨大的机甲一下便将你碾压！造成了<span class=\"red\">1107</span>点伤害！</span><br>";
+					$hp-=1107;
+					if($hp < 0) $hp=0;
+				}else{
+					$log .= "<span class=\"lime\">你在地上进行了一次翻滚，躲开了从天而降的机甲！</span><br>";
+				}
+			}
+			if($w_wep!='八八连流星浮游炮'){
+				$event_dice=rand(1,6);
+				//$log .= "<span class=\"yellow\">从红暮的机甲中发射出了大量的火箭弹！<br>“知道吗，量变终究会引起质变！”</span><br>";
+				$log .= "<span class=\"neonred\">从红暮的机甲中发射出了大量的火箭弹！</span><br>";
+				if($event_dice==1){
+					$log .= "<span class=\"yellow\">虽然火箭弹的精度颇低，但是大量的火箭弹还是对你的防具造成了可观的伤害！</span><br>";
+					$adamage=rand(5,40);
+			if(($aras !=0)&&($aras !='∞')){
+				$aras-=$adamage;
+				$log .= "攻击使得<span class=\"red\">$ara</span>的耐久度下降了<span class=\"red\">$adamage</span>点！<br>";
+				if($aras <= 0){
+					$log .= "<span class=\"red\">$ara</span>被彻底破坏了！<br>";
+					$ara = $arak = $arask ='';
+					$arae = $aras =0;
+				}
+			}
+			if(($arfs !=0)&&($arfs !='∞')){
+				$arfs-=$adamage;
+				$log .= "攻击使得<span class=\"red\">$arf</span>的耐久度下降了<span class=\"red\">$adamage</span>点！<br>";
+				if($arfs <= 0){
+					$log .= "<span class=\"red\">$arf</span>被彻底破坏了！<br>";
+					$arf = $arfk = $arfsk ='';
+					$arfe = $arfs =0;
+				}
+			}
+			if(($arts !=0)&&($arts !='∞')){
+				$arts-=$adamage;
+				$log .= "攻击使得<span class=\"red\">$art</span>的耐久度下降了<span class=\"red\">$adamage</span>点！<br>";
+				if($arts <= 0){
+					$log .= "<span class=\"red\">$art</span>被彻底破坏了！<br>";
+					$art = $artk = $artsk ='';
+					$arte = $arts =0;
+				}
+			}
+			if(($arhs !=0)&&($arhs !='∞')){
+				$arhs-=$adamage;
+				$log .= "攻击使得<span class=\"red\">$arh</span>的耐久度下降了<span class=\"red\">$adamage</span>点！<br>";
+				if($arts <= 0){
+					$log .= "<span class=\"red\">$arh</span>被彻底破坏了！<br>";
+					$arh = $arhk = $arhsk ='';
+					$arhe = $arhs =0;
+				}
+			}
+				}else{
+					$log .= "<span class=\"lime\">然而飞弹的精度太低，你并没有被它们打中。</span><br>";
+				}
+			}
+	}
+
 	
-	//正式上线时修改NPC名称！
-	if (($w_type==89)&&($w_name=='电子狐')){ // 电子狐
-		$log .= "<span class=\"yellow\">【电子狐】的双眼突然闪耀了起来！</span><br>
+	//
+	if (($w_type==89)&&($w_name=='电掣部长 米娜')){ // 电子狐
+		$log .= "<span class=\"yellow\">米娜的双眼突然闪耀了起来！</span><br>
 		<span class=\"neonblue\">“侦测到敌意实体，开始扫描~”</span><br>";
 		$dice = rand(1,1024);
-		$log .= "<span class=\"yellow\">【DEBUG】骰子检定结果：<span class=\"red\">$dice</span>/1024。</span><br>";
+		//$log .= "<span class=\"yellow\">【DEBUG】骰子检定结果：<span class=\"red\">$dice</span>/1024。</span><br>";
 		if($dice<=127){ //8%
-			$log .= "<span class=\"yellow\">“似乎【电子狐】具现化了你的武器！”</span><br>
+			$log .= "<span class=\"yellow\">“似乎米娜具现化了你的武器！”</span><br>
 			<span class=\"neonblue\">“你的<span class=\"red\">$wep</span>，我就收下了！”</span><br>";
 			$w_wep = $wep;
 			$w_wepk = $wepk;
@@ -638,7 +968,7 @@ function defend($w_wep_kind = 'N', $active = 0) {
 			$w_wepsk = $wepsk;
 		}elseif($dice<=635){
 			$dice2 = rand(1,5);
-			$log .= "<span class=\"yellow\">“似乎【电子狐】扫描了你的武器！”</span><br>
+			$log .= "<span class=\"yellow\">“似乎米娜扫描了你的武器！”</span><br>
 			<span class=\"neonblue\">“你的<span class=\"red\">$wep</span>，已扫描入<span class=\"red\">$dice2</span>号位。”<br>
 			“我会妥善保管的~”</span><br>";
 			if($dice2 == 1){
@@ -674,7 +1004,7 @@ function defend($w_wep_kind = 'N', $active = 0) {
 			}
 		}elseif($dice>=1024){ // 1/1024 几率直接抢夺玩家全部背包
 			$log .= "<span class=\"yellow\">哎呀，骰子检定结果是大·失·败！</span><br>";
-			$log .= "<span class=\"yellow\">“【电子狐】将你的全身扫描了个遍！”</span><br>
+			$log .= "<span class=\"yellow\">“米娜将你的全身扫描了个遍！”</span><br>
 			<span class=\"neonblue\">“我判定你身上的东西放到我身上可能更好一点~”<br>
 			“我会妥善保管的~”</span><br>";
 			$w_itm1 = $itm1;
@@ -709,14 +1039,14 @@ function defend($w_wep_kind = 'N', $active = 0) {
 			$itm4 = ''; $itmk4 = ''; $itme4 = 0; $itms4 = 0; $w_itmsk4 = '';
 			$itm5 = ''; $itmk5 = ''; $itme5 = 0; $itms5 = 0; $w_itmsk5 = '';
 		}else{
-			$log .= "<span class=\"yellow\">“不过似乎什么都没发生！”</span><br>
+			$log .= "<span class=\"yellow\">不过似乎什么都没发生！</span><br>
 			<span class=\"neonblue\">“扫描失败了么……”</span><br>";
 		}
 
 		
 	}
 
-	if (($w_type==89)&&($w_name=='百命猫')){ // 百命猫
+	if (($w_type==89)&&($w_name=='是TSEROF啦！')){ // 百命猫
 		//并非战斗机制，所以毫无反应，就是个白板，但每次等级和怒气都会上升。
 		if($w_lvl < 255){
 			$w_lvl++;
@@ -728,14 +1058,14 @@ function defend($w_wep_kind = 'N', $active = 0) {
 		global $rp;
 		global $w_mhp, $w_msp;
 		//70%几率吸收玩家HP值成为自己的HP和SP值，SP值上升到一定程度时变身，变身后各种数值直接膨胀。三段变身。
-		$log .= "<span class=\"yellow\">“【笼中鸟】含情脉脉地看着你！”</span><br>";
+		$log .= "<span class=\"yellow\">“笼中鸟含情脉脉地看着你！”</span><br>";
 		$dice=rand(1,20);
-		$log .= "<span class=\"yellow\">【DEBUG】骰子检定结果：<span class=\"red\">$dice</span>。</span><br>";
+		//$log .= "<span class=\"yellow\">【DEBUG】骰子检定结果：<span class=\"red\">$dice</span>。</span><br>";
 		if($dice>=14){
 			$log .= "<span class=\"yellow\">“你感觉你的生命被她汲取，但同时更有一种奇怪的暖洋洋的舒畅感。”</span><br>";
 			//继续投d20，1~10吸收30%，11~19吸收65%，大失败直接吸到1。
 			$dice2=rand(1,20);
-			$log .= "<span class=\"yellow\">【DEBUG】骰子2检定结果：<span class=\"red\">$dice2</span>。</span><br>";
+			//$log .= "<span class=\"yellow\">【DEBUG】骰子2检定结果：<span class=\"red\">$dice2</span>。</span><br>";
 			if($dice2<=10){
 				$log .= "<span class=\"yellow\">“你稍微稳了稳身形，似乎问题不是很严重。”</span><br>";
 				$gain = $hp * 0.3;
@@ -760,13 +1090,13 @@ function defend($w_wep_kind = 'N', $active = 0) {
 		}
 		//处理直接变身
 		if($w_msp > 5003){
-			$log .= "<span class=\"yellow\">“【笼中鸟】的枷锁被打破了一些。”</span><br>";
+			$log .= "<span class=\"yellow\">“笼中鸟的枷锁被打破了一些。”</span><br>";
 			$w_mhp = $w_mhp * 5; $w_hp = $w_hp * 5; $w_wf = $w_wf * 5; $w_att = $w_att * 5; $w_def = $w_def * 5;
 		}elseif($w_msp > 13377){
-			$log .= "<span class=\"yellow\">“【笼中鸟】的枷锁被打破了一些。”</span><br>";
+			$log .= "<span class=\"yellow\">“笼中鸟的枷锁被打破了一些。”</span><br>";
 			$w_mhp = $w_mhp * 10; $w_hp = $w_hp * 10; $w_wf = $w_wf * 10; $w_att = $w_att * 10; $w_def = $w_def * 10;
 		}elseif($w_msp > 33777){
-			$log .= "<span class=\"yellow\">“【笼中鸟】的枷锁被完全打破了！”</span><br>";
+			$log .= "<span class=\"yellow\">“笼中鸟的枷锁被完全打破了！”</span><br>";
 			$w_mhp = $w_mhp * 30; $w_hp = $w_hp * 30; $w_wf = $w_wf * 30; $w_att = $w_att * 30; $w_def = $w_def * 30;
 			$w_name = "完全解放的鸟儿";
 		}
@@ -776,7 +1106,7 @@ function defend($w_wep_kind = 'N', $active = 0) {
 
 	}
 
-	if (($w_type==89)&&($w_name=='走地羊')){ // 走地羊
+	if (($w_type==89)&&($w_name=='坚韧之子·拉姆')){ // 走地羊
 		//旧电波直port的削武器防具耐久NPC，削爆直接消失。不过被削掉的数值会加算在其金钱上。
 		$event_dice=rand(1,100);
 		if($event_dice >=30){
@@ -834,47 +1164,47 @@ function defend($w_wep_kind = 'N', $active = 0) {
 	}
 	}
 
-	if (($w_type==89)&&($w_name=='书中虫')){ // 书中虫
+	if (($w_type==89)&&($w_name=='高中生·白神')){ // 书中虫
 		global $rp;
 		$log .= "<span class=\"yellow\">“你真的愿意对这个手无寸铁的高中女生下手么？”</span><br>";
 		$dice = rand(1,444);
 		if($dice<=200){
 			$log .= "<span class=\"neonblue\">“你感觉到了罪恶感。”</span><br>";
-			$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
+			//$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
 		}else{
 			$log .= "<span class=\"neonblue\">“你不该这么做的。”</span><br>";
-			$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
+			//$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
 		}
 		$rp = $rp + $dice;
 	}
 
-	if (($w_type==89)&&($w_name=='书中虫·讨价还价')){ // 书中虫·讨价还价
+	if (($w_type==89)&&($w_name=='白神·讨价还价')){ // 书中虫·讨价还价
 		global $rp;
 		$dice = rand(1,1777);
 		$log .= "<span class=\"yellow\">“对面似乎真的没有敌意，你还是要下手么？”</span><br>";
 		if($dice<=200){
 			$log .= "<span class=\"neonblue\">“你感觉到了罪恶感。”</span><br>";
-			$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
+			//$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
 		}elseif($dice<=400){
 			$log .= "<span class=\"neonblue\">“你不该这么做的。”</span><br>";
-			$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
+			//$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
 		}else{
 			$log .= "<span class=\"neonblue\">“罪恶感爬上了你的脊梁！”</span><br>";
-			$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
+			//$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
 		}
 		$rp = $rp + $dice;
 	}
 
-	if (($w_type==89)&&($w_name=='书中虫·接受')){ // 书中虫·接受
+	if (($w_type==89)&&($w_name=='白神·接受')){ // 书中虫·接受
 		global $rp;
 		$dice = rand(1777,4888);
 		$log .= "<span class=\"yellow\">“你对一位毫无反抗能力，并且已经表示无敌意的女高中生横下死手。”</span><br>";
 		$log .= "<span class=\"neonblue\">“希望你的良心还能得以安生。”</span><br>";
-		$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
+		//$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
 		$rp = $rp + $dice;
 	}
 
-	if (($w_type==89)&&($w_name=='迷你蜂')){ // 迷你蜂
+	if (($w_type==89)&&($w_name=='诚心使魔·阿摩尔')){ // 迷你蜂
 		//随机固定伤害和异常效果。
 		$log .= "<span class=\"neonblue\">“这只小蜜蜂勇敢地朝你袭来！”</span><br>";
 		$dice = rand(1,4);
@@ -908,7 +1238,7 @@ function defend($w_wep_kind = 'N', $active = 0) {
 		return 0;
 	}
 
-	if (($w_type==89)&&($w_name=='种火花')){ // 种火花
+	if (($w_type==89)&&($w_name=='✦繁花的烈火')){ // 种火花
 		//就是个巨大种火，没有反应，这里只是白板。
 	}
 	
