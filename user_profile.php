@@ -41,7 +41,7 @@ if (!valid_achievement($ach)) {
 	$ach=init_achievement($ach);
 	$db->query("UPDATE {$tablepre}users SET achievement='$ach' WHERE username='$n'" );	
 }
-//½âÎö³É¾ÍµÄÍê³ÉÇé¿ö
+//è§£ææˆå°±çš„å®Œæˆæƒ…å†µ
 global $gamecfg;
 require config("gamecfg",$gamecfg);
 for ($i=0; $i<$achievement_count; $i++)

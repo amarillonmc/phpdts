@@ -11,7 +11,7 @@ elseif(preg_match('/[,|<|>|&|;|#|"|\s|\p{C}]+/u',$username)) { return
 'name_invalid'; } elseif(preg_match($nmlimit,$username)) { return 'name_banned'; 
 } return 'name_ok'; }
 
-function pass_check($pass,$rpass){//Î´¾­md5´¦ÀíµÄ
+function pass_check($pass,$rpass){//æœªç»md5å¤„ç†çš„
 	if(!isset($pass) || strlen($pass)===0 || !isset($rpass) || strlen($rpass)===0){
 		return 'pass_not_set';
 	} elseif($pass != $rpass) {
@@ -25,7 +25,7 @@ function pass_check($pass,$rpass){//Î´¾­md5´¦ÀíµÄ
 }
 
 /**  
-* »ñµÃÓÃ»§µÄÕæÊµIPµØÖ·  
+* èŽ·å¾—ç”¨æˆ·çš„çœŸå®žIPåœ°å€  
 *
 * @access  public  
 * @return  string  
@@ -42,7 +42,7 @@ function real_ip()
 		if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))  
 		{  
 			$arr = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);  
-			/* È¡X-Forwarded-ForÖÐµÚÒ»¸ö·ÇunknownµÄÓÐÐ§IP×Ö·û´® */ 
+			/* å–X-Forwarded-Forä¸­ç¬¬ä¸€ä¸ªéžunknownçš„æœ‰æ•ˆIPå­—ç¬¦ä¸² */ 
 			foreach ($arr AS $ip)  
 			{  
 				$ip = trim($ip);  
@@ -105,12 +105,12 @@ function get_iconlist(){
 	return $iconarray;
 }
 
-function get_utitlelist(){//³ÆºÅ
+function get_utitlelist(){//ç§°å·
 	global $nicks,$utitlelist;
-	$utarr = explode('/',$nicks);//×Ö·û´®×ªÊý×é
+	$utarr = explode('/',$nicks);//å­—ç¬¦ä¸²è½¬æ•°ç»„
 	$utlist = Array();
-	//array_unshift($utarr,0);//Êý×éÓÒÒÆÒ»Î»ÒÔÓë$utitlelist¶ÔÓ¦
-	foreach($utarr as $key => $val){//$utitlelistÔÚresourcesÀï
+	//array_unshift($utarr,0);//æ•°ç»„å³ç§»ä¸€ä½ä»¥ä¸Ž$utitlelistå¯¹åº”
+	foreach($utarr as $key => $val){//$utitleliståœ¨resourcesé‡Œ
 			$utlist[$key] = $val;
 	}
 	return $utlist;
