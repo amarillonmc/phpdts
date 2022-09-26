@@ -376,7 +376,7 @@ function getchat($last,$team='',$limit=0) {
 	global $db,$tablepre,$chatlimit,$chatinfo,$plsinfo;
 	$limit = $limit ? $limit : $chatlimit;
 	$result = $db->query("SELECT * FROM {$tablepre}chat WHERE cid>'$last' AND (type!='1' OR (type='1' AND recv='$team')) ORDER BY cid desc LIMIT $limit");
-	$chatdata = Array('lastcid' => $last, 'msg' => '');
+	$chatdata = Array('lastcid' => $last, 'msg' => array());
 	if(!$db->num_rows($result)){$chatdata = array('lastcid' => $last, 'msg' => '');return $chatdata;}
 	
 	while($chat = $db->fetch_array($result)) {
