@@ -103,6 +103,9 @@ table.admin td.tdtitle {
 .grey{color:#999; font: bold 10pt "微软雅黑" serif;line-height:16px}
 .linen{color:rgb(200,192,184); font: bold 10pt "微软雅黑" serif;line-height:16px}
 .L5{color: #ff0000;font: bold 10pt "微软雅黑" serif;line-height:16px;background:url("../../img/backround4.gif") repeat-x;}
+.redseed{color:#ff6599; font: bold 10pt "微软雅黑" serif;line-height:16px}
+.blueseed{color:#b5d5f7; font: bold 10pt "微软雅黑" serif;line-height:16px}
+.seedhint{background-image: url("../../img/rbfireseed.png");font: 8pt;-webkit-text-stroke: 0.3px white;}
 
 @keyframes blueflicker {
 	0%, 18%, 22%, 25%, 53%, 57%, 100% {

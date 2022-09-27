@@ -370,7 +370,7 @@ function attack($wep_kind = 'N', $active = 0) {
 			if($w_arte < 100){
 				$log .= "<span class=\"red\">对手身上的数据护盾投射出了防护罩，轻松挡下了你的攻击！</span><br>";
 				$w_arte = $w_arte + $w_arts;
-				if($w_arte < 100){$w_arte = 100;}
+				if($w_arte > 100){$w_arte = 100;}
 				return 0;
 			}else{
 				$log .= "<span class=\"red\">对手身上的数据护盾失效了！</span><br>";
@@ -379,7 +379,7 @@ function attack($wep_kind = 'N', $active = 0) {
 			if($w_arte > 1){
 				$log .= "<span class=\"red\">对手身上的数据护盾投射出了防护罩，轻松挡下了你的攻击！</span><br>";
 				$w_arte = $w_arte - $w_arts;
-				if($w_arte > 1){$w_arte = 1;}
+				if($w_arte < 1){$w_arte = 1;}
 				return 0;
 			}else{
 				$log .= "<span class=\"red\">对手身上的数据护盾失效了！</span><br>";
@@ -786,7 +786,7 @@ function defend($w_wep_kind = 'N', $active = 0) {
 				if($w_arte < 100){
 					$log .= "<span class=\"red\">对手身上的数据护盾投射出了防护罩，轻松挡下了你的攻击！</span><br>";
 					$w_arte = $w_arte + $w_arts;
-					if($w_arte < 100){$w_arte = 100;}
+					if($w_arte > 100){$w_arte = 100;}
 					return 0;
 				}else{
 					$log .= "<span class=\"red\">对手身上的数据护盾失效了！</span><br>";
@@ -795,7 +795,7 @@ function defend($w_wep_kind = 'N', $active = 0) {
 				if($w_arte > 1){
 					$log .= "<span class=\"red\">对手身上的数据护盾投射出了防护罩，轻松挡下了你的攻击！</span><br>";
 					$w_arte = $w_arte - $w_arts;
-					if($w_arte > 1){$w_arte = 1;}
+					if($w_arte < 1){$w_arte = 1;}
 					return 0;
 				}else{
 					$log .= "<span class=\"red\">对手身上的数据护盾失效了！</span><br>";
@@ -804,24 +804,13 @@ function defend($w_wep_kind = 'N', $active = 0) {
 		}
 
 		if($artk=="AA"){ //受击判定 - 对己
-			if($w_type!=0){ // NPC 用
-				if($w_arte < 100){
-					$log .= "<span class=\"red\">你身上的数据护盾投射出了防护罩，轻松挡下了对手的攻击！</span><br>";
-					$w_arte = $w_arte + $w_arts;
-					if($w_arte < 100){$w_arte = 100;}
-					return 0;
-				}else{
-					$log .= "<span class=\"red\">你身上的数据护盾失效了！</span><br>";
-				}
-			}else{ // 玩家用
-				if($arte > 1){
-					$log .= "<span class=\"red\">你身上的数据护盾投射出了防护罩，轻松挡下了对手的攻击！</span><br>";
-					$arte = $arte - $arts;
-					if($arte > 1){$arte = 1;}
-					return 0;
-				}else{
-					$log .= "<span class=\"red\">你身上的数据护盾失效了！</span><br>";
-				}
+			if($arte > 1){
+				$log .= "<span class=\"red\">你身上的数据护盾投射出了防护罩，轻松挡下了对手的攻击！</span><br>";
+				$arte = $arte - $arts;
+				if($arte < 1){$arte = 1;}
+				return 0;
+			}else{
+				$log .= "<span class=\"red\">你身上的数据护盾失效了！</span><br>";
 			}
 		}
 
