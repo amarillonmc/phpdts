@@ -235,7 +235,11 @@ function combat($active = 1, $wep_kind = '') {
 		$log .= "<span class=\"red\">{$w_name}被你杀死了！</span><br>";
 		//$rp = $rp + 20 ;
 		
-		if(!$w_type){$rpup = $w_rp;}
+		if(!$w_type){
+			if($w_rp < 80){
+				$rpup = 80;
+			}else{$rpup = $w_rp;}
+		}
 		else{$rpup = 20;}		
 		if($club == 19){
 			$rpdec = 30;

@@ -78,7 +78,8 @@ function wthchange($itm,$itmsk){
 		
 		$flag = false;
 		if($itm=='【风神的神德】'){
-			$dice = rand ( 1, 20 );
+			//$dice = rand ( 1, 18 );
+			$dice = rand ( 1, 30 );
 			if ($dice < 18){
 				$flag = true;
 			} else{
@@ -86,11 +87,15 @@ function wthchange($itm,$itmsk){
 			}
 		}
 		if($flag){
+			global $hp;
 			$weather = $weathertd;
 			$log .= "你使用了<span class=\"yellow\">{$itm}</span>。<br>“好像没什么反应嘛？”";
-			include_once GAME_ROOT . './include/state.func.php';
-			$log .= "你正这样想着，天空中忽然传来一阵巨响！”<br>“祈求神德的话，就以你的生命作为祭品吧！<br>你只来得及看到一个巨大的柱状物飞来，就失去了意识。";
-			death ( 'thunde', '', 0, $itm );
+			//include_once GAME_ROOT . './include/state.func.php';
+			//$log .= "你正这样想着，天空中忽然传来一阵巨响！”<br>“祈求神德的话，就以你的生命作为祭品吧！<br>你只来得及看到一个巨大的柱状物飞来，就失去了意识。";
+			//death ( 'thunde', '', 0, $itm );
+			$log .= "你正这样想着，天空中忽然传来一阵巨响！”<br>“祈求神德的话，就以你的生命作为祭品吧！<br>你只来得及看到一个巨大的柱状物飞来，便觉得眼前一黑！<br>";
+			$log .= "<span class = \"damage\">你受到了巨大的伤害！</span>";
+			$hp = 9;
 		} else {
 			include_once GAME_ROOT . './include/system.func.php';
 			save_gameinfo ();

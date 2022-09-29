@@ -546,6 +546,34 @@ function check_item_achievement($nn,$i,$ie,$is,$ik,$isk)
 		done_achievement(30,1,$nn);
 		}
 	}
+	//34. 独自逃脱成就
+	if ($i=="【E.S.C.A.P.E】"){
+		update_achievement(34,$nn,((int)fetch_achievement(34,$nn))+1);
+		// +20 切糕与1胜场
+		$db->query("UPDATE {$tablepre}users SET credits=credits+20 WHERE username='".$nn."'" );
+		$db->query("UPDATE {$tablepre}users SET wingames=wingames+1 WHERE username='".$nn."'" );
+		if (((int)fetch_achievement(34,$nn)>=101) && (check_achievement(34,$nn))<999) {
+			done_achievement(34,999,$nn);
+			$db->query("UPDATE {$tablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
+			$db->query("UPDATE {$tablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
+			include_once GAME_ROOT.'./include/game/titles.func.php';
+			get_title("脚底抹油",$nn);
+			}
+			elseif ((int)fetch_achievement(34,$nn)>=36 && (check_achievement(34,$nn)<2)) {
+			done_achievement(34,2,$nn);
+			$db->query("UPDATE {$tablepre}users SET credits=credits+50 WHERE username='".$nn."'" );
+			$db->query("UPDATE {$tablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
+			include_once GAME_ROOT.'./include/game/titles.func.php';
+			get_title("现实主义者",$nn);
+			}
+			elseif ((int)fetch_achievement(34,$nn)>=1 && (check_achievement(34,$nn)<1)) {
+			done_achievement(34,1,$nn);
+			$db->query("UPDATE {$tablepre}users SET credits=credits+10 WHERE username='".$nn."'" );
+			$db->query("UPDATE {$tablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+			include_once GAME_ROOT.'./include/game/titles.func.php';
+			get_title("实用主义者",$nn);
+			}
+	}
 }
 
 

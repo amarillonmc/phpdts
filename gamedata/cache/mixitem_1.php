@@ -282,6 +282,7 @@ $mixinfo = array
 	array('class' => 'fseed', 'stuff' => array('☾真残火☽','☼焰火☼'),'result' => array('☼残火☼','DA',3000,3000,'bZ'),),
 
 	array('class' => 'fseed', 'stuff' => array('✦钥匙碎片','✦烈焰火'),'result' => array('✦种火钥匙','Y',1,1,),),
+	array('class' => 'fseed', 'stuff' => array('✦钥匙碎片','✦烈焰火','◆焰火'),'result' => array('电掣召唤仪','Y',1,1,),),
 	array('class' => 'fseed', 'stuff' => array('✦种火钥匙','★华焰火★'),'result' => array('✦NPC钥匙·一阶段','Y',1,1,),),
 	array('class' => 'fseed', 'stuff' => array('✦NPC钥匙·一阶段','☾真焰火☽'),'result' => array('✦✦NPC钥匙·二阶段','Y',1,1,),),
 	//array('class' => 'hidden', 'stuff' => array('✦✦NPC钥匙·二阶段','☼焰火☼'),'result' => array('✦✦✦NPC钥匙·EX','Y',1,1,),),	
@@ -354,6 +355,8 @@ $mixinfo = array
 	array('class' => 'hidden', 'stuff' => array('黑色碎片','十字发卡'),'result' => array('黑色发卡','X',1,1,),),
 	array('class' => 'hidden', 'stuff' => array('『T.E.R.R.A』','『A.Q.U.A』','『V.E.N.T.U.S』'),'result' => array('『G.A.M.E.O.V.E.R』','Y',1,1,),),
 	array('class' => 'hidden', 'stuff' => array('提示纸条K','提示纸条E'),'result' => array('提示纸条Y','WC',1,1,'zd'),),
-
+	array('class' => 'hidden', 'stuff' => array('［ＩＮＮＯＣＥＮＣＥ］','［ＤＩＬＩＧＥＮＣＥ］','［ＣＯＮＳＣＩＥＮＣＥ］'),'result' => array('【E.S.C.A.P.E】','Y',1,1,),),
+	array('class' => 'hidden', 'stuff' => array('［ΨТОВХ］','［ЫΑИЙВХΨ］','［ΩЙΑТΨ］'),'result' => array('【E.S.C.A.P.E】','Y',1,1,),),
+	array('class' => 'hidden', 'stuff' => array('［ｒｍ］','［－ｒ］','［－ｆ］'),'result' => array('【E.S.C.A.P.E】','Y',1,1,),),
 	);
 ?>

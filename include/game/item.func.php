@@ -1271,11 +1271,11 @@ function itemuse($itmn) {
 		} elseif ($itm == '装有H173的注射器') {
 			global $wp, $wk, $wg, $wc, $wd, $wf, $club, $bid, $att, $def;
 			$log .= '你考虑了一会，<br>把袖子卷了起来，给自己注射了H173。<br>';
-			$deathdice = rand ( 0, 8191 );
-			if ($deathdice == 8191 || $club == 15) {
+			$deathdice = rand ( 0, 4096 );
+			if ($deathdice == 4096 || $club == 15) {
 				$log .= '你突然感觉到一种不可思议的力量贯通全身！<br>';
-				$wp = $wk = $wg = $wc = $wd = $wf = 3000;
-				$att = $def = 5000;
+				$wp = $wk = $wg = $wc = $wd = $wf = 8010;
+				$att = $def = 13337;
 				$club = 15;
 				addnews ( $now, 'suisidefail',$nick.' '.$name );
 				$itm = $itmk = $itmsk = '';
@@ -1642,6 +1642,88 @@ function itemuse($itmn) {
 			addnews ($now , 'keyuu', $name, '', $pls);
 			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【红暮】','','切，真是少见的要求，那么我会在【无月之影】等着你们的挑战！')");
 			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【蓝凝】','','英雄就该姗姗来迟，我会和姐姐一起迎接你们！')");
+			//销毁物品
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		} elseif ($itmk =='ZA'){
+			global $plsinfo,$db,$tablepre;
+			if($itm =='→【单兵撤退按钮】←'){
+				$log .= "你按下了这个按钮。<br>但似乎什么都没有发生。<br>按钮就这样消失了。<br>在你觉得你买到了假冒伪劣产品时，你听到了来自红暮的广播。<br>";
+				//销毁物品
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【红暮】','','如果你们发现了什么带有异样颜色的代码断片，千万别合成它们，老实带过来给我就行。')");
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【红暮】','','大家请注意，虚拟幻境系统似乎遭到了来自不明人士的入侵。')");
+				//播撒合成用物品
+				$kitm1="［ＩＮＮＯＣＥＮＣＥ］";
+				$kitm2="［ＤＩＬＩＧＥＮＣＥ］";
+				$kitm3="［ＣＯＮＳＣＩＥＮＣＥ］";
+				$rndpls1= rand(1,count($plsinfo)-2);
+				$rndpls2= rand(1,count($plsinfo)-2);
+				$rndpls3= rand(1,count($plsinfo)-2);
+				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm1', 'XA', '1', '1', '', '$rndpls1')");
+				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm2', 'XA', '1', '1', '', '$rndpls2')");
+				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm3', 'XA', '1', '1', '', '$rndpls3')");
+				$plsname1 = $plsinfo[$rndpls1];
+				$plsname2 = $plsinfo[$rndpls2];
+				$plsname3 = $plsinfo[$rndpls3];
+				$log .= "然后，你听到了来自蓝凝的私聊——<br><span class=\"clan\">【蓝凝】就给你一些提示吧，你需要找到三个代码断片进行合成：{$kitm1}，{$kitm2}与{$kitm3}，它们分别位于{$plsname1}，{$plsname2}与{$plsname3}。<br>【蓝凝】别谢我，问就是我免贵姓雷了。祝你好运！</span>";
+				$log .= "<br>看起来，在脱出幻境之前，你需要玩一把寻宝游戏了……";
+			}elseif($itm == '→【神器任意门】←'){
+				$log .= "你将这个门扉种在了地上。<br>但门扉突然消失了。<br>在你觉得你捡到了个笑话时，你听到了来自红暮的广播。<br>";
+				//销毁物品
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【红暮】','','如果你们发现了什么带有异样颜色的代码断片，千万别合成它们，老实带过来给我就行。')");
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【红暮】','','大家请注意，虚拟幻境系统似乎遭到了来自不明人士的入侵。')");
+				//播撒合成用物品
+				$kitm1="［ΨТОВХ］";
+				$kitm2="［ЫΑИЙВХΨ］";
+				$kitm3="［ΩЙΑТΨ］";
+				$rndpls1= rand(1,count($plsinfo)-2);
+				$rndpls2= rand(1,count($plsinfo)-2);
+				$rndpls3= rand(1,count($plsinfo)-2);
+				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm1', 'XB', '1', '1', '', '$rndpls1')");
+				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm2', 'XB', '1', '1', '', '$rndpls2')");
+				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm3', 'XB', '1', '1', '', '$rndpls3')");
+				$plsname1 = $plsinfo[$rndpls1];
+				$plsname2 = $plsinfo[$rndpls2];
+				$plsname3 = $plsinfo[$rndpls3];
+				$log .= "然后，你听到了来自不明人士的私聊——<br><span class=\"lime\">【？？？】就给你一些提示吧，你需要找到三个代码断片进行合成：{$kitm1}，{$kitm2}与{$kitm3}，它们分别位于{$plsname1}，{$plsname2}与{$plsname3}。<br>【？？？】祝你好运！</span>";
+				$log .= "<br>看起来，在脱出幻境之前，你需要玩一把寻宝游戏了……";
+			}else{
+				$log .= "你启动了单人脱出机构。<br>";
+				//销毁物品
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【红暮】','','如果你们发现了什么带有异样颜色的代码断片，千万别合成它们，老实带过来给我就行。')");
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【红暮】','','大家请注意，虚拟幻境系统似乎遭到了来自不明人士的入侵。')");
+				//播撒合成用物品
+				$kitm1="［ｒｍ］";
+				$kitm2="［－ｒ］";
+				$kitm3="［－ｆ］";
+				$rndpls1= rand(1,count($plsinfo)-2);
+				$rndpls2= rand(1,count($plsinfo)-2);
+				$rndpls3= rand(1,count($plsinfo)-2);
+				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm1', 'XC', '1', '1', '', '$rndpls1')");
+				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm2', 'XC', '1', '1', '', '$rndpls2')");
+				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm3', 'XC', '1', '1', '', '$rndpls3')");
+				$plsname1 = $plsinfo[$rndpls1];
+				$plsname2 = $plsinfo[$rndpls2];
+				$plsname3 = $plsinfo[$rndpls3];
+				$log .= "然后，你听到了来自不明人士的私聊——<br><span class=\"lime\">【？？？】就给你一些提示吧，你需要找到三个代码断片进行合成：{$kitm1}，{$kitm2}与{$kitm3}，它们分别位于{$plsname1}，{$plsname2}与{$plsname3}。<br>【？？？】祝你好运！</span>";
+				$log .= "<br>看起来，在脱出幻境之前，你需要玩一把寻宝游戏了……";
+			}
+		} elseif ($itm == '【E.S.C.A.P.E】'){
+			global $db, $tablepre;
+			//这实际上是个死法，但是会给成就，称号，并加积分与胜场。
+			include_once GAME_ROOT . './include/state.func.php';
+			//成就检查该物品本身的使用，逻辑不写在这里。
+			$log .= '万事俱备，只欠逃离！<br>';
+			//销毁物品
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+			death ( 's_escape', '', 0, $itm );
 		} elseif ($itm == '提示纸条A') {
 			$log .= '你读着纸条上的内容：<br>“执行官其实都是幻影，那个红暮的身上应该有召唤幻影的玩意。”<br>“用那个东西然后打倒幻影的话能用游戏解除钥匙出去吧。”<br>';
 		} elseif ($itm == '提示纸条B') {

@@ -60,6 +60,10 @@ function death($death, $kname = '', $ktype = 0, $annex = '') {
 		$state = 39;
 	} elseif ($death == 'fake_dn'){
 		$state = 28;
+	} elseif ($death == 'thunde'){
+		$state = 40;
+	} elseif ($death == 's_escape'){
+		$state = 42;
 	} else {
 		$state = 10;
 	}

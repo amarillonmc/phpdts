@@ -148,6 +148,12 @@ CREATE TABLE bra_players (
   statusc int(10) NOT NULL default '0',
   statusd int(10) NOT NULL default '0',
   statuse int(10) NOT NULL default '0',
+  element0 mediumint unsigned NOT NULL default '0',
+  element1 mediumint unsigned NOT NULL default '0',
+  element2 mediumint unsigned NOT NULL default '0',
+  element3 mediumint unsigned NOT NULL default '0',
+  element4 mediumint unsigned NOT NULL default '0',
+  element5 mediumint unsigned NOT NULL default '0',
 
   PRIMARY KEY  (pid),
   INDEX TYPE (type, sNo),
