@@ -1,0 +1,19 @@
+<table><tr>
+<td>
+<!--{if ($cpl[57]) }--><img src="img/achievement_0.gif"><!--{else}--><img src="img/achievement_not_done.gif"><!--{/if}-->
+</td>
+<td valign="top" align="left">
+<b>
+<!--{if ($cpl[57]=='0') }-->外来的神秘<!--{/if}-->
+<!--{if ($cpl[57]=='1') }-->风驰电掣<!--{/if}-->
+<!--{if ($cpl[57]=='2') }-->暴雷骤雨<!--{/if}-->
+<!--{if ($cpl[57]=='999') }-->暴雷骤雨<!--{/if}-->
+</b>
+<!--{if ($cpl[57]=='999') }--><span class="lime">[完成]</span><!--{else}--><!--{if ($cpl[57]==0) }--><span class="red">[未完成]</span><!--{else}--><span class="clan">[进行中]</span><!--{/if}--><!--{/if}--><br>
+<font color="yellow">击杀总数： {$prc[57]}名<br></font>
+<!--{if ($cpl[57]=='0') }--><font color="olive">奖励： 切糕10<br></font> 击杀1名残响回声<br><!--{/if}-->
+<!--{if ($cpl[57]=='1') }--><font color="olive">奖励： 积分100 <span class="evergreen">称号 风驰电掣</span><br></font> 击杀52名残响回声<br><!--{/if}-->
+<!--{if ($cpl[57]=='2') }--><font color="olive">奖励： 积分250 <span class="evergreen">称号 暴雷骤雨</span><br></font> 击杀103名残响回声<br><!--{/if}-->
+<!--{if ($cpl[57]=='999') }--><font color="olive">奖励： 积分250 <span class="evergreen">称号 暴雷骤雨</span><br></font> 击杀103名残响回声<br><!--{/if}-->
+</td>
+</tr></table>

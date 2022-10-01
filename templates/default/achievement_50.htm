@@ -1,0 +1,17 @@
+<table><tr>
+<td>
+<!--{if ($cpl[50]) }--><img src="img/achievement_0.gif"><!--{else}--><img src="img/achievement_not_done.gif"><!--{/if}-->
+</td>
+<td valign="top" align="left">
+<b>
+<!--{if ($cpl[50]=='0') }-->人，能够挑战神吗？<!--{/if}-->
+<!--{if ($cpl[50]=='1') }-->★一发逆转！★<!--{/if}-->
+<!--{if ($cpl[50]=='999') }-->★一发逆转！★<!--{/if}-->
+</b>
+<!--{if ($cpl[50]=='999') }--><span class="lime">[完成]</span><!--{else}--><!--{if ($cpl[50]==0) }--><span class="red">[未完成]</span><!--{else}--><span class="clan">[进行中]</span><!--{/if}--><!--{/if}--><br>
+<font color="yellow">合成次数： {$prc[50]}次<br></font>
+<!--{if ($cpl[50]=='0') }--><font color="olive">奖励： 切糕100<br></font> 合成物品★一发逆转神话★1次<br><!--{/if}-->
+<!--{if ($cpl[50]=='1') }--><font color="olive">奖励： 积分700 <span class="evergreen">称号 ★一发逆转！★</span><br></font> 合成物品★一发逆转神话★7次<br><!--{/if}-->
+<!--{if ($cpl[50]=='999') }--><font color="olive">奖励： 积分700 <span class="evergreen">称号 ★一发逆转！★</span><br></font> 合成物品★一发逆转神话★7次<br><!--{/if}-->
+</td>
+</tr></table>

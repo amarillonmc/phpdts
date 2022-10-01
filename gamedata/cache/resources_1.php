@@ -970,7 +970,7 @@ $iteminfo = Array(//注意顺序，AB必须在A的前面，以此类推
 	'Z' => '特殊',#不可合并
 	);
 
-/* $itemspkinfo = Array(
+/* $itemspkinfo2 = Array(
 	'A' => '全系防御',
 	'a' => '属性防御',
 	'B' => '伤害抹消',

@@ -111,6 +111,6 @@ $hack_obbs = 40;
 $elec_cap = 5;
 
 //成就总数
-$achievement_count=70;
+$achievement_count=140;
 
 ?>

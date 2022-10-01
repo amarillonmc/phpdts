@@ -1,0 +1,19 @@
+<table><tr>
+<td>
+<!--{if ($cpl[39]) }--><img src="img/achievement_0.gif"><!--{else}--><img src="img/achievement_not_done.gif"><!--{/if}-->
+</td>
+<td valign="top" align="left">
+<b>
+<!--{if ($cpl[39]=='0') }-->试试看重枪吧！<!--{/if}-->
+<!--{if ($cpl[39]=='1') }-->黑洞边缘<!--{/if}-->
+<!--{if ($cpl[39]=='2') }-->重枪爱好者<!--{/if}-->
+<!--{if ($cpl[39]=='999') }-->重枪爱好者<!--{/if}-->
+</b>
+<!--{if ($cpl[39]=='999') }--><span class="lime">[完成]</span><!--{else}--><!--{if ($cpl[39]==0) }--><span class="red">[未完成]</span><!--{else}--><span class="clan">[进行中]</span><!--{/if}--><!--{/if}--><br>
+<font color="yellow">合成次数： {$prc[39]}次<br></font>
+<!--{if ($cpl[39]=='0') }--><font color="olive">奖励： 切糕10<br></font> 合成物品☆金色闪光☆1次<br><!--{/if}-->
+<!--{if ($cpl[39]=='1') }--><font color="olive">奖励： 积分100 <span class="evergreen">称号 黑洞边缘</span><br></font> 合成物品☆金色闪光☆51次<br><!--{/if}-->
+<!--{if ($cpl[39]=='2') }--><font color="olive">奖励： 积分350 <span class="evergreen">称号 重枪爱好者</span><br></font> 合成物品☆金色闪光☆111次<br><!--{/if}-->
+<!--{if ($cpl[39]=='999') }--><font color="olive">奖励： 积分350 <span class="evergreen">称号 重枪爱好者</span><br></font> 合成物品☆金色闪光☆111次<br><!--{/if}-->
+</td>
+</tr></table>

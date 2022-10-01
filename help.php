@@ -95,7 +95,7 @@ if(filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemti
 				<td class=\"b1\"><span>合成材料五</span></td>
 				<td class=\"b1\"></td>
 				<td class=\"b1\"><span>合成结果</span></td>
-				<td class=\"b1\"><span>用途</span></td>
+				<td class=\"b1\"><span>物品属性</span></td>
 			</tr>
 			";
 		foreach($list as $val){
@@ -112,10 +112,14 @@ if(filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemti
 				include_once GAME_ROOT.'./include/game/itemplace.func.php';
 				if ($val['stuff'][$i]!='-') $mixhelpinfo .= "title=\"".get_item_place($val['stuff'][$i])."\" ";
 				$mixhelpinfo .= "><span>{$val['stuff'][$i]}</span></td>";
+				//修复加入悬浮提示后出现的问题。
 			}
+//			$mixhelpinfo .= "<td class=\"b3\">→</td>
+//					<td class=\"b3\" title=\"{$val['result'][1]}/{$val['result'][2]}/{$val['result'][3]}{$itmskword}\"><span>{$val['result'][0]}</span></td>
+//					<td class=\"b3\"><span>{$val['result'][1]}/{$val['result'][2]}/{$val['result'][3]}{$itmskword}</span></td>
 			$mixhelpinfo .= "<td class=\"b3\">→</td>
-					<td class=\"b3\" title=\"{$val['result'][1]}/{$val['result'][2]}/{$val['result'][3]}{$itmskword}\"><span>{$val['result'][0]}</span></td>
-					<td class=\"b3\"><span>{$val['result'][1]}/{$val['result'][2]}/{$val['result'][3]}{$itmskword}</span></td>
+			<td class=\"b3\"><span>{$val['result'][0]}</span></td>
+			<td class=\"b3\"><span>{$val['result'][1]}/{$val['result'][2]}/{$val['result'][3]}{$itmskword}</span></td>
 				</tr>
 				";
 		}

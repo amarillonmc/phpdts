@@ -1,0 +1,19 @@
+<table><tr>
+<td>
+<!--{if ($cpl[36]) }--><img src="img/achievement_0.gif"><!--{else}--><img src="img/achievement_not_done.gif"><!--{/if}-->
+</td>
+<td valign="top" align="left">
+<b>
+<!--{if ($cpl[36]=='0') }-->试试看斩系吧！<!--{/if}-->
+<!--{if ($cpl[36]=='1') }-->苍蓝之光<!--{/if}-->
+<!--{if ($cpl[36]=='2') }-->斩系爱好者<!--{/if}-->
+<!--{if ($cpl[36]=='999') }-->斩系爱好者<!--{/if}-->
+</b>
+<!--{if ($cpl[36]=='999') }--><span class="lime">[完成]</span><!--{else}--><!--{if ($cpl[36]==0) }--><span class="red">[未完成]</span><!--{else}--><span class="clan">[进行中]</span><!--{/if}--><!--{/if}--><br>
+<font color="yellow">合成次数： {$prc[36]}次<br></font>
+<!--{if ($cpl[36]=='0') }--><font color="olive">奖励： 切糕10<br></font> 合成物品Azurewrath1次<br><!--{/if}-->
+<!--{if ($cpl[36]=='1') }--><font color="olive">奖励： 积分100 <span class="evergreen">称号 苍蓝之光</span><br></font> 合成物品Azurewrath51次<br><!--{/if}-->
+<!--{if ($cpl[36]=='2') }--><font color="olive">奖励： 积分350 <span class="evergreen">称号 斩系爱好者</span><br></font> 合成物品Azurewrath111次<br><!--{/if}-->
+<!--{if ($cpl[36]=='999') }--><font color="olive">奖励： 积分350 <span class="evergreen">称号 斩系爱好者</span><br></font> 合成物品Azurewrath111次<br><!--{/if}-->
+</td>
+</tr></table>

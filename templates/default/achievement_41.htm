@@ -1,0 +1,19 @@
+<table><tr>
+<td>
+<!--{if ($cpl[41]) }--><img src="img/achievement_0.gif"><!--{else}--><img src="img/achievement_not_done.gif"><!--{/if}-->
+</td>
+<td valign="top" align="left">
+<b>
+<!--{if ($cpl[41]=='0') }-->进行加速同调吧！<!--{/if}-->
+<!--{if ($cpl[41]=='1') }-->加速同调<!--{/if}-->
+<!--{if ($cpl[41]=='2') }-->聚集的祈愿<!--{/if}-->
+<!--{if ($cpl[41]=='999') }-->聚集的祈愿<!--{/if}-->
+</b>
+<!--{if ($cpl[41]=='999') }--><span class="lime">[完成]</span><!--{else}--><!--{if ($cpl[41]==0) }--><span class="red">[未完成]</span><!--{else}--><span class="clan">[进行中]</span><!--{/if}--><!--{/if}--><br>
+<font color="yellow">合成次数： {$prc[41]}次<br></font>
+<!--{if ($cpl[41]=='0') }--><font color="olive">奖励： 切糕10<br></font> 合成物品流星龙 ★10 1次<br><!--{/if}-->
+<!--{if ($cpl[41]=='1') }--><font color="olive">奖励： 积分100 <span class="evergreen">称号 加速同调</span><br></font> 合成物品流星龙 ★10 51次<br><!--{/if}-->
+<!--{if ($cpl[41]=='2') }--><font color="olive">奖励： 积分350 <span class="evergreen">称号 聚集的祈愿</span><br></font> 合成物品流星龙 ★10 111次<br><!--{/if}-->
+<!--{if ($cpl[41]=='999') }--><font color="olive">奖励： 积分350 <span class="evergreen">称号 聚集的祈愿</span><br></font> 合成物品流星龙 ★10 111次<br><!--{/if}-->
+</td>
+</tr></table>

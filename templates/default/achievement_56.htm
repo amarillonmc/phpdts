@@ -1,0 +1,19 @@
+<table><tr>
+<td>
+<!--{if ($cpl[56]) }--><img src="img/achievement_0.gif"><!--{else}--><img src="img/achievement_not_done.gif"><!--{/if}-->
+</td>
+<td valign="top" align="left">
+<b>
+<!--{if ($cpl[56]=='0') }-->种火？那是啥？<!--{/if}-->
+<!--{if ($cpl[56]=='1') }-->是都市传说。<!--{/if}-->
+<!--{if ($cpl[56]=='2') }-->除错大师<!--{/if}-->
+<!--{if ($cpl[56]=='999') }-->除错大师<!--{/if}-->
+</b>
+<!--{if ($cpl[56]=='999') }--><span class="lime">[完成]</span><!--{else}--><!--{if ($cpl[56]==0) }--><span class="red">[未完成]</span><!--{else}--><span class="clan">[进行中]</span><!--{/if}--><!--{/if}--><br>
+<font color="yellow">击杀总数： {$prc[56]}名<br></font>
+<!--{if ($cpl[56]=='0') }--><font color="olive">奖励： 切糕10<br></font> 击杀1名种火<br><!--{/if}-->
+<!--{if ($cpl[56]=='1') }--><font color="olive">奖励： 积分100 <span class="evergreen">称号 都市传说</span><br></font> 击杀180名种火<br><!--{/if}-->
+<!--{if ($cpl[56]=='2') }--><font color="olive">奖励： 积分250 <span class="evergreen">称号 除错大师</span><br></font> 击杀366个种火<br><!--{/if}-->
+<!--{if ($cpl[56]=='999') }--><font color="olive">奖励： 积分250 <span class="evergreen">称号 除错大师</span><br></font> 击杀366个种火<br><!--{/if}-->
+</td>
+</tr></table>
