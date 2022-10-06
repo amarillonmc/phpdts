@@ -323,6 +323,9 @@ function syncro($sb){
 	$itm0=$n;$itmk0=$k;$itme0=$e;$itms0=$s;$itmsk0=$sk;
 	if ($r>0) {addnews($now,'syncmix',$nick.' '.$name,$itm0);}
 	else {addnews($now,'overmix',$nick.' '.$name,$itm0);}
+			//检查成就
+			include_once GAME_ROOT.'./include/game/achievement.func.php';
+			check_mixitem_achievement($name,$itm0);
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
 	itemget();
 	return;
