@@ -789,7 +789,10 @@ function itemuse($itmn) {
 		$log.="你打开了<span class=\"yellow\">$itm</span>。<br>";
 		if(strpos( $itmk, 'ps' ) === 0){//银色盒子
 			include_once config('randomitem',$gamecfg);
-			$dice = rand(1,100);
+			//1st case of the new diceroll system.
+			include_once GAME_ROOT.'./include/game/dice.func.php';
+			$dice = diceroll(100);
+			//$dice = rand(1,100);
 			if($dice <= 75){//一般物品
 				$itemflag = $itmlow;
 			}elseif($dice <= 95){//中级道具
@@ -869,6 +872,11 @@ function itemuse($itmn) {
 		$trapresult = $db->query("SELECT * FROM {$tablepre}maptrap WHERE pls = '$pls' AND itme>='$itme'");
 		$trpnum = $db->num_rows($trapresult);
 		$itms--;
+		if ($itms <= 0) {
+			$log .= "<span class=\"red\">$itm</span>用光了。<br>";
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		}
 		if ($trpnum>0){
 			$itemno = rand(0,$trpnum-1);
 			$db->data_seek($trapresult,$itemno);
