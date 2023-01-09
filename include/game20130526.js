@@ -63,6 +63,18 @@ function itemmixchooser(){
 	}
 }
 
+function elementmixchooser(){
+	//呃呃 这里可能会有点问题
+	for(i=0;i<=5;i++){
+		var mname = 'emitm'+i;
+		if($(mname) != null){
+			if($(mname).checked){
+				$(mname).value=i;
+			}
+		}
+	}
+}
+
 //icon select
 //function iconMover(){
 //	gd = document.valid.gender[0].checked ? 'm' : 'f';
@@ -275,7 +287,7 @@ function showData(sdata){
 	if(shwData['timer'] && typeof(timerid)=='undefined'){
 		demiSecTimerStarter(shwData['timer']);
 	}
-	if ($('HsUipfcGhU'))	//ˢ��ҳ����
+	if ($('HsUipfcGhU'))	//ˢ��ҳ����
 	{
 		window.location.reload();
 	}

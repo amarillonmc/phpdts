@@ -1,0 +1,36 @@
+你伸手掏向口袋……<br>
+打算投入哪些元素？<br>
+
+<input type="hidden" name="mode" value="itemmain">
+<input type="hidden" name="command" id="command" value="menu">
+<br>
+<!--元素选取模块-->
+<!--{if $element0}-->
+<input type="checkbox" id="emitm0" name="emitm0" value="-1"><a onclick="$('emitm0').click();" href="javascript:void(0);">【$elements_info[0]】 → 投入数量：</a>
+<input type="number" style="width:50px" name="emitm0_num" value="0" min="0" max="$element0" oninput="if(value>$element0)value=$element0;if(value<0)value=0" /><br>
+<!--{/if}-->
+<!--{if $element1}-->
+<input type="checkbox" id="emitm1" name="emitm1" value="-1"><a onclick="$('emitm1').click();" href="javascript:void(0);">【$elements_info[1]】 → 投入数量：</a>
+<input type="number" style="width:50px" name="emitm1_num" value="0" min="0" max="$element1" oninput="if(value>$element1)value=$element1;if(value<0)value=0" /><br>
+<!--{/if}-->
+<!--{if $element2}-->
+<input type="checkbox" id="emitm2" name="emitm2" value="-1"><a onclick="$('emitm2').click();" href="javascript:void(0);">【$elements_info[2]】 → 投入数量：</a>
+<input type="number" style="width:50px" name="emitm2_num" value="0" min="0" max="$element2" oninput="if(value>$element2)value=$element2;if(value<0)value=0" /><br>
+<!--{/if}-->
+<!--{if $element3}-->
+<input type="checkbox" id="emitm3" name="emitm3" value="-1"><a onclick="$('emitm3').click();" href="javascript:void(0);">【$elements_info[3]】 → 投入数量：</a>
+<input type="number" style="width:50px" name="emitm3_num" value="0" min="0" max="$element3" oninput="if(value>$element3)value=$element3;if(value<0)value=0" /><br>
+<!--{/if}-->
+<!--{if $element4}-->
+<input type="checkbox" id="emitm4" name="emitm4" value="-1"><a onclick="$('emitm4').click();" href="javascript:void(0);">【$elements_info[4]】 → 投入数量：</a>
+<input type="number" style="width:50px" name="emitm4_num" value="0" min="0" max="$element4" oninput="if(value>$element4)value=$element4;if(value<0)value=0" /><br>
+<!--{/if}-->
+<!--{if $element5}-->
+<input type="checkbox" id="emitm5" name="emitm5" value="-1"><a onclick="$('emitm5').click();" href="javascript:void(0);">【$elements_info[5]】 → 投入数量：</a>
+<input type="number" style="width:50px" name="emitm5_num" value="0" min="0" max="$element5" oninput="if(value>$element5)value=$element5;if(value<0)value=0" /><br>
+<!--{/if}-->
+<br>
+<!--（暂定）升级解锁：指定武器/道具类型-->
+<!--（暂定）升级解锁：效果、耐久比例调节-->
+<input type="button" class="cmdbutton" name="submit" value="提交" onclick="$('command').value='elementmix';elementmixchooser();postCmd('gamecmd','command.php');this.disabled=true;">
+<input type="button" class="cmdbutton" name="submit" value="放弃" onclick="postCmd('gamecmd','command.php');this.disabled=true;">
