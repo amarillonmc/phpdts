@@ -1732,6 +1732,21 @@ function itemuse($itmn) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 			death ( 's_escape', '', 0, $itm );
+		} elseif ($itm == '测试用元素口袋'){
+			//-----------------------//
+			//冴冴可以把这一段放在使用社团卡后执行的事件里
+			include_once config('elementmix',$gamecfg);
+			$tags_arr = $temp_etags;
+			include_once GAME_ROOT.'./include/game/elementmix.func.php';
+			create_flip_temp_etags_cache_file($tags_arr);
+			//-----------------------//
+			global $elements_info;
+			$log.="什么！你从身上不知道哪个角落摸出来一大坨元素！<br>";
+			foreach($elements_info as $e_key=>$e_info)
+			{
+				global ${'element'.$e_key};
+				${'element'.$e_key} += 10000;
+			}
 		} elseif ($itm == '提示纸条A') {
 			$log .= '你读着纸条上的内容：<br>“执行官其实都是幻影，那个红暮的身上应该有召唤幻影的玩意。”<br>“用那个东西然后打倒幻影的话能用游戏解除钥匙出去吧。”<br>';
 		} elseif ($itm == '提示纸条B') {
