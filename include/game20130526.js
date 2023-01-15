@@ -52,9 +52,18 @@ function demiSecTimerStarter(msec){
 	timerid = setInterval("demiSecTimer()",itv);
 }
 
-function itemmixchooser(){
-	for(i=1;i<=6;i++){
-		var mname = 'mitm'+i;
+function itemmixchooser(type=NULL){
+	var istart = 1; 
+	var iend = 6; 
+	var iname = 'mitm';
+	if(type==20)
+	{
+		istart = 0;
+		iend = 5;
+		iname = 'emitm';
+	}
+	for(i=istart;i<=iend;i++){
+		var mname = iname+i;
 		if($(mname) != null){
 			if($(mname).checked){
 				$(mname).value=i;
@@ -62,19 +71,6 @@ function itemmixchooser(){
 		}
 	}
 }
-
-function elementmixchooser(){
-	//呃呃 这里可能会有点问题
-	for(i=0;i<=5;i++){
-		var mname = 'emitm'+i;
-		if($(mname) != null){
-			if($(mname).checked){
-				$(mname).value=i;
-			}
-		}
-	}
-}
-
 //icon select
 //function iconMover(){
 //	gd = document.valid.gender[0].checked ? 'm' : 'f';
@@ -346,6 +342,22 @@ function openShutManager(oSourceObj,oTargetObj,shutAble,oOpenTip,oShutTip){
 	   if(openTip  &&  shutTip){
 	    sourceObj.innerHTML = openTip; 
 	   }
+	}
+}
+
+//元素合成界面的ajax效果 仅作美化使用
+function getEmitmeR(type=0) {
+	if(type == 1)
+	{	
+		var r = document.getElementById("emitme_max_r").value;
+		var e = document.getElementById("emax").value;
+		$('s_emitme_max').innerHTML = Math.round(e*(r/100));
+	}
+	else
+	{
+		var r = document.getElementById("emitme_r").value;
+		$('s_emitme_r').innerHTML = r;
+		$('s_emitms_r').innerHTML = 100-r;
 	}
 }
 

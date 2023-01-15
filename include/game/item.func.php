@@ -1740,8 +1740,9 @@ function itemuse($itmn) {
 			include_once GAME_ROOT.'./include/game/elementmix.func.php';
 			create_flip_temp_etags_cache_file($tags_arr);
 			//-----------------------//
-			global $elements_info;
-			$log.="什么！你从身上不知道哪个角落摸出来一大坨元素！<br>";
+			global $elements_info,$club,$url;
+			if(!$club || $club!=20) $club=20;
+			$log.="什么！你从身上不知道哪个角落摸出来一大包元素！<br>";
 			foreach($elements_info as $e_key=>$e_info)
 			{
 				global ${'element'.$e_key};

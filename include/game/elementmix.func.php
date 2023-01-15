@@ -8,6 +8,32 @@
 	global $gamecfg,$elements_info;//这个$gamecfg到底是在哪定义的……
 	include_once config('elementmix',$gamecfg);
 
+	/********界面交互部分********/
+	function print_elements_info()
+	{
+		global $elements_info,$temp_etags,$iteminfo,$itemspkinfo,$log;
+		$log.="你在你的小口袋里翻找起来……<br>";
+		$log.="当前的<span class='lime'>元素存量</span>如下：<br>";
+		foreach($elements_info as $e_key=>$e_info)
+		{
+			global ${'element'.$e_key};
+			if(${'element'.$e_key})
+			{
+				$log.="【{$e_info}：{${'element'.$e_key}} 份】<br>";
+				$log.="<span class='grey'>已了解的特征：</span>";
+				foreach($temp_etags[$e_key] as $tk => $tarr)
+				{
+					foreach($tarr as $tm)
+					{
+						$log.= $tk=='dom' ? "<span class='grey'>【{$iteminfo[$tm]}】</span>" : "<span class='grey'>【{$itemspkinfo[$tm]}】</span>";
+					}
+				}
+				$log.="<br>";
+			}
+		}
+		$log.="总之就是这么一回事了。<br>";
+	}
+
 	/********拆解元素部分********/
 
 	//过滤掉不能拆解的道具 不能分解返回1 能分解返回0
@@ -17,11 +43,11 @@
 		if($i)
 		{
 			//过滤不能分解的道具种类
-			if(in_array($i['itmk'],$no_itmk_to_e_list)) return 1;
+			if((!is_array($i['itmk']) && in_array($i['itmk'],$no_itmk_to_e_list)) || (is_array($i['itmk']) && array_intersect($i['itmk'],$no_itmsk_to_e_list))) return 1;
 			//过滤不能分解的道具名
 			foreach($no_itm_to_e_list as $no_itm)
 			{
-				if(strpos($i['itm'],$no_itm)!==false) return 1;
+				if(preg_match("/$no_itm/",$i['itm'])) return 1;
 			}
 			//过滤不能分解的道具属性
 			if($i['itmsk'])
@@ -38,7 +64,7 @@
 	//把尸体打散成元素
 	function split_corpse_to_elements(&$edata)
 	{
-		$tmp_arr = Array();
+		$ev_arr = Array();
 		if($edata)
 		{
 			global $elements_info,$no_type_to_e_list,$corpse_to_e_lvl_r;
@@ -50,7 +76,7 @@
 				return;
 			}
 			//成功从尸体中提炼元素
-			$log.="{$edata['name']}化作点点荧光四散开来……<br>";
+			$log.="你用指尖轻轻一点，{$edata['name']}便化作点点荧光四散而去……<br>";
 			//根据尸体等级计算能获得的全种类元素数量
 			$ev_lvl = ceil($edata['lvl']*$corpse_to_e_lvl_r);
 			//把尸体上的装备道具一起打包
@@ -62,13 +88,21 @@
 			{
 				global ${'element'.$e_key};
 				$add_ev = $ev_arr[$e_key] + $ev_lvl;
+				//如果尸体上有元素，一并获取，不过现在还不能在npc配置文件里预设NPC出生时带的元素
+				//瞄了眼NPC初始化的函数，要改的话不如一步到位都改了。
+				//TODO：创建一个同步player表字段的函数，在NPC初始化时对NPC数据格式化，插入数据库时用格式化后的数组，这样以后添加新字段也不再需要动初始化函数了
+				if($edata['element'.$e_key])
+				{
+					$add_ev += $edata['element'.$e_key];
+					$edata['element'.$e_key] = 0;
+				}
 				${'element'.$e_key} += $add_ev;
 				$log.="提取到了{$add_ev}份{$e_info}！<br>";
 			}
 			//销毁尸体
 			destory_corpse($edata);
-			//你也一块去吧！
-			unset($ev_arr); 
+			//你们也一块去吧！
+			unset($ev_arr); unset($corpse_itm_arr);
 			//炼人油败人品
 			$ep_dice = rand(0,100);
 			if($ep_dice>70)
@@ -84,6 +118,7 @@
 	//把道具打散成元素 改下传入的参数其实也可以拆装备
 	function split_item_to_elements($iid=NULL)
 	{
+		$i_arr = Array();
 		if(isset($iid))
 		{
 			global $elements_info,$itmk_to_e_list;
@@ -107,7 +142,7 @@
 				return;
 			}
 			//分解道具获得元素
-			$log.=${'itm'.$iid}."化作点点荧光四散开来……<br>";
+			$log.="你用指尖轻轻一点，".${'itm'.$iid}."便化作点点荧光四散而去……<br>";
 			//计算能获得的元素种类与数量
 			$i_arr = get_evalues_by_iarr($i_arr);
 			//增加对应的元素
@@ -140,18 +175,16 @@
 	function get_evalues_by_iarr($iarr)
 	{
 		global $log,$nosta,$elements_info,$temp_etags;
-		global $itm_to_e_fix,$itmk_to_e_fix,$itmk_to_e_r,$itmsk_to_e_fix;
+		global $itm_to_e_fix,$itm_to_e_r,$itmk_to_e_fix,$itmk_to_e_r,$itmsk_to_e_fix;
 		global $emix_sub_tags_values,$emix_sub_tags_default_values;
 
-		$ev_arr = Array();
+		$ev_arr = Array(); $ev_ir = 1;//道具名关联的价值修正系数 对所有拆解出的元素都生效
 		//通过缓存文件获取翻转数组……是不是真的有必要这么搞啊……？
 		$cache_file = GAME_ROOT."./gamedata/bak/elementmix.bak";
 		$flip_etags_arr = file_exists($cache_file) ? openfile_decode($cache_file) : flip_temp_etags($temp_etags);
 		//开始计算元素价值
 		foreach($iarr as $i => $t)
 		{
-			//重复过滤一次
-			if(split_to_elements_filter($t)) continue;
 			//检查拆解固定道具时的事件
 			//通过道具名为道具关联一个元素
 			if($itm_to_e_fix[$t['itm']])
@@ -163,17 +196,44 @@
 				//道具在特判列表里 不再继续计算后面的内容 直接跳到下一个道具
 				continue;
 			}
+			//处理道具类别：道具类别不在特殊处理列表里 对其子类别进行过滤 只保留主类别
+			//if(!$itmk_to_e_r[$t['itmk']] && !$itmk_to_e_fix[$t['itmk']]) $t['itmk'] = filter_itemkind($t['itmk']);
+			//过滤不能分解的道具
+			if(split_to_elements_filter($t)) continue;
+			//通过道具名（关键词匹配）获取价值修正 这个修正对所有获得的元素类都生效！重要的事情说三遍……三遍了吗？
+			//如果这个列表里东西变多了 可以考虑加一个类别限制条件 比如类别是Y/Z/X才会去过条件 
+			foreach($itm_to_e_r as $ev_i => $ev_r)
+			{
+				//echo "开始匹配{$t['itm']}与{$ev_i}是否相符";
+				if(preg_match("/$ev_i/",$t['itm'])) 
+				{
+					$ev_ir = $ev_r;
+					//echo "获取到了evir{$ev_r}";
+					break;
+				}
+			}
 			//通过道具的效果、耐久，确定原始价值
 			if($t['itms'] == $nosta) $t['itms'] = rand(1,10);
 			$base_ev = round(($t['itme']+$t['itms'])/2);
-			//通过道具类别为道具关联一个元素
-			//能找到源头元素的情况下绑定源头元素 否则绑定随机元素
-			$ekey = $flip_etags_arr['flip_d_tag'][$t['itmk']] ? $flip_etags_arr['flip_d_tag'][$t['itmk']] : array_rand($elements_info);
-			//类别价值修正
-			$base_ev *= $itmk_to_e_r[$t['itmk']] ? $itmk_to_e_r[$t['itmk']] : 1;
-			$base_ev = ceil($base_ev);
-			$ev_arr[$ekey] += $base_ev;
-			echo "【DEBUG】【{$t['itmk']}】{$t['itm']}分解出了{$base_ev}份{$elements_info[$ekey]}<br>";
+			//通过道具类别为道具关联一个或多个元素
+			//能找到源头元素的情况下绑定源头元素 否则绑定随机元素 返回了多个类别则多次处理
+			if(is_array($t['itmk']))
+			{
+				foreach($t['itmk'] as $kind)
+					$ekey = $flip_etags_arr['flip_d_tag'][$kind] ? $flip_etags_arr['flip_d_tag'][$kind] : array_rand($elements_info);
+					//价值修正
+					$base_ev *= $itmk_to_e_r[$kind] ? $itmk_to_e_r[$kind] : 1;
+					$ev_arr[$ekey] += ceil($base_ev*$ev_ir);
+					echo "【DEBUG】【{$kind}】{$t['itm']}分解出了{$base_ev}份{$elements_info[$ekey]}<br>";
+			}
+			else 
+			{
+				$ekey = $flip_etags_arr['flip_d_tag'][$t['itmk']] ? $flip_etags_arr['flip_d_tag'][$t['itmk']] : array_rand($elements_info);
+				//类别价值修正
+				$base_ev *= $itmk_to_e_r[$t['itmk']] ? $itmk_to_e_r[$t['itmk']] : 1;
+				$ev_arr[$ekey] += ceil($base_ev*$ev_ir);
+				echo "【DEBUG】【{$t['itmk']}】{$t['itm']}分解出了{$base_ev}份{$elements_info[$ekey]}<br>";
+			}
 			//通过道具属性为道具关联一个或多个元素
 			if(isset($t['itmsk']))
 			{
@@ -186,8 +246,10 @@
 						$add_ev = 0;
 						//获取属性价值
 						$add_ev = $emix_sub_tags_values[$tsk] ? $emix_sub_tags_values[$tsk] : $emix_sub_tags_default_values;
+						echo "【DEBUG】{$add_ev}份{$emix_sub_tags_default_values}和{$emix_sub_tags_values[$tsk]}<br>";
 						//获取属性价值修正
 						if($emix_sub_tags_values_fix[$t['itmk']]) $add_ev = max(0,$add_ev+$emix_sub_tags_values_fix[$t['itmk']]);
+						echo "【DEBUG】{$add_ev}份<br>";
 						//入列！
 						$ev_arr[$ekey] += $add_ev;
 						echo "【DEBUG】{$t['itm']}的【属性{$tsk}】分解出了{$add_ev}份{$elements_info[$ekey]}<br>";
@@ -201,15 +263,21 @@
 	/********元素合成部分********/
 
 	//元素喝茶
-	function element_mix($emlist,$eitme_r=NULL)
+	function element_mix($emlist,$eitme_max_r=NULL,$eitme_r=NULL)
 	{
-		global $log,$elements_info,$default_emix_itme_r,$no_emix_circulation;
-		global $emix_name_brackets_arr,$emix_name_prefix_arr,$emix_name_meta_arr,$emix_name_tail_arr;
+		global $log,$elements_info,$default_emix_itme_r,$no_emix_circulation,$iteminfo,$itemspkinfo;
+		global $emix_tips_arr,$emix_name_brackets_arr,$emix_name_prefix_arr,$emix_name_meta_arr,$emix_name_tail_arr;
+		if(!$emlist)
+		{
+			$log.="你不能用不存在的东西合成！<br>";
+			return;
+		}
 		//输入了合法的元素参数，先初始化一些变量。
 		$c_times = 0; $total_enum = 0; $dom_ekey = -1; $dom_enum = -1; $multi_dom_ekey = Array();
 		//自定义效/耐比的阈值：2%~98%
-		if(isset($eitme_r)) $eitme_r = min(0.98,max(0.02,$eitme_r));
-
+		if(isset($eitme_r)) $eitme_r = min(98,max(2,$eitme_r)); $eitme_r /= 100;
+		//自定义最大效果的阈值：1%~100%
+		$eitme_max_r = isset($eitme_max_r) ? min(100,max(1,$eitme_max_r)) : 100; $eitme_max_r /= 100;
 		//对参与合成的元素按投入数量降序排序，筛出投入数量最多的元素作为主元素
 		arsort($emlist);
 		$log.="从口袋中抓出了";
@@ -236,7 +304,7 @@
 			global ${'element'.$ekey};
 			${'element'.$ekey} -= $enum;
 		}
-		$log.="。<br>……<br>开始了合成。<br><br>";
+		$log.="。<br>……感觉有点紧张。<br>开始合成了。<br>";
 
 		//在开始随机合成前，先检查是否存在固定合成。
 		//（TODO：固定的元素合成列表）
@@ -245,8 +313,11 @@
 		//把分解数个关键道具获得的元素=>秘钥 重新进行元素合成，就可以得到结局道具。
 
 		//开始随机合成：
-		//（TODO：随机的合成事件：大失败 失败 普通 成功 大成功）
-		//$dice_flag = get_emix_dice_flag();
+		//（TODO：合成的大成功、大失败事件）
+		//（可能的事件：增加效果、升级/改变/增加属性、道具爆炸扣血）
+		$emix_dice = rand(1,20)+rand(1,20)+rand(1,20)+rand(1,20)+rand(1,20);
+
+		$log.="<span class='grey'>加入了一点{$emix_tips_arr[array_rand($emix_tips_arr)]}……</span><br>";
 
 		//生成道具类别：
 		$emix_itmk = '';
@@ -264,16 +335,22 @@
 		//用获取到的主特征（是个数组）确定道具类别（理论上来说可以存在多个重复的主特征，也许可以加入些套娃配方）
 		$emix_itmk = get_emix_itmk($emix_itmk_tags);
 
+		$log.="{$elements_info[$dom_ekey]}<span class='clan'>的形状变得有些像{$iteminfo[$emix_itmk]}了。</span><br>";
+		$log.="<span class='grey'>再加一些{$emix_tips_arr[array_rand($emix_tips_arr)]}……</span><br>";
+
 		//生成道具效果、耐久：
 		$emix_itme = 0; $emix_itms = 0;
 		//根据投入的元素总量 计算其中能够转化为效果、耐久的部分（不会超过当前等级的理论上限值）
-		$cost_enum = get_emix_max_cost($total_enum);
+		$cost_enum = get_emix_max_cost($total_enum,$eitme_max_r);
 		//获取道具效果耐久比例。$eitem_r：解锁自定义比例功能后，合成时设定的效/耐比。
 		$emix_itme_r = $eitme_r ? $eitme_r : $default_emix_itme_r;
 		$emix_itms_r = 1-$emix_itme_r;
 		//计算道具效果、耐久
 		$emix_itme = ceil($cost_enum*$emix_itme_r); //只投入1份元素，至少也会有1点效果、1点耐久。你赚了我亏了好吧！
 		$emix_itms = ceil($cost_enum*$emix_itms_r);
+
+		$log.="<span class='clan'>你有听到</span>{$elements_info[array_rand($emlist)]}<span class='clan'>在雾气中的低语吗？</span><br>";
+		$log.="<span class='grey'>哎呀，不小心混入了一点{$emix_tips_arr[array_rand($emix_tips_arr)]}……</span><br>";
 
 		//生成道具属性：
 		$emix_itmsk = $no_emix_circulation ? Array('v') : Array(); 
@@ -301,55 +378,51 @@
 			//把次要特征转化为道具属性。第三个参数：能保留的属性数量上限
 			$emix_itmsk = array_merge($emix_itmsk,get_emix_itmsk($emix_itmsk_tags,$emix_itmk,$emix_itmsk_max));
 		}
+		$log.="<span class='clan'>闻到了";
+		if($emix_itmsk) $log.="{$itemspkinfo[$emix_itmsk[array_rand($emix_itmsk)]]}、";
+		$log.="硫磺、</span>{$elements_info[array_rand($emlist)]}<span class='clan'>与某种发酵物混合的味道。</span><br>";
 		//把itmsk从数组转回字符串
 		$emix_itmsk = get_itmsk_strlen($emix_itmsk);
 
 		//（TODO：合成事件结算阶段）
+		$log.="<span class='grey'>最后再加上一点{$emix_tips_arr[array_rand($emix_tips_arr)]}……</span><br>";
+		$log.="……结束了……？<br><br>";
 
 		//出生了！为孩子起个可爱的名字吧
 		$emix_itm = ''; $emix_itm_prefix = ''; $emix_itm_meta = ''; $emix_itm_tail = ''; $emix_name_brackets = '';
-		//根据主元素获取修饰词前缀
-		$emix_itm_prefix = $emix_name_prefix_arr[$dom_ekey][array_rand($emix_name_prefix_arr[$dom_ekey])];
-		//随便挑一个元素作为过渡词缀
-		$emix_itm_meta = $emix_name_meta_arr[array_rand($emlist)];
-		$emix_itm_meta = $emix_itm_meta[array_rand($emix_itm_meta)];
-		//根据生成的类别获取一个尾巴 
-		//这部分太畜生了，之后得改一个正常点的
-		switch ($emix_itmk)
+		//根据主元素获取修饰前缀词组
+		$emix_itm_prefix = array_rand($emix_name_prefix_arr[$dom_ekey]);
+		$emix_itm_prefix = $emix_name_prefix_arr[$dom_ekey][$emix_itm_prefix];
+		//随便挑一个元素的元词缀词组
+		$meta_emlist_id =array_rand($emlist); //TODO：大成功、失败事件可以使用拓展1词组
+		$emix_itm_meta = array_rand($emix_name_meta_arr[$meta_emlist_id]);
+		$emix_itm_meta = $emix_name_meta_arr[$meta_emlist_id][$emix_itm_meta];
+		//根据生成的类别获取尾巴词组
+		$tmp_kind = $emix_itmk;
+		//过滤掉道具的子类别
+		$tmp_kind = filter_itemkind($emix_itmk,1);
+		if(strpos($tmp_kind,'D')===0) $tmp_kind = 'D'; //TODO：提供了单个部位的防具词组后删掉这一句
+		//复合武器
+		if(is_array($tmp_kind))
 		{
-			case strpos($emix_itmk,'WK')!==false:
-				$emix_itm_tail = $emix_name_tail_arr[0][array_rand($emix_name_tail_arr[0])];
-				break;
-			case strpos($emix_itmk,'WP')!==false:
-				$emix_itm_tail = $emix_name_tail_arr[1][array_rand($emix_name_tail_arr[1])];
-				break;
-			case strpos($emix_itmk,'WC')!==false:
-				$emix_itm_tail = $emix_name_tail_arr[2][array_rand($emix_name_tail_arr[2])];
-				break;
-			case strpos($emix_itmk,'WG')!==false:
-				$emix_itm_tail = $emix_name_tail_arr[3][array_rand($emix_name_tail_arr[3])];
-				break;
-			case strpos($emix_itmk,'WD')!==false:
-				$emix_itm_tail = $emix_name_tail_arr[4][array_rand($emix_name_tail_arr[4])];
-				break;
-			case strpos($emix_itmk,'WF')!==false:
-				$emix_itm_tail = $emix_name_tail_arr[5][array_rand($emix_name_tail_arr[5])];
-				break;
-			case strpos($emix_itmk,'D')!==false:
-				$emix_itm_tail = $emix_name_tail_arr[6][array_rand($emix_name_tail_arr[6])];
-				break;
-			case strpos($emix_itmk,'H')!==false:
-				$emix_itm_tail = $emix_name_tail_arr[7][array_rand($emix_name_tail_arr[7])];
-				break;
-			default:
-				//要补一个乱七八糟词组，乱七八糟的类别都套这个名字
-				$emix_itm_tail = $emix_name_tail_arr[6][array_rand($emix_name_tail_arr[6])];
-				return;
+			//把两种武器的词尾组合起来 可能会生成很怪很怪的东西！！
+			for($k=0;$k<=count($tmp_kind);$k++)
+			{
+				$tmp_k_name = $emix_name_tail_arr[$tmp_kind[$k]][array_rand($emix_name_tail_arr[$tmp_kind[$k]])];
+				//第一种武器的词尾只保留前两个字 嘻嘻
+				if($k==0) $tmp_k_name = mb_substr($tmp_k_name,0,2,'utf-8');
+				$emix_itm_tail .= $tmp_k_name;
+			}
+		}
+		else
+		{
+			//根据类别获取词尾 如果没有对应类别的词尾则生成泛用性词尾
+			$emix_itm_tail = $emix_name_tail_arr[$tmp_kind] ? $emix_name_tail_arr[$tmp_kind][array_rand($emix_name_tail_arr[$tmp_kind])] : $emix_name_tail_arr['0'][array_rand($emix_name_tail_arr['0'])];
 		}
 		//根据合成出的道具效果生成一个能大幅提升时髦值的括号
 		$emix_name_brackets = $emix_itme/100;
-		$emix_name_brackets += rand(0,1);
-		$emix_name_brackets = min(max(0,$emix_name_brackets),8);
+		$emix_name_brackets += rand(-1,1);
+		$emix_name_brackets = min(max(0,$emix_name_brackets),count($emix_name_brackets_arr));
 		$emix_name_brackets = explode('+',$emix_name_brackets_arr[$emix_name_brackets]);
 		//出生！
 		$emix_itm = $emix_name_brackets[0].$emix_itm_prefix.$emix_itm_meta.$emix_itm_tail.$emix_name_brackets[1];
@@ -366,7 +439,7 @@
 		}
 		else
 		{
-			$log.="<br>……但是合成失败了！你的元素也全部木大了！真是遗憾呐！<br>";
+			$log.="<span class='red'>……合成失败了！<br>你投入进去的元素也全部打了水漂！<br>怎么这样……</span><br>";
 			addnews($now,'emix_failed',$name);
 		}
 		return;
@@ -385,10 +458,12 @@
 	}
 
 	//通过投入的元素数量 判断合成时最多有多少元素可以转化为效果、耐久
-	function get_emix_max_cost($total_enum)
+	function get_emix_max_cost($total_enum,$emr=1)
 	{
 		//获取理论上限
 		$max_enum = get_emix_itme_max();
+		//通过自定义上限系数修正
+		$max_enum *= $emr;
 		//判断投入数量有没有超过理论上限
 		$max_cost = min($max_enum,$total_enum);
 		return $max_cost;
@@ -555,7 +630,7 @@
 			$tmp_arr = openfile_decode($file);
 			if($tmp_arr['gamenum'] == $gamenum)
 			{
-				$log.="【DEBUG】配置文件已存在，请不要重复生成。<br>";
+				//$log.="【DEBUG】配置文件已存在，请不要重复生成。<br>";
 				return;
 			}
 		}
@@ -565,7 +640,7 @@
 		$tags_arr['gamenum'] = $gamenum;
 		//写入文件
 		writeover_encode($file,$tags_arr);
-		$log.="【DEBUG】生成了本局游戏对应的临时配置文件".$file."。<br>";
+		//$log.="【DEBUG】生成了本局游戏对应的临时配置文件。<br>";
 		return;
 	}
 
@@ -591,7 +666,7 @@
 		if($edata && $edata['hp']<=0)
 		{
 			$tmp_arr = Array();
-			foreach(Array('wep','arb','arh','ara','arf') as $i)
+			foreach(Array('wep','arb','arh','ara','arf','ara') as $i)
 			{ //搞笑！
 				if($edata[$i.'s'])
 				{
@@ -647,6 +722,36 @@
 		return $ret;
 	}
 
+	//过滤杂项道具类别（可以作为一个通用型函数） 
+	//$check_dualwep：1=复合武器会返回一个带有2个武器类别的数组；0=不还原复合武器的类别
+	//在分解道具流程里，会先检查道具类别是否存在于$itmk_to_e_r内，不存在才会尝试使用该函数过滤掉乱七八糟的类型。
+	function filter_itemkind($kind,$check_dualwep=1)
+	{
+		global $iteminfo;
+		//武器：
+		switch($kind)
+		{
+			//武器
+			case strpos($kind,'W')===0:
+				if($check_dualwep && strlen($kind)==3)
+				{	//复合武器
+					$w1 = 'W'.substr($kind,1,1);
+					$w2 = 'W'.substr($kind,2,1);
+					$kind = Array($w1,$w2);
+				}
+				else
+				{	//可能只有游戏王卡牌了？
+					$kind = 'W'.substr($kind,1,2);
+				}
+				break;
+			//饰品、药剂、强化药物、技能书、陷阱、回复道具 一锅端了吧
+			case (strpos($kind,'A')===0 || strpos($kind,'C')===0 || strpos($kind,'M')===0 || strpos($kind,'V')===0 || strpos($kind,'T')===0 || strpos($kind,'H')===0 || strpos($kind,'P')===0):
+				$kind = substr($kind,0,1);
+				break;
+		}
+		return $kind;
+	}
+
 	//使用json_encode结构将指定数组写入文件
 	function writeover_encode($filename,$arr,$method='rb+')
 	{	
@@ -654,7 +759,7 @@
 		{
 			$arr = json_encode($arr);
 			writeover($filename,$arr,$method);
-			chmod($arr,0777);
+			chmod($filename,0777);
 			return;
 		}
 		return;

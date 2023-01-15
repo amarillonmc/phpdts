@@ -1076,14 +1076,15 @@ $iteminfo = Array(//注意顺序，AB必须在A的前面，以此类推
 
 	//club20 元素大师：
 	//元素列表 可能需要一些布灵布灵的特效
+	$sparkle = '<span class="sparkle">✨</span>';
 	$elements_info = Array
 	(
-		0 => '亮晶晶',
-		1 => '暖洋洋',
-		2 => '冷冰冰',
-		3 => '郁萌萌',
-		4 => '昼闪闪',
-		5 => '夜静静',
+		0 => $sparkle.'<span class="mtgcolorless">亮晶晶</span>'.$sparkle,
+		1 => $sparkle.'<span class="mtgred">暖洋洋</span>'.$sparkle,
+		2 => $sparkle.'<span class="mtgblue">冷冰冰</span>'.$sparkle,
+		3 => $sparkle.'<span class="mtggreen">郁萌萌</span>'.$sparkle,
+		4 => $sparkle.'<span class="mtgwhite">昼闪闪</span>'.$sparkle,
+		5 => $sparkle.'<span class="mtgblack">夜静静</span>'.$sparkle,
 	);
 
 $shops = Array(0,14,27);

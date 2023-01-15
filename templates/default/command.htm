@@ -29,9 +29,9 @@
 	<!--{/if}-->
 <br>
 <!--{if $club==19}--> 【<span class="lime">报应点数：<span id="anum">$rp</span></span>】<br><!--{/if}-->
-<!--{if $club==20}--> 【<span class="lime">元素口袋：<span id="anum">{$element0}/{$element1}/{$element2}/{$element3}/{$element4}/{$element5}</span></span>】<br><!--{/if}-->
 	<!--{if $club==20}--> 
-	<input type="button" class="cmdbutton" id="elementmix" name="elementmix" value="元素炼成" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='elementmix';postCmd('gamecmd','command.php');this.disabled=true;">
+	<a onclick="$('mode').value='itemmain';$('command').value='elementbag';postCmd('gamecmd','command.php');this.disabled=true;">【<span class="sparkle">{$sparkle}元素口袋{$sparkle}</span>】</a><br>
+	<input type="button" class="cmdbutton" id="elementmix" name="elementmix" value="元素合成" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='elementmix';postCmd('gamecmd','command.php');this.disabled=true;">
 	<!--{else}-->
 	<input type="button" class="cmdbutton" id="itemmix" name="itemmix" value="道具合成" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='itemmix';postCmd('gamecmd','command.php');this.disabled=true;">
 	<!--{/if}-->

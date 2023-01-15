@@ -127,13 +127,18 @@ if($hp > 0){
 				}
 			} elseif($command == 'itemmain') {
 				//保险起见 在这里检测下两种伪造提交情况 比较丑陋！
-				if(($club == 20 && $itemcmd == 'itemmix') || ($club != 20 && $itemcmd == 'elementmix'))
+				if(($club == 20 && $itemcmd == 'itemmix') || ($club != 20 && ($itemcmd == 'elementmix' || $itemcmd == 'elementbag')))
 				{
 					$log .= "你的手突然掐住了你的头左右摇摆！<br><span class='yellow'>“你还想要干什么，啊？你还想要干什么！！”</span><br>看来你的手和脑子之间起了一点小摩擦。<br><br>";
 					$mode = 'command';
 				}
 				else 
-				{
+				{	
+					if($club == 20)
+					{
+						include_once GAME_ROOT.'./include/game/elementmix.func.php';
+						$emax = get_emix_itme_max();
+					}
 					$mode = $itemcmd;
 				}
 			} elseif($command == 'song') {
@@ -311,17 +316,26 @@ if($hp > 0){
 					}
 					if(count($e_mixlist)>0)
 					{
+						if($lvl>=5 && $emitme_r) $er = $emitme_r;
+						if($lvl>=15 && $emitme_max_r) $emr = $emitme_max_r;
 						include_once GAME_ROOT.'./include/game/elementmix.func.php';
-						element_mix($e_mixlist);
+						element_mix($e_mixlist,$emr,$er);
 					}
 					else
 					{
-						$log.="放弃了合成。<br>";
+						$log.="至少要放入一份元素。<br>";
 					}
 				}
 				else 
 				{
 					$log.="你挠了挠头，没搞懂自己到底要干什么。<br>";
+				}
+				$mode='command';
+			} elseif($command == 'elementbag') {
+				if($club == 20)
+				{
+					include_once GAME_ROOT.'./include/game/elementmix.func.php';
+					print_elements_info();
 				}
 				$mode='command';
 			} elseif($command == 'itemencase') {
