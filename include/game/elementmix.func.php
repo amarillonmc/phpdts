@@ -9,34 +9,52 @@
 	include_once config('elementmix',$gamecfg);
 
 	/********界面交互部分********/
+	//显示元素数量
 	function print_elements_info()
 	{
-		global $elements_info,$temp_etags,$iteminfo,$itemspkinfo,$log;
-		$log.="你在你的小口袋里翻找起来……<br>";
-		$log.="当前的<span class='lime'>元素存量</span>如下：<br>";
+		global $elements_info,$log;
+		$log.="当前的<span class='lime'>元素存量</span>如下：<br><span class='grey'>（将鼠标悬浮在元素上可以查看其特征）</span><br>";
 		foreach($elements_info as $e_key=>$e_info)
 		{
 			global ${'element'.$e_key};
 			if(${'element'.$e_key})
 			{
-				$log.="【{$e_info}：{${'element'.$e_key}} 份】<br>";
-				$log.="<span class='grey'>已了解的特征：</span>";
-				foreach($temp_etags[$e_key] as $tk => $tarr)
-				{
-					foreach($tarr as $tm)
-					{
-						$log.= $tk=='dom' ? "<span class='grey'>【{$iteminfo[$tm]}】</span>" : "<span class='grey'>【{$itemspkinfo[$tm]}】</span>";
-					}
-				}
-				$log.="<br>";
+				$log.="<span title=\"".print_elements_tags($e_key)."\">";
+				$log.="◆ {$e_info}：{${'element'.$e_key}} 份；";
+				$log.="</span><br>";
 			}
 		}
-		$log.="总之就是这么一回事了。<br>";
+		$log.="<br>";
+	}
+	//显示元素标签……卧槽怎么会这样
+	function print_elements_tags($e_key)
+	{
+		global $temp_etags,$iteminfo,$itemspkinfo;
+		$tinfo="已了解的特征：";
+		foreach($temp_etags[$e_key] as $tk => $tarr)
+		{
+			foreach($tarr as $tm)
+			{
+				if($tk == 'dom')
+				{
+					$tinfo.= "[主]".$iteminfo[$tm]." ";
+				}
+				else 
+				{
+					//……这样真的好吗
+					$tt = $itemspkinfo[$tm];
+					$ta = mb_strpos($tt,'>',0,'utf-8')+1; 
+					$tb = mb_strpos($tt,'</span>',0,'utf-8');
+					$tinfo.= "[次]".mb_substr($tt,$ta,$tb-$ta,'utf-8')." ";
+				}
+			}
+		}
+		return $tinfo;
 	}
 
 	/********拆解元素部分********/
 
-	//过滤掉不能拆解的道具 不能分解返回1 能分解返回0
+	//过滤掉不能拆解的道具（数组） 不能分解返回1 能分解返回0
 	function split_to_elements_filter($i)
 	{
 		global $no_itm_to_e_list,$no_itmk_to_e_list,$no_itmsk_to_e_list;
@@ -67,7 +85,7 @@
 		$ev_arr = Array();
 		if($edata)
 		{
-			global $elements_info,$no_type_to_e_list,$corpse_to_e_lvl_r;
+			global $elements_info,$no_type_to_e_list,$split_corpse_lvl_r,$split_spcorpse_fix,$typeinfo;
 			global $log,$rp;
 			//过滤不能分解的尸体
 			if(in_array($edata['type'],$no_type_to_e_list))
@@ -76,9 +94,43 @@
 				return;
 			}
 			//成功从尸体中提炼元素
-			$log.="你用指尖轻轻一点，{$edata['name']}便化作点点荧光四散而去……<br>";
+			$log.="<span class='grey'>{$edata['name']}化作点点荧光四散开来……</span><br>";
+			//处理绑定有秘钥的尸体
+			if($split_spcorpse_fix[$edata['type']])
+			{	
+				$ek_arr = Array(); unset($ekey); unset($ev);
+				//获取缓存文件
+				$re_list = merge_random_emix_list();
+				//还原配方与素材键名
+				$e_list = is_array($split_spcorpse_fix[$edata['type']]) ? $split_spcorpse_fix[$edata['type']][$edata['name']] : $split_spcorpse_fix[$edata['type']];
+				$e_list = explode('-',str_replace('r_','',$e_list));
+				//$e_list[0]：配方键名  $e_list[1]：素材所在数组内的位置（不是元素编号）  
+				if($e_list[1] == 'r')
+				{
+					//返回随机素材
+					$ekey = array_rand($re_list[$e_list[0]]['stuff']);
+					$ev = $re_list[$e_list[0]]['stuff'][$ekey];
+				}
+				else
+				{
+					//返回指定位置素材 遍历配方 找到它的家
+					$e_sort = 0;
+					foreach($re_list[$e_list[0]]['stuff'] as $stuff_key => $stuff_num)
+					{
+						if($e_sort == $e_list[1])
+						{
+							$ekey = $stuff_key;
+							$ev = $stuff_num;
+							break;
+						}	
+						$e_sort ++;
+					}
+				}
+				$log.="<span class='grey'>你发现从{$typeinfo[$edata['type']]}身上飘落的<span class='red'>{$ev}</span>份{$elements_info[$ekey]}样子有点奇怪……怎么回事呢？</span><br>";
+				$ek_arr[$ekey] += $ev;
+			}
 			//根据尸体等级计算能获得的全种类元素数量
-			$ev_lvl = ceil($edata['lvl']*$corpse_to_e_lvl_r);
+			$ev_lvl = ceil($edata['lvl']*$split_corpse_lvl_r);
 			//把尸体上的装备道具一起打包
 			$corpse_itm_arr = pack_corpse($edata);
 			//计算从尸体的装备上能获得的元素种类与数量
@@ -87,7 +139,7 @@
 			foreach($elements_info as $e_key=>$e_info)
 			{
 				global ${'element'.$e_key};
-				$add_ev = $ev_arr[$e_key] + $ev_lvl;
+				$add_ev = $ev_arr[$e_key] + $ev_lvl + $ek_arr[$e_key];
 				//如果尸体上有元素，一并获取，不过现在还不能在npc配置文件里预设NPC出生时带的元素
 				//瞄了眼NPC初始化的函数，要改的话不如一步到位都改了。
 				//TODO：创建一个同步player表字段的函数，在NPC初始化时对NPC数据格式化，插入数据库时用格式化后的数组，这样以后添加新字段也不再需要动初始化函数了
@@ -97,7 +149,7 @@
 					$edata['element'.$e_key] = 0;
 				}
 				${'element'.$e_key} += $add_ev;
-				$log.="提取到了{$add_ev}份{$e_info}！<br>";
+				$log.="获得了{$add_ev}份{$e_info}！<br>";
 			}
 			//销毁尸体
 			destory_corpse($edata);
@@ -142,7 +194,7 @@
 				return;
 			}
 			//分解道具获得元素
-			$log.="你用指尖轻轻一点，".${'itm'.$iid}."便化作点点荧光四散而去……<br>";
+			$log.="<span class='grey'>".${'itm'.$iid}."化作点点荧光四散开来……</span><br>";
 			//计算能获得的元素种类与数量
 			$i_arr = get_evalues_by_iarr($i_arr);
 			//增加对应的元素
@@ -150,7 +202,7 @@
 			{
 				global ${'element'.$e_key};
 				${'element'.$e_key} += $ev;
-				$log.="提取到了{$ev}份{$elements_info[$e_key]}！<br>";
+				$log.="获得了{$ev}份{$elements_info[$e_key]}！<br>";
 			}
 			//销毁道具
 			${'itm'.$iid} = ${'itmk'.$iid} = ${'itmsk'.$iid} = '';
@@ -161,8 +213,8 @@
 			$ep_dice = rand(0,100);
 			if($ep_dice>70)
 			{
-				$rp = max(0,$rp-$ep_dice);
-				//$log.="忽闻遥远天外飞来一句赞叹：“感谢你对幻境环卫事业作出的贡献！”<br>";
+				$rp = $rp-$ep_dice;
+				//rp可以为负吗？
 			}
 			$log.="<br>";
 		}
@@ -175,84 +227,158 @@
 	function get_evalues_by_iarr($iarr)
 	{
 		global $log,$nosta,$elements_info,$temp_etags;
-		global $itm_to_e_fix,$itm_to_e_r,$itmk_to_e_fix,$itmk_to_e_r,$itmsk_to_e_fix;
-		global $emix_sub_tags_values,$emix_sub_tags_default_values;
+		global $split_itm_fix,$split_spitm_fix,$split_itmk_r,$split_default_itmk_r;
+		global $split_itmsk_fix,$split_default_itmsk_fix;
 
-		$ev_arr = Array(); $ev_ir = 1;//道具名关联的价值修正系数 对所有拆解出的元素都生效
-		//通过缓存文件获取翻转数组……是不是真的有必要这么搞啊……？
+		$ev_arr = Array();
+		//获取缓存文件
 		$cache_file = GAME_ROOT."./gamedata/bak/elementmix.bak";
-		$flip_etags_arr = file_exists($cache_file) ? openfile_decode($cache_file) : flip_temp_etags($temp_etags);
+		if(!file_exists($cache_file)) create_random_emix_list();
+		$flip_etags_arr = openfile_decode($cache_file);
 		//开始计算元素价值
 		foreach($iarr as $i => $t)
 		{
-			//检查拆解固定道具时的事件
-			//通过道具名为道具关联一个元素
-			if($itm_to_e_fix[$t['itm']])
+			//最优先：检查拆解特定道具（全名匹配）时的事件
+			if($split_itm_fix[$t['itm']])
 			{
-				foreach($itm_to_e_fix[$t['itm']] as $ekey=>$ev)
+				unset($ekey);unset($ev);
+				//处理秘钥道具
+				if(strpos($split_itm_fix[$t['itm']],'r_')===0)
+				{
+					//还原配方与素材键名 暂时不考虑秘钥道具=>array的情况 有需要的情况再现加
+					//$e_list[0]：配方键名  $e_list[1]：素材所在数组内的位置（不是元素编号）  
+					$e_list = explode('-',str_replace('r_','',$split_itm_fix[$t['itm']]));
+					//返回随机素材
+					if($e_list[1] == 'r')
+					{
+						$ekey = array_rand($flip_etags_arr['random_emix_list'][$e_list[0]]['stuff']);
+						$ev = $flip_etags_arr['random_emix_list'][$e_list[0]]['stuff'][$ekey];
+					}
+					//返回指定位置素材 遍历配方 找到它的家
+					else 
+					{
+						$e_sort = 0;
+						foreach($flip_etags_arr['random_emix_list'][$e_list[0]]['stuff'] as $stuff_key => $stuff_num)
+						{
+							if($e_sort == $e_list[1])
+							{
+								$ekey = $stuff_key;
+								$ev = $stuff_num;
+								break;
+							}	
+							$e_sort ++;
+						}
+					}
+					$log.="<span class='grey'>你发现构成{$t['itm']}的<span class='red'>{$ev}</span>份{$elements_info[$ekey]}样子有点奇怪……怎么回事呢？</span><br>";
+					$ev_arr[$ekey] += $ev;
+					//润！
+					continue;
+				}
+				foreach($split_itm_fix[$t['itm']] as $ekey=>$ev)
 				{
 					$ev_arr[$ekey] += $ev;
 				}
-				//道具在特判列表里 不再继续计算后面的内容 直接跳到下一个道具
-				continue;
+				//echo "【DEBUG】检查到了特殊道具【{$t['itm']}】<br>";
+				continue; //道具在特判列表里 不再继续计算后面的内容 直接跳到下一个道具
 			}
-			//处理道具类别：道具类别不在特殊处理列表里 对其子类别进行过滤 只保留主类别
-			//if(!$itmk_to_e_r[$t['itmk']] && !$itmk_to_e_fix[$t['itmk']]) $t['itmk'] = filter_itemkind($t['itmk']);
-			//过滤不能分解的道具
-			if(split_to_elements_filter($t)) continue;
-			//通过道具名（关键词匹配）获取价值修正 这个修正对所有获得的元素类都生效！重要的事情说三遍……三遍了吗？
-			//如果这个列表里东西变多了 可以考虑加一个类别限制条件 比如类别是Y/Z/X才会去过条件 
-			foreach($itm_to_e_r as $ev_i => $ev_r)
+
+			//次优先：检查拆解特定道具（关键词匹配）时的事件
+			foreach($split_spitm_fix as $spitm=>$sp_ev)
 			{
-				//echo "开始匹配{$t['itm']}与{$ev_i}是否相符";
-				if(preg_match("/$ev_i/",$t['itm'])) 
+				$sp_flag = 0;
+				if(preg_match("/$spitm/",$t['itm']))
 				{
-					$ev_ir = $ev_r;
-					//echo "获取到了evir{$ev_r}";
-					break;
-				}
+					//没有指定获得哪种元素 随机获得一种元素
+					if(!is_array($sp_ev))
+					{
+						$ev_arr[array_rand($elements_info)] += $sp_ev;
+					}
+					else 
+					{
+						foreach ($sp_ev as $ekey=>$ev)
+							$ev_arr[$ekey] += $ev;
+							unset($ekey);unset($ev);
+					}
+					$sp_flag = 1;//道具在特判列表里 不再继续计算后面的内容 直接跳到下一个道具
+					//echo "【DEBUG】检查到了特殊道具【{$t['itm']}】<br>";
+				}	
 			}
+
+			//道具不能分解 跳过
+			if(split_to_elements_filter($t) || $sp_flag) continue;
+
 			//通过道具的效果、耐久，确定原始价值
 			if($t['itms'] == $nosta) $t['itms'] = rand(1,10);
 			$base_ev = round(($t['itme']+$t['itms'])/2);
-			//通过道具类别为道具关联一个或多个元素
-			//能找到源头元素的情况下绑定源头元素 否则绑定随机元素 返回了多个类别则多次处理
-			if(is_array($t['itmk']))
+			//echo "【DEBUG】{$t['itm']}的基础价值是{$base_ev}<br>";
+
+			//通过道具类别获取价值修正
+			$k_t = $t['itmk'];
+			if($split_itmk_r[$k_t])
 			{
-				foreach($t['itmk'] as $kind)
-					$ekey = $flip_etags_arr['flip_d_tag'][$kind] ? $flip_etags_arr['flip_d_tag'][$kind] : array_rand($elements_info);
-					//价值修正
-					$base_ev *= $itmk_to_e_r[$kind] ? $itmk_to_e_r[$kind] : 1;
-					$ev_arr[$ekey] += ceil($base_ev*$ev_ir);
-					echo "【DEBUG】【{$kind}】{$t['itm']}分解出了{$base_ev}份{$elements_info[$ekey]}<br>";
+				//存在对应修正 优先获取
+				$k_ev_r = $split_itmk_r[$k_t];
 			}
 			else 
 			{
-				$ekey = $flip_etags_arr['flip_d_tag'][$t['itmk']] ? $flip_etags_arr['flip_d_tag'][$t['itmk']] : array_rand($elements_info);
-				//类别价值修正
-				$base_ev *= $itmk_to_e_r[$t['itmk']] ? $itmk_to_e_r[$t['itmk']] : 1;
-				$ev_arr[$ekey] += ceil($base_ev*$ev_ir);
-				echo "【DEBUG】【{$t['itmk']}】{$t['itm']}分解出了{$base_ev}份{$elements_info[$ekey]}<br>";
+				//不存在对应修正 先尝试过滤类别
+				$k_t = filter_itemkind($k_t);
+				//没有对应修正关系则返回默认类别的分解系数
+				$k_ev_r = $split_itmk_r[$k_t] ? $split_itmk_r[$k_t] : $split_default_itmk_r;
 			}
-			//通过道具属性为道具关联一个或多个元素
+			//应用价值修正
+			$base_ev = ceil($base_ev*$k_ev_r);
+			//echo "【DEBUG】{$t['itm']}的类别价值修正系数是{$k_ev_r}，修正后的价值是{$base_ev}。<br>";
+			
+			//通过道具类别关联元素
+			$k_t = $t['itmk']; $k_ekey = '';
+			if($flip_etags_arr['flip_d_tag'][$k_t])
+			{
+				//存在对应元素 优先获取
+				$k_ekey = $flip_etags_arr['flip_d_tag'][$k_t];
+			}
+			else 
+			{
+				//不存在对应元素 先尝试过滤类别
+				$k_t = filter_itemkind($k_t);
+				//还是没有对应元素 返回随机一种元素
+				$k_ekey = $flip_etags_arr['flip_d_tag'][$k_t] ? $flip_etags_arr['flip_d_tag'][$k_t] : array_rand($elements_info);
+			}
+			//echo "【DEBUG】【{$t['itmk']}】{$t['itm']}关联到的元素是【{$elements_info[$k_ekey]}】<br>";
+			
+			//应用 类别=>元素 的价值
+			$ev_arr[$k_ekey] += $base_ev;
+
+			//通过属性计算道具的附加价值
 			if(isset($t['itmsk']))
 			{
 				$t['itmsk'] = get_itmsk_array($t['itmsk']);
 				foreach($t['itmsk'] as $tsk)
 				{
+					//获取单个属性关联的元素 没有则随机挑选一个元素
 					$ekey = $flip_etags_arr['flip_s_tag'][$tsk] ? $flip_etags_arr['flip_s_tag'][$tsk] : array_rand($elements_info);
 					if(isset($ekey))
 					{
 						$add_ev = 0;
 						//获取属性价值
-						$add_ev = $emix_sub_tags_values[$tsk] ? $emix_sub_tags_values[$tsk] : $emix_sub_tags_default_values;
-						echo "【DEBUG】{$add_ev}份{$emix_sub_tags_default_values}和{$emix_sub_tags_values[$tsk]}<br>";
-						//获取属性价值修正
-						if($emix_sub_tags_values_fix[$t['itmk']]) $add_ev = max(0,$add_ev+$emix_sub_tags_values_fix[$t['itmk']]);
-						echo "【DEBUG】{$add_ev}份<br>";
+						if($split_itmsk_fix[$tsk])
+						{
+							if(is_array($split_itmsk_fix[$tsk]))
+							{
+								$add_ev = $split_itmsk_fix[$tsk][$t['itmk']] ? $split_itmsk_fix[$tsk][$t['itmk']] : $split_itmsk_fix[$tsk]['default'];
+							}
+							else 
+							{
+								$add_ev = $split_itmsk_fix[$tsk];
+							}
+						}
+						else 
+						{
+							$add_ev = $split_default_itmsk_fix;
+						}
 						//入列！
 						$ev_arr[$ekey] += $add_ev;
-						echo "【DEBUG】{$t['itm']}的【属性{$tsk}】分解出了{$add_ev}份{$elements_info[$ekey]}<br>";
+						//echo "【DEBUG】{$t['itm']}的【属性{$tsk}】分解出了{$add_ev}份{$elements_info[$ekey]}<br>";
 					}
 				}
 			}
@@ -265,22 +391,28 @@
 	//元素喝茶
 	function element_mix($emlist,$eitme_max_r=NULL,$eitme_r=NULL)
 	{
-		global $log,$elements_info,$default_emix_itme_r,$no_emix_circulation,$iteminfo,$itemspkinfo;
-		global $emix_tips_arr,$emix_name_brackets_arr,$emix_name_prefix_arr,$emix_name_meta_arr,$emix_name_tail_arr;
+		global $now,$name,$log,$iteminfo,$itemspkinfo,$elements_info;
+		global $no_emix_circulation;
+		global $emix_luck_info,$emix_tips_arr,$emix_name_brackets_arr,$emix_name_prefix_arr,$emix_name_meta_arr,$emix_name_tail_arr;
+		global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
+
 		if(!$emlist)
 		{
 			$log.="你不能用不存在的东西合成！<br>";
 			return;
 		}
+
 		//输入了合法的元素参数，先初始化一些变量。
-		$c_times = 0; $total_enum = 0; $dom_ekey = -1; $dom_enum = -1; $multi_dom_ekey = Array();
+		$c_times = 0; $total_enum = 0; $dom_ekey = -1; $dom_enum = -1; $multi_dom_ekey = Array(); $emix_flag = NULL; $emix_fix = NULL;
 		//自定义效/耐比的阈值：2%~98%
-		if(isset($eitme_r)) $eitme_r = min(98,max(2,$eitme_r)); $eitme_r /= 100;
+		$eitme_r = isset($eitme_r) ? min(98,max(2,$eitme_r)) : rand(2,98); 
+		$eitme_r /= 100;
 		//自定义最大效果的阈值：1%~100%
-		$eitme_max_r = isset($eitme_max_r) ? min(100,max(1,$eitme_max_r)) : 100; $eitme_max_r /= 100;
+		$eitme_max_r = isset($eitme_max_r) ? min(100,max(1,$eitme_max_r)) : 100; 
+		$eitme_max_r /= 100;
 		//对参与合成的元素按投入数量降序排序，筛出投入数量最多的元素作为主元素
 		arsort($emlist);
-		$log.="从口袋中抓出了";
+		$log.="从口袋中抓出了：<br>";
 		foreach($emlist as $ekey=>$enum)
 		{
 			if($c_times == 0)
@@ -291,8 +423,8 @@
 			}
 			else 
 			{
-				//其他元素投入了与主元素相同的数量 把其他元素登记到备选主元素列表里
-				if($enum == $dom_enum) $multi_dom_ekey[$ekey]=$enum;
+				//其他投入的元素数量与主元素数量相差10以内 也可以提供主要特征
+				if($enum >= ($dom_enum-10)) $multi_dom_ekey[$ekey]=$enum;
 				//log修正
 				$log.="、";
 			}
@@ -304,27 +436,57 @@
 			global ${'element'.$ekey};
 			${'element'.$ekey} -= $enum;
 		}
-		$log.="。<br>……感觉有点紧张。<br>开始合成了。<br>";
 
-		//在开始随机合成前，先检查是否存在固定合成。
-		//（TODO：固定的元素合成列表）
-		//一些想法：元素大师不能合成结局道具啊！
-		//一个思路：分解指定关键道具，生成5~4位数随机值的指定元素，把元素=>作为秘钥的随机值保存在每局重置的临时文件里。
-		//把分解数个关键道具获得的元素=>秘钥 重新进行元素合成，就可以得到结局道具。
+		$log.="。<br>你紧张地搓了搓手。<br>合成开始了。<br>";
+
+		//检查是否存在固定合成（其实放最顶层也行 放这里只是为了输出上面一段log）
+		$emix_fix = check_in_emix_list($emlist);
+		if($emix_fix)
+		{
+			$log.="<br>但是出现结果的速度比你想象中要快得多！<br>你还没反应过来，元素们就把一样东西吐了出来！<br><br>";
+			$itm0 = $emix_fix[0]; $itmk0 = $emix_fix[1]; $itmsk0 = $emix_fix[4];
+			$itme0 = $emix_fix[2]; $itms0 = $emix_fix[3];
+			include_once GAME_ROOT.'./include/game/itemmain.func.php';
+			itemget();
+			addnews($now,'emix_success',$name,$emix_fix[0]);
+			return;
+		}
 
 		//开始随机合成：
-		//（TODO：合成的大成功、大失败事件）
-		//（可能的事件：增加效果、升级/改变/增加属性、道具爆炸扣血）
-		$emix_dice = rand(1,20)+rand(1,20)+rand(1,20)+rand(1,20)+rand(1,20);
+		$log.="<span class='grey'>…加入了一点{$emix_tips_arr[array_rand($emix_tips_arr)]}…</span><br>";
 
-		$log.="<span class='grey'>加入了一点{$emix_tips_arr[array_rand($emix_tips_arr)]}……</span><br>";
+		//掷骰：
+		$emix_dice = rand(1,100);
+		switch($emix_dice)
+		{
+			case $emix_dice<=5:
+				//大成功
+				$emix_flag = 4;
+				break;
+			case $emix_dice<=15:
+				//出色表现
+				$emix_flag = 3;
+				break;
+			case $emix_dice<=50:
+				//成功
+				$emix_flag = 2;
+				break;
+			case $emix_dice<=96:
+				//普通
+				$emix_flag = 1;
+				break;
+			default:
+				//哇 这下便样衰了！（道具会带有灵魂绑定属性 可恶 为什么诅咒属性不见了）
+				$emix_flag = -2;
+		}
+		$log.="<span class='grey'>你感觉{$emix_luck_info[$emix_flag]}</span><br>";
 
 		//生成道具类别：
 		$emix_itmk = '';
 		//获取主特征：
 		$emix_itmk_tags = Array();
 		$emix_itmk_tags[] = get_emix_dom_tags($dom_ekey,$dom_enum);
-		//存在复数个主元素，获取多个主特征
+		//有备选的主特征列表，依次获取
 		if(count($multi_dom_ekey)>0)
 		{
 			foreach($multi_dom_ekey as $md_ekey=>$md_enum)
@@ -332,29 +494,31 @@
 				$emix_itmk_tags[] = get_emix_dom_tags($md_ekey,$md_enum);
 			}
 		}
-		//用获取到的主特征（是个数组）确定道具类别（理论上来说可以存在多个重复的主特征，也许可以加入些套娃配方）
-		$emix_itmk = get_emix_itmk($emix_itmk_tags);
+		//用获取到的主特征（是个数组）确定道具类别
+		$emix_itmk = get_emix_itmk($emix_itmk_tags,$emix_flag);
 
-		$log.="{$elements_info[$dom_ekey]}<span class='clan'>的形状变得有些像{$iteminfo[$emix_itmk]}了。</span><br>";
-		$log.="<span class='grey'>再加一些{$emix_tips_arr[array_rand($emix_tips_arr)]}……</span><br>";
+		$log.="<span class='clan'>你观察到自己投入进去的那坨混合物慢慢有了形状，它似乎能被用作<span class='yellow'>{$iteminfo[$emix_itmk]}</span>。</span><br>";
+		$log.="<span class='grey'>…再加一些{$emix_tips_arr[array_rand($emix_tips_arr)]}…</span><br>";
 
 		//生成道具效果、耐久：
 		$emix_itme = 0; $emix_itms = 0;
 		//根据投入的元素总量 计算其中能够转化为效果、耐久的部分（不会超过当前等级的理论上限值）
 		$cost_enum = get_emix_max_cost($total_enum,$eitme_max_r);
-		//获取道具效果耐久比例。$eitem_r：解锁自定义比例功能后，合成时设定的效/耐比。
-		$emix_itme_r = $eitme_r ? $eitme_r : $default_emix_itme_r;
+		//获取道具效耐比（随机2~98）。$eitem_r：解锁自定义比例功能后，可以自己设置固定的效耐比。
+		$emix_itme_r = $eitme_r;
 		$emix_itms_r = 1-$emix_itme_r;
 		//计算道具效果、耐久
-		$emix_itme = ceil($cost_enum*$emix_itme_r); //只投入1份元素，至少也会有1点效果、1点耐久。你赚了我亏了好吧！
-		$emix_itms = ceil($cost_enum*$emix_itms_r);
+		$emix_itme = ($emix_flag==4) ? $cost_enum : ceil($cost_enum*$emix_itme_r*($emix_flag/10 + 1)); //只投入1份元素，至少也会有1点效果、1点耐久。你赚了我亏了好吧！
+		$emix_itms = ($emix_flag==4) ? '∞' : ceil($cost_enum*$emix_itms_r*($emix_flag/10 + 1));
+		if(strpos($emix_itmk,'D')===0 && $emix_itms=='∞') $emix_itms = $emix_itme;
 
-		$log.="<span class='clan'>你有听到</span>{$elements_info[array_rand($emlist)]}<span class='clan'>在雾气中的低语吗？</span><br>";
-		$log.="<span class='grey'>哎呀，不小心混入了一点{$emix_tips_arr[array_rand($emix_tips_arr)]}……</span><br>";
+		$log.="<span class='clan'>在那形状愈发明晰的时候，你听到<span class='yellow'>{$cost_enum}</span>份</span>{$elements_info[$dom_ekey]}<span class='clan'>在升腾的雾气种喃喃呓语。</span><br>";
+		$log.="<span class='grey'>…哎呀，不小心混入了一点{$emix_tips_arr[array_rand($emix_tips_arr)]}…</span><br>";
 
 		//生成道具属性：
-		$emix_itmsk = $no_emix_circulation ? Array('v') : Array(); 
-		$emix_itmsk_max = $no_emix_circulation ? 4 : 5; 
+		$emix_itmsk = ($no_emix_circulation || $emix_flag==-2) ? Array('v') : Array(); //是否固定带有灵魂绑定属性
+		$emix_itmsk_max = ($no_emix_circulation || $emix_flag==-2) ? 4 : 5; //最多能生成几个属性
+		//获取次要特征：
 		$emix_itmsk_tags = Array();
 		foreach($emlist as $ekey=>$enum)
 		{
@@ -366,27 +530,26 @@
 			//基本逻辑：低面板出属性代价低，高面板出属性代价高。
 			if($enum>0) 
 			{
-				//get_emix_sub_tags()返回的是一个数组。
-				//（可选）第四个参数：返回的标签数量上限。暂定2个，是否有必要用升级解锁等方式拓展这个数量？
-				$tmp_emix_itmsk_tags = get_emix_sub_tags($ekey,$enum,$emix_itmk,2);
+				//获取次要特征
+				$tmp_emix_itmsk_tags = Array();
+				$tmp_emix_itmsk_tags = get_emix_sub_tags($ekey,$enum,$emix_itmk,$emix_flag);
 				$emix_itmsk_tags = array_merge($tmp_emix_itmsk_tags,$emix_itmsk_tags);
 			}
 		}
-		//获取到了次要特征
+		//获取到了次要特征，把次要特征转化为道具属性：
 		if(count($emix_itmsk_tags)>0)
 		{
-			//把次要特征转化为道具属性。第三个参数：能保留的属性数量上限
+			//第三个参数：能保留的属性数量上限
 			$emix_itmsk = array_merge($emix_itmsk,get_emix_itmsk($emix_itmsk_tags,$emix_itmk,$emix_itmsk_max));
 		}
-		$log.="<span class='clan'>闻到了";
-		if($emix_itmsk) $log.="{$itemspkinfo[$emix_itmsk[array_rand($emix_itmsk)]]}、";
-		$log.="硫磺、</span>{$elements_info[array_rand($emlist)]}<span class='clan'>与某种发酵物混合的味道。</span><br>";
 		//把itmsk从数组转回字符串
 		$emix_itmsk = get_itmsk_strlen($emix_itmsk);
 
+		$log.="<span class='clan'>闻到了硫磺、莎草纸、</span>{$elements_info[array_rand($emlist)]}<span class='clan'>与</span><span class='yellow'>".(count($emix_itmsk_tags)+1)."种发酵物</span><span class='clan'>混合的味道。</span><br>";
+
 		//（TODO：合成事件结算阶段）
-		$log.="<span class='grey'>最后再加上一点{$emix_tips_arr[array_rand($emix_tips_arr)]}……</span><br>";
-		$log.="……结束了……？<br><br>";
+		$log.="<span class='grey'>…最后再加一点{$emix_tips_arr[array_rand($emix_tips_arr)]}…</span><br><br>";
+		$log.="结束了…？<br><br>";
 
 		//出生了！为孩子起个可爱的名字吧
 		$emix_itm = ''; $emix_itm_prefix = ''; $emix_itm_meta = ''; $emix_itm_tail = ''; $emix_name_brackets = '';
@@ -419,18 +582,18 @@
 			//根据类别获取词尾 如果没有对应类别的词尾则生成泛用性词尾
 			$emix_itm_tail = $emix_name_tail_arr[$tmp_kind] ? $emix_name_tail_arr[$tmp_kind][array_rand($emix_name_tail_arr[$tmp_kind])] : $emix_name_tail_arr['0'][array_rand($emix_name_tail_arr['0'])];
 		}
-		//根据合成出的道具效果生成一个能大幅提升时髦值的括号
-		$emix_name_brackets = $emix_itme/100;
-		$emix_name_brackets += rand(-1,1);
-		$emix_name_brackets = min(max(0,$emix_name_brackets),count($emix_name_brackets_arr));
-		$emix_name_brackets = explode('+',$emix_name_brackets_arr[$emix_name_brackets]);
+		//（只有生成的是武器时才会）根据合成出的道具效果生成一个能大幅提升时髦值的括号
+		if(strpos($emix_itmk,'W')===0)
+		{
+			$emix_name_brackets = ($emix_itme/100) + rand(-1,1);
+			$emix_name_brackets = min(max(0,$emix_name_brackets),count($emix_name_brackets_arr)-rand(1,2));
+			$emix_name_brackets = explode('+',$emix_name_brackets_arr[$emix_name_brackets]);
+		}
 		//出生！
 		$emix_itm = $emix_name_brackets[0].$emix_itm_prefix.$emix_itm_meta.$emix_itm_tail.$emix_name_brackets[1];
 
-		global $now,$name;
 		if($emix_itm && $emix_itmk && $emix_itme && $emix_itms)
 		{
-			global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
 			$itm0 = $emix_itm; $itmk0 = $emix_itmk; $itmsk0 = $emix_itmsk;
 			$itme0 = $emix_itme; $itms0 = $emix_itms;
 			include_once GAME_ROOT.'./include/game/itemmain.func.php';
@@ -465,90 +628,130 @@
 		//通过自定义上限系数修正
 		$max_enum *= $emr;
 		//判断投入数量有没有超过理论上限
-		$max_cost = min($max_enum,$total_enum);
+		$max_cost = min(round($max_enum),$total_enum);
 		return $max_cost;
+	}
+
+	//判断是否存在固定合成
+	function check_in_emix_list($emlist)
+	{
+		global $emix_list,$random_emix_list;
+		//先检查固定合成
+		foreach($emix_list as $elist)
+		{
+			if(!array_diff($emlist,$elist['stuff']) && count($emlist) == count($elist['stuff']))
+			{
+				//echo "【DEBUG】检测到了固定合成{$elist['result'][0]}<br>";
+				return $elist['result'];
+			}
+		}
+		//再检查随机合成：尝试获取随机合成配方
+		$r_emix_list = merge_random_emix_list();
+		foreach($r_emix_list as $rid => $relist)
+		{
+			if(!array_diff($emlist,$relist['stuff']) && count($emlist) == count($relist['stuff']))
+			{
+				//echo "【DEBUG】检测到了固定随机合成{$relist['result'][0]}<br>";
+				return $r_emix_list[$rid]['result'];
+			}
+		}
 	}
 
 	//获取元素主特征
 	function get_emix_dom_tags($ekey,$enum)
 	{
 		global $elements_info,$temp_etags;
-		$e_dom_tags = $temp_etags[$ekey]['dom'];
-		$e_dom_tag = is_array($e_dom_tags) ? $e_dom_tags[array_rand($e_dom_tags)] : $e_dom_tags;
-		return $e_dom_tag;
+		//拉取元素对应的主特征
+		$dom_tag = $temp_etags[$ekey]['dom'];
+		//只有一个主特征 直接返回
+		if(count($dom_tag)==1) return $dom_tag[0];
+		//有多个主特征 按规律返回
+		//判断投入的元素是单数还是双数份
+		$tag_flag = fmod($enum,2); 
+		//规律：投入单数份元素，返回第0个主特征；否则返回第1个主特征。如果以后有第2、3、4个主特征呢？以后的事情以后再说吧。
+		$dom_tag = $tag_flag ? $dom_tag[0] : $dom_tag[1];
+		return $dom_tag;
 	}
 
 	//根据主特征输出道具类别
-	function get_emix_itmk($dom_tags)
+	function get_emix_itmk($dom_tags,$emix_flag=NULL)
 	{
-		global $emix_dom_mixlist;
-		$emix_itmk = 'E'; //DEBUG用
+		global $dommix_list;
+		$emix_itmk = ''; $obbs_fix = 0;
+		//根据合成表现修正概率
+		if($emix_flag) $obbs_fix = $emix_flag*10;
+
 		if(count($dom_tags)>1)
 		{
 			//存在复数个主特征，判断能否进行组合
 			$mixflag = false;
-			foreach($emix_dom_mixlist as $minfo) 
+			foreach($dommix_list as $minfo) 
 			{
 				//直接抄合成匹配逻辑了 有一种野性的美
 				if(!array_diff($dom_tags,$minfo['stuff']) && !array_diff($minfo['stuff'],$dom_tags) && count($dom_tags) == count($minfo['stuff']))
 				{ 
-					if($minfo['obbs'] && rand(1,100)>$minfo['obbs']) continue; //配方为概率合成 掷骰判定没通过 跳过
+					if($minfo['obbs'] && (rand(1,100)-$obbs_fix)>$minfo['obbs']) continue; //配方为概率合成 掷骰判定没通过 跳过
 					$emix_itmk = $minfo['result'];
 					$mixflag = true;
 					break;
 				}
 			}
-			//没有匹配的组合 随机挑一个吧
+			//没有匹配的组合 随机返回一个主特征作为类别
 			if(!$mixflag) $emix_itmk = $dom_tags[array_rand($dom_tags)];
 		}
 		else
 		{
-			//只有一个主特征
+			//只有一个主特征 直接让它作为类别返回
 			$emix_itmk = $dom_tags[0];
 		}
 		return $emix_itmk;
 	}
 
-	//获取元素次要特征 $tag_max：输出的次要特征数量上限
-	function get_emix_sub_tags($ekey,$enum,$kind,$tag_max=4)
+	//获取元素次要特征
+	function get_emix_sub_tags($ekey,$enum,$kind,$emix_flag)
 	{
-		global $elements_info,$temp_etags,$emix_sub_tags_values,$emix_sub_tags_default_values,$emix_sub_tags_values_fix;
-		$ev_sub_tags = Array();
+		global $elements_info,$temp_etags;
+		global $split_default_itmsk_fix,$split_itmsk_fix;
+
+		//可惜没有诅咒属性了……
+		$subtags = Array();
+		//获取元素所有的次要特征
 		$e_sub_tags = $temp_etags[$ekey]['sub'];
-		//根据价值筛选出符合条件的次要特征
+		//筛选出投入数量大于属性价值的次要特征
 		foreach($e_sub_tags as $etag)
 		{
-			//获取特征价值
-			$evalues = $emix_sub_tags_values[$etag] ? $emix_sub_tags_values[$etag] : $emix_sub_tags_default_values;
-			//根据道具类别获取特征价值修正（暂时没有）
-			if(isset($emix_sub_tags_values_fix[$kind][$ekey]))
+			//获取属性价值
+			if($split_itmsk_fix[$etag])
 			{
-				$evalues_fix = $emix_sub_tags_values_fix[$kind][$ekey];
-				$evalues += $evalues_fix;
+				if(is_array($split_itmsk_fix[$etag]))
+				{
+					$evalues = $split_itmsk_fix[$etag][$kind] ? $split_itmsk_fix[$etag][$kind] : $split_itmsk_fix[$etag]['default'];
+				}
+				else 
+				{
+					$evalues = $split_itmsk_fix[$etag];
+				}
+			}
+			else 
+			{
+				$evalues = $split_default_itmsk_fix;
 			}
 			//配吗？
-			if($enum >= $evalues) $ev_sub_tags[$etag] = $evalues;
+			if($enum >= $evalues) $sub_tags[$etag] = $evalues;
 		}
-		//从特征中进一步挑选出高价值对象、限制生成的特征个数
-		//参数里传进来道具类别了，如果想限制类似【武器上不能有防御属性】【防具上不能有攻击属性】，可以在这里判断。
-		//但是我觉得来点乱七八糟的属性也挺好的（
+		//扣除元素存量，并随机生成特征： 
 		$e_sub_tags = Array(); $tn = 0;
-		if(count($ev_sub_tags)>0)
+		if(count($sub_tags)>0)
 		{
-			//对价值数组降序排序 优先生成高价值属性
-			arsort($ev_sub_tags);
-			foreach($ev_sub_tags as $skey=>$values)
-			{
-				if($enum >= $values)
-				{
-					//扣除存款，输出对应特征
-					$enum -= $values;
-					$e_sub_tags[]=$skey;
-					$tn++;
-				}
-				//到达可生成的特征上限 返回
-				if($tn >= $tag_max) break;
-			}
+			//骰一个生成的次要特征上限
+			$tag_max = rand(0,count($sub_tags)) + $emix_flag;
+			do{
+				$skey = array_rand($sub_tags);
+				$enum -= $sub_tags[$skey];
+				$e_sub_tags[]=$skey;
+				unset($sub_tags[$skey]);
+				$tn++;
+			}while($tn < $tag_max && count($sub_tags)>0);
 		}
 		return $e_sub_tags;
 	}
@@ -556,24 +759,34 @@
 	//根据次要特征输出道具属性 $max_sk：输出的属性数量上限
 	function get_emix_itmsk($sub_tags,$kind,$max_sk=5)
 	{
-		global $emix_sub_mixlist,$emix_sub_mix_obbs_fix;
+		global $submix_list,$itmk_to_itmsk_tags;
 		$sk_value = Array();
 		//对传入的次要特征进行组合判断
 		if(count($sub_tags)>1)
 		{
 			//存在复数个次要特征，判断能否进行组合
-			$mixflag = false;
-			foreach($emix_sub_mixlist as $minfo) 
+			//尝试获取随机配方
+			$r_submix_list = merge_random_emix_list(1);
+			//合并固定配方与随机配方
+			$submix_list = array_merge_recursive($r_submix_list,$submix_list);
+			foreach($submix_list as $minfo) 
 			{
 				//属性组合就不要求数量一一对应了 先到先得
-				//逻辑：匹配素材数量>=要求素材数量 感觉有点问题 但又好像没有问题 暂时就这么搞！
-				if(count(array_intersect($sub_tags,$minfo['stuff'])) >= count($minfo['stuff']))
+				//逻辑：匹配素材数量>=要求素材数量 感觉有点问题 但又好像没有问题 暂时就这么搞！<-傻了吧 没做重复属性判断
+				if(count(array_intersect($sub_tags,$minfo['stuff'])) >= count($minfo['stuff']) && !in_array($minfo['result'],$sk_value))
 				{ 
 					//配方为概率合成 掷骰判定
 					if($minfo['obbs']) 
 					{
 						//获取概率修正
-						if(isset($emix_sub_mix_obbs_fix[$kind][$minfo['result']])) $minfo['obbs'] += $emix_sub_mix_obbs_fix[$kind][$minfo['result']];
+						if(is_array($minfo['obbs']))
+						{
+							$obbs = $minfo['obbs'][$kind] ? $minfo['obbs'][$kind] : $minfo['obbs']['default'];
+						} 
+						else 
+						{
+							$obbs = $minfo['obbs'];
+						}
 						if(rand(1,100)>$minfo['obbs']) continue; 
 					}
 					//配对成功！消除素材特征
@@ -583,14 +796,25 @@
 					}
 					//把组合结果丢进待生成的属性队列内
 					$sk_value[] = $minfo['result'];
-					$mixflag = true;
 					break;
 				}
 			}
 		}
 		//将次要特征合并进待生成的属性队列内
 		$sk_value = array_merge($sk_value,$sub_tags); 
-		//从尾部筛出过滤属性数量
+		//将传入的道具类别与特征对比，过滤掉一些乱七八糟的属性：
+		$kind = substr($kind,0,1); //只用道具类别的首字母判断……这个叫什么？大类！
+		foreach($sk_value as $key_sk => $sk)
+		{	
+			//来点反人类的：
+			//武器上不会生成“防御性”属性
+			if($kind=='W' && array_search($sk,$itmk_to_itmsk_tags['D'])) unset($sk_value[$key_sk]);
+			//防具、道具上不会生成“攻击性”属性
+			if($kind!='W' && array_search($sk,$itmk_to_itmsk_tags['W'])) unset($sk_value[$key_sk]);
+			//补给品只会生成杂项属性
+			if($kind=='H' && !array_search($sk,$itmk_to_itmsk_tags['misc'])) unset($sk_value[$key_sk]);
+		}
+		//从尾部筛出超过生成上限的属性
 		while(count($sk_value)>$max_sk)
 		{
 			//shuffle($sub_tags); //按照原顺序筛出，可以优先保留组合出的属性
@@ -603,6 +827,7 @@
 	function flip_temp_etags($tags_arr)
 	{
 		$cache_arr = Array();
+		//翻转标签
 		foreach($tags_arr as $eid=>$earr)
 		{
 			foreach($earr['dom'] as $dom_tag)
@@ -617,29 +842,119 @@
 		return $cache_arr;
 	}
 
-	//将翻转后的标签数组保存在临时文件里 只在有人用了对应社团卡时执行一次 
-	//如果不想用这个的话 也可以直接用flip_temp_etags() 但是每次拆东西的时候都要遍历一遍……
-	//研究模式随机生成的一些东西也会以这种方式储存
-	function create_flip_temp_etags_cache_file($tags_arr)
+	//打印随机合成结果 记得先执行上面那个翻转数组 把翻转后的数组传进这里 才能确保生成随机属性组合时每个素材都有源头元素
+	function create_random_emix_list($cache_arr)
 	{
-		global $gamecfg,$gamenum,$log;
+		global $elements_info,$split_itmsk_fix,$split_default_itmsk_fix,$itmk_to_itmsk_tags;
+		global $random_emix_list,$random_submix_list;
+		$emix_arr = Array();
+		//先处理随机合成
+		foreach($random_emix_list as $eid=>$elist)
+		{
+			$emix_arr['random_emix_list'][$eid]['stuff'] = Array(); //缓存文件里只保存键值和配方
+			foreach($elist['stuff'] as $ekey=>$enum)
+			{
+				do{  
+					$ekey = array_rand($elements_info);
+				}while(isset($emix_arr['random_emix_list'][$eid]['stuff'][$ekey]));  
+				$enum = explode('-',substr($enum,1));
+				$enum = rand($enum[0],$enum[1]);
+				$emix_arr['random_emix_list'][$eid]['stuff'][$ekey]=$enum;
+			}
+		}
+		//然后处理随机属性……呃啊
+		//所有参与属性组合的“特征” 都应该存在于传入的$cache_arr（翻转数组）里 这样才能确保它是有“源头”的 
+		foreach($random_submix_list as $sid=>$slist)
+		{
+			$emix_arr['random_smix_list'][$sid]['stuff'] = Array();
+			foreach($slist['stuff'] as $skey=>$snum)
+			{
+				$skey = '';
+				if(strpos($snum,'sk_')===0)
+				{
+					$skey = str_replace('sk_','',$snum);
+				}
+				elseif(strpos($snum,'v_')===0) 
+				{
+					$snum = str_replace('v_','',$snum);
+					do{
+						$skey = array_rand($cache_arr['flip_s_tag']);
+						$sv = $split_itmsk_fix[$skey] ? $split_itmsk_fix[$skey] : $split_default_itmsk_fix;
+						if(is_array($sv)) $sv = $sv['default'];
+					}while($sv<$snum || in_array($emix_arr['random_smix_list'][$sid]['stuff']));
+				}
+				elseif(strpos($snum,'tags_')===0)
+				{
+					$snum = $itmk_to_itmsk_tags[str_replace('tags_','',$snum)];
+					do{
+						shuffle($snum);
+						$skey = $snum[0];
+					}while(in_array($emix_arr['random_smix_list'][$sid]['stuff']) || !array_key_exists($skey,$cache_arr['flip_s_tag']));
+				}
+				$emix_arr['random_smix_list'][$sid]['stuff'][] = $skey;
+			}
+		}
+		return array_merge($emix_arr,$cache_arr);
+	}
+
+	//合并随机合成模板与素材
+	function merge_random_emix_list($type=0)
+	{
+		global $random_emix_list,$random_submix_list;
+		//获取缓存文件
+		$cache_file = GAME_ROOT."./gamedata/bak/elementmix.bak";
+		if(!file_exists($cache_file)) create_emix_cache_file();
+		$cache_file = openfile_decode($cache_file);
+		//用已生成的随机配方替换模板配方
+		if($type == 0)
+		{
+			$list = $random_emix_list;
+			foreach($list as $rkey => $rlist)
+			{
+				$list[$rkey]['stuff'] = $cache_file['random_emix_list'][$rkey]['stuff'];
+			}
+		}
+		else 
+		{
+			$list = $random_submix_list;
+			foreach($list as $rkey => $rlist)
+			{
+				$list[$rkey]['stuff'] = $cache_file['random_smix_list'][$rkey]['stuff'];
+			}
+		}
+		return $list;
+	}
+
+	//生成元素合成相关的临时配置文件 只在有人用了对应社团卡时执行一次 
+	//如果不想用这个的话 也可以直接调用对应的数组生成模块
+	//研究模式随机生成的一些东西也会以这种方式储存
+	function create_emix_cache_file()
+	{
+		global $temp_etags,$gamecfg,$gamenum,$log;
 		$file = GAME_ROOT."./gamedata/bak/elementmix.bak";
 		if(file_exists($file))
 		{
 			//检查本局游戏是不是已经生成过配置文件了
-			$tmp_arr = openfile_decode($file);
-			if($tmp_arr['gamenum'] == $gamenum)
+			$check = openfile_decode($file);
+			if($check['gamenum'] == $gamenum)
 			{
-				//$log.="【DEBUG】配置文件已存在，请不要重复生成。<br>";
 				return;
+				$log.="【DEBUG】如果你看到这条信息，请转告管理员：“调试完记得把注释去掉！”<br>";
+			}
+			else 
+			{
+				//文件是旧的，直接删掉
+				unlink($file);
 			}
 		}
 		//翻转标签
-		$tags_arr = flip_temp_etags($tags_arr);
+		$cache_arr = flip_temp_etags($temp_etags);
+		//生成随机合成
+		$cache_arr = create_random_emix_list($cache_arr);
 		//加入本局游戏编号
-		$tags_arr['gamenum'] = $gamenum;
+		$cache_arr['gamenum'] = $gamenum;
 		//写入文件
-		writeover_encode($file,$tags_arr);
+		writeover_encode($file,$cache_arr);
 		//$log.="【DEBUG】生成了本局游戏对应的临时配置文件。<br>";
 		return;
 	}
@@ -724,8 +1039,8 @@
 
 	//过滤杂项道具类别（可以作为一个通用型函数） 
 	//$check_dualwep：1=复合武器会返回一个带有2个武器类别的数组；0=不还原复合武器的类别
-	//在分解道具流程里，会先检查道具类别是否存在于$itmk_to_e_r内，不存在才会尝试使用该函数过滤掉乱七八糟的类型。
-	function filter_itemkind($kind,$check_dualwep=1)
+	//在分解道具流程里，会先检查道具类别是否存在于$split_itmk_r内，不存在才会尝试使用该函数过滤掉乱七八糟的类型。
+	function filter_itemkind($kind,$check_dualwep=0)
 	{
 		global $iteminfo;
 		//武器：
@@ -741,7 +1056,7 @@
 				}
 				else
 				{	//可能只有游戏王卡牌了？
-					$kind = 'W'.substr($kind,1,2);
+					$kind = substr($kind,0,2);
 				}
 				break;
 			//饰品、药剂、强化药物、技能书、陷阱、回复道具 一锅端了吧

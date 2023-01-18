@@ -273,7 +273,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		} elseif($news == 'present') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}打开了{$b}，获得了{$c}！</span><br>\n";
 		} elseif($news == 'emix_success') {
-			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}将零散的元素重新组合成了{$b}！</span><br>\n";
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}用零散的元素组合出了{$b}！</span><br>\n";
 		} elseif($news == 'emix_failed') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">{$a}试图把零散的元素重新组合起来，但是失败了！哎呀呀、这可真是……</span><br>\n";
 		} else {

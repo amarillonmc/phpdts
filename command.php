@@ -126,7 +126,6 @@ if($hp > 0){
 					$mode = 'rest';
 				}
 			} elseif($command == 'itemmain') {
-				//保险起见 在这里检测下两种伪造提交情况 比较丑陋！
 				if(($club == 20 && $itemcmd == 'itemmix') || ($club != 20 && ($itemcmd == 'elementmix' || $itemcmd == 'elementbag')))
 				{
 					$log .= "你的手突然掐住了你的头左右摇摆！<br><span class='yellow'>“你还想要干什么，啊？你还想要干什么！！”</span><br>看来你的手和脑子之间起了一点小摩擦。<br><br>";
@@ -136,8 +135,10 @@ if($hp > 0){
 				{	
 					if($club == 20)
 					{
+						global $elements_info;
 						include_once GAME_ROOT.'./include/game/elementmix.func.php';
 						$emax = get_emix_itme_max();
+						foreach($elements_info as $e_key=>$e_info) ${'etaginfo'.$e_key} ="<span title=\"".print_elements_tags($e_key)."\">";
 					}
 					$mode = $itemcmd;
 				}
@@ -306,9 +307,9 @@ if($hp > 0){
 					foreach($elements_info as $e_key=>$e_info)
 					{
 						global ${'element'.$e_key};
-						//偷个懒 只对合法参数进行判断 非法参数就不额外判断发log了……
+						$m_e_key = $e_key + 1;//这样就不用污染原本的js了
 						${'emitm'.$e_key.'_num'} = round( ${'emitm'.$e_key.'_num'});
-						if(${'element'.$e_key} && ${'emitm'.$e_key}>=0 && ${'emitm'.$e_key.'_num'}>0 && ${'emitm'.$e_key.'_num'}<=${'element'.$e_key})
+						if(${'mitm'.$m_e_key}>=0 && ${'element'.$e_key} && ${'emitm'.$e_key.'_num'}>0 && ${'emitm'.$e_key.'_num'}<=${'element'.$e_key})
 						{
 							//打入参与合成的元素编号与数量
 							$e_mixlist[$e_key] = ${'emitm'.$e_key.'_num'};
@@ -316,8 +317,8 @@ if($hp > 0){
 					}
 					if(count($e_mixlist)>0)
 					{
-						if($lvl>=5 && $emitme_r) $er = $emitme_r;
-						if($lvl>=15 && $emitme_max_r) $emr = $emitme_max_r;
+						$er = ($lvl>=15 && $emitme_r && $change_emr==1) ? $emitme_r : NULL;
+						$emr = ($lvl>=5 && $emitme_max_r && $change_emax==1) ? $emitme_max_r : NULL;
 						include_once GAME_ROOT.'./include/game/elementmix.func.php';
 						element_mix($e_mixlist,$emr,$er);
 					}

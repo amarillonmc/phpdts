@@ -52,25 +52,19 @@ function demiSecTimerStarter(msec){
 	timerid = setInterval("demiSecTimer()",itv);
 }
 
-function itemmixchooser(type=NULL){
-	var istart = 1; 
-	var iend = 6; 
-	var iname = 'mitm';
-	if(type==20)
-	{
-		istart = 0;
-		iend = 5;
-		iname = 'emitm';
-	}
-	for(i=istart;i<=iend;i++){
-		var mname = iname+i;
+function itemmixchooser(){
+	for(i=1;i<=6;i++){
+		var mname = 'mitm'+i;
 		if($(mname) != null){
 			if($(mname).checked){
 				$(mname).value=i;
 			}
 		}
 	}
+	if($('change_emr') != null && $('change_emr').checked) $('change_emr').value=1;
+	if($('change_emax') != null && $('change_emax').checked) $('change_emax').value=1;
 }
+
 //icon select
 //function iconMover(){
 //	gd = document.valid.gender[0].checked ? 'm' : 'f';
@@ -358,6 +352,11 @@ function getEmitmeR(type=0) {
 		var r = document.getElementById("emitme_r").value;
 		$('s_emitme_r').innerHTML = r;
 		$('s_emitms_r').innerHTML = 100-r;
+		$('sr_warning').innerHTML = '';
+		if(r>79 || r<21)
+		{
+			$('sr_warning').innerHTML = '警告：过度干预可能引发灾难性的后果！';
+		}
 	}
 }
 

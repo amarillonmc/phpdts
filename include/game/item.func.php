@@ -5,7 +5,7 @@ if (! defined ( 'IN_GAME' )) {
 }
 
 function itemuse($itmn) {
-	global $mode, $log, $nosta, $pid, $name, $state, $now,$nick,$achievement;
+	global $mode, $log, $nosta, $pid, $name, $state, $now,$nick,$achievement,$club;
 	if ($itmn < 1 || $itmn > 6) {
 		$log .= '此道具不存在，请重新选择。';
 		$mode = 'command';
@@ -1733,21 +1733,61 @@ function itemuse($itmn) {
 			$itme = $itms = 0;
 			death ( 's_escape', '', 0, $itm );
 		} elseif ($itm == '测试用元素口袋'){
-			//-----------------------//
-			//冴冴可以把这一段放在使用社团卡后执行的事件里
-			include_once config('elementmix',$gamecfg);
-			$tags_arr = $temp_etags;
-			include_once GAME_ROOT.'./include/game/elementmix.func.php';
-			create_flip_temp_etags_cache_file($tags_arr);
-			//-----------------------//
-			global $elements_info,$club,$url;
-			if(!$club || $club!=20) $club=20;
-			$log.="什么！你从身上不知道哪个角落摸出来一大包元素！<br>";
+			global $elements_info;
+			$log.="【DEBUG】你不知道从哪里摸出来一大堆元素！<br>";
 			foreach($elements_info as $e_key=>$e_info)
 			{
 				global ${'element'.$e_key};
-				${'element'.$e_key} += 10000;
+				${'element'.$e_key} += 100000;
+				$log.="获得了100000份".$elements_info[$e_key]."！<br>";
 			}
+			//初始化元素合成缓存文件
+			include_once GAME_ROOT.'./include/game/elementmix.func.php';
+			create_emix_cache_file();
+		} elseif ($itm == '测试用元素大师社团卡'){
+			//-----------------------//
+			//这是一张测试用卡 冴冴可以挑一些用得上的放在使用社团卡后执行的事件里
+			global $elements_info,$sparkle;
+			//未选择社团情况下才可以用社团卡
+			if($club)
+			{
+				$log.="你已经是有身份的人了！不能再使用社团卡。<br>";
+			
+			}
+			//反正是测试用的 发段怪log
+			$log.="你拿起<span class='yellow'>$itm</span>左右端详着……<br>
+			你将目光扫过卡片上若隐若现的纹理，突然发现这张卡内似乎别有洞天。<br>
+			透过纹理，你看到一群奇装异服的小人们，围坐在一处颇具古典风格的露天广场上。<br>
+			广场中央有一人，正抬手指天，慷慨陈词。<br>
+			你听不到它们在说什么，但演讲者那极富感染力的动作勾起了你的好奇心，<br>
+			你不由自主得沿着它指的方向望去——<br>
+			<br>
+			洁白如镜的天穹上，倒映出的是你的脸。<br>
+			<br>
+			你赶忙移开视线，但小人们已经发现了你。<br>
+			从广场再到远处的平原上，数以十计、百计、千计、万计，
+			一眼望不到头的小人们从你视野的尽头涌出，挤向你所在的方向。<br>
+			就在此时，你突然感到手心一烫，下意识地便将手里的卡片丢了出去。<br>
+			眼前亦真亦幻的怪异景象登时消失不见了。<br>
+			<br>
+			你低下头，发现卡片已经被烧掉一半了，<br>
+			在被火焰烧灼得卷曲起的边缘处，漏出了某样东西的一角。<br>
+			你捡起卡片，甩了甩，便看到一个足足有卡片五倍甚至四倍大的东西从里面掉了出来！<br>";
+			$log.="<br>获得了<span class='sparkle'>{$sparkle}元素口袋{$sparkle}</span>！<br>";
+			$log.="……这到底是怎么一回事呢？<br><br>";
+			//社团变更
+			$club = 20;
+			//获取初始元素与第一条配方
+			$dice = rand(0,5);
+			global ${'element'.$dice};
+			${'element'.$dice} += 200+$dice;
+			//初始化元素合成缓存文件
+			include_once GAME_ROOT.'./include/game/elementmix.func.php';
+			create_emix_cache_file();
+			//销毁道具
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+			//-----------------------//
 		} elseif ($itm == '提示纸条A') {
 			$log .= '你读着纸条上的内容：<br>“执行官其实都是幻影，那个红暮的身上应该有召唤幻影的玩意。”<br>“用那个东西然后打倒幻影的话能用游戏解除钥匙出去吧。”<br>';
 		} elseif ($itm == '提示纸条B') {
@@ -1898,11 +1938,37 @@ function itemuse($itmn) {
 			$log .= " <span class=\"yellow\">$itm</span> 该如何使用呢？<br>";
 		}
 		
+		//元素大师使用提示纸条的特殊效果：
+		if($club == 20 && strpos($itmk,'Y')===0 && strpos($itm,'提示纸条')!==false)
+		{
+			$log.="<br>就在你读完内容打算把纸条收起来时，你愕然发现纸条背面竟然还有字！<br><br>";
+			include_once config('elementmix',$gamecfg);
+			$log.= $emix_slip[array_rand($emix_slip)];
+			//除商店纸条外：提供一条元素特征（TODO）、或一条固定配方、或一条随机属性组合
+			if(!preg_match('/(A|B|C|D)/',$itm))
+			{
+				$log .= "“附：见面有缘，再送你一条提示吧：”<br>";
+				/*** TODO：把这一块封装进一个函数里 ***/
+				$log .= "<span class='yellow'>“将带有";
+				global $itemspkinfo;
+				include_once GAME_ROOT.'./include/game/elementmix.func.php';
+				$s_list = merge_random_emix_list(1); $s_id = array_rand($s_list);
+				foreach($s_list[$s_id]['stuff'] as $skey) $log .= "【$itemspkinfo[$skey]】";
+				$s_result = $itemspkinfo[$random_submix_list[$s_id]['result']];
+				$log .= "特征的元素组合起来，就有机会组合出【{$s_result}】属性。”</span><br>";
+				/*** TODO：把这一块封装进一个函数里 ***/
+			}
+			//阅后即焚
+			$log .="<br>……说这么多鬼记得住啊！<br>你思考了一下，决定把{$itm}吃进肚子里，以便慢慢消化其中的知识。<br>";
+			$itms--;
+		}
+		
 		if (($itms <= 0) && ($itm)) {
 			$log .= "<span class=\"red\">$itm</span> 用光了。<br>";
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		}
+
 	} else {
 		$log .= "你使用了道具 <span class=\"yellow\">$itm</span> 。<br>但是什么也没有发生。<br>";
 	}
