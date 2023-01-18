@@ -33,21 +33,7 @@
 		$tinfo="已了解的特征：";
 		foreach($temp_etags[$e_key] as $tk => $tarr)
 		{
-			foreach($tarr as $tm)
-			{
-				if($tk == 'dom')
-				{
-					$tinfo.= "[主]".$iteminfo[$tm]." ";
-				}
-				else 
-				{
-					//……这样真的好吗
-					$tt = $itemspkinfo[$tm];
-					$ta = mb_strpos($tt,'>',0,'utf-8')+1; 
-					$tb = mb_strpos($tt,'</span>',0,'utf-8');
-					$tinfo.= "[次]".mb_substr($tt,$ta,$tb-$ta,'utf-8')." ";
-				}
-			}
+			foreach($tarr as $tm) $tinfo.= $tk == 'dom' ? "[主]".$iteminfo[$tm]." " : "[次]".$iteminfo[$tm]." ";
 		}
 		return $tinfo;
 	}
@@ -806,7 +792,7 @@
 		$kind = substr($kind,0,1); //只用道具类别的首字母判断……这个叫什么？大类！
 		foreach($sk_value as $key_sk => $sk)
 		{	
-			//来点反人类的：
+			//来点反人类的：TODO：这里有问题
 			//武器上不会生成“防御性”属性
 			if($kind=='W' && array_search($sk,$itmk_to_itmsk_tags['D'])) unset($sk_value[$key_sk]);
 			//防具、道具上不会生成“攻击性”属性
@@ -1005,64 +991,19 @@
 		return $tmp_arr;
 	}
 
-	//数组化itmsk 可能是四面的遗产
-	function get_itmsk_array($sk_value)
-	{
-		global $itemspkinfo;
-		$ret = Array();
-		$i = 0;
-		while ($i < strlen($sk_value))
-		{
-			$sub = substr($sk_value,$i,1); 
-			$i++;
-			if(!empty($sub) && array_key_exists($sub,$itemspkinfo)) array_push($ret,$sub); //itmsk里怪东西不少 规范一些 只会加入登记过的属性
-		}
-		return $ret;		
-	}
+	//数组化itmsk 可能是四面的遗产 //和还原itmsk为字符串一起挪到game.func.php里了
 
-	//还原itmsk为字符串 $max_length-字符串长度上限 
-	function get_itmsk_strlen($sk_value,$max_length=5)
-	{
-		global $itemspkinfo;
-		$ret = ''; $sk_count = 0;
-		foreach($sk_value as $sk)
-		{
-			if(array_key_exists($sk,$itemspkinfo))
-			{
-				$ret.=$sk;
-				$sk_count+=strlen($sk);
-			}
-			if($sk_count>=$max_length) break;
-		}
-		return $ret;
-	}
-
-	//过滤杂项道具类别（可以作为一个通用型函数） 
-	//$check_dualwep：1=复合武器会返回一个带有2个武器类别的数组；0=不还原复合武器的类别
-	//在分解道具流程里，会先检查道具类别是否存在于$split_itmk_r内，不存在才会尝试使用该函数过滤掉乱七八糟的类型。
+	//过滤杂项道具类别（可以作为一个通用型函数） //我好傻
 	function filter_itemkind($kind,$check_dualwep=0)
 	{
 		global $iteminfo;
-		//武器：
-		switch($kind)
+		foreach($iteminfo as $info_key => $info_value)
 		{
-			//武器
-			case strpos($kind,'W')===0:
-				if($check_dualwep && strlen($kind)==3)
-				{	//复合武器
-					$w1 = 'W'.substr($kind,1,1);
-					$w2 = 'W'.substr($kind,2,1);
-					$kind = Array($w1,$w2);
-				}
-				else
-				{	//可能只有游戏王卡牌了？
-					$kind = substr($kind,0,2);
-				}
+			if(strpos($kind,$info_key)===0)
+			{
+				$kind = $info_key;
 				break;
-			//饰品、药剂、强化药物、技能书、陷阱、回复道具 一锅端了吧
-			case (strpos($kind,'A')===0 || strpos($kind,'C')===0 || strpos($kind,'M')===0 || strpos($kind,'V')===0 || strpos($kind,'T')===0 || strpos($kind,'H')===0 || strpos($kind,'P')===0):
-				$kind = substr($kind,0,1);
-				break;
+			}
 		}
 		return $kind;
 	}
