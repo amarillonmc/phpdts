@@ -4,7 +4,65 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
-
+//将sk转为数组格式 只会转换登记过的属性
+function get_itmsk_array($sk_value)
+{
+	global $itemspkinfo;
+	$ret = Array();
+	$i = 0;
+	while ($i < strlen($sk_value))
+	{
+		$sub = substr($sk_value,$i,1); 
+		$i++;
+		if(!empty($sub) && array_key_exists($sub,$itemspkinfo)) array_push($ret,$sub);
+	}
+	return $ret;		
+}
+//还原itmsk为字符串 $max_length:字符串长度上限 
+function get_itmsk_strlen($sk_value,$max_length=5)
+{
+	global $itemspkinfo;
+	$ret = ''; $sk_count = 0;
+	foreach($sk_value as $sk)
+	{
+		if(array_key_exists($sk,$itemspkinfo))
+		{
+			$ret.=$sk;
+			$sk_count+=strlen($sk);
+		}
+		if($sk_count>=$max_length) break;
+	}
+	return $ret;
+}
+//为显示在主界面、尸体发现界面、游戏帮助界面的道具名、道具类、道具属性添加额外描述
+function parse_itm_desc($n,$t='m')
+{
+	global $iteminfo,$itemspkinfo;
+	global $iteminfo_tooltip,$itemkinfo_tooltip,$itemspkinfo_tooltip;
+	$s = "<span "; unset($p1); unset($p2);
+	switch($t)
+	{
+		//处理类别
+		case $t=='k':
+			if($itemkinfo_tooltip[$n]['title']) $p1 = "title=\"".$itemkinfo_tooltip[$n]['title']."\"";
+			if($itemkinfo_tooltip[$n]['class']) $p2 = "class=\"".$itemkinfo_tooltip[$n]['class']."\"";
+			$n = $iteminfo[$n];
+			break;
+		//处理属性
+		case $t=='sk':
+			if($itemspkinfo_tooltip[$n]['title']) $p1 = "title=\"".$itemspkinfo_tooltip[$n]['title']."\"";
+			if($itemspkinfo_tooltip[$n]['class']) $p2 = "class=\"".$itemspkinfo_tooltip[$n]['class']."\"";
+			$n = $itemspkinfo[$n];
+			break;
+		//处理名字
+		default:
+			if($iteminfo_tooltip[$n]['title']) $p1 = "title=\"".$iteminfo_tooltip[$n]['title']."\"";
+			if($iteminfo_tooltip[$n]['class']) $p2 = "class=\"".$iteminfo_tooltip[$n]['class']."\"";
+	}
+	$p3 = " >";	$e = "</span>";
+	$ret = $s.$p1.$p2.$p3.$n.$e;
+	return $ret;
+}
 
 function init_playerdata(){
 	global $lvl,$baseexp,$exp,$gd,$icon,$arbe,$arhe,$arae,$arfe,$weather,$fog,$weps,$arbs,$log,$upexp,$lvlupexp,$iconImg,$ardef;
@@ -35,39 +93,45 @@ function init_profile(){
 	global $itemspkinfo,$wepsk,$arbsk,$arhsk,$arask,$arfsk,$artsk,$itmsk0,$itmsk1,$itmsk2,$itmsk3,$itmsk4,$itmsk5,$itmsk6;
 	global $nospk,$wepsk_words,$arbsk_words,$arhsk_words,$arask_words,$arfsk_words,$artsk_words,$itmsk0_words,$itmsk1_words,$itmsk2_words,$itmsk3_words,$itmsk4_words,$itmsk5_words,$itmsk6_words;
 	global $wepk_words,$arbk_words,$arhk_words,$arak_words,$arfk_words,$artk_words,$itmk0_words,$itmk1_words,$itmk2_words,$itmk3_words,$itmk4_words,$itmk5_words,$itmk6_words;
+	global $wep,$arb,$arh,$ara,$arf,$art,$itm0,$itm1,$itm2,$itm3,$itm4,$itm5,$itm6;
 
-		
+	foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
+	{
+		${$value} = parse_itm_desc(${$value});
+	}
+
 	foreach (Array('wepk','arbk','arhk','arak','arfk','artk','itmk0','itmk1','itmk2','itmk3','itmk4','itmk5','itmk6') as $k_value) {
-		if(${$k_value}){
+		if(${$k_value})
+		{
 			${$k_value.'_words'} = '';
-			
-			foreach($iteminfo as $info_key => $info_value){
+			foreach($iteminfo as $info_key => $info_value)
+			{
 				if(strpos(${$k_value},$info_key)===0){
-					${$k_value.'_words'} = $info_value;
+					${$k_value.'_words'} = parse_itm_desc($info_key,'k');
 					break;
 				}
-				
 			}
 		} else {
 			${$k_value.'_words'} = '';
 		}
-		
 	}
 	
 	foreach (Array('wepsk','arbsk','arhsk','arask','arfsk','artsk','itmsk0','itmsk1','itmsk2','itmsk3','itmsk4','itmsk5','itmsk6') as $sk_value) {
 		if(${$sk_value} && is_numeric(${$sk_value}) === false){
 			${$sk_value.'_words'} = '';
-			for ($i = 0; $i < strlen($sk_value); $i++) {
-				$sub = substr(${$sk_value},$i,1);
-				if(!empty($sub)){
-					if(!empty(${$sk_value.'_words'})){
-						${$sk_value.'_words'} .= '+'.$itemspkinfo[$sub];
-					}else{
-						${$sk_value.'_words'} = $itemspkinfo[$sub];
-					}					
-				}				
+			//取我数组斧来
+			$tmpsk = get_itmsk_array(${$sk_value});
+			foreach($tmpsk as $sk)
+			{
+				if(!empty(${$sk_value.'_words'}))
+				{
+					${$sk_value.'_words'} .= "+".parse_itm_desc($sk,'sk');
+				}
+				else
+				{
+					${$sk_value.'_words'} = parse_itm_desc($sk,'sk');
+				}
 			}
-			
 		} else {
 			${$sk_value.'_words'} =$nospk;
 		}

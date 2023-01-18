@@ -29,7 +29,12 @@
 	<!--{/if}-->
 <br>
 <!--{if $club==19}--> 【<span class="lime">报应点数：<span id="anum">$rp</span></span>】<br><!--{/if}-->
+	<!--{if $club==20}--> 
+	<a onclick="$('mode').value='itemmain';$('command').value='elementbag';postCmd('gamecmd','command.php');this.disabled=true;">【<span class="sparkle">{$sparkle}元素口袋{$sparkle}</span>】</a><br>
+	<input type="button" class="cmdbutton" id="elementmix" name="elementmix" value="元素合成" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='elementmix';postCmd('gamecmd','command.php');this.disabled=true;">
+	<!--{else}-->
 	<input type="button" class="cmdbutton" id="itemmix" name="itemmix" value="道具合成" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='itemmix';postCmd('gamecmd','command.php');this.disabled=true;">
+	<!--{/if}-->
 	<input type="button" class="cmdbutton" id="itemmerge" name="itemmerge" value="整理包裹" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='itemmerge';postCmd('gamecmd','command.php');this.disabled=true;">
 	<!--{if strpos($artk,'ss')!==false}-->
 	<input type="button" class="cmdbutton" id="sp_weapon" name="sp_weapon" value="歌唱" onclick="$('command').value='song';$('subcmd').name='song';postCmd('gamecmd','command.php');this.disabled=true;">

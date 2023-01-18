@@ -5,5 +5,9 @@
 <br>
 <input type="hidden" id="mode" name="mode" value="itemmain">
 <input type="hidden" id="command" name="command" value="itemget">
-<input type="button" class="cmdbutton" name="itemget" value="拾取" onclick="postCmd('gamecmd','command.php');this.disabled=true;"><br><br>
+<input type="button" class="cmdbutton" name="itemget" value="拾取" onclick="postCmd('gamecmd','command.php');this.disabled=true;">
+<!--{if $club==20}-->
+&nbsp;&nbsp;<input type="button" class="cmdbutton" name="split_itm" value="提炼" onclick="$('command').value='split_itm0';postCmd('gamecmd','command.php');this.disabled=true;">
+<!--{/if}-->
+<br><br>
 <input type="button" class="cmdbutton" name="dropitm0" value="丢弃" onclick="$('command').value='dropitm0';postCmd('gamecmd','command.php');this.disabled=true;">

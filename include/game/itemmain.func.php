@@ -178,6 +178,7 @@ function trap(){
 
 function itemfind() {
 	global $mode,$log,$itm0,$itmk0,$itms0,$itmsk0;
+	global $club;
 	if(!$itm0||!$itmk0||!$itms0){
 		$log .= '获取物品信息错误！';
 		$mode = 'command';
@@ -995,6 +996,7 @@ function itembuy($item,$shop,$bnum=1) {
 function getcorpse($item){
 	global $db,$tablepre,$log,$mode;
 	global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$money,$pls,$action;
+	global $club;
 	$corpseid = strpos($action,'corpse')===0 ? str_replace('corpse','',$action) : str_replace('pacorpse','',$action);
 	if(!$corpseid || strpos($action,'corpse')===false){
 		$log .= '<span class="yellow">你没有遇到尸体，或已经离开现场！</span><br>';
@@ -1020,6 +1022,22 @@ function getcorpse($item){
 		return;
 	} elseif($edata['pls'] != $pls) {
 		$log .= '对方跟你不在同一个地图！<br>';
+		$action = '';
+		$mode = 'command';
+		return;
+	}
+
+	if($item == 'element_split')
+	{
+		if($club != 20)
+		{
+			$log.="你还想对这具可怜的尸体干什么？麻烦给死者一点基本的尊重！<br>";
+			$action = '';
+			$mode = 'command';
+			return;
+		}
+		include_once GAME_ROOT.'./include/game/elementmix.func.php';
+		split_corpse_to_elements($edata);
 		$action = '';
 		$mode = 'command';
 		return;

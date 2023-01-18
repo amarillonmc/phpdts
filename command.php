@@ -126,7 +126,22 @@ if($hp > 0){
 					$mode = 'rest';
 				}
 			} elseif($command == 'itemmain') {
-				$mode = $itemcmd;
+				if(($club == 20 && $itemcmd == 'itemmix') || ($club != 20 && ($itemcmd == 'elementmix' || $itemcmd == 'elementbag')))
+				{
+					$log .= "你的手突然掐住了你的头左右摇摆！<br><span class='yellow'>“你还想要干什么，啊？你还想要干什么！！”</span><br>看来你的手和脑子之间起了一点小摩擦。<br><br>";
+					$mode = 'command';
+				}
+				else 
+				{	
+					if($club == 20)
+					{
+						global $elements_info;
+						include_once GAME_ROOT.'./include/game/elementmix.func.php';
+						$emax = get_emix_itme_max();
+						foreach($elements_info as $e_key=>$e_info) ${'etaginfo'.$e_key} ="<span title=\"".print_elements_tags($e_key)."\">";
+					}
+					$mode = $itemcmd;
+				}
 			} elseif($command == 'song') {
 				$sname=trim(trim($art,'【'),'】');
 				include_once GAME_ROOT.'./include/game/song.inc.php';
@@ -247,6 +262,11 @@ if($hp > 0){
 				else{itemmerge($merge1,$merge2);}
 			} elseif($command == 'itemmove') {
 				itemmove($from,$to);
+			} elseif(strpos($command,'split_itm') === 0) {
+				//把道具分解为元素 在数据库里注销道具的流程已经在discover()里走完了
+				$split_item = substr($command,9);
+				include_once GAME_ROOT . './include/game/elementmix.func.php';
+				split_item_to_elements($split_item);
 			} elseif(strpos($command,'drop') === 0) {
 				$drop_item = substr($command,4);
 				itemdrop($drop_item);
@@ -280,6 +300,45 @@ if($hp > 0){
 						itemmix($mixlist,$itemselect);
 					else  itemmix($mixlist);
 				}
+			} elseif($command == 'elementmix') {
+				if($club == 20)
+				{
+					$e_mixlist = Array();
+					foreach($elements_info as $e_key=>$e_info)
+					{
+						global ${'element'.$e_key};
+						$m_e_key = $e_key + 1;//这样就不用污染原本的js了
+						${'emitm'.$e_key.'_num'} = round( ${'emitm'.$e_key.'_num'});
+						if(${'mitm'.$m_e_key}>=0 && ${'element'.$e_key} && ${'emitm'.$e_key.'_num'}>0 && ${'emitm'.$e_key.'_num'}<=${'element'.$e_key})
+						{
+							//打入参与合成的元素编号与数量
+							$e_mixlist[$e_key] = ${'emitm'.$e_key.'_num'};
+						}
+					}
+					if(count($e_mixlist)>0)
+					{
+						$er = ($lvl>=15 && $emitme_r && $change_emr==1) ? $emitme_r : NULL;
+						$emr = ($lvl>=5 && $emitme_max_r && $change_emax==1) ? $emitme_max_r : NULL;
+						include_once GAME_ROOT.'./include/game/elementmix.func.php';
+						element_mix($e_mixlist,$emr,$er);
+					}
+					else
+					{
+						$log.="至少要放入一份元素。<br>";
+					}
+				}
+				else 
+				{
+					$log.="你挠了挠头，没搞懂自己到底要干什么。<br>";
+				}
+				$mode='command';
+			} elseif($command == 'elementbag') {
+				if($club == 20)
+				{
+					include_once GAME_ROOT.'./include/game/elementmix.func.php';
+					print_elements_info();
+				}
+				$mode='command';
 			} elseif($command == 'itemencase') {
 				if(strpos($arbsk,'^')!==false && $arbs && $arbe){
 					$ilist = array();

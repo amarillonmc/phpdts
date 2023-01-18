@@ -80,7 +80,8 @@ function findteam(&$w_pdata){
 function findcorpse(&$w_pdata){
 	global $log,$mode,$main,$battle_title,$cmd,$iteminfo,$itemspkinfo;
 	global $w_type,$w_name,$w_gd,$w_sNo,$w_icon,$w_hp,$w_mhp,$w_wep,$w_wepk,$w_wepe,$w_lvl,$w_pose,$w_tactic,$w_inf;//,$itmsk0;
-	
+	global $club;
+
 	$battle_title = '发现尸体';
 	extract($w_pdata,EXTR_PREFIX_ALL,'w');
 	init_battle(1);
@@ -111,11 +112,15 @@ function findcorpse(&$w_pdata){
 	{	
 		$main = 'battle';
 		$log .= '你发现了<span class="red">'.$w_name.'</span>的尸体！<br>';
+		foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $w_value) 
+		{
+			${$w_value} = parse_itm_desc(${$w_value});
+		}
 		foreach (Array('w_wepk','w_arbk','w_arhk','w_arak','w_arfk','w_artk','w_itmk0','w_itmk1','w_itmk2','w_itmk3','w_itmk4','w_itmk5','w_itmk6') as $w_k_value) {
 			if(${$w_k_value}){
 				foreach($iteminfo as $info_key => $info_value){
 					if(strpos(${$w_k_value},$info_key)===0){
-						${$w_k_value.'_words'} = $info_value;
+						${$w_k_value.'_words'} = parse_itm_desc($info_key,'k');
 						break;
 					}
 				}
@@ -123,15 +128,19 @@ function findcorpse(&$w_pdata){
 		}
 		foreach (Array('w_wepsk','w_arbsk','w_arhsk','w_arask','w_arfsk','w_artsk','w_itmsk0','w_itmsk1','w_itmsk2','w_itmsk3','w_itmsk4','w_itmsk5','w_itmsk6') as $w_sk_value) {
 			${$w_sk_value.'_words'} = '';
-			if(${$w_sk_value} && ! is_numeric(${$w_sk_value})){
-				
-				for ($i = 0; $i < strlen($w_sk_value)-1; $i++) {
+			if(${$w_sk_value} && ! is_numeric(${$w_sk_value}))
+			{
+				$tmp_wsk = get_itmsk_array(${$w_sk_value});	
+				foreach($tmp_wsk as $sk)
+				{
+					${$w_sk_value.'_words'} .= parse_itm_desc($sk,'sk');
+				}
+				/*for ($i = 0; $i < strlen($w_sk_value)-1; $i++) {
 					$sub = substr(${$w_sk_value},$i,1);
 					if(!empty($sub)){
 						${$w_sk_value.'_words'} .= $itemspkinfo[$sub];
 					}
-				}
-				
+				}*/
 			}
 		}
 		include template('corpse');

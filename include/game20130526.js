@@ -61,6 +61,8 @@ function itemmixchooser(){
 			}
 		}
 	}
+	if($('change_emr') != null && $('change_emr').checked) $('change_emr').value=1;
+	if($('change_emax') != null && $('change_emax').checked) $('change_emax').value=1;
 }
 
 //icon select
@@ -275,7 +277,7 @@ function showData(sdata){
 	if(shwData['timer'] && typeof(timerid)=='undefined'){
 		demiSecTimerStarter(shwData['timer']);
 	}
-	if ($('HsUipfcGhU'))	//ˢ��ҳ����
+	if ($('HsUipfcGhU'))	//ˢ��ҳ����
 	{
 		window.location.reload();
 	}
@@ -334,6 +336,27 @@ function openShutManager(oSourceObj,oTargetObj,shutAble,oOpenTip,oShutTip){
 	   if(openTip  &&  shutTip){
 	    sourceObj.innerHTML = openTip; 
 	   }
+	}
+}
+
+//元素合成界面的ajax效果 仅作美化使用
+function getEmitmeR(type=0) {
+	if(type == 1)
+	{	
+		var r = document.getElementById("emitme_max_r").value;
+		var e = document.getElementById("emax").value;
+		$('s_emitme_max').innerHTML = Math.round(e*(r/100));
+	}
+	else
+	{
+		var r = document.getElementById("emitme_r").value;
+		$('s_emitme_r').innerHTML = r;
+		$('s_emitms_r').innerHTML = 100-r;
+		$('sr_warning').innerHTML = '';
+		if(r>79 || r<21)
+		{
+			$('sr_warning').innerHTML = '警告：过度干预可能引发灾难性的后果！';
+		}
 	}
 }
 
