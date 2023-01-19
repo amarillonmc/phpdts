@@ -219,7 +219,7 @@
 		$ev_arr = Array();
 		//获取缓存文件
 		$cache_file = GAME_ROOT."./gamedata/bak/elementmix.bak";
-		if(!file_exists($cache_file)) create_random_emix_list();
+		if(!file_exists($cache_file)) create_emix_cache_file();
 		$flip_etags_arr = openfile_decode($cache_file);
 		//开始计算元素价值
 		foreach($iarr as $i => $t)
@@ -393,9 +393,11 @@
 		//自定义效/耐比的阈值：2%~98%
 		$eitme_r = isset($eitme_r) ? min(98,max(2,$eitme_r)) : rand(2,98); 
 		$eitme_r /= 100;
+		//echo '【DEBUG】初始化阶段，道具效果系数：'.$eitme_r.'<br>';
 		//自定义最大效果的阈值：1%~100%
 		$eitme_max_r = isset($eitme_max_r) ? min(100,max(1,$eitme_max_r)) : 100; 
 		$eitme_max_r /= 100;
+		//echo '【DEBUG】初始化阶段，道具效果上限系数：'.$eitme_max_r.'<br>';
 		//对参与合成的元素按投入数量降序排序，筛出投入数量最多的元素作为主元素
 		arsort($emlist);
 		$log.="从口袋中抓出了：<br>";
@@ -551,6 +553,7 @@
 		//过滤掉道具的子类别
 		$tmp_kind = filter_itemkind($emix_itmk,1);
 		if(strpos($tmp_kind,'D')===0) $tmp_kind = 'D'; //TODO：提供了单个部位的防具词组后删掉这一句
+		if(strpos($tmp_kind,'H')===0) $tmp_kind = 'H'; //TODO：提供了单独的道具类别词组后删掉这一句
 		//复合武器
 		if(is_array($tmp_kind))
 		{
@@ -613,6 +616,7 @@
 		$max_enum = get_emix_itme_max();
 		//通过自定义上限系数修正
 		$max_enum *= $emr;
+		//echo '【DEBUG】获取实际上限阶段，修正系数：'.$emr.'理论上限：'.$max_enum.'<br>';
 		//判断投入数量有没有超过理论上限
 		$max_cost = min(round($max_enum),$total_enum);
 		return $max_cost;
@@ -641,6 +645,7 @@
 				return $r_emix_list[$rid]['result'];
 			}
 		}
+		return;
 	}
 
 	//获取元素主特征
@@ -997,6 +1002,16 @@
 	function filter_itemkind($kind,$check_dualwep=0)
 	{
 		global $iteminfo;
+
+		//将复合武器拆成两把武器
+		if($check_dualwep && strlen($kind)==3)
+		{	
+			$w1 = 'W'.substr($kind,1,1);
+			$w2 = 'W'.substr($kind,2,1);
+			$kind = Array($w1,$w2);
+			return $kind;
+		}
+
 		foreach($iteminfo as $info_key => $info_value)
 		{
 			if(strpos($kind,$info_key)===0)
