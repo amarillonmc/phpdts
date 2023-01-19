@@ -35,29 +35,30 @@ function get_itmsk_strlen($sk_value,$max_length=5)
 	return $ret;
 }
 //为显示在主界面、尸体发现界面、游戏帮助界面的道具名、道具类、道具属性添加额外描述
-function parse_itm_desc($n,$t='m')
+function parse_itm_desc($n,$t)
 {
 	global $iteminfo,$itemspkinfo;
 	global $iteminfo_tooltip,$itemkinfo_tooltip,$itemspkinfo_tooltip;
-	$s = "<span "; unset($p1); unset($p2);
+	$s = "<span "; $p1 = ''; $p2 = ''; $ret = '';
 	switch($t)
 	{
 		//处理类别
 		case $t=='k':
-			if($itemkinfo_tooltip[$n]['title']) $p1 = "title=\"".$itemkinfo_tooltip[$n]['title']."\"";
-			if($itemkinfo_tooltip[$n]['class']) $p2 = "class=\"".$itemkinfo_tooltip[$n]['class']."\"";
+			if(isset($itemkinfo_tooltip[$n]['title'])) $p1 = "title=\"".$itemkinfo_tooltip[$n]['title']."\"";
+			if(isset($itemkinfo_tooltip[$n]['class'])) $p2 = "class=\"".$itemkinfo_tooltip[$n]['class']."\"";
 			$n = $iteminfo[$n];
 			break;
 		//处理属性
 		case $t=='sk':
-			if($itemspkinfo_tooltip[$n]['title']) $p1 = "title=\"".$itemspkinfo_tooltip[$n]['title']."\"";
-			if($itemspkinfo_tooltip[$n]['class']) $p2 = "class=\"".$itemspkinfo_tooltip[$n]['class']."\"";
+			if(isset($itemspkinfo_tooltip[$n]['title'])) $p1 = "title=\"".$itemspkinfo_tooltip[$n]['title']."\"";
+			if(isset($itemspkinfo_tooltip[$n]['class'])) $p2 = "class=\"".$itemspkinfo_tooltip[$n]['class']."\"";
 			$n = $itemspkinfo[$n];
 			break;
 		//处理名字
-		default:
-			if($iteminfo_tooltip[$n]['title']) $p1 = "title=\"".$iteminfo_tooltip[$n]['title']."\"";
-			if($iteminfo_tooltip[$n]['class']) $p2 = "class=\"".$iteminfo_tooltip[$n]['class']."\"";
+		case $t=='m':
+			if(isset($iteminfo_tooltip[$n]['title'])) $p1 = "title=\"".$iteminfo_tooltip[$n]['title']."\"";
+			if(isset($iteminfo_tooltip[$n]['class'])) $p2 = "class=\"".$iteminfo_tooltip[$n]['class']."\"";
+			break;
 	}
 	$p3 = " >";	$e = "</span>";
 	$ret = $s.$p1.$p2.$p3.$n.$e;
@@ -97,7 +98,7 @@ function init_profile(){
 
 	foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
 	{
-		${$value} = parse_itm_desc(${$value});
+		${$value} = parse_itm_desc(${$value},'m');
 	}
 
 	foreach (Array('wepk','arbk','arhk','arak','arfk','artk','itmk0','itmk1','itmk2','itmk3','itmk4','itmk5','itmk6') as $k_value) {

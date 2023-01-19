@@ -25,11 +25,11 @@ foreach ($npcinfo as $i => $npcs)
 	{	
 		foreach (Array('arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
 		{
-			if($npcinfo[$i][$value]) $npcinfo[$i][$value] = parse_itm_desc($npcinfo[$i][$value]);
+			if(isset($npcinfo[$i][$value])) $npcinfo[$i][$value] = parse_itm_desc($npcinfo[$i][$value],'m');
 		}
 		foreach (Array('arbk','arhk','arak','arfk','artk','itmk0','itmk1','itmk2','itmk3','itmk4','itmk5','itmk6') as $value) 
 		{
-			if($npcinfo[$i][$value]) 
+			if(isset($npcinfo[$i][$value])) 
 			{
 				foreach($iteminfo as $info_key => $info_value)
 				{
@@ -42,9 +42,8 @@ foreach ($npcinfo as $i => $npcs)
 		}
 		foreach(Array('arbsk','arhsk','arask','arfsk','artsk','itmsk0','itmsk1','itmsk2','itmsk3','itmsk4','itmsk5','itmsk6') as $value) 
 		{
-			if($npcinfo[$i][$value]) 
+			if(isset($npcinfo[$i][$value])) 
 			{
-				$npcinfo[$i][$value][$value.'_words'] = '';
 				$tmpsk = get_itmsk_array($npcinfo[$i][$value]);
 				foreach($tmpsk as $sk)
 				{
@@ -63,11 +62,11 @@ foreach ($npcinfo as $i => $npcs)
 		{
 			foreach(Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
 			{
-				if($npcinfo[$i]['sub'][$n][$value]) $npcinfo[$i]['sub'][$n][$value] = parse_itm_desc($npcinfo[$i]['sub'][$n][$value]);
+				if(isset($npcinfo[$i]['sub'][$n][$value])) $npcinfo[$i]['sub'][$n][$value] = parse_itm_desc($npcinfo[$i]['sub'][$n][$value],'m');
 			}
 			foreach(Array('wepk','arbk','arhk','arak','arfk','artk','itmk0','itmk1','itmk2','itmk3','itmk4','itmk5','itmk6') as $value) 
 			{
-				if($npcinfo[$i]['sub'][$n][$value]) 
+				if(isset($npcinfo[$i]['sub'][$n][$value])) 
 				{
 					foreach($iteminfo as $info_key => $info_value)
 					{
@@ -80,9 +79,8 @@ foreach ($npcinfo as $i => $npcs)
 			}
 			foreach(Array('wepsk','arbsk','arhsk','arask','arfsk','artsk','itmsk0','itmsk1','itmsk2','itmsk3','itmsk4','itmsk5','itmsk6') as $value) 
 			{
-				if($npcinfo[$i]['sub'][$n][$value]) 
+				if(isset($npcinfo[$i]['sub'][$n][$value])) 
 				{
-					$npcinfo[$i]['sub'][$n][$value.'_words'] = '';
 					$tmpsk = get_itmsk_array($npcinfo[$i]['sub'][$n][$value]);
 					foreach($tmpsk as $sk)
 					{
@@ -126,7 +124,7 @@ if(filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemti
 	foreach($mixinfo as $mix){
 		if($mix['class'] !== 'hidden'){
 			//名字
-			$mix['result'][0] = parse_itm_desc($mix['result'][0]);
+			$mix['result'][0] = parse_itm_desc($mix['result'][0],'m');
 			//类别
 			foreach($iteminfo as $info_key => $info_value){
 				if(strpos($mix['result'][1],$info_key)===0){

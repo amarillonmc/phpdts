@@ -1024,16 +1024,12 @@ $iteminfo = Array(//注意顺序，AB必须在A的前面，以此类推
 
 	$iteminfo_tooltip = Array
 	(
-		'男生校服' => Array('class'=>'spitem2', 'title'=>"总之就是校服了……其实……我也没上过学……",),//DEBUG用
-		'女生校服' => Array('class'=>'spitem', 'title'=>"总之就是校服了……其实……我也没上过学……",),//DEBUG用
 		'魔法蜂针' => Array('class'=>'spitem', 'title'=>"这个武器一定会对敌人造成350点伤害，但对防御非常高的敌人除外。",),
 		'临摹装置' => Array('class'=>'spitem', 'title'=>"这个武器在主动攻击对手时，将可以复制对手的武器。注意：对手武器数值太高时会失败，后果自负！",),
 	);
 
 	$itemkinfo_tooltip = Array
 	(
-		'WG' => Array('class'=>'spitem','title'=>"这可能是一把远程武器，但也不一定是。这取决于你怎么理解远程武器。",),//DEBUG用
-		'WP' => Array('class'=>'spitem',),//DEBUG用
 		'AA' => Array('class'=>'spitem', 'title'=>"可以将一定数量的攻击次数伤害变为0，那之后失效",),
 		'AB' => Array('class'=>'spitem', 'title'=>"装备后，对补给品使用毒药下毒变为为其解毒。",),
 		'XA' => Array('class'=>'lime', 'title'=>"集齐三个同颜色的不同名代码残片，来合成单人脱出结局道具吧！",),
@@ -1044,8 +1040,8 @@ $iteminfo = Array(//注意顺序，AB必须在A的前面，以此类推
 
 	$itemspkinfo_tooltip = Array
 	(
-		'A' => Array('class' => 'red', 'title' => "高概率将殴斩射投爆灵六系对你的伤害减半。",),//测试用
-		'a' => Array('class' => 'clan', 'title' => "高概率将毒火冻电乱音以及爆炸对你的伤害减半。并避免异常状态。",),//测试用
+		'A' => Array('title' => "高概率将殴斩射投爆灵六系对你的伤害减半。",),//测试用
+		'a' => Array('title' => "高概率将毒火冻电乱音以及爆炸对你的伤害减半。并避免异常状态。",),//测试用
 		'B' => Array('title' => "极高概率将全部物理伤害变为1。",),
 		'b' => Array('title' => "极高概率将全部属性伤害变为1。",),
 		'C' => Array('title' => "高概率将投系对你的物理伤害减半。",),

@@ -114,7 +114,7 @@ function findcorpse(&$w_pdata){
 		$log .= '你发现了<span class="red">'.$w_name.'</span>的尸体！<br>';
 		foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $w_value) 
 		{
-			${$w_value} = parse_itm_desc(${$w_value});
+			${$w_value} = parse_itm_desc(${$w_value},'m');
 		}
 		foreach (Array('w_wepk','w_arbk','w_arhk','w_arak','w_arfk','w_artk','w_itmk0','w_itmk1','w_itmk2','w_itmk3','w_itmk4','w_itmk5','w_itmk6') as $w_k_value) {
 			if(${$w_k_value}){

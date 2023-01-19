@@ -40,7 +40,7 @@
 <br>
 <!--5级后解锁：最大生成效果调节-->
 <!--{if $lvl>=5}-->
-<span class="yellow">&nbsp;&nbsp;【节制】</span><span class="grey">（勾选启用）</span><input type="checkbox" id="change_emr" name="change_emr" value="-1"><br>
+<span class="yellow">&nbsp;&nbsp;【节制】</span><span class="grey">（勾选启用）</span><input type="checkbox" id="change_emax" name="change_emax" value="-1"><br>
 &nbsp; › 你可以主动限制元素合成结果的<span class="lime">效耐上限</span>。<br>
 &nbsp; › 当前：生成道具的效果+耐久上限<span class="yellow">【<span id="s_emitme_max" name="s_emitme_max">$emax</span>】</span><br>
 <input type="range" class="range" step="0.1" style="width:220px" id="emitme_max_r" name="emitme_max_r" min="1" max="100" value="100" onchange="getEmitmeR(1)"><br>
@@ -52,7 +52,7 @@
 <!--{/if}-->
 <!--15级后解锁：效果、耐久比例调节-->
 <!--{if $lvl>=15}-->
-<span class="yellow">&nbsp;&nbsp;【预言】</span><span class="grey">（勾选启用）</span><input type="checkbox" id="change_emax" name="change_emax" value="-1"><br>
+<span class="yellow">&nbsp;&nbsp;【预言】</span><span class="grey">（勾选启用）</span><input type="checkbox" id="change_emr" name="change_emr" value="-1"><br>
 &nbsp; › 你能够干涉元素合成结果的<span class="lime">效耐占比</span>。<br>
 &nbsp; › 当前：效果占比<span class="yellow">【<span id="s_emitme_r" name="s_emitme_r">55</span>%】</span>&nbsp;耐久占比<span class="yellow">【<span id="s_emitms_r" name="s_emitms_r">45</span>%】</span><br>
 &nbsp; <span id="sr_warning" name="sr_warning" class="red"></span>

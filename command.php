@@ -317,9 +317,11 @@ if($hp > 0){
 					}
 					if(count($e_mixlist)>0)
 					{
-						$er = ($lvl>=15 && $emitme_r && $change_emr==1) ? $emitme_r : NULL;
-						$emr = ($lvl>=5 && $emitme_max_r && $change_emax==1) ? $emitme_max_r : NULL;
+						//echo '【DEBUG】提交阶段：值系数'.$emitme_r.'上限系数：'.$emitme_max_r.'上限勾选状态：'.$change_emax.'值勾选状态：'.$change_emr.'<br>';
+						$er = ($lvl>=15 && $emitme_r && $change_emr>0) ? $emitme_r : NULL;
+						$emr = ($lvl>=5 && $emitme_max_r && $change_emax>0) ? $emitme_max_r : NULL;
 						include_once GAME_ROOT.'./include/game/elementmix.func.php';
+						//echo '【DEBUG】传入阶段：值系数'.$er.'上限系数：'.$emr.'<br>';
 						element_mix($e_mixlist,$emr,$er);
 					}
 					else
