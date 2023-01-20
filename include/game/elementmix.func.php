@@ -3,9 +3,9 @@
 	if(!defined('IN_GAME')) {
 		exit('Access Denied');
 	}
-
 	//zai jian le suoyoude global
 	global $gamecfg,$elements_info;//这个$gamecfg到底是在哪定义的……
+	require_once './include/game/dice.func.php';
 	include_once config('elementmix',$gamecfg);
 
 	/********界面交互部分********/
@@ -26,20 +26,23 @@
 		}
 		$log.="<br>";
 	}
-	//显示元素标签……卧槽怎么会这样
+	//显示元素标签
 	function print_elements_tags($e_key)
 	{
 		global $temp_etags,$iteminfo,$itemspkinfo;
 		$tinfo="已了解的特征：";
 		foreach($temp_etags[$e_key] as $tk => $tarr)
 		{
-			foreach($tarr as $tm) $tinfo.= $tk == 'dom' ? "[主]".$iteminfo[$tm]." " : "[次]".$iteminfo[$tm]." ";
+			if(is_array($tarr))
+			{
+				foreach($tarr as $tm) 
+					$tinfo.= $tk == 'dom' ? "[主]".$iteminfo[$tm]." " : "[次]".$itemspkinfo[$tm]." ";
+			}
 		}
 		return $tinfo;
 	}
 
 	/********拆解元素部分********/
-
 	//过滤掉不能拆解的道具（数组） 不能分解返回1 能分解返回0
 	function split_to_elements_filter($i)
 	{
@@ -122,6 +125,7 @@
 			//计算从尸体的装备上能获得的元素种类与数量
 			$ev_arr = get_evalues_by_iarr($corpse_itm_arr);
 			//增加对应的元素
+			$total_addev = 0;
 			foreach($elements_info as $e_key=>$e_info)
 			{
 				global ${'element'.$e_key};
@@ -135,6 +139,7 @@
 					$edata['element'.$e_key] = 0;
 				}
 				${'element'.$e_key} += $add_ev;
+				$total_addev += $add_ev;
 				$log.="获得了{$add_ev}份{$e_info}！<br>";
 			}
 			//销毁尸体
@@ -142,7 +147,8 @@
 			//你们也一块去吧！
 			unset($ev_arr); unset($corpse_itm_arr);
 			//炼人油败人品
-			$ep_dice = rand(0,100);
+			//$ep_dice = diceroll($total_addev);
+			$ep_dice = rand(0,$total_addev);
 			if($ep_dice>70)
 			{
 				$rp += $ep_dice;
@@ -184,10 +190,12 @@
 			//计算能获得的元素种类与数量
 			$i_arr = get_evalues_by_iarr($i_arr);
 			//增加对应的元素
+			$total_addev = 0;
 			foreach($i_arr as $e_key=>$ev)
 			{
 				global ${'element'.$e_key};
 				${'element'.$e_key} += $ev;
+				$total_addev += $ev;
 				$log.="获得了{$ev}份{$elements_info[$e_key]}！<br>";
 			}
 			//销毁道具
@@ -196,8 +204,9 @@
 			//一起一起
 			unset($i_arr);
 			//捡垃圾涨功德
-			$ep_dice = rand(0,100);
-			if($ep_dice>70)
+			//$ep_dice = diceroll($total_addev);
+			$ep_dice = rand(0,$total_addev);
+			if($ep_dice>0)
 			{
 				$rp = $rp-$ep_dice;
 				//rp可以为负吗？
@@ -225,7 +234,7 @@
 		foreach($iarr as $i => $t)
 		{
 			//最优先：检查拆解特定道具（全名匹配）时的事件
-			if($split_itm_fix[$t['itm']])
+			if(isset($split_itm_fix[$t['itm']]))
 			{
 				unset($ekey);unset($ev);
 				//处理秘钥道具
@@ -300,7 +309,7 @@
 
 			//通过道具类别获取价值修正
 			$k_t = $t['itmk'];
-			if($split_itmk_r[$k_t])
+			if(isset($split_itmk_r[$k_t]))
 			{
 				//存在对应修正 优先获取
 				$k_ev_r = $split_itmk_r[$k_t];
@@ -310,7 +319,7 @@
 				//不存在对应修正 先尝试过滤类别
 				$k_t = filter_itemkind($k_t);
 				//没有对应修正关系则返回默认类别的分解系数
-				$k_ev_r = $split_itmk_r[$k_t] ? $split_itmk_r[$k_t] : $split_default_itmk_r;
+				$k_ev_r = isset($split_itmk_r[$k_t]) ? $split_itmk_r[$k_t] : $split_default_itmk_r;
 			}
 			//应用价值修正
 			$base_ev = ceil($base_ev*$k_ev_r);
@@ -318,7 +327,7 @@
 			
 			//通过道具类别关联元素
 			$k_t = $t['itmk']; $k_ekey = '';
-			if($flip_etags_arr['flip_d_tag'][$k_t])
+			if(isset($flip_etags_arr['flip_d_tag'][$k_t]))
 			{
 				//存在对应元素 优先获取
 				$k_ekey = $flip_etags_arr['flip_d_tag'][$k_t];
@@ -328,7 +337,7 @@
 				//不存在对应元素 先尝试过滤类别
 				$k_t = filter_itemkind($k_t);
 				//还是没有对应元素 返回随机一种元素
-				$k_ekey = $flip_etags_arr['flip_d_tag'][$k_t] ? $flip_etags_arr['flip_d_tag'][$k_t] : array_rand($elements_info);
+				$k_ekey = isset($flip_etags_arr['flip_d_tag'][$k_t]) ? $flip_etags_arr['flip_d_tag'][$k_t] : array_rand($elements_info);
 			}
 			//echo "【DEBUG】【{$t['itmk']}】{$t['itm']}关联到的元素是【{$elements_info[$k_ekey]}】<br>";
 			
@@ -444,6 +453,7 @@
 		$log.="<span class='grey'>…加入了一点{$emix_tips_arr[array_rand($emix_tips_arr)]}…</span><br>";
 
 		//掷骰：
+		//$emix_dice = diceroll(100);
 		$emix_dice = rand(1,100);
 		switch($emix_dice)
 		{
@@ -500,7 +510,7 @@
 		$emix_itms = ($emix_flag==4) ? '∞' : ceil($cost_enum*$emix_itms_r*($emix_flag/10 + 1));
 		if(strpos($emix_itmk,'D')===0 && $emix_itms=='∞') $emix_itms = $emix_itme;
 
-		$log.="<span class='clan'>在那形状愈发明晰的时候，你听到<span class='yellow'>{$cost_enum}</span>份</span>{$elements_info[$dom_ekey]}<span class='clan'>在升腾的雾气种喃喃呓语。</span><br>";
+		$log.="<span class='clan'>在那形状愈发明晰的时候，你听到<span class='yellow'>{$cost_enum}</span>份</span>{$elements_info[$dom_ekey]}<span class='clan'>在升腾的雾气中喃喃呓语。</span><br>";
 		$log.="<span class='grey'>…哎呀，不小心混入了一点{$emix_tips_arr[array_rand($emix_tips_arr)]}…</span><br>";
 
 		//生成道具属性：
@@ -681,7 +691,8 @@
 				//直接抄合成匹配逻辑了 有一种野性的美
 				if(!array_diff($dom_tags,$minfo['stuff']) && !array_diff($minfo['stuff'],$dom_tags) && count($dom_tags) == count($minfo['stuff']))
 				{ 
-					if($minfo['obbs'] && (rand(1,100)-$obbs_fix)>$minfo['obbs']) continue; //配方为概率合成 掷骰判定没通过 跳过
+					//if($minfo['obbs'] && (diceroll(100)-$obbs_fix)>$minfo['obbs']) continue; 
+					if($minfo['obbs'] && (rand(0,100)-$obbs_fix)>$minfo['obbs']) continue; //配方为概率合成 掷骰判定没通过 跳过
 					$emix_itmk = $minfo['result'];
 					$mixflag = true;
 					break;
@@ -778,7 +789,8 @@
 						{
 							$obbs = $minfo['obbs'];
 						}
-						if(rand(1,100)>$minfo['obbs']) continue; 
+						//if(diceroll(100)>$minfo['obbs']) continue; 
+						if(rand(0,100)>$minfo['obbs']) continue; 
 					}
 					//配对成功！消除素材特征
 					foreach($minfo['stuff'] as $m_sub_tags)

@@ -1026,6 +1026,11 @@ $iteminfo = Array(//注意顺序，AB必须在A的前面，以此类推
 	(
 		'魔法蜂针' => Array('class'=>'spitem', 'title'=>"这个武器一定会对敌人造成350点伤害，但对防御非常高的敌人除外。",),
 		'临摹装置' => Array('class'=>'spitem', 'title'=>"这个武器在主动攻击对手时，将可以复制对手的武器。注意：对手武器数值太高时会失败，后果自负！",),
+		//巫师
+		'巫师袍子' => Array('class'=>'spitem2'),'巫师兜帽' => Array('class'=>'spitem2'),'巫师便鞋' => Array('class'=>'spitem2'),'巫师手套' => Array('class'=>'spitem2'),'巫师之力' => Array('class'=>'spitem2'),
+		'■胶冻の巴雷特■' => Array('class'=>'spitem2'),'■胶冻的风衣■' => Array('class'=>'spitem2'),'■胶冻的兜帽■' => Array('class'=>'spitem2'),'■胶冻的跑鞋■' => Array('class'=>'spitem2'),'■胶冻的手套■' => Array('class'=>'spitem2'),'■胶冻的吊坠■' => Array('class'=>'spitem2'),
+		'便携式火力平台' => Array('class'=>'spitem2'),'Type3防弹插板' => Array('class'=>'spitem2'),'VFL 6-24×56光学瞄具' => Array('class'=>'spitem2'),'IOP T4外骨骼' => Array('class'=>'spitem2'),'热光学迷彩披风' => Array('class'=>'spitem2'),'遗留的武器库' => Array('class'=>'spitem2'),
+		'【工作用数位板】' => Array('class'=>'spitem2'),'【学园针织罩衫】' => Array('class'=>'spitem2'),'【鱼形发卡】' => Array('class'=>'spitem2'),'【学园制服鞋】' => Array('class'=>'spitem2'),'【工作用数位笔】' => Array('class'=>'spitem2'),'【布艺猫咪挂件】' => Array('class'=>'spitem2'),
 	);
 
 	$itemkinfo_tooltip = Array

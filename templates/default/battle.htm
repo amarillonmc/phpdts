@@ -201,9 +201,9 @@
 											<td class="b2" height=20px><span>{lang wep}{lang effect}</span></td>
 											<td class="b3"><span>$w_wepestate</span></td>
 											<td class="b2"><span>{lang wep}{lang kind1}</span></td>
-											<td class="b3"><span><!--{if $w_wepk != ''}-->$iteminfo[$w_wepk]<!--{else}-->？？？<!--{/if}--></span></td>
+											<td class="b3"><span><!--{if $w_wepk != ''}-->$w_wepk_words<!--{else}-->？？？<!--{/if}--></span></td>
 											<td class="b2"><span>{lang wep}</span></td>
-											<td class="b3"><span>$w_wep</span></td>
+											<td class="b3"><span>$w_wep_words</span></td>
 										</tr>
 										<tr>
 											<td class="b2" height=20px><span>{lang tactic}</span></td>
@@ -243,9 +243,9 @@
 							</tr>
 							<tr>
 								<td class="b2" height=20px><span>{lang wep}</span></td>
-								<td class="b3"><span>$wep</span></td>
+								<td class="b3"><span>$wep_words</span></td>
 								<td class="b2"><span>{lang wep}{lang kind1}</span></td>
-								<td class="b3"><span>$iteminfo[$wepk]</span></td>
+								<td class="b3"><span>$wepk_words</span></td>
 								<td class="b2"><span>{lang wep}{lang effect}</span></td>
 								<td class="b3"><span>$wepe</span></td>
 							</tr>

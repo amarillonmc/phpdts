@@ -4,6 +4,40 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
+//格式化储存player表 可能也是四面的遗产
+function update_db_player_structure($type=0)
+{
+	$db_player_structure = $db_player_structure_types = $tpldata = Array();
+	
+	$dps_need_update = 0;//判定是否需要更新玩家字段
+	$dps_file = GAME_ROOT.'./gamedata/bak/db_player_structure.config.php';
+	$sql_file = GAME_ROOT.'./gamedata/sql/players.sql';
+	if(!file_exists($dps_file) || filemtime($sql_file) > filemtime($dps_file)){
+		$dps_need_update = 1;
+	}
+	
+	if($dps_need_update){//如果要更新，直接新建一个表，不需要依赖已有的players表
+		$sql = file_get_contents($sql_file);
+		$sql = str_replace("\r", "\n", str_replace(' bra_', ' '.$gtablepre.'tmp_', $sql));
+		$db->queries($sql);
+		$result = $db->query("DESCRIBE {$gtablepre}tmp_players");
+		while ($sttdata = $db->fetch_array($result))
+		{
+			global ${$sttdata['Field']}; 
+			$db_player_structure[] = $sttdata['Field'];
+			$db_player_structure_types[$sttdata['Field']] = $sttdata['Type'];
+			//array_push($db_player_structure,$pdata['Field']);
+		}
+		$dps_cont = str_replace('?>','',str_replace('<?','<?php',$checkstr));
+		$dps_cont .= '$db_player_structure = ' . var_export($db_player_structure,1).";\r\n".'$db_player_structure_types = ' . var_export($db_player_structure_types,1).";\r\n?>";
+		writeover($dps_file, $dps_cont);
+		chmod($dps_file,0777);
+		
+	}else{//若不需要更新，则直接读文件就好
+		include $dps_file ;
+	}
+	return $type ? $db_player_structure_types : $db_player_structure;
+}
 //将sk转为数组格式 只会转换登记过的属性
 function get_itmsk_array($sk_value)
 {
@@ -233,6 +267,7 @@ function init_profile(){
 }
 
 function init_battle($ismeet = 0){
+	global $wep,$wepk;
 	global $w_type,$w_name,$w_gd,$w_sNo,$w_icon,$w_lvl,$w_rage,$w_hp,$w_sp,$w_mhp,$w_msp,$w_wep,$w_wepk,$w_wepe,$w_sNoinfo,$w_iconImg,$w_hpstate,$w_spstate,$w_ragestate,$w_wepestate,$w_isdead,$hpinfo,$spinfo,$rageinfo,$wepeinfo,$fog,$typeinfo,$sexinfo,$infinfo,$w_exp,$w_upexp,$baseexp,$w_pose,$w_tactic,$w_inf,$w_infdata;
 	$w_upexp = round(($w_lvl*$baseexp)+(($w_lvl+1)*$baseexp));
 	
@@ -292,8 +327,12 @@ function init_battle($ismeet = 0){
 	}
 	
 	if(!$fog||$ismeet) {
+		//在战斗界面中加载敌我双方武器tooltip
+		global $wep_words,$wepk_words,$w_wep_words,$w_wepk_words;
+		$wep_words = parse_itm_desc($wep,'m'); $w_wep_words = parse_itm_desc($w_wep,'m');
+		$wepk_words = parse_itm_desc($wepk,'k'); $w_wepk_words = parse_itm_desc($w_wepk,'k');
 		$w_sNoinfo = "$typeinfo[$w_type]({$sexinfo[$w_gd]}{$w_sNo}号)";
-	  $w_i = $w_type > 0 ? 'n' : $w_gd;
+	 	$w_i = $w_type > 0 ? 'n' : $w_gd;
 		$w_iconImg = $w_i.'_'.$w_icon.'.gif';
 		if($w_inf) {
 			$w_infdata = '';
@@ -409,7 +448,6 @@ function w_save2(&$data){
 	return;
 
 }
-
 
 
 ?>

@@ -308,7 +308,7 @@ if($hp > 0){
 					{
 						global ${'element'.$e_key};
 						$m_e_key = $e_key + 1;//这样就不用污染原本的js了
-						${'emitm'.$e_key.'_num'} = round( ${'emitm'.$e_key.'_num'});
+						if(isset(${'emitm'.$e_key.'_num'})) ${'emitm'.$e_key.'_num'} = round( ${'emitm'.$e_key.'_num'});
 						if(${'mitm'.$m_e_key}>=0 && ${'element'.$e_key} && ${'emitm'.$e_key.'_num'}>0 && ${'emitm'.$e_key.'_num'}<=${'element'.$e_key})
 						{
 							//打入参与合成的元素编号与数量
