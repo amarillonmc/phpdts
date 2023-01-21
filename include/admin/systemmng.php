@@ -11,6 +11,7 @@ if($command == 'edit') {
 	$edfmt = Array(
 		'adminmsg'=>'html',
 		'systemmsg' => 'html',
+		'gameversion' => 'html',
 		'startmode'=>'int',
 		'starthour'=>'int',
 		'startmin'=>'int',

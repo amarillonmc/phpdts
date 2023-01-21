@@ -44,7 +44,9 @@ $clubinfo = Array(
 	17=>'走路萌物',
 	18=>'天赋异禀',
 	19=>'晶莹剔透',
-	20=>'元素大师',
+	20=>'元素大师', #商店购买社团卡
+	21=>'灵子梦魇', #暂定名，商店购买社团卡
+	22=>'偶像大师', #暂定名，「除错大师」头衔奖励
 	98=>'换装迷宫',
 	99=>'决死结界'
 	);
@@ -964,9 +966,10 @@ $iteminfo = Array(//注意顺序，AB必须在A的前面，以此类推
 	'XC' =>'代码残片·黄',
 	'XX' =>'杀意已决',
 	'XY' =>'杀意未决',
-	'X'=> '合成专用',
+	'X' => '合成专用',
 	'Y' => '特殊',
 	'ZA' => '代码漏洞',
+	'ZB'=> '称号卡',
 	'Z' => '特殊',#不可合并
 	);
 
@@ -1026,11 +1029,62 @@ $iteminfo = Array(//注意顺序，AB必须在A的前面，以此类推
 	(
 		'魔法蜂针' => Array('class'=>'spitem', 'title'=>"这个武器一定会对敌人造成350点伤害，但对防御非常高的敌人除外。",),
 		'临摹装置' => Array('class'=>'spitem', 'title'=>"这个武器在主动攻击对手时，将可以复制对手的武器。注意：对手武器数值太高时会失败，后果自负！",),
-		//巫师
-		'巫师袍子' => Array('class'=>'spitem2'),'巫师兜帽' => Array('class'=>'spitem2'),'巫师便鞋' => Array('class'=>'spitem2'),'巫师手套' => Array('class'=>'spitem2'),'巫师之力' => Array('class'=>'spitem2'),
-		'■胶冻の巴雷特■' => Array('class'=>'spitem2'),'■胶冻的风衣■' => Array('class'=>'spitem2'),'■胶冻的兜帽■' => Array('class'=>'spitem2'),'■胶冻的跑鞋■' => Array('class'=>'spitem2'),'■胶冻的手套■' => Array('class'=>'spitem2'),'■胶冻的吊坠■' => Array('class'=>'spitem2'),
-		'便携式火力平台' => Array('class'=>'spitem2'),'Type3防弹插板' => Array('class'=>'spitem2'),'VFL 6-24×56光学瞄具' => Array('class'=>'spitem2'),'IOP T4外骨骼' => Array('class'=>'spitem2'),'热光学迷彩披风' => Array('class'=>'spitem2'),'遗留的武器库' => Array('class'=>'spitem2'),
-		'【工作用数位板】' => Array('class'=>'spitem2'),'【学园针织罩衫】' => Array('class'=>'spitem2'),'【鱼形发卡】' => Array('class'=>'spitem2'),'【学园制服鞋】' => Array('class'=>'spitem2'),'【工作用数位笔】' => Array('class'=>'spitem2'),'【布艺猫咪挂件】' => Array('class'=>'spitem2'),
+		# 巫师物品
+		'■胶冻の巴雷特■' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'■胶冻的风衣■' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'■胶冻的兜帽■' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'■胶冻的跑鞋■' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'■胶冻的手套■' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'■胶冻的吊坠■' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'■便携式火力平台■' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'■Type3防弹插板■' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'■VFL 6-24×56光学瞄具■' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'■IOP T4外骨骼■' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'■热光学迷彩披风■' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'■遗留的武器库■' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'【工作用数位板】' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'【学园针织罩衫】' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'【鱼形发卡】' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'【学园制服鞋】' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'【工作用数位笔】' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		'【布艺猫咪挂件】' => Array('class'=>'spitem2', 'title'=>"为游戏做出过贡献的巫师的装备。",),
+		# 福袋SR
+		'「信仰之山」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「间断的噩梦」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「运钝根的捕物帐」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「喧嚣叙事曲」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「升天」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「曳光」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「人生重来箱」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「菁英宅之怒」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'闭锁世界的冥神 Ｌ5' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'铁兽式强袭机动兵装改牛头伯劳2 Ｌ5' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'防火龙·暗流体 Ｌ5' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'前托枪管龙 Ｌ5' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'电子界到临者＠火灵天星 Ｌ6' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「活跃迎春曲」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「飘落」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「明动」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「正午高阳」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'神灭兵器－天霆号扼宙斯 ☆12' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「碧海船歌」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「翼展」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「安谧」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「午前许愿」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'神之圣剑' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「龙怒」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「升天」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「宁静」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'「清晨恩典」' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		'神之棍棒' => Array('class'=>'neonorange', 'title'=>"从幸运礼物福袋中以二成几率左右能开出的强力装备。",),
+		# 福袋SSR
+		'随机数之神的棍棒' => Array('class'=>'rainbow', 'title'=>"从幸运礼物福袋中以极低几率左右能开出的强力装备。",),
+		'随机数之神的圣剑' => Array('class'=>'rainbow', 'title'=>"从幸运礼物福袋中以极低几率左右能开出的强力装备。",),
+		'随机数之神的泪水' => Array('class'=>'rainbow', 'title'=>"从幸运礼物福袋中以极低几率左右能开出的强力装备。",),
+		'随机数之神的神力' => Array('class'=>'rainbow', 'title'=>"从幸运礼物福袋中以极低几率左右能开出的强力装备。",),
+		'随机数之神的震撼' => Array('class'=>'rainbow', 'title'=>"从幸运礼物福袋中以极低几率左右能开出的强力装备。",),
+		'随机数之神的摄理' => Array('class'=>'rainbow', 'title'=>"从幸运礼物福袋中以极低几率左右能开出的强力装备。",),
+		'随机数之神的恶戏' => Array('class'=>'rainbow', 'title'=>"从幸运礼物福袋中以极低几率左右能开出的强力装备。",),
 	);
 
 	$itemkinfo_tooltip = Array
@@ -1040,6 +1094,7 @@ $iteminfo = Array(//注意顺序，AB必须在A的前面，以此类推
 		'XA' => Array('class'=>'lime', 'title'=>"集齐三个同颜色的不同名代码残片，来合成单人脱出结局道具吧！",),
 		'XB' => Array('class'=>'purple', 'title'=>"集齐三个同颜色的不同名代码残片，来合成单人脱出结局道具吧！",),
 		'XC' => Array('class'=>'yellow', 'title'=>"集齐三个同颜色的不同名代码残片，来合成单人脱出结局道具吧！",),
+		'ZB' => Array('class'=>'lime', 'title'=>"在没有决定称号的时候使用该物品，便可获得该对应称号。",),
 		'ZA' => Array('class'=>'neonyellow', 'title'=>"这个物品中似乎含有让你可以独自脱离幻境的方法……",),
 	);
 
