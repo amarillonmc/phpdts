@@ -3,6 +3,7 @@
 define('CURSCRIPT', 'help');
 
 require './include/common.inc.php';
+require './include/game.func.php';
 
 $mixfile = config('mixitem',$gamecfg);
 $shopfile = config('shopitem',$gamecfg);
@@ -17,6 +18,86 @@ $writefile = GAME_ROOT.TPLDIR.'/mixhelp.htm';
 include_once config('npc',$gamecfg);
 for ($i=0; $i<=20; $i++) $p[$i]=$i;
 for ($i=1; $i<=6; $i++) $itemlst[$i]=$i;
+
+foreach ($npcinfo as $i => $npcs)
+{
+	if(!empty($npcs)) 
+	{	
+		foreach (Array('arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
+		{
+			if(isset($npcinfo[$i][$value])) $npcinfo[$i][$value] = parse_itm_desc($npcinfo[$i][$value],'m');
+		}
+		foreach (Array('arbk','arhk','arak','arfk','artk','itmk0','itmk1','itmk2','itmk3','itmk4','itmk5','itmk6') as $value) 
+		{
+			if(isset($npcinfo[$i][$value])) 
+			{
+				foreach($iteminfo as $info_key => $info_value)
+				{
+					if(strpos($npcinfo[$i][$value],$info_key)===0){
+						$npcinfo[$i][$value] = parse_itm_desc($info_key,'k');;
+						break;
+					}
+				}
+			}
+		}
+		foreach(Array('arbsk','arhsk','arask','arfsk','artsk','itmsk0','itmsk1','itmsk2','itmsk3','itmsk4','itmsk5','itmsk6') as $value) 
+		{
+			if(isset($npcinfo[$i][$value])) 
+			{
+				$tmpsk = get_itmsk_array($npcinfo[$i][$value]);
+				foreach($tmpsk as $sk)
+				{
+					if(!empty($npcinfo[$i][$value][$value.'_words']))
+					{
+						$npcinfo[$i][$value.'_words'] .= "+".parse_itm_desc($sk,'sk');
+					}
+					else
+					{
+						$npcinfo[$i][$value.'_words'] = parse_itm_desc($sk,'sk');
+					}
+				}
+			}
+		}
+		foreach($npcs['sub'] as $n => $npc)
+		{
+			foreach(Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
+			{
+				if(isset($npcinfo[$i]['sub'][$n][$value])) $npcinfo[$i]['sub'][$n][$value] = parse_itm_desc($npcinfo[$i]['sub'][$n][$value],'m');
+			}
+			foreach(Array('wepk','arbk','arhk','arak','arfk','artk','itmk0','itmk1','itmk2','itmk3','itmk4','itmk5','itmk6') as $value) 
+			{
+				if(isset($npcinfo[$i]['sub'][$n][$value])) 
+				{
+					foreach($iteminfo as $info_key => $info_value)
+					{
+						if(strpos($npcinfo[$i]['sub'][$n][$value],$info_key)===0){
+							$npcinfo[$i]['sub'][$n][$value] = parse_itm_desc($info_key,'k');;
+							break;
+						}
+					}
+				}
+			}
+			foreach(Array('wepsk','arbsk','arhsk','arask','arfsk','artsk','itmsk0','itmsk1','itmsk2','itmsk3','itmsk4','itmsk5','itmsk6') as $value) 
+			{
+				if(isset($npcinfo[$i]['sub'][$n][$value])) 
+				{
+					$tmpsk = get_itmsk_array($npcinfo[$i]['sub'][$n][$value]);
+					foreach($tmpsk as $sk)
+					{
+						if(!empty($npcinfo[$i]['sub'][$n][$value.'_words']))
+						{
+							$npcinfo[$i]['sub'][$n][$value.'_words'] .= "+".parse_itm_desc($sk,'sk');
+						}
+						else
+						{
+							$npcinfo[$i]['sub'][$n][$value.'_words'] = parse_itm_desc($sk,'sk');
+						}
+					}
+				}
+			}
+		}
+	}
+}
 // $ty1[1]=6; $ty1[2]=5; $ty1[3]=1; $ty1[4]=9; $ty1[5]=88;
 // $ty2[1]=11;
 // $ty3[1]=2; $ty3[2]=90;
@@ -42,21 +123,31 @@ if(filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemti
 	$mixitem = array();
 	foreach($mixinfo as $mix){
 		if($mix['class'] !== 'hidden'){
+			//名字
+			$mix['result'][0] = parse_itm_desc($mix['result'][0],'m');
+			//类别
 			foreach($iteminfo as $info_key => $info_value){
 				if(strpos($mix['result'][1],$info_key)===0){
-					$mixitmk = $info_value;
+					$mixitmk = parse_itm_desc($info_key,'k');
 					break;
 				}
 			}
+			//属性
 			$mixitmsk = '';
 			if(!empty($mix['result'][4]) && !is_numeric($mix['result'][4])){
-				for ($j = 0; $j < strlen($mix['result'][4]); $j++) {
+				/*for ($j = 0; $j < strlen($mix['result'][4]); $j++) {
 					$sub = substr($mix['result'][4],$j,1);
 					if(!empty($sub)){
 						$mixitmsk .= $itemspkinfo[$sub].'+';
 					}
 				}
-				if(!empty($mixitmsk)){$mixitmsk = substr($mixitmsk,0,-1);}
+				if(!empty($mixitmsk)){$mixitmsk = substr($mixitmsk,0,-1);}*/
+				$mix_sk = get_itmsk_array($mix['result'][4]); $mixitmsk = '';
+				foreach($mix_sk as $sk_value)
+				{
+					if(!empty($mixitmsk)) $mixitmsk .= '+'.parse_itm_desc($sk_value,'sk');
+					else $mixitmsk = parse_itm_desc($sk_value,'sk');
+				}
 			}
 			$mixitem[$mix['class']][] = array('stuff' => $mix['stuff'], 'result' => array($mix['result'][0],$mixitmk,$mix['result'][2],$mix['result'][3],$mixitmsk));
 		}

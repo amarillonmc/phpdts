@@ -3,6 +3,7 @@
 define('CURSCRIPT', 'news');
 
 require './include/common.inc.php';
+require './include/game.func.php';
 //$t_s=getmicrotime();
 //require_once GAME_ROOT.'./include/JSON.php';
 require_once GAME_ROOT.'./include/news.func.php';

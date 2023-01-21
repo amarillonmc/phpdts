@@ -223,7 +223,7 @@
 									武器名称
 								</td>
 								<td width=505px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['wep']/$iteminfo[$npcinfo[$kind]['sub'][$key]['wepk']]/$npcinfo[$kind]['sub'][$key]['wepe']/$npcinfo[$kind]['sub'][$key]['weps']<!--{if isset($npcinfo[$kind]['sub'][$key]['wepsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['wepsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['wepsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['wepsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['wepsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									$npcinfo[$kind]['sub'][$key]['wep']/$npcinfo[$kind]['sub'][$key]['wepk']/$npcinfo[$kind]['sub'][$key]['wepe']/$npcinfo[$kind]['sub'][$key]['weps']<!--{if isset($npcinfo[$kind]['sub'][$key]['wepsk_words'])}-->/$npcinfo[$kind]['sub'][$key]['wepsk_words']<!--{/if}-->
 								</td>
 							</tr>
 							<tr>
@@ -232,9 +232,9 @@
 								</td>
 								<td width=505px align="center" class="b3">
 									<!--{if isset($npcinfo[$kind]['sub'][$key]['arb'])}-->
-									$npcinfo[$kind]['sub'][$key]['arb']/$npcinfo[$kind]['sub'][$key]['arbe']/$npcinfo[$kind]['sub'][$key]['arbs']<!--{if isset($npcinfo[$kind]['sub'][$key]['arbsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arbsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arbsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arbsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arbsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									$npcinfo[$kind]['sub'][$key]['arb']/$npcinfo[$kind]['sub'][$key]['arbe']/$npcinfo[$kind]['sub'][$key]['arbs']<!--{if isset($npcinfo[$kind]['sub'][$key]['arbsk_words'])}-->/$npcinfo[$kind]['sub'][$key]['arbsk_words']<!--{/if}-->
 									<!--{else}-->
-									$npcinfo[$kind]['arb']/$npcinfo[$kind]['arbe']/$npcinfo[$kind]['arbs']<!--{if isset($npcinfo[$kind]['arbsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arbsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arbsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arbsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arbsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									$npcinfo[$kind]['arb']/$npcinfo[$kind]['arbe']/$npcinfo[$kind]['arbs']<!--{if isset($npcinfo[$kind]['arbsk_words'])}-->/$npcinfo[$kind]['arbsk_words']<!--{/if}-->
 									<!--{/if}-->
 								</td>
 							</tr>
@@ -244,9 +244,9 @@
 								</td>
 								<td width=505px align="center" class="b3">
 									<!--{if isset($npcinfo[$kind]['sub'][$key]['arh'])}-->
-									$npcinfo[$kind]['sub'][$key]['arh']/$npcinfo[$kind]['sub'][$key]['arhe']/$npcinfo[$kind]['sub'][$key]['arhs']<!--{if isset($npcinfo[$kind]['sub'][$key]['arhsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arhsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arhsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arhsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arhsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									$npcinfo[$kind]['sub'][$key]['arh']/$npcinfo[$kind]['sub'][$key]['arhe']/$npcinfo[$kind]['sub'][$key]['arhs']<!--{if isset($npcinfo[$kind]['sub'][$key]['arhsk_words'])}-->/$npcinfo[$kind]['sub'][$key]['arhsk_words']<!--{/if}-->
 									<!--{else}-->
-									$npcinfo[$kind]['arh']/$npcinfo[$kind]['arhe']/$npcinfo[$kind]['arhs']<!--{if isset($npcinfo[$kind]['arhsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arhsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arhsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arhsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arhsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									$npcinfo[$kind]['arh']/$npcinfo[$kind]['arhe']/$npcinfo[$kind]['arhs']<!--{if isset($npcinfo[$kind]['arhsk_words'])}-->/$npcinfo[$kind]['arhsk_words']<!--{/if}-->
 									<!--{/if}-->
 								</td>
 							</tr>
@@ -256,9 +256,9 @@
 								</td>
 								<td width=505px align="center" class="b3">
 									<!--{if isset($npcinfo[$kind]['sub'][$key]['ara'])}-->
-									$npcinfo[$kind]['sub'][$key]['ara']/$npcinfo[$kind]['sub'][$key]['arae']/$npcinfo[$kind]['sub'][$key]['aras']<!--{if isset($npcinfo[$kind]['sub'][$key]['arask'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arask'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arask'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arask'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arask'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									$npcinfo[$kind]['sub'][$key]['ara']/$npcinfo[$kind]['sub'][$key]['arae']/$npcinfo[$kind]['sub'][$key]['aras']<!--{if isset($npcinfo[$kind]['sub'][$key]['arask_words'])}-->/$npcinfo[$kind]['sub'][$key]['arask_words']<!--{/if}-->
 									<!--{else}-->
-									$npcinfo[$kind]['ara']/$npcinfo[$kind]['arae']/$npcinfo[$kind]['aras']<!--{if isset($npcinfo[$kind]['arask'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arask'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arask'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arask'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arask'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									$npcinfo[$kind]['ara']/$npcinfo[$kind]['arae']/$npcinfo[$kind]['aras']<!--{if isset($npcinfo[$kind]['arask_words'])}-->/$npcinfo[$kind]['arask_words']<!--{/if}-->
 									<!--{/if}-->
 								</td>
 							</tr>
@@ -268,9 +268,9 @@
 								</td>
 								<td width=505px align="center" class="b3">
 									<!--{if isset($npcinfo[$kind]['sub'][$key]['arf'])}-->
-									$npcinfo[$kind]['sub'][$key]['arf']/$npcinfo[$kind]['sub'][$key]['arfe']/$npcinfo[$kind]['sub'][$key]['arfs']<!--{if isset($npcinfo[$kind]['sub'][$key]['arfsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arfsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arfsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arfsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['arfsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									$npcinfo[$kind]['sub'][$key]['arf']/$npcinfo[$kind]['sub'][$key]['arfe']/$npcinfo[$kind]['sub'][$key]['arfs']<!--{if isset($npcinfo[$kind]['sub'][$key]['arfsk_words'])}-->/$npcinfo[$kind]['sub'][$key]['arfsk_words']<!--{/if}-->
 									<!--{else}-->
-									$npcinfo[$kind]['arf']/$npcinfo[$kind]['arfe']/$npcinfo[$kind]['arfs']<!--{if isset($npcinfo[$kind]['arfsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arfsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arfsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['arfsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['arfsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									$npcinfo[$kind]['arf']/$npcinfo[$kind]['arfe']/$npcinfo[$kind]['arfs']<!--{if isset($npcinfo[$kind]['arfsk_words'])}-->/$npcinfo[$kind]['arfsk_words']<!--{/if}-->
 									<!--{/if}-->
 								</td>
 							</tr>
@@ -280,9 +280,9 @@
 								</td>
 								<td width=505px align="center" class="b3">
 									<!--{if isset($npcinfo[$kind]['sub'][$key]['art'])}-->
-									$npcinfo[$kind]['sub'][$key]['art']/$iteminfo[$npcinfo[$kind]['sub'][$key]['artk']]<!--{if isset($npcinfo[$kind]['sub'][$key]['artsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['artsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['artsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['artsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['artsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									$npcinfo[$kind]['sub'][$key]['art']/$npcinfo[$kind]['sub'][$key]['artk']<!--{if isset($npcinfo[$kind]['sub'][$key]['artsk_words'])}-->/$npcinfo[$kind]['sub'][$key]['artsk_words']<!--{/if}-->
 									<!--{else}-->
-									$npcinfo[$kind]['art']/$iteminfo[$npcinfo[$kind]['artk']]<!--{if isset($npcinfo[$kind]['artsk'])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['artsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['artsk'],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['artsk'],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['artsk'],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									$npcinfo[$kind]['art']/$npcinfo[$kind]['artk']<!--{if isset($npcinfo[$kind]['artsk_words'])}-->/$npcinfo[$kind]['artsk_words']<!--{/if}-->
 									<!--{/if}-->
 								</td>
 							</tr>
@@ -293,7 +293,7 @@
 									掉落物品
 								</td>
 								<td width=505px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['itm'.$id]/$iteminfo[$npcinfo[$kind]['sub'][$key]['itmk'.$id]]/$npcinfo[$kind]['sub'][$key]['itme'.$id]/$npcinfo[$kind]['sub'][$key]['itms'.$id]<!--{if isset($npcinfo[$kind]['sub'][$key]['itmsk'.$id])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['itmsk'.$id],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['itmsk'.$id],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['itmsk'.$id],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['sub'][$key]['itmsk'.$id],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									$npcinfo[$kind]['sub'][$key]['itm'.$id]/$npcinfo[$kind]['sub'][$key]['itmk'.$id]/$npcinfo[$kind]['sub'][$key]['itme'.$id]/$npcinfo[$kind]['sub'][$key]['itms'.$id]<!--{if isset($npcinfo[$kind]['sub'][$key]['itmsk'.$id.'_words'])}-->/$npcinfo[$kind]['sub'][$key]['itmsk'.$id.'_words']<!--{/if}-->	
 								</td>
 							</tr>
 							<!--{elseif isset($npcinfo[$kind]['itm'.$id])}-->
@@ -302,7 +302,7 @@
 									掉落物品
 								</td>
 								<td width=505px align="center" class="b3">
-									$npcinfo[$kind]['itm'.$id]/$iteminfo[$npcinfo[$kind]['itmk'.$id]]/$npcinfo[$kind]['itme'.$id]/$npcinfo[$kind]['itms'.$id]<!--{if isset($npcinfo[$kind]['itmsk'.$id])}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['itmsk'.$id],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['itmsk'.$id],$ky)===0}-->/$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{loop $itemspkinfo $ky $vl}--><!--{if strpos($npcinfo[$kind]['itmsk'.$id],$ky)!==false}--><!--{if strpos($npcinfo[$kind]['itmsk'.$id],$ky)!==0}-->+$vl<!--{/if}--><!--{/if}--><!--{/loop}--><!--{/if}-->
+									$npcinfo[$kind]['itm'.$id]/$npcinfo[$kind]['itmk'.$id]/$npcinfo[$kind]['itme'.$id]/$npcinfo[$kind]['itms'.$id]<!--{if isset($npcinfo[$kind]['itmsk'.$id.'_words'])}-->/$npcinfo[$kind]['itmsk'.$id.'_words']<!--{/if}-->
 								</td>
 							</tr>
 							<!--{/if}-->

@@ -1047,7 +1047,7 @@ function get_clubskill_bonus_spd($clb,$skl)
 	$r=1;
 	for ($i=1; $i<=2; $i++)
 	{
-		if ($clb==13) $r*=(1-$clskl[13][${'a'.$i}][1]/100);	//超能力者称号
+		if ($clb==9) $r*=(1-$clskl[13][${'a'.$i}][1]/100);	//超能力者称号
 	}
 	return $r;
 }

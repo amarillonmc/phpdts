@@ -1,0 +1,68 @@
+你在你的小口袋里翻找起来……<br>
+打算组合哪些元素？<br>
+
+<input type="hidden" id="emax" name="emax" value="$emax">
+<input type="hidden" name="mode" value="itemmain">
+<input type="hidden" name="command" id="command" value="menu">
+<br>
+<!--元素选取模块-->
+<!--{if $element0}-->
+<input type="checkbox" id="mitm1" name="mitm1" value="-1"><a onclick="$('mitm1').click();" href="javascript:void(0);">$etaginfo0 $elements_info[0] 放入：</span></a>
+<input type="number" style="width:50px" name="emitm0_num" value="$element0" min="0" max="$element0" oninput="if(value>$element0)value=$element0;if(value<0)value=0" /> 份<br>
+<!--{/if}-->
+<!--{if $element1}-->
+<input type="checkbox" id="mitm2" name="mitm2" value="-1"><a onclick="$('mitm2').click();" href="javascript:void(0);">$etaginfo1 $elements_info[1] 放入：</span></a>
+<input type="number" style="width:50px" name="emitm1_num" value="$element1" min="0" max="$element1" oninput="if(value>$element1)value=$element1;if(value<0)value=0" /> 份<br>
+<!--{/if}-->
+<!--{if $element2}-->
+<input type="checkbox" id="mitm3" name="mitm3" value="-1"><a onclick="$('mitm3').click();" href="javascript:void(0);">$etaginfo2 $elements_info[2] 放入：</span></a>
+<input type="number" style="width:50px" name="emitm2_num" value="$element2" min="0" max="$element2" oninput="if(value>$element2)value=$element2;if(value<0)value=0" /> 份<br>
+<!--{/if}-->
+<!--{if $element3}-->
+<input type="checkbox" id="mitm4" name="mitm4" value="-1"><a onclick="$('mitm4').click();" href="javascript:void(0);">$etaginfo3 $elements_info[3] 放入：</span></a>
+<input type="number" style="width:50px" name="emitm3_num" value="$element3" min="0" max="$element3" oninput="if(value>$element3)value=$element3;if(value<0)value=0" /> 份<br>
+<!--{/if}-->
+<!--{if $element4}-->
+<input type="checkbox" id="mitm5" name="mitm5" value="-1"><a onclick="$('mitm5').click();" href="javascript:void(0);">$etaginfo4 $elements_info[4] 放入：</span></a>
+<input type="number" style="width:50px" name="emitm4_num" value="$element4" min="0" max="$element4" oninput="if(value>$element4)value=$element4;if(value<0)value=0" /> 份<br>
+<!--{/if}-->
+<!--{if $element5}-->
+<input type="checkbox" id="mitm6" name="mitm6" value="-1"><a onclick="$('mitm6').click();" href="javascript:void(0);">$etaginfo5 $elements_info[5] 放入：</span></a>
+<input type="number" style="width:50px" name="emitm5_num" value="$element5" min="0" max="$element5" oninput="if(value>$element5)value=$element5;if(value<0)value=0" /> 份<br>
+<!--{/if}-->
+<br>
+<!--自带：通过投入元素数量的奇偶决定道具类别-->
+<span class="yellow">&nbsp;&nbsp;【数术】</span><br>
+&nbsp; › 投入份数<span class="lime">最多(±10)</span>的一种或多种元素<br>
+会成为<span class="lime">主元素</span>，影响合成结果的<span class="lime">类型</span>。<br>
+&nbsp; › 投入的主元素为<span class="redseed">奇</span>|<span class="blueseed">偶</span>数份时，元素会展<br>
+现<span class="redseed">第一</span>|<span class="blueseed">第二</span>个主特征。<br>
+<br>
+<!--5级后解锁：最大生成效果调节-->
+<!--{if $lvl>=5}-->
+<span class="yellow">&nbsp;&nbsp;【节制】</span><span class="grey">（勾选启用）</span><input type="checkbox" id="change_emax" name="change_emax" value="-1"><br>
+&nbsp; › 你可以主动限制元素合成结果的<span class="lime">效耐上限</span>。<br>
+&nbsp; › 当前：生成道具的效果+耐久上限<span class="yellow">【<span id="s_emitme_max" name="s_emitme_max">$emax</span>】</span><br>
+<input type="range" class="range" step="0.1" style="width:220px" id="emitme_max_r" name="emitme_max_r" min="1" max="100" value="100" onchange="getEmitmeR(1)"><br>
+<br>
+<!--{else}-->
+<span class="grey">&nbsp;&nbsp;【节制】（5级后解锁）：<br>
+&nbsp; › 解锁后可以限制元素合成的<span class="lime">效耐上限</span>。<br></span>
+<br>
+<!--{/if}-->
+<!--15级后解锁：效果、耐久比例调节-->
+<!--{if $lvl>=15}-->
+<span class="yellow">&nbsp;&nbsp;【预言】</span><span class="grey">（勾选启用）</span><input type="checkbox" id="change_emr" name="change_emr" value="-1"><br>
+&nbsp; › 你能够干涉元素合成结果的<span class="lime">效耐占比</span>。<br>
+&nbsp; › 当前：效果占比<span class="yellow">【<span id="s_emitme_r" name="s_emitme_r">55</span>%】</span>&nbsp;耐久占比<span class="yellow">【<span id="s_emitms_r" name="s_emitms_r">45</span>%】</span><br>
+&nbsp; <span id="sr_warning" name="sr_warning" class="red"></span>
+<input type="range" class="range" style="width:220px" id="emitme_r" name="emitme_r" min="2" max="98" value="55" onchange="getEmitmeR(0)"><br>
+<br>
+<!--{else}-->
+<span class="grey">&nbsp;&nbsp;【预言】（15级后解锁）：<br>
+&nbsp; › 解锁后能够干涉元素合成结果的<span class="lime">效耐占比</span>。<br>
+&nbsp; › 当前：效果、耐久占比会在<span class="lime">2%~98%</span>间浮动。</span><br>
+<br>
+<!--{/if}-->
+<input type="button" class="cmdbutton" name="submit" value="提交" onclick="$('command').value='elementmix';itemmixchooser();postCmd('gamecmd','command.php');this.disabled=true;">
+<input type="button" class="cmdbutton" name="submit" value="放弃" onclick="postCmd('gamecmd','command.php');this.disabled=true;">

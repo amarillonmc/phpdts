@@ -1085,13 +1085,13 @@ function check_item_achievement($nn,$i,$ie,$is,$ik,$isk)
 		if ($uu>9999999) $uu=9999999;
 		update_achievement(55,$nn,$uu);
 		if (((int)fetch_achievement(55,$nn)>=17777) && (check_achievement(55,$nn))<999) {
-			done_achievement(54,999,$nn);
+			done_achievement(55,999,$nn);
 			$db->query("UPDATE {$tablepre}users SET credits=credits WHERE username='".$nn."'" );
 			$db->query("UPDATE {$tablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
 			include_once GAME_ROOT.'./include/game/titles.func.php';
 			get_title("无情补丁",$nn);
 			}
-			elseif ((int)fetch_achievement(55,$nn)>=77777 && (check_achievement(55,$nn)<2)) {
+			elseif ((int)fetch_achievement(55,$nn)>=1777 && (check_achievement(55,$nn)<2)) {
 			done_achievement(55,2,$nn);
 			$db->query("UPDATE {$tablepre}users SET credits=credits WHERE username='".$nn."'" );
 			$db->query("UPDATE {$tablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
