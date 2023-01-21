@@ -1788,6 +1788,14 @@ function itemuse($itmn) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 			//-----------------------//
+		} elseif ($itm == '电子蛐蛐测试装置') {
+			//这是一个测试用道具 设置好$nid（先手者pid）和$eid（挨打者pid）后可以看这两个人打架 把其中一个设置成自己的pid就可以亲自下场 //自己下场现在有BUG
+			//$nid：先手攻击者的pid；$eid：挨打者的pid
+			//如果$nid打死了$eid的话，尸体会由你来摸，这不是BUG，是一个暂时缺少条件判断的特性。
+			$nid = 1; $eid = 15;
+			include_once GAME_ROOT.'./include/game/revcombat.func.php';
+			rev_combat_prepare($nid,$eid);
+			return;
 		} elseif ($itm == '提示纸条A') {
 			$log .= '你读着纸条上的内容：<br>“执行官其实都是幻影，那个红暮的身上应该有召唤幻影的玩意。”<br>“用那个东西然后打倒幻影的话能用游戏解除钥匙出去吧。”<br>';
 		} elseif ($itm == '提示纸条B') {
