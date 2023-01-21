@@ -816,6 +816,45 @@ function itemuse($itmn) {
 				$rand = rand(0,count($itemflag)-1);
 				list($in,$ik,$ie,$is,$isk) = explode(',',$itemflag[$rand]);
 			}
+		}elseif(strpos( $itmk, 'p0' ) === 0){//新福袋·VOL1
+			if(strpos( $itmk, 'p0P' ) === 0){
+				include_once config('randomWP',$gamecfg);
+			}elseif(strpos( $itmk, 'p0K' ) === 0){
+				include_once config('randomWK',$gamecfg);
+			}elseif(strpos( $itmk, 'p0G' ) === 0){
+				include_once config('randomWG',$gamecfg);
+			}elseif(strpos( $itmk, 'p0C' ) === 0){
+				include_once config('randomWC',$gamecfg);
+			}elseif(strpos( $itmk, 'p0D' ) === 0){
+				include_once config('randomWD',$gamecfg);
+			}elseif(strpos( $itmk, 'p0F' ) === 0){
+				include_once config('randomWF',$gamecfg);
+			}elseif(strpos( $itmk, 'p0O1' ) === 0){
+				include_once config('randomO1',$gamecfg);
+			}elseif(strpos( $itmk, 'p000' ) === 0){
+				include_once config('random00',$gamecfg);
+			}elseif(strpos( $itmk, 'p0AV' ) === 0){ #TODO VTuber大福袋
+				//include_once config('randomAV',$gamecfg);
+				include_once config('randomO1',$gamecfg);
+			}else{ #防呆
+				include_once config('randomO1',$gamecfg);
+			}
+			include_once GAME_ROOT.'./include/game/dice.func.php';
+			$dice = diceroll(100);
+			if($dice <= 55){//一般物品
+				$itemflag = $itmlow;
+			}elseif($dice <= 85){//中级道具
+				$itemflag = $itmmedium;
+			}elseif($dice <= 98){//神装
+				$itemflag = $itmhigh;
+			}else{
+				$itemflag = $antimeta;
+			}
+			if($itemflag){
+				$itemflag = explode("\r\n",$itemflag);
+				$rand = rand(0,count($itemflag)-1);
+				list($in,$ik,$ie,$is,$isk) = explode(',',$itemflag[$rand]);
+			}
 		}else{//一般礼品盒
 			$file = config('present',$gamecfg);
 			$plist = openfile($file);
@@ -1732,6 +1771,83 @@ function itemuse($itmn) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 			death ( 's_escape', '', 0, $itm );
+		} elseif ($itmk =='ZB'){ //社团卡
+			if($club)
+			{
+				$log .="你已经是有身份的人了！不能再使用称号卡。<br>";
+			}
+			//处理不能成为合法社团的情况
+			if ($itme == 15){ //L5状态
+				global $wp, $wk, $wg, $wc, $wd, $wf, $club, $bid, $att, $def;
+				$log .="【DEBUG】进入L5状态<br>";
+				$log .= '你突然感觉到一种不可思议的力量贯通全身！<br>';
+				$wp = $wk = $wg = $wc = $wd = $wf = 8010;
+				$att = $def = 13337;
+				$club = 15;
+				addnews ( $now, 'suisidefail',$nick.' '.$name );
+			}
+			elseif ($itme == 17 || $itme > 22){ //状态机社团以及不存在的社团
+				$log .="但是什么都没有发生！";
+			}
+			elseif ($itme == 20){ // 元素大师特殊处理
+				global $elements_info,$sparkle;
+				//规则怪谈类型文案
+				$log.="你拿起<span class='yellow'>$itm</span>左右端详着……<br>
+				然后，它突然就在你的眼前消失了！<br>
+				在你寻思着出了什么事情之后，你的面前突然多了几条类似于规则的玩意。<br>
+				【特殊程序·元素大师使用规则】<br>
+				<br>
+				【其之一】这世上的一切都由六种元素组成。<br>
+				【其之二】每种元素都能组成一种武器或防具。<br>
+				【其之三】当你捡到物品后，便可将其提炼成元素。<br>
+				【其之四】此外，看起来没有用的尸体也可被提炼，不过后果自负。<br>
+				【其之五】提炼时偶尔会蹦出特殊信息，最好将它们记录下来。<br>
+				【其之六】提炼出的元素，可以通过「元素合成」产出各种物品。<br>
+				【其之七】相对是这个世界的摄理之一，如果过于追求数字，就无法体现特殊性。<br>
+				正在你读着这些规则的时候，它们也在你的眼前慢慢消失……<br>";
+				$log.="最后变成了一个<span class='sparkle'>{$sparkle}元素口袋{$sparkle}</span>！<br>";
+				$log.="在你将这个口袋收起来时，突然胸口一紧，你的眼前跳出了更多的文字：<br>
+				【其之零】在D.T.S.的虚拟环境中，不存在将物品单纯地放在一起就能合成的手段。<br>
+				然后，一行新的文字替代了这条规则：<br>
+				【其之零】一切都是数字的假象而已。<br>
+				正在你回味着这句话的时候，一切已经恢复如初。";
+				//社团变更
+				$club = 20;
+				//获取初始元素与第一条配方
+				$dice = rand(0,5);
+				global ${'element'.$dice};
+				${'element'.$dice} += 200+$dice;
+				//初始化元素合成缓存文件
+				include_once GAME_ROOT.'./include/game/elementmix.func.php';
+				create_emix_cache_file();
+			}
+			elseif ($itme == 21){ //灵子梦魇特殊处理
+				$log .="再等等吧……<br>";
+			}
+			elseif ($itme == 22){ //偶像大师特殊处理
+				$log .="再等等吧……<br>";
+			}
+			else{//直接将社团卡的效果写入玩家club
+				$club = $itme;
+			}
+			//销毁物品
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		} elseif ($itm == '随机数之神的庇佑'){
+			global $wp, $wk, $wg, $wc, $wd, $wf, $club, $bid, $att, $def;
+			$log.="你将<span class='yellow'>$itm</span>捧在手心……<br>
+			突然，从天上传来一个慵懒的声音：<br>
+			<span class=\"blueseed\">“现在还没到我的上班时间呢！”<br>
+			“不过既然你提前抽出来了，我也给你点好处，那么载入既定事项……”</span><br>
+			然后你看到天上出现了一行字：【实行L5改造】<br>";
+			$log .= '你突然感觉到一种不可思议的力量贯通全身！<br>';
+			$wp = $wk = $wg = $wc = $wd = $wf = 8010;
+			$att = $def = 13337;
+			//$club = 15; 因为是神力嘛！↓但是下面这个还是要适用的。
+			addnews ( $now, 'suisidefail',$nick.' '.$name );
+			//销毁物品
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
 		} elseif ($itm == '测试用元素口袋'){
 			global $elements_info;
 			$log.="【DEBUG】你不知道从哪里摸出来一大堆元素！<br>";

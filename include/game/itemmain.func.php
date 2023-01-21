@@ -56,6 +56,9 @@ function trap(){
 		if($itmk0 == 'TOc'){//奇迹陷阱
 			$damage = $hp;
 			$goodmancard = 0;
+		}elseif($itmk0 == 'TO8'){ //随机数大神的陷阱
+			$damage = $hp / 8;
+			$goodmancard = 0;
 		}else{
 			$damage = round(rand(0,$itme0/2)+($itme0/2));
 			$damage = $tactic == 2 ? round($damage * 0.75) : $damage;

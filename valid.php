@@ -82,7 +82,8 @@ if($mode == 'enter') {
 	$itm[1] = '面包'; $itmk[1] = 'HH'; $itme[1] = 120; $itms[1] = 15;
 	$itm[2] = '矿泉水'; $itmk[2] = 'HS'; $itme[2] = 140; $itms[2] = 15;
 	//$itm[6] = '银白盒子'; $itmk[6] = 'p'; $itme[6] = 1; $itms[6] = 1; $itmsk[6] = 'ps';
-	$itm[5] = '秋刀鱼罐头'; $itmk[5] = 'HB'; $itme[5] = 70; $itms[5] = 15;
+	//$itm[5] = '秋刀鱼罐头'; $itmk[5] = 'HB'; $itme[5] = 70; $itms[5] = 15;
+	$itm[5] = 'GRAND OPENING 「开门大吉」'; $itmk[5] = 'p000'; $itme[5] = 1; $itms[5] = 1;
 	
 	if ($wingames <=1){
 	$itm[6] = '银白盒子'; $itmk[6] = 'ps'; $itme[6] = 1; $itms[6] = 1; $itmsk[6] = '';

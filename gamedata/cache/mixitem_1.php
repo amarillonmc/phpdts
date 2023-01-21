@@ -46,6 +46,12 @@ $mixinfo = array
 	array('class' => 'wp', 'stuff' => array('《哲♂学》','小棍棒','增幅设备'),'result' => array('森之妖精的棍棒','WP',200,60,'re'),),
 	array('class' => 'wp', 'stuff' => array('冰沙','小棍棒','御神签'),'result' => array('冰棍棒','WP',19,29,'r'),),
 	array('class' => 'wp', 'stuff' => array('☆法式长棍面包☆','水'),'result' => array('法式面包棍棒','WP',120,25,'NRz'),),
+	array('class' => 'wp', 'stuff' => array('棍棒','岩石','钉','毒药'),'result' => array('绽花毒藤','WKP',180,150,'Np'),),
+	array('class' => 'wp', 'stuff' => array('向日葵','月光碎片','铁链','超级重锤'),'result' => array('太极','WP',180,150,'Nwc'),),
+	array('class' => 'wp', 'stuff' => array('红宝石方块','制御棒','延展御柱','夜雀歌谱'),'result' => array('晨星链刃','WKP',827,260,'rdfc'),),
+	array('class' => 'wp', 'stuff' => array('岩石','火把','阔剑地雷'),'result' => array('阳炎之怒','WP',188,30,'du'),),
+	array('class' => 'wp', 'stuff' => array('阳炎之怒','雏人型','祝福宝石'),'result' => array('风滚草','WP',156,77,'rcd'),),
+	array('class' => 'wp', 'stuff' => array('风滚草','晨星链刃','太极','海胆链球'),'result' => array('龙魂破','WKP',6600,2200,'ZrdfN'),),
 	
 	array('class' => 'wg', 'stuff' => array('火把','红宝石方块','某种电子零件'),'result' => array('『红石电路』','X',1,1,''),),
 	array('class' => 'wg', 'stuff' => array('『环形激光』','『红石电路』','原型武器G'),'result' => array('『红石光束炮』','WG',280,280,'udo'),),
@@ -109,14 +115,14 @@ $mixinfo = array
 	array('class' => 'item', 'stuff' => array('水','黑色方块','白色雏菊'),'result' => array('仪水镜','Y',1,1,),),
 	array('class' => 'item', 'stuff' => array('风祭河水','仪水镜','白色雏菊','黑色雏菊'),'result' => array('八咫镜','DH',1,'∞','b'),),
 	
-	array('class' => 'pokemon', 'stuff' => array('《小黄的草帽》','《小黄的钓鱼竿》','《小黄的行军靴》'),'result' => array('《小黄的精灵球》','WC',233,'∞',),),
-	array('class' => 'pokemon', 'stuff' => array('《小黄的精灵球》','《小黄的收服特训》'),'result' => array('《小黄的超级球》','WC',233,'∞','Zir'),),
+	array('class' => 'pokemon', 'stuff' => array('《小黄的草帽》','《小黄的钓鱼竿》','《小黄的行军靴》'),'result' => array('《小黄的精灵球》','WC',386,'∞',),),
+	array('class' => 'pokemon', 'stuff' => array('《小黄的精灵球》','《小黄的收服特训》'),'result' => array('《小黄的超级球》','WC',386,'∞','Zir'),),
 	array('class' => 'pokemon', 'stuff' => array('白色的羽毛','金色方块'),'result' => array('凤凰之羽','WK',20,200,'u'),),
 	array('class' => 'pokemon', 'stuff' => array('白色的羽毛','银色方块'),'result' => array('露琪亚之羽','WK',50,200,'i'),),
-	array('class' => 'pokemon', 'stuff' => array('《小黄的收服特训》','《小黄的超级球》','《小黄的常磐之力》'),'result' => array('《小黄的大师球》','WC',386,'∞','Zrd'),),
-	array('class' => 'pokemon', 'stuff' => array('凤凰之羽','《小黄的超级球》','《小黄的常磐之力》'),'result' => array('《小黄的大师球》','WC',386,'∞','ucrd'),),
-	array('class' => 'pokemon', 'stuff' => array('露琪亚之羽','《小黄的超级球》','《小黄的常磐之力》'),'result' => array('《小黄的大师球》','WC',386,'∞','icrd'),),
-	array('class' => 'pokemon', 'stuff' => array('凤凰之羽','露琪亚之羽','《小黄的超级球》','《小黄的常磐之力》'),'result' => array('《小黄的大师球》','WC',386,'∞','Zcrd'),),
+	array('class' => 'pokemon', 'stuff' => array('《小黄的收服特训》','《小黄的超级球》','《小黄的常磐之力》'),'result' => array('《小黄的大师球》','WC',493,'∞','Zrd'),),
+	array('class' => 'pokemon', 'stuff' => array('凤凰之羽','《小黄的超级球》','《小黄的常磐之力》'),'result' => array('《小黄的大师球》','WC',493,'∞','ucrd'),),
+	array('class' => 'pokemon', 'stuff' => array('露琪亚之羽','《小黄的超级球》','《小黄的常磐之力》'),'result' => array('《小黄的大师球》','WC',493,'∞','icrd'),),
+	array('class' => 'pokemon', 'stuff' => array('凤凰之羽','露琪亚之羽','《小黄的超级球》','《小黄的常磐之力》'),'result' => array('《小黄的大师球》','WC',493,'∞','Zcrd'),),
 	
 	array('class' => 'key', 'stuff' => array('月宫 亚由的半身像','神尾 观铃的半身像','古河 渚的半身像'),'result' => array('四季流转的咏叹调','WP',750,1,'N'),),
 	array('class' => 'key', 'stuff' => array('天泽 郁末的半身像','长森 瑞佳的半身像','枣 铃的半身像'),'result' => array('旁观轮回的覆唱诗','WK',750,1,'n'),),
@@ -281,10 +287,10 @@ $mixinfo = array
 	array('class' => 'fseed', 'stuff' => array('☾真永火☽','☼焰火☼'),'result' => array('☼永火☼','DF',3000,3000,'MZ'),),
 	array('class' => 'fseed', 'stuff' => array('☾真残火☽','☼焰火☼'),'result' => array('☼残火☼','DA',3000,3000,'bZ'),),
 
-	array('class' => 'fseed', 'stuff' => array('✦钥匙碎片','✦烈焰火'),'result' => array('✦种火钥匙','Y',1,1,),),
-	array('class' => 'fseed', 'stuff' => array('✦钥匙碎片','✦烈焰火','◆焰火'),'result' => array('电掣召唤仪','Y',1,1,),),
-	array('class' => 'fseed', 'stuff' => array('✦种火钥匙','★华焰火★'),'result' => array('✦NPC钥匙·一阶段','Y',1,1,),),
-	array('class' => 'fseed', 'stuff' => array('✦NPC钥匙·一阶段','☾真焰火☽'),'result' => array('✦✦NPC钥匙·二阶段','Y',1,1,),),
+	array('class' => 'fseed', 'stuff' => array('✦钥匙碎片','✦烈焰火'),'result' => array('✦种火钥匙','Z',1,1,),),
+	array('class' => 'fseed', 'stuff' => array('✦钥匙碎片','✦烈焰火','◆焰火'),'result' => array('电掣召唤仪','Z',1,1,),),
+	array('class' => 'fseed', 'stuff' => array('✦种火钥匙','★华焰火★'),'result' => array('✦NPC钥匙·一阶段','Z',1,1,),),
+	array('class' => 'fseed', 'stuff' => array('✦NPC钥匙·一阶段','☾真焰火☽'),'result' => array('✦✦NPC钥匙·二阶段','Z',1,1,),),
 	//array('class' => 'hidden', 'stuff' => array('✦✦NPC钥匙·二阶段','☼焰火☼'),'result' => array('✦✦✦NPC钥匙·EX','Y',1,1,),),	
 
 
