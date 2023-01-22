@@ -85,7 +85,7 @@ function get_itmsk_strlen($sk_value,$max_length=5)
 function parse_itm_desc($n,$t,$short=0,$c=NULL)
 {
 	global $iteminfo,$itemspkinfo;
-	global $iteminfo_tooltip,$itemkinfo_tooltip,$itemspkinfo_tooltip;
+	global $iteminfo_tooltip,$itemkinfo_tooltip,$itemspkinfo_tooltip,$iteminfo_tooltip_desc;
 	$s = "<span "; $p1 = ''; $p2 = ''; $ret = '';
 	switch($t)
 	{
@@ -118,8 +118,20 @@ function parse_itm_desc($n,$t,$short=0,$c=NULL)
 			break;
 		//处理名字
 		case $t=='m':
-			if(isset($iteminfo_tooltip[$n]['title'])) $p1 = "title=\"".$iteminfo_tooltip[$n]['title']."\"";
-			if(isset($iteminfo_tooltip[$n]['class'])) $p2 = "class=\"".$iteminfo_tooltip[$n]['class']."\"";
+			$filter_n = preg_replace('/锋利的|电气|毒性|钉|\[.*\]|-改/', '', $n);
+			if(isset($iteminfo_tooltip[$filter_n]))
+			{
+				if(is_array($iteminfo_tooltip[$filter_n]))
+				{
+					if(isset($iteminfo_tooltip[$filter_n]['title'])) $p1 = "title=\"".$iteminfo_tooltip[$filter_n]['title']."\"";
+					if(isset($iteminfo_tooltip[$filter_n]['class'])) $p2 = "class=\"".$iteminfo_tooltip[$filter_n]['class']."\"";
+				}
+				elseif(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]))
+				{	//使用可复用描述 越来越离谱了
+					if(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['title'])) $p1 = "title=\"".$iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['title']."\"";
+					if(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['class'])) $p2 = "class=\"".$iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['class']."\"";
+				}
+			}
 			break;
 	}
 	//传入了样式 且道具没有与预设匹配的样式 则使用传入的样式

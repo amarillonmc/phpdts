@@ -35,8 +35,8 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		include_once GAME_ROOT.'./include/game.func.php';
 		//死法（除DN外）：道具名登记在$d上；第四个参数：没有检查到特殊样式的给一个红色
 		if(strpos($news,'death')!==false && $news!=='death28' && isset($d)) $d = parse_itm_desc($d,'m',0,"red");
-		//赠送道具、吃到毒补给、陷阱、改变天气、强化武器、唱歌：道具名登记在$c上；
-		if((strpos($news,'senditem')!==false||strpos($news,'poison')!==false||strpos($news,'trap')!==false||strpos($news,'wth')!==false||strpos($news,'newwep')!==false||strpos($news,'song')!==false) && isset($c)) $c = parse_itm_desc($c,'m');
+		//赠送道具、吃到毒补给、陷阱、改变天气、强化武器、唱歌、打开礼物盒：道具名登记在$c上；
+		if((strpos($news,'senditem')!==false||strpos($news,'poison')!==false||strpos($news,'trap')!==false||strpos($news,'wth')!==false||strpos($news,'newwep')!==false||strpos($news,'song')!==false||strpos($news,'present')!==false) && isset($c)) $c = parse_itm_desc($c,'m');
 		//合成、使用死斗卡：道具名登记在$b上;
 		if((strpos($news,'mix')!==false||strpos($news,'duelkey')!==false) && isset($b)) $b = parse_itm_desc($b,'m');
 
