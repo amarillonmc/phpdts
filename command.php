@@ -98,7 +98,7 @@ if($hp > 0){
 		$mode = 'command';
 	}else{
 		//进入指令判断
-		if($mode !== 'combat' && $mode !== 'corpse' && strpos($action,'pacorpse')===false && $mode !== 'senditem'){
+		if($mode !== 'combat' && $mode !== 'revcombat' && $mode !== 'corpse' && strpos($action,'pacorpse')===false && $mode !== 'senditem'){
 			$action = '';
 		}
 		if($command == 'menu') {
@@ -308,7 +308,7 @@ if($hp > 0){
 					{
 						global ${'element'.$e_key};
 						$m_e_key = $e_key + 1;//这样就不用污染原本的js了
-						${'emitm'.$e_key.'_num'} = round( ${'emitm'.$e_key.'_num'});
+						if(isset(${'emitm'.$e_key.'_num'})) ${'emitm'.$e_key.'_num'} = round( ${'emitm'.$e_key.'_num'});
 						if(${'mitm'.$m_e_key}>=0 && ${'element'.$e_key} && ${'emitm'.$e_key.'_num'}>0 && ${'emitm'.$e_key.'_num'}<=${'element'.$e_key})
 						{
 							//打入参与合成的元素编号与数量
@@ -405,6 +405,24 @@ if($hp > 0){
 		} elseif($mode == 'combat') {
 			include_once GAME_ROOT.'./include/game/combat.func.php';
 			combat(1,$command);
+		} elseif($mode == 'revcombat'){
+			//NPC vs NPC：
+			if($command == 'enter' && (strpos($action,'corpse')===0 || strpos($action,'pacorpse')===0))
+			{
+				$cid = strpos($action,'corpse')===0 ? str_replace('corpse','',$action) : str_replace('pacorpse','',$action);
+				if($cid)
+				{
+					global $db,$tablepre;
+					$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$cid' AND hp=0");
+					if($db->num_rows($result)>0)
+					{
+						$edata = $db->fetch_array($result);
+						extract($edata,EXTR_PREFIX_ALL,'w');
+						include_once GAME_ROOT.'./include/game/battle.func.php';
+						findcorpse($edata);
+					}
+				}	
+			}
 		} elseif($mode == 'rest') {
 			include_once GAME_ROOT.'./include/state.func.php';
 			rest($command);

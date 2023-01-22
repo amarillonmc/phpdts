@@ -3,9 +3,9 @@
 	if(!defined('IN_GAME')) {
 		exit('Access Denied');
 	}
-
 	//zai jian le suoyoude global
 	global $gamecfg,$elements_info;//这个$gamecfg到底是在哪定义的……
+	require_once './include/game/dice.func.php';
 	include_once config('elementmix',$gamecfg);
 
 	/********界面交互部分********/
@@ -26,20 +26,23 @@
 		}
 		$log.="<br>";
 	}
-	//显示元素标签……卧槽怎么会这样
+	//显示元素标签
 	function print_elements_tags($e_key)
 	{
 		global $temp_etags,$iteminfo,$itemspkinfo;
 		$tinfo="已了解的特征：";
 		foreach($temp_etags[$e_key] as $tk => $tarr)
 		{
-			foreach($tarr as $tm) $tinfo.= $tk == 'dom' ? "[主]".$iteminfo[$tm]." " : "[次]".$iteminfo[$tm]." ";
+			if(is_array($tarr))
+			{
+				foreach($tarr as $tm) 
+					$tinfo.= $tk == 'dom' ? "[主]".$iteminfo[$tm]." " : "[次]".$itemspkinfo[$tm]." ";
+			}
 		}
 		return $tinfo;
 	}
 
 	/********拆解元素部分********/
-
 	//过滤掉不能拆解的道具（数组） 不能分解返回1 能分解返回0
 	function split_to_elements_filter($i)
 	{
@@ -72,11 +75,12 @@
 		if($edata)
 		{
 			global $elements_info,$no_type_to_e_list,$split_corpse_lvl_r,$split_spcorpse_fix,$typeinfo;
-			global $log,$rp;
+			global $log,$rp,$mode;
 			//过滤不能分解的尸体
 			if(in_array($edata['type'],$no_type_to_e_list))
 			{
 				$log.="无法从{$edata['name']}身上提炼元素……为什么呢？<br><br>";
+				$mode = 'command';
 				return;
 			}
 			//成功从尸体中提炼元素
@@ -122,6 +126,7 @@
 			//计算从尸体的装备上能获得的元素种类与数量
 			$ev_arr = get_evalues_by_iarr($corpse_itm_arr);
 			//增加对应的元素
+			$total_addev = 0;
 			foreach($elements_info as $e_key=>$e_info)
 			{
 				global ${'element'.$e_key};
@@ -135,14 +140,26 @@
 					$edata['element'.$e_key] = 0;
 				}
 				${'element'.$e_key} += $add_ev;
+				$total_addev += $add_ev;
 				$log.="获得了{$add_ev}份{$e_info}！<br>";
+			}
+			//分解的结果有参数合法的特殊道具
+			if(is_array($ev_arr['spitm']) && count($ev_arr['spitm'])>3)
+			{
+				global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
+				$log.="但出现在你面前的不是元素，而是<span class='yellow'>{$ev_arr['result'][0]}</span>！<br>……这是什么情况……！？<br>";
+				$itm0 = $ev_arr['result'][0]; $itmk0 = $ev_arr['result'][1]; $itmsk0 = $ev_arr['result'][4];
+				$itme0 = $ev_arr['result'][2]; $itms0 = $ev_arr['result'][3];
+				include_once GAME_ROOT.'./include/game/itemmain.func.php';
+				itemget();
 			}
 			//销毁尸体
 			destory_corpse($edata);
 			//你们也一块去吧！
 			unset($ev_arr); unset($corpse_itm_arr);
 			//炼人油败人品
-			$ep_dice = rand(0,100);
+			//$ep_dice = diceroll($total_addev);
+			$ep_dice = rand(0,$total_addev);
 			if($ep_dice>70)
 			{
 				$rp += $ep_dice;
@@ -150,6 +167,7 @@
 			}
 			$log.="<br>";
 		}
+		$mode = 'command';
 		return;
 	}
 
@@ -160,11 +178,12 @@
 		if(isset($iid))
 		{
 			global $elements_info,$itmk_to_e_list;
-			global $log,$rp;
+			global $log,$rp,$mode;
 			global ${'itm'.$iid},${'itmk'.$iid},${'itme'.$iid},${'itms'.$iid},${'itmsk'.$iid};
 			if(!${'itms'.$iid})
 			{
 				$log.="道具来源非法。<br>";
+				$mode = 'command';
 				return;
 			}
 			//打包
@@ -183,21 +202,36 @@
 			$log.="<span class='grey'>".${'itm'.$iid}."化作点点荧光四散开来……</span><br>";
 			//计算能获得的元素种类与数量
 			$i_arr = get_evalues_by_iarr($i_arr);
-			//增加对应的元素
-			foreach($i_arr as $e_key=>$ev)
-			{
-				global ${'element'.$e_key};
-				${'element'.$e_key} += $ev;
-				$log.="获得了{$ev}份{$elements_info[$e_key]}！<br>";
-			}
 			//销毁道具
 			${'itm'.$iid} = ${'itmk'.$iid} = ${'itmsk'.$iid} = '';
 			${'itme'.$iid} = ${'itms'.$iid} = 0;
-			//一起一起
+			//增加对应的元素
+			$total_addev = 0;
+			foreach($i_arr as $e_key=>$ev)
+			{
+				if(is_array($ev) && count($ev)>3)
+				{
+					//分解的结果里有参数合法的道具
+					global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
+					$log.="但出现在你面前的不是元素，而是<span class='yellow'>{$ev[0]}</span>！<br>……这是什么情况……！？<br>";
+					$itm0 = $ev[0]; $itmk0 = $ev[1]; $itmsk0 = $ev[4];
+					$itme0 = $ev[2]; $itms0 = $ev[3];
+					include_once GAME_ROOT.'./include/game/itemmain.func.php';
+					itemget();
+				}
+				else 
+				{
+					global ${'element'.$e_key};
+					${'element'.$e_key} += $ev;
+					$total_addev += $ev;
+					$log.="获得了{$ev}份{$elements_info[$e_key]}！<br>";
+				}
+			}
 			unset($i_arr);
 			//捡垃圾涨功德
-			$ep_dice = rand(0,100);
-			if($ep_dice>70)
+			//$ep_dice = diceroll($total_addev);
+			$ep_dice = rand(0,$total_addev);
+			if($ep_dice>0)
 			{
 				$rp = $rp-$ep_dice;
 				//rp可以为负吗？
@@ -218,14 +252,15 @@
 
 		$ev_arr = Array();
 		//获取缓存文件
-		$cache_file = GAME_ROOT."./gamedata/bak/elementmix.bak";
+		$cache_file = GAME_ROOT."./gamedata/bak/elementmix.bak.php";
 		if(!file_exists($cache_file)) create_emix_cache_file();
-		$flip_etags_arr = openfile_decode($cache_file);
+		//$cache_arr = openfile_decode($cache_file);
+		include_once $cache_file;
 		//开始计算元素价值
 		foreach($iarr as $i => $t)
 		{
 			//最优先：检查拆解特定道具（全名匹配）时的事件
-			if($split_itm_fix[$t['itm']])
+			if(isset($split_itm_fix[$t['itm']]))
 			{
 				unset($ekey);unset($ev);
 				//处理秘钥道具
@@ -237,14 +272,14 @@
 					//返回随机素材
 					if($e_list[1] == 'r')
 					{
-						$ekey = array_rand($flip_etags_arr['random_emix_list'][$e_list[0]]['stuff']);
-						$ev = $flip_etags_arr['random_emix_list'][$e_list[0]]['stuff'][$ekey];
+						$ekey = array_rand($cache_arr['random_emix_list'][$e_list[0]]['stuff']);
+						$ev = $cache_arr['random_emix_list'][$e_list[0]]['stuff'][$ekey];
 					}
 					//返回指定位置素材 遍历配方 找到它的家
 					else 
 					{
 						$e_sort = 0;
-						foreach($flip_etags_arr['random_emix_list'][$e_list[0]]['stuff'] as $stuff_key => $stuff_num)
+						foreach($cache_arr['random_emix_list'][$e_list[0]]['stuff'] as $stuff_key => $stuff_num)
 						{
 							if($e_sort == $e_list[1])
 							{
@@ -258,6 +293,13 @@
 					$log.="<span class='grey'>你发现构成{$t['itm']}的<span class='red'>{$ev}</span>份{$elements_info[$ekey]}样子有点奇怪……怎么回事呢？</span><br>";
 					$ev_arr[$ekey] += $ev;
 					//润！
+					continue;
+				}
+				//处理吐出来的道具，一次分解最多只会吐一个道具，后到先得。
+				elseif(is_array($split_itm_fix[$t['itm']]['spitm']))
+				{
+					if(isset($ev_arr['spitm'])) unset($ev_arr['spitm']);
+					$ev_arr['spitm'] = $split_itm_fix[$t['itm']]['spitm'];
 					continue;
 				}
 				foreach($split_itm_fix[$t['itm']] as $ekey=>$ev)
@@ -300,7 +342,7 @@
 
 			//通过道具类别获取价值修正
 			$k_t = $t['itmk'];
-			if($split_itmk_r[$k_t])
+			if(isset($split_itmk_r[$k_t]))
 			{
 				//存在对应修正 优先获取
 				$k_ev_r = $split_itmk_r[$k_t];
@@ -310,7 +352,7 @@
 				//不存在对应修正 先尝试过滤类别
 				$k_t = filter_itemkind($k_t);
 				//没有对应修正关系则返回默认类别的分解系数
-				$k_ev_r = $split_itmk_r[$k_t] ? $split_itmk_r[$k_t] : $split_default_itmk_r;
+				$k_ev_r = isset($split_itmk_r[$k_t]) ? $split_itmk_r[$k_t] : $split_default_itmk_r;
 			}
 			//应用价值修正
 			$base_ev = ceil($base_ev*$k_ev_r);
@@ -318,17 +360,17 @@
 			
 			//通过道具类别关联元素
 			$k_t = $t['itmk']; $k_ekey = '';
-			if($flip_etags_arr['flip_d_tag'][$k_t])
+			if(isset($cache_arr['flip_d_tag'][$k_t]))
 			{
 				//存在对应元素 优先获取
-				$k_ekey = $flip_etags_arr['flip_d_tag'][$k_t];
+				$k_ekey = $cache_arr['flip_d_tag'][$k_t];
 			}
 			else 
 			{
 				//不存在对应元素 先尝试过滤类别
 				$k_t = filter_itemkind($k_t);
 				//还是没有对应元素 返回随机一种元素
-				$k_ekey = $flip_etags_arr['flip_d_tag'][$k_t] ? $flip_etags_arr['flip_d_tag'][$k_t] : array_rand($elements_info);
+				$k_ekey = isset($cache_arr['flip_d_tag'][$k_t]) ? $cache_arr['flip_d_tag'][$k_t] : array_rand($elements_info);
 			}
 			//echo "【DEBUG】【{$t['itmk']}】{$t['itm']}关联到的元素是【{$elements_info[$k_ekey]}】<br>";
 			
@@ -342,7 +384,7 @@
 				foreach($t['itmsk'] as $tsk)
 				{
 					//获取单个属性关联的元素 没有则随机挑选一个元素
-					$ekey = $flip_etags_arr['flip_s_tag'][$tsk] ? $flip_etags_arr['flip_s_tag'][$tsk] : array_rand($elements_info);
+					$ekey = $cache_arr['flip_s_tag'][$tsk] ? $cache_arr['flip_s_tag'][$tsk] : array_rand($elements_info);
 					if(isset($ekey))
 					{
 						$add_ev = 0;
@@ -393,11 +435,9 @@
 		//自定义效/耐比的阈值：2%~98%
 		$eitme_r = isset($eitme_r) ? min(98,max(2,$eitme_r)) : rand(2,98); 
 		$eitme_r /= 100;
-		//echo '【DEBUG】初始化阶段，道具效果系数：'.$eitme_r.'<br>';
 		//自定义最大效果的阈值：1%~100%
 		$eitme_max_r = isset($eitme_max_r) ? min(100,max(1,$eitme_max_r)) : 100; 
 		$eitme_max_r /= 100;
-		//echo '【DEBUG】初始化阶段，道具效果上限系数：'.$eitme_max_r.'<br>';
 		//对参与合成的元素按投入数量降序排序，筛出投入数量最多的元素作为主元素
 		arsort($emlist);
 		$log.="从口袋中抓出了：<br>";
@@ -427,7 +467,7 @@
 
 		$log.="。<br>你紧张地搓了搓手。<br>合成开始了。<br>";
 
-		//检查是否存在固定合成（其实放最顶层也行 放这里只是为了输出上面一段log）
+		//检查是否存在固定合成
 		$emix_fix = check_in_emix_list($emlist);
 		if($emix_fix)
 		{
@@ -444,6 +484,7 @@
 		$log.="<span class='grey'>…加入了一点{$emix_tips_arr[array_rand($emix_tips_arr)]}…</span><br>";
 
 		//掷骰：
+		//$emix_dice = diceroll(100);
 		$emix_dice = rand(1,100);
 		switch($emix_dice)
 		{
@@ -497,10 +538,16 @@
 		$emix_itms_r = 1-$emix_itme_r;
 		//计算道具效果、耐久
 		$emix_itme = ($emix_flag==4) ? $cost_enum : ceil($cost_enum*$emix_itme_r*($emix_flag/10 + 1)); //只投入1份元素，至少也会有1点效果、1点耐久。你赚了我亏了好吧！
-		$emix_itms = ($emix_flag==4) ? '∞' : ceil($cost_enum*$emix_itms_r*($emix_flag/10 + 1));
-		if(strpos($emix_itmk,'D')===0 && $emix_itms=='∞') $emix_itms = $emix_itme;
+		$emix_itms = ($emix_flag==4) ? '∞' : ceil($cost_enum*$emix_itms_r*($emix_flag/10 + 1));//大成功情况下获得无限耐久
+		if(strpos($emix_itmk,'D')===0 && $emix_itms=='∞') $emix_itms = $emix_itme; //防具没有这种待遇
+		//临时的道具效果修正：强化药物道具效果上限
+		if(strpos($emix_itmk,'M')===0 || strpos($emix_itmk,'HM')===0) 
+		{
+			$emix_itme = ceil(min(30*($emix_flag/10 + 1),$emix_itme));
+			$emix_itms = ceil(min(2*($emix_flag/10 + 1),$emix_itms));
+		}
 
-		$log.="<span class='clan'>在那形状愈发明晰的时候，你听到<span class='yellow'>{$cost_enum}</span>份</span>{$elements_info[$dom_ekey]}<span class='clan'>在升腾的雾气种喃喃呓语。</span><br>";
+		$log.="<span class='clan'>在那形状愈发明晰的时候，你听到<span class='yellow'>{$cost_enum}</span>份</span>{$elements_info[$dom_ekey]}<span class='clan'>在升腾的雾气中喃喃呓语。</span><br>";
 		$log.="<span class='grey'>…哎呀，不小心混入了一点{$emix_tips_arr[array_rand($emix_tips_arr)]}…</span><br>";
 
 		//生成道具属性：
@@ -545,14 +592,13 @@
 		$emix_itm_prefix = array_rand($emix_name_prefix_arr[$dom_ekey]);
 		$emix_itm_prefix = $emix_name_prefix_arr[$dom_ekey][$emix_itm_prefix];
 		//随便挑一个元素的元词缀词组
-		$meta_emlist_id =array_rand($emlist); //TODO：大成功、失败事件可以使用拓展1词组
+		$meta_emlist_id = ($emix_flag==4 || $emix_flag==-2) ? 6 : array_rand($emlist); //大成功、失败事件可以使用拓展1词组
 		$emix_itm_meta = array_rand($emix_name_meta_arr[$meta_emlist_id]);
 		$emix_itm_meta = $emix_name_meta_arr[$meta_emlist_id][$emix_itm_meta];
 		//根据生成的类别获取尾巴词组
 		$tmp_kind = $emix_itmk;
 		//过滤掉道具的子类别
 		$tmp_kind = filter_itemkind($emix_itmk,1);
-		if(strpos($tmp_kind,'D')===0) $tmp_kind = 'D'; //TODO：提供了单个部位的防具词组后删掉这一句
 		if(strpos($tmp_kind,'H')===0) $tmp_kind = 'H'; //TODO：提供了单独的道具类别词组后删掉这一句
 		//复合武器
 		if(is_array($tmp_kind))
@@ -616,7 +662,6 @@
 		$max_enum = get_emix_itme_max();
 		//通过自定义上限系数修正
 		$max_enum *= $emr;
-		//echo '【DEBUG】获取实际上限阶段，修正系数：'.$emr.'理论上限：'.$max_enum.'<br>';
 		//判断投入数量有没有超过理论上限
 		$max_cost = min(round($max_enum),$total_enum);
 		return $max_cost;
@@ -631,7 +676,6 @@
 		{
 			if(!array_diff($emlist,$elist['stuff']) && count($emlist) == count($elist['stuff']))
 			{
-				//echo "【DEBUG】检测到了固定合成{$elist['result'][0]}<br>";
 				return $elist['result'];
 			}
 		}
@@ -641,7 +685,6 @@
 		{
 			if(!array_diff($emlist,$relist['stuff']) && count($emlist) == count($relist['stuff']))
 			{
-				//echo "【DEBUG】检测到了固定随机合成{$relist['result'][0]}<br>";
 				return $r_emix_list[$rid]['result'];
 			}
 		}
@@ -681,7 +724,8 @@
 				//直接抄合成匹配逻辑了 有一种野性的美
 				if(!array_diff($dom_tags,$minfo['stuff']) && !array_diff($minfo['stuff'],$dom_tags) && count($dom_tags) == count($minfo['stuff']))
 				{ 
-					if($minfo['obbs'] && (rand(1,100)-$obbs_fix)>$minfo['obbs']) continue; //配方为概率合成 掷骰判定没通过 跳过
+					//if($minfo['obbs'] && (diceroll(100)-$obbs_fix)>$minfo['obbs']) continue; 
+					if($minfo['obbs'] && (rand(0,100)-$obbs_fix)>$minfo['obbs']) continue; //配方为概率合成 掷骰判定没通过 跳过
 					$emix_itmk = $minfo['result'];
 					$mixflag = true;
 					break;
@@ -704,7 +748,6 @@
 		global $elements_info,$temp_etags;
 		global $split_default_itmsk_fix,$split_itmsk_fix;
 
-		//可惜没有诅咒属性了……
 		$subtags = Array();
 		//获取元素所有的次要特征
 		$e_sub_tags = $temp_etags[$ekey]['sub'];
@@ -762,8 +805,7 @@
 			$submix_list = array_merge_recursive($r_submix_list,$submix_list);
 			foreach($submix_list as $minfo) 
 			{
-				//属性组合就不要求数量一一对应了 先到先得
-				//逻辑：匹配素材数量>=要求素材数量 感觉有点问题 但又好像没有问题 暂时就这么搞！<-傻了吧 没做重复属性判断
+				//属性组合逻辑：匹配素材数量>=要求素材数量 && 不能重复生成属性
 				if(count(array_intersect($sub_tags,$minfo['stuff'])) >= count($minfo['stuff']) && !in_array($minfo['result'],$sk_value))
 				{ 
 					//配方为概率合成 掷骰判定
@@ -778,7 +820,8 @@
 						{
 							$obbs = $minfo['obbs'];
 						}
-						if(rand(1,100)>$minfo['obbs']) continue; 
+						//if(diceroll(100)>$minfo['obbs']) continue; 
+						if(rand(0,100)>$minfo['obbs']) continue; 
 					}
 					//配对成功！消除素材特征
 					foreach($minfo['stuff'] as $m_sub_tags)
@@ -797,13 +840,12 @@
 		$kind = substr($kind,0,1); //只用道具类别的首字母判断……这个叫什么？大类！
 		foreach($sk_value as $key_sk => $sk)
 		{	
-			//来点反人类的：TODO：这里有问题
 			//武器上不会生成“防御性”属性
-			if($kind=='W' && array_search($sk,$itmk_to_itmsk_tags['D'])) unset($sk_value[$key_sk]);
+			if($kind=='W' && in_array($sk,$itmk_to_itmsk_tags['D'])) unset($sk_value[$key_sk]);
 			//防具、道具上不会生成“攻击性”属性
-			if($kind!='W' && array_search($sk,$itmk_to_itmsk_tags['W'])) unset($sk_value[$key_sk]);
+			if($kind!='W' && in_array($sk,$itmk_to_itmsk_tags['W'])) unset($sk_value[$key_sk]);
 			//补给品只会生成杂项属性
-			if($kind=='H' && !array_search($sk,$itmk_to_itmsk_tags['misc'])) unset($sk_value[$key_sk]);
+			if($kind!='W' && $kind!='D' && !in_array($sk,$itmk_to_itmsk_tags['misc'])) unset($sk_value[$key_sk]);
 		}
 		//从尾部筛出超过生成上限的属性
 		while(count($sk_value)>$max_sk)
@@ -893,16 +935,16 @@
 	{
 		global $random_emix_list,$random_submix_list;
 		//获取缓存文件
-		$cache_file = GAME_ROOT."./gamedata/bak/elementmix.bak";
+		$cache_file = GAME_ROOT."./gamedata/bak/elementmix.bak.php";
 		if(!file_exists($cache_file)) create_emix_cache_file();
-		$cache_file = openfile_decode($cache_file);
+		include_once $cache_file;
 		//用已生成的随机配方替换模板配方
 		if($type == 0)
 		{
 			$list = $random_emix_list;
 			foreach($list as $rkey => $rlist)
 			{
-				$list[$rkey]['stuff'] = $cache_file['random_emix_list'][$rkey]['stuff'];
+				$list[$rkey]['stuff'] = $cache_arr['random_emix_list'][$rkey]['stuff'];
 			}
 		}
 		else 
@@ -910,24 +952,23 @@
 			$list = $random_submix_list;
 			foreach($list as $rkey => $rlist)
 			{
-				$list[$rkey]['stuff'] = $cache_file['random_smix_list'][$rkey]['stuff'];
+				$list[$rkey]['stuff'] = $cache_arr['random_smix_list'][$rkey]['stuff'];
 			}
 		}
 		return $list;
 	}
 
-	//生成元素合成相关的临时配置文件 只在有人用了对应社团卡时执行一次 
-	//如果不想用这个的话 也可以直接调用对应的数组生成模块
-	//研究模式随机生成的一些东西也会以这种方式储存
+	//生成元素合成相关的临时配置文件，只在有人用了对应社团卡时执行一次 
+	//现在直接用更优雅的方式生成php格式文件，可以直接include进来。
 	function create_emix_cache_file()
 	{
 		global $temp_etags,$gamecfg,$gamenum,$log;
-		$file = GAME_ROOT."./gamedata/bak/elementmix.bak";
+		$file = GAME_ROOT."./gamedata/bak/elementmix.bak.php";
 		if(file_exists($file))
 		{
 			//检查本局游戏是不是已经生成过配置文件了
-			$check = openfile_decode($file);
-			if($check['gamenum'] == $gamenum)
+			include_once $file;
+			if($cache_arr['gamenum'] == $gamenum)
 			{
 				return;
 				$log.="【DEBUG】如果你看到这条信息，请转告管理员：“调试完记得把注释去掉！”<br>";
@@ -945,7 +986,10 @@
 		//加入本局游戏编号
 		$cache_arr['gamenum'] = $gamenum;
 		//写入文件
-		writeover_encode($file,$cache_arr);
+		global $checkstr;
+		$cache_str = str_replace('?>','',str_replace('<?','<?php',$checkstr));
+		$cache_str .= '$cache_arr = ' . var_export($cache_arr,1).";\r\n?>";
+		writeover($file,$cache_str);
 		//$log.="【DEBUG】生成了本局游戏对应的临时配置文件。<br>";
 		return;
 	}
@@ -996,8 +1040,6 @@
 		return $tmp_arr;
 	}
 
-	//数组化itmsk 可能是四面的遗产 //和还原itmsk为字符串一起挪到game.func.php里了
-
 	//过滤杂项道具类别（可以作为一个通用型函数） //我好傻
 	function filter_itemkind($kind,$check_dualwep=0)
 	{
@@ -1011,7 +1053,7 @@
 			$kind = Array($w1,$w2);
 			return $kind;
 		}
-
+		//过滤道具类别
 		foreach($iteminfo as $info_key => $info_value)
 		{
 			if(strpos($kind,$info_key)===0)
@@ -1022,34 +1064,4 @@
 		}
 		return $kind;
 	}
-
-	//使用json_encode结构将指定数组写入文件
-	function writeover_encode($filename,$arr,$method='rb+')
-	{	
-		if(is_array($arr))
-		{
-			$arr = json_encode($arr);
-			writeover($filename,$arr,$method);
-			chmod($filename,0777);
-			return;
-		}
-		return;
-	}
-
-	//打开使用json_encode结构保存的文件，返回整个数组，或单独某节
-	function openfile_decode($filename,$key=NULL)
-	{
-		if(file_exists($filename))
-		{
-			$data = file_get_contents($filename);
-			if($data)
-			{
-				$data = json_decode($data,true);
-				if(isset($key)) return $data[$key];
-			}
-			return $data;
-		}
-		return;
-	}
-
 ?>

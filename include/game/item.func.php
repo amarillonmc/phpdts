@@ -1815,7 +1815,7 @@ function itemuse($itmn) {
 				$club = 20;
 				//获取初始元素与第一条配方
 				$dice = rand(0,5);
-				global ${'element'.$dice};
+				global ${'element'.$dice},$clbpara;
 				${'element'.$dice} += 200+$dice;
 				//初始化元素合成缓存文件
 				include_once GAME_ROOT.'./include/game/elementmix.func.php';
@@ -1904,6 +1904,15 @@ function itemuse($itmn) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 			//-----------------------//
+		} elseif ($itm == '电子蛐蛐测试装置') {
+			//这是一个测试用道具 设置好$nid（先手者pid）和$eid（挨打者pid）后可以看这两个人打架 把其中一个设置成自己的pid就可以亲自下场 //自己下场现在有BUG
+			//$nid：先手攻击者的pid；$eid：挨打者的pid
+			//如果$nid打死了$eid的话，尸体会由你来摸，这不是BUG，是一个暂时缺少条件判断的特性。
+			global $pid;
+			$nid = $pid; $eid = 2;
+			include_once GAME_ROOT.'./include/game/revcombat.func.php';
+			rev_combat_prepare($nid,$eid);
+			return;
 		} elseif ($itm == '提示纸条A') {
 			$log .= '你读着纸条上的内容：<br>“执行官其实都是幻影，那个红暮的身上应该有召唤幻影的玩意。”<br>“用那个东西然后打倒幻影的话能用游戏解除钥匙出去吧。”<br>';
 		} elseif ($itm == '提示纸条B') {
@@ -2061,19 +2070,23 @@ function itemuse($itmn) {
 			include_once config('elementmix',$gamecfg);
 			$log.= $emix_slip[array_rand($emix_slip)];
 			//除商店纸条外：提供一条元素特征（TODO）、或一条固定配方、或一条随机属性组合
+			$log .= "<br><span class='yellow'>附：见面有缘，再送你一条提示吧：<br>“将带有";
+			global $itemspkinfo;
+			include_once GAME_ROOT.'./include/game/elementmix.func.php';
 			if(!preg_match('/(A|B|C|D)/',$itm))
 			{
-				$log .= "“附：见面有缘，再送你一条提示吧：”<br>";
-				/*** TODO：把这一块封装进一个函数里 ***/
-				$log .= "<span class='yellow'>“将带有";
-				global $itemspkinfo;
-				include_once GAME_ROOT.'./include/game/elementmix.func.php';
+				//野生纸条：给随机属性组合提示
 				$s_list = merge_random_emix_list(1); $s_id = array_rand($s_list);
-				foreach($s_list[$s_id]['stuff'] as $skey) $log .= "【$itemspkinfo[$skey]】";
 				$s_result = $itemspkinfo[$random_submix_list[$s_id]['result']];
-				$log .= "特征的元素组合起来，就有机会组合出【{$s_result}】属性。”</span><br>";
-				/*** TODO：把这一块封装进一个函数里 ***/
 			}
+			else
+			{
+				//商店纸条：给固定属性组合提示
+				$s_list = $submix_list; $s_id = array_rand($s_list);
+				$s_result = $itemspkinfo[$s_list[$s_id]['result']];
+			}
+			foreach($s_list[$s_id]['stuff'] as $skey) $log .= "【$itemspkinfo[$skey]】";
+			$log .= "特征的元素组合起来，就有机会组合出【{$s_result}】属性。”</span><br>";
 			//阅后即焚
 			$log .="<br>……说这么多鬼记得住啊！<br>你思考了一下，决定把{$itm}吃进肚子里，以便慢慢消化其中的知识。<br>";
 			$itms--;

@@ -4,6 +4,52 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
+//格式化储存player表 可能也是四面的遗产
+function update_db_player_structure($type=0)
+{
+	global $db,$tablepre,$checkstr;
+	$db_player_structure = $db_player_structure_types = $tpldata = Array();
+	
+	$dps_need_update = 0;//判定是否需要更新玩家字段
+	$dps_file = GAME_ROOT.'./gamedata/bak/db_player_structure.config.php';
+	$sql_file = GAME_ROOT.'./gamedata/sql/players.sql';
+	if(!file_exists($dps_file) || filemtime($sql_file) > filemtime($dps_file)){
+		$dps_need_update = 1;
+	}
+	
+	if($dps_need_update){//如果要更新，直接新建一个表，不需要依赖已有的players表
+		$sql = file_get_contents($sql_file);
+		$sql = str_replace("\r", "\n", str_replace(' bra_', ' '.$tablepre.'tmp_', $sql));
+		$db->queries($sql);
+		$result = $db->query("DESCRIBE {$tablepre}tmp_players");
+		while ($sttdata = $db->fetch_array($result))
+		{
+			global ${$sttdata['Field']}; 
+			$db_player_structure[] = $sttdata['Field'];
+			$db_player_structure_types[$sttdata['Field']] = $sttdata['Type'];
+			//array_push($db_player_structure,$pdata['Field']);
+		}
+		$dps_cont = str_replace('?>','',str_replace('<?','<?php',$checkstr));
+		$dps_cont .= '$db_player_structure = ' . var_export($db_player_structure,1).";\r\n".'$db_player_structure_types = ' . var_export($db_player_structure_types,1).";\r\n?>";
+		writeover($dps_file, $dps_cont);
+		chmod($dps_file,0777);
+		
+	}else{//若不需要更新，则直接读文件就好
+		include $dps_file ;
+	}
+	return $type ? $db_player_structure_types : $db_player_structure;
+}
+//返回一个只有数据库合法字段键名的pdata数组
+function player_format_with_db_structure($data){
+	$ndata=Array();
+	$db_player_structure = update_db_player_structure();
+	foreach ($db_player_structure as $key){
+		if (isset($data[$key])) {
+			$ndata[$key]=$data[$key];
+		}
+	}
+	return $ndata;
+}
 //将sk转为数组格式 只会转换登记过的属性
 function get_itmsk_array($sk_value)
 {
@@ -35,7 +81,8 @@ function get_itmsk_strlen($sk_value,$max_length=5)
 	return $ret;
 }
 //为显示在主界面、尸体发现界面、游戏帮助界面的道具名、道具类、道具属性添加额外描述
-function parse_itm_desc($n,$t)
+//传入$n=道具名/类/属性；$t='m'(使用名称数组)/'k'(类别)/'sk'(属性)；$short=1(传入的$n为数组情况下才有效，缩写属性)
+function parse_itm_desc($n,$t,$short=0)
 {
 	global $iteminfo,$itemspkinfo;
 	global $iteminfo_tooltip,$itemkinfo_tooltip,$itemspkinfo_tooltip;
@@ -50,9 +97,24 @@ function parse_itm_desc($n,$t)
 			break;
 		//处理属性
 		case $t=='sk':
-			if(isset($itemspkinfo_tooltip[$n]['title'])) $p1 = "title=\"".$itemspkinfo_tooltip[$n]['title']."\"";
-			if(isset($itemspkinfo_tooltip[$n]['class'])) $p2 = "class=\"".$itemspkinfo_tooltip[$n]['class']."\"";
-			$n = $itemspkinfo[$n];
+			//如果传入的n为数组，且开启缩写模式，则输出一段缩写
+			if($short && is_array($n))
+			{
+				$p1 = "title=\"";
+				$sk1 = $itemspkinfo[current($n)]; $sk2 = $itemspkinfo[end($n)]; $skn = '';
+				foreach($n as $sk_value)
+				{
+					if(!empty($skn)) $skn .='+'.$itemspkinfo[$sk_value];
+					else $skn = $itemspkinfo[$sk_value];
+				}
+				$p1.=$skn; $n = $sk1.'+...+'.$sk2; $p2 = "\"";
+			}
+			else
+			{
+				if(isset($itemspkinfo_tooltip[$n]['title'])) $p1 = "title=\"".$itemspkinfo_tooltip[$n]['title']."\"";
+				if(isset($itemspkinfo_tooltip[$n]['class'])) $p2 = "class=\"".$itemspkinfo_tooltip[$n]['class']."\"";
+				$n = $itemspkinfo[$n];
+			}
 			break;
 		//处理名字
 		case $t=='m':
@@ -122,15 +184,23 @@ function init_profile(){
 			${$sk_value.'_words'} = '';
 			//取我数组斧来
 			$tmpsk = get_itmsk_array(${$sk_value});
-			foreach($tmpsk as $sk)
+			if(count($tmpsk)>3)
 			{
-				if(!empty(${$sk_value.'_words'}))
+				//在装备、道具栏内的道具超过3个属性时，显示为+...+的缩写……不然属性多起来太丑了！！
+				${$sk_value.'_words'} = parse_itm_desc($tmpsk,'sk',1);
+			}
+			else 
+			{
+				foreach($tmpsk as $sk)
 				{
-					${$sk_value.'_words'} .= "+".parse_itm_desc($sk,'sk');
-				}
-				else
-				{
-					${$sk_value.'_words'} = parse_itm_desc($sk,'sk');
+					if(!empty(${$sk_value.'_words'}))
+					{
+						${$sk_value.'_words'} .= "+".parse_itm_desc($sk,'sk');
+					}
+					else
+					{
+						${$sk_value.'_words'} = parse_itm_desc($sk,'sk');
+					}
 				}
 			}
 		} else {
@@ -233,7 +303,9 @@ function init_profile(){
 }
 
 function init_battle($ismeet = 0){
+	global $wep,$wepk;
 	global $w_type,$w_name,$w_gd,$w_sNo,$w_icon,$w_lvl,$w_rage,$w_hp,$w_sp,$w_mhp,$w_msp,$w_wep,$w_wepk,$w_wepe,$w_sNoinfo,$w_iconImg,$w_hpstate,$w_spstate,$w_ragestate,$w_wepestate,$w_isdead,$hpinfo,$spinfo,$rageinfo,$wepeinfo,$fog,$typeinfo,$sexinfo,$infinfo,$w_exp,$w_upexp,$baseexp,$w_pose,$w_tactic,$w_inf,$w_infdata;
+	global $n_type,$n_name,$n_gd,$n_sNo,$n_icon,$n_hp,$n_mhp,$n_sp,$n_msp,$n_rage,$n_wep,$n_wepk,$n_wepe,$n_lvl,$n_pose,$n_tactic,$n_inf;
 	$w_upexp = round(($w_lvl*$baseexp)+(($w_lvl+1)*$baseexp));
 	
 	if (CURSCRIPT == 'botservice') 
@@ -249,7 +321,6 @@ function init_battle($ismeet = 0){
 		$w_ragestate = "<span class=\"red\">$rageinfo[3]</span>";
 		$w_isdead = true;
 		if (CURSCRIPT == 'botservice') echo "w_dead=1\n";
-			
 	} else{
 		if($w_hp < $w_mhp*0.2) {
 			$w_hpstate = "<span class=\"red\">$hpinfo[2]</span>";
@@ -276,6 +347,38 @@ function init_battle($ismeet = 0){
 		$w_ragestate = "$rageinfo[0]";
 		}
 	}
+
+	if($n_hp <= 0)
+	{
+		global $n_hpstate,$n_spstate,$n_ragestate,$n_isdead;
+		$n_hpstate = "<span class=\"red\">$hpinfo[3]</span>";
+		$n_spstate = "<span class=\"red\">$spinfo[3]</span>";
+		$n_ragestate = "<span class=\"red\">$rageinfo[3]</span>";
+		$n_isdead = true;
+	} elseif(isset($n_hp)) {
+		global $n_hpstate,$n_spstate,$n_ragestate;
+		if($n_hp < $n_mhp*0.2) {
+			$n_hpstate = "<span class=\"red\">$hpinfo[2]</span>";
+		} elseif($n_hp < $n_mhp*0.5) {
+			$n_hpstate = "<span class=\"yellow\">$hpinfo[1]</span>";
+		} else {
+			$n_hpstate = "<span class=\"clan\">$hpinfo[0]</span>";
+		}
+		if($n_sp < $n_msp*0.2) {
+			$n_spstate = "$spinfo[2]";
+		} elseif($n_sp < $n_msp*0.5) {
+			$n_spstate = "$spinfo[1]";
+		} else {
+			$n_spstate = "$spinfo[0]";
+		}
+		if($n_rage >= 100) {
+		$n_ragestate = "<span class=\"red\">$rageinfo[2]</span>";
+		} elseif($n_rage >= 30) {
+			$n_ragestate = "<span class=\"yellow\">$rageinfo[1]</span>";
+		} else {
+			$n_ragestate = "$rageinfo[0]";
+		}
+	}
 	
 	if($w_wepe >= 400) {
 		$w_wepestate = "$wepeinfo[3]";
@@ -291,9 +394,23 @@ function init_battle($ismeet = 0){
 		if (CURSCRIPT == 'botservice') echo "w_wepestate=0\n";
 	}
 	
+	//在战斗界面中加载敌我双方武器tooltip
+	global $wep_words,$wepk_words,$w_wep_words,$w_wepk_words;
+	$wep_words = parse_itm_desc($wep,'m'); $wepk_words = parse_itm_desc($wepk,'k');
 	if(!$fog||$ismeet) {
+		//非雾天显示敌人武器情报
+		$w_wep_words = parse_itm_desc($w_wep,'m');
+		$w_wepk_words = parse_itm_desc($w_wepk,'k');
+		//如果有的话 初始化第三方武器情报 
+		if(isset($n_type))
+		{
+			global $n_wep_words,$n_wepk_words,$n_iconImg;
+			$n_iconImg = $n_type ? 'n_'.$n_icon.'.gif' : $n_gd.'_'.$n_icon.'.gif';
+			$n_wep_words = parse_itm_desc($n_wep,'m');
+			$n_wepk_words = parse_itm_desc($n_wepk,'k');
+		}
 		$w_sNoinfo = "$typeinfo[$w_type]({$sexinfo[$w_gd]}{$w_sNo}号)";
-	  $w_i = $w_type > 0 ? 'n' : $w_gd;
+	 	$w_i = $w_type > 0 ? 'n' : $w_gd;
 		$w_iconImg = $w_i.'_'.$w_icon.'.gif';
 		if($w_inf) {
 			$w_infdata = '';
@@ -329,6 +446,9 @@ function init_battle($ismeet = 0){
 			$w_infdata = '';
 		}
 	} else {
+		//雾天显示？？？
+		$w_wep_words = '？？？';
+		$w_wepk_words = '？？？';
 		$w_sNoinfo = '？？？';
 		$w_iconImg = 'question.gif';
 		$w_name = '？？？';
@@ -384,8 +504,19 @@ function player_save($data){
 	global $db,$tablepre;
 	if(isset($data['pid'])){
 		$pid = $data['pid'];
-		unset($data['pid']);
-		$db->array_update("{$tablepre}players",$data,"pid='$pid'");
+		$ndata = player_format_with_db_structure($data);
+		unset($data);
+		$db->array_update("{$tablepre}players",$ndata,"pid='$pid'");
+	}
+	return;
+}
+function player_load($data)
+{
+	$ndata = player_format_with_db_structure($data);
+	foreach ($ndata as $key => $value)
+	{
+		global $$key;
+		$$key = $value;
 	}
 	return;
 }
@@ -409,7 +540,6 @@ function w_save2(&$data){
 	return;
 
 }
-
 
 
 ?>
