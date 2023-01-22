@@ -91,7 +91,8 @@ function death($death, $kname = '', $ktype = 0, $annex = '') {
 	$deathtime = $now;
 	$result = $db->query("SELECT nick FROM {$tablepre}players WHERE name = '$kname' AND type = '$type'");
 	$knick = $db->result($result, 0);
-	addnews ( $now, 'death' . $state, $name, $type, $knick.' '.$kname, $annex, $lastword );
+	$knname = isset($knick) ? $knick.' '.$kname : $kname;
+	addnews ( $now, 'death' . $state, $name, $type, $knname, $annex, $lastword );
 	//$alivenum = $db->result($db->query("SELECT COUNT(*) FROM {$tablepre}players WHERE hp>0 AND type=0"), 0);
 	
 	if ($type==0 && $club==99 && ($death=="N" || $death=="P" || $death=="K" || $death=="G" || $death=="C" || $death=="D" || $death=="F" || $death=="J" || $death=="trap"))	

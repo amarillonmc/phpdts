@@ -8,9 +8,8 @@
 	include_once GAME_ROOT.'./include/game/attr.func.php';
 	
 	/*这个文件里的函数是供npc与npc战斗使用的。
-	但是只要提供了正确的pa和pd当然也可以给玩家使用。 //哈哈！不行！玩家数据存不回去！傻了吧！ //虽然不能直接替换掉原版战斗函数，但是也许能用做这个的思路对原版进行一些优化……
+	但是只要提供了正确的pa和pd当然也可以给玩家使用。 //哈哈！不行！玩家数据存不回去！傻了吧！ //搞定了！ //没搞定啊！！不能100%保证不出怪问题，所以还是不要给玩家使用
 	本质上就是一套整理过的原版战斗函数。*/
-
 
 	//战斗准备流程：通过传入的战斗双方ID初始化
 	function rev_combat_prepare($nid,$eid) 
@@ -174,7 +173,7 @@
 				$log .= "<span class=\"red\">{$pd['name']}攻击范围不足，不能反击，逃跑了！</span><br>";
 			}
 		}
-		elseif($pd['hp']>0) 
+		elseif($pd['hp']>0  && !$att_result) 
 		{
 			$log .= "<span class=\"red\">{$pd['name']}逃跑了！</span><br>";
 		}
@@ -227,6 +226,8 @@
 		$log = str_replace('你',$pa['name'],$log); //偷懒做法 如果NPC的台词里有“你”出现的话 会变得很怪23333
 		//保存两个人的状态
 		player_save($pa);player_save($pd);
+		if(!$pa['type']) player_load($pa);
+		if(!$pd['type']) player_load($pd);
 		//刷新界面状态
 		global $n_iconImg,$n_type,$n_name,$n_gd,$n_sNo,$n_icon,$n_hp,$n_mhp,$n_sp,$n_msp,$n_rage,$n_wep,$n_wepk,$n_wepe,$n_lvl,$n_pose,$n_tactic,$n_inf,$n_wep_words,$n_wepk_words;
 		global $w_type,$w_name,$w_gd,$w_sNo,$w_icon,$w_hp,$w_mhp,$w_wep,$w_wepk,$w_wepe,$w_lvl,$w_pose,$w_tactic,$w_inf;
