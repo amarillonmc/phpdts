@@ -355,3 +355,14 @@ background-image: url("../../img/footer_line.gif");
 	outline:none;
 	box-shadow:0 0 6px rgba(246, 219, 251, 0.6);
 }
+
+span[title]:active:before {
+    content: attr(title);
+    display: block;
+    position: fixed;
+	background-color: rgba(225, 124, 226, 0.82); *BACKGROUND: rgb(98,135,163); *filter:alpha(opacity=60)
+	width: 200px;max-width:200px;
+	font: bold 10pt "微软雅黑" serif; color: white; overflow-x:hidden; overflow-y:auto; text-shadow:none; text-align: center;
+    padding: 2px;
+	z-index:10;
+}
