@@ -1027,6 +1027,9 @@ $iteminfo = Array(//注意顺序，AB必须在A的前面，以此类推
 
 	$iteminfo_tooltip = Array
 	(
+		# 测试用
+		'神圣手榴弹' => Array('class'=>'spitem2', 'title'=>"嗷！",),
+		# 
 		'魔法蜂针' => Array('class'=>'spitem', 'title'=>"这个武器一定会对敌人造成350点伤害，但对防御非常高的敌人除外。",),
 		'临摹装置' => Array('class'=>'spitem', 'title'=>"这个武器在主动攻击对手时，将可以复制对手的武器。注意：对手武器数值太高时会失败，后果自负！",),
 		# 巫师物品
