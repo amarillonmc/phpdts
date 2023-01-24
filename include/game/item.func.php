@@ -1777,7 +1777,7 @@ function itemuse($itmn) {
 				$log .="你已经是有身份的人了！不能再使用称号卡。<br>";
 			}
 			//处理不能成为合法社团的情况
-			if ($itme == 15){ //L5状态
+			elseif ($itme == 15){ //L5状态
 				global $wp, $wk, $wg, $wc, $wd, $wf, $club, $bid, $att, $def;
 				$log .="【DEBUG】进入L5状态<br>";
 				$log .= '你突然感觉到一种不可思议的力量贯通全身！<br>';
@@ -1829,6 +1829,7 @@ function itemuse($itmn) {
 			}
 			else{//直接将社团卡的效果写入玩家club
 				$club = $itme;
+				$log .="你的称号被改动了！";
 			}
 			//销毁物品
 			$itm = $itmk = $itmsk = '';
