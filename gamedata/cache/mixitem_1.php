@@ -48,9 +48,9 @@ $mixinfo = array
 	array('class' => 'wp', 'stuff' => array('☆法式长棍面包☆','水'),'result' => array('法式面包棍棒','WP',120,25,'NRz'),),
 	array('class' => 'wp', 'stuff' => array('棍棒','岩石','钉','毒药'),'result' => array('绽花毒藤','WKP',180,150,'Np'),),
 	array('class' => 'wp', 'stuff' => array('向日葵','月光碎片','铁链','超级重锤'),'result' => array('太极','WP',180,150,'Nwc'),),
-	array('class' => 'wp', 'stuff' => array('红宝石方块','制御棒','延展御柱','夜雀歌谱'),'result' => array('晨星链刃','WKP',827,260,'rdfc'),),
-	array('class' => 'wp', 'stuff' => array('岩石','火把','阔剑地雷'),'result' => array('阳炎之怒','WP',188,30,'du'),),
-	array('class' => 'wp', 'stuff' => array('阳炎之怒','雏人型','祝福宝石'),'result' => array('风滚草','WP',156,77,'rcd'),),
+	array('class' => 'wp', 'stuff' => array('红宝石方块','★制御棒★','延展御柱','夜雀歌谱'),'result' => array('晨星链刃','WKP',827,260,'rdfc'),),
+	array('class' => 'wp', 'stuff' => array('岩石','火把','★阔剑地雷★'),'result' => array('阳炎之怒','WP',188,30,'du'),),
+	array('class' => 'wp', 'stuff' => array('阳炎之怒','雏人型','『祝福宝石』'),'result' => array('风滚草','WP',156,77,'rcd'),),
 	array('class' => 'wp', 'stuff' => array('风滚草','晨星链刃','太极','海胆链球'),'result' => array('龙魂破','WKP',6600,2200,'ZrdfN'),),
 	
 	array('class' => 'wg', 'stuff' => array('火把','红宝石方块','某种电子零件'),'result' => array('『红石电路』','X',1,1,''),),

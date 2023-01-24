@@ -1774,7 +1774,11 @@ function itemuse($itmn) {
 		} elseif ($itmk =='ZB'){ //社团卡
 			if($club)
 			{
+				global $db,$tablepre;
 				$log .="你已经是有身份的人了！不能再使用称号卡。<br>";
+				$db->query("INSERT INTO {$tablepre}shopitem (kind,num,price,area,item,itmk,itme,itms,itmsk) VALUES ('18','1','20','0','$itm','$itmk','$itme','$itms','$itmsk')");
+				$log .="<span class='yellow'>$itm</span>像是有生命一般从你的手上脱离，飞回了商店！";
+
 			}
 			//处理不能成为合法社团的情况
 			elseif ($itme == 15){ //L5状态
