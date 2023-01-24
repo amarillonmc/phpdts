@@ -31,8 +31,6 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$nday = $day;
 		}
 
-		//tooltip处理（可能不用include……）
-		include_once GAME_ROOT.'./include/game.func.php';
 		//死法（除DN外）：道具名登记在$d上；第四个参数：没有检查到特殊样式的给一个红色
 		if(strpos($news,'death')!==false && $news!=='death28' && isset($d)) $d = parse_itm_desc($d,'m',0,"red");
 		//赠送道具、吃到毒补给、陷阱、改变天气、强化武器、唱歌、打开礼物盒：道具名登记在$c上；
@@ -286,6 +284,12 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}用零散的元素组合出了{$b}！</span><br>\n";
 		} elseif($news == 'emix_failed') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">{$a}试图把零散的元素重新组合起来，但是失败了！哎呀呀、这可真是……</span><br>\n";
+		} elseif($news == 'gpost') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"sienna\">{$a}为{$c}赞助了{$e}份{$b}！快递员正带着包裹前往【{$d}】</span><br>\n";
+		} elseif($news == 'gpost_success') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"sienna\">{$a}向{$c}赞助的{$b}已成功送达！</span><br>\n";
+		} elseif($news == 'gpost_failed') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"sienna\">{$a}向场内玩家赞助的{$b}竟然被人半路截走了！真是天有不测风云……</span><br>\n";
 		} else {
 			$newsinfo .= "<li>$time,$news,$a,$b,$c,$d<br>\n";
 		}

@@ -363,8 +363,6 @@ function discover($schmode = 0) {
 			combat(0);
 			return;
 		}
-		
-		
 	}
 	
 	$trap_dice=rand(0,99);//随机数，开始判断是否踩陷阱
@@ -459,15 +457,12 @@ function discover($schmode = 0) {
 //		}
 //	}
 	include_once GAME_ROOT.'./include/game/attr.func.php';
-
 	$mode_dice = rand(0,99);
-	if($mode_dice < $schmode) {
+	if($mode_dice < $schmode) 
+	{
 		global $pid,$corpse_obbs,$teamID,$fog,$bid,$gamestate;
-//		if($gamestate < 40) {
-//			$result = $db->query("SELECT * FROM {$tablepre}players WHERE pls='$pls' AND pid!='$pid' AND pid!='$bid'");
-//		} else {
-//			$result = $db->query("SELECT * FROM {$tablepre}players WHERE pls='$pls' AND pid!='$pid'");
-//		}
+		global $clbpara,$clbstatusa,$clbstatusb,$clbstatusc,$clbstatusd,$clbstatuse;
+
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pls='$pls' AND pid!='$pid'");
 		if(!$db->num_rows($result)){
 			$log .= '<span class="yellow">周围一个人都没有。</span><br>';
@@ -482,81 +477,123 @@ function discover($schmode = 0) {
 		$find_r = get_find_r($weather,$pls,$pose,$tactic,$club,$inf);
 		$find_obbs = $enemy_obbs + $find_r;
 		
-		foreach($enemyarray as $enum){
+		//移除了重复调用discover()的设定，尝试用一种正常一点的办法确保敌人/尸体发现率符合基础设定值，不然现在的尸体确实太难摸了。
+		//现在触发遇敌事件只会返回三种结果：1、发现尸体；2、发现敌人、3、敌人隐藏起来；所以实际的尸体发现率=$enemyrate*$corpse_obbs
+		$meetman_flag = 0;
+		foreach($enemyarray as $enum)
+		{
 			$db->data_seek($result, $enum);
 			$edata = $db->fetch_array($result);
-			if(!$edata['type'] || $gamestate < 50){
-				if($edata['hp'] > 0) {
-					global $art,$artk,$name; 
-					if ((!$edata['type'])&&($artk=='XX')&&(($edata['artk']!='XX')||($edata['art']!=$name))&&($gamestate<50)){
-						continue;
+			if(!$edata['type'] || $gamestate < 50)
+			{
+				if($edata['hp'] <= 0)
+				{
+					//直接略过无效尸体
+					if($gamestate>=40||($edata['endtime']>($now-$corpseprotect))) continue;
+					$ret = false;
+					foreach(array('money','arhs','aras','arfs','arts','itms1','itms2','itms3','itms4','itms5','itms6') as $chkval)
+					{
+						if($edata[$chkval]) 
+						{
+							$ret = true;
+							break;
+						}
 					}
-					if (($artk!='XX')&&($edata['artk']=='XX')&&($gamestate<50)){
-						continue;
+					if(!$ret) continue;
+					//计算尸体发现率
+					$corpse_dice = rand(0,99);
+					if($corpse_dice < $corpse_obbs)
+					{
+						$meetman_flag = 1;
+						break;
 					}
+				}
+				else 
+				{
+					//直接略过决斗者
+					if ((!$edata['type'])&&($artk=='XX')&&(($edata['artk']!='XX')||($edata['art']!=$name))&&($gamestate<50)) continue;
+					if (($artk!='XX')&&($edata['artk']=='XX')&&($gamestate<50)) continue;
+					//计算活人发现率
 					$hide_r = get_hide_r($weather,$pls,$edata['pose'],$edata['tactic'],$edata['club'],$edata['inf']);
 					include_once GAME_ROOT.'./include/game/clubskills.func.php';
 					$hide_r *= get_clubskill_bonus_hide($edata['club'],$edata['skills']);
 					$enemy_dice = rand(0,99);
-					if($enemy_dice < ($find_obbs - $hide_r)) {
-						if($teamID&&(!$fog)&&($gamestate<40)&&($teamID == $edata['teamID'])){
-							$bid = $edata['pid'];
-							$action = 'team'.$edata['pid'];
-							include_once GAME_ROOT.'./include/game/battle.func.php';
-							findteam($edata);
-							return;
-						} else {
-							$active_r = get_active_r($weather,$pls,$pose,$tactic,$club,$inf,$edata['pose']);
-							include_once GAME_ROOT.'./include/game/clubskills.func.php';
-							$active_r *= get_clubskill_bonus_active($club,$skills,$edata['club'],$edata['skills']);
-							if ($active_r>96) $active_r=96;
-							$bid = $edata['pid'];
-							$active_dice = rand(0,99);
-							if($active_dice <  $active_r) {
-								$action = 'enemy'.$edata['pid'];
-								include_once GAME_ROOT.'./include/game/battle.func.php';
-								findenemy($edata);
-								return;
-							} else {
-								if (CURSCRIPT == 'botservice') 
-								{
-									echo "passive_battle=1\n";
-									echo "passive_w_name={$edata['name']}\n";
-									echo "passive_w_type={$edata['type']}\n";
-									echo "passive_w_sNo={$edata['sNo']}\n";
-								}
-								include_once GAME_ROOT.'./include/game/combat.func.php';
-								combat(0);
-								return;
-							}
-						}
-					}else{
-						$hideflag = true;
-					}
-				} else {
-					$corpse_dice = rand(0,99);
-					if($corpse_dice < $corpse_obbs) {
-						
-						if($gamestate <40 && $edata['endtime'] < $now - $corpseprotect && (($edata['weps'] && $edata['wepe'])||($edata['arbs'] && $edata['arbe'])||$edata['arhs']||$edata['aras']||$edata['arfs']||$edata['arts']||$edata['itms0']||$edata['itms1']||$edata['itms2']||$edata['itms3']||$edata['itms4']||$edata['itms5']||$edata['money'])){
-							
-							$bid = $edata['pid'];
-							$action = 'corpse'.$edata['pid'];
-							include_once GAME_ROOT.'./include/game/battle.func.php';
-							findcorpse($edata);
-							return;
-						} else {
-							//这看上去是个bug…… 会导致地图上最后一个兵很难摸到…… 
-							//改成discover(100)应该就能解决问题…… 但修复了可能导致平衡性问题…… 所以暂时留在这……
-							discover(50);	
-							return;
-						}
-					}
+					$meetman_flag = $enemy_dice<($find_obbs - $hide_r) ? 1 : -1;
+					break;
 				}
 			}
 		}
-		if($hideflag == true){
+		if($meetman_flag>0)
+		{
+			if($edata['hp'] > 0) 
+			{
+				if(isset($edata['clbpara'])) $edata['clbpara']=get_clbpara($edata['clbpara']);
+				//发现队友
+				if($teamID&&(!$fog)&&($gamestate<40)&&($teamID == $edata['teamID']))
+				{
+					$bid = $edata['pid'];
+					$action = 'team'.$edata['pid'];
+					include_once GAME_ROOT.'./include/game/battle.func.php';
+					findteam($edata);
+					return;
+				} 
+				//发现中立NPC或友军 TODO：把这里条件判断挪到一个函数里
+				elseif($edata['clbpara']['post'] == $pid)
+				{
+					$bid = $edata['pid'];
+					$action = 'neut'.$edata['pid'];
+					include_once GAME_ROOT.'./include/game/revcombat.func.php';
+					findneut($edata,1);
+					return;
+				}
+				//发现敌人
+				else 
+				{
+					$active_r = get_active_r($weather,$pls,$pose,$tactic,$club,$inf,$edata['pose']);
+					include_once GAME_ROOT.'./include/game/clubskills.func.php';
+					$active_r *= get_clubskill_bonus_active($club,$skills,$edata['club'],$edata['skills']);
+					if ($active_r>96) $active_r=96;
+					$bid = $edata['pid'];
+					$active_dice = rand(0,99);
+					//先制
+					if($active_dice < $active_r) 
+					{
+						$action = 'enemy'.$edata['pid'];
+						include_once GAME_ROOT.'./include/game/battle.func.php';
+						findenemy($edata);
+						return;
+					} 
+					//挨打
+					else 
+					{
+						if (CURSCRIPT == 'botservice') 
+						{
+							echo "passive_battle=1\n";
+							echo "passive_w_name={$edata['name']}\n";
+							echo "passive_w_type={$edata['type']}\n";
+							echo "passive_w_sNo={$edata['sNo']}\n";
+						}
+						include_once GAME_ROOT.'./include/game/combat.func.php';
+						combat(0);
+						return;
+					}
+				}
+			}
+			else 
+			{
+				$bid = $edata['pid'];
+				$action = 'corpse'.$edata['pid'];
+				include_once GAME_ROOT.'./include/game/battle.func.php';
+				findcorpse($edata);
+				return;
+			}
+		}
+		elseif($meetman_flag < 0)
+		{
 			$log .= '似乎有人隐藏着……<br>';
-		}else{
+		}
+		else 
+		{
 			$log .= '<span class="yellow">周围一个人都没有。</span><br>';
 		}
 		$mode = 'command';
@@ -566,11 +603,6 @@ function discover($schmode = 0) {
 		$find_obbs = $item_obbs + $find_r;
 		$item_dice = rand(0,99);
 		if($item_dice < $find_obbs) {
-			//$mapfile = GAME_ROOT."./gamedata/mapitem/{$pls}mapitem.php";
-			//$mapitem = openfile($mapfile);
-			//$itemnum = sizeof($mapitem) - 1;
-//			$result = $db->query("SELECT * FROM {$tablepre}mapitem WHERE map='$pls'");
-//			$itemnum = $db->num_rows($result);
 			$result = $db->query("SELECT * FROM {$tablepre}mapitem WHERE pls = '$pls'");
 			$itemnum = $db->num_rows($result);
 			if($itemnum <= 0){
@@ -589,10 +621,6 @@ function discover($schmode = 0) {
 			$itmsk0=$mi['itmsk'];
 			$iid=$mi['iid'];
 			$db->query("DELETE FROM {$tablepre}mapitem WHERE iid='$iid'");
-			//list($itm0,$itmk0,$itme0,$itms0,$itmsk0) = explode(',', $mapitem[$itemno]);
-			//array_splice($mapitem,$itemno,1);
-			//writeover($mapfile,implode('', $mapitem),'wb');
-			//unset($mapitem);
 
 			if($itms0){
 				include_once GAME_ROOT.'./include/game/itemmain.func.php';

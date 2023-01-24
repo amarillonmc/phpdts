@@ -102,6 +102,20 @@ if((strpos($action,'corpse')===0 || strpos($action,'pacorpse')===0) && $gamestat
 		}
 	}	
 }
+elseif((strpos($action,'neut')===0)){
+	$nid = str_replace('neut','',$action);
+	if($nid){
+		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$nid' AND hp>0");
+		if($db->num_rows($result)>0){
+			$edata = $db->fetch_array($result);
+			include_once GAME_ROOT.'./include/game/revcombat.func.php';
+			findneut($edata,1);
+			extract($edata,EXTR_PREFIX_ALL,'w');
+			init_battle(1);
+			$main = 'battle';
+		}
+	}	
+}
 if($hp > 0 && $coldtimeon && $showcoldtimer && $rmcdtime){$log .= "行动冷却时间：<span id=\"timer\" class=\"yellow\">0.0</span>秒<script type=\"text/javascript\">demiSecTimerStarter($rmcdtime);</script><br>";}
 
 if ($club==0)

@@ -4,143 +4,6 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
-//格式化储存player表 可能也是四面的遗产
-function update_db_player_structure($type=0)
-{
-	global $db,$tablepre,$checkstr;
-	$db_player_structure = $db_player_structure_types = $tpldata = Array();
-	
-	$dps_need_update = 0;//判定是否需要更新玩家字段
-	$dps_file = GAME_ROOT.'./gamedata/bak/db_player_structure.config.php';
-	$sql_file = GAME_ROOT.'./gamedata/sql/players.sql';
-	if(!file_exists($dps_file) || filemtime($sql_file) > filemtime($dps_file)){
-		$dps_need_update = 1;
-	}
-	
-	if($dps_need_update){//如果要更新，直接新建一个表，不需要依赖已有的players表
-		$sql = file_get_contents($sql_file);
-		$sql = str_replace("\r", "\n", str_replace(' bra_', ' '.$tablepre.'tmp_', $sql));
-		$db->queries($sql);
-		$result = $db->query("DESCRIBE {$tablepre}tmp_players");
-		while ($sttdata = $db->fetch_array($result))
-		{
-			global ${$sttdata['Field']}; 
-			$db_player_structure[] = $sttdata['Field'];
-			$db_player_structure_types[$sttdata['Field']] = $sttdata['Type'];
-			//array_push($db_player_structure,$pdata['Field']);
-		}
-		$dps_cont = str_replace('?>','',str_replace('<?','<?php',$checkstr));
-		$dps_cont .= '$db_player_structure = ' . var_export($db_player_structure,1).";\r\n".'$db_player_structure_types = ' . var_export($db_player_structure_types,1).";\r\n?>";
-		writeover($dps_file, $dps_cont);
-		chmod($dps_file,0777);
-		
-	}else{//若不需要更新，则直接读文件就好
-		include $dps_file ;
-	}
-	return $type ? $db_player_structure_types : $db_player_structure;
-}
-//返回一个只有数据库合法字段键名的pdata数组
-function player_format_with_db_structure($data){
-	$ndata=Array();
-	$db_player_structure = update_db_player_structure();
-	foreach ($db_player_structure as $key){
-		if (isset($data[$key])) {
-			$ndata[$key]=$data[$key];
-		}
-	}
-	return $ndata;
-}
-//将sk转为数组格式 只会转换登记过的属性
-function get_itmsk_array($sk_value)
-{
-	global $itemspkinfo;
-	$ret = Array();
-	$i = 0;
-	while ($i < strlen($sk_value))
-	{
-		$sub = substr($sk_value,$i,1); 
-		$i++;
-		if(!empty($sub) && array_key_exists($sub,$itemspkinfo)) array_push($ret,$sub);
-	}
-	return $ret;		
-}
-//还原itmsk为字符串 $max_length:字符串长度上限 
-function get_itmsk_strlen($sk_value,$max_length=5)
-{
-	global $itemspkinfo;
-	$ret = ''; $sk_count = 0;
-	foreach($sk_value as $sk)
-	{
-		if(array_key_exists($sk,$itemspkinfo))
-		{
-			$ret.=$sk;
-			$sk_count+=strlen($sk);
-		}
-		if($sk_count>=$max_length) break;
-	}
-	return $ret;
-}
-//为显示在主界面、尸体发现界面、游戏帮助界面的道具名、道具类、道具属性添加额外描述
-//传入$n=道具名/类/属性；$t='m'(使用名称数组)/'k'(类别)/'sk'(属性)；$short=1(传入的$n为数组情况下才有效，缩写属性)；$class(如果传入的$n没有匹配的样式,则应用该样式)
-function parse_itm_desc($n,$t,$short=0,$c=NULL)
-{
-	global $iteminfo,$itemspkinfo;
-	global $iteminfo_tooltip,$itemkinfo_tooltip,$itemspkinfo_tooltip,$iteminfo_tooltip_desc;
-	$s = "<span "; $p1 = ''; $p2 = ''; $ret = '';
-	switch($t)
-	{
-		//处理类别
-		case $t=='k':
-			if(isset($itemkinfo_tooltip[$n]['title'])) $p1 = "title=\"".$itemkinfo_tooltip[$n]['title']."\"";
-			if(isset($itemkinfo_tooltip[$n]['class'])) $p2 = "class=\"".$itemkinfo_tooltip[$n]['class']."\"";
-			$n = $iteminfo[$n];
-			break;
-		//处理属性
-		case $t=='sk':
-			//如果传入的n为数组，且开启缩写模式，则输出一段缩写
-			if($short && is_array($n))
-			{
-				$p1 = "title=\"";
-				$sk1 = $itemspkinfo[current($n)]; $sk2 = $itemspkinfo[end($n)]; $skn = '';
-				foreach($n as $sk_value)
-				{
-					if(!empty($skn)) $skn .='+'.$itemspkinfo[$sk_value];
-					else $skn = $itemspkinfo[$sk_value];
-				}
-				$p1.=$skn; $n = $sk1.'+...+'.$sk2; $p2 = "\"";
-			}
-			else
-			{
-				if(isset($itemspkinfo_tooltip[$n]['title'])) $p1 = "title=\"".$itemspkinfo_tooltip[$n]['title']."\"";
-				if(isset($itemspkinfo_tooltip[$n]['class'])) $p2 = "class=\"".$itemspkinfo_tooltip[$n]['class']."\"";
-				$n = $itemspkinfo[$n];
-			}
-			break;
-		//处理名字
-		case $t=='m':
-			$filter_n = preg_replace('/锋利的|电气|毒性|钉|\[.*\]|-改/', '', $n);
-			if(isset($iteminfo_tooltip[$filter_n]))
-			{
-				if(is_array($iteminfo_tooltip[$filter_n]))
-				{
-					if(isset($iteminfo_tooltip[$filter_n]['title'])) $p1 = "title=\"".$iteminfo_tooltip[$filter_n]['title']."\"";
-					if(isset($iteminfo_tooltip[$filter_n]['class'])) $p2 = "class=\"".$iteminfo_tooltip[$filter_n]['class']."\"";
-				}
-				elseif(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]))
-				{	//使用可复用描述 越来越离谱了
-					if(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['title'])) $p1 = "title=\"".$iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['title']."\"";
-					if(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['class'])) $p2 = "class=\"".$iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['class']."\"";
-				}
-			}
-			break;
-	}
-	//传入了样式 且道具没有与预设匹配的样式 则使用传入的样式
-	if(isset($c) && !$p2) $p2 = "class=\"".$c."\"";
-	$p3 = " >";	$e = "</span>";
-	$ret = $s.$p1.$p2.$p3.$n.$e;
-	return $ret;
-}
-
 function init_playerdata(){
 	global $lvl,$baseexp,$exp,$gd,$icon,$arbe,$arhe,$arae,$arfe,$weather,$fog,$weps,$arbs,$log,$upexp,$lvlupexp,$iconImg,$ardef;
 
@@ -552,7 +415,19 @@ function w_save2(&$data){
 		//$db->query("UPDATE {$tablepre}players SET name='$w_name',pass='$w_pass',type='$w_type',endtime='$w_endtime',gd='$w_gd',sNo='$w_sNo',icon='$w_icon',club='$w_club',hp='$w_hp',mhp='$w_mhp',sp='$w_sp',msp='$w_msp',att='$w_att',def='$w_def',pls='$w_pls',lvl='$w_lvl',exp='$w_exp',money='$w_money',bid='$w_bid',inf='$w_inf',rage='$w_rage',pose='$w_pose',tactic='$w_tactic',state='$w_state',killnum='$w_killnum',wp='$w_wp',wk='$w_wk',wg='$w_wg',wc='$w_wc',wd='$w_wd',wf='$w_wf',teamID='$w_teamID',teamPass='$w_teamPass',wep='$w_wep',wepk='$w_wepk',wepe='$w_wepe',weps='$w_weps',wepsk='$w_wepsk',arb='$w_arb',arbk='$w_arbk',arbe='$w_arbe',arbs='$w_arbs',arbsk='$w_arbsk',arh='$w_arh',arhk='$w_arhk',arhe='$w_arhe',arhs='$w_arhs',arhsk='$w_arhsk',ara='$w_ara',arak='$w_arak',arae='$w_arae',aras='$w_aras',arask='$w_arask',arf='$w_arf',arfk='$w_arfk',arfe='$w_arfe',arfs='$w_arfs',arfsk='$w_arfsk',art='$w_art',artk='$w_artk',arte='$w_arte',arts='$w_arts',artsk='$w_artsk',itm0='$w_itm0',itmk0='$w_itmk0',itme0='$w_itme0',itms0='$w_itms0',itmsk0='$w_itmsk0',itm1='$w_itm1',itmk1='$w_itmk1',itme1='$w_itme1',itms1='$w_itms1',itmsk1='$w_itmsk1',itm2='$w_itm2',itmk2='$w_itmk2',itme2='$w_itme2',itms2='$w_itms2',itmsk2='$w_itmsk2',itm3='$w_itm3',itmk3='$w_itmk3',itme3='$w_itme3',itms3='$w_itms3',itmsk3='$w_itmsk3',itm4='$w_itm4',itmk4='$w_itmk4',itme4='$w_itme4',itms4='$w_itms4',itmsk4='$w_itmsk4',itm5='$w_itm5',itmk5='$w_itmk5',itme5='$w_itme5',itms5='$w_itms5',itmsk5='$w_itmsk5',itm6='$w_itm6',itmk6='$w_itmk6',itme6='$w_itme6',itms6='$w_itms6',itmsk6='$w_itmsk6' WHERE pid='$w_pid'");
 	}
 	return;
+}
 
+//销毁尸体
+function destory_corpse(&$edata)
+{
+	if($edata)
+	{
+		$edata['state'] = 16; $edata['hp'] = 0; $edata['money'] = 0; $edata['pls'] = 99;
+		$edata['weps'] = 0;$edata['arbs'] = 0;$edata['arhs'] = 0;$edata['aras'] = 0;$edata['arfs'] = 0;$edata['arts'] = 0;
+		$edata['itms0'] = 0;$edata['itms1'] = 0;$edata['itms2'] = 0;$edata['itms3'] = 0;$edata['itms4'] = 0;$edata['itms5'] = 0;$edata['itms6'] = 0;
+		player_save($edata);
+	}
+	return;
 }
 
 

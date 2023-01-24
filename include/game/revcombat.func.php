@@ -11,6 +11,53 @@
 	但是只要提供了正确的pa和pd当然也可以给玩家使用。 //哈哈！不行！玩家数据存不回去！傻了吧！ //搞定了！ //没搞定啊！！不能100%保证不出怪问题，所以还是不要给玩家使用
 	本质上就是一套整理过的原版战斗函数。*/
 
+	//发现中立NPC $kind 0=中立单位 1=友军
+	function findneut(&$edata,$kind=0)
+	{
+		global $log,$action,$mode,$name,$main,$cmd,$battle_title,$pid,$db,$tablepre;
+		global $w_type,$w_name,$w_gd,$w_sNo,$w_icon,$w_hp,$w_mhp,$w_sp,$w_msp,$w_rage,$w_wep,$w_wepk,$w_wepe,$w_lvl,$w_pose,$w_tactic,$w_inf;
+		
+		$battle_title = $kind ? '发现朋友' : '发现敌人？';
+
+		extract($edata,EXTR_PREFIX_ALL,'w');
+		init_battle(1);
+		if(!is_array($edata['clbpara'])) $edata['clbpara']=get_clbpara($edata['clbpara']);
+
+		$log .= "你发现了<span class=\"yellow\">$w_name</span>！<br>";
+		if(!$kind) $log .= "对方看起来没有敌意。<br>";
+
+		//TODO：把这一段挪到一个独立函数里
+		if($edata['clbpara']['post'] == $pid) 
+		{	
+			$log.="对方一看见你，便猛地朝你扑了过来！<br>
+			<br><span class='sienna'>“老板！有你的快递喔！”</span><br>
+			<br>你被这突然袭击吓了一跳！<br>
+			但对方只是从身上摸出了一个包裹样的东西扔给了你。然后又急匆匆地转身离开了。<br>
+			<br>……这是在搞啥……？<br><br>";
+			$action='';
+			global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
+			$iid=$edata['clbpara']['postid'];
+			$itm0=$edata['itm'.$iid];$itmk0=$edata['itmk'.$iid];$itmsk0=$edata['itmsk'.$iid];
+			$itme0=$edata['itme'.$iid];$itms0=$edata['itms'.$iid];
+			//发一条news 表示快递已送达
+			$sponsorid = $edata['clbpara']['sponsor'];
+			$result = $db->query("SELECT * FROM {$tablepre}gambling WHERE uid = '$sponsorid'");
+			$sordata = $db->fetch_array($result);
+			addnews($now,'gpost_success',$sordata['uname'],$itm0,$name);
+			//再见了~快递员！
+			unset($edata['clbpara']['post']);unset($edata['clbpara']['postid']);unset($edata['clbpara']['sponsor']);
+			destory_corpse($edata);
+			//解除快递锁
+			$db->query("UPDATE {$tablepre}gambling SET bnid=0 WHERE uid='$sponsorid'");
+		}
+
+		include template('findneut');
+		$cmd = ob_get_contents();
+		ob_clean();
+		$main = 'battle';
+		return;
+	}
+
 	//战斗准备流程：通过传入的战斗双方ID初始化
 	function rev_combat_prepare($nid,$eid) 
 	{

@@ -492,9 +492,160 @@ function putmicrotime($t_s,$t_e,$file,$info)
 	writeover( $file.'.txt',"$info ；执行时间：$mtime 毫秒 \n",'ab');
 }
 
+//格式化储存player表 可能也是四面的遗产
+function update_db_player_structure($type=0)
+{
+	global $db,$tablepre,$checkstr;
+	$db_player_structure = $db_player_structure_types = $tpldata = Array();
+	
+	$dps_need_update = 0;//判定是否需要更新玩家字段
+	$dps_file = GAME_ROOT.'./gamedata/bak/db_player_structure.config.php';
+	$sql_file = GAME_ROOT.'./gamedata/sql/players.sql';
+	if(!file_exists($dps_file) || filemtime($sql_file) > filemtime($dps_file)){
+		$dps_need_update = 1;
+	}
+	
+	if($dps_need_update){//如果要更新，直接新建一个表，不需要依赖已有的players表
+		$sql = file_get_contents($sql_file);
+		$sql = str_replace("\r", "\n", str_replace(' bra_', ' '.$tablepre.'tmp_', $sql));
+		$db->queries($sql);
+		$result = $db->query("DESCRIBE {$tablepre}tmp_players");
+		while ($sttdata = $db->fetch_array($result))
+		{
+			global ${$sttdata['Field']}; 
+			$db_player_structure[] = $sttdata['Field'];
+			$db_player_structure_types[$sttdata['Field']] = $sttdata['Type'];
+			//array_push($db_player_structure,$pdata['Field']);
+		}
+		$dps_cont = str_replace('?>','',str_replace('<?','<?php',$checkstr));
+		$dps_cont .= '$db_player_structure = ' . var_export($db_player_structure,1).";\r\n".'$db_player_structure_types = ' . var_export($db_player_structure_types,1).";\r\n?>";
+		writeover($dps_file, $dps_cont);
+		chmod($dps_file,0777);
+		
+	}else{//若不需要更新，则直接读文件就好
+		include $dps_file ;
+	}
+	return $type ? $db_player_structure_types : $db_player_structure;
+}
+//返回一个只有数据库合法字段键名的pdata数组
+function player_format_with_db_structure($data){
+	$ndata=Array();
+	$db_player_structure = update_db_player_structure();
+	foreach ($db_player_structure as $key){
+		if (isset($data[$key])) 
+		{
+			if(is_array($data[$key])) $data[$key]=json_encode($data[$key]);
+			$ndata[$key]=$data[$key];
+		}
+	}
+	return $ndata;
+}
+//为显示在主界面、尸体发现界面、游戏帮助界面的道具名、道具类、道具属性添加额外描述
+//传入$n=道具名/类/属性；$t='m'(使用名称数组)/'k'(类别)/'sk'(属性)；$short=1(传入的$n为数组情况下才有效，缩写属性)；$class(如果传入的$n没有匹配的样式,则应用该样式)
+function parse_itm_desc($n,$t,$short=0,$c=NULL)
+{
+	global $iteminfo,$itemspkinfo;
+	global $iteminfo_tooltip,$itemkinfo_tooltip,$itemspkinfo_tooltip,$iteminfo_tooltip_desc;
+	$s = "<span "; $p1 = ''; $p2 = ''; $ret = '';
+	switch($t)
+	{
+		//处理类别
+		case $t=='k':
+			if(isset($itemkinfo_tooltip[$n]['title'])) $p1 = "title=\"".$itemkinfo_tooltip[$n]['title']."\"";
+			if(isset($itemkinfo_tooltip[$n]['class'])) $p2 = "class=\"".$itemkinfo_tooltip[$n]['class']."\"";
+			$n = $iteminfo[$n];
+			break;
+		//处理属性
+		case $t=='sk':
+			//如果传入的n为数组，且开启缩写模式，则输出一段缩写
+			if($short && is_array($n))
+			{
+				$p1 = "title=\"";
+				$sk1 = $itemspkinfo[current($n)]; $sk2 = $itemspkinfo[end($n)]; $skn = '';
+				foreach($n as $sk_value)
+				{
+					if(!empty($skn)) $skn .='+'.$itemspkinfo[$sk_value];
+					else $skn = $itemspkinfo[$sk_value];
+				}
+				$p1.=$skn; $n = $sk1.'+...+'.$sk2; $p2 = "\"";
+			}
+			else
+			{
+				if(isset($itemspkinfo_tooltip[$n]['title'])) $p1 = "title=\"".$itemspkinfo_tooltip[$n]['title']."\"";
+				if(isset($itemspkinfo_tooltip[$n]['class'])) $p2 = "class=\"".$itemspkinfo_tooltip[$n]['class']."\"";
+				$n = $itemspkinfo[$n];
+			}
+			break;
+		//处理名字
+		case $t=='m':
+			$filter_n = preg_replace('/锋利的|电气|毒性|钉|\[.*\]|-改/', '', $n);
+			if(isset($iteminfo_tooltip[$filter_n]))
+			{
+				if(is_array($iteminfo_tooltip[$filter_n]))
+				{
+					if(isset($iteminfo_tooltip[$filter_n]['title'])) $p1 = "title=\"".$iteminfo_tooltip[$filter_n]['title']."\"";
+					if(isset($iteminfo_tooltip[$filter_n]['class'])) $p2 = "class=\"".$iteminfo_tooltip[$filter_n]['class']."\"";
+				}
+				elseif(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]))
+				{	//使用可复用描述 越来越离谱了
+					if(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['title'])) $p1 = "title=\"".$iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['title']."\"";
+					if(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['class'])) $p2 = "class=\"".$iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['class']."\"";
+				}
+			}
+			break;
+	}
+	//传入了样式 且道具没有与预设匹配的样式 则使用传入的样式
+	if(isset($c) && !$p2) $p2 = "class=\"".$c."\"";
+	$p3 = " >";	$e = "</span>";
+	$ret = $s.$p1.$p2.$p3.$n.$e;
+	return $ret;
+}
+
 //----------------------------------------
 //              字符串处理
 //----------------------------------------
+
+//将sk转为数组格式 只会转换登记过的属性
+function get_itmsk_array($sk_value)
+{
+	global $itemspkinfo;
+	$ret = Array();
+	$i = 0;
+	while ($i < strlen($sk_value))
+	{
+		$sub = substr($sk_value,$i,1); 
+		$i++;
+		if(!empty($sub) && array_key_exists($sub,$itemspkinfo)) array_push($ret,$sub);
+	}
+	return $ret;		
+}
+
+//还原itmsk为字符串 $max_length:字符串长度上限 
+function get_itmsk_strlen($sk_value,$max_length=5)
+{
+	global $itemspkinfo;
+	$ret = ''; $sk_count = 0;
+	foreach($sk_value as $sk)
+	{
+		if(array_key_exists($sk,$itemspkinfo))
+		{
+			$ret.=$sk;
+			$sk_count+=strlen($sk);
+		}
+		if($sk_count>=$max_length) break;
+	}
+	return $ret;
+}
+
+function get_clbpara($para)
+{
+	return json_decode($para,true);
+}
+
+function set_clbpara($para)
+{
+	return json_encode($para);
+}
 
 function mgzdecode($data)
 {

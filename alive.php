@@ -3,6 +3,7 @@
 define('CURSCRIPT', 'alive');
 
 require './include/common.inc.php';
+require './include/game/special.func.php';
 //extract(gkillquotes($_POST));
 //unset($_GET);
 
@@ -31,6 +32,23 @@ while($apdata = $db->fetch_array($result)) {
 
 $adata = Array();
 if($gamblingon){
+	//允许购买投资物品的商店类型
+	$gshoplist = Array
+	(
+		1=>'■ 补给品 ■',2=>'■ 药剂 ■',3=>'■ 钝器 ■',
+		4=>'■ 锐器 ■',5=>'■ 远程兵器 ■',6=>'■ 投掷兵器 ■',
+		7=>'■ 爆炸物 ■',8=>'■ 灵力兵器材料 ■',9=>'■ 防具 ■',
+		10=>'■ 书籍 ■',11=>'■ 电子装备 ■',12=>'■ 杂物 ■',
+		17=>'■ 限量福袋 ■',13=>'■ 埃克法轻工特供武器 ■',14=>'■ 林苍月的提示 ■',
+		15=>'■ Key社纪念品专卖 ■',16=>'■ NPC解锁钥匙 ■',18=>'■ 上级者向物品 ■',
+	);
+	//切糕与游戏币的兑换比率：1切糕=2块钱
+	$credits2_values = 2;
+	//不能赞助自己 1:启用 0:关闭
+	$no_self_sponsored = 0;
+	//赞助者的头衔
+	$sponsor_title = '场外热心玩家';
+	//初始化赌局变量
 	$gbinfo = '';
 	$gbingdata = $gbeddata = $gambled = Array();
 	$gbpool = 0;
@@ -58,40 +76,131 @@ if($gamblingon){
 //		$ad['odds'] = podds($ad);
 	}
 	//判断是否满足下注条件
-	if($cuser && $cpass){
+	if($cuser && $cpass)
+	{
 		if($gamestate < 20) { $gbinfo .= $_ERROR['no_start']; }
-		//elseif($now - $starttime >= 600) { $gbinfo .= '游戏开始超过10分钟，不可进行下注！'; }
-		elseif($areanum >= $areaadd) { $gbinfo .= '游戏超过一禁，不可进行下注！'; }
-		elseif($gamestate >= 30) { $gbinfo .= '游戏已停止激活，不可进行下注！'; }
+		elseif($gbmode=='gamble' && $now - $starttime >= 600) { $gbinfo .= '游戏开始超过10分钟，不可进行下注！'; }
+		elseif($gbmode=='gamble' && $areanum >= $areaadd) { $gbinfo .= '游戏超过一禁，不可进行下注！'; }
+		elseif($gamestate >= 30) { $gbinfo .= '游戏已停止激活，不可进行下注或赞助！'; }
 		elseif($gbpool >= 8000 && $wager>50) { $gbinfo .= '本局总奖池已经超过8000切糕上限，此时每人最多只能下注50切糕！'; }
-		else{
+		else
+		{
 			$uresult = $db->query("SELECT * FROM {$tablepre}users WHERE username='$cuser'");
-			if(!$db->num_rows($uresult)) { $gbinfo .= $_ERROR['login_check']; }
-			else{
+			if(!$db->num_rows($uresult)) 
+			{ 
+				$gbinfo .= $_ERROR['login_check']; 
+			}
+			else
+			{
 				$udata = $db->fetch_array($uresult);
 				if($udata['password'] != $cpass) { $gbinfo .= $_ERROR['wrong_pw']; }
 				elseif($udata['groupid'] <= 0) { $gbinfo .= $_ERROR['user_ban']; }
-				elseif($alivenum <= 0){ $gbinfo .= '当前生存人数为0，无法下注！';}
-				else{
+				elseif($alivenum <= 0){ $gbinfo .= '当前生存人数为0，无法下注！<br>';}
+				else
+				{
 					$uid = $udata['uid'];$uname = $udata['username'];
 					$credits2 = $udata['credits2'];
-					if($gbmode == 'gamble'){
-						$wager = ceil((int)$wager);
-						if(!$bet || $bet == 'none'){ $gbinfo .= '投注对象有误，请检查输入。';}
-						elseif($wager <= 0){ $gbinfo .= '投注数额有误，请检查输入。';}
-						elseif($wager > $credits2 || $wager > 1000 ){ $gbinfo .= '投注数额过大。每人每局最多只能投注总计不超过1000切糕。';}
-						elseif ($gbpool >= 8000 && $wager > 50) { $gbinfo .= '本局总奖池已经超过8000切糕上限，此时每人最多只能下注50切糕！'; }
-						else{
-							$bet = (int)$bet;
-							$bresult = $db->query("SELECT * FROM {$tablepre}players LEFT JOIN {$tablepre}users ON {$tablepre}players.name={$tablepre}users.username WHERE {$tablepre}players.pid='$bet'");
-							if(!$db->num_rows($bresult)) { $gbinfo .= '投注对象不存在。'; }
-							else{
-								$bdata = $db->fetch_array($bresult);
-								$bname = $bdata['name'];
-								if($bdata['hp'] <= 0 || $bdata['state'] >= 10) {$gbinfo .= '投注对象已死亡，无法下注。'; }
-								elseif($bdata['type'] >=1) {$gbinfo .= '投注对象不是人类！'; }
+					if(isset($gbmode) && $gbmode!=='none')
+					{
+						//脑瓜子嗡嗡的……连goto都用上了
+						if(!$bet || $bet == 'none')
+						{ 
+							$gbinfo .= '选择对象有误，请检查输入。<br>'; 
+							goto gb_result;
+						}
+						$bresult = $db->query("SELECT * FROM {$tablepre}players LEFT JOIN {$tablepre}users ON {$tablepre}players.name={$tablepre}users.username WHERE {$tablepre}players.pid='$bet'");
+						if(!$db->num_rows($bresult)) 
+						{ 
+							$gbinfo .= '选择的对象不存在。<br>'; 
+							goto gb_result;
+						}
+						$bdata = $db->fetch_array($bresult);
+						if($bdata['hp'] <= 0 || $bdata['state'] >= 10) 
+						{
+							$gbinfo .= '选择的对象已死亡，无法下注或赞助。'; 
+							goto gb_result;
+						}
+						if($bdata['type'] >=1) 
+						{
+							$gbinfo .= '选择的对象不是玩家！'; 
+							goto gb_result;
+						}
+						$bet = (int)$bet;
+						$bname = $bdata['name']; $bid = $bdata['pid'];
+						$gbudata = $gbeddata[$udata['uid']];
+						if($no_self_sponsored && $bname==$uname) 
+						{
+							$gbinfo .= '不能给自己下注或赞助！<br>'; 
+							goto gb_result;
+						}
+						if($gbmode == 'gsponsor')
+						{
+							//使用切糕点外卖
+							if ($gbudata['bitm'] || $gbudata['bnid'] ) 
+							{
+								$gbinfo .= '你派出去的快递员还没回来，耐心等等吧！<br>'; 
+								goto gb_result;
+							}
+							$iresult=$db->query("SELECT * FROM {$tablepre}shopitem WHERE sid = '$gbid'");
+							$iteminfo = $db->fetch_array($iresult);
+							$bnum = (int)$gbinum;
+							if(!$iteminfo) 
+							{
+								$gbinfo .= '要购买的道具不存在！<br><br>';
+								goto gb_result;
+							}
+							if($iteminfo['num'] <= 0) {
+								$gbinfo .= '此物品已经售空！<br><br>';
+								goto gb_result;
+							} elseif($bnum<=0) {
+								$gbinfo .= '购买数量必须为大于0的整数。<br><br>';
+								goto gb_result;
+							} elseif($bnum>$iteminfo['num']) {
+								$gbinfo .= '购买数量必须小于存货数量。<br><br>';
+								goto gb_result;
+							} elseif($credits2*$credits2_values < $iteminfo['price']*$bnum) {
+								$gbinfo .= '切糕不足，不能购买此物品！<br><br>';
+								goto gb_result;
+							} elseif(!preg_match('/^(WC|WD|WF|Y|B|C|TN|GB|H|V|M)/',$iteminfo['itmk'])&&$bnum>1) {
+								$gbinfo .= '此物品一次只能购买一个。<br><br>';
+								goto gb_result;
+							}elseif($iteminfo['area']> $areanum/$areaadd){
+								$gbinfo .= '此物品尚未开放出售！<br><br>';
+								goto gb_result;
+							}
+							$inum = $iteminfo['num']-$bnum;
+							$sid = $iteminfo['sid'];
+							//扣除商店库存
+							$db->query("UPDATE {$tablepre}shopitem SET num = '$inum' WHERE sid = '$sid'");
+							//扣除切糕
+							$cost_credits2 = round($iteminfo['price']*$bnum/$credits2_values);
+							$credits2 -= $cost_credits2;
+							$db->query("UPDATE {$tablepre}users SET credits2='$credits2' WHERE uid='$uid'");
+							//发news
+							$gbinfo .= "花费{$cost_credits2}切糕购买了{$bnum}份{$iteminfo['item']}。<br>";
+							addnews($now,'gpost',$sponsor_title.' '.$udata['username'],$iteminfo['item'],$bdata['nick'].' '.$bdata['name'],$plsinfo[$bdata['pls']],$bnum);
+							//打包快递给快递员 返回新生成的快递员pid
+							$gclb = Array('clbpara'=>Array('sponsor'=>$uid,'post'=>$bet,'postid'=>6),); //记录赞助者的uid、收货方的pid、道具位置
+							$gitem = Array(6,$iteminfo['item'],$iteminfo['itmk'],$iteminfo['itme'],$iteminfo['itms']*$bnum,$iteminfo['itmsk']);//打包快递
+							include_once GAME_ROOT.'./include/system.func.php';
+							$nid = addnpc(90,0,1,$now,$gclb,$gitem,$bdata['pls'])[0];
+							$gbinfo .= "快递员已带着你赞助的商品前往{$bdata['name']}所在的{$plsinfo[$bdata['pls']]}！谢谢惠顾~<br>";
+							//存一条发快递记录到gambling表里，一个玩家在快递被接收前不能发第二份快递。防止有人狂买低价商品挤爆players表。
+							//有过投注记录
+							if($gbnum && isset($gbeddata[$udata['uid']])) $db->query("UPDATE {$tablepre}gambling SET bnid='$nid' WHERE uid='$uid'");
+							//没有投注记录，新生成一条
+							else $db->query("INSERT INTO {$tablepre}gambling (uid,uname,bnid) VALUES ('$uid','$uname','$nid')");
+						}
+						elseif($gbmode == 'gamble')
+						{
+							//使用切糕刚不灵
+							$wager = ceil((int)$wager);
+							if($wager > $credits2 || $wager > 1000 ){ $gbinfo .= '投注数额过大。每人每局最多只能投注总计不超过1000切糕。';}
+							elseif ($gbpool >= 8000 && $wager > 50) { $gbinfo .= '本局总奖池已经超过8000切糕上限，此时每人最多只能下注50切糕！'; }
+							else
+							{
+								if($wager <= 0){ $gbinfo .= '投注数额有误，请检查输入。';}
 								elseif($gbnum && isset($gbeddata[$udata['uid']])){//已经下注
-									$gbudata = $gbeddata[$udata['uid']];
 									if ($gbudata['wager'] + $wager > 1000 ) 
 									{
 										$gbinfo .= '投注数额过大。每人每局最多只能投注总计不超过1000切糕。';
@@ -100,11 +209,11 @@ if($gamblingon){
 									{
 										$gbinfo .= '本局总奖池已经超过8000切糕上限，此时每人最多只能下注50切糕！';
 									}
-									else if($gbudata['bid'] != $bet){$gbinfo .= '追加切糕的对象必须跟之前相同。';}
+									else if($gbudata['bid'] != $bet && $gbudata['bid'] != 0){$gbinfo .= '追加切糕的对象必须跟之前相同。';}
 									else{
 										$bwager = $gbudata['wager'] + $wager;
 										$odds = ($gbudata['wager'] * $gbudata['odds'] + $nowodds * $wager)/$bwager;
-										$db->query("UPDATE {$tablepre}gambling SET wager='$bwager',odds='$odds' WHERE uid='$uid'");
+										$db->query("UPDATE {$tablepre}gambling SET bid='$bet',bname='$bname',wager='$bwager',odds='$odds' WHERE uid='$uid'");
 										if($db->affected_rows() == 1){
 											$gbeddata[$udata['uid']]['wager']+=$wager;
 											//$gbeddata[$udata['uid']]['odds']=$odds;
@@ -141,15 +250,16 @@ if($gamblingon){
 							}
 						}
 					}
+					gb_result:
 					if($gbnum && isset($gbeddata[$udata['uid']])){
 						$gbudata = $gbeddata[$udata['uid']];
-						$gbinfo .= '你已下注，对象为：'.$gbudata['bname'].'，切糕为：'.$gbudata['wager'].'；';
-						//var_dump($gbeddata[$udata['uid']]);
+						if($gbudata['wager']>0) $gbinfo .= '<span class=\'yellow\'>你已下注，对象为：'.$gbudata['bname'].'，下注的切糕为：'.$gbudata['wager'].'；</span><br>';
+						if($gbudata['bnid']>0) $gbinfo .= '<span class=\'yellow\'>你赞助的包裹尚在运输途中！</span><br>';
 						$gbact = 1;
 					}else{
-						$gbinfo .= '你尚未下注。';
+						$gbinfo .= '<span class=\'grey\'>你尚未下注或投资。</span>';
 						$gbact = 0;
-					}					
+					}
 				}
 			}		
 		}

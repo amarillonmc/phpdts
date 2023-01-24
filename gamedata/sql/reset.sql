@@ -101,6 +101,6 @@ CREATE TABLE bra_gambling (
   bname char(15) NOT NULL default '',
   wager int unsigned NOT NULL default '0',
   odds decimal(8,4) unsigned NOT NULL default '0',
-
+  bnid smallint unsigned NOT NULL default '0',
   PRIMARY KEY  (gid)
 ) ENGINE=MyISAM;

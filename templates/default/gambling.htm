@@ -1,23 +1,40 @@
-
-<!--{if $gbnum}-->当前奖池：{$gbpool}。<!--{else}-->当前还未开设赌局。<!--{/if}-->当前分成系数：{$nowodds}
-<span class="yellow" id="gbinfo">
-	$gbinfo
-</span>
-<!--{if $cuser && isset($credits2)}-->
-	你的{lang credits2}：<span id="credits2" class="yellow">$credits2</span>
-	<!--{if $gbact == 1}-->
-	<input type="hidden" name="bet" value="{$gbudata['bid']}">
-	
-	<!--{else}-->
-	选择：
+<!--{if $cuser && isset($credits2)}-->你的{lang credits2}：<span id="credits2" class="yellow">$credits2</span>。
+	你可以选择一位对象，消耗<span class="yellow">{lang credits2}</span>为ta<span class="yellow">下注</span>或<span class="yellow">赞助</span>。
+	选择对象：
 	<select name="bet">
 		<option value="none">不选择
 		<!--{loop $alivedata $alive}--><option value="{$alive['pid']}">{$alive['name']}<!--{/loop}-->
 	</select>
-	<!--{/if}-->
-	
-	
-	赌注：<input type="text" name="wager" value="1" size="4" maxlength="6">	
-	
-	<input type="button" <!--{if $gbact == 1}-->value="追加"<!--{else}-->value="下注"<!--{/if}--> onClick="$('gbmode').value='gamble';postCmd('alive','alive.php');">
+	<br>
 <!--{/if}-->
+
+<!--{if $cuser && isset($credits2)}-->
+	赞助：
+	<span id="gbshop_box">
+		<select id="gbid" name="gbid" style="width:100px" onchange="$('command').value='gbid';postCmd('gamecmd','command.php');this.disabled=true;">
+		<option  value="main">可赞助商品一览</option>
+		<!--{loop $gshoplist $gshopid $gshopname}-->
+			<optgroup label="$gshopname">
+				<!--{loop shoplist($gshopid,1) $idata}-->
+					<!--{if isset($idata['sid']) && $idata['price']<=$credits2*$credits2_values}-->
+					<option value="$idata['sid']">$idata['item']/$idata['itmk']/$idata['itme']/$idata['itms']<!--{if $idata['itmsk_words']}-->/$idata['itmsk_words']<!--{/if}--> 【价:$idata['price'],数:$idata['num']】</option>
+					<!--{/if}-->
+				<!--{/loop}-->
+		<!--{/loop}-->
+		</select>
+	</span>
+	 数量：<input type="text" name="gbinum" value="1" size="4" maxlength="6">
+	<input type="button" value="下单" onClick="$('gbmode').value='gsponsor';postCmd('alive','alive.php');">
+	<br>
+<!--{/if}-->
+
+<!--{if $gbnum}-->当前奖池：{$gbpool}。当前分成系数：{$nowodds}。<!--{else}-->当前还未开设赌局。<!--{/if}-->
+<!--{if $cuser && isset($credits2)}-->
+	下注：<input type="text" name="wager" value="1" size="4" maxlength="6">
+	<input type="button" <!--{if $gbact == 1}-->value="追加"<!--{else}-->value="下注"<!--{/if}--> onClick="$('gbmode').value='gamble';postCmd('alive','alive.php');">
+	<br>
+<!--{/if}-->	
+
+<span class="yellow" id="gbinfo">
+	$gbinfo
+</span>

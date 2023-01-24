@@ -996,20 +996,6 @@
 
 	/********一些可复用函数 也许可以挪到其他地方********/
 
-	//销毁尸体
-	function destory_corpse(&$edata)
-	{
-		if($edata && $edata['hp']<=0)
-		{
-			//$edata['state'] = 16;
-			$edata['money'] = 0;
-			$edata['weps'] = 0;$edata['arbs'] = 0;$edata['arhs'] = 0;$edata['aras'] = 0;$edata['arfs'] = 0;$edata['arts'] = 0;
-			$edata['itms0'] = 0;$edata['itms1'] = 0;$edata['itms2'] = 0;$edata['itms3'] = 0;$edata['itms4'] = 0;$edata['itms5'] = 0;$edata['itms6'] = 0;
-			player_save($edata);
-		}
-		return;
-	}
-
 	//打包尸体 ……
 	function pack_corpse(&$edata)
 	{

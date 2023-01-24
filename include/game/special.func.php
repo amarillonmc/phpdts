@@ -475,12 +475,13 @@ function press_bomb(){
 	return;
 }
 
-function shoplist($sn) {
+function shoplist($sn,$getlist=NULL) {
 	global $gamecfg,$mode,$itemdata,$areanum,$areaadd,$iteminfo,$itemspkinfo,$club;
 	global $db,$tablepre;
 	$arean = floor($areanum / $areaadd); 
 	$result=$db->query("SELECT * FROM {$tablepre}shopitem WHERE kind = '$sn' AND area <= '$arean' AND num > '0' AND price > '0' ORDER BY sid");
 	$shopnum = $db->num_rows($result);
+	$itemdata = Array();
 	for($i=0;$i< $shopnum;$i++){
 		$itemlist = $db->fetch_array($result);
 		$itemdata[$i]['sid']=$itemlist['sid'];
@@ -489,26 +490,38 @@ function shoplist($sn) {
 		$itemdata[$i]['price']= $club == 11 ? round($itemlist['price']*0.75) : $itemlist['price'];
 		$itemdata[$i]['area']=$itemlist['area'];
 		$itemdata[$i]['item']=$itemlist['item'];
+		$itemdata[$i]['item_words']= parse_itm_desc($itemdata[$i]['item'],'m');
 		$itemdata[$i]['itme']=$itemlist['itme'];
 		$itemdata[$i]['itms']=$itemlist['itms'];
 		//list($sid,$kind,$num,$price,$area,$item,$itmk,$itme,$itms,$itmsk)=explode(',',$itemlist);
 		foreach($iteminfo as $info_key => $info_value){
 			if(strpos($itemlist['itmk'],$info_key)===0){
-				$itemdata[$i]['itmk_words'] = $info_value;
+				if(isset($getlist)) $itemdata[$i]['itmk'] = $info_value;
+				$itemdata[$i]['itmk_words'] = parse_itm_desc($info_key,'k');
 				break;
 			}
 		}
 		$itemdata[$i]['itmsk_words'] = '';
 		if($itemlist['itmsk'] && ! is_numeric($itemlist['itmsk'])){
-			for ($j = 0; $j < strlen($itemlist['itmsk']); $j++) {
-				$sub = substr($itemlist['itmsk'],$j,1);
-				if(!empty($sub)){
-					$itemdata[$i]['itmsk_words'] .= $itemspkinfo[$sub];
+			if(!isset($getlist))
+			{
+				$tmp_sk = get_itmsk_array($itemlist['itmsk']);
+				foreach($tmp_sk as $sk) $itemdata[$i]['itmsk_words'].= parse_itm_desc($sk,'sk');
+			}
+			else 
+			{
+				for ($j = 0; $j < strlen($itemlist['itmsk']); $j++) {
+					$sub = substr($itemlist['itmsk'],$j,1);
+					if(!empty($sub) && isset($itemspkinfo[$sub])){
+						$itemdata[$i]['itmsk_words'] .= $itemspkinfo[$sub];
+					}
 				}
 			}
 		}
 		//$itemdata[$i] = array('sid' => $sid, 'kind' => $kind,'num' => $num, 'price' => $price, 'area' => $area, 'item' => $item,'itmk_words' => $itmk_words,'itme' => $itme, 'itms' => $itms,'itmsk_words' => $itmsk_words);
 	}
+
+	if(isset($getlist)) return $itemdata;
 	
 	$mode = 'shop';
 

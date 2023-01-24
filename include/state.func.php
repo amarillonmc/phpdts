@@ -538,4 +538,32 @@ function rest($command) {
 	return;
 }
 
+//登记一些特殊的死亡事件
+function check_kill_events($kid,$eid)
+{
+	global $db,$tablepre,$log;
+
+	$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$eid'");
+	$edata = $db->fetch_array($result);
+
+	if(!is_array($edata['clbpara'])) $edata['clbpara']=get_clbpara($edata['clbpara']);
+
+	if($edata['clbpara']['post']) 
+	{	
+		//发一条news 表示快递被劫走了
+		$log.="<span class='sienna'>某样东西从{$edata['name']}身上掉了出来……</span><br>";
+		$iid = $edata['clbpara']['postid'];
+		$sponsorid = $edata['clbpara']['sponsor'];
+		$result = $db->query("SELECT * FROM {$tablepre}gambling WHERE uid = '$sponsorid'");
+		$sordata = $db->fetch_array($result);
+		addnews($now,'gpost_failed',$sordata['uname'],$edata['itm'.$iid]);
+		//消除快递相关参数
+		unset($edata['clbpara']['post']);unset($edata['clbpara']['postid']);unset($edata['clbpara']['sponsor']);
+		//解除快递锁
+		$db->query("UPDATE {$tablepre}gambling SET bnid=0 WHERE uid='$sponsorid'");
+		player_save($edata);
+	}
+	return;
+}
+
 ?>
