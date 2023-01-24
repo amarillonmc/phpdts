@@ -227,6 +227,7 @@ function combat($active = 1, $wep_kind = '') {
 		
 		include_once GAME_ROOT . './include/state.func.php';
 		$killmsg = kill ( $wep_kind, $w_name, $w_type, $w_pid, $wep_temp );
+		check_kill_events($pid,$w_pid);
 		$log .= npc_chat ( $w_type,$w_name, 'death' );
 		
 		include_once GAME_ROOT.'./include/game/achievement.func.php';
