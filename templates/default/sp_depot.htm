@@ -1,0 +1,16 @@
+<!--{eval include_once GAME_ROOT.'./include/game/depot.func.php';}-->
+<input type="hidden" name="mode" value="depot">
+你在某个不起眼的角落发现了一个黑乎乎的匣子。<br>
+当你靠近时，匣子上方投影出了一段文字。<br>
+从屏幕上的内容来看，你似乎可以把道具存放在这个「绝对安全」的匣子里。<br>
+那么……该怎么做呢？<br>
+<br>
+<input type="radio" name="command" id="menu" value="menu" checked><a onclick=sl('menu'); href="javascript:void(0);" onmouseover="status=' ';return true;">【离开】</a>
+<br>
+<input type="radio" name="command" id="sp_depot_save" value="sp_depot_save"><a onclick=sl('sp_depot_save'); href="javascript:void(0);" onmouseover="status=' ';return true;">【存放道具】</a><br>
+<span class="grey">选择该功能，可以将身上的道具<span class="yellow">储存</span>在安全箱中进行保管。<br>储存的道具<span class="yellow">不可堆叠</span>，<!--{if $max_saveitem_num>0}-->且最多可以存放<span class="yellow">$max_saveitem_num</span>件，<!--{/if}-->请在储存前将其整理好。储存道具的手续费为每件<span class="yellow">$saveitem_cost</span>元。<br>
+
+<input type="radio" name="command" id="sp_depot_load" value="sp_depot_load"><a onclick=sl('sp_depot_load'); href="javascript:void(0);" onmouseover="status=' ';return true;">【取出道具】</a><br>
+<span class="grey">选择该功能，可以将储存在安全箱中的道具<span class="yellow">取出</span>。<br>取出道具时，会收取一定的保管费，保管费用为每件<span class="yellow">$loaditem_cost</span>元。<br>
+<br>
+<input type="button" class="cmdbutton" name="submit" id="提交" value="提交" onclick="postCmd('gamecmd','command.php');this.disabled=true;">

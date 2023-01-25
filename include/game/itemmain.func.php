@@ -1045,6 +1045,16 @@ function getcorpse($item){
 		$mode = 'command';
 		return;
 	}
+
+	if($item == 'loot_depot')
+	{
+		global $name,$type;
+		include_once GAME_ROOT.'./include/game/depot.func.php';
+		loot_depot($name,$type,$edata['name'],$edata['type']);
+		$action = '';
+		$mode = 'command';
+		return;
+	}
 	
 	if($item == 'wep') {
 		$itm0 = $edata['wep'];
