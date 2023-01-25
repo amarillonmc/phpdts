@@ -23,6 +23,8 @@ if(filemtime($mapitemfile) > filemtime($writefile))
 	$file = config('mapitem',$gamecfg);
 	$itemlist = openfile($file);
 	$in = sizeof($itemlist);
+	//登记非功能性地点信息时合并隐藏地点
+	foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
 	for($i = 1; $i < $in; $i++) 
 		if(!empty($itemlist[$i]) && strpos($itemlist[$i],',')!==false)
 		{

@@ -176,6 +176,9 @@ function senditem(){
 
 	$edata = $db->fetch_array($result);
 	if($edata['pls'] != $pls) {
+		//登记非功能性地点信息时合并隐藏地点
+		global $hplsinfo;
+		foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
 		$log .= '<span class="yellow">'.$edata['name'].'</span>已经离开了<span class="yellow">'.$plsinfo[$pls].'</span>。<br>';
 		$mode = 'command';
 		$action = '';

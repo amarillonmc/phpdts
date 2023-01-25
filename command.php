@@ -599,7 +599,7 @@ if($hp <= 0) {
 
 
 if(isset($url)){$gamedata['url'] = $url;}
-$gamedata['innerHTML']['pls'] = $plsinfo[$pls];
+$gamedata['innerHTML']['pls'] = (!isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup])) ? $hplsinfo[$pgroup][$pls] : $plsinfo[$pls];
 $gamedata['innerHTML']['anum'] = $alivenum;
 
 ob_clean();

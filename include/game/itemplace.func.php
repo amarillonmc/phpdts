@@ -5,7 +5,9 @@ if (! defined ( 'IN_GAME' )) {
 
 function get_item_place($which)
 {
-	global $plsinfo,$gamecfg;
+	global $plsinfo,$hplsinfo,$gamecfg;
+	//登记非功能性地点信息时合并隐藏地点
+	foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
 	//获取某物品的获取方式，如刷新地点或商店是否有卖等
 	$result="";
 	$file = config('mapitem',$gamecfg);

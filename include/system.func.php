@@ -494,7 +494,7 @@ function gameover($time = 0, $mode = '', $winname = '') {
 function movehtm($atime = 0) {
 	global $plsinfo,$arealist,$areanum,$hack,$pls,$xyinfo,$areahour,$areaadd;
 
-	$movehtm = GAME_ROOT.TPLDIR.'/move.htm';
+	/*$movehtm = GAME_ROOT.TPLDIR.'/move.htm';
 	$movedata = '<option value="main">■ 移动 ■<br />';
 
 	foreach($plsinfo as $key => $value) {
@@ -502,15 +502,16 @@ function movehtm($atime = 0) {
 		$movedata .= "<option value=\"$key\"><!--{if \$pls == $key}--><--现在位置--><!--{else}-->$value($xyinfo[$key])<!--{/if}--><br />";
 		}
 	} 
-	writeover($movehtm,$movedata);
+	writeover($movehtm,$movedata);*/
 	
-	$areahtm = GAME_ROOT.TPLDIR.'/areainfo.htm';
+	/*$areahtm = GAME_ROOT.TPLDIR.'/areainfo.htm';
 	$areadata = '<span class="evergreen"><b>现在的禁区是：</b></span>';
 	for($i=0;$i<=$areanum;$i++){
 		$areadata .= '&nbsp;'.$plsinfo[$arealist[$i]];
 	}
-	$areadata .= '<br><span class="evergreen"><b>下回的禁区是：</b></span>';
+	$areadata .= '<br><span class="evergreen"><b>下回的禁区是：</b></span>';*/
 	
+	$areadata = '';
 	if(!$atime){
 		global $areatime;
 		$atime = $areatime;
@@ -551,8 +552,9 @@ function movehtm($atime = 0) {
 			$areadata .= '&nbsp;'.$plsinfo[$arealist[$areanum+$areaadd*2+$i]].'&nbsp;';
 		}
 	}
-	writeover($areahtm,$areadata);
-	return;
+	return $areadata;
+	//writeover($areahtm,$areadata);
+	//return;
 }
 
 function addnpc($type,$sub,$num,$time = 0,$clbstatus=NULL,$aitem=NULL,$apls=NULL) {

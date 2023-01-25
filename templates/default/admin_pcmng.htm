@@ -265,8 +265,8 @@
 		<tr>
 			<td>最大歌魂</td>
 			<td><input size="20" type="text" name="mss" value="{$pc['mss']}" maxlength="20"></td>
-			<td></td>
-			<td></td>
+			<td>位置组</td>
+			<td><input size="20" type="text" name="pgroup" value="{$pc['pgroup']}" maxlength="20"></td>
 			<td></td>
 			<td></td>
 		</tr>
@@ -288,7 +288,7 @@
 		</tr>
 		<tr>
 			<td>社团参数集</td>
-			<td><textarea cols="20" rows="4" style="overflow:auto" name="clbpara">{$pc['clbpara']}</textarea></td>
+			<td><textarea cols="20" rows="4" style="overflow:auto" name="str_clbpara">{$pc['str_clbpara']}</textarea></td>
 		</tr>
 	</table>
 	<input type="submit" value="修改玩家数值" onclick="$('command').value = 'submitedit'">

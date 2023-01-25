@@ -57,6 +57,9 @@ function combat($active = 1, $wep_kind = '') {
 		$edata = $db->fetch_array ( $result );
 		
 		if ($edata ['pls'] != $pls) {
+			//登记非功能性地点信息时合并隐藏地点
+			global $hplsinfo;
+			foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
 			$log .= "<span class=\"yellow\">" . $edata ['name'] . "</span>已经离开了<span class=\"yellow\">$plsinfo[$pls]</span>。<br>";
 			$action = '';
 			$mode = 'command';
@@ -2116,6 +2119,11 @@ function exprgup(&$lv_a, $lv_d, &$exp, $isplayer, &$rg) {
 }
 
 function addnoise($wp_kind, $wsk, $ntime, $npls, $nid1, $nid2, $nmode) {
+	
+	//在隐藏地图内不会传出声音信息
+	global $plsinfo;
+	if(!array_key_exists($npls,$plsinfo)) return;
+	
 	if ((($wp_kind == 'G') && (strpos ( $wsk, 'S' ) === false)) || ($wp_kind == 'F')) {
 		global $noisetime, $noisepls, $noiseid, $noiseid2, $noisemode;
 		$noisetime = $ntime;

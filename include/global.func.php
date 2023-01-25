@@ -373,11 +373,15 @@ function save_combatinfo(){
 }
 
 function getchat($last,$team='',$limit=0) {
-	global $db,$tablepre,$chatlimit,$chatinfo,$plsinfo;
+	global $db,$tablepre,$chatlimit,$chatinfo,$plsinfo,$hplsinfo;
 	$limit = $limit ? $limit : $chatlimit;
 	$result = $db->query("SELECT * FROM {$tablepre}chat WHERE cid>'$last' AND (type!='1' OR (type='1' AND recv='$team')) ORDER BY cid desc LIMIT $limit");
 	$chatdata = Array('lastcid' => $last, 'msg' => array());
 	if(!$db->num_rows($result)){$chatdata = array('lastcid' => $last, 'msg' => '');return $chatdata;}
+
+	//登记非功能性地点信息时合并隐藏地点
+	$tplsinfo = $plsinfo;
+	foreach($hplsinfo as $hgroup=>$hpls) $tplsinfo += $hpls;
 	
 	while($chat = $db->fetch_array($result)) {
 		//if(!$chatdata['lastcid']){$chatdata['lastcid'] = $chat['cid'];}
@@ -391,9 +395,9 @@ function getchat($last,$team='',$limit=0) {
 			$msg = "<span class=\"lime\">【{$chatinfo[$chat['type']]}】{$chat['send']}：{$chat['msg']}".date("\(H:i:s\)",$chat['time']).'</span><br>';
 		} elseif($chat['type'] == '3') {
 			if ($chat['msg']){
-				$msg = "<span class=\"red\">【{$plsinfo[$chat['recv']]}】{$chat['send']}：{$chat['msg']} ".date("\(H:i:s\)",$chat['time']).'</span><br>';
+				$msg = "<span class=\"red\">【{$tplsinfo[$chat['recv']]}】{$chat['send']}：{$chat['msg']} ".date("\(H:i:s\)",$chat['time']).'</span><br>';
 			} else {
-				$msg = "<span class=\"red\">【{$plsinfo[$chat['recv']]}】{$chat['send']} 什么都没说就死去了 ".date("\(H:i:s\)",$chat['time']).'</span><br>';
+				$msg = "<span class=\"red\">【{$tplsinfo[$chat['recv']]}】{$chat['send']} 什么都没说就死去了 ".date("\(H:i:s\)",$chat['time']).'</span><br>';
 			}
 		} elseif($chat['type'] == '4') {
 			$msg = "<span class=\"yellow\">【{$chatinfo[$chat['type']]}】{$chat['msg']}".date("\(H:i:s\)",$chat['time']).'</span><br>';

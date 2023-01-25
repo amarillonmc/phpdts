@@ -41,7 +41,7 @@
 			$log.="无法转移安全箱权限！可能是对方的权限等级比你高。<br>";
 			return;
 		}
-		if(count(depot_getlist($n,$t))<=0) 
+		if(count(depot_getlist($tn,$tt))<=0) 
 		{
 			$log.="对方没有在安全箱内存过东西！<br>";
 			return;
