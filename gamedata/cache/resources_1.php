@@ -1213,7 +1213,8 @@ $elements_info = Array
 	4 => $sparkle.'<span class="mtgwhite">昼闪闪</span>'.$sparkle,
 	5 => $sparkle.'<span class="mtgblack">夜静静</span>'.$sparkle,
 );
-
+//安全箱位置
+$depots = Array(5,28);
 $shops = Array(0,14,27);
 $hospitals = Array(11,19,32);
 $plsinfo = Array(

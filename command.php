@@ -452,6 +452,37 @@ if($hp > 0){
 				$log .= '<span class="yellow">你所在的地区没有商店。</span><br />';
 				$mode = 'command';
 			}
+		} elseif($mode == 'depot') {
+			include_once GAME_ROOT.'./include/game/depot.func.php';
+			if(in_array($pls,$depots))
+			{
+				global $name,$type;
+				$saveitem_list = depot_getlist($name,$type);
+				switch($command)
+				{
+					case 'sp_depot_save':
+						$mode = 'sp_depot_save';
+						break;
+					case 'sp_depot_load':
+						$mode = 'sp_depot_load';
+						break;
+					case strpos($command,'saveitem')===0:
+						$iid = substr($command,9);
+						depot_save($iid);
+						break;
+					case strpos($command,'loaditem')===0:
+						$lid = substr($command,9);
+						depot_load($lid);
+						break;
+					default :
+						$mode = 'sp_depot';
+				}
+			}
+			else
+			{
+				$log .= '<span class="yellow">你所在的地区没有安全箱。</span><br />';
+				$mode = 'command';
+			}
 		} elseif($mode == 'deathnote') {
 			if($dnname){
 				include_once GAME_ROOT.'./include/game/item2.func.php';

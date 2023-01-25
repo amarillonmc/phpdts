@@ -104,3 +104,23 @@ CREATE TABLE bra_gambling (
   bnid smallint unsigned NOT NULL default '0',
   PRIMARY KEY  (gid)
 ) ENGINE=MyISAM;
+
+
+--
+-- 表的结构 `bra_itemdepot`
+-- 储存仓库道具的信息
+--
+
+DROP TABLE IF EXISTS bra_itemdepot;
+CREATE TABLE bra_itemdepot (
+  iid mediumint unsigned NOT NULL auto_increment,
+  itm varchar(30) NOT NULL default '',
+  itmk varchar(15) not null default '',
+  itme int(10) unsigned NOT NULL default '0',
+  itms varchar(10) not null default '0',
+  itmsk varchar(40) not null default '',
+  itmowner char(15) NOT NULL DEFAULT '',
+  itmpw char(5) NOT NULL DEFAULT '',
+  
+  PRIMARY KEY  (iid)
+) ENGINE=MyISAM;

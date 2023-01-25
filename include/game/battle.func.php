@@ -135,13 +135,13 @@ function findcorpse(&$w_pdata){
 				{
 					${$w_sk_value.'_words'} .= parse_itm_desc($sk,'sk');
 				}
-				/*for ($i = 0; $i < strlen($w_sk_value)-1; $i++) {
-					$sub = substr(${$w_sk_value},$i,1);
-					if(!empty($sub)){
-						${$w_sk_value.'_words'} .= $itemspkinfo[$sub];
-					}
-				}*/
 			}
+		}
+		include_once GAME_ROOT.'./include/game/depot.func.php';
+		$loot_depot_flag = 0;
+		if(in_array($w_type,$can_lootdepot_type))
+		{
+			$loot_depot_flag = depot_getlist($w_name,$w_type) ? 1 : 0;
 		}
 		include template('corpse');
 		$cmd = ob_get_contents();

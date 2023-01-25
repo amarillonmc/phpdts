@@ -1,0 +1,12 @@
+<input type="hidden" name="mode" value="depot">
+你在全息屏幕上提交了取出道具的请求。<br>
+一阵闪烁后，屏幕上的内容刷新为你曾经在安全箱中存入的道具信息。<br>
+要从安全箱中取出什么呢？<br>
+<br>
+<input type="radio" name="command" id="sp_depot" value="sp_depot" checked><a onclick=sl('menu'); href="javascript:void(0);" onmouseover="status=' ';return true;">返回</a>
+<br><br>
+<!--{loop $saveitem_list $sid $siar}-->
+<input type="radio" name="command" id="loaditem_$sid" value="loaditem_$sid"><a onclick="$('loaditem_$sid').click();" href="javascript:void(0);">$siar['itm']/$siar['itme']/$siar['itms']</a><br>
+<!--{/loop}-->
+<br><br>
+<input type="button" class="cmdbutton" name="submit" id="提交" value="提交" onclick="postCmd('gamecmd','command.php');this.disabled=true;">

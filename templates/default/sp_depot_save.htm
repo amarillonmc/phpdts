@@ -1,0 +1,15 @@
+<input type="hidden" name="mode" value="depot">
+你在全息屏幕上提交了储存的请求。<br>
+一阵闪烁后，屏幕上的内容刷新为了你身上携带着的道具信息。<br>
+要向安全箱内存入什么呢？<br>
+<br>
+<input type="radio" name="command" id="sp_depot" value="sp_depot" checked><a onclick=sl('menu'); href="javascript:void(0);" onmouseover="status=' ';return true;">返回</a>
+<br><br>
+<!--{if $itms1}--><input type="radio" name="command" id="saveitem_1" value="saveitem_1"><a onclick="$('saveitem_1').click();" href="javascript:void(0);">$itm1/$itme1/$itms1</a><br><!--{/if}-->
+<!--{if $itms2}--><input type="radio" name="command" id="saveitem_2" value="saveitem_2"><a onclick="$('saveitem_2').click();" href="javascript:void(0);">$itm2/$itme2/$itms2</a><br><!--{/if}-->
+<!--{if $itms3}--><input type="radio" name="command" id="saveitem_3" value="saveitem_3"><a onclick="$('saveitem_3').click();" href="javascript:void(0);">$itm3/$itme3/$itms3</a><br><!--{/if}-->
+<!--{if $itms4}--><input type="radio" name="command" id="saveitem_4" value="saveitem_4"><a onclick="$('saveitem_4').click();" href="javascript:void(0);">$itm4/$itme4/$itms4</a><br><!--{/if}-->
+<!--{if $itms5}--><input type="radio" name="command" id="saveitem_5" value="saveitem_5"><a onclick="$('saveitem_5').click();" href="javascript:void(0);">$itm5/$itme5/$itms5</a><br><!--{/if}-->
+<!--{if $itms6}--><input type="radio" name="command" id="saveitem_6" value="saveitem_6"><a onclick="$('saveitem_6').click();" href="javascript:void(0);">$itm6/$itme6/$itms6</a><br><!--{/if}-->
+<br><br>
+<input type="button" class="cmdbutton" name="submit" id="提交" value="提交" onclick="postCmd('gamecmd','command.php');this.disabled=true;">

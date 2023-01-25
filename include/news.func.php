@@ -35,8 +35,8 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		if(strpos($news,'death')!==false && $news!=='death28' && isset($d)) $d = parse_itm_desc($d,'m',0,"red");
 		//赠送道具、吃到毒补给、陷阱、改变天气、强化武器、唱歌、打开礼物盒：道具名登记在$c上；
 		if((strpos($news,'senditem')!==false||strpos($news,'poison')!==false||strpos($news,'trap')!==false||strpos($news,'wth')!==false||strpos($news,'newwep')!==false||strpos($news,'song')!==false||strpos($news,'present')!==false) && isset($c)) $c = parse_itm_desc($c,'m');
-		//合成、使用死斗卡：道具名登记在$b上;
-		if((strpos($news,'mix')!==false||strpos($news,'duelkey')!==false) && isset($b)) $b = parse_itm_desc($b,'m');
+		//合成、使用死斗卡、使用仓库：道具名登记在$b上;
+		if((strpos($news,'mix')!==false||strpos($news,'duelkey')!==false||strpos($news,'depot')===0) && isset($b)) $b = parse_itm_desc($b,'m');
 
 		//$sec='??';
 		if($news == 'newgame') {
@@ -290,6 +290,12 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"sienna\">{$a}向{$c}赞助的{$b}已成功送达！</span><br>\n";
 		} elseif($news == 'gpost_failed') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"sienna\">{$a}向场内玩家赞助的{$b}竟然被人半路截走了！真是天有不测风云……</span><br>\n";
+		} elseif($news == 'depot_save') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"grey\">{$a}向安全箱中存入了道具{$b}。</span><br>\n";
+		} elseif($news == 'depot_load') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"grey\">{$a}从安全箱中取出了道具{$b}。</span><br>\n";
+		} elseif($news == 'loot_depot') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"grey\">{$a}将{$b}生前存放在安全箱里的东西转移到了自己的名下。哇……真是世风日下，道德沦丧啊！</span><br>\n";
 		} else {
 			$newsinfo .= "<li>$time,$news,$a,$b,$c,$d<br>\n";
 		}

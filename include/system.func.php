@@ -207,7 +207,21 @@ function rs_game($mode = 0) {
 		
 		unset($itemlist);unset($iqry);
 		//unset($mapitem);
-		
+		//挤一挤 仓库道具初始化
+		include_once GAME_ROOT.'./include/game/depot.func.php';
+		if(is_array($npc_depot))
+		{
+			foreach($npc_depot as $nd_num => $nd_arr)
+			{
+				foreach($nd_arr['itm'] as $nd_itm_arr)
+				{
+					$ditm = $nd_itm_arr['itm'];$ditmk = $nd_itm_arr['itmk'];$ditmsk = $nd_itm_arr['itmsk'];
+					$ditme = $nd_itm_arr['itme'];$ditms = $nd_itm_arr['itms'];
+					$dname = $nd_arr['name'];$dtype = $nd_arr['type'];
+					$db->query("INSERT INTO {$tablepre}itemdepot (itm, itmk, itme, itms, itmsk ,itmowner, itmpw) VALUES ('$ditm', '$ditmk', '$ditme', '$ditms', '$ditmsk', '$dname', '$dtype')");
+				}
+			}
+		}
 	}
 	if ($mode & 32) {
 		//echo " - 商店初始化 - ";

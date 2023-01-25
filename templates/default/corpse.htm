@@ -3,6 +3,9 @@
 <!--{if $club==20}-->
 <input type="radio" name="command" id="element_split" value="element_split" <!--{if !$w_money}-->checked<!--{/if}-->><a onclick=sl('element_split'); href="javascript:void(0);" >提炼元素</a><br>
 <!--{/if}-->
+<!--{if $loot_depot_flag}-->
+<input type="radio" name="command" id="loot_depot" value="loot_depot"><a onclick=sl('loot_depot'); href="javascript:void(0);" >转移安全箱权限</a><br>
+<!--{/if}-->
 <input type="radio" name="command" id="menu" value="menu" <!--{if !$w_money && $club!=20 }-->checked<!--{/if}-->><a onclick=sl('menu'); href="javascript:void(0);" >返回</a><br><br>
 <!--{if $w_weps && $w_wepe}-->
 <input type="radio" name="command" id="wep" value="wep"><a onclick=sl('wep'); href="javascript:void(0);" >$w_wep/$w_wepk_words/$w_wepe/$w_weps<!--{if $w_wepsk_words}-->/$w_wepsk_words<!--{/if}--></a><br>

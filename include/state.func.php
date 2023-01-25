@@ -541,7 +541,7 @@ function rest($command) {
 //登记一些特殊的死亡事件
 function check_kill_events($kid,$eid)
 {
-	global $db,$tablepre,$log;
+	global $db,$tablepre,$log,$now;
 
 	$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$eid'");
 	$edata = $db->fetch_array($result);
