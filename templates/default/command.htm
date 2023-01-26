@@ -3,7 +3,7 @@
 <input type="hidden" id="subcmd" name="subcmd" value="">
 现在想要做什么？<br /><br />
 
-<input type="button" class="cmdbutton" id="search" name="search" value="搜寻" onclick="$('command').value='search';postCmd('gamecmd','command.php');this.disabled=true;" <!--{if array_search($pls,$arealist) <= $areanum && !$hack}-->disabled<!--{/if}-->>
+<input type="button" class="cmdbutton" id="search" name="search" value="搜寻" onclick="$('command').value='search';postCmd('gamecmd','command.php');this.disabled=true;" <!--{if (array_search($pls,$arealist) <= $areanum && !$hack) && (isset($plsinfo[$pls]) && !isset($hplsinfo[$pgroup]))}-->disabled<!--{/if}-->>
 <select id="moveto" name="moveto" onchange="$('command').value='move';postCmd('gamecmd','command.php');this.disabled=true;">
 {template move}
 </select>

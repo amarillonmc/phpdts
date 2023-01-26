@@ -5,23 +5,44 @@ if(!defined('IN_GAME')) {
 }
 
 function move($moveto = 99) {
-	global $lvl,$log,$pls,$plsinfo,$inf,$hp,$mhp,$sp,$def,$club,$arealist,$areanum,$hack,$areainfo,$gamestate,$pose,$weather;
+	global $lvl,$log,$pls,$pgroup,$plsinfo,$hplsinfo,$inf,$hp,$mhp,$sp,$def,$club,$arealist,$areanum,$hack,$areainfo,$gamestate,$pose,$weather;
 	global $gamestate;
 	$f=false;
 	if ($pls==34 && $gamestate<50) $f=true;
 	if ($moveto==34 && $gamestate<50) $f=true;
 	$plsnum = sizeof($plsinfo);
-	if(($moveto == 'main')||($moveto < 0 )||($moveto >= $plsnum)){
-		$log .= '请选择正确的移动地点。<br>';
-		return;
-	} elseif($pls == $moveto){
+
+	if($pls == $moveto)
+	{
 		$log .= '相同地点，不需要移动。<br>';
-		return;
-	} elseif(array_search($moveto,$arealist) <= $areanum && !$hack){
-		$log .= $plsinfo[$moveto].'是禁区，还是离远点吧！<br>';
 		return;
 	}
 
+	if(!isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup]))
+	{
+		//玩家位于隐藏地点组内，不能通过常规移动方式回到标准地点，也不能移动到其他隐藏地点组
+		if(!array_key_exists($moveto,$hplsinfo[$pgroup]))
+		{
+			$log .= "地图上没有{$hplsinfo[$pgroup][$moveto]}啊？<br>";
+			return;
+		}
+		$hpls_flag = true;
+	}
+	else
+	{
+		//玩家位于标准地点组内
+		if(($moveto == 'main')||($moveto < 0 )||($moveto >= $plsnum))
+		{
+			$log .= '请选择正确的移动地点。<br>';
+			return;
+		} 
+		elseif(array_search($moveto,$arealist) <= $areanum && !$hack)
+		{
+			$log .= $plsinfo[$moveto].'是禁区，还是离远点吧！<br>';
+			return;
+		}
+		$hpls_flag = false;
+	}
 
 	//足部受伤，20；足球社，12；冻伤，30；正常，15；去gamecfg里改吧
 	$movesp = 15;
@@ -50,9 +71,18 @@ function move($moveto = 99) {
 	$sp -= $movesp;
 	$moved = false;
 	if($weather == 11) {//龙卷风
-		if($hack){$pls = rand(0,sizeof($plsinfo)-1);}
-		else {$pls = rand($areanum+1,sizeof($plsinfo)-1);$pls=$arealist[$pls];}
-		$log = ($log . "龙卷风把你吹到了<span class=\"yellow\">$plsinfo[$pls]</span>！<br>");
+		if($hpls_flag)
+		{
+			$pls = array_rand($hplsinfo[$pgroup]);
+			$moveto_info = $hplsinfo[$pgroup][$pls];
+		}
+		else 
+		{
+			if($hack){$pls = rand(0,sizeof($plsinfo)-1);}
+			else {$pls = rand($areanum+1,sizeof($plsinfo)-1);$pls=$arealist[$pls];}
+			$moveto_info = $plsinfo[$pls];
+		}
+		$log = ($log . "龙卷风把你吹到了<span class=\"yellow\">$moveto_info</span>！<br>");
 		$moved = true;
 	} elseif($weather == 13) {//冰雹
 		$damage = round($mhp/12) + rand(0,20);
@@ -125,8 +155,10 @@ function move($moveto = 99) {
 		}
 	} 
 	if(!$moved) {
+		if(!$hpls_flag) $pgroup = 0;
 		$pls = $moveto;
-		$log .= "消耗<span class=\"yellow\">{$movesp}</span>点体力，移动到了<span class=\"yellow\">$plsinfo[$pls]</span>。<br>";
+		$moveto_info = $hpls_flag ? $hplsinfo[$pgroup][$pls] : $plsinfo[$pls];
+		$log .= "消耗<span class=\"yellow\">{$movesp}</span>点体力，移动到了<span class=\"yellow\">{$moveto_info}</span>。<br>";
 	}else{$f=false;}
 	
 	
@@ -170,12 +202,21 @@ function move($moveto = 99) {
 }
 
 function search(){
-	global $lvl,$log,$pls,$arealist,$areanum,$hack,$plsinfo,$club,$sp,$gamestate,$pose,$weather,$hp,$mhp,$def,$inf;
+	global $lvl,$log,$pls,$pgroup,$arealist,$areanum,$hack,$plsinfo,$hplsinfo,$club,$sp,$gamestate,$pose,$weather,$hp,$mhp,$def,$inf;
 	
 	
-	if(array_search($pls,$arealist) <= $areanum && !$hack){
-		$log .= $plsinfo[$pls].'是禁区，还是赶快逃跑吧！<br>';
-		return;
+	if(!isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup]))
+	{
+		$hpls_flag = true;
+	}
+	else 
+	{
+		if(array_search($pls,$arealist) <= $areanum && !$hack)
+		{
+			$log .= $plsinfo[$pls].'是禁区，还是赶快逃跑吧！<br>';
+			return;
+		}
+		$hpls_flag = false;
 	}
 
 	//腕部受伤，20；冻伤：30；侦探社，12；正常，15；改到gamecfg
@@ -203,9 +244,18 @@ function search(){
 	}
 
 	if($weather == 11) {//龙卷风
-		if($hack){$pls = rand(0,sizeof($plsinfo)-1);}
-		else {$pls = rand($areanum+1,sizeof($plsinfo)-1);$pls=$arealist[$pls];}
-		$log = ($log . "龙卷风把你吹到了<span class=\"yellow\">$plsinfo[$pls]</span>！<br>");
+		if($hpls_flag)
+		{
+			$pls = array_rand($hplsinfo[$pgroup]);
+			$moveto_info = $hplsinfo[$pgroup][$pls];
+		}
+		else 
+		{
+			if($hack){$pls = rand(0,sizeof($plsinfo)-1);}
+			else {$pls = rand($areanum+1,sizeof($plsinfo)-1);$pls=$arealist[$pls];}
+			$moveto_info = $plsinfo[$pls];
+		}
+		$log = ($log . "龙卷风把你吹到了<span class=\"yellow\">$moveto_info</span>！<br>");
 		$moved = true;
 	} elseif($weather == 13) {//冰雹
 		$damage = round($mhp/12) + rand(0,20);

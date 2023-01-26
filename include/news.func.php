@@ -6,7 +6,7 @@ if(!defined('IN_GAME')) {
 
 
 function  nparse_news($start = 0, $range = 0  ){//$type = '') {
-	global $week,$nowep,$db,$tablepre,$lwinfo,$plsinfo,$wthinfo,$typeinfo,$exdmginf,$newslimit;
+	global $week,$nowep,$db,$tablepre,$lwinfo,$plsinfo,$hplsinfo,$wthinfo,$typeinfo,$exdmginf,$newslimit;
 	//$file = $file ? $file : $newsfile;	
 	//$ninfo = openfile($file);
 	$range = $range == 0 ? $newslimit : $range ;
@@ -31,6 +31,8 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$nday = $day;
 		}
 
+		//登记非功能性地点信息时合并隐藏地点 为什么会有两个news.func.php？？？
+		foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
 		//死法（除DN外）：道具名登记在$d上；第四个参数：没有检查到特殊样式的给一个红色
 		if(strpos($news,'death')!==false && $news!=='death28' && isset($d)) $d = parse_itm_desc($d,'m',0,"red");
 		//赠送道具、吃到毒补给、陷阱、改变天气、强化武器、唱歌、打开礼物盒：道具名登记在$c上；

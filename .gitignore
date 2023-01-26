@@ -36,10 +36,8 @@ gamedata/clearlog.php
 # DTS Cache Files
 gamedata/bak/
 gamedata/templates/
-templates/default/areainfo.htm
 templates/default/lastgb.htm
 templates/default/lastnews.htm
-templates/default/move.htm
 
 # PSD Material
 *.psd

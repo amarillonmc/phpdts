@@ -105,7 +105,10 @@
 	function rev_combat(&$pa,&$pd,$active,$wep_kind='') 
 	{
 		global $log,$mode,$main,$cmd,$action,$db,$tablepre,$now,$nosta,$hdamage,$hplayer;
-		global $infinfo,$plsinfo,$battle_title,$message;
+		global $infinfo,$plsinfo,$hplsinfo,$battle_title,$message;
+
+		//登记非功能性地点信息时合并隐藏地点
+		foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
 
 		$battle_title = '战斗发生';
 

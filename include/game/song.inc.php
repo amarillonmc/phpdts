@@ -1,12 +1,15 @@
  <?php
  //require_once './include/common.inc.php';
  function sing($sn){
-	global $log,$msg,$now,$pls,$name,$nick,$plsinfo,$ss,$mss,$noiseinfo,$arte;
+	global $log,$msg,$now,$pls,$name,$nick,$plsinfo,$hplsinfo,$ss,$mss,$noiseinfo,$arte;
 	global $db,$tablepre;
 	global $att,$def;
 	global $wep,$wepk,$weps,$wepes,$wepsk;
 	global $rp;
 	
+	//登记非功能性地点信息时合并隐藏地点
+	foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
+
 	//$log.=$sn.'_'.$now.'_'.$pls.'_'.$name."<br>";
 	$r=$arte;
 	include_once GAME_ROOT.'./include/game/combat.func.php';
