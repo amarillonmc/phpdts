@@ -817,6 +817,13 @@ function itemuse($itmn) {
 				list($in,$ik,$ie,$is,$isk) = explode(',',$itemflag[$rand]);
 			}
 		}elseif(strpos( $itmk, 'p0' ) === 0){//新福袋·VOL1
+			global $statuse; // 用这个数值记录打开福袋的次数，目前只有VOL1所以只需要判断非0状况，以后如果加入更多的福袋则需要修改。
+			global $db,$tablepre;
+/* 			if($statuse){
+				$log.="似乎你本轮已经打开过福袋，因此不能再打开更多的福袋！<br>";
+				$db->query("INSERT INTO {$tablepre}shopitem (kind,num,price,area,item,itmk,itme,itms,itmsk) VALUES ('17','1','20','0','$itm','$itmk','$itme','$itms','$itmsk')");
+				$log.="<span class=\"yellow\">$itm</span>从你的手中飞出，向商店的方向飞去。<br>";
+			} */
 			if(strpos( $itmk, 'p0P' ) === 0){
 				include_once config('randomWP',$gamecfg);
 			}elseif(strpos( $itmk, 'p0K' ) === 0){
@@ -840,12 +847,12 @@ function itemuse($itmn) {
 				include_once config('randomO1',$gamecfg);
 			}
 			include_once GAME_ROOT.'./include/game/dice.func.php';
-			$dice = diceroll(100);
-			if($dice <= 55){//一般物品
+			$dice = diceroll(1000);
+			if($dice <= 550){//一般物品
 				$itemflag = $itmlow;
-			}elseif($dice <= 85){//中级道具
+			}elseif($dice <= 888){//中级道具
 				$itemflag = $itmmedium;
-			}elseif($dice <= 98){//神装
+			}elseif($dice <= 995){//神装
 				$itemflag = $itmhigh;
 			}else{
 				$itemflag = $antimeta;
@@ -854,6 +861,7 @@ function itemuse($itmn) {
 				$itemflag = explode("\r\n",$itemflag);
 				$rand = rand(0,count($itemflag)-1);
 				list($in,$ik,$ie,$is,$isk) = explode(',',$itemflag[$rand]);
+				$statuse++; //记录打开福袋+1
 			}
 		}else{//一般礼品盒
 			$file = config('present',$gamecfg);
