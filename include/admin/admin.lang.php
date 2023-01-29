@@ -232,6 +232,8 @@ $lang = array
 	'gmlist_comment' => '设置各管理员的权限',
 	'urlist' => '玩家帐户管理',
 	'urlist_comment' => '管理玩家帐户信息',
+	'vnmixlist' => '玩家提交合成列表',
+	'vnmixlist_comment' => '检查已被采纳的玩家提交的合成列表<br>可以将指定合成回退到待采纳状态',
 	'gamecheck' => '当前游戏自检',
 	'gamecheck_comment' => '修正游戏人数异常和移动下拉框消失的功能',
 	

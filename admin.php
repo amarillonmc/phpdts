@@ -14,6 +14,7 @@ $admin_cmd_list = Array(
 	'gmlist' => 9,
 	'urlist' => 6,
 	'banlistmng' => 6,
+	'vnmixlist' => 5,
 	'gamecheck' => 2,
 	'pcmng' => 5,
 	'npcmng' => 5,

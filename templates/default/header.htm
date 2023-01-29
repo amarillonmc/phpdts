@@ -181,11 +181,9 @@
   body {background-image: url("../../img/location/34.jpg");background-position: center;}
   </style>
 <!--{/if}-->
-
 </head>
 <BODY <!--{if CURSCRIPT == 'game' && $hotkeyon}-->onkeydown="hotkey(event);"<!--{/if}-->>
 <div class="title" >{lang title}</div>
-
 <div class="headerlink" >
 <a href="index.php">>>{lang index}</a>
 <!--{if isset($cuser) && isset($cpass)}--><a href="user_profile.php">>>{lang user}</a>
@@ -197,9 +195,20 @@
 <a href="winner.php">>>{lang winner}</a>
 <a href="rank.php">>>{lang rank}</a>
 <a href="help.php">>>{lang help}</a>
+<span class="drop"><a>>>{lang vnworld}
+<div class="dropdown-menu">
+  <ul>
+    <li><a href="vnworld.php">>>空想梦境</a></li>
+    <li><a href="">>>敬请期待</a></li>
+    <li><a href="">>>敬请期待</a></li>
+  </ul>
+</div>
+</a>
+</span>
 <a href="admin.php">>>{lang admin}</a>
 <a href="https://bbs.brdts.online/" target="_blank">>>{lang report}</a>
 <a href="https://bbs.brdts.online/?thread-2.htm" target="_blank">>>{lang donate}</a>
+</div>
 <!-- <a href="$homepage" target="_blank">>>{lang homepage}</a> -->
 <!--[if lt IE 7]> <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;'> <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode"><img src="http://storage.ie6countdown.com/assets/100/images/banners/warning_bar_0027_Simplified Chinese.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today." /></a></div> <![endif]-->
 <!--{if (CURSCRIPT == 'game' && $pls=='34' && $gamestate<50)}-->
@@ -208,6 +217,4 @@
   <source src="https://res.brdts.online/BGM/mmc-2017-jan-neubruder_mix03.mp3" type="audio/mpeg">
 </audio>
 <!--{/if}-->
-
-</div>
 <div>

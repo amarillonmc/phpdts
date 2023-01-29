@@ -209,7 +209,7 @@ function rs_game($mode = 0) {
 		//unset($mapitem);
 		//挤一挤 仓库道具初始化
 		include_once GAME_ROOT.'./include/game/depot.func.php';
-		if(is_array($npc_depot))
+		if(isset($npc_depot) && count($npc_depot)>0)
 		{
 			foreach($npc_depot as $nd_num => $nd_arr)
 			{

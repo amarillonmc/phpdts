@@ -535,12 +535,10 @@ function update_db_player_structure($type=0)
 /* function player_format_with_db_structure($data){
 	$ndata=Array();
 	$db_player_structure = update_db_player_structure();
-	foreach ($db_player_structure as $key){
-		if (isset($data[$key])) 
-		{
-			if(is_array($data[$key])) $data[$key]=json_encode($data[$key]);
-			$ndata[$key]=$data[$key];
-		}
+	foreach ($db_player_structure as $key)
+	{
+		if(isset($data[$key]) && is_array($data[$key])) $data[$key]=json_encode($data[$key]);
+		$ndata[$key]=isset($data[$key]) ? $data[$key] : '';
 	}
 	return $ndata;
 } */
@@ -549,8 +547,8 @@ function player_format_with_db_structure($data){
     $db_player_structure = update_db_player_structure();
     foreach ($db_player_structure as $key)
     {
-        if(is_array($data[$key])) $data[$key]=json_encode($data[$key]);
-        $ndata[$key]=$data[$key];
+        if(isset($data[$key]) && is_array($data[$key])) $data[$key]=json_encode($data[$key]);
+		$ndata[$key]=isset($data[$key]) ? $data[$key] : '';
     }
     return $ndata;
 }
@@ -627,7 +625,7 @@ function get_itmsk_array($sk_value)
 	$i = 0;
 	while ($i < strlen($sk_value))
 	{
-		$sub = substr($sk_value,$i,1); 
+		$sub = mb_substr($sk_value,$i,1,'utf-8'); 
 		$i++;
 		if(!empty($sub) && array_key_exists($sub,$itemspkinfo)) array_push($ret,$sub);
 	}
@@ -676,13 +674,6 @@ function gdecode($para, $assoc = false){
 	$assoc = $assoc ? true : false;
 	if (!$para) return array();
 	else return json_decode(mgzdecode(base64_decode($para)),$assoc);
-}
-
-//字符串中段省略，取头部+尾部1字符
-function middle_abbr($str,$len1,$len2=1,$elli='...') {
-	$str = (string)$str;
-	$len1 = (int)$len1; $len2 = (int)$len2;
-	return mb_substr($str,0,$len1).$elli.mb_substr($str,-$len2,$len2);
 }
 
 //mb_strlen()兼容替代函数，直接照抄的网络
