@@ -5,11 +5,19 @@ if(!defined('IN_GAME')) {
 }
 
 function init_playerdata(){
-	global $lvl,$baseexp,$exp,$gd,$icon,$arbe,$arhe,$arae,$arfe,$weather,$fog,$weps,$arbs,$log,$upexp,$lvlupexp,$iconImg,$ardef;
+	global $lvl,$baseexp,$exp,$gd,$icon,$arbe,$arhe,$arae,$arfe,$weather,$fog,$weps,$arbs,$log,$upexp,$lvlupexp,$iconImg,$iconImgB,$ardef;
 
 	$upexp = round(($lvl*$baseexp)+(($lvl+1)*$baseexp));
 	$lvlupexp = $upexp - $exp;
-	$iconImg = $gd.'_'.$icon.'.gif';
+	$iconImg = $gd.'_'.$icon; $iconImgB = NULL;
+	if(file_exists('img/'.$iconImg.'a.gif'))
+	{
+		$iconImgB = $iconImg.'a.gif';
+	}
+	else 
+	{
+		$iconImg = $iconImg.'.gif';
+	}
 	$ardef = $arbe + $arhe + $arae + $arfe;
 	if(($weather == 8)||($weather == 9)||($weather == 12)) {
 		$fog = true;
@@ -181,7 +189,7 @@ function init_profile(){
 
 function init_battle($ismeet = 0){
 	global $wep,$wepk;
-	global $w_type,$w_name,$w_gd,$w_sNo,$w_icon,$w_lvl,$w_rage,$w_hp,$w_sp,$w_mhp,$w_msp,$w_wep,$w_wepk,$w_wepe,$w_sNoinfo,$w_iconImg,$w_hpstate,$w_spstate,$w_ragestate,$w_wepestate,$w_isdead,$hpinfo,$spinfo,$rageinfo,$wepeinfo,$fog,$typeinfo,$sexinfo,$infinfo,$w_exp,$w_upexp,$baseexp,$w_pose,$w_tactic,$w_inf,$w_infdata;
+	global $w_type,$w_name,$w_gd,$w_sNo,$w_icon,$w_lvl,$w_rage,$w_hp,$w_sp,$w_mhp,$w_msp,$w_wep,$w_wepk,$w_wepe,$w_sNoinfo,$w_iconImg,$w_iconImgB,$w_hpstate,$w_spstate,$w_ragestate,$w_wepestate,$w_isdead,$hpinfo,$spinfo,$rageinfo,$wepeinfo,$fog,$typeinfo,$sexinfo,$infinfo,$w_exp,$w_upexp,$baseexp,$w_pose,$w_tactic,$w_inf,$w_infdata;
 	global $n_type,$n_name,$n_gd,$n_sNo,$n_icon,$n_hp,$n_mhp,$n_sp,$n_msp,$n_rage,$n_wep,$n_wepk,$n_wepe,$n_lvl,$n_pose,$n_tactic,$n_inf;
 	$w_upexp = round(($w_lvl*$baseexp)+(($w_lvl+1)*$baseexp));
 	
@@ -288,7 +296,15 @@ function init_battle($ismeet = 0){
 		}
 		$w_sNoinfo = "$typeinfo[$w_type]({$sexinfo[$w_gd]}{$w_sNo}号)";
 	 	$w_i = $w_type > 0 ? 'n' : $w_gd;
-		$w_iconImg = $w_i.'_'.$w_icon.'.gif';
+		$w_iconImg = $w_i.'_'.$w_icon; $w_iconImgB = NULL;
+		if(file_exists('img/'.$w_iconImg.'a.gif'))
+		{
+			$w_iconImgB = $w_iconImg.'a.gif';
+		}
+		else 
+		{
+			$w_iconImg = $w_iconImg.'.gif';
+		}
 		if($w_inf) {
 			$w_infdata = '';
 			foreach ($infinfo as $inf_ky => $inf_nm) {
