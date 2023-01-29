@@ -1741,7 +1741,7 @@ $anpcinfo = array
 		0 => array
 			(
 			'name' => '迷之搬运工',
-			'icon' => 10,
+			'icon' => 127,
 			'wep' => '大喇叭',
 			'wepk' => 'WP',
 			'wepe' => 25,

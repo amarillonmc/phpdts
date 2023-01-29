@@ -532,7 +532,7 @@ function update_db_player_structure($type=0)
 	return $type ? $db_player_structure_types : $db_player_structure;
 }
 //返回一个只有数据库合法字段键名的pdata数组
-function player_format_with_db_structure($data){
+/* function player_format_with_db_structure($data){
 	$ndata=Array();
 	$db_player_structure = update_db_player_structure();
 	foreach ($db_player_structure as $key)
@@ -541,6 +541,16 @@ function player_format_with_db_structure($data){
 		$ndata[$key]=isset($data[$key]) ? $data[$key] : '';
 	}
 	return $ndata;
+} */
+function player_format_with_db_structure($data){
+    $ndata=Array();
+    $db_player_structure = update_db_player_structure();
+    foreach ($db_player_structure as $key)
+    {
+        if(is_array($data[$key])) $data[$key]=json_encode($data[$key]);
+        $ndata[$key]=$data[$key];
+    }
+    return $ndata;
 }
 //为显示在主界面、尸体发现界面、游戏帮助界面的道具名、道具类、道具属性添加额外描述
 //传入$n=道具名/类/属性；$t='m'(使用名称数组)/'k'(类别)/'sk'(属性)；$short=1(传入的$n为数组情况下才有效，缩写属性)；$class(如果传入的$n没有匹配的样式,则应用该样式)
