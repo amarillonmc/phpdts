@@ -547,8 +547,8 @@ function player_format_with_db_structure($data){
     $db_player_structure = update_db_player_structure();
     foreach ($db_player_structure as $key)
     {
-        if(is_array($data[$key])) $data[$key]=json_encode($data[$key]);
-        $ndata[$key]=$data[$key];
+        if(isset($data[$key]) && is_array($data[$key])) $data[$key]=json_encode($data[$key]);
+		$ndata[$key]=isset($data[$key]) ? $data[$key] : '';
     }
     return $ndata;
 }
