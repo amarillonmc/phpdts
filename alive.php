@@ -178,13 +178,13 @@ if($gamblingon){
 							$db->query("UPDATE {$tablepre}users SET credits2='$credits2' WHERE uid='$uid'");
 							//发news
 							$gbinfo .= "花费{$cost_credits2}切糕购买了{$bnum}份{$iteminfo['item']}。<br>";
-							addnews($now,'gpost',$sponsor_title.' '.$udata['username'],$iteminfo['item'],$bdata['nick'].' '.$bdata['name'],$plsinfo[$bdata['pls']],$bnum);
+							addnews($now,'gpost',$sponsor_title.' '.$udata['username'],$iteminfo['item'],$bdata['nick'].' '.$bdata['name'],$bdata['pls'],$bnum);
 							//打包快递给快递员 返回新生成的快递员pid
 							$gclb = Array('clbpara'=>Array('sponsor'=>$uid,'post'=>$bet,'postid'=>6),); //记录赞助者的uid、收货方的pid、道具位置
 							$gitem = Array(6,$iteminfo['item'],$iteminfo['itmk'],$iteminfo['itme'],$iteminfo['itms']*$bnum,$iteminfo['itmsk']);//打包快递
 							include_once GAME_ROOT.'./include/system.func.php';
 							$nid = addnpc(90,0,1,$now,$gclb,$gitem,$bdata['pls'])[0];
-							$gbinfo .= "快递员已带着你赞助的商品前往{$bdata['name']}所在的{$plsinfo[$bdata['pls']]}！谢谢惠顾~<br>";
+							$gbinfo .= "快递员已带着你赞助的商品前往{$bdata['name']}所在的位置！谢谢惠顾~<br>";
 							//存一条发快递记录到gambling表里，一个玩家在快递被接收前不能发第二份快递。防止有人狂买低价商品挤爆players表。
 							//有过投注记录
 							if($gbnum && isset($gbeddata[$udata['uid']])) $db->query("UPDATE {$tablepre}gambling SET bnid='$nid' WHERE uid='$uid'");

@@ -287,7 +287,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		} elseif($news == 'emix_failed') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">{$a}试图把零散的元素重新组合起来，但是失败了！哎呀呀、这可真是……</span><br>\n";
 		} elseif($news == 'gpost') {
-			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"sienna\">{$a}为{$c}赞助了{$e}份{$b}！快递员正带着包裹前往【{$d}】</span><br>\n";
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"sienna\">{$a}为{$c}赞助了{$e}份{$b}！快递员正带着包裹前往【{$plsinfo[$d]}】</span><br>\n";
 		} elseif($news == 'gpost_success') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"sienna\">{$a}向{$c}赞助的{$b}已成功送达！</span><br>\n";
 		} elseif($news == 'gpost_failed') {

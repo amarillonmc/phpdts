@@ -1,0 +1,130 @@
+{template header}
+<div id="notice"></div>
+<div class="subtitle">空想梦境</div>
+<center>
+<form method="post" name="vn_postitem" onsubmit="return false;">
+	<input type="hidden" name="vnmode" id="vnmode" value="none">
+    <span class="grey"><div id="vmixtips">$vnmix_top_tips</div></span>
+    <span class="yellow"><div id="vmixc2">所持切糕数：$udata['credits2']</div></span>
+	<table>
+        <tr>
+            <td class="b1" height=20px><span>$stuff_tips[0]</span></td>
+            <td class="b1"><span>$stuff_tips[1]</span></td>
+            <td class="b1"><span>$stuff_tips[2]</span></td>
+            <td class="b1"><span>$stuff_tips[3]</span></td>
+            <td class="b1"><span>$stuff_tips[4]</span></td>
+        </tr>
+        <tr>
+            <td class="b3">
+                <input type="text" name="vsname0" list="vsnamelist" value="<!--{if !empty($uvs0)}-->$uvs0<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+            </td>
+            <td class="b3">
+                <input type="text" name="vsname1" list="vsnamelist" value="<!--{if !empty($uvs1)}-->$uvs1<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+            </td>
+            <td class="b3">
+                <input type="text" name="vsname2" list="vsnamelist" value="<!--{if !empty($uvs2)}-->$uvs2<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+            </td>
+            <td class="b3">
+                <input type="text" name="vsname3" list="vsnamelist" value="<!--{if !empty($uvs3)}-->$uvs3<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+            </td>
+            <td class="b3">
+                <input type="text" name="vsname4" list="vsnamelist" value="<!--{if !empty($uvs4)}-->$uvs4<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+            </td>
+        </tr>
+    </table>
+    <br>
+    <table>
+        <tr>
+            <td class="b1" width=20px></td>
+            <td class="b1"><span>$result_tips[0]</span></td>
+            <td class="b1"><span>$result_tips[1]</span></td>
+            <td class="b1"><span>$result_tips[2]</span></td>
+            <td class="b1"><span>$result_tips[3]</span></td>
+            <td class="b1"><span>$result_tips[4]</span></td>
+            <td class="b1"><span>$result_tips[5]</span></td>
+            <td class="b1"><span>$result_tips[6]</span></td>
+            <td class="b1"><span>$result_tips[7]</span></td>
+            <td class="b1"><span>$result_tips[8]</span></td>
+        </tr>
+        <tr>
+            <td class="b3" width=20px>↪</td>
+            <td class="b3">
+                <input type="text" name="vrname" list="vsnamelist" value="<!--{if !empty($uvrn)}-->$uvrn<!--{else}-->请输入道具名<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+            </td>
+            <td class="b3">
+                <select name="vrk">
+					<!--{loop $temp_vn_iteminfo $k $info}-->
+					<option value="$k" <!--{if $k===$uvrk}-->selected<!--{/if}-->>$info
+                    <!--{/loop}-->
+                </select>
+            </td>
+            <td class="b3">	
+                <input type="number" name="vre" style="width:45px" value="$uvre" min="1" max="16777214" oninput="if(value>16777214)value=16777214;if(value<1)value=1" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+            </td>
+            <td class="b3">
+                <input type="number" name="vrs" style="width:45px" value="$uvrs" min="0" max="65535" oninput="if(value>65535)value=65535;if(value<0)value=0" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+            </td>
+            <td class="b3">
+                <select name="vrsk0">
+					<!--{loop $temp_vn_itemspkinfo $sk $skinfo}-->
+					<option value="$sk" <!--{if $sk===$uvrsk0}-->selected<!--{/if}-->>$skinfo
+                    <!--{/loop}-->
+                </select>
+            </td>
+            <td class="b3">
+                <select name="vrsk1">
+					<!--{loop $temp_vn_itemspkinfo $sk $skinfo}-->
+					<option value="$sk" <!--{if $sk===$uvrsk1}-->selected<!--{/if}-->>$skinfo
+                    <!--{/loop}-->
+                </select>
+            </td>
+            <td class="b3">
+                <select name="vrsk2">
+					<!--{loop $temp_vn_itemspkinfo $sk $skinfo}-->
+					<option value="$sk" <!--{if $sk===$uvrsk2}-->selected<!--{/if}-->>$skinfo
+                    <!--{/loop}-->
+                </select>
+            </td>
+            <td class="b3">
+                <select name="vrsk3">
+					<!--{loop $temp_vn_itemspkinfo $sk $skinfo}-->
+					<option value="$sk" <!--{if $sk===$uvrsk3}-->selected<!--{/if}-->>$skinfo
+                    <!--{/loop}-->
+                </select>
+            </td>
+            <td class="b3">
+                <select name="vrsk4">
+					<!--{loop $temp_vn_itemspkinfo $sk $skinfo}-->
+					<option value="$sk" <!--{if $sk===$uvrsk4}-->selected<!--{/if}-->>$skinfo
+                    <!--{/loop}-->
+                </select>
+            </td>
+        </tr>
+	</table>
+    <!--{if $vnmix_name_assoc}-->
+    <datalist id="vsnamelist">
+        <!--{loop $temp_item_namelist $in}-->
+            <option value="$in">
+        <!--{/loop}-->
+    </datalist>
+    <!--{/if}-->
+    <br>
+    <div id="vmixlog">$vmixlog</div>
+    <div id="vmixprint"></div>
+    <!--{if isset($editid)}-->
+        <!--{eval $ep='ep'.$editid;$dp='dp'.$editid;$c1='cs'.$editid.'+1';$c2='cs'.$editid.'+2';}-->
+            <!--{if ($udata['groupid']>=$vnmix_editor_group||$udata['username']==$gamefounder)}-->
+                <input type="radio" id="c1" name="exmode" value="$c1"><a onclick="$('c1').click();" href="javascript:void(0);">审核通过</a>
+                &nbsp;<input type="radio" id="c2" name="exmode"value="$c2"><a onclick="$('c2').click();" href="javascript:void(0);">审核不通过</a>
+            <!--{/if}-->
+            &nbsp;<input type="radio" id="ep" name="exmode" value="$ep" checked><a onclick="$('ep').click();" href="javascript:void(0);">编辑</a>
+            &nbsp;<input type="radio" id="dp" name="exmode" value="$dp"><a onclick="$('dp').click();" href="javascript:void(0);"><span class="red">删除（该操作不可撤销！）</span></a>
+        <br>
+    <!--{/if}-->
+    <br>
+    <input type="button" value="提交" onClick="$('vnmode').value='postmode';postCmd('vn_postitem','vn_postitem.php');disabled=true;setTimeout(function(){disabled=false;},1000);">
+    <a href="vnworld.php"><input type="button" value="返回"></a>
+    <br>
+</form> 
+</center>
+{template footer}

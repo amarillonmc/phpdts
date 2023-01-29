@@ -12,6 +12,7 @@ $synfile = config('synitem',$gamecfg);
 $ovlfile = config('overlay',$gamecfg);
 $presentfile = config('present',$gamecfg);
 $boxfile = config('box',$gamecfg);
+$vnmixfile = config('vnmixitem',$gamecfg);
 include_once $mixfile;
 $writefile = GAME_ROOT.TPLDIR.'/mixhelp.htm';
 
@@ -119,7 +120,7 @@ $ty10[1]=21;
 $ty11[1]=89;
 $ty12[1]=24;
 
-if(filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemtime($writefile) || filemtime($mapitemfile) > filemtime($writefile) || filemtime($synfile) > filemtime($writefile) || filemtime($ovlfile) > filemtime($writefile) || filemtime($presentfile) > filemtime($writefile) || filemtime($boxfile) > filemtime($writefile)){
+if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemtime($writefile) || filemtime($mapitemfile) > filemtime($writefile) || filemtime($synfile) > filemtime($writefile) || filemtime($ovlfile) > filemtime($writefile) || filemtime($presentfile) > filemtime($writefile) || filemtime($boxfile) > filemtime($writefile)){
 	$mixitem = array();
 	foreach($mixinfo as $mix){
 		if($mix['class'] !== 'hidden'){
@@ -170,6 +171,7 @@ if(filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemti
 		'key'=> array('KEY系道具','lime'),
 		'cube'=> array('方块系道具','yellow'),
 		'item'=> array('其他道具','yellow'),
+		'VN'=> array('玩家原创道具','lime'),
 		);
 	$mixhelpinfo = '';
 	foreach($mixitem as $class => $list){

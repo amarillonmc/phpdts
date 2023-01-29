@@ -11,7 +11,7 @@ li {font: bold 10pt "微软雅黑" serif;line-height:16px}
 input {cursor: crosshair;}
 .title {font-family: "微软雅黑"; margin: 6px;color: #cceafa; width: 100%;filter:blur(add=1,direction=90,strength=12):glow(strength=5,color=gold); font-weight:900; text-decoration:underline;font-size: 30px;}
 .subtitle {font-family: "微软雅黑"; margin: 6px;color: #cceafa; width: 100%;font-size: 24px;font-weight:400;}
-.headerlink{}
+/*.headerlink{}*/
 .small {font-size: 9pt}
 .center-text {text-align: center;}
 .ver a{font:bold 10pt "Viner Hand ITC","隶书" serif;color:#ff0000;}
@@ -359,13 +359,58 @@ background-image: url("../../img/footer_line.gif");
 	box-shadow:0 0 6px rgba(246, 219, 251, 0.6);
 }
 
+span.title {
+    position: relative;
+}
+/*长按带有title标签的内容时显示一个悬浮框，用于移动端、触屏显示tooltip*/
 span[title]:active:before {
     content: attr(title);
-    display: block;
-    position: fixed;
-	background-color: rgba(225, 124, 226, 0.82); *BACKGROUND: rgb(98,135,163); *filter:alpha(opacity=60)
-	width: 200px;max-width:200px;
-	font: bold 10pt "微软雅黑" serif; color: white; overflow-x:hidden; overflow-y:auto; text-shadow:none; text-align: center;
-    padding: 2px;
+	font: bold 10pt "微软雅黑" serif; color: white; overflow-x:hidden; overflow-y:auto; text-shadow:3px 3px 3px #3b3535; text-align: center;
+	background-color: rgba(198, 114, 199, 0.8); *BACKGROUND: rgb(98,135,163); *filter:alpha(opacity=60)
+    padding: 10px;
+	width: 220px; 
+    max-width: 220px; 
 	z-index:10;
+	top: -25px;
+	left: 0;
+	border-radius: 3px;
+    position: absolute;
+}
+
+.headerlink{
+	font-family: "微软雅黑";
+}
+/*用于触发下拉菜单的样式drop*/
+span.drop{
+	position: relative;
+}
+/*悬浮在drop样式上时触发下拉菜单*/
+span.drop:hover .dropdown-menu{
+	display: block;
+	background-color: rgba(83, 63, 90, 0.8);
+	border-radius: 5px;
+}
+/*下拉菜单样式本体*/
+.dropdown-menu{
+	top:17px;
+	left:-10px;
+	width: 90px; 
+    max-width: 90px; 
+    position: absolute;
+	z-index:10;
+	display: none;
+}
+/*去除下拉菜单内<ul>标签的样式*/
+.dropdown-menu ul{
+	list-style: none;
+	margin: 0; 
+	padding: 2px; 
+}
+/*改变下拉菜单内<li>标签的样式*/
+.dropdown-menu li{
+	list-style: none;
+	padding: 2px; 
+	align-items: center; 
+	justify-content: center;
+	font: bold 10pt "微软雅黑" serif; color: white; overflow-x:hidden; overflow-y:auto; text-shadow:3px 3px 3px #231e1e; text-align: center;
 }
