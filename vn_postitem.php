@@ -516,7 +516,9 @@ function filter_post_mixlist($vsname0,$vsname1,$vsname2,$vsname3,$vsname4,$vrnam
 			if(${'vrsk'.$s} != 'none' && !in_array(${'vrsk'.$s},$sklist)) $sklist[] = ${'vrsk'.$s};
 		}
 		//检查素材名
-		${'vsname'.$s} = preg_replace('/[,\#;\s\p{Cc}]+|锋利的|电气|毒性|钉|\[.*\]|[\s\t\r\n]|-改|<|>|\"/u','',${'vsname'.$s});
+		${'vsname'.$s} = preg_replace('/[,\#;\p{Cc}]+|锋利的|电气|毒性|钉|\[.*\]|[\r\n]|-改|<|>|\"/u','',${'vsname'.$s});
+		//只过滤以首格空格开头或以尾部空格结尾的部分，不改变后面内容里的空格
+		${'vsname'.$s} = preg_replace('/^\s+|\s+$/m', '', ${'vsname'.$s});
 		if(empty(${'vsname'.$s}) || mb_strlen(${'vsname'.$s},'utf-8')>30)
 		{
 			//$vlog .= '<span class="red">错误：'.$stuff_tips[$s].'的名称为空或长度超过了30个字符。</span><br>';
