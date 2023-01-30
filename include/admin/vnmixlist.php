@@ -138,6 +138,12 @@ function post_back_vn_cache_file($data,$arr,$t=NULL)
 	{
 		include_once($file);
 	}
+
+	//把字符串还原为数组
+	if(!empty($arr['result'][4]))
+	{
+		$arr['result'][4] = get_itmsk_array($arr['result'][4]);
+	}
 	
 	if(isset($t))
 	{

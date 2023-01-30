@@ -414,3 +414,25 @@ span.drop:hover .dropdown-menu{
 	justify-content: center;
 	font: bold 10pt "微软雅黑" serif; color: white; overflow-x:hidden; overflow-y:auto; text-shadow:3px 3px 3px #231e1e; text-align: center;
 }
+/**/
+/*用于显示大头像的样式*/
+span.icon{
+	position: relative;
+}
+/*悬浮在大头像样式上时大头像*/
+span.icon:hover .icona{
+	display: block;
+	background-color: rgba(83, 63, 90, 0.5);
+	border-radius: 10px;
+}
+/*大头像本体样式*/
+.icona{
+	top:-40px;
+	left:-5px;
+	width: 140px; 
+    max-width: 140px; 
+	padding: 5px;
+    position: absolute;
+	z-index:10;
+	display: none;
+}
