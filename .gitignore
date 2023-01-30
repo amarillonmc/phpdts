@@ -32,6 +32,8 @@ gamedata/system.php
 gamedata/banlist.list
 gamedata/banlist.php
 gamedata/clearlog.php
+gamedata/cache/queue_vnmixitem_1.php
+gamedata/cache/vnmixitem_1.php
 
 # DTS Cache Files
 gamedata/bak/
