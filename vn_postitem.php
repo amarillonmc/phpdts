@@ -496,7 +496,8 @@ function filter_post_mixlist($vsname0,$vsname1,$vsname2,$vsname3,$vsname4,$vrnam
 		return $vlog;
 	}
 	//检查道具名
-	$vrname = preg_replace('/[,\#;\s\p{Cc}]+|锋利的|电气|毒性|钉|\[.*\]|[\s\t\r\n]|-改|<|>|\"/u','', $vrname);
+	$vrname = preg_replace('/[,\#;\p{Cc}]+|锋利的|电气|毒性|钉|\[.*\]|[\r\n]|-改|<|>|\"/u','', $vrname);
+	$vrname = preg_replace('/^\s+|\s+$/m', '', $vrname);
 	if(empty($vrname) || mb_strlen($vrname,'utf-8')>30)
 	{
 		$vlog .= '<span class="red">错误：'.$result_tips[0].'的名称为空或长度超过了30个字符。</span><br>';
