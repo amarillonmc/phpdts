@@ -608,9 +608,13 @@ function parse_itm_desc($n,$t,$short=0,$c=NULL)
 	}
 	$ret = $span;
 	if(!empty($ret1)) $ret .= $p1.$ret1;
-	if(!empty($ret2))
+	if(isset($c))
 	{
-		if(isset($c)) $ret2 = $c."\"";
+		$ret2 = $c."\"";
+		$ret .= $p2.$ret2;
+	}
+	elseif(!empty($ret2))
+	{
 		$ret .= $p2.$ret2;
 	}
 	$ret .= ">".$n."</span>";
