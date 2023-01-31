@@ -1,5 +1,5 @@
 <!--{loop $npcinfo[$kind]['sub'] $key $value}-->
-<!--{if isset($npcdescription[$kind]['sub'][$key]['description']) && is_numeric($key)}-->
+<!--{if !is_numeric($key)}-->
 <table border="1" cellspacing="0" cellpadding="0" valign="middle">
 	<tr>
 		<td>
@@ -39,7 +39,7 @@
 								</td>
 								<td width=100px align="center" class="b3">
 									<span class="yellow">
-									$npcinfo[$kind]['sub'][$key]['pls']
+									原地
 									</span>
 								</td>
 							</tr>

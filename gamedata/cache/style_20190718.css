@@ -359,46 +359,38 @@ background-image: url("../../img/footer_line.gif");
 	box-shadow:0 0 6px rgba(246, 219, 251, 0.6);
 }
 
-span.title {
+/*==========tooltip样式 摆脱title了！==========*/
+span[tooltip] {
     position: relative;
 }
-/*长按带有title标签的内容时显示一个悬浮框，用于移动端、触屏显示tooltip*/
-span[title]:active:before {
-    content: attr(title);
-	font: bold 10pt "微软雅黑" serif; color: white; overflow-x:hidden; overflow-y:auto; text-shadow:3px 3px 3px #3b3535; text-align: center;
-	background-color: rgba(198, 114, 199, 0.8); *BACKGROUND: rgb(98,135,163); *filter:alpha(opacity=60)
-    padding: 10px;
-	width: 220px; 
-    max-width: 220px; 
-	z-index:10;
-	top: -25px;
-	left: 0;
-	border-radius: 3px;
-    position: absolute;
+span[tooltip]:hover:before {
+    content: attr(tooltip);
+	overflow-x:hidden;overflow-y:auto; padding: 3px; 
+	font: bold 10pt "微软雅黑" serif; color: white; 
+	text-shadow:3px 3px 3px #3b3535; text-align: center; text-fill-color: white; -webkit-text-fill-color: white;
+	background-size: 0; background-clip: border-box; background-color: rgba(198, 114, 199, 0.8);
+	top: 20px; left: -5px; border-radius: 2px;
+    width: 160px; max-width: 160px; z-index: 3; position: absolute;    
 }
 
+/*==========下拉菜单样式==========*/
 .headerlink{
 	font-family: "微软雅黑";
 }
-/*用于触发下拉菜单的样式drop*/
 span.drop{
 	position: relative;
 }
 /*悬浮在drop样式上时触发下拉菜单*/
 span.drop:hover .dropdown-menu{
 	display: block;
-	background-color: rgba(83, 63, 90, 0.8);
-	border-radius: 5px;
 }
 /*下拉菜单样式本体*/
 .dropdown-menu{
-	top:17px;
-	left:-10px;
-	width: 90px; 
-    max-width: 90px; 
-    position: absolute;
-	z-index:10;
 	display: none;
+	background-size: 0; background-clip: border-box; background-color: rgba(83, 63, 90, 0.8);
+	top:17px; left:-10px; border-radius: 5px;
+	width: 90px; max-width: 90px; 
+	z-index:4; position: absolute;
 }
 /*去除下拉菜单内<ul>标签的样式*/
 .dropdown-menu ul{
@@ -414,12 +406,12 @@ span.drop:hover .dropdown-menu{
 	justify-content: center;
 	font: bold 10pt "微软雅黑" serif; color: white; overflow-x:hidden; overflow-y:auto; text-shadow:3px 3px 3px #231e1e; text-align: center;
 }
-/**/
-/*用于显示大头像的样式*/
+
+/*==========在小头像上悬浮显示大头像==========*/
 span.icon{
 	position: relative;
 }
-/*悬浮在大头像样式上时大头像*/
+/*光标移动到样式上时 显示大头像*/
 span.icon:hover .icona{
 	display: block;
 	background-color: rgba(83, 63, 90, 0.5);
@@ -433,6 +425,44 @@ span.icon:hover .icona{
     max-width: 140px; 
 	padding: 5px;
     position: absolute;
-	z-index:10;
+	z-index:4;
 	display: none;
+}
+
+/*==========用dialog实现的气泡框==========*/
+/*用法：
+打开：<input type="button" value="" onclick="showModalDialog($('名字'))">
+气泡框本体：
+<dialog id="名字">
+	要输入的内容
+	关闭气泡框方法A：<input class="cmdbutton" onclick="closeDialog($('名字'))" value="关闭窗口" type="button">
+	关闭气泡框方法B：<img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('名字'))">
+	备注：方法B是一张覆盖全界面的背景图片，以实现玩家点击其他区域自动关闭对话框，
+	但其实点击框内的空区域也会关闭对话框……！
+</dialog>*/
+dialog{
+	position: fixed;
+	max-width: 50%;
+	max-height: 75%;
+	font:10pt 微软雅黑 serif; 
+	border: #000 0px none; color: #fff; border-radius: 4px;
+	background-color:rgba(15, 0, 21, 0.9);
+	box-shadow: 0px 2px 6px #999;
+	z-index:4;
+}
+dialog::backdrop{
+	font: bold 10pt "微软雅黑" serif;text-decoration: none;color: #ddd; cursor: crosshair;
+	background-color:rgba(17,17,17,0.5); *BACKGROUND:rgb(17,17,17); *filter:alpha(opacity=50);
+}
+.dialog-background {
+	display: flex;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	z-index:-2;
 }

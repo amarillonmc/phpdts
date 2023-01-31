@@ -12,6 +12,19 @@
 {template npcinfohelp}
 <!--{/loop}-->
 <br>
+此外，游戏中还存在着满足条件才能够召唤的特殊BOSS NPC。他们通常拥有独特的战斗机制，很难使用常规的战斗方式击败：
+<input class="cmdbutton" onclick="showModalDialog($('ty2a'))" value="点击这里查看特殊BOSS NPC" type="button">
+<br>
+<dialog id="ty2a">
+    <p><span class="lime b">参战者 红暮&蓝凝 简介：</span></p>
+    <p>使用【我想要领略真正的红杀之力】后，应约而来的红暮&蓝凝。要战胜她们，光凭蛮力是行不通的……</p>
+    <br>
+    <!--{loop $ty2a $vkind $kind}-->
+        {template npcinfohelp_a}
+    <!--{/loop}-->
+    <img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('ty2a'))">
+</dialog>
+<br>
 <p><span class="lime">真职人 NPC简介</span>：</p>
 此类NPC在开局对<span class="yellow">无防具的玩家有较大威胁</span>，这类NPC的特点是<span class="yellow">防御非常高</span>，且<span class="yellow">武器均带有“电击+冻气+带毒+火焰+音波”属性</span>，很容易导致玩家中异常状态。<br>如果防具很差，或没有属性防御也没钱买药剂，请不要贸然攻击它们，否则很可能导致自己中大量异常状态后难以恢复，苦不堪言。<br>
 当然，击杀这些NPC后可以获取<span class="lime">极为优秀的防具</span>，在游戏中后期<span class="lime">击杀它们并拾取它们的防具保护自己</span>往往是玩家取胜的关键。<br>
@@ -36,8 +49,19 @@
 {template npcinfohelp}
 <!--{/loop}-->
 <br>
+
 <p><span class="lime">二重NPC 简介</span>：</p>
 此类NPC对玩家无威胁，但当玩家击杀它们后，它们会变身为<span class="yellow">“第二形态”</span>，此时<span class="yellow">攻击力会变得极强</span>。<br>可别不小心击杀了它们后被第二形态秒杀哦～ 不过，当自己处于劣势时，偷偷击杀这类NPC，并期望对手撞上它们并被它们秒杀，也是不错的翻盘思路哦～<br>
+<input class="cmdbutton" onclick="showModalDialog($('ty6e'))" value="点击这里查看" type="button">她们的第二形态。<br>
+<dialog id="ty6e">
+    <p><span class="lime b">数据碎片第二形态NPC简介</span>：</p>
+    <p>女主们的第二形态实力强大，无准备的情况下遭遇她们<span class="yellow b">有性命之忧！</span>不过，击倒她们也是<span class="lime b">特殊胜利</span>的必经之路。</p>
+    <br>
+    <!--{loop $ty6e $vkind $kind}-->
+        {template npcinfohelp_e}
+    <!--{/loop}-->
+    <img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('ty6e'))">
+</dialog>
 <br>
 <!--{loop $ty6 $vkind $kind}-->
 {template npcinfohelp}
@@ -50,6 +74,17 @@
 下列的每一种卡池，可以刷出对应卡池的NPC。<br>
 <span class="yellow">Vol.1：电掣召唤仪</span><br>
 该物品可刷出以下NPC：<br>
+<!--<input class="cmdbutton" onclick="showModalDialog($('ty11e'))" value="点击这里查看" type="button">她们的第二形态。<br>-->
+<dialog id="ty11e">
+    <p><span class="lime b">电掣第二形态NPC简介</span>：</p>
+    <p></p>
+    <br>
+    <!--{loop $ty11e $vkind $kind}-->
+        {template npcinfohelp_e}
+    <!--{/loop}-->
+    <input class="cmdbutton" onclick="closeDialog($('ty11e'))" value="关闭窗口" type="button">
+    <img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('ty11e'))">
+</dialog>
 <br>
 <!--{loop $ty11 $vkind $kind}-->
 {template npcinfohelp}

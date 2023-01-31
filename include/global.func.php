@@ -557,34 +557,34 @@ function player_format_with_db_structure($data){
 function parse_itm_desc($n,$t,$short=0,$c=NULL)
 {
 	global $iteminfo,$itemspkinfo;
+	//我再也不敢把变量名起的又臭又长了
 	global $iteminfo_tooltip,$itemkinfo_tooltip,$itemspkinfo_tooltip,$iteminfo_tooltip_desc;
-	$s = "<span "; $p1 = ''; $p2 = ''; $ret = '';
+	$span = "<span "; $p1 = "tooltip=\""; $p2 = "class=\""; $ret1 = ''; $ret2 = ''; $ret = '';
 	switch($t)
 	{
 		//处理类别
 		case $t=='k':
-			if(isset($itemkinfo_tooltip[$n]['title'])) $p1 = "title=\"".$itemkinfo_tooltip[$n]['title']."\"";
-			if(isset($itemkinfo_tooltip[$n]['class'])) $p2 = "class=\"".$itemkinfo_tooltip[$n]['class']."\"";
+			if(isset($itemkinfo_tooltip[$n]['title'])) $ret1 = $itemkinfo_tooltip[$n]['title']."\"";				
+			if(isset($itemkinfo_tooltip[$n]['class'])) $ret2 = $itemkinfo_tooltip[$n]['class']."\"";
 			$n = $iteminfo[$n];
 			break;
 		//处理属性
 		case $t=='sk':
 			//如果传入的n为数组，且开启缩写模式，则输出一段缩写
-			if($short && is_array($n))
+			if($short && is_array($n) && count($n)>1)
 			{
-				$p1 = "title=\"";
 				$sk1 = $itemspkinfo[current($n)]; $sk2 = $itemspkinfo[end($n)]; $skn = '';
 				foreach($n as $sk_value)
 				{
 					if(!empty($skn)) $skn .='+'.$itemspkinfo[$sk_value];
 					else $skn = $itemspkinfo[$sk_value];
 				}
-				$p1.=$skn; $n = $sk1.'+...+'.$sk2; $p2 = "\"";
+				$ret1=$skn; $n = $sk1.'+...+'.$sk2; $ret1.= "\"";
 			}
 			else
 			{
-				if(isset($itemspkinfo_tooltip[$n]['title'])) $p1 = "title=\"".$itemspkinfo_tooltip[$n]['title']."\"";
-				if(isset($itemspkinfo_tooltip[$n]['class'])) $p2 = "class=\"".$itemspkinfo_tooltip[$n]['class']."\"";
+				if(isset($itemspkinfo_tooltip[$n]['title'])) $ret1= $itemspkinfo_tooltip[$n]['title']."\"";
+				if(isset($itemspkinfo_tooltip[$n]['class'])) $ret2= $itemspkinfo_tooltip[$n]['class']."\"";
 				$n = $itemspkinfo[$n];
 			}
 			break;
@@ -595,21 +595,25 @@ function parse_itm_desc($n,$t,$short=0,$c=NULL)
 			{
 				if(is_array($iteminfo_tooltip[$filter_n]))
 				{
-					if(isset($iteminfo_tooltip[$filter_n]['title'])) $p1 = "title=\"".$iteminfo_tooltip[$filter_n]['title']."\"";
-					if(isset($iteminfo_tooltip[$filter_n]['class'])) $p2 = "class=\"".$iteminfo_tooltip[$filter_n]['class']."\"";
+					if(isset($iteminfo_tooltip[$filter_n]['title'])) $ret1= $iteminfo_tooltip[$filter_n]['title']."\"";
+					if(isset($iteminfo_tooltip[$filter_n]['class'])) $ret2= $iteminfo_tooltip[$filter_n]['class']."\"";
 				}
 				elseif(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]))
 				{	//使用可复用描述 越来越离谱了
-					if(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['title'])) $p1 = "title=\"".$iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['title']."\"";
-					if(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['class'])) $p2 = "class=\"".$iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['class']."\"";
+					if(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['title'])) $ret1= $iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['title']."\"";
+					if(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['class'])) $ret2= $iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['class']."\"";
 				}
 			}
 			break;
 	}
-	//传入了样式 且道具没有与预设匹配的样式 则使用传入的样式
-	if(isset($c) && !$p2) $p2 = "class=\"".$c."\"";
-	$p3 = " >";	$e = "</span>";
-	$ret = $s.$p1.$p2.$p3.$n.$e;
+	$ret = $span;
+	if(!empty($ret1)) $ret .= $p1.$ret1;
+	if(!empty($ret2))
+	{
+		if(isset($c)) $ret2 = $c."\"";
+		$ret .= $p2.$ret2;
+	}
+	$ret .= ">".$n."</span>";
 	return $ret;
 }
 
