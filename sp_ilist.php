@@ -144,7 +144,14 @@ function get_itm_namelist()
 		include_once config('addnpc',$gamecfg);
 		include_once config('evonpc',$gamecfg);
 		$nownpclist = Array();
-		$nownpclist = array_merge($npcinfo,$anpcinfo,$enpcinfo);
+		$nownpclist = $npcinfo+$anpcinfo;
+		foreach($enpcinfo as $ekey => $enpcs)
+		{
+			foreach($enpcs as $sname => $enpc)
+			{
+				$nownpclist[$ekey]['sub'][$sname] = $enpc;
+			}
+		}
 		foreach($nownpclist as $npcs)
 		{
 			foreach(array('wep','arb','arh','ara','arf','art','itm1','itm2','itm3','itm4','itm5','itm6') as $nipval)

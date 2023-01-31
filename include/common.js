@@ -4,6 +4,16 @@ function $(id) {
 	return document.getElementById(id);
 }
 
+//dialog
+function showDialog(id){
+	id.show();
+}
+function showModalDialog(id){
+	id.showModal();
+}
+function closeDialog(id){
+	id.close();
+}
 
 //时间检查
 function checkTime(i)

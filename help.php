@@ -4,6 +4,7 @@ define('CURSCRIPT', 'help');
 
 require './include/common.inc.php';
 require './include/game.func.php';
+include_once GAME_ROOT.'./include/game/itemplace.func.php';
 
 $mixfile = config('mixitem',$gamecfg);
 $shopfile = config('shopitem',$gamecfg);
@@ -17,107 +18,35 @@ include_once $mixfile;
 $writefile = GAME_ROOT.TPLDIR.'/mixhelp.htm';
 
 include_once config('npc',$gamecfg);
-for ($i=0; $i<=20; $i++) $p[$i]=$i;
+include_once config('addnpc',$gamecfg);
+include_once config('evonpc',$gamecfg);
+//for ($i=0; $i<=20; $i++) $p[$i]=$i; //？？？
 for ($i=1; $i<=6; $i++) $itemlst[$i]=$i;
 
-foreach ($npcinfo as $i => $npcs)
+foreach($enpcinfo as $ekey => $enpcs)
 {
-	if(!empty($npcs)) 
-	{	
-		foreach (Array('arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
-		{
-			if(isset($npcinfo[$i][$value])) $npcinfo[$i][$value] = parse_itm_desc($npcinfo[$i][$value],'m');
-		}
-		foreach (Array('arbk','arhk','arak','arfk','artk','itmk0','itmk1','itmk2','itmk3','itmk4','itmk5','itmk6') as $value) 
-		{
-			if(isset($npcinfo[$i][$value])) 
-			{
-				foreach($iteminfo as $info_key => $info_value)
-				{
-					if(strpos($npcinfo[$i][$value],$info_key)===0){
-						$npcinfo[$i][$value] = parse_itm_desc($info_key,'k');;
-						break;
-					}
-				}
-			}
-		}
-		foreach(Array('arbsk','arhsk','arask','arfsk','artsk','itmsk0','itmsk1','itmsk2','itmsk3','itmsk4','itmsk5','itmsk6') as $value) 
-		{
-			if(isset($npcinfo[$i][$value])) 
-			{
-				$tmpsk = get_itmsk_array($npcinfo[$i][$value]);
-				foreach($tmpsk as $sk)
-				{
-					if(!empty($npcinfo[$i][$value][$value.'_words']))
-					{
-						$npcinfo[$i][$value.'_words'] .= "+".parse_itm_desc($sk,'sk');
-					}
-					else
-					{
-						$npcinfo[$i][$value.'_words'] = parse_itm_desc($sk,'sk');
-					}
-				}
-			}
-		}
-		foreach($npcs['sub'] as $n => $npc)
-		{
-			foreach(Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
-			{
-				if(isset($npcinfo[$i]['sub'][$n][$value])) $npcinfo[$i]['sub'][$n][$value] = parse_itm_desc($npcinfo[$i]['sub'][$n][$value],'m');
-			}
-			foreach(Array('wepk','arbk','arhk','arak','arfk','artk','itmk0','itmk1','itmk2','itmk3','itmk4','itmk5','itmk6') as $value) 
-			{
-				if(isset($npcinfo[$i]['sub'][$n][$value])) 
-				{
-					foreach($iteminfo as $info_key => $info_value)
-					{
-						if(strpos($npcinfo[$i]['sub'][$n][$value],$info_key)===0){
-							$npcinfo[$i]['sub'][$n][$value] = parse_itm_desc($info_key,'k');;
-							break;
-						}
-					}
-				}
-			}
-			foreach(Array('wepsk','arbsk','arhsk','arask','arfsk','artsk','itmsk0','itmsk1','itmsk2','itmsk3','itmsk4','itmsk5','itmsk6') as $value) 
-			{
-				if(isset($npcinfo[$i]['sub'][$n][$value])) 
-				{
-					$tmpsk = get_itmsk_array($npcinfo[$i]['sub'][$n][$value]);
-					foreach($tmpsk as $sk)
-					{
-						if(!empty($npcinfo[$i]['sub'][$n][$value.'_words']))
-						{
-							$npcinfo[$i]['sub'][$n][$value.'_words'] .= "+".parse_itm_desc($sk,'sk');
-						}
-						else
-						{
-							$npcinfo[$i]['sub'][$n][$value.'_words'] = parse_itm_desc($sk,'sk');
-						}
-					}
-				}
-			}
-		}
+	foreach($enpcs as $sname => $enpc)
+	{
+		$npcinfo[$ekey]['sub'][$sname] = $enpc;
 	}
 }
-// $ty1[1]=6; $ty1[2]=5; $ty1[3]=1; $ty1[4]=9; $ty1[5]=88;
-// $ty2[1]=11;
-// $ty3[1]=2; $ty3[2]=90;
-// $ty4[1]=14; $ty4[2]=4;
-// $ty5[1]=13;
-// $ty6[1]=15;
-// $ty7[1]=22;
-// $ty8[1]=21;
-$ty1[1]=1; $ty1[3]=88;
-$ty2[1]=5; $ty2[2]=6; $ty2[3]=19;
+$npcinfo = get_npc_helpinfo($npcinfo);
+$anpcinfo = get_npc_helpinfo($anpcinfo);
+
+$ty1[1]=1; $ty1[3]=88; 
+$ty2[1]=5; $ty2[2]=6; 
+$ty2a[1]=19; #真红蓝
 $ty3[1]=11;
 $ty4[1]=90; $ty4[2]=92;
 $ty5[1]=2;
-$ty6[1]=14; $ty6[2]=4;
+$ty6[1]=14; $ty6[2]=4; 
+$ty6e[1]=14; #女主第二形态情报
 $ty7[1]=13;
 $ty8[1]=15;
 $ty9[1]=22;
 $ty10[1]=21;
-$ty11[1]=89;
+$ty11[1]=89; 
+$ty11e[1]=89; #电掣NPC第二形态情报
 $ty12[1]=24;
 
 if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemtime($writefile) || filemtime($mapitemfile) > filemtime($writefile) || filemtime($synfile) > filemtime($writefile) || filemtime($ovlfile) > filemtime($writefile) || filemtime($presentfile) > filemtime($writefile) || filemtime($boxfile) > filemtime($writefile)){
@@ -202,7 +131,6 @@ if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemti
 			{
 				$mixhelpinfo .= "<td class=\"b3\" ";
 				if ($i==0)  $mixhelpinfo .= "height=20px ";
-				include_once GAME_ROOT.'./include/game/itemplace.func.php';
 				if ($val['stuff'][$i]!='-') $mixhelpinfo .= "title=\"".get_item_place($val['stuff'][$i])."\" ";
 				$mixhelpinfo .= "><span>{$val['stuff'][$i]}</span></td>";
 				//修复加入悬浮提示后出现的问题。

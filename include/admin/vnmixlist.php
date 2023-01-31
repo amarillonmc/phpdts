@@ -160,7 +160,7 @@ function post_back_vn_cache_file($data,$arr,$t=NULL)
 	$cont = str_replace('?>','',str_replace('<?','<?php',$checkstr));
 	$cont .= '$carr = ' . var_export($carr,1).";\r\n?>";
 	writeover($file, $cont);
-	chmod($cache_file,0777);
+	chmod($file,0777);
 	unlink($lock_file);
 	return 0;
 }

@@ -1,4 +1,4 @@
-<!--{loop $npcinfo[$kind]['sub'] $key $value}-->
+<!--{loop $anpcinfo[$kind]['sub'] $key $value}-->
 <!--{if isset($npcdescription[$kind]['sub'][$key]['description']) && is_numeric($key)}-->
 <table border="1" cellspacing="0" cellpadding="0" valign="middle">
 	<tr>
@@ -7,10 +7,10 @@
 				<tr>
 					<td>
 						<span class="icon">
-							<IMG width=140px src="img/n_$npcinfo[$kind]['sub'][$key]['icon'].gif" border="0" valign="middle"/>
-							<!--{if file_exists('img/n_'.$npcinfo[$kind]['sub'][$key]['icon'].'a.gif')}-->
+							<IMG width=140px src="img/n_$anpcinfo[$kind]['sub'][$key]['icon'].gif" border="0" valign="middle"/>
+							<!--{if file_exists('img/n_'.$anpcinfo[$kind]['sub'][$key]['icon'].'a.gif')}-->
 								<div class="icona">
-									<IMG class="aicon" width=140px src="img/n_$npcinfo[$kind]['sub'][$key]['icon']a.gif">
+									<IMG class="aicon" width=140px src="img/n_$anpcinfo[$kind]['sub'][$key]['icon']a.gif">
 								</div>
 							<!--{/if}-->
 						</span>
@@ -39,7 +39,7 @@
 								</td>
 								<td width=100px align="center" class="b3">
 									<span class="yellow">
-									$npcinfo[$kind]['sub'][$key]['pls']
+									$anpcinfo[$kind]['sub'][$key]['pls']
 									</span>
 								</td>
 							</tr>
@@ -49,7 +49,7 @@
 								</td>
 								<td width=100px align="center" class="b3">
 									<span>
-									Lv. $npcinfo[$kind]['sub'][$key]['lvl']
+									Lv. $anpcinfo[$kind]['sub'][$key]['lvl']
 									</span>
 								</td>
 								<td width=100px align="center" class="b1">
@@ -57,14 +57,14 @@
 								</td>	
 								<td width=100px align="center" class="b3">
 									<span class="lime">
-									$npcinfo[$kind]['sub'][$key]['name']
+									$anpcinfo[$kind]['sub'][$key]['name']
 									</span>
 								</td>
 								<td width=100px align="center" class="b1">
 									性别
 								</td>
 								<td width=100px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['gd']
+									$anpcinfo[$kind]['sub'][$key]['gd']
 								</td>
 							</tr>					
 							<tr>
@@ -72,19 +72,19 @@
 									内定称号
 								</td>					
 								<td width=100px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['club']
+									$anpcinfo[$kind]['sub'][$key]['club']
 								</td>
 								<td width=100px align="center" class="b1">
 									{lang pose}
 								</td>
 								<td width=100px align="center" class="b3">
-									$poseinfo[$npcinfo[$kind]['sub'][$key]['pose']]
+									$poseinfo[$anpcinfo[$kind]['sub'][$key]['pose']]
 								</td>
 								<td width=100px align="center" class="b1">
 									{lang tactic}
 								</td>
 								<td width=100px align="center" class="b3">
-									$tacinfo[$npcinfo[$kind]['sub'][$key]['tactic']]
+									$tacinfo[$anpcinfo[$kind]['sub'][$key]['tactic']]
 								</td>
 							</tr>
 							<tr>
@@ -92,19 +92,19 @@
 									生命上限
 								</td>
 								<td width=100px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['mhp']
+									$anpcinfo[$kind]['sub'][$key]['mhp']
 								</td>
 								<td width=100px align="center" class="b1">
 									熟练度
 								</td>
 								<td width=100px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['skill']
+									$anpcinfo[$kind]['sub'][$key]['skill']
 								</td>
 								<td width=100px align="center" class="b1">
 									怒气值
 								</td>
 								<td width=100px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['rage']
+									$anpcinfo[$kind]['sub'][$key]['rage']
 								</td>
 							</tr>
 							<tr>
@@ -112,19 +112,19 @@
 									基础攻击
 								</td>
 								<td width=100px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['att']
+									$anpcinfo[$kind]['sub'][$key]['att']
 								</td>
 								<td width=100px align="center" class="b1">
 									基础防御
 								</td>
 								<td width=100px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['def']
+									$anpcinfo[$kind]['sub'][$key]['def']
 								</td>
 								<td width=100px align="center" class="b1">
 									掉落金钱
 								</td>
 								<td width=100px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['money']
+									$anpcinfo[$kind]['sub'][$key]['money']
 								</td>
 							</tr>
 						</table>
@@ -147,7 +147,7 @@
 									武器名称
 								</td>
 								<td width=505px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['wep']/$npcinfo[$kind]['sub'][$key]['wepk']/$npcinfo[$kind]['sub'][$key]['wepe']/$npcinfo[$kind]['sub'][$key]['weps']<!--{if isset($npcinfo[$kind]['sub'][$key]['wepsk_words'])}-->/$npcinfo[$kind]['sub'][$key]['wepsk_words']<!--{/if}-->
+									$anpcinfo[$kind]['sub'][$key]['wep']/$anpcinfo[$kind]['sub'][$key]['wepk']/$anpcinfo[$kind]['sub'][$key]['wepe']/$anpcinfo[$kind]['sub'][$key]['weps']<!--{if isset($anpcinfo[$kind]['sub'][$key]['wepsk_words'])}-->/$anpcinfo[$kind]['sub'][$key]['wepsk_words']<!--{/if}-->
 								</td>
 							</tr>
 							<tr>
@@ -155,7 +155,7 @@
 									身体装备
 								</td>
 								<td width=505px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['arb']/$npcinfo[$kind]['sub'][$key]['arbe']/$npcinfo[$kind]['sub'][$key]['arbs']<!--{if isset($npcinfo[$kind]['sub'][$key]['arbsk_words'])}-->/$npcinfo[$kind]['sub'][$key]['arbsk_words']<!--{/if}-->
+									$anpcinfo[$kind]['sub'][$key]['arb']/$anpcinfo[$kind]['sub'][$key]['arbe']/$anpcinfo[$kind]['sub'][$key]['arbs']<!--{if isset($anpcinfo[$kind]['sub'][$key]['arbsk_words'])}-->/$anpcinfo[$kind]['sub'][$key]['arbsk_words']<!--{/if}-->
 								</td>
 							</tr>
 							<tr>
@@ -163,7 +163,7 @@
 									头部装备
 								</td>
 								<td width=505px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['arh']/$npcinfo[$kind]['sub'][$key]['arhe']/$npcinfo[$kind]['sub'][$key]['arhs']<!--{if isset($npcinfo[$kind]['sub'][$key]['arhsk_words'])}-->/$npcinfo[$kind]['sub'][$key]['arhsk_words']<!--{/if}-->
+									$anpcinfo[$kind]['sub'][$key]['arh']/$anpcinfo[$kind]['sub'][$key]['arhe']/$anpcinfo[$kind]['sub'][$key]['arhs']<!--{if isset($anpcinfo[$kind]['sub'][$key]['arhsk_words'])}-->/$anpcinfo[$kind]['sub'][$key]['arhsk_words']<!--{/if}-->
 								</td>
 							</tr>
 							<tr>
@@ -171,7 +171,7 @@
 									手臂装备
 								</td>
 								<td width=505px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['ara']/$npcinfo[$kind]['sub'][$key]['arae']/$npcinfo[$kind]['sub'][$key]['aras']<!--{if isset($npcinfo[$kind]['sub'][$key]['arask_words'])}-->/$npcinfo[$kind]['sub'][$key]['arask_words']<!--{/if}-->
+									$anpcinfo[$kind]['sub'][$key]['ara']/$anpcinfo[$kind]['sub'][$key]['arae']/$anpcinfo[$kind]['sub'][$key]['aras']<!--{if isset($anpcinfo[$kind]['sub'][$key]['arask_words'])}-->/$anpcinfo[$kind]['sub'][$key]['arask_words']<!--{/if}-->
 								</td>
 							</tr>
 							<tr>
@@ -179,7 +179,7 @@
 									腿部装备
 								</td>
 								<td width=505px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['arf']/$npcinfo[$kind]['sub'][$key]['arfe']/$npcinfo[$kind]['sub'][$key]['arfs']<!--{if isset($npcinfo[$kind]['sub'][$key]['arfsk_words'])}-->/$npcinfo[$kind]['sub'][$key]['arfsk_words']<!--{/if}-->
+									$anpcinfo[$kind]['sub'][$key]['arf']/$anpcinfo[$kind]['sub'][$key]['arfe']/$anpcinfo[$kind]['sub'][$key]['arfs']<!--{if isset($anpcinfo[$kind]['sub'][$key]['arfsk_words'])}-->/$anpcinfo[$kind]['sub'][$key]['arfsk_words']<!--{/if}-->
 								</td>
 							</tr>
 							<tr>
@@ -187,17 +187,17 @@
 									饰品 
 								</td>
 								<td width=505px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['art']/$npcinfo[$kind]['sub'][$key]['artk']<!--{if isset($npcinfo[$kind]['sub'][$key]['artsk_words'])}-->/$npcinfo[$kind]['sub'][$key]['artsk_words']<!--{/if}-->
+									$anpcinfo[$kind]['sub'][$key]['art']/$anpcinfo[$kind]['sub'][$key]['artk']<!--{if isset($anpcinfo[$kind]['sub'][$key]['artsk_words'])}-->/$anpcinfo[$kind]['sub'][$key]['artsk_words']<!--{/if}-->
 								</td>
 							</tr>
 							<!--{loop $itemlst $id $vid}-->
-							<!--{if isset($npcinfo[$kind]['sub'][$key]['itm'.$id])}-->
+							<!--{if isset($anpcinfo[$kind]['sub'][$key]['itm'.$id])}-->
 							<tr>
 								<td width=100px align="center" class="b1">
 									掉落物品
 								</td>
 								<td width=505px align="center" class="b3">
-									$npcinfo[$kind]['sub'][$key]['itm'.$id]/$npcinfo[$kind]['sub'][$key]['itmk'.$id]/$npcinfo[$kind]['sub'][$key]['itme'.$id]/$npcinfo[$kind]['sub'][$key]['itms'.$id]<!--{if isset($npcinfo[$kind]['sub'][$key]['itmsk'.$id.'_words'])}-->/$npcinfo[$kind]['sub'][$key]['itmsk'.$id.'_words']<!--{/if}-->	
+									$anpcinfo[$kind]['sub'][$key]['itm'.$id]/$anpcinfo[$kind]['sub'][$key]['itmk'.$id]/$anpcinfo[$kind]['sub'][$key]['itme'.$id]/$anpcinfo[$kind]['sub'][$key]['itms'.$id]<!--{if isset($anpcinfo[$kind]['sub'][$key]['itmsk'.$id.'_words'])}-->/$anpcinfo[$kind]['sub'][$key]['itmsk'.$id.'_words']<!--{/if}-->	
 								</td>
 							</tr>
 							<!--{/if}-->
