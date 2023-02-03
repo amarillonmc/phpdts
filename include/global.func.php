@@ -662,8 +662,24 @@ function get_clbpara($para)
 	return json_decode($para,true);
 }
 
-function set_clbpara($para)
+function get_single_clbpara($para,$key)
 {
+	$para = get_clbpara($para);
+	if(isset($para[$key])) return $para[$key];
+	return;
+}
+
+function del_clbpara($para,$key)
+{
+	$para = get_clbpara($para);
+	if(isset($para[$key])) unset($para[$key]);
+	return json_encode($para);
+}
+
+function set_clbpara($para,$key,$value)
+{
+	$para = get_clbpara($para);
+	$para[$key] = $value;
 	return json_encode($para);
 }
 

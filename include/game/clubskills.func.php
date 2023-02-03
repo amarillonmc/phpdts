@@ -3,6 +3,8 @@ if (! defined ( 'IN_GAME' )) {
 	exit ( 'Access Denied' );
 }
 
+include_once GAME_ROOT.'./include/game/dice.func.php';
+
 function getskills(&$arr)
 {
 	$arr=Array(
@@ -777,6 +779,248 @@ function upgradeclubskills($cmd)
 	}
 }
 
+#适配新版战斗函数的社团技能判定函数：
+function rev_get_clubskill_bonus_hitrate($aclub,$askl,$pa,$bclub,$bskl,$pd)
+{
+	//命中率系数
+	getskills2($clskl);
+	getlearnt($alearn,$aclub,$askl);
+	getlearnt($blearn,$bclub,$bskl);
+	$a1=((int)($askl/10))%10; $a2=$askl%10;
+	$b1=((int)($bskl/10))%10; $b2=$bskl%10;
+	$r=1;
+	for ($i=1; $i<=2; $i++)
+	{
+		if ($alearn['learn'.$i]==3 && $pa['wep_kind']=="K")	//见敌必斩称号
+		{
+			$r*=(1+$clskl[3][${'a'.$i}][1]/100);
+		}
+		if ($alearn['learn'.$i]==5 && ($pa['wep_kind']=="G" || $pa['wep_kind']=="J"))	//狙击鹰眼称号
+		{
+			$r*=(1+$clskl[5][${'a'.$i}][1]/100);
+		}
+		if ($blearn['learn'.$i]==12)						//宛如疾风称号
+		{
+			$r*=(1-$clskl[12][${'b'.$i}][1]/100);
+		}
+	}
+	return $r;
+}
+
+function rev_get_clubskill_bonus_imfrate($aclub,$askl,$pa,$bclub,$bskl,$pd)
+{
+	//防具损坏率系数
+	getskills2($clskl);
+	getlearnt($alearn,$aclub,$askl);
+	getlearnt($blearn,$bclub,$bskl);
+	$a1=((int)($askl/10))%10; $a2=$askl%10;
+	$b1=((int)($bskl/10))%10; $b2=$bskl%10;
+	$r=1;
+	for ($i=1; $i<=2; $i++)
+	{
+		if ($alearn['learn'.$i]==6 && ($pa['wep_kind']=="G" || $pa['wep_kind']=="J"))	//狙击鹰眼称号
+		{
+			$r*=(1+$clskl[6][${'a'.$i}][1]/100);
+		}
+	}
+	return $r;
+}
+
+function rev_get_clubskill_bonus_imftime($aclub,$askl,$pa,$bclub,$bskl,$pd)
+{
+	//防具损坏效果系数
+	getskills2($clskl);
+	getlearnt($alearn,$aclub,$askl);
+	getlearnt($blearn,$bclub,$bskl);
+	$a1=((int)($askl/10))%10; $a2=$askl%10;
+	$b1=((int)($bskl/10))%10; $b2=$bskl%10;
+	$r=1;
+	for ($i=1; $i<=2; $i++)
+	{
+		if ($alearn['learn'.$i]==6 && ($pa['wep_kind']=="G" || $pa['wep_kind']=="J"))	//狙击鹰眼称号
+		{
+			$r+=$clskl[6][${'a'.$i}][2];
+		}
+	}
+	return $r;
+}
+
+function rev_get_clubskill_bonus_imprate($aclub,$askl,$pa,$bclub,$bskl,$pd)
+{
+	//武器损坏率系数
+	getskills2($clskl);
+	getlearnt($alearn,$aclub,$askl);
+	getlearnt($blearn,$bclub,$bskl);
+	$a1=((int)($askl/10))%10; $a2=$askl%10;
+	$b1=((int)($bskl/10))%10; $b2=$bskl%10;
+	$r=1;
+	for ($i=1; $i<=2; $i++)
+	{
+		if ($alearn['learn'.$i]==4 && $pa['wep_kind']=="K")	//见敌必斩称号
+		{
+			$r*=(1-$clskl[4][${'a'.$i}][1]/100);
+		}
+	}
+	return $r;
+}
+
+function rev_get_clubskill_bonus($aclub,$askl,$pa,$bclub,$bskl,$pd,&$att,&$def)
+{
+	//攻击防御力加成
+	getskills2($clskl);
+	getlearnt($alearn,$aclub,$askl);
+	getlearnt($blearn,$bclub,$bskl);
+	$a1=((int)($askl/10))%10; $a2=$askl%10;
+	$b1=((int)($bskl/10))%10; $b2=$bskl%10;
+	$att=0; $def=0;
+	for ($i=1; $i<=2; $i++)
+	{
+		if ($blearn['learn'.$i]==1 && $pd['wep_kind']=="P")	//铁拳无敌称号
+		{
+			$dup=$clskl[1][${'b'.$i}][1]/100*$pd['wepe'];
+			if ($dup>2000) $dup=2000;
+			$def+=$dup;
+		}
+	}
+}
+
+function rev_get_clubskill_bonus_p($aclub,$askl,$pa,$bclub,$bskl,$pd,&$att,&$def)
+{
+	//攻击防御加成系数
+	getskills2($clskl);
+	getlearnt($alearn,$aclub,$askl);
+	getlearnt($blearn,$bclub,$bskl);
+	$a1=((int)($askl/10))%10; $a2=$askl%10;
+	$b1=((int)($bskl/10))%10; $b2=$bskl%10;
+	$att=1; $def=1;
+	for ($i=1; $i<=2; $i++)
+	{
+		if ($alearn['learn'.$i]==2 && $pa['wep_kind']=="P")	//铁拳无敌称号
+		{
+			$att*=(1+$clskl[2][${'a'.$i}][1]/100);
+			if (rand(0,99)<$clskl[2][${'a'.$i}][2]) $def*=(1-$clskl[2][${'a'.$i}][3]/100);
+		}
+		if ($alearn['learn'.$i]==8 && $pa['wep_kind']=="C")	//灌篮高手称号
+		{
+			$att*=(1+$clskl[8][${'a'.$i}][1]/100);
+		}
+		if ($alearn['learn'.$i]==6 && ($pa['wep_kind']=="G" || $pa['wep_kind']=="J"))	//狙击鹰眼称号
+		{
+			if (rand(0,99)<$clskl[6][${'a'.$i}][3]) $att*=(1+$clskl[6][${'a'.$i}][4]/100);
+		}
+	}
+}
+
+function rev_get_clubskill_bonus_fluc($aclub,$askl,$pa,$bclub,$bskl,$pd)
+{
+	//伤害浮动值
+	getskills2($clskl);
+	getlearnt($alearn,$aclub,$askl);
+	getlearnt($blearn,$bclub,$bskl);
+	$a1=((int)($askl/10))%10; $a2=$askl%10;
+	$b1=((int)($bskl/10))%10; $b2=$bskl%10;
+	$r=0;
+	for ($i=1; $i<=2; $i++)
+	{
+		if ($alearn['learn'.$i]==8 && $pa['wep_kind']=="C")	//灌篮高手称号
+		{
+			$r+=$clskl[8][${'a'.$i}][2];
+		}
+	}
+	return $r;
+}
+function rev_get_clubskill_bonus_counter($aclub,$askl,$pa,$bclub,$bskl,$pd)
+{
+	//反击率加成
+	getskills2($clskl);
+	getlearnt($alearn,$aclub,$askl);
+	getlearnt($blearn,$bclub,$bskl);
+	$a1=((int)($askl/10))%10; $a2=$askl%10;
+	$b1=((int)($bskl/10))%10; $b2=$bskl%10;
+	$r=1;
+	for ($i=1; $i<=2; $i++)
+	{
+		if ($alearn['learn'.$i]==7 && $pa['wep_kind']=='C')	//灌篮高手称号
+		{
+			$r*=(1+$clskl[7][${'a'.$i}][1]/100);
+		}
+		if ($alearn['learn'.$i]==11)						//宛如疾风称号
+		{
+			$r*=(1+$clskl[11][${'a'.$i}][3]/100);
+		}
+		if ($blearn['learn'.$i]==13 && $pd['wep_kind']=='F')	//超能力者称号
+		{
+			$r*=(1-$clskl[13][${'b'.$i}][2]/100);
+		}
+	}
+	return $r;
+}
+function rev_get_clubskill_bonus_dmg_rate($aclub,$askl,$pa,$bclub,$bskl,$pd)
+{
+	//最终伤害加成/减成，a为攻击方，b为防御方
+	getskills2($clskl);
+	getlearnt($alearn,$aclub,$askl);
+	getlearnt($blearn,$bclub,$bskl);
+	$a1=((int)($askl/10))%10; $a2=$askl%10;
+	$b1=((int)($bskl/10))%10; $b2=$bskl%10;
+	$ar=100;
+	for ($i=1; $i<=2; $i++)
+	{
+		if ($alearn['learn'.$i]==14)	//攻击方有晶莹技能，伤害大幅下降
+		{
+			$ar-=$clskl[14][${'a'.$i}][1];
+		}
+	}
+	$br=100;
+	for ($i=1; $i<=2; $i++)
+	{
+		if ($blearn['learn'.$i]==14)	//防御方有晶莹技能，伤害下降
+		{
+			$br-=$clskl[14][${'b'.$i}][2];
+		}
+	}
+	$r = round($ar*$br)/10000*100; //高端的算法往往以低调的姿态示人
+	return $r;
+}
+function rev_get_clubskill_bonus_dmg_val($club,$skl,$pa,$pd)
+{
+	//最终伤害增加值
+	getskills2($clskl);
+	getlearnt($learn,$club,$skl);
+	$a1=((int)($skl/10))%10; $a2=$skl%10;
+	$rate = 0;
+	for ($i=1; $i<=2; $i++)
+	{
+		if ($learn['learn'.$i]==15)	//攻击方有剔透技能，得到概率
+		{
+			$rate=$clskl[15][${'a'.$i}][1];
+		}
+	}
+	$rate -= round($pa['rp']/20);
+	if($rate < 0){$rate = 0;}
+	$rpdmg = $pd['rp'] - $pa['rp'];
+	$dice = diceroll(99);
+	if($rpdmg > 0 && $dice < $rate){
+		return $rpdmg;
+	}
+	return 0;
+}
+function rev_get_clubskill_rp_dec($clb,$skl)
+{
+	//RP增长率下降
+	getskills2($clskl);
+	getlearnt($alearn,$clb,$skl);
+	$a1=((int)($skl/10))%10; $a2=$skl%10;
+	$r=0;
+	for ($i=1; $i<=2; $i++)
+	{
+		if ($alearn['learn'.$i]==14) $r=$clskl[14][${'a'.$i}][3];	//晶莹剔透1
+	}
+	//echo $r;
+	return $r;
+}
+
+#### 原社团技能函数：
 function get_clubskill_bonus_p($aclub,$askl,$prefix1,$bclub,$bskl,$prefix2,&$att,&$def)
 {
 	//攻击防御加成系数

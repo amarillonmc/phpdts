@@ -50,7 +50,7 @@ $clubinfo = Array(
 	98=>'换装迷宫',
 	99=>'决死结界'
 	);
-$wthinfo = Array('晴天','大晴','多云','小雨','暴雨','台风','雷雨','下雪','起雾','浓雾','<span class="yellow">瘴气</span>','<span class="red">龙卷风</span>','<span class="clan">暴风雪</span>','<span class="blue">冰雹</span>','<span class="linen">离子暴</span>','<span class="green">辐射尘</span>','<span class="purple">臭氧洞</span>');
+$wthinfo = Array('晴天','大晴','多云','小雨','暴雨','台风','雷雨','下雪','起雾','浓雾','<span class="yellow">瘴气</span>','<span class="red">龙卷风</span>','<span class="clan">暴风雪</span>','<span class="blue">冰雹</span>','<span class="linen">离子暴</span>','<span class="green">辐射尘</span>','<span class="purple">臭氧洞</span>','<span class="gold">极光</span>');
 $sexinfo = Array(0=> '未定', 'm' => '男生', 'f' => '女生');
 $raceinfo = Array(0=> '人类', 1=> '兽人', 2=> '妖精', 3=> '龙', 4=> '鱼人', 5=> 'ＡＩ');
 $hpinfo = Array('并无大碍','伤痕累累','生命危险','已经死亡');
@@ -1144,6 +1144,7 @@ $itemspkinfo_tooltip = Array
 	'w' => Array('title' => "攻击对手时，将产生额外的音波属性伤害。也有可能让对手陷入混乱异常状态。",),
 	'X' => Array('title' => "可能会一击必杀。",),
 	'x' => Array('title' => "人类，可以挑战神么？",),
+	'y' => Array('title' => "攻击对手时，一定几率无效属性抹消类与属性防御类属性，并增加让对手陷入异常状态的概率。",),
 	'Z' => Array('title' => "该物品可以使用特定物品进行强化。",),
 	'z' => Array('title' => "那么，这个有什么用呢……？",),
 	'-' => Array('title' => "战斗时无效双方的防具效果。",),
@@ -1196,6 +1197,7 @@ $itemspkinfo = Array(
 	'w' => '音波',
 	'X' => '直死', //NPC专用
 	'x' => '奇迹',
+	'y' => '破格', //属穿
 	'Z' => '菁英',
 	'z' => '天然',
 	'-' => '精神抽取',

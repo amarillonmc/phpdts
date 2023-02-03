@@ -6,6 +6,7 @@ if (! defined ( 'IN_GAME' )) {
 
 function death($death, $kname = '', $ktype = 0, $annex = '') {
 	global $now, $db, $tablepre, $alivenum, $deathnum, $name, $state, $deathtime, $type, $lvl, $bid, $killmsginfo, $typeinfo, $hp, $mhp, $wp, $wk, $wg, $wc, $wd, $wf, $sp, $msp, $club, $pls , $nick;
+	global $weather,$clbpara;
 	if (! $death) {
 		return;
 	}
@@ -94,23 +95,42 @@ function death($death, $kname = '', $ktype = 0, $annex = '') {
 	$knname = isset($knick) ? $knick.' '.$kname : $kname;
 	addnews ( $now, 'death' . $state, $name, $type, $knname, $annex, $lastword );
 	//$alivenum = $db->result($db->query("SELECT COUNT(*) FROM {$tablepre}players WHERE hp>0 AND type=0"), 0);
-	
-	if ($type==0 && $club==99 && ($death=="N" || $death=="P" || $death=="K" || $death=="G" || $death=="C" || $death=="D" || $death=="F" || $death=="J" || $death=="trap"))	
+
+	$revival_flag = false;
+	//依次判定复活效果
+	if (!$revival_flag && $weather == 17)
+	{
+		include_once GAME_ROOT.'./include/game/dice.func.php';
+		$aurora_rate = 10; //玩家10%概率复活
+		$aurora_dice = diceroll(100);
+		if($aurora_dice<=$aurora_rate)
+		{
+			//奥罗拉复活效果
+			addnews($now,'aurora_revival',$name);
+			$hp += min($mhp,max($aurora_dice,1)); $sp += min($msp,max($aurora_dice,1));
+			$alivenum++; $state=0;
+			$clbpara = set_clbpara($clbpara,'revival_flag','17');
+			$revival_flag = true;
+		}
+	}
+	if (!$revival_flag && $type==0 && $club==99 && ($death=="N" || $death=="P" || $death=="K" || $death=="G" || $death=="C" || $death=="D" || $death=="F" || $death=="J" || $death=="trap"))	
 	{
 		addnews($now,'revival',$name);	//玩家春哥附体称号的处理
 		$hp=$mhp; $sp=$msp;
 		$club=17; $state=0;
+		$clbpara = set_clbpara($clbpara,'revival_flag','99');
 		$alivenum++;
 	}
-	
-	//PORT
-	//死亡时灵魂绑定的道具也会消失
-	global $wep,$arb,$arh,$ara,$arf,$art,$itm1,$itm2,$itm3,$itm4,$itm5,$itm6;
-	global $weps,$arbs,$arhs,$aras,$arfs,$arts,$itms1,$itms2,$itms3,$itms4,$itms5,$itms6;
-	global $wepe,$arbe,$arhe,$arae,$arfe,$arte,$itme1,$itme2,$itme3,$itme4,$itme5,$itme6;
-	global $wepk,$arbk,$arhk,$arak,$arfk,$artk,$itmk1,$itmk2,$itmk3,$itmk4,$itmk5,$itmk6;
-	global $wepsk,$arbsk,$arhsk,$arask,$arfsk,$artsk,$itmsk1,$itmsk2,$itmsk3,$itmsk4,$itmsk5,$itmsk6;
-	global $log;
+
+	if(!$revival_flag)
+	{
+		//死亡时灵魂绑定的道具也会消失 嗨呀 死了没复活才会消失
+		global $wep,$arb,$arh,$ara,$arf,$art,$itm1,$itm2,$itm3,$itm4,$itm5,$itm6;
+		global $weps,$arbs,$arhs,$aras,$arfs,$arts,$itms1,$itms2,$itms3,$itms4,$itms5,$itms6;
+		global $wepe,$arbe,$arhe,$arae,$arfe,$arte,$itme1,$itme2,$itme3,$itme4,$itme5,$itme6;
+		global $wepk,$arbk,$arhk,$arak,$arfk,$artk,$itmk1,$itmk2,$itmk3,$itmk4,$itmk5,$itmk6;
+		global $wepsk,$arbsk,$arhsk,$arask,$arfsk,$artsk,$itmsk1,$itmsk2,$itmsk3,$itmsk4,$itmsk5,$itmsk6;
+		global $log;
 		for($i = 1;$i <= 6;$i++){
 			if(strpos(${'itmsk'.$i},'v')!==false){
 			$log .= "伴随着你的死亡，<span class=\"yellow\">${'itm'.$i}</span>也化作灰烬消散了。<br>";
@@ -149,17 +169,17 @@ function death($death, $kname = '', $ktype = 0, $annex = '') {
 			$arts=$arte = 0;
 			}
 		}
-
-	$alivenum --;
-	$deathnum ++;
+		$alivenum --;
+		$deathnum ++;	
+	}
 	save_gameinfo ();
-	
 	return $killmsg;
 }
 
 
-function kill($death, $dname, $dtype = 0, $dpid = 0, $annex = '') {
+function kill($death, $dname, $dtype = 0, $dpid = 0, $annex = '', &$revival_flag=0) {
 	global $now, $db, $tablepre, $alivenum, $deathnum, $name, $w_state, $type, $pid, $typeinfo, $pls, $lwinfo, $w_achievement;
+	global $weather;
 	
 	if (! $death || ! $dname) {
 		return;
@@ -199,11 +219,6 @@ function kill($death, $dname, $dtype = 0, $dpid = 0, $annex = '') {
 	
 	
 	if ($dtype) {
-		if($dtype == 15){//静流AI
-			global $gamevars;
-			$gamevars['sanmadead'] = 1;
-			save_gameinfo();
-		}
 		$lwname = $typeinfo [$dtype] . ' ' . $dname;
 		if (is_array ( $lwinfo [$dtype] )) {
 			$lastword = $lwinfo [$dtype] [$dname];
@@ -225,30 +240,48 @@ function kill($death, $dname, $dtype = 0, $dpid = 0, $annex = '') {
 	
 	$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid=$dpid" );
 	$res=$db->fetch_array($result);
+	
 	$revivaled=false;
-	if ($res['type']==0 && $res['club']==99 && ($death=="N" || $death=="P" || $death=="K" || $death=="G" || $death=="C" ||$death=="D" || $death=="F" || $death=="J" || $death=="trap"))	
+	//依次判定复活效果
+	if (!$revival_flag && $weather == 17)
+	{
+		include_once GAME_ROOT.'./include/game/dice.func.php';
+		$aurora_rate = $dtype ? 1 : 10; //NPC概率1% 玩家概率10%
+		$aurora_dice = diceroll(100);
+		if($aurora_dice<=$aurora_rate)
+		{
+			//奥罗拉复活效果
+			addnews($now,'aurora_revival',$res['name']);
+			$res['hp'] += min($res['mhp'],max($aurora_dice,1)); $res['sp'] += min($res['msp'],max($aurora_dice,1));
+			$res['state']=0;
+			$alivenum++; 
+			$revival_flag = 17;
+		}
+	}
+	if (!$revival_flag && $res['type']==0 && $res['club']==99 && ($death=="N" || $death=="P" || $death=="K" || $death=="G" || $death=="C" ||$death=="D" || $death=="F" || $death=="J" || $death=="trap"))	
 	{
 		addnews($now,'revival',$res['name']);	//玩家春哥附体称号的处理
-		$db->query ( "UPDATE {$tablepre}players SET hp=mhp WHERE pid=$dpid" );
+		$res['hp'] = $res['mhp']; $res['sp'] = $res['msp'];
+		$res['club'] = 17; $res['state'] = 0;
+		/*$db->query ( "UPDATE {$tablepre}players SET hp=mhp WHERE pid=$dpid" );
 		$db->query ( "UPDATE {$tablepre}players SET sp=msp WHERE pid=$dpid" );
 		$db->query ( "UPDATE {$tablepre}players SET club=17 WHERE pid=$dpid" );
-		$db->query ( "UPDATE {$tablepre}players SET state=0 WHERE pid=$dpid" );
+		$db->query ( "UPDATE {$tablepre}players SET state=0 WHERE pid=$dpid" );*/
 		$alivenum++;
-		$revivaled=true;
+		$revivaled = 99;
 	}
-	if (!$revivaled) $db->query ( "UPDATE {$tablepre}players SET hp='0',endtime='$now',deathtime='$now',bid='$pid',state='$w_state' WHERE pid=$dpid" );
-//	if($dtype == 1 || $dtype == 9){
-//		global $rdown,$bdown;
-//		if($dtype == 1){
-//			$rdown = 1;
-//			storyputchat($now,'rdown');
-//		}elseif($dtype == 9){
-//			$bdown = 1;
-//			storyputchat($now,'bdown');
-//		}			
-//	}
-	
-	save_gameinfo ();
+	if (!$revivaled)
+	{
+		if($dtype == 15){//静流AI
+			global $gamevars;
+			$gamevars['sanmadead'] = 1;
+			save_gameinfo();
+		}
+		//$db->query ( "UPDATE {$tablepre}players SET hp='0',endtime='$now',deathtime='$now',bid='$pid',state='$w_state' WHERE pid=$dpid" );
+	}
+
+	player_save($res);
+	save_gameinfo();
 	return $killmsg;
 }
 

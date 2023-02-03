@@ -1106,7 +1106,104 @@ function getcorpse($item){
 	return;
 }
 
+//武器损耗&消耗计算：
+function weapon_loss(&$pa)
+{
+	global $log,$wepimprate;
 
+	if(isset($pa['wep_imp_times']) && $pa['wep_imp_times']>0)
+	{
+		$wep_loss_flag = 0;
+		//获取武器损耗类型
+		$wep_imp = $wepimprate[$pa['wep_kind']];
+		//损耗型武器
+		if($wep_imp > 0)
+		{
+			if($pa['weps'] == $nosta)
+			{
+				$pa['wepe'] -= $pa['wep_imp_times'];
+				$log.= "{$pa['nm']}的{$pa['wep']}的攻击力下降了{$pa['wep_imp_times']}。<br>";
+			}
+			else 
+			{
+				$pa['weps'] -= $pa['wep_imp_times'];
+				$log.= "{$pa['nm']}的{$pa['wep']}的耐久度下降了{$pa['wep_imp_times']}。<br>";
+			}
+			if($pa['weps']<=0 || $pa['wepe']<=0)
+			{
+				$log .= "{$pa['nm']}的<span class=\"red\">{$pa['wep']}</span>使用过度，已经损坏，无法再装备了！<br>";
+				$wep_loss_flag = 1;
+			}
+		}
+		//消耗型武器
+		else 
+		{
+			if($pa['weps'] != $nosta)
+			{
+				$pa['weps'] -= $pa['wep_imp_times'];
+				if($pa['wep_kind'] == 'C' || $pa['wep_kind'] == 'D' || $pa['wep_kind'] == 'F')
+				{
+					$log .= "{$pa['nm']}用掉了{$pa['wep_imp_times']}个{$pa['wep']}。<br>";
+					if($pa['weps']<=0)
+					{
+						$log .= "{$pa['nm']}的<span class=\"red\">{$pa['wep']}</span>用光了！<br>";
+						$wep_loss_flag = 1;
+					}
+				} 
+				elseif($pa['wep_kind'] == 'G' || $pa['wep_kind'] == 'J') 
+				{
+					$log .= "{$pa['nm']}的{$pa['wep']}的弹药数减少了{$pa['wep_imp_times']}。<br>";
+					if($pa['weps']<=0)
+					{
+						$log .= "{$pa['nm']}的<span class=\"red\">{$pa['wep']}</span>弹药用光了！<br>";
+						$wep_loss_flag = 1;
+					}
+				}
+			}
+		}
+		if($wep_loss_flag)
+		{
+			$pa['wep'] = '拳头'; $pa['wep_kind'] = 'N'; $pa['wepk'] = 'WN';
+			$pa['wepe'] = 0; $pa['weps'] = $nosta; $pa['wepsk'] = '';
+		}
+	}
+	return;
+}
+
+//扣除指定装备的耐久。$hurtkind 0=装备损坏文本 1=灵魂绑定消失文本
+function armor_hurt(&$pa,$which,$hurtvalue,$hurtkind=0)
+{
+	global $log,$nosta;
+
+	if(isset($pa[$which.'s']))
+	{
+		//无限耐久的防具可以抵挡1次任意点损耗
+		if ($pa[$which.'s'] == $nosta)
+		{
+			$pa[$which.'s'] = $hurtvalue;
+		}
+		//扣除耐久
+		$x = min($pa[$which.'s'], $hurtvalue);
+		$pa[$which.'s'] = $pa[$which.'s']-$x;
+		$log .= "{$pa['nm']}的".$pa[$which]."的耐久度下降了{$x}！<br>";
+		//耐久为0 装备损坏
+		if($pa[$which.'s'] <= 0)
+		{
+			$log .= "{$pa['nm']}的<span class=\"red b\">".$pa[$which]."</span>受损过重，无法再装备了！<br>";
+			if($which == 'arb')
+			{
+				$pa[$which] = '内衣'; $pa[$which.'k'] = 'DN';
+				$pa[$which.'e'] = 0; $pa[$which.'s'] = $nosta; $pa[$which.'sk'] = '';
+			}
+			else 
+			{
+				$pa[$which] = $pa[$which.'k'] = $pa[$which.'sk'] = '';
+				$pa[$which.'e'] = $pa[$which.'s'] = 0; 
+			}
+		}
+	}
+	return;
+}
 
 
 ?>

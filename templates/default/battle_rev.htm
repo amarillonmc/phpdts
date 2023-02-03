@@ -1,5 +1,5 @@
 <!--{loop $plsinfo $places $info}-->
-	<!--{if (CURSCRIPT == 'game' && $pls==$places)}-->
+	<!--{if (CURSCRIPT == 'game' && $s_pls==$places)}-->
 	<!--{eval $bgurl = "img/location/".$places.".jpg"}-->
 	<style>
 		body {background-image: url("$bgurl");background-position: center;}
@@ -22,7 +22,7 @@
 				<tr>
 					<td class="b1" colspan=2 height=20px><span>Lv. $w_lvl</span></td>											
 					<td class="b1" colspan=2><span>$w_name</span></td>											
-					<td class="b1" colspan=2><span>$w_sNoinfo</span><!--{if $club==19}--> 【<span class="lime">报应点数：<span id="anum">$w_rp</span></span>】<!--{/if}--></td>											
+					<td class="b1" colspan=2><span>$w_sNoinfo</span><!--{if $s_club==19}--> 【<span class="lime">报应点数：<span id="anum">$w_rp</span></span>】<!--{/if}--></td>											
 				</tr>
 				<tr>
 					<td class="b2" width=70px height=20px><span>{lang rage}</span></td>
@@ -71,25 +71,25 @@
 		<td colspan=2 width=580px>
 			<table border="0" width=580px height=80px cellspacing="0" cellpadding="0" valign="middle">
 				<tr>
-					<td class="b1" colspan=2 height=20px><span>$typeinfo[$type]({$sexinfo[$gd]}{$sNo}号)</span></td>
-					<td class="b1" colspan=2><span>$name</span></td>
-					<td class="b1" colspan=2><span>Lv. $lvl</span></td>
+					<td class="b1" colspan=2 height=20px><span>$typeinfo[$s_type]({$sexinfo[$s_gd]}{$s_sNo}号)</span></td>
+					<td class="b1" colspan=2><span>$s_name</span></td>
+					<td class="b1" colspan=2><span>Lv. $s_lvl</span></td>
 				</tr>
 				<tr>
 					<td class="b2" width=70px height=20px><span>{lang hp}</span></td>
-					<td class="b3" width=170px><span><span class="$hpcolor">$hp / $mhp</span></span></td>
+					<td class="b3" width=170px><span><span class="$hpcolor">$s_hp / $s_mhp</span></span></td>
 					<td class="b2" width=70px><span>{lang sp}</span></td>
-					<td class="b3" width=105px><span>$sp / $msp</span></td>
+					<td class="b3" width=105px><span>$s_sp / $s_msp</span></td>
 					<td class="b2" width=70px><span>{lang rage}</span></td>
-					<td class="b3" width=95px><span><!--{if $rage >=30}--><span class="yellow">$rage</span><!--{else}-->$rage<!--{/if}--></span></td>
+					<td class="b3" width=95px><span><!--{if $s_rage >=30}--><span class="yellow">$s_rage</span><!--{else}-->$s_rage<!--{/if}--></span></td>
 				</tr>
 				<tr>
 					<td class="b2" height=20px><span>{lang wep}</span></td>
-					<td class="b3"><span>$wep_words</span></td>
+					<td class="b3"><span>$s_wep_words</span></td>
 					<td class="b2"><span>{lang wep}{lang kind1}</span></td>
-					<td class="b3"><span>$wepk_words</span></td>
+					<td class="b3"><span>$s_wepk_words</span></td>
 					<td class="b2"><span>{lang wep}{lang effect}</span></td>
-					<td class="b3"><span>$wepe</span></td>
+					<td class="b3"><span>$s_wepe</span></td>
 				</tr>
 				<tr>
 					<td class="b2" height=20px><span>{lang inf}</span></td>
@@ -97,7 +97,7 @@
 						<span>
 							<!--{if $inf}-->
 								<!--{loop $infinfo $key $val}-->
-									<!--{if strpos($inf,$key)!==false}-->
+									<!--{if strpos($s_inf,$key)!==false}-->
 										$val
 									<!--{/if}-->
 								<!--{/loop}-->
@@ -107,9 +107,9 @@
 						</span>
 					</td>
 					<td class="b2"><span>{lang pose}</span></td>
-					<td class="b3"><span>$poseinfo[$pose]</span></td>
+					<td class="b3"><span>$poseinfo[$s_pose]</span></td>
 					<td class="b2"><span>{lang tactic}</span></td>
-					<td class="b3"><span>$tacinfo[$tactic]</span></td>
+					<td class="b3"><span>$tacinfo[$s_tactic]</span></td>
 				</tr>
 			</table>
 		</td>
