@@ -7,6 +7,30 @@
 	include_once GAME_ROOT.'./include/game/dice.func.php';
 	include_once GAME_ROOT.'./include/game/clubskills.func.php';
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
+	include_once GAME_ROOT.'./include/game/revattr_extra.func.php';
+
+	//获取真实攻击类别
+	function get_wep_kind(&$pa,$wep_kind='')
+	{
+		if(!empty($wep_kind))
+		{
+			$pa['wep_kind'] = strpos($pa['wepk'],$wep_kind)===false ? substr ($pa['wepk'], 1, 1 ) : $wep_kind;
+		}
+		else
+		{
+			$w1 = substr ($pa['wepk'], 1, 1 );
+			$w2 = substr ($pa['wepk'], 2, 1 );
+			if ((($w1 == 'G')||($w1=='J')) && ($pa['weps'] == $nosta)) 
+			{
+				$pa['wep_kind']= $w2 ? $w2 : 'P';
+			} 
+			else 
+			{
+				$pa['wep_kind'] = $w1;
+			}
+		}
+		return;
+	}
 
 	//获取防具上的属性
 	//如果你想设计一个在战斗中能临时获得属性的机制，请在这两个函数执行完毕后，把属性加入返回的结果内。除非你希望技能的机制优先级高于三抽的判定。
@@ -51,6 +75,109 @@
 			}
 		}
 		return $skarr;
+	}
+
+	//在初始化战斗阶段触发的事件。即：无论是否反击都只会触发1次的事件。
+	function combat_prepare_events(&$pa,&$pd,$active)
+	{
+		# 百命猫 初始化事件： 每次初始化战斗时都会提升等级与怒气
+		if (($pa['type'] == 89 && $pa['name']=='是TSEROF啦！') || ($pd['type'] == 89 && $pd['name']=='是TSEROF啦！'))
+		{ 
+			attr_extra_89_100lifecat($pa,$pd,$active);
+		}
+
+		# 笼中鸟 初始化事件：喂养成功会跳过战斗
+		if($pa['type'] == 89 && $pa['name'] =='笼中鸟')
+		{
+			$flag = attr_extra_89_cagedbird($pa,$pd,$active);
+		}
+		if($pd['type'] == 89 && $pd['name'] =='笼中鸟')
+		{
+			$flag = attr_extra_89_cagedbird($pd,$pa,$active);
+		}
+		if($flag < 0) return $flag;
+
+		return 1;
+	}
+
+	//攻击方(pa)在开始伤害计算流程前触发的事件（直死、临摹装置、DOT结算、踩陷阱……） 返回1-继续打击流程 返回0-中止打击流程
+	function hitrate_prepare_events(&$pa,&$pd,$active)
+	{
+		global $log;
+
+		# 玩家直死反噬：
+		if(in_array('X',$pa['ex_keys']) && !$pa['type'])
+		{
+			$xdice = diceroll(99);
+			if($xdice <= 14)
+			{
+				$log .= "<span class=\"red\">{$pa['nm']}手中的武器忽然失去了控制，喀吧一声就斩断了什么。那似乎是{$pa['nm']}的死线……</span><br>";
+				$pa['gg_flag'] = 1; $pa['hp'] = 0;
+			}
+			return 0;
+		}
+
+		# 真红暮进攻事件：
+		if($pa['type'] == 19 && $pa['name'] == '红暮')
+		{
+			attr_extra_19_crimson($pa,$pd,$active,'attack');
+		}
+
+		# 电子狐进攻事件：
+		if($pa['type'] == 89 && $pa['name'] == '电掣部长 米娜')
+		{
+			attr_extra_89_efox($pa,$pd,$active);
+		}
+
+		# 走地羊进攻事件：
+		if($pa['type'] == 89 && $pa['name'] == '坚韧之子·拉姆')
+		{
+			attr_extra_89_walksheep($pa,$pd,$active);
+		}
+
+		# 临摹装置：
+		if($pa['wep'] == "临摹装置")
+		{
+			$log .= "<span class=\"yellow\">{$pa['nm']}尝试使用临摹装置来复制{$pd['nm']}的武器！</span><br>";
+			$dice1 = diceroll(20);
+			if($dice1 > 1)
+			{
+				$dice2 = diceroll(20);
+				if(($pd['wepe'] > 17777) && ($dice2 <= 4)){ //对手武器过于强力则 1/4 可能失败！
+					$log .= "<span class=\"red\">因为{$pd['nm']}的武器过于给力，临摹装置在{$pa['nm']}手上爆炸了！</span><br>";
+					if($dice2 <= 2){
+						//大失败！
+						$log .= "<span class=\"red\">{$pa['nm']}眼前一黑，感觉小命要交代在这里了！</span><br>";
+						$pa['hp'] = 1;
+					}else{
+						$log .= "<span class=\"red\">{$pa['nm']}受到了巨大的伤害！</span><br>";
+						$pa['hp'] = round($pa['hp'] * 0.3);
+					}
+				}elseif(($pd['wepe'] > 999999) && ($dice2 >= 4)){
+					$log .= "<span class=\"red\">因为{$pd['nm']}的武器过于给力，临摹装置在{$pa['nm']}手上爆炸了！</span><br>";
+					if($dice2 <= 4){
+						//大失败！
+						$log .= "<span class=\"red\">{$pa['nm']}眼前一黑，感觉小命要交代在这里了！</span><br>";
+						$pa['hp'] = 1;
+					}else{
+						$log .= "<span class=\"red\">{$pa['nm']}受到了特别巨大的伤害！</span><br>";
+						$pa['hp'] = round($pa['hp'] * 0.1);
+					}
+				}else{
+					$log .= "<span class=\"yellow\">{$pa['nm']}成功地复制了对手的武器！</span><br>";
+					$log .= "<span class=\"yellow\">临摹装置化作了<span class=\"red\">{$pd['wep']}</span>！</span><br><br>";
+					$pa['wep'] = $pd['wep']; $pa['wepk'] = $pd['wepk']; $pa['wepsk'] = $pd['wepsk'];
+					$pa['wepe'] = $pd['wepe']; $pa['weps'] = $pd['weps']; 
+					get_wep_kind($pa);
+				}
+			}
+			else
+			{
+				$log .= "<span class=\"red\">但是似乎失败了！</span><br>";	
+			}
+		}
+		
+		return 1;
 	}
 
 	//获取基础命中率与修正
@@ -154,18 +281,87 @@
 		return;
 	}
 
-	//获取不受其他条件影响的固定伤害值（混沌伤害）
+	//获取不受其他条件影响的固定伤害变化（混沌伤害）
 	function get_fix_damage(&$pa,&$pd,$active)
 	{
-		//混沌伤害
+		global $log;
+
+		# 黑熊吃香蕉事件：
+		if($pa['type'] && in_array('X',$pa['ex_keys']))
+		{
+			if ($pa['wep'] == '燕返262') $log.="<img src=\"img/other/262.png\"><br>";
+			$damage = 999983;
+			$pd['gg_flag'] = 1;
+			$log .= "造成<span class=\"red\">$damage</span>点伤害！<br>";
+			return $damage;
+		}
+
+		# 真红暮防御事件：
+		if($pd['type'] == 19 && $pd['name'] == '红暮')
+		{	
+			$p = attr_extra_19_crimson($pa,$pd,$active,'defend');
+			if(isset($p)) return $p;
+		}
+
+		# 数据护盾：这个有意思
+		if($pd['artk'] == "AA")
+		{
+			if($pd['type'])
+			{
+				if($pd['arte'] < 100)
+				{
+					$pd['arte'] = min(100,$pd['arte']+$pd['arts']);
+					$log .= "<span class=\"red\">{$pd['nm']}身上的数据护盾投射出了防护罩，轻松挡下了你的攻击！</span><br>";
+					return 0;
+				}
+			}
+			else 
+			{
+				if($pd['arte'] > 1)
+				{
+					$pd['arte'] = max(1,$pd['arte']-$pd['arts']);
+					$log .= "<span class=\"red\">{$pd['nm']}身上的数据护盾投射出了防护罩，轻松挡下了你的攻击！</span><br>";
+					return 0;
+				}
+			}
+			$log .= "<span class=\"red\">{$pd['nm']}身上的数据护盾失效了！</span><br>";
+		}
+
+		# 迷你蜂进攻事件：
+		if ($pa['type'] == 89 && $pa['name'] == '诚心使魔·阿摩尔')
+		{
+			$damage = attr_extra_89_minibee($pa,$pd,$active);
+			return $damage;
+		}
+
+		# 魔法蜂针：
+		if($pa['wep'] == "魔法蜂针")
+		{
+			$log .= "<span class=\"red\">{$pa['nm']}使用魔法蜂针攻击{$pd['nm']}！</span><br>";
+			$damage = $pd['def']>65000 ? 1 : 350;
+
+			if($damage > 1) $log .= "<span class=\"lime\">蜂针命中了{$pd['nm']}，对其造成了350点真实伤害！</span><br>";
+			else $log .= "<span class=\"lime\">然而{$pd['nm']}的防御力实在太高，你根本无法对其造成有效伤害！</span><br>";
+
+			if(strpos($pd['inf'],'p')===false)
+			{
+				$pd['inf'] .= 'p';
+				$log .= "<span class=\"lime\">蜂针还让{$pd['nm']}中毒了！</span><br>";
+			}
+			return $damage;
+		}
+
+		# 混沌伤害：
 		if(in_array('R',$pa['ex_keys']))
 		{
 			$maxdmg = $pd['mhp'] > $pa['wepe'] ? $pa['wepe'] : $pd['mhp'];
 			$damage = rand(1,$maxdmg);
 			global $log;
 			$log .= "武器随机造成了<span class=\"red\">$damage</span>点伤害！<br>";
+			return $damage;
 		}
-		return $damage;
+
+		return NULL;
 	}
 
 	//获取pa的攻击力
@@ -195,10 +391,10 @@
 		rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
 		//pa攻击力：
 		$base_att = $pa['att'] + $pa['wepe_t'] + $att1;
-		echo "【DEBUG】{$pa['name']}的base_att是{$base_att}，";
+			//echo "【DEBUG】{$pa['name']}的base_att是{$base_att}，";
 		//计算攻击力修正
 		$base_att = get_base_att_modifier($pa,$pd,$active,$base_att);
-		echo "修正后是{$base_att}。<br>";
+			//echo "修正后是{$base_att}。<br>";
 		return $base_att;
 	}
 	
@@ -252,10 +448,10 @@
 		rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
 		//pd防御力：
 		$total_def = $base_def+$equip_def+$def1;
-		echo "【DEBUG】{$pd['name']}的total_def是{$total_def}，";
+			//echo "【DEBUG】{$pd['name']}的total_def是{$total_def}，";
 		//计算防御力修正
 		$total_def = get_base_def_modifier($pa,$pd,$active,$total_def);
-		echo "修正后是{$total_def}。<br>";
+			//echo "修正后是{$total_def}。<br>";
 		return $total_def;
 	}
 
@@ -300,6 +496,8 @@
 		//计算伤害浮动：
 		$dmg_factor = (100 + rand ( - $dfluc, $dfluc )) / 100;
 		$damage = round ( $damage * $dmg_factor * rand ( 4, 10 ) / 10 );
+		//把计算得到的原始伤害保存在$pa['original_dmg']里
+		$pa['original_dmg'] = $damage;
 		return $damage;
 	}
 
@@ -338,6 +536,13 @@
 		//在输出成log时会显示为：总计造成了100x0.5x1.2...=111点伤害 的形式
 		$dmg_p = Array();
 
+		# 书中虫防守事件：
+		if($pd['type'] == 89)
+		{
+			$p = attr_extra_89_bookworm($pa,$pd,$active);
+			if($p>0) $dmg_p[]= $p; 
+		}
+
 		# 重击判定：
 		//获取触发重击需要的最小怒气值
 		if(in_array('c',$pa['ex_keys']))
@@ -370,8 +575,9 @@
 				$dmg_p[]= $p; 
 				//输出log
 				$log .= npc_chat ($pa['type'],$pa['nm'],'critical');
-				if ($pa['club'] == 9) $log .= "消耗<span class=\"yellow\">$rg_m</span>点怒气，<span class=\"red\">发动必杀技！</span><br>";
-				else $log .= "<span class=\"red\">使出重击！</span><br>";
+				$log .= "{$pa['nm']}消耗<span class=\"yellow\">{$rage_min_cost}</span>点怒气，";
+				if ($pa['club'] == 9) $log .= "<span class=\"red\">发动必杀技！</span>";
+				else $log .= "<span class=\"red\">使出重击！</span>";
 			}
 		}
 
@@ -733,12 +939,16 @@
 		$fin_dmg_p = 1;
 
 		# 晶莹判定:
-		$p = rev_get_clubskill_bonus_dmg_rate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
-		if($p != 100)
+		if($pa['club'] == 19 || $pd['club'] == 19)
 		{
-			$log.="<span class=\"yellow\">在「晶莹」的作用下，{$pa['nm']}造成的最终伤害变化至".$p."%！</span><br>";
-			$fin_dmg_p[] = round($p/100);
+			$p = rev_get_clubskill_bonus_dmg_rate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
+			if($p != 100)
+			{
+				$log.="<span class=\"yellow\">在「晶莹」的作用下，{$pa['nm']}造成的最终伤害变化至".$p."%！</span><br>";
+				$fin_dmg_p[] = round($p/100);
+			}
 		}
+
 		return $fin_dmg_p;
 	}
 
@@ -764,11 +974,14 @@
 		}
 
 		#剔透判定：
-		$rp_dmg = rev_get_clubskill_bonus_dmg_val($pa['club'],$pa['skills'],$pa,$pd);
-		if($rp_dmg > 0)
+		if($pa['club'] == 19)
 		{
-			$fin_dmg += $rp_dmg;
-			$log .= "<span class=\"yellow\">在「剔透」的作用下，敌人受到了<span class=\"red\">$rp_dmg</span>点额外伤害。</span><br>";
+			$rp_dmg = rev_get_clubskill_bonus_dmg_val($pa['club'],$pa['skills'],$pa,$pd);
+			if($rp_dmg > 0)
+			{
+				$fin_dmg += $rp_dmg;
+				$log .= "<span class=\"yellow\">在「剔透」的作用下，敌人受到了<span class=\"red\">$rp_dmg</span>点额外伤害。</span><br>";
+			}
 		}
 
 		return $fin_dmg;
@@ -792,8 +1005,11 @@
 			if (in_array('H',$pa['ex_keys'])) {
 				$hp_d = floor ( $hp_d / 10 );
 			}
-			$log .= "惨无人道的攻击对{$pa['nm']}自身造成了<span class=\"red\">$hp_d</span>点<span class=\"red\">反噬伤害！</span><br>";
-			$pa['hp'] -= $hp_d;
+			if($hp_d > 0)
+			{
+				$log .= "惨无人道的攻击对{$pa['nm']}自身造成了<span class=\"red\">$hp_d</span>点<span class=\"red\">反噬伤害！</span><br>";
+				$pa['hp'] -= $hp_d;
+			}
 		}
 		return;
 	}
@@ -803,6 +1019,12 @@
 	{
 		global $log,$infatt_rev,$infinfo;
 
+		# 真蓝凝防守事件：
+		if($pd['type'] == 19 && $pd['name'] == '蓝凝')
+		{
+			attr_extra_19_azure($pa,$pd,$active);
+		}
+		
 		# pa致伤次数＞0时，计算pd防具受损或致伤情况
 		if($pa['inf_times']>0)
 		{
@@ -827,15 +1049,45 @@
 				}
 				else 
 				{
-					if(strpos($pd['inf'],$inf_att) === false)
-					{
-						$pd['inf'] .= $inf_att;
-						$pd['combat_inf'] .= $inf_att;
-						$log .= "{$pd['nm']}的<span class=\"red\">$infinfo[$inf_att]</span>部受伤了！<br>";				
-					}
+					$flag = get_inf_rev($pd,$inf_att);
+					if($flag) $log .= "{$pd['nm']}的<span class=\"red\">$infinfo[$inf_att]</span>部受伤了！<br>";
 				}
 			}
 		}
 		return;
 	}
+
+	//战斗后结算rp事件
+	function get_killer_rp(&$pa,&$pd,$active)
+	{
+		//杀人rp结算
+		$rpup = $pd['type'] ? 20 : max(80,$pd['rp']);		
+		//晶莹剔透修正
+		if($pa['club'] == 19)
+		{
+			$rpdec = 30;
+			$rpdec += get_clubskill_rp_dec($pa['club'],$pa['skills']);
+			$pa['rp'] += round($rpup*(100-$rpdec)/100);
+		}		
+		else
+		{
+			$pa['rp'] += $rpup;
+		}
+		return;
+	}
+
+	//受到致伤或异常
+	function get_inf_rev(&$pa,$infnm,$type=0)
+	{
+		global $log;
+
+		if(strpos($pa['inf'],$infnm) === false)
+		{
+			$pa['inf'] .= $infnm;
+			$pa['combat_inf'] .= $infnm;		
+			return 1;	
+		}
+		return 0;
+	}
+
 ?>

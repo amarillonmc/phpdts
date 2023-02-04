@@ -1106,30 +1106,30 @@ function getcorpse($item){
 	return;
 }
 
-//武器损耗&消耗计算：
-function weapon_loss(&$pa)
+//武器损耗&消耗计算：force_imp 强制扣除武器效果
+function weapon_loss(&$pa,$force_imp=0)
 {
-	global $log,$wepimprate;
+	global $log,$wepimprate,$nosta;
 
-	if(isset($pa['wep_imp_times']) && $pa['wep_imp_times']>0)
+	if(isset($pa['wep_imp_times']) && $pa['wep_imp_times']>0 && $pa['wep_kind'] != 'N')
 	{
 		$wep_loss_flag = 0;
 		//获取武器损耗类型
 		$wep_imp = $wepimprate[$pa['wep_kind']];
 		//损耗型武器
-		if($wep_imp > 0)
+		if($wep_imp > 0 || $force_imp)
 		{
-			if($pa['weps'] == $nosta)
+			if($pa['weps'] == $nosta || $force_imp)
 			{
-				$pa['wepe'] -= $pa['wep_imp_times'];
+				$pa['wepe'] = max(0,$pa['wepe']-$pa['wep_imp_times']);
 				$log.= "{$pa['nm']}的{$pa['wep']}的攻击力下降了{$pa['wep_imp_times']}。<br>";
 			}
 			else 
 			{
-				$pa['weps'] -= $pa['wep_imp_times'];
+				$pa['weps'] = max(0,$pa['weps']-$pa['wep_imp_times']);
 				$log.= "{$pa['nm']}的{$pa['wep']}的耐久度下降了{$pa['wep_imp_times']}。<br>";
 			}
-			if($pa['weps']<=0 || $pa['wepe']<=0)
+			if(empty($pa['weps']) || empty($pa['wepe']))
 			{
 				$log .= "{$pa['nm']}的<span class=\"red\">{$pa['wep']}</span>使用过度，已经损坏，无法再装备了！<br>";
 				$wep_loss_flag = 1;
@@ -1140,11 +1140,11 @@ function weapon_loss(&$pa)
 		{
 			if($pa['weps'] != $nosta)
 			{
-				$pa['weps'] -= $pa['wep_imp_times'];
+				$pa['weps'] = max(0,$pa['weps']-$pa['wep_imp_times']);
 				if($pa['wep_kind'] == 'C' || $pa['wep_kind'] == 'D' || $pa['wep_kind'] == 'F')
 				{
 					$log .= "{$pa['nm']}用掉了{$pa['wep_imp_times']}个{$pa['wep']}。<br>";
-					if($pa['weps']<=0)
+					if(empty($pa['weps']))
 					{
 						$log .= "{$pa['nm']}的<span class=\"red\">{$pa['wep']}</span>用光了！<br>";
 						$wep_loss_flag = 1;
@@ -1153,10 +1153,10 @@ function weapon_loss(&$pa)
 				elseif($pa['wep_kind'] == 'G' || $pa['wep_kind'] == 'J') 
 				{
 					$log .= "{$pa['nm']}的{$pa['wep']}的弹药数减少了{$pa['wep_imp_times']}。<br>";
-					if($pa['weps']<=0)
+					if(empty($pa['weps']))
 					{
 						$log .= "{$pa['nm']}的<span class=\"red\">{$pa['wep']}</span>弹药用光了！<br>";
-						$wep_loss_flag = 1;
+						$pa['weps'] = $nosta;
 					}
 				}
 			}
@@ -1165,7 +1165,9 @@ function weapon_loss(&$pa)
 		{
 			$pa['wep'] = '拳头'; $pa['wep_kind'] = 'N'; $pa['wepk'] = 'WN';
 			$pa['wepe'] = 0; $pa['weps'] = $nosta; $pa['wepsk'] = '';
+			return -1;
 		}
+		unset($pa['wep_imp_times']);
 	}
 	return;
 }
@@ -1200,9 +1202,10 @@ function armor_hurt(&$pa,$which,$hurtvalue,$hurtkind=0)
 				$pa[$which] = $pa[$which.'k'] = $pa[$which.'sk'] = '';
 				$pa[$which.'e'] = $pa[$which.'s'] = 0; 
 			}
+			return -1;
 		}
 	}
-	return;
+	return 0;
 }
 
 

@@ -3,9 +3,10 @@
 	if(!defined('IN_GAME')) {
 		exit('Access Denied');
 	}
-	include_once GAME_ROOT.'./include/game/clubskills.func.php';
-	include_once GAME_ROOT.'./include/game/combat.func.php';
+	include_once GAME_ROOT.'./include/game/dice.func.php';
 	include_once GAME_ROOT.'./include/game/attr.func.php';
+	include_once GAME_ROOT.'./include/game/revattr.func.php';
+	include_once GAME_ROOT.'./include/game/combat.func.php';
 
 	//战斗准备流程：根据active为交战双方分配视角，初始化界面
 	function rev_combat_prepare($pa,$pd,$active,$wep_kind='',$msg='',$log_print=1) 
@@ -54,29 +55,14 @@
 		//登记非功能性地点信息时合并隐藏地点
 		foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
 
-		//传入了攻击方式/主动技的情况下，在这里判断传入参数的合法性
-		if (!$wep_kind) 
-		{
-			$w1 = substr ($pa['wepk'], 1, 1 );
-			$w2 = substr ($pa['wepk'], 2, 1 );
-			if ((($w1 == 'G')||($w1=='J')) && ($pa['weps'] == $nosta)) 
-			{
-				$wep_kind = $w2 ? $w2 : $w1; //这里不判断枪没子弹的情况 传进下个流程后再同一批判断
-			} 
-			else 
-			{
-				$wep_kind = $w1;
-			}
-		}
-		elseif(strpos($pa['wepk'],$wep_kind)===false)
-		{
-			$wep_kind = substr ($pa['wepk'], 1, 1 );
-		}
-		$pa['wep_kind'] = $wep_kind;
-
 		//登记称谓
 		$pa['nm'] = (!$pa['type'] && $active) ? '你' : $pa['name'];
 		$pd['nm'] = (!$pd['type'] && !$active && $pa['nm']!=='你') ? '你' : $pd['name'];
+
+		//在初始化战斗阶段触发的事件。即：无论是否反击都只会触发1次的事件。
+		//如果返回值小于0，则中断战斗。
+		$cp_flag = combat_prepare_events($pa,$pd,$active);
+		if($cp_flag < 0) goto battle_finish_flag;
 
 		if($active)
 		{
@@ -102,18 +88,25 @@
 		//战斗发起者是NPC时进行的判断
 		if($pa['type'])
 		{
-			//$log .= npc_chat ($pa['type'],$pa['name'],'attack');
-			//npc_changewep(); TODO
+			$log .= npc_chat ($pa['type'],$pa['name'],'attack');
+			//换装判定
+			npc_changewep();
 		}
+		
+		//传入了攻击方式/主动技的情况下，在这里判断传入参数的合法性，并初始化$pa['wep_kind']
+		get_wep_kind($pa,$wep_kind);
+		get_wep_kind($pd);
 
 		//打击流程
 		$att_dmg = rev_attack($pa,$pd,$active);
 
 		//暴毙流程
-		if($pa['ggflag'])
+		if($pa['gg_flag'])
 		{
-			unset($pa['ggflag']);
-			return;
+			//登记暴毙死法
+			//执行复活判定：
+			//$revival_flag = revive_process($pa,$pd,$active);
+			//if(!$revival_flag) goto battle_finish_flag;
 		}
 		
 		//打击效果结算
@@ -121,21 +114,14 @@
 		{
 			//扣血
 			$pd['hp'] = max(0,$pd['hp']-$att_dmg);
-			//判断是否触发击杀或复活
+			//判断是否触发击杀或复活：1-继续战斗；0-中止战斗
 			$att_result = rev_combat_result($pa,$pd,$active);
 		} 
 
 		//判断是否进入反击流程 把!$att_result去掉可以实现复活后反击 很酷吧！
-		if (($pd['hp'] > 0) && ($pd['pose'] != 5) && ($pd['tactic'] != 4) && !$att_result) 
+		if (($pd['hp'] > 0) && ($pd['pose'] != 5) && ($pd['tactic'] != 4) && $att_result>0) 
 		{
 			global $rangeinfo;
-			$w_w1 = substr ($pd['wepk'], 1, 1 );
-			$w_w2 = substr ($pd['wepk'], 2, 1 );
-			if ((($w_w1 == 'G')||($w_w1=='J')) && ($pd['weps'] == $nosta)) {
-				$pd['wep_kind'] = $w_w2 ? $w_w2 : 'P';
-			} else {
-				$pd['wep_kind'] = $w_w1;
-			}
 			//echo "【DEBUG】{$pd['name']}的攻击方式是{$pd['wep_kind']}<br>";
 			$d_wep_temp = $pd['wep'];
 
@@ -163,9 +149,9 @@
 				$log .= "<span class=\"red\">{$pd['nm']}攻击范围不足，不能反击，逃跑了！</span><br>";
 			}
 		}
-		elseif($pd['hp']>0  && !$att_result) 
+		elseif($pd['hp']>0  && $att_result>0) 
 		{
-			$log .= "<span class=\"red\">{$pd['nm']}逃跑了！</span><br>";
+			$log .= "<span class=\"red\">{$pd['nm']}没有反击，转身逃开了！</span><br>";
 		}
 
 		//反击效果结算
@@ -190,6 +176,13 @@
 			save_combatinfo ();
 		}
 
+		//logsave
+		if (!$pd['type'])
+		{
+
+		}
+
+		battle_finish_flag:
 		//如果战斗中出现了死人 更新action标记
 		if ($active) 
 		{ 
@@ -270,7 +263,9 @@
 		global $now,$nosta,$log,$infobbs,$infinfo,$attinfo,$skillinfo,$wepimprate,$specialrate;
 		global $db,$tablepre;
 
-		include_once GAME_ROOT . './include/game/revattr.func.php';
+		# 在打击流程开始前判定的事件（直死、临摹装置、DOT结算、踩陷阱……） 返回1-继续打击流程 返回0-中止打击流程
+		$gg_flag = hitrate_prepare_events($pa,$pd,$active);
+		if(!$gg_flag) return 0;
 
 		//枪托修正：你怎么老搞特殊化
 		if (($pa['wep_kind'] == 'G'||$pa['wep_kind']=='J') && ($pa['weps'] == $nosta)) 
@@ -345,7 +340,7 @@
 		{
 			//检查是否存在造成不受其他因素影响的固定伤害（例：混沌伤害、直死）
 			$fix_dmg = get_fix_damage($pa,$pd,$active);
-			if($fix_damage)
+			if(isset($fix_dmg))
 			{
 				$damage = $fix_dmg;
 			}
@@ -476,85 +471,93 @@
 		return $damage;
 	}
 
-	//战斗结算流程：
+	//战斗结算流程：返回1=继续战斗；返回0=中止战斗；
 	function rev_combat_result(&$pa,&$pd,$active)
 	{
 		global $log;
+
+		# 防守方血量低于0时 结算击杀/复活事件
 		if($pd['hp']<= 0)
 		{
-			//复活判定
-			if($pd['club'] == 99)
+			# NPC二阶段处理：
+			if($pd['club'] == 99 && $pd['type'])
 			{
-				//NPC进化
-				if ($pd['type']) 
-				{
-					$log .= npc_chat ($pd['type'],$pd['nm'], 'death' );
-					include_once GAME_ROOT . './include/system.func.php';
-					$npcdata = evonpc ($pd['type'],$pd['nm']);
-					$log .= '<span class="yellow">'.$pd['nm'].'却没死去，反而爆发出真正的实力！</span><br>';
-					if($npcdata){
-						addnews($now , 'evonpc',$pd['name'], $npcdata['name'], $pa['name']);
-						foreach($npcdata as $key => $val)
-						{
-							$pd[$key] = $val;
-						}
-					}
-				}
-				//决死结界复活
-				else
-				{
-					$killmsg = rev_kill($pa,$pd,$pa['wep_kind'],$pa['wep']);
-					$log .= '<span class="yellow">由于及时按了BOMB键，'.$pd['nm'].'原地满血复活了！</span><br>';
-				}
-				return 1;
-			}
-			elseif($pd['hp'] <= 0)
-			{
-				$pd['hp'] = 0;
-				if (!$pd['type']) $pa['killnum'] ++;
-				$killmsg = rev_kill($pa,$pd,$active,$pa['wep_kind']);
 				$log .= npc_chat ($pd['type'],$pd['name'], 'death' );
-
+				include_once GAME_ROOT . './include/system.func.php';
+				$npcdata = evonpc ($pd['type'],$pd['name']);
+				$log .= '<span class="yellow">'.$pd['name'].'却没死去，反而爆发出真正的实力！</span><br>';
+				if($npcdata)
+				{
+					addnews($now , 'evonpc',$pd['name'], $npcdata['name'], $pa['name']);
+					foreach($npcdata as $key => $val)
+					{
+						$pd[$key] = $val;
+					}
+					return 0;
+				}
+			}
+			# 击杀、复活判定检查
+			else
+			{
 				$log .= "<span class=\"red\">{$pd['nm']}被{$pa['nm']}杀死了！</span><br>";
-				if($killmsg) $log .= "<span class=\"yellow\">{$pa['nm']}对{$pd['nm']}说：“{$killmsg}”</span><br>";
-				
-				//杀人rp结算
-				if(!$pd['type'])
+				//执行不需要考虑复活问题的击杀事件：
+				$lastword = pre_kill_events($pa,$pd,$active,$pa['wep_kind']);
+				//执行复活判定：
+				$revival_flag = revive_process($pa,$pd,$active);
+				//没有复活的情况下，执行完后续击杀事件：
+				if(!$revival_flag)
 				{
-					if($pd['rp'] < 80){
-						$rpup = 80;
-					}else{$rpup = $pd['rp'];}
+					global $alivenum,$deathnum;
+					$pd['hp'] = 0;
+					//初始化遗言
+					if (!$pd['type'])
+					{
+						//死者是玩家，增加击杀数并保存系统状况。
+						$pa['killnum'] ++;
+						$alivenum --;
+					}
+					else 
+					{
+						//死者是NPC，加载NPC遗言
+						$lastword = npc_chat ($pd['type'],$pd['name'], 'death' );
+					}
+					$deathnum ++;
+					if(!empty($lastword)) $log.= "<span class='yellow'>“".$lastword."”</span><br>";
+					//初始化killmsg
+					if(!$pa['type'])
+					{
+						global $db,$tablepre;
+						$pname = $pa['name'];
+						$result = $db->query("SELECT killmsg FROM {$tablepre}users WHERE username = '$pname'");
+						$killmsg = $db->result($result,0);
+					}
+					else
+					{
+						$killmsg = npc_chat ($pa['type'],$pa['name'],'kill');
+					}
+					if($killmsg) $log .= "<span class=\"yellow\">{$pa['nm']}对{$pd['nm']}说：“{$killmsg}”</span><br>";
+					
+					//杀人rp结算
+					get_killer_rp($pa,$pd,$active);
+					//保存游戏进行状态
+					include_once GAME_ROOT.'./include/system.func.php';
+					save_gameinfo();
 				}
-				else{$rpup = 20;}		
-				//晶莹剔透修正
-				if($pa['club'] == 19)
+				else 
 				{
-					$rpdec = 30;
-					$rpdec += get_clubskill_rp_dec($pa['club'],$pa['skills']);
-					$pa['rp'] += round($rpup*(100-$rpdec)/100);
-				}		
-				else{
-					$pa['rp'] += $rpup;
+					//如果希望复活后能继续战斗，在这里加入判定条件
+					//例：if($revival_flag == 99) return 1;
 				}
-				return 1;
+				return 0;
 			}
 		}
-		return 0;
+		return 1;
 	}
-	function rev_kill(&$pa,&$pd,$active,$death) 
-	{
-		global $log, $now, $db, $tablepre, $alivenum, $deathnum, $typeinfo, $lwinfo;
-		
-		$log.="rev_kill阶段：pa是{$pa['name']}，pd是{$pd['name']}，active是{$active}<br>";
 
-		//登记玩家狠话
-		$killmsg = '';
-		if(!$pa['type'])
-		{
-			$pname = $pa['name'];
-			$result = $db->query("SELECT killmsg FROM {$tablepre}users WHERE username = '$pname'");
-			$killmsg = $db->result($result,0);
-		}
+	//执行不需要考虑复活问题的击杀事件：
+	function pre_kill_events(&$pa,&$pd,$active,$death) 
+	{
+		global $log, $now, $db, $tablepre, $typeinfo, $lwinfo;
 		
 		//登记死法
 		if ($death == 'N') {
@@ -578,50 +581,69 @@
 		} else {
 			$pd['state'] = 10;
 		}
-		
-		//死者是玩家 更新幸存者数
-		if (!$pd['type']) $alivenum --;
-		$deathnum ++;
-		
-		//发遗言
+		//初始化死者信息
 		$dtype = $pd['type']; $dname = $pd['name']; $dpls = $pd['pls'];
-		if($dtype == 15)
-		{	//静流AI
-			global $gamevars;
-			$gamevars['sanmadead'] = 1;
-			save_gameinfo();
-		}
-		//死者是？
 		$lwname = $typeinfo [$dtype] . ' ' . $dname;
-		//遗言是？
+	
+		//初始化NPC遗言
 		if($dtype)
 		{
 			$lastword = is_array($lwinfo[$dtype]) ? $lwinfo[$dtype][$dname] : $lwinfo[$dtype];
 		}
+		//初始化玩家遗言
 		else 
 		{
 			$result = $db->query ( "SELECT lastword FROM {$tablepre}users WHERE username ='$dname'");
 			$lastword = $db->result ( $result, 0 );
 		}
+		//向聊天框发送遗言
 		$db->query ( "INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$now','$lwname','$dpls','$lastword')" );
 
-		//发news
+		//发送news
 		$kname = $pa['type'] ? $pa['name'] : $pa['nick'].' '.$pa['name'];
 		addnews ($now,'death'.$pd['state'],$pd['name'],$pd['type'],$pa['name'],$pa['wep_name'],$lastword );
-		
-		//玩家决死结界复活判定
-		$revivaled = false;
-		if (!$pd['type'] && $pd['club']==99 && ($death=="N" || $death=="P" || $death=="K" || $death=="G" || $death=="C" ||$death=="D" || $death=="F" || $death=="J" || $death=="trap"))	
+
+		return $lastword;
+	}
+
+	//执行复活事件：
+	function revive_process(&$pa,&$pd,$active)
+	{
+		global $log,$weather;
+
+		$revival_flag = 0;
+
+		#极光天气下，玩家有10%概率、NPC有1%概率无条件复活
+		if (!$revival_flag && $weather == 17)
 		{
-			addnews($now,'revival',$pd['name']);
-			$pd['hp'] = $pd['mhp'];
-			$pd['sp'] = $pd['msp'];
-			$pd['club'] = 17;
-			$pd['state'] = 0;
-			$alivenum++;
+			$aurora_rate = $pd['type'] ? 1 : 10; //玩家10%概率复活
+			$aurora_dice = diceroll(99);
+			if($aurora_dice<=$aurora_rate)
+			{
+				#奥罗拉复活效果
+				$revival_flag = 17; //保存复活标记为通过奥罗拉复活
+				addnews($now,'aurora_revival',$pd['name']);
+				$pd['hp'] += min($pd['mhp'],max($aurora_dice,1)); 
+				$pd['sp'] += min($pd['msp'],max($aurora_dice,1));
+				$pd['state'] = 0;
+				$log.= "<span class=\"lime\">但是，空气中弥漫着的奥罗拉让{$pd['nm']}重新站了起来！</span><br>";;
+				return $revival_flag;
+			}
 		}
-		save_gameinfo();
-		return $killmsg;
-	}	
+
+		#决死结界复活：
+		if (!$revival_flag && $pd['club']==99 && !$pd['type'])	
+		{
+			#决死结界复活效果：
+			$revival_flag = 99; //保存复活标记为通过奥罗拉复活
+			addnews($now,'revival',$pd['name']);	//玩家春哥附体称号的处理
+			$pd['hp'] = $pd['mhp']; $pd['sp'] = $pd['msp'];
+			$pd['state'] = 0; $pd['club'] = 17;
+			$log .= '<span class="yellow">但是，由于及时按下BOMB键，'.$pd['nm'].'原地满血复活了！</span><br>';
+			return $revival_flag;
+		}
+
+		return $revival_flag;
+	}
 
 ?>
