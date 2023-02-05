@@ -26,7 +26,8 @@
 		# 真红暮作为进攻方时的事件：
 		if($pa['type'] == 19 && $pa['name'] == '红暮' && $phase == 'attack')
 		{
-			$log .= "<span class=\"yellow\">“那么说好了，不留手咯~”<br>红暮吐气扬声，向你袭来！</span><br>";
+			$log .= "<span class=\"yellow\">“那么说好了，不留手咯~”<br></span>";
+			//$log .= "红暮吐气扬声，向你袭来！<br>";
 			
 			if($pa['wep'] != '喷气式红杀重铁剑')
 			{
@@ -67,8 +68,7 @@
 				if($event_dice==1)
 				{
 					$wdamage=rand(5,40);
-					$pd['wep_imp_times'] = $wdamage;
-					weapon_loss($pd,1);
+					weapon_loss($pd,$wdamage,1,1);
 					get_inf_rev($pd,'a');
 					$log .= "<span class=\"yellow\">这一发强袭追踪弹结实地打到了你手持武器的手上，你痛的龇牙咧嘴，武器也受到了损伤！</span><br>";
 				}
@@ -118,7 +118,7 @@
 					$adamage=rand(5,40);
 					foreach(Array('arb','arh','ara','arf') as $ar)
 					{
-						if(!empty(${$ar.'s'})) armor_hurt($pd,$ar,$adamage);
+						if(!empty(${$ar.'s'})) armor_hurt($pd,$ar,$adamage,1);
 					}
 				}
 				else
@@ -126,8 +126,6 @@
 					$log .= "<span class=\"lime\">然而飞弹的精度太低，你并没有被它们打中。</span><br>";
 				}
 			}
-			//血量小于0的情况下 返回值1
-			if($pd['hp'] < 0) return 1;
 		}
 
 		return NULL;
@@ -226,60 +224,75 @@
 	function attr_extra_89_bookworm(&$pa,&$pd,$active,$phase=0)
 	{
 		global $log;
-		$rp_up = 0; $dmg_p = -1;
-		# 防守方(pd)为白神
+
 		if($pd['type'] == 89)
 		{
+			$rp_up = 0; $dmg_p = -1;
 			if($pd['name'] == '高中生·白神')
 			{
-				$log .= "<span class=\"yellow\">“你真的愿意对这个手无寸铁的高中女生下手么？”</span><br>";
-				$dice = diceroll(444);
-				if($dice<=200){
-					$log .= "<span class=\"neonblue\">“你感觉到了罪恶感。”</span><br>";
-				}else{
-					$log .= "<span class=\"neonblue\">“你不该这么做的。”</span><br>";
-				}
-				$rp_up = $pa['rp'] + $dice;
-				if ($pa['original_dmg'] > 400)
+				if($phase == 'rp')
 				{
-					$log .= "<span class=\"yellow\">白神从裙底抽出了她的名为WIN MAX 2的微型电脑！<br>“哪能这样被你干打？”</span><br>";
-					$log .= "<span class=\"yellow\">白神的高超黑客技术大幅度降低了你造成的伤害！</span><br>";
-					$dmg_p = 0.005;
+					$log .= "<span class=\"yellow\">“你真的愿意对这个手无寸铁的高中女生下手么？”</span><br>";
+					$dice = diceroll(444);
+					if($dice<=200){
+						$log .= "<span class=\"neonblue\">“你感觉到了罪恶感。”</span><br>";
+					}else{
+						$log .= "<span class=\"neonblue\">“你不该这么做的。”</span><br>";
+					}
+					$rp_up = $pa['rp'] + $dice;
+				}
+				elseif($phase == 'defend')
+				{
+					if ($pa['original_dmg'] > 400)
+					{
+						$log .= "<span class=\"yellow\">白神从裙底抽出了她的名为WIN MAX 2的微型电脑！<br>“哪能这样被你干打？”</span><br>";
+						$log .= "<span class=\"yellow\">白神的高超黑客技术大幅度降低了你造成的伤害！</span><br>";
+						$dmg_p = 0.005;
+					}
 				}
 			}
 			if ($pd['name'] == '白神·讨价还价')
 			{
-				$dice = diceroll(1777);
-				$log .= "<span class=\"yellow\">“对面似乎真的没有敌意，你还是决定要下手么？”</span><br>";
-				if($dice<=200){
-					$log .= "<span class=\"neonblue\">“你感觉到了罪恶感。”</span><br>";
-				}elseif($dice<=400){
-					$log .= "<span class=\"neonblue\">“你不该这么做的。”</span><br>";
-				}else{
-					$log .= "<span class=\"neonblue\">“罪恶感爬上了你的脊梁！”</span><br>";
-				}
-				$rp_up = $pa['rp'] + $dice;
-				if ($pa['original_dmg'] > 400)
+				if($phase == 'rp')
 				{
-					$log .= "<span class=\"yellow\">白神从裙底抽出了她的名为DECK的微型电脑！<br>“哪能这样被你干打？”</span><br>";
-					$log .= "<span class=\"yellow\">白神的高超黑客技术大幅度降低了你造成的伤害！</span><br>";
-					$dmg_p = 0.005;
+					$dice = diceroll(1777);
+					$log .= "<span class=\"yellow\">“对面似乎真的没有敌意，你还是决定要下手么？”</span><br>";
+					if($dice<=200){
+						$log .= "<span class=\"neonblue\">“你感觉到了罪恶感。”</span><br>";
+					}elseif($dice<=400){
+						$log .= "<span class=\"neonblue\">“你不该这么做的。”</span><br>";
+					}else{
+						$log .= "<span class=\"neonblue\">“罪恶感爬上了你的脊梁！”</span><br>";
+					}
+					$rp_up = $pa['rp'] + $dice;
+				}
+				elseif($phase == 'defend')
+				{
+					if ($pa['original_dmg'] > 400)
+					{
+						$log .= "<span class=\"yellow\">白神从裙底抽出了她的名为DECK的微型电脑！<br>“哪能这样被你干打？”</span><br>";
+						$log .= "<span class=\"yellow\">白神的高超黑客技术大幅度降低了你造成的伤害！</span><br>";
+						$dmg_p = 0.005;
+					}
 				}
 			}
 			if ($pd['name'] == '白神·接受')
 			{
-				global $rp;
-				$dice = rand(1777,4888);
-				$log .= "<span class=\"yellow\">“你对一位毫无反抗能力，并且已经表示无敌意的女高中生横下死手。”</span><br>";
-				$log .= "<span class=\"neonblue\">“希望你的良心还能得以安生。”</span><br>";
-				//$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
-				$rp_up = $pa['rp'] + $dice;
+				if($phase == 'rp')
+				{
+					$dice = rand(1777,4888);
+					$log .= "<span class=\"yellow\">“你对一位毫无反抗能力，并且已经表示无敌意的女高中生横下死手。”</span><br>";
+					$log .= "<span class=\"neonblue\">“希望你的良心还能得以安生。”</span><br>";
+					//$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
+					$rp_up = $pa['rp'] + $dice;
+				}
 			}
 			//结算rp上升事件
-			if($rp_up > 0) $pa['rp'] = $pa['rp'] + $rp_up;
+			if($phase == 'rp' && $rp_up > 0) $pa['rp'] = $pa['rp'] + $rp_up;
 			//返回一个伤害系数
+			if($phase == 'defend' && $dmg_p > 0) return $dmg_p;
 		}
-		return $dmg_p;
+		return;
 	}
 
 	# 百命猫特殊判定
@@ -290,7 +303,7 @@
 			if($pa['lvl'] < 255) $pa['lvl']++;
 			if($pa['rage'] < 255) $pa['rage']++;
 		}
-		if ($pd['type'] == 89 && $pd['name']=='是TSEROF啦！')
+		elseif ($pd['type'] == 89 && $pd['name']=='是TSEROF啦！')
 		{
 			if($pd['lvl'] < 255) $pd['lvl']++;
 			if($pd['rage'] < 255) $pd['rage']++;
@@ -376,11 +389,10 @@
 			{
 				$log .= "<span class=\"neonblue\">“我这双拳头……很强……很厉害……咚咚打你……”</span><br>";
 				$damage=rand(5,40);
-				if(!empty($pd['weps']))
+				if(!empty($pd['wepe']) && $pd['wepk']!='WN')
 				{
-					$log .= "攻击使得<span class=\"red\">{$pd['wep']}</span>的耐久度下降了<span class=\"red\">$damage</span>点！<br>";
-					$pd['wep_imp_times'] = $damage;
-					$loss_flag = weapon_loss($pd,1);
+					$log .= "攻击使得<span class=\"red\">{$pd['wep']}</span>的效果下降了<span class=\"red\">$damage</span>点！<br>";
+					$loss_flag = weapon_loss($pd,$damage,1,1);
 					if($loss_flag < 0)
 					{
 						$pa['money'] = $pa['money'] + ($damage * 120);
@@ -388,9 +400,9 @@
 				}
 				foreach(Array('arb','arh','ara','arf') as $ar)
 				{
-					if(!empty(${$ar.'s'}))
+					if(!empty($pd[$ar.'s']))
 					{
-						$loss_flag = armor_hurt($pd,$ar,$damage);
+						$loss_flag = armor_hurt($pd,$ar,$damage,1);
 						if($loss_flag < 0)
 						{
 							$pa['money'] = $pa['money'] + ($damage * 60);
@@ -434,7 +446,6 @@
 			}else{
 				$log .= "<span class=\"yellow\">体当冲刺朝你袭来！造成了<span class=\"red\">550</span>点伤害！<br>";
 				$dmg = 250;
-				if($hp < 0) $hp=0;
 			}
 			return $dmg;
 		}

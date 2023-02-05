@@ -159,8 +159,7 @@ function combat($active = 1, $wep_kind = '') {
 			$w_wep_kind = $w_w1;
 		}
 		$def_dmg = defend ( $w_wep_kind, 1 );
-		if(get_single_clbpara($clbpara,'revival_flag')) $revival_flag = get_single_clbpara($clbpara,'revival_flag');
-		if (($hp > 0) && ($tactic != 4) && ($pose != 5) && !$revival_flag) {
+		if (($hp > 0) && ($tactic != 4) && ($pose != 5)) {
 			global $rangeinfo;
 			if ($rangeinfo [$wep_kind] >= $rangeinfo [$w_wep_kind] && $rangeinfo [$w_wep_kind] !== 0) {
 				$counter = get_counter ( $wep_kind, $tactic, $club, $inf );
@@ -178,8 +177,6 @@ function combat($active = 1, $wep_kind = '') {
 			} else {
 				$log .= "<span class=\"red\">你攻击范围不足，不能反击，逃跑了！</span><br>";
 			}
-		} elseif($revival_flag) {
-			//复活后不会反击，不发log
 		} else {
 			$log .= "<span class=\"red\">你逃跑了！</span><br>";
 		}
@@ -225,13 +222,6 @@ function combat($active = 1, $wep_kind = '') {
 			}
 		}
 		logsave ( $w_pid, $now, $w_log ,'b');
-	}
-
-	//注销复活标记
-	if($revival_flag)
-	{
-		unset($revival_flag);
-		$clbpara = del_clbpara($clbpara,'revival_flag');
 	}
 	
 	if (($att_dmg > $hdamage) && ($att_dmg >= $def_dmg)) {
@@ -286,7 +276,6 @@ function combat($active = 1, $wep_kind = '') {
 			else
 			{
 				if ($w_type==0){$killnum ++;};
-				check_kill_events($pid,$w_pid);
 				$log .= npc_chat ( $w_type,$w_name, 'death' );
 			
 				include_once GAME_ROOT.'./include/game/achievement.func.php';
@@ -1334,7 +1323,6 @@ function defend($w_wep_kind = 'N', $active = 0) {
 				$attack = $w_att + $watt;
 				$defend = checkdef($def , $arbe + $arhe + $arae + $arfe,$w_att_key);
 				
-				
 				$damage = get_original_dmg ( 'w_', '', $attack, $defend, $w_wep_skill, $w_wep_kind );
 				
 				if ($w_wep_kind == 'F') {
@@ -1427,18 +1415,9 @@ function defend($w_wep_kind = 'N', $active = 0) {
 			include_once GAME_ROOT . './include/state.func.php';
 			$killmsg = death ( $w_wep_kind, $w_name, $w_type, $w_wep_temp );
 			$log .= npc_chat ( $w_type,$w_name, 'kill' );
-			global $clbpara;
-			if($hp>0 && get_single_clbpara($clbpara,'revival_flag'))
+			if($hp>0)
 			{
-				$revival_flag = get_single_clbpara($clbpara,'revival_flag');
-				if ($revival_flag == 99)
-				{	
-					$log .= '<span class="yellow">由于你及时按了BOMB键，你原地满血复活了！</span><br>';
-				}
-				elseif ($revival_flag == 17) 
-				{
-					$log .= "<span class=\"lime b\">但是，空气中弥漫着的奥罗拉让你重新站了起来！</span><br>";
-				}
+				$log .= '<span class="yellow">由于你及时按了BOMB键，你原地满血复活了！</span><br>';
 			}
 		}
 	} else {
@@ -1475,6 +1454,7 @@ function get_original_dmg($w1, $w2, $att, $def, $ws, $wp_kind) {
 	$att_pow *= $attfac;
 	$def_pow *= $deffac;
 	if($def_pow <= 0){$def_pow = 0.01;}
+	echo "【DEBUG】原始伤害计算阶段：PA的基础攻击为{$att_pow}，PD的基础防御为{$def_pow}，";
 	$damage = ($att_pow / $def_pow) * $ws * $skill_dmg [$wp_kind];
 	
 	$dfluc = $dmg_fluc [$wp_kind];
@@ -1483,6 +1463,7 @@ function get_original_dmg($w1, $w2, $att, $def, $ws, $wp_kind) {
 	$dmg_factor = (100 + rand ( - $dfluc, $dfluc )) / 100;
 	
 	$damage = round ( $damage * $dmg_factor * rand ( 4, 10 ) / 10 );
+	echo "【DEBUG】伤害浮动为{$dmg_factor}，原始伤害为{$damage}<br>";
 	return $damage;
 }
 

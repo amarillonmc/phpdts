@@ -446,7 +446,7 @@ if($hp > 0){
 			else
 			{
 				include_once GAME_ROOT . './include/game/revcombat.func.php';
-				rev_combat_prepare($pdata,$edata,1,$command);
+				rev_combat_prepare($pdata,$edata,1,$command,$message);
 			}
 		} elseif($mode == 'rest') {
 			include_once GAME_ROOT.'./include/state.func.php';

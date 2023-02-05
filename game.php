@@ -108,7 +108,7 @@ elseif((strpos($action,'neut')===0)){
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$nid' AND hp>0");
 		if($db->num_rows($result)>0){
 			$edata = $db->fetch_array($result);
-			include_once GAME_ROOT.'./include/game/revcombat.func.php';
+			include_once GAME_ROOT.'./include/game/revbattle.func.php';
 			findneut($edata,1);
 			extract($edata,EXTR_PREFIX_ALL,'w');
 			init_battle(1);

@@ -19,7 +19,12 @@ function get_find_r($weather = 0,$pls = 0,$pose = 0,$tactic = 0,$club = 0,$inf =
 		(
 		'weather' => array(10,20,0,-2,-3,-10,-7,5,-10,-20,0,-7,-5,-30,-5,-20,0,20),
 		//'weather' => array(10,20,0,-2,-3,-7,-10,-5,10,0,0,-7,-5,-30),
-		'pls' => array(10,0,0,10,-10,10,0,10,-10,0,10,0,0,-10,0,-10,-10,-10,0,10,0,10),
+		//'pls' => array(10,0,0,10,-10,10,0,10,-10,0,10,0,0,-10,0,-10,-10,-10,0,10,0,10),
+		'pls' => Array(
+			// 无月 端点 RF高 雪镇 索拉 指挥 梦幻 清水 白穗 墓地 麦斯 对天 夏镇 三体 光坂 守矢 常林 常高 秋镇 精灵 春镇 圣G  初始 幻想 永恒 妖精 冰封 花菱 FARG 风祭 格纳 和田 SCP  雏菊 英灵
+			   20,  0,   0,   0,    0,    0,  0,  0,    0,    0,    0,   0,   0,    0,  0,   0,   0,   0,  0,   0,  0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,    0,  10,   0,  20
+			// 10,  0,   0,   10,  -10,  10,  0,  10,  -10,   0,   10,   0,   0,  -10,  0, -10, -10, -10,  0,  10,  0,  10
+		),
 		'pose' => array(0,0,0,25,-10,-25,85),
 		'tactic' => array(),
 		);
@@ -72,6 +77,9 @@ function get_active_r($weather = 0,$pls = 0,$pose = 0,$tactic = 0,$club = 0,$inf
 	//echo 'active:'.$active_r.' ';
 	return $active_r;
 }
+
+# 下面的部分在新版战斗流程中已弃用 #
+
 //命中率修正
 function get_hitrate($wkind = 'N',$skill = 0,$club = 0,$inf = ''){
 	global $hitrate_obbs,$hitrate_max_obbs,$hitrate_r,$weather,$inf_htr_p;

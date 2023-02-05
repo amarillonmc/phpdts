@@ -12,6 +12,10 @@
 	//获取真实攻击类别
 	function get_wep_kind(&$pa,$wep_kind='')
 	{
+		global $nosta;
+
+		if(isset($pa['is_wpg'])) unset($pa['is_wpg']);
+
 		if(!empty($wep_kind))
 		{
 			$pa['wep_kind'] = strpos($pa['wepk'],$wep_kind)===false ? substr ($pa['wepk'], 1, 1 ) : $wep_kind;
@@ -23,7 +27,8 @@
 			if ((($w1 == 'G')||($w1=='J')) && ($pa['weps'] == $nosta)) 
 			{
 				$pa['wep_kind']= $w2 ? $w2 : 'P';
-			} 
+				if($pa['wep_kind'] == 'P') $pa['is_wpg'] = true;
+			}
 			else 
 			{
 				$pa['wep_kind'] = $w1;
@@ -80,6 +85,7 @@
 	//在初始化战斗阶段触发的事件。即：无论是否反击都只会触发1次的事件。
 	function combat_prepare_events(&$pa,&$pd,$active)
 	{
+		
 		# 百命猫 初始化事件： 每次初始化战斗时都会提升等级与怒气
 		if (($pa['type'] == 89 && $pa['name']=='是TSEROF啦！') || ($pd['type'] == 89 && $pd['name']=='是TSEROF啦！'))
 		{ 
@@ -90,34 +96,38 @@
 		if($pa['type'] == 89 && $pa['name'] =='笼中鸟')
 		{
 			$flag = attr_extra_89_cagedbird($pa,$pd,$active);
+			if($flag < 0) return $flag;
 		}
-		if($pd['type'] == 89 && $pd['name'] =='笼中鸟')
+		elseif($pd['type'] == 89 && $pd['name'] =='笼中鸟')
 		{
 			$flag = attr_extra_89_cagedbird($pd,$pa,$active);
+			if($flag < 0) return $flag;
 		}
-		if($flag < 0) return $flag;
-
+	
 		return 1;
 	}
 
-	//攻击方(pa)在开始伤害计算流程前触发的事件（直死、临摹装置、DOT结算、踩陷阱……） 返回1-继续打击流程 返回0-中止打击流程
+	//攻击方(pa)在命中流程前触发的事件（直死、DOT结算、踩陷阱……） 返回值小于0：中止打击流程
 	function hitrate_prepare_events(&$pa,&$pd,$active)
 	{
-		global $log;
+		global $log,$attinfo;
 
-		# 玩家直死反噬：
+		# 玩家直死反噬：这是一个暴毙死法，触发时将中止后续战斗动作。
 		if(in_array('X',$pa['ex_keys']) && !$pa['type'])
 		{
 			$xdice = diceroll(99);
 			if($xdice <= 14)
 			{
-				$log .= "<span class=\"red\">{$pa['nm']}手中的武器忽然失去了控制，喀吧一声就斩断了什么。那似乎是{$pa['nm']}的死线……</span><br>";
-				$pa['gg_flag'] = 1; $pa['hp'] = 0;
+				$log .= "<span class=\"red\">{$pa['nm']}手中的武器忽然失去了控制，喀吧一声就斩断了什么！那似乎是{$pa['nm']}的死线……</span><br>";
+				$pa['gg_flag'] = 39;  #这个标记用于登记暴毙死法 39-武器反噬
+				$pa['hp'] = 0;
+				return -1;
 			}
-			return 0;
 		}
 
 		# 真红暮进攻事件：
+		# 注意：真红暮的进攻事件虽然有让敌人扣血致死的可能，但是不应该返回-1，因为死的不是自己。在这个函数里，只有攻击方在造成伤害前暴毙才需要返回-1。
+		# 如果想为真红暮的特殊攻击提供指定死法，请在判定中添加：$pd['gg_flag'] = '死法编号';
 		if($pa['type'] == 19 && $pa['name'] == '红暮')
 		{
 			attr_extra_19_crimson($pa,$pd,$active,'attack');
@@ -133,6 +143,12 @@
 		if($pa['type'] == 89 && $pa['name'] == '坚韧之子·拉姆')
 		{
 			attr_extra_89_walksheep($pa,$pd,$active);
+		}
+
+		# 书中虫受伤时rp上升事件：
+		if($pd['type'] == 89 && ($pd['name'] == '高中生·白神' || $pd['name'] == '白神·讨价还价' || $pd['name'] == '白神·接受'))
+		{
+			attr_extra_89_bookworm($pa,$pd,$active,'rp');
 		}
 
 		# 临摹装置：
@@ -166,9 +182,14 @@
 				}else{
 					$log .= "<span class=\"yellow\">{$pa['nm']}成功地复制了对手的武器！</span><br>";
 					$log .= "<span class=\"yellow\">临摹装置化作了<span class=\"red\">{$pd['wep']}</span>！</span><br><br>";
+					//从原属性数组中剔除当前武器属性 
+					if(!empty($pa['wepsk'])) unset_ex_from_array($pa,get_itmsk_array($pa['wepsk']));
 					$pa['wep'] = $pd['wep']; $pa['wepk'] = $pd['wepk']; $pa['wepsk'] = $pd['wepsk'];
 					$pa['wepe'] = $pd['wepe']; $pa['weps'] = $pd['weps']; 
+					//没有灵抽的情况下，向属性数组中打入复制后武器的属性
+					if(!isset($pa['sldr_flag'])) $pa['ex_keys'] = array_merge($pa['ex_keys'],get_itmsk_array($pa['wepsk']));
 					get_wep_kind($pa);
+					$log .= "{$pa['nm']}使用{$pa['wep']}<span class=\"yellow\">{$attinfo[$pa['wep_kind']]}</span>{$pd['nm']}！<br>";
 				}
 			}
 			else
@@ -177,7 +198,13 @@
 			}
 		}
 		
-		return 1;
+		# 存在其他方式提供的暴毙死法，也中止后续战斗动作。
+		if(isset($pa['gg_flag']))
+		{
+			return -1;
+		}
+		
+		return 0;
 	}
 
 	//获取基础命中率与修正
@@ -252,6 +279,7 @@
 		}
 		
 		//计算实际命中次数
+		$pa['hitrate_times'] = $pa['inf_times'] = $pa['wep_imp_times'] = 0;
 		for($i = 1; $i <= $atk_t; $i ++) 
 		{
 			$dice = diceroll(99);
@@ -291,7 +319,7 @@
 		{
 			if ($pa['wep'] == '燕返262') $log.="<img src=\"img/other/262.png\"><br>";
 			$damage = 999983;
-			$pd['gg_flag'] = 1;
+			$pd['sp_death_flag'] = 1; #这个标记用于影响是否复活或登记特殊死法的判断
 			$log .= "造成<span class=\"red\">$damage</span>点伤害！<br>";
 			return $damage;
 		}
@@ -311,7 +339,7 @@
 				if($pd['arte'] < 100)
 				{
 					$pd['arte'] = min(100,$pd['arte']+$pd['arts']);
-					$log .= "<span class=\"red\">{$pd['nm']}身上的数据护盾投射出了防护罩，轻松挡下了你的攻击！</span><br>";
+					$log .= "<span class=\"red\">{$pd['nm']}身上的数据护盾投射出了防护罩，轻松挡下了{$pa['nm']}的攻击！</span><br>";
 					return 0;
 				}
 			}
@@ -320,7 +348,7 @@
 				if($pd['arte'] > 1)
 				{
 					$pd['arte'] = max(1,$pd['arte']-$pd['arts']);
-					$log .= "<span class=\"red\">{$pd['nm']}身上的数据护盾投射出了防护罩，轻松挡下了你的攻击！</span><br>";
+					$log .= "<span class=\"red\">{$pd['nm']}身上的数据护盾投射出了防护罩，轻松挡下了{$pa['nm']}的攻击！</span><br>";
 					return 0;
 				}
 			}
@@ -341,7 +369,7 @@
 			$damage = $pd['def']>65000 ? 1 : 350;
 
 			if($damage > 1) $log .= "<span class=\"lime\">蜂针命中了{$pd['nm']}，对其造成了350点真实伤害！</span><br>";
-			else $log .= "<span class=\"lime\">然而{$pd['nm']}的防御力实在太高，你根本无法对其造成有效伤害！</span><br>";
+			else $log .= "<span class=\"lime\">然而{$pd['nm']}的防御力实在太高，{$pa['nm']}根本无法对其造成有效伤害！</span><br>";
 
 			if(strpos($pd['inf'],'p')===false)
 			{
@@ -378,7 +406,7 @@
 			$pa['wepe_t'] = $pa['wepe'];
 		}
 		//枪托打人 武器伤害=面板数值/5
-		elseif($pa['is_wpg']) 
+		elseif(isset($pa['is_wpg'])) 
 		{
 			$pa['wepe_t'] = round ($pa['wepe']/ 5 );
 		}
@@ -391,10 +419,11 @@
 		rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
 		//pa攻击力：
 		$base_att = $pa['att'] + $pa['wepe_t'] + $att1;
-			//echo "【DEBUG】{$pa['name']}的base_att是{$base_att}，";
+		global $log;
+			//$log.= "【DEBUG】{$pa['name']}的base_att是{$base_att}，";
 		//计算攻击力修正
 		$base_att = get_base_att_modifier($pa,$pd,$active,$base_att);
-			//echo "修正后是{$base_att}。<br>";
+			//$log.= "修正后是{$base_att}。<br>";
 		return $base_att;
 	}
 	
@@ -428,7 +457,7 @@
 	//获取pd的防御力与修正
 	function get_base_def(&$pa,&$pd,$active)
 	{
-		global $specialrate;
+		global $specialrate,$log;
 		//pd基础防御力：
 		$base_def = $pd['def'];
 		//pd装备提供防御力：
@@ -440,7 +469,7 @@
 			if($Ndice < $specialrate['N'])
 			{
 				$equip_def =  round($equip_def/2);
-				//为了美观考虑……冲击的log在之后的attack_prepare_events()显示
+				//为了美观考虑……冲击的log在之后的deal_damage_prepare_events()显示
 				$pa['charge_flag'] = 1;
 			}
 		}
@@ -448,10 +477,10 @@
 		rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
 		//pd防御力：
 		$total_def = $base_def+$equip_def+$def1;
-			//echo "【DEBUG】{$pd['name']}的total_def是{$total_def}，";
+			//$log.= "【DEBUG】{$pd['name']}的total_def是{$total_def}，";
 		//计算防御力修正
 		$total_def = get_base_def_modifier($pa,$pd,$active,$total_def);
-			//echo "修正后是{$total_def}。<br>";
+			//$log.= "修正后是{$total_def}。<br>";
 		return $total_def;
 	}
 
@@ -459,13 +488,18 @@
 	function get_base_def_modifier(&$pa,&$pd,$active,$total_def)
 	{
 		//计算天气、姿态、策略、地点对pd防御力的修正
-		global $weather,$weather_defend_modifier,$pose_defend_modifier,$tactic_defend_modifier,$pls_defend_modifier;
+		global $weather,$weather_defend_modifier,$pose_defend_modifier,$tactic_defend_modifier,$pls_defend_modifier,$log;
 		$wth_def_per = $weather_defend_modifier[$weather] ?: 0 ;
+			//$log.= "天气修正系数是{$wth_def_per}。<br>";
 		$pose_def_per = $pose_defend_modifier[$pd['pose']] ?: 0 ;
+			//$log.= "姿势修正系数是{$pose_def_per}。<br>";
 		$tac_def_per = $tactic_defend_modifier[$pd['tactic']] ?: 0;
+			//$log.= "策略修正系数是{$tac_def_per}。<br>";
 		$pls_def_per = $pls_defend_modifier[$pd['pls']] ?: 0;
+			//$log.= "地点修正系数是{$pls_def_per}。<br>";
 
 		$total_def = round($total_def*((100+$wth_def_per+$pose_def_per+$tac_def_per+$pls_def_per)/100));
+			//$log.= "上述修正后防御为{$total_def}。<br>";
 
 		//计算受伤状态对pd防御力的修正
 		global $inf_def_p;
@@ -477,6 +511,7 @@
 		//计算社团技能对pd防御力的修正
 		rev_get_clubskill_bonus_p($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$attfac,$deffac);
 		$total_def *= $deffac;
+			//$log.= "社团技能修正后防御为{$total_def}。<br>";
 
 		$total_def = max(0.01,$total_def);
 		return $total_def;
@@ -485,8 +520,9 @@
 	//计算原始伤害
 	function get_original_dmg_rev(&$pa,&$pd,$active) 
 	{
-		global $skill_dmg, $dmg_fluc, $weather, $pls;
+		global $skill_dmg, $dmg_fluc, $weather, $pls, $log;
 
+			//$log.= "【DEBUG】原始伤害计算阶段：{$pa['name']}的攻击系数为{$pa['base_att']}，{$pd['name']}的防御系数为{$pd['base_def']}，";
 		//原始伤害：(pa基础攻击/pd基础防御) * pa熟练度 * pa熟练度系数
 		$damage = ($pa['base_att'] / $pd['base_def']) * $pa['wep_skill'] * $skill_dmg[$pa['wep_kind']];
 		//获取伤害浮动系数：
@@ -496,6 +532,7 @@
 		//计算伤害浮动：
 		$dmg_factor = (100 + rand ( - $dfluc, $dfluc )) / 100;
 		$damage = round ( $damage * $dmg_factor * rand ( 4, 10 ) / 10 );
+			//echo "【DEBUG】伤害浮动为{$dmg_factor}，原始伤害为{$damage}<br>";
 		//把计算得到的原始伤害保存在$pa['original_dmg']里
 		$pa['original_dmg'] = $damage;
 		return $damage;
@@ -504,6 +541,7 @@
 	//计算在原始伤害基础上附加的固定伤害
 	function get_original_fix_dmg_rev(&$pa,&$pd,$active)
 	{
+		$damage = 0;
 		//重枪
 		if ($pa['wep_kind'] == 'J') 
 		{
@@ -515,7 +553,7 @@
 		if ($pa['wep_kind'] == 'F') 
 		{
 			global $log;
-			if($pa['sldr_flag'] || $pd['sldr_flag']) 
+			if(isset($pa['sldr_flag']) || isset($pd['sldr_flag'])) 
 			{
 				$log.="<span class=\"red\">由于灵魂抽取的作用，灵系武器伤害大幅降低了！</span><br>";
 			}
@@ -536,11 +574,30 @@
 		//在输出成log时会显示为：总计造成了100x0.5x1.2...=111点伤害 的形式
 		$dmg_p = Array();
 
-		# 书中虫防守事件：
-		if($pd['type'] == 89)
+		# 灵力武器伤害↔体力消耗系数判定：
+		if($pa['wep_kind'] == 'F')
 		{
-			$p = attr_extra_89_bookworm($pa,$pd,$active);
-			if($p>0) $dmg_p[]= $p; 
+			//玩家使用灵力武器才会计算体力消耗
+			if(!$pa['type'])
+			{
+				//获取体力消耗系数：
+				$sp_cost_r = $pa['club'] == 9 ? 0.2 : 0.25;
+				//获取社团技能对体力消耗系数的修正：
+				$sp_cost_r *= get_clubskill_bonus_spd($pa['club'],$pa['skills']);
+				//获取理论消耗体力最大值：
+				$sp_cost_max = $sp_cost_r*$pa['wepe'];
+				//获取实际消耗体力：
+				$sp_cost = min(ceil($sp_cost_max),$pa['sp']-1);
+				$log .= "消耗{$sp_cost}点体力，";
+			}
+			//获取威力系数：NPC固定为50%
+			$factor = $pa['type'] ? 0.5 : 0.5+($sp_cost/$sp_cost_max/2);
+			//获取伤害变化倍率并扣除体力
+			$dmg_p[]= $factor; 
+			$pa['sp'] -= $sp_cost;
+			//输出log
+			$f = round ( 100 * $factor );
+			$log .= "发挥了灵力武器{$f}％的威力！<br>";
 		}
 
 		# 重击判定：
@@ -576,35 +633,9 @@
 				//输出log
 				$log .= npc_chat ($pa['type'],$pa['nm'],'critical');
 				$log .= "{$pa['nm']}消耗<span class=\"yellow\">{$rage_min_cost}</span>点怒气，";
-				if ($pa['club'] == 9) $log .= "<span class=\"red\">发动必杀技！</span>";
-				else $log .= "<span class=\"red\">使出重击！</span>";
+				if ($pa['club'] == 9) $log .= "<span class=\"red\">发动必杀技！</span><br>";
+				else $log .= "<span class=\"red\">使出重击！</span><br>";
 			}
-		}
-
-		# 灵力武器伤害↔体力消耗系数判定：
-		if($pa['wep_kind'] == 'F')
-		{
-			//玩家使用灵力武器才会计算体力消耗
-			if(!$pa['type'])
-			{
-				//获取体力消耗系数：
-				$sp_cost_r = $pa['club'] == 9 ? 0.2 : 0.25;
-				//获取社团技能对体力消耗系数的修正：
-				$sp_cost_r *= get_clubskill_bonus_spd($pa['club'],$pa['skills']);
-				//获取理论消耗体力最大值：
-				$sp_cost_max = $sp_cost_r*$pa['wepe'];
-				//获取实际消耗体力：
-				$sp_cost = min($sp_cost_max,$pa['sp']-1);
-				$log .= "消耗{$sp_cost}点体力，";
-			}
-			//获取威力系数：NPC固定为50%
-			$factor = $pa['type'] ? 0.5 : 0.5+($sp_cost/$sp_cost_max/2);
-			//获取伤害变化倍率并扣除体力
-			$dmg_p[]= $factor; 
-			$pa['sp'] -= $sp_cost;
-			//输出log
-			$f = round ( 100 * $factor );
-			$log .= "发挥了灵力武器{$f}％的威力！<br>";
 		}
 
 		# 连击判定：
@@ -623,12 +654,12 @@
 	}
 
 	//攻击方在造成伤害前触发的事件
-	function attack_prepare_events(&$pa,&$pd,$active)
+	function deal_damage_prepare_events(&$pa,&$pd,$active)
 	{
 		global $log,$def_kind,$specialrate,$itemspkinfo;
 
 		# 冲击效果log显示（实际的效果判断在get_base_def()阶段）
-		if($pa['charge_flag'])
+		if(!empty($pa['charge_flag']))
 		{
 			$log .= "<span class=\"yellow\">{$pa['nm']}的攻击隔着{$pd['nm']}的防具造成了伤害！</span><br>";
 		}
@@ -679,13 +710,17 @@
 		}
 
 		# 贯穿效果判定：
-		if(in_array('n',$pa['ex_keys']) && $pd['phy_def_flag']) 
+		if(in_array('n',$pa['ex_keys'])) 
 		{
 			$dice = diceroll(99);
-			if ($dice < $specialrate['n']) 
+			if($dice < $specialrate['n'])
 			{
-				$pd['phy_def_flag'] = 0;
-				$log .= "<span class=\"yellow\">{$pa['nm']}的攻击贯穿了{$pd['nm']}的防具！</span><br>";
+				if(!empty($pd['phy_def_flag']))
+				{
+					$pd['phy_def_flag'] = 0;
+					$log .= "<span class=\"yellow\">{$pa['nm']}的攻击贯穿了{$pd['nm']}的防具！</span><br>";
+				}
+				$pa['pierce_flag'] = 1;
 			}
 		}
 		return;
@@ -750,13 +785,13 @@
 		}
 
 		# 防御属性减伤判定：
-		if($pd['phy_def_flag'])
+		if(!empty($pd['phy_def_flag']))
 		{
 			//存在抹消属性
 			if($pd['phy_def_flag']==2)
 			{
 				$p = 0;
-				$log .= "<span class=\"yellow\">{$pa['nm']}的攻击完全被{$pd['nm']}的装备吸收了！</span><br>";
+				$log .= "<span class=\"red\">{$pa['nm']}的攻击完全被{$pd['nm']}的装备吸收了！</span><br>";
 			}
 			else 
 			{
@@ -786,7 +821,7 @@
 	}
 
 	//pa在造成属性伤害前触发的事件
-	function ex_attack_prepare_events(&$pa,&$pd,$active)
+	function deal_ex_damage_prepare_events(&$pa,&$pd,$active)
 	{
 		global $log,$ex_attack,$ex_def_kind,$specialrate,$itemspkinfo;
 
@@ -845,13 +880,17 @@
 		}
 
 		# 破格（属穿）效果判断：
-		if(in_array('y',$pa['ex_keys']) && isset($pd['ex_def_flag'])) 
+		if(in_array('y',$pa['ex_keys'])) 
 		{
 			$dice = diceroll(99);
 			if ($dice < $specialrate['y']) 
 			{
-				$pd['ex_def_flag'] = 0;
-				$log .= "<span class=\"yellow\">{$pa['nm']}的攻击瓦解了{$pd['nm']}的属性防护！</span><br>";
+				if(!empty($pd['ex_def_flag']))
+				{
+					$pd['ex_def_flag'] = 0;
+					$log .= "<span class=\"yellow\">{$pa['nm']}的攻击瓦解了{$pd['nm']}的属性防护！</span><br>";
+				}
+				$pa['ex_pierce_flag'] = 1;
 			}
 		}
 		return;
@@ -860,9 +899,9 @@
 	//计算可造成的属性伤害
 	function get_original_ex_dmg(&$pa,&$pd,$active)
 	{
-		global $log;
+		global $log,$now;
 		//触发了属抹效果，直接返回固定伤害值
-		if($pd['ex_def_flag'] == 2) 
+		if(isset($pd['ex_def_flag']) && $pd['ex_def_flag'] == 2) 
 		{
 			$total_ex_dmg = count($pa['ex_attack_keys']);
 			$log .= "<span class=\"red\">属性攻击的力量完全被防具吸收了！</span>仅造成了<span class=\"red\">{$total_ex_dmg}</span>点伤害！<br>";
@@ -873,8 +912,8 @@
 		$ex_dmg = 0; $ex_inf = 0;
 		//      属性攻击名   异常状态	 对应防御属性   基础属性伤害   属性伤害上限  效果↔伤害系数  熟练↔伤害系数     伤害浮动
 		global $exdmgname, $exdmginf, $ex_def_kind, $ex_base_dmg, $ex_max_dmg, $ex_wep_dmg, $ex_skill_dmg, $ex_dmg_fluc;
-		//	   属性↔异常   异常率     异常率上限     熟练↔异常率系数    异常↔伤害系数    得意社团
-		global $ex_inf, $ex_inf_r, $ex_max_inf_r, $ex_skill_inf_r, $ex_inf_punish, $ex_good_club;
+		//	   属性↔异常   异常率     异常率上限     熟练↔异常率系数    异常↔伤害系数    得意社团		得意武器
+		global $ex_inf, $ex_inf_r, $ex_max_inf_r, $ex_skill_inf_r, $ex_inf_punish, $ex_good_club, $ex_good_wep;
 
 		foreach($pa['ex_attack_keys'] as $ex)
 		{
@@ -887,18 +926,18 @@
 			//计算得意武器类型修正
 			if($ex_good_wep[$ex] == $pa['wep_kind']) $ex_dmg *= 2;
 			//计算已经进入的异常状态对属性攻击伤害的影响
-			if(strpos($inf,$exdmginf[$ex])!==false && isset($ex_inf_punish[$ex]))
+			if(isset($ex_inf[$ex]) && strpos($pd['inf'],$ex_inf[$ex])!==false && isset($ex_inf_punish[$ex]))
 			{
 				$ex_dmg *= $ex_inf_punish[$ex];
-				$log .= "由于{$pd['nm']}已经{$dmginf}，{$exdmgname[$ex]}伤害";
-				$log .= $ex_inf_punish[$ex]>1 ? "倍增！" : "减少！";
+				$log .= "由于{$pd['nm']}已经{$exdmginf[$ex_inf[$ex]]}，{$exdmgname[$ex]}的伤害";
+				$log .= $ex_inf_punish[$ex]>1 ? "增加了！" : "减少了！";
 			}
 			//计算属性伤害浮动
 			$ex_dmg = round($ex_dmg * rand(100-$ex_dmg_fluc[$ex],100+$ex_dmg_fluc[$ex])/100);
 
 			//计算属性伤害是否被防御
 			$log.=$exdmgname[$ex];
-			if($pd['ex_def_flag'] == 1 || in_array($ex,$pd['ex_def_flag']))
+			if(!empty($pd['ex_def_flag']) && ($pd['ex_def_flag'] == 1 || (is_array($pd['ex_def_flag']) && in_array($ex,$pd['ex_def_flag']))))
 			{
 				$ex_dmg = round($ex_dmg*0.5);
 				$log .="被防御效果抵消了！仅";
@@ -906,7 +945,7 @@
 			else 
 			{
 				//计算是否施加属性异常
-				if (strpos($pd['inf'],$ex_inf[$ex])===false) 
+				if (isset($ex_inf[$ex]) && strpos($pd['inf'],$ex_inf[$ex])===false) 
 				{
 					$dice = diceroll(99);
 					//获取属性施加异常的基础概率 + 熟练度修正
@@ -936,7 +975,14 @@
 	function get_final_dmg_p(&$pa,&$pd,$active)
 	{
 		global $log;
-		$fin_dmg_p = 1;
+		$fin_dmg_p = Array();
+
+		# 书中虫防守事件：移动到最终伤害系数变化阶段了
+		if($pd['type'] == 89 && ($pd['name'] == '高中生·白神' || $pd['name'] == '白神·讨价还价'))
+		{
+			$p = attr_extra_89_bookworm($pa,$pd,$active,'defend');
+			if($p>0) $fin_dmg_p[]= $p; 
+		}
 
 		# 晶莹判定:
 		if($pa['club'] == 19 || $pd['club'] == 19)
@@ -957,15 +1003,24 @@
 	{
 		global $log;
 
+		$fin_dmg = 0;
+
 		# 伤害制御判定：
 		if(in_array('h',$pd['ex_keys']) && $fin_dmg>=1950)
 		{
 			$dice = diceroll(99);
 			if ($dice < 90) 
 			{
-				$fin_dmg = 1950 + $dice;
-				$log .= "在{$pd['nm']}的装备的作用下，攻击伤害被限制了！<br>";
-				
+				//贯穿与破格同时生效时 穿透伤害制御
+				if(isset($pa['ex_pierce_flag']) && isset($pa['pierce_flag']))
+				{
+					$log .= "<span class='gold'>{$pa['nm']}凌厉的攻势直接突破了{$pd['nm']}的伤害限制！</span><br>";
+				}
+				else 
+				{
+					$fin_dmg = 1950 + $dice;
+					$log .= "在{$pd['nm']}的装备的作用下，攻击伤害被限制了！<br>";
+				}
 			}
 			else
 			{
@@ -997,7 +1052,7 @@
 		{
 			if ($pa['final_damage'] < 2000) {
 				$hp_d = floor($pa['hp']/2);
-			} elseif ($dmg < 5000) {
+			} elseif ($pa['final_damage'] < 5000) {
 				$hp_d = floor($pa['hp']*2/3);
 			} else {
 				$hp_d = floor($pa['hp']*4/5);
@@ -1037,7 +1092,7 @@
 				$aim = rand(0,count($inf_parts)-1);
 				$inf_aim = $inf_parts[$aim];
 				//对应部位致伤次数+1
-				$inf_att[$inf_aim] += 1;
+				$inf_att[$inf_aim] = isset($inf_att[$inf_aim]) ? $inf_att[$inf_aim]+1 : 1;
 			}
 			//应用防具损伤/致伤效果
 			foreach($inf_att as $ipt => $times)
@@ -1049,8 +1104,8 @@
 				}
 				else 
 				{
-					$flag = get_inf_rev($pd,$inf_att);
-					if($flag) $log .= "{$pd['nm']}的<span class=\"red\">$infinfo[$inf_att]</span>部受伤了！<br>";
+					$flag = get_inf_rev($pd,$ipt);
+					if($flag) $log .= "{$pd['nm']}的<span class=\"red\">$infinfo[$ipt]</span>部受伤了！<br>";
 				}
 			}
 		}
@@ -1084,7 +1139,7 @@
 		if(strpos($pa['inf'],$infnm) === false)
 		{
 			$pa['inf'] .= $infnm;
-			$pa['combat_inf'] .= $infnm;		
+			//$pa['combat_inf'] .= $infnm;		
 			return 1;	
 		}
 		return 0;

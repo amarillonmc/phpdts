@@ -8,12 +8,15 @@
 	function findenemy_rev($edata) 
 	{
 		global $db,$tablepre;
-		global $fog,$pid,$log,$mode,$main,$cmd,$battle_title,$attinfo,$skillinfo;
+		global $fog,$pid,$log,$mode,$main,$cmd,$battle_title,$attinfo,$skillinfo,$nosta;
 
 		$battle_title = '发现敌人';
 
-		//保存当前玩家数据，返回当前玩家数据组
+		//获取并保存当前玩家数据
 		$sdata = current_player_save();
+
+		//格式化双方clbpara
+		$sdata['clbpara'] = get_clbpara($sdata['clbpara']); $edata['clbpara'] = get_clbpara($edata['clbpara']);
 
 		//格式化对战双方数据
 		$init_data = update_db_player_structure();
@@ -24,13 +27,14 @@
 		extract($edata,EXTR_PREFIX_ALL,'w'); extract($sdata,EXTR_PREFIX_ALL,'s');
 		init_rev_battle();
 
-		$log .= "你发现了敌人<span class=\"red\">$w_name</span>！<br>对方好像完全没有注意到你！<br>";
+		$log .= "你发现了敌人<span class=\"red\">{$w_name}</span>！<br>对方好像完全没有注意到你！<br>";
 
 		//初始化玩家攻击方式信息
 		$w1 = substr($s_wepk,1,1);
 		$w2 = substr($s_wepk,2,1);
 		if ($w2=='0'||$w2=='1') $w2='';
 		if (($w1 == 'G'||$w1=='J')&&($s_weps==$nosta)) $w1 = 'P';
+
 		include template('battlecmd_rev');
 		$cmd = ob_get_contents();
 		ob_clean();
@@ -41,20 +45,31 @@
 	//发现中立NPC $kind 0=中立单位 1=友军
 	function findneut(&$edata,$kind=0)
 	{
-		global $log,$action,$mode,$name,$main,$cmd,$battle_title,$pid,$db,$tablepre;
-		global $w_type,$w_name,$w_gd,$w_sNo,$w_icon,$w_hp,$w_mhp,$w_sp,$w_msp,$w_rage,$w_wep,$w_wepk,$w_wepe,$w_lvl,$w_pose,$w_tactic,$w_inf;
+		global $db,$tablepre;
+		global $fog,$log,$mode,$main,$cmd,$battle_title,$attinfo,$skillinfo;
 		
 		$battle_title = $kind ? '发现朋友' : '发现敌人？';
 
-		extract($edata,EXTR_PREFIX_ALL,'w');
-		init_battle(1);
-		if(!is_array($edata['clbpara'])) $edata['clbpara']=get_clbpara($edata['clbpara']);
+		//获取并保存当前玩家数据
+		$sdata = current_player_save();
+
+		//格式化双方clbpara
+		$sdata['clbpara'] = get_clbpara($sdata['clbpara']); $edata['clbpara'] = get_clbpara($edata['clbpara']);
+
+		//格式化双方数据
+		$init_data = update_db_player_structure();
+		foreach(Array('w_','s_','') as $p)
+		{
+			foreach ($init_data as $i) global ${$p.$i};
+		}
+		extract($edata,EXTR_PREFIX_ALL,'w'); extract($sdata,EXTR_PREFIX_ALL,'s');
+		init_rev_battle(1);
 
 		$log .= "你发现了<span class=\"yellow\">$w_name</span>！<br>";
 		if(!$kind) $log .= "对方看起来没有敌意。<br>";
 
 		//TODO：把这一段挪到一个独立函数里
-		if($edata['clbpara']['post'] == $pid) 
+		if($edata['clbpara']['post'] == $sdata['pid']) 
 		{	
 			$log.="对方一看见你，便猛地朝你扑了过来！<br>
 			<br><span class='sienna'>“老板！有你的快递喔！”</span><br>
@@ -81,7 +96,7 @@
 		include template('findneut');
 		$cmd = ob_get_contents();
 		ob_clean();
-		$main = 'battle';
+		$main = 'battle_rev';
 		return;
 	}
 ?>

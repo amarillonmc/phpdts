@@ -496,6 +496,7 @@ function current_player_save(){
 		global $$key;
 		$pdata[$key]= $$key;
 	}
+	$pdata = player_format_with_db_structure($pdata);
 	$db->array_update("{$tablepre}players",$pdata,"pid='$pid'");
 	return $pdata;
 }

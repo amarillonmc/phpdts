@@ -1106,12 +1106,12 @@ function getcorpse($item){
 	return;
 }
 
-//武器损耗&消耗计算：force_imp 强制扣除武器效果
-function weapon_loss(&$pa,$force_imp=0)
+//武器损耗&消耗计算：force_imp：强制扣除武器效果；check_sk：是否在武器毁坏时重新检查属性数组$pa['ex_keys']
+function weapon_loss(&$pa,$hurtvalue,$force_imp=0,$check_sk=0)
 {
 	global $log,$wepimprate,$nosta;
 
-	if(isset($pa['wep_imp_times']) && $pa['wep_imp_times']>0 && $pa['wep_kind'] != 'N')
+	if($hurtvalue>0 && $pa['wep_kind'] != 'N')
 	{
 		$wep_loss_flag = 0;
 		//获取武器损耗类型
@@ -1121,13 +1121,13 @@ function weapon_loss(&$pa,$force_imp=0)
 		{
 			if($pa['weps'] == $nosta || $force_imp)
 			{
-				$pa['wepe'] = max(0,$pa['wepe']-$pa['wep_imp_times']);
-				$log.= "{$pa['nm']}的{$pa['wep']}的攻击力下降了{$pa['wep_imp_times']}。<br>";
+				$pa['wepe'] = max(0,$pa['wepe']-$hurtvalue);
+				if(!$pa['type']) $log.= "<span class='grey'>{$pa['nm']}的{$pa['wep']}的攻击力下降了{$hurtvalue}。</span><br>";
 			}
 			else 
 			{
-				$pa['weps'] = max(0,$pa['weps']-$pa['wep_imp_times']);
-				$log.= "{$pa['nm']}的{$pa['wep']}的耐久度下降了{$pa['wep_imp_times']}。<br>";
+				$pa['weps'] = max(0,$pa['weps']-$hurtvalue);
+				if(!$pa['type']) $log.= "<span class='grey'>{$pa['nm']}的{$pa['wep']}的耐久度下降了{$hurtvalue}。</span><br>";
 			}
 			if(empty($pa['weps']) || empty($pa['wepe']))
 			{
@@ -1140,10 +1140,10 @@ function weapon_loss(&$pa,$force_imp=0)
 		{
 			if($pa['weps'] != $nosta)
 			{
-				$pa['weps'] = max(0,$pa['weps']-$pa['wep_imp_times']);
+				$pa['weps'] = max(0,$pa['weps']-$hurtvalue);
 				if($pa['wep_kind'] == 'C' || $pa['wep_kind'] == 'D' || $pa['wep_kind'] == 'F')
 				{
-					$log .= "{$pa['nm']}用掉了{$pa['wep_imp_times']}个{$pa['wep']}。<br>";
+					if(!$pa['type']) $log .= "<span class='grey'>{$pa['nm']}用掉了{$hurtvalue}个{$pa['wep']}。</span><br>";
 					if(empty($pa['weps']))
 					{
 						$log .= "{$pa['nm']}的<span class=\"red\">{$pa['wep']}</span>用光了！<br>";
@@ -1152,7 +1152,7 @@ function weapon_loss(&$pa,$force_imp=0)
 				} 
 				elseif($pa['wep_kind'] == 'G' || $pa['wep_kind'] == 'J') 
 				{
-					$log .= "{$pa['nm']}的{$pa['wep']}的弹药数减少了{$pa['wep_imp_times']}。<br>";
+					if(!$pa['type']) $log .= "<span class='grey'>{$pa['nm']}的{$pa['wep']}的弹药数减少了{$hurtvalue}。</span><br>";
 					if(empty($pa['weps']))
 					{
 						$log .= "{$pa['nm']}的<span class=\"red\">{$pa['wep']}</span>弹药用光了！<br>";
@@ -1163,21 +1163,23 @@ function weapon_loss(&$pa,$force_imp=0)
 		}
 		if($wep_loss_flag)
 		{
+			//剔除武器属性
+			if($check_sk && !empty($pa['wepsk'])) unset_ex_from_array($pa,get_itmsk_array($pa['wepsk']));
+
 			$pa['wep'] = '拳头'; $pa['wep_kind'] = 'N'; $pa['wepk'] = 'WN';
 			$pa['wepe'] = 0; $pa['weps'] = $nosta; $pa['wepsk'] = '';
 			return -1;
 		}
-		unset($pa['wep_imp_times']);
 	}
 	return;
 }
 
-//扣除指定装备的耐久。$hurtkind 0=装备损坏文本 1=灵魂绑定消失文本
-function armor_hurt(&$pa,$which,$hurtvalue,$hurtkind=0)
+//扣除指定装备的耐久。check_sk：是否在武器毁坏时重新检查属性数组$pa['ex_keys']
+function armor_hurt(&$pa,$which,$hurtvalue,$check_sk=0)
 {
 	global $log,$nosta;
 
-	if(isset($pa[$which.'s']))
+	if(!empty($pa[$which.'s']))
 	{
 		//无限耐久的防具可以抵挡1次任意点损耗
 		if ($pa[$which.'s'] == $nosta)
@@ -1187,11 +1189,15 @@ function armor_hurt(&$pa,$which,$hurtvalue,$hurtkind=0)
 		//扣除耐久
 		$x = min($pa[$which.'s'], $hurtvalue);
 		$pa[$which.'s'] = $pa[$which.'s']-$x;
-		$log .= "{$pa['nm']}的".$pa[$which]."的耐久度下降了{$x}！<br>";
+		if(!$pa['type']) $log .= "<span class=\"grey\">{$pa['nm']}的".$pa[$which]."的耐久度下降了{$x}！</span><br>";
 		//耐久为0 装备损坏
 		if($pa[$which.'s'] <= 0)
 		{
-			$log .= "{$pa['nm']}的<span class=\"red b\">".$pa[$which]."</span>受损过重，无法再装备了！<br>";
+			$log .= "{$pa['nm']}的<span class=\"red\">".$pa[$which]."</span>受损过重，无法再装备了！<br>";
+
+			//剔除防具属性
+			if($check_sk && !empty($pa[$which.'sk'])) unset_ex_from_array($pa,get_itmsk_array($pa[$which.'sk']));
+
 			if($which == 'arb')
 			{
 				$pa[$which] = '内衣'; $pa[$which.'k'] = 'DN';
@@ -1206,6 +1212,19 @@ function armor_hurt(&$pa,$which,$hurtvalue,$hurtkind=0)
 		}
 	}
 	return 0;
+}
+
+//从属性数组中剔除指定属性
+function unset_ex_from_array(&$pa,$exarr)
+{
+	if(!empty($pa['ex_keys']) && !empty($exarr))
+	{
+		foreach($exarr as $ex)
+		{
+			if(in_array($ex,$pa['ex_keys'])) unset($pa['ex_keys'][array_search($ex,$pa['ex_keys'])]);
+		}
+	}
+	return;
 }
 
 

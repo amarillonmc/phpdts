@@ -121,8 +121,10 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>投掷{$d}致死";
 			} elseif($news == 'death25') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>埋设{$d}伏击炸死";
-			}	elseif($news == 'death29') {
+			} elseif($news == 'death29') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>发动{$d}以灵力杀死";
+			} elseif($news == 'death39') {
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>在与<span class=\"yellow\">$c</span>的战斗中因<span class=\"red\">武器反噬</span>意外身亡";
 			} elseif($news == 'death26') {
 				if($c) {
 					$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因食用了<span class=\"yellow\">$c</span>下毒的{$d}被毒死";

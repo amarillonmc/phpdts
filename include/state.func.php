@@ -6,7 +6,7 @@ if (! defined ( 'IN_GAME' )) {
 
 function death($death, $kname = '', $ktype = 0, $annex = '') {
 	global $now, $db, $tablepre, $alivenum, $deathnum, $name, $state, $deathtime, $type, $lvl, $bid, $killmsginfo, $typeinfo, $hp, $mhp, $wp, $wk, $wg, $wc, $wd, $wf, $sp, $msp, $club, $pls , $nick;
-	global $weather,$clbpara;
+	global $weather;
 	if (! $death) {
 		return;
 	}
@@ -97,28 +97,11 @@ function death($death, $kname = '', $ktype = 0, $annex = '') {
 	//$alivenum = $db->result($db->query("SELECT COUNT(*) FROM {$tablepre}players WHERE hp>0 AND type=0"), 0);
 
 	$revival_flag = false;
-	//依次判定复活效果
-	if (!$revival_flag && $weather == 17)
-	{
-		include_once GAME_ROOT.'./include/game/dice.func.php';
-		$aurora_rate = 10; //玩家10%概率复活
-		$aurora_dice = diceroll(100);
-		if($aurora_dice<=$aurora_rate)
-		{
-			//奥罗拉复活效果
-			addnews($now,'aurora_revival',$name);
-			$hp += min($mhp,max($aurora_dice,1)); $sp += min($msp,max($aurora_dice,1));
-			$alivenum++; $state=0;
-			$clbpara = set_clbpara($clbpara,'revival_flag','17');
-			$revival_flag = true;
-		}
-	}
 	if (!$revival_flag && $type==0 && $club==99 && ($death=="N" || $death=="P" || $death=="K" || $death=="G" || $death=="C" || $death=="D" || $death=="F" || $death=="J" || $death=="trap"))	
 	{
 		addnews($now,'revival',$name);	//玩家春哥附体称号的处理
 		$hp=$mhp; $sp=$msp;
 		$club=17; $state=0;
-		$clbpara = set_clbpara($clbpara,'revival_flag','99');
 		$alivenum++;
 	}
 
@@ -567,34 +550,6 @@ function rest($command) {
 		$state = 0;
 		$endtime = $now;
 		$mode = 'command';
-	}
-	return;
-}
-
-//登记一些特殊的死亡事件
-function check_kill_events($kid,$eid)
-{
-	global $db,$tablepre,$log,$now;
-
-	$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$eid'");
-	$edata = $db->fetch_array($result);
-
-	if(!is_array($edata['clbpara'])) $edata['clbpara']=get_clbpara($edata['clbpara']);
-
-	if($edata['clbpara']['post']) 
-	{	
-		//发一条news 表示快递被劫走了
-		$log.="<span class='sienna'>某样东西从{$edata['name']}身上掉了出来……</span><br>";
-		$iid = $edata['clbpara']['postid'];
-		$sponsorid = $edata['clbpara']['sponsor'];
-		$result = $db->query("SELECT * FROM {$tablepre}gambling WHERE uid = '$sponsorid'");
-		$sordata = $db->fetch_array($result);
-		addnews($now,'gpost_failed',$sordata['uname'],$edata['itm'.$iid]);
-		//消除快递相关参数
-		unset($edata['clbpara']['post']);unset($edata['clbpara']['postid']);unset($edata['clbpara']['sponsor']);
-		//解除快递锁
-		$db->query("UPDATE {$tablepre}gambling SET bnid=0 WHERE uid='$sponsorid'");
-		player_save($edata);
 	}
 	return;
 }
