@@ -368,6 +368,7 @@ span[tooltip]:hover:before {
     content: attr(tooltip);
 	overflow-x:hidden;overflow-y:auto; padding: 3px; 
 	font: bold 10pt "微软雅黑" serif; color: white; 
+	white-space:pre-line;
 	text-shadow:3px 3px 3px #3b3535; text-align: center; text-fill-color: white; -webkit-text-fill-color: white;
 	background-size: 0; background-clip: border-box; background-color: rgba(198, 114, 199, 0.8);
 	top: 20px; left: -5px; border-radius: 2px;

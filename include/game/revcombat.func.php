@@ -147,6 +147,7 @@
 					$log .= npc_chat ($pd['type'],$pd['nm'], 'defend' );
 					# 反击打击实行
 					# 因为这时候进攻方(造成伤害)的一方是pd，所以向第一个位置传入pd，向第二个位置(防守方)传入pa。
+					$pd['is_counter'] = 1; //给pd一个反击标记，代表这是反击造成的伤害
 					$def_dmg = rev_attack($pd,$pa,1);
 				} 
 				else 

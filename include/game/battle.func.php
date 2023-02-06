@@ -80,7 +80,7 @@ function findteam(&$w_pdata){
 function findcorpse(&$w_pdata){
 	global $log,$mode,$main,$battle_title,$cmd,$iteminfo,$itemspkinfo;
 	global $w_type,$w_name,$w_gd,$w_sNo,$w_icon,$w_hp,$w_mhp,$w_wep,$w_wepk,$w_wepe,$w_lvl,$w_pose,$w_tactic,$w_inf,$w_rp;//,$itmsk0;
-	global $club;
+	global $club,$allow_destory_corpse,$no_destory_corpse_type;
 
 	$battle_title = '发现尸体';
 	extract($w_pdata,EXTR_PREFIX_ALL,'w');

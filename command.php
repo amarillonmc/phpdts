@@ -138,7 +138,7 @@ if($hp > 0){
 						global $elements_info;
 						include_once GAME_ROOT.'./include/game/elementmix.func.php';
 						$emax = get_emix_itme_max();
-						foreach($elements_info as $e_key=>$e_info) ${'etaginfo'.$e_key} ="<span title=\"".print_elements_tags($e_key)."\">";
+						foreach($elements_info as $e_key=>$e_info) ${'etaginfo'.$e_key} ="<span tooltip=\"".print_elements_tags($e_key)."\">";
 					}
 					$mode = $itemcmd;
 				}

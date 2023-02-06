@@ -158,7 +158,7 @@ function get_item_place($which)
 			{
 				if ($iarea==99) $result.="每禁"; else $result.="{$iarea}禁";
 				if ($imap==99) $result.="全图随机"; else $result.="于{$plsinfo[$imap]}";
-				$result.="刷新{$inum}个&#13;";
+				$result.="刷新{$inum}个 \r";
 			}
 		}
 	$file = config('shopitem',$gamecfg);
@@ -169,19 +169,22 @@ function get_item_place($which)
 			list($kind,$num,$price,$area,$item)=explode(',',$lst);
 			if ($item==$which)
 			{
-				$result.="{$area}禁起在商店中出售({$price}元)&#13;";
+				$result.="{$area}禁起在商店中出售({$price}元) \r";
 			}
 		}
 	include_once config('mixitem',$gamecfg);
 	global $mixinfo;
-	foreach($mixinfo as $lst)
+	if(is_array($mixinfo))
 	{
-		if ($lst['result'][0]==$which || $lst['result'][0]==$which.' ')
+		foreach($mixinfo as $lst)
 		{
-			$result.="通过合成获取&#13;";
-			break;
+			if ($lst['result'][0]==$which || $lst['result'][0]==$which.' ')
+			{
+				$result.="通过合成获取 \r";
+				break;
+			}
 		}
-	}	
+	}
 	$file=config('synitem',$gamecfg);
 	$synlist = openfile($file);
 	foreach($synlist as $lst)
@@ -190,7 +193,7 @@ function get_item_place($which)
 			list($item,$kind)=explode(',',$lst);
 			if ($item==$which)
 			{
-				$result.="通过同调合成获取&#13;";
+				$result.="通过同调合成获取 \r";
 				break;
 			}
 		}
@@ -202,7 +205,7 @@ function get_item_place($which)
 			list($item,$kind)=explode(',',$lst);
 			if ($item==$which)
 			{
-				$result.="通过超量合成获取&#13;";
+				$result.="通过超量合成获取 \r";
 				break;
 			}
 		}
@@ -214,7 +217,7 @@ function get_item_place($which)
 			list($item,$kind)=explode(',',$lst);
 			if ($item==$which)
 			{
-				$result.="打开礼品盒时有概率获得&#13;";
+				$result.="打开礼品盒时有概率获得 \r";
 				break;
 			}
 		}
@@ -226,11 +229,62 @@ function get_item_place($which)
 			list($item,$kind)=explode(',',$lst);
 			if ($item==$which)
 			{
-				$result.="打开游戏王卡包时有概率获得&#13;";
+				$result.="打开游戏王卡包时有概率获得 \r";
 				break;
 			}
 		}
-	if ($which=="悲叹之种") $result.="通过使用『灵魂宝石』强化物品失败获得&#13;";
+	//打开福袋有几率获得
+	/*foreach(Array('00','O1','WC','WD','WF','WG','WK','WP','') as $rnm)
+	{
+		if(file_exists(config('random'.$rnm,$gamecfg)))
+		{
+			include_once config('random'.$rnm,$gamecfg);
+			foreach(Array('itmlow','itmmedium','itmhigh','antimeta') as $rlvl)
+			{
+				$item = explode("\r\n",$$rlvl);
+				foreach($item as $oi)
+				{
+					list($in) = explode(',',$oi);
+					if ($in==$which)
+					{
+						$result.="打开福袋时有概率获得 \r";
+						break;
+					}
+				}
+			}				
+		}
+	}
+	//NPC掉落
+	include_once config('npc',$gamecfg);
+	include_once config('addnpc',$gamecfg);
+	include_once config('evonpc',$gamecfg);
+	$nownpclist = Array();
+	$nownpclist = $npcinfo+$anpcinfo;
+	foreach($enpcinfo as $ekey => $enpcs)
+	{
+		foreach($enpcs as $sname => $enpc)
+		{
+			$nownpclist[$ekey]['sub'][$sname] = $enpc;
+		}
+	}
+	foreach($nownpclist as $npcs)
+	{
+		foreach(array('wep','arb','arh','ara','arf','art','itm1','itm2','itm3','itm4','itm5','itm6') as $nipval)
+		{
+			if(!empty($npcs['sub'])) 
+			{
+				foreach($npcs['sub'] as $npc)
+				{
+					if (isset($npc[$nipval]) && $npc[$nipval]==$which)
+					{
+						$result.="击败NPC {$npc['name']}时获得 \r";
+						break;
+					}
+				}
+			}
+		}
+	}*/
+	if ($which=="悲叹之种") $result.="通过使用『灵魂宝石』强化物品失败获得 \r";
 	return $result;
 }
 ?>

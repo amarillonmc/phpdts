@@ -91,7 +91,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		} elseif($news == 'revival') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}因为及时按了BOMB键而原地满血复活了！</span><br>\n";
 		} elseif($news == 'aurora_revival')  {
-			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}在奥罗拉的作用下原地复活了！</span></li>";
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}在奥罗拉的作用下原地复活了！</span><br>\n";
 		} elseif(strpos($news,'death') === 0) {
 			if($news == 'death11') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因滞留在<span class=\"red\">禁区【{$plsinfo[$c]}】</span>死亡";
@@ -302,6 +302,8 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"grey\">{$a}从安全箱中取出了道具{$b}。</span><br>\n";
 		} elseif($news == 'loot_depot') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"grey\">{$a}将{$b}生前存放在安全箱里的东西转移到了自己的名下。哇……真是世风日下，道德沦丧啊！</span><br>\n";
+		} elseif($news == 'cdestroy') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red b\">{$a}把{$b}的尸体销毁了</span><br>\n";
 		} else {
 			$newsinfo .= "<li>$time,$news,$a,$b,$c,$d<br>\n";
 		}

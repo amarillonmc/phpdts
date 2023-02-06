@@ -3,6 +3,7 @@ if(!defined('IN_ADMIN')) {
 	exit('Access Denied');
 }
 require config('vnworld',$gamecfg);
+//require './include/game/itemplace.func.php';
 
 if(!isset($vncmd)){$vncmd = 'none';}
 
@@ -19,6 +20,14 @@ if(file_exists($cache_file))
 		{
 			foreach($vn_arr as $vn_type => $vn_info)
 			{
+				/*if($vn_type == 'stuff')
+				{
+					// 格式化素材来源
+					foreach($vn_info as $sid => $snm)
+					{
+						$temp_mixinfo[$vn_key][$vn_type][$sid] = "<span tooltip=\"".get_item_place($snm)."\">".$snm."</span>";
+					}
+				}*/
 				if($vn_type == 'result')
 				{
 					$temp_mixinfo[$vn_key][$vn_type][1] = $temp_vniteminfo[$vn_info[1]];
@@ -57,7 +66,7 @@ if(strpos($vncmd ,'del')===0)
 	}
 	else 
 	{
-		$vname = $flag['name'];
+		$vname = $flag['name']; $vresult = $flag['result'][0];
 		$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$vname'");
 		if(!$db->num_rows($result))
 		{
@@ -67,6 +76,7 @@ if(strpos($vncmd ,'del')===0)
 		$vdata = $db->fetch_array($result);
 		post_back_vn_cache_file($vdata,$flag);
 	}
+	adminlog('回退了配方',$vresult);
 	$cmd_info = "已回退配方{$vnid}！";
 	return;
 }
