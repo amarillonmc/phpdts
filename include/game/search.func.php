@@ -592,7 +592,7 @@ function discover($schmode = 0) {
 				{
 					$bid = $edata['pid'];
 					$action = 'neut'.$edata['pid'];
-					include_once GAME_ROOT.'./include/game/revcombat.func.php';
+					include_once GAME_ROOT.'./include/game/revbattle.func.php';
 					findneut($edata,1);
 					return;
 				}
@@ -609,8 +609,10 @@ function discover($schmode = 0) {
 					if($active_dice < $active_r) 
 					{
 						$action = 'enemy'.$edata['pid'];
-						include_once GAME_ROOT.'./include/game/battle.func.php';
-						findenemy($edata);
+						//include_once GAME_ROOT.'./include/game/battle.func.php';
+						//findenemy($edata);
+						include_once GAME_ROOT.'./include/game/revbattle.func.php';
+						findenemy_rev($edata);
 						return;
 					} 
 					//挨打
@@ -623,8 +625,10 @@ function discover($schmode = 0) {
 							echo "passive_w_type={$edata['type']}\n";
 							echo "passive_w_sNo={$edata['sNo']}\n";
 						}
-						include_once GAME_ROOT.'./include/game/combat.func.php';
-						combat(0);
+						//include_once GAME_ROOT.'./include/game/combat.func.php';
+						//combat(0);
+						include_once GAME_ROOT.'./include/game/revcombat.func.php';
+						rev_combat_prepare($edata,NULL,0);
 						return;
 					}
 				}

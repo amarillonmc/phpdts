@@ -405,23 +405,48 @@ if($hp > 0){
 		} elseif($mode == 'combat') {
 			include_once GAME_ROOT.'./include/game/combat.func.php';
 			combat(1,$command);
+			include_once GAME_ROOT.'./include/game/revcombat.func.php';
+			combat(1,$command);
 		} elseif($mode == 'revcombat'){
-			//NPC vs NPC：
-			if($command == 'enter' && (strpos($action,'corpse')===0 || strpos($action,'pacorpse')===0))
+			global $action;
+			if(strpos($action,'enemy')===0)
 			{
-				$cid = strpos($action,'corpse')===0 ? str_replace('corpse','',$action) : str_replace('pacorpse','',$action);
-				if($cid)
-				{
-					global $db,$tablepre;
-					$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$cid' AND hp=0");
-					if($db->num_rows($result)>0)
-					{
-						$edata = $db->fetch_array($result);
-						extract($edata,EXTR_PREFIX_ALL,'w');
-						include_once GAME_ROOT.'./include/game/battle.func.php';
-						findcorpse($edata);
-					}
-				}	
+				$enemyid = str_replace('enemy','',$action);
+			}
+			if(!$enemyid || (strpos($action,'enemy')===false))
+			{
+				$log .= "<span class=\"yellow b\">你没有遇到敌人，或已经离开战场！</span>{$enemyid}<br>";
+				goto back_flag;
+			}
+			$result = $db->query ( "SELECT * FROM {$tablepre}players WHERE pid='$enemyid'" );
+			if (! $db->num_rows ( $result )) {
+				$log .= "对方不存在！<br>";
+				goto back_flag;
+			}
+
+			$edata = $db->fetch_array($result);
+			if ($edata ['pls'] != $pls) 
+			{
+				$log .= "<span class=\"yellow b\">" . $edata ['name'] . "</span>已经离开了<span class=\"yellow b\">$plsinfo[$pls]</span>。<br>";
+			} 
+			elseif ($edata ['hp'] <= 0)
+			{
+				$log .= "<span class=\"red b\">" . $edata ['name'] . "</span>已经死亡，不能被攻击。<br>";
+				include_once GAME_ROOT . './include/game/battle.func.php';
+				$action = 'corpse'.$edata['pid'];
+				findcorpse($edata);
+			}
+			elseif ($command == 'back') 
+			{
+				$log .= "你逃跑了。";
+				$action = '';
+				back_flag:
+				$mode = 'command';
+			}
+			else
+			{
+				include_once GAME_ROOT . './include/game/revcombat.func.php';
+				rev_combat_prepare($pdata,$edata,1,$command,$message);
 			}
 		} elseif($mode == 'rest') {
 			include_once GAME_ROOT.'./include/state.func.php';

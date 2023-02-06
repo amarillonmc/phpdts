@@ -12,6 +12,7 @@ function combat($active = 1, $wep_kind = '') {
 	global $w_wep, $w_wepk, $w_wepe, $w_weps, $w_arb, $w_arbk, $w_arbe, $w_arbs, $w_arh, $w_arhk, $w_arhe, $w_arhs, $w_ara, $w_arak, $w_arae, $w_aras, $w_arf, $w_arfk, $w_arfe, $w_arfs, $w_art, $w_artk, $w_arte, $w_arts, $w_itm0, $w_itmk0, $w_itme0, $w_itms0, $w_itm1, $w_itmk1, $w_itme1, $w_itms1, $w_itm2, $w_itmk2, $w_itme2, $w_itms2, $w_itm3, $w_itmk3, $w_itme3, $w_itms3, $w_itm4, $w_itmk4, $w_itme4, $w_itms4, $w_itm5, $w_itmk5, $w_itme5, $w_itms5,$w_itm6, $w_itmk6, $w_itme6, $w_itms6, $w_wepsk, $w_arbsk, $w_arhsk, $w_arask, $w_arfsk, $w_artsk, $w_itmsk0, $w_itmsk1, $w_itmsk2, $w_itmsk3, $w_itmsk4, $w_itmsk5, $w_itmsk6;
 	global $infinfo, $w_combat_inf;
 	global $rp,$w_rp,$action,$w_action,$achievement,$w_achievement,$skills,$w_skills,$skillpoint,$w_skillpoint;
+	global $clubpara,$w_clubpara;
 	
 	$battle_title = '战斗发生';
 	
@@ -176,9 +177,10 @@ function combat($active = 1, $wep_kind = '') {
 			} else {
 				$log .= "<span class=\"red\">你攻击范围不足，不能反击，逃跑了！</span><br>";
 			}
-		} elseif($hp > 0) {
+		} else {
 			$log .= "<span class=\"red\">你逃跑了！</span><br>";
 		}
+
 	}
 
 	if($hp == 0 && !$w_action){$w_action = 'pacorpse'.$pid;}
@@ -207,7 +209,18 @@ function combat($active = 1, $wep_kind = '') {
 			//include_once GAME_ROOT.'./include/game/achievement.func.php';
 			//check_battle_achievement($w_achievement,$w_type,$name);
 		}
-		
+		if($revival_flag)
+		{
+			$w_log .= "<span class=\"yellow\">$name</span><span class=\"red\">被你杀死了！</span><br>";
+			if($revival_flag == 99)
+			{
+				$w_log .= "<span class=\"lime\">但由于及时按下了BOMB键，{$name}原地满血复活了！</span><br>";
+			}
+			elseif($revival_flag == 17)
+			{
+				$w_log .= "<span class=\"lime\">但是，空气中弥漫着的奥罗拉让{$name}重新站了起来！</span><br>";
+			}
+		}
 		logsave ( $w_pid, $now, $w_log ,'b');
 	}
 	
@@ -223,80 +236,93 @@ function combat($active = 1, $wep_kind = '') {
 	
 	//$bid = $w_pid;
 	
-	if ($w_hp <= 0 && $w_club != 99) {
-		$w_bid = $pid;
-		$w_hp = 0;
-		if ($w_type==0){$killnum ++;};
-		
-		include_once GAME_ROOT . './include/state.func.php';
-		$killmsg = kill ( $wep_kind, $w_name, $w_type, $w_pid, $wep_temp );
-		check_kill_events($pid,$w_pid);
-		$log .= npc_chat ( $w_type,$w_name, 'death' );
-		
-		include_once GAME_ROOT.'./include/game/achievement.func.php';
-		check_battle_achievement($name,$w_type,$w_name,$wep_temp);
-			
-		$log .= "<span class=\"red\">{$w_name}被你杀死了！</span><br>";
-		//$rp = $rp + 20 ;
-		
-		if(!$w_type){
-			if($w_rp < 80){
-				$rpup = 80;
-			}else{$rpup = $w_rp;}
-		}
-		else{$rpup = 20;}		
-		if($club == 19){
-			$rpdec = 30;
-			$rpdec += get_clubskill_rp_dec($club,$skills);
-			$rp += round($rpup*(100-$rpdec)/100);
-		}		
-		else{
-			$rp += $rpup;
-		}
-		
-		if($killmsg){$log .= "<span class=\"yellow\">你对{$w_name}说：“{$killmsg}”</span><br>";}
-		include_once GAME_ROOT . './include/game/battle.func.php';
-		$result = $db->query ( "SELECT * FROM {$tablepre}players WHERE pid='$w_pid'" );
-		$cdata = $db->fetch_array ( $result );
-		$action = 'corpse'.$edata['pid'];
-		findcorpse ( $cdata );
-		return;
-	} else {
-		if($w_hp <= 0){//有第二阶段
-			if ($w_type) 
-			{
-				$log .= npc_chat ( $w_type,$w_name, 'death' );
-				include_once GAME_ROOT . './include/system.func.php';
-				$npcdata = evonpc ($w_type,$w_name);
-				$log .= '<span class="yellow">'.$w_name.'却没死去，反而爆发出真正的实力！</span><br>';
-				if($npcdata){
-					addnews($now , 'evonpc',$w_name, $npcdata['name'], $name);
-					foreach($npcdata as $key => $val){
-						${'w_'.$key} = $val;
-					}
+	if ($w_hp <= 0) 
+	{
+		//二形态最优先判断
+		if ($w_club == 99 && $w_type) 
+		{
+			$log .= npc_chat ( $w_type,$w_name, 'death' );
+			include_once GAME_ROOT . './include/system.func.php';
+			$npcdata = evonpc ($w_type,$w_name);
+			$log .= '<span class="yellow">'.$w_name.'却没死去，反而爆发出真正的实力！</span><br>';
+			if($npcdata){
+				addnews($now , 'evonpc',$w_name, $npcdata['name'], $name);
+				foreach($npcdata as $key => $val){
+					${'w_'.$key} = $val;
 				}
 			}
+		}
+		else
+		{
+			$w_bid = $pid;
+			$w_hp = 0;
+				
+			$log .= "<span class=\"red\">{$w_name}被你杀死了！</span><br>";
+			//进行复活判定
+			include_once GAME_ROOT . './include/state.func.php';
+			$killmsg = kill ( $wep_kind, $w_name, $w_type, $w_pid, $wep_temp ,$revival_flag);
+			if($revival_flag)
+			{
+				if($revival_flag == 99)
+				{
+					$log .= '<span class="yellow">'.$w_name.'由于其及时按了BOMB键而原地满血复活了！</span><br>';
+				}
+				elseif($revival_flag == 17)
+				{
+					$log .= '<span class="yellow">但是，空气中弥漫着的奥罗拉让敌人重新站了起来！</span><br>';
+				}
+			}
+			//没有复活 继续击杀判定
 			else
 			{
-				include_once GAME_ROOT . './include/state.func.php';
-				$killmsg = kill ( $wep_kind, $w_name, $w_type, $w_pid, $wep_temp );
-				$log .= '<span class="yellow">'.$w_name.'由于其及时按了BOMB键而原地满血复活了！</span><br>';
+				if ($w_type==0){$killnum ++;};
+				$log .= npc_chat ( $w_type,$w_name, 'death' );
+			
+				include_once GAME_ROOT.'./include/game/achievement.func.php';
+				check_battle_achievement($name,$w_type,$w_name,$wep_temp);
+
+				if(!$w_type){
+					if($w_rp < 80){
+						$rpup = 80;
+					}else{$rpup = $w_rp;}
+				}
+				else{$rpup = 20;}		
+				if($club == 19){
+					$rpdec = 30;
+					$rpdec += get_clubskill_rp_dec($club,$skills);
+					$rp += round($rpup*(100-$rpdec)/100);
+				}		
+				else{
+					$rp += $rpup;
+				}
+				
+				if($killmsg){$log .= "<span class=\"yellow\">你对{$w_name}说：“{$killmsg}”</span><br>";}
+				include_once GAME_ROOT . './include/game/battle.func.php';
+				$result = $db->query ( "SELECT * FROM {$tablepre}players WHERE pid='$w_pid'" );
+				$cdata = $db->fetch_array ( $result );
+				$action = 'corpse'.$edata['pid'];
+				findcorpse ( $cdata );
+				return;
 			}	
 		}
-		$main = 'battle';
-		init_battle ( 1 );
-		
-		if (CURSCRIPT !== 'botservice')
-		{
-			include template('battleresult');
-			//$cmd = '<br><br><input type="hidden" name="mode" value="command"><input type="radio" name="command" id="back" value="back" checked><a onclick=sl("back"); href="javascript:void(0);" >确定</a><br>';
-			$cmd = ob_get_contents();
-			ob_clean();
-			//$bid = $hp <= 0 ? $bid : 0;
-		}
-		$action = '';
-		return;
+	}	
+
+	//再注销一次复活标记
+	if($revival_flag) unset($revival_flag);
+
+	$main = 'battle';
+	init_battle ( 1 );
+	
+	if (CURSCRIPT !== 'botservice')
+	{
+		include template('battleresult');
+		//$cmd = '<br><br><input type="hidden" name="mode" value="command"><input type="radio" name="command" id="back" value="back" checked><a onclick=sl("back"); href="javascript:void(0);" >确定</a><br>';
+		$cmd = ob_get_contents();
+		ob_clean();
+		//$bid = $hp <= 0 ? $bid : 0;
 	}
+	$action = '';
+	return;
 }
 
 function attack($wep_kind = 'N', $active = 0) {
@@ -1297,7 +1323,6 @@ function defend($w_wep_kind = 'N', $active = 0) {
 				$attack = $w_att + $watt;
 				$defend = checkdef($def , $arbe + $arhe + $arae + $arfe,$w_att_key);
 				
-				
 				$damage = get_original_dmg ( 'w_', '', $attack, $defend, $w_wep_skill, $w_wep_kind );
 				
 				if ($w_wep_kind == 'F') {
@@ -1390,8 +1415,10 @@ function defend($w_wep_kind = 'N', $active = 0) {
 			include_once GAME_ROOT . './include/state.func.php';
 			$killmsg = death ( $w_wep_kind, $w_name, $w_type, $w_wep_temp );
 			$log .= npc_chat ( $w_type,$w_name, 'kill' );
-			if ($tmp_club==99)
+			if($hp>0)
+			{
 				$log .= '<span class="yellow">由于你及时按了BOMB键，你原地满血复活了！</span><br>';
+			}
 		}
 	} else {
 		$damage = 0;
@@ -1427,6 +1454,7 @@ function get_original_dmg($w1, $w2, $att, $def, $ws, $wp_kind) {
 	$att_pow *= $attfac;
 	$def_pow *= $deffac;
 	if($def_pow <= 0){$def_pow = 0.01;}
+	echo "【DEBUG】原始伤害计算阶段：PA的基础攻击为{$att_pow}，PD的基础防御为{$def_pow}，";
 	$damage = ($att_pow / $def_pow) * $ws * $skill_dmg [$wp_kind];
 	
 	$dfluc = $dmg_fluc [$wp_kind];
@@ -1435,6 +1463,7 @@ function get_original_dmg($w1, $w2, $att, $def, $ws, $wp_kind) {
 	$dmg_factor = (100 + rand ( - $dfluc, $dfluc )) / 100;
 	
 	$damage = round ( $damage * $dmg_factor * rand ( 4, 10 ) / 10 );
+	echo "【DEBUG】伤害浮动为{$dmg_factor}，原始伤害为{$damage}<br>";
 	return $damage;
 }
 

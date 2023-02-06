@@ -91,6 +91,7 @@ table.admin td.tdtitle {
 
 .clit {color: #feea23; font:18pt "微软雅黑" serif; }
 .yellow{color:#ffff00; font: bold 10pt "微软雅黑" serif;line-height:16px}
+.gold{color:rgb(255,215,0);font: bold 10pt "微软雅黑" serif;line-height:16px}
 .clan{color: #00ffff;font: bold 10pt "微软雅黑" serif;line-height:16px}
 .blue{color: #0060ff;font: bold 10pt "微软雅黑" serif;line-height:16px}
 .red{color: #ff0000;font: bold 10pt "微软雅黑" serif;line-height:16px}
@@ -370,7 +371,7 @@ span[tooltip]:hover:before {
 	text-shadow:3px 3px 3px #3b3535; text-align: center; text-fill-color: white; -webkit-text-fill-color: white;
 	background-size: 0; background-clip: border-box; background-color: rgba(198, 114, 199, 0.8);
 	top: 20px; left: -5px; border-radius: 2px;
-    width: 160px; max-width: 160px; z-index: 3; position: absolute;    
+    width: 160px; max-width: 160px; z-index: 3; position: absolute;  z-index: 5;
 }
 
 /*==========下拉菜单样式==========*/

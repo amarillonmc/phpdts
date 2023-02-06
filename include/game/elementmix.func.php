@@ -19,7 +19,7 @@
 			global ${'element'.$e_key};
 			if(${'element'.$e_key})
 			{
-				$log.="<span title=\"".print_elements_tags($e_key)."\">";
+				$log.="<span tooltip=\"".print_elements_tags($e_key)."\">";
 				$log.="◆ {$e_info}：{${'element'.$e_key}} 份；";
 				$log.="</span><br>";
 			}

@@ -359,27 +359,120 @@ function init_battle($ismeet = 0){
 	return;
 }
 
-//function get_pstate($pid){//玩家状态储存在内存表里，读取之前先判断是否存在
-//	global $db,$tablepre,$now;
-//	$result=$db->query("SELECT * FROM {$tablepre}pstate WHERE pid = '$pid'");
-//	if($db->num_rows($result)){
-//		$psdata = $db->fetch_array($result);
-//	}else{
-//		$psdata = false;
-//	}
-//	return $psdata;
-//}
-
-//function set_pstate($psdata){//玩家状态储存在内存表里，若存在则更新记录，否则创建记录
-//	global $db,$tablepre;
-//	$pid = $psdata['pid'];
-//	$result=$db->query("SELECT * FROM {$tablepre}pstate WHERE pid = '$pid'");
-//	if($db->num_rows($result)){
-//		return $db->array_update("{$tablepre}pstate",$psdata," pid = '$pid'");
-//	}else{
-//		return $db->array_insert("{$tablepre}pstate",$psdata);
-//	}
-//}
+function init_rev_battle($ismeet = 0)
+{
+	global $fog,$hpinfo,$spinfo,$rageinfo,$wepeinfo,$typeinfo,$sexinfo,$infinfo;
+	$ui_data = Array('hpstate','spstate','ragestate','wepestate','wepk_words','wep_words','infdata','iconImg','iconImgB','sNoinfo');
+	$init_data = update_db_player_structure();
+	foreach(Array('w_','s_') as $p)
+	{
+		foreach ($init_data as $i)
+   		{
+			global ${$p.$i};
+    	}
+		foreach($ui_data as $u)
+		{
+			global ${$p.$u};
+		}
+		//更新血量、体力、怒气显示
+		if(${$p.'hp'} <= 0)
+		{
+			${$p.'hpstate'} = "<span class=\"red\">$hpinfo[3]</span>";
+			${$p.'spstate'} = "<span class=\"red\">$spinfo[3]</span>";
+			${$p.'ragestate'} = "<span class=\"red\">$rageinfo[3]</span>";
+		}
+		else 
+		{
+			if(${$p.'hp'} < ${$p.'mhp'}*0.2) {
+				${$p.'hpstate'} = "<span class=\"red\">$hpinfo[2]</span>";
+			} elseif(${$p.'hp'} < ${$p.'mhp'}*0.5) {
+				${$p.'hpstate'} = "<span class=\"yellow\">$hpinfo[1]</span>";
+			} else {
+				${$p.'hpstate'} = "<span class=\"clan\">$hpinfo[0]</span>";
+			}
+			if(${$p.'sp'} < ${$p.'msp'}*0.2) {
+				${$p.'spstate'} = "$spinfo[2]";
+			} elseif(${$p.'sp'} < ${$p.'msp'}*0.5) {
+				${$p.'spstate'} = "$spinfo[1]";
+			} else {
+				${$p.'spstate'} = "$spinfo[0]";
+			}
+			if(${$p.'rage'} >= 100) {
+				${$p.'ragestate'} = "<span class=\"red\">$rageinfo[2]</span>";
+			} elseif(${$p.'rage'} >= 30) {
+				${$p.'ragestate'} = "<span class=\"yellow\">$rageinfo[1]</span>";
+			} else {
+				${$p.'ragestate'} = "$rageinfo[0]";
+			}
+		}
+		//更新武器效果情报
+		switch(${$p.'wepe'})
+		{
+			case ${$p.'wepe'}>= 400:
+				${$p.'wepestate'} = "$wepeinfo[3]";
+				break;
+			case ${$p.'wepe'}>= 200:
+				${$p.'wepestate'} = "$wepeinfo[2]";
+				break;
+			case ${$p.'wepe'}>= 60:
+				${$p.'wepestate'} = "$wepeinfo[1]";
+				break;
+			default :
+				${$p.'wepestate'} = "$wepeinfo[0]";
+		}
+		//更新武器名、武器类别情报
+		${$p.'wep_words'} = parse_itm_desc(${$p.'wep'},'m');
+		${$p.'wepk_words'} = parse_itm_desc(${$p.'wepk'},'k');
+		//更新编号情报
+		${$p.'sNoinfo'} = $typeinfo[${$p.'type'}]."(".$sexinfo[${$p.'gd'}].${$p.'sNo'}."号)";
+		//更新头像情报
+		$itype = ${$p.'type'} > 0 ? 'n' : ${$p.'gd'};
+		$iname = $itype.'_'.${$p.'icon'}; 
+		if(file_exists('img/'.$iname.'a.gif'))
+		{
+			${$p.'iconImgB'}= $iname.'a.gif';
+		}
+		else 
+		{
+			${$p.'iconImg'} = $iname.'.gif';
+			unset(${$p.'iconImgB'});
+		}
+		//更新受伤状态
+		if(${$p.'inf'}) 
+		{
+			${$p.'infdata'} = '';
+			foreach ($infinfo as $inf_ky => $inf_nm) 
+			{
+				if(strpos(${$p.'inf'},$inf_ky) !== false) ${$p.'infdata'} .= $inf_nm;	
+			}
+		}
+		else 
+		{
+			${$p.'infdata'} = '';
+		}
+	}
+	if($fog && !$ismeet)
+	{
+		//雾天显示？？？
+		$w_wep_words = '？？？';
+		$w_wepk_words = '？？？';
+		$w_sNoinfo = '？？？';
+		$w_iconImg = 'question.gif';
+		$w_iconImgB = '';
+		$w_name = '？？？';
+		$w_wep = '？？？';
+		$w_infdata = '？？？';
+		$w_pose = -1;
+		$w_tactic = -1;
+		$w_lvl = '？';
+		$w_hpstate = '？？？';
+		$w_spstate = '？？？';
+		$w_ragestate = '？？？';
+		$w_wepestate = '？？？';
+		$w_wepk = '';
+	}
+	return;
+}
 
 function get_remaincdtime($pid){
 	$psdata = get_pstate($pid);
@@ -393,8 +486,24 @@ function get_remaincdtime($pid){
 	}	
 }
 
+//用于将当前玩家数据保存至数据库
+function current_player_save(){
+	global $db,$tablepre;
+	$pdata = Array();
+	$data = update_db_player_structure();
+	foreach($data as $key)
+	{
+		global $$key;
+		$pdata[$key]= $$key;
+	}
+	$pdata = player_format_with_db_structure($pdata);
+	$db->array_update("{$tablepre}players",$pdata,"pid='$pid'");
+	return $pdata;
+}
+//用于将指定player数据存回数据库
 function player_save($data){
 	global $db,$tablepre;
+	$ndata = Array();
 	if(isset($data['pid'])){
 		$pid = $data['pid'];
 		$ndata = player_format_with_db_structure($data);
@@ -403,6 +512,7 @@ function player_save($data){
 	}
 	return;
 }
+//用于刷新当前玩家数据
 function player_load($data)
 {
 	$ndata = player_format_with_db_structure($data);

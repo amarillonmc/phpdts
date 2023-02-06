@@ -657,14 +657,32 @@ function get_itmsk_strlen($sk_value,$max_length=5)
 	return $ret;
 }
 
+//将clbpara转为数组
 function get_clbpara($para)
 {
-	return json_decode($para,true);
+	if(!is_array($para)) return json_decode($para,true);
+	else return $para;
 }
-
-function set_clbpara($para)
+//获取clbpara中指定键
+function get_single_clbpara($para,$key)
 {
-	return json_encode($para);
+	if(!is_array($para)) $para = get_clbpara($para);
+	if(isset($para[$key])) return $para[$key];
+	return;
+}
+//删除clbpara中指定键
+function del_single_clbpara($para,$key)
+{
+	if(!is_array($para)) $para = get_clbpara($para);
+	if(isset($para[$key])) unset($para[$key]);
+	return $para;
+}
+//修改clbpara中指定键
+function set_clbpara($para,$key,$value)
+{
+	if(!is_array($para)) $para = get_clbpara($para);
+	if(isset($para[$key])) $para[$key] = $value;
+	return $para;
 }
 
 function mgzdecode($data)

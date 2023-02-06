@@ -90,6 +90,8 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">本局游戏被GM中止</span><br>\n";
 		} elseif($news == 'revival') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}因为及时按了BOMB键而原地满血复活了！</span><br>\n";
+		} elseif($news == 'aurora_revival')  {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}在奥罗拉的作用下原地复活了！</span></li>";
 		} elseif(strpos($news,'death') === 0) {
 			if($news == 'death11') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因滞留在<span class=\"red\">禁区【{$plsinfo[$c]}】</span>死亡";
@@ -108,7 +110,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			} elseif($news == 'death18') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因<span class=\"red\">烧伤发作</span>死亡";
 			} elseif($news == 'death20') {
-				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span><span class=\"red\">$nowep</span>击飞";
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>用<span class=\"red\">$nowep</span>击飞";
 			} elseif($news == 'death21') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>使用{$d}殴打致死";
 			} elseif($news == 'death22') {
@@ -119,8 +121,10 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>投掷{$d}致死";
 			} elseif($news == 'death25') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>埋设{$d}伏击炸死";
-			}	elseif($news == 'death29') {
+			} elseif($news == 'death29') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>发动{$d}以灵力杀死";
+			} elseif($news == 'death39') {
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>在与<span class=\"yellow\">$c</span>的战斗中因<span class=\"red\">武器反噬</span>意外身亡";
 			} elseif($news == 'death26') {
 				if($c) {
 					$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因食用了<span class=\"yellow\">$c</span>下毒的{$d}被毒死";

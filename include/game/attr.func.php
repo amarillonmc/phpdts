@@ -17,9 +17,14 @@ $tacinfo = Array('通常','','重视防御','重视反击','重视躲避',);
 function get_find_r($weather = 0,$pls = 0,$pose = 0,$tactic = 0,$club = 0,$inf = ''){
 	$_FIND = Array
 		(
-		'weather' => array(10,20,0,-2,-3,-10,-7,5,-10,-20,0,-7,-5,-30,-5,-20,0),
+		'weather' => array(10,20,0,-2,-3,-10,-7,5,-10,-20,0,-7,-5,-30,-5,-20,0,20),
 		//'weather' => array(10,20,0,-2,-3,-7,-10,-5,10,0,0,-7,-5,-30),
-		'pls' => array(10,0,0,10,-10,10,0,10,-10,0,10,0,0,-10,0,-10,-10,-10,0,10,0,10),
+		//'pls' => array(10,0,0,10,-10,10,0,10,-10,0,10,0,0,-10,0,-10,-10,-10,0,10,0,10),
+		'pls' => Array(
+			// 无月 端点 RF高 雪镇 索拉 指挥 梦幻 清水 白穗 墓地 麦斯 对天 夏镇 三体 光坂 守矢 常林 常高 秋镇 精灵 春镇 圣G  初始 幻想 永恒 妖精 冰封 花菱 FARG 风祭 格纳 和田 SCP  雏菊 英灵
+			   20,  0,   0,   0,    0,    0,  0,  0,    0,    0,    0,   0,   0,    0,  0,   0,   0,   0,  0,   0,  0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,    0,  10,   0,  20
+			// 10,  0,   0,   10,  -10,  10,  0,  10,  -10,   0,   10,   0,   0,  -10,  0, -10, -10, -10,  0,  10,  0,  10
+		),
 		'pose' => array(0,0,0,25,-10,-25,85),
 		'tactic' => array(),
 		);
@@ -52,7 +57,7 @@ function get_active_r($weather = 0,$pls = 0,$pose = 0,$tactic = 0,$club = 0,$inf
 	global $active_obbs,$inf_active_p;
 	$_ACTIVE = Array
 		(
-		'weather' => array(10,20,0,-5,-10,-20,-15,0,-7,-10,-10,-5,0,-5,-20,-5,0),
+		'weather' => array(10,20,0,-5,-10,-20,-15,0,-7,-10,-10,-5,0,-5,-20,-5,0,20),
 		//'weather' => array(20,10,0,-3,-5,-5,-7,10,-10,-10,-10,-5,0,-5),
 		'pls' => array(),
 		'pose' => array(0,0,0,0,25,-25,5),
@@ -72,6 +77,9 @@ function get_active_r($weather = 0,$pls = 0,$pose = 0,$tactic = 0,$club = 0,$inf
 	//echo 'active:'.$active_r.' ';
 	return $active_r;
 }
+
+# 下面的部分在新版战斗流程中已弃用 #
+
 //命中率修正
 function get_hitrate($wkind = 'N',$skill = 0,$club = 0,$inf = ''){
 	global $hitrate_obbs,$hitrate_max_obbs,$hitrate_r,$weather,$inf_htr_p;
@@ -106,7 +114,7 @@ function get_attack_p($weather = 0,$pls = 0,$pose = 0,$tactic = 0,$club = 0,$inf
 	global $inf_att_p;
 	$_ATTACK = Array
 		(
-		'weather' => array(10,10,0,-5,-10,-20,-15,0,0,7,20,-7,-20,-5,-10,-10,-10),
+		'weather' => array(10,10,0,-5,-10,-20,-15,0,0,7,20,-7,-20,-5,-10,-10,-10,10),
 		'pls' => array(0,0,0,0,0,0,10,0,0,-10,0,0,0,0,-10,0,0,0,10,0,0,0),
 		'pose' => array(0,100,0,-25,25,-50,50),
 		'tactic' => array(0,20,-25,25,-50),
@@ -131,7 +139,7 @@ function get_defend_p($weather = 0,$pls = 0,$pose = 0,$tactic = 0,$club = 0,$inf
 	global $inf_def_p;
 	$_DEFEND = Array
 		(
-		'weather' => array(10,30,0,0,-3,-15,-10,0,-20,-30,-50,-5,-20,-3,-20,5,-30),
+		'weather' => array(10,30,0,0,-3,-15,-10,0,-20,-30,-50,-5,-20,-3,-20,5,-30,30),
 		'pls' => array(0,-10,10,0,0,0,0,0,0,0,0,-10,10,0,0,0,0,0,0,0,10,0),
 		'pose' => array(0,25,0,-25,-50,-50,-466),
 		'tactic' => array(0,-20,50,-25,0),
