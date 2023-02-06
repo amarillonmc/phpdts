@@ -218,6 +218,7 @@
 				<span class=\"neonblue\">“扫描失败了么……”</span><br>";
 			}
 		}
+		return;
 	}
 
 	# 书中虫特殊判定
@@ -449,6 +450,7 @@
 			}
 			return $dmg;
 		}
+		return;
 	}
 
 ?>
