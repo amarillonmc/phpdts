@@ -42,6 +42,11 @@ function init_profile(){
 	global $nospk,$wepsk_words,$arbsk_words,$arhsk_words,$arask_words,$arfsk_words,$artsk_words,$itmsk0_words,$itmsk1_words,$itmsk2_words,$itmsk3_words,$itmsk4_words,$itmsk5_words,$itmsk6_words;
 	global $wepk_words,$arbk_words,$arhk_words,$arak_words,$arfk_words,$artk_words,$itmk0_words,$itmk1_words,$itmk2_words,$itmk3_words,$itmk4_words,$itmk5_words,$itmk6_words;
 	global $wep,$arb,$arh,$ara,$arf,$art,$itm0,$itm1,$itm2,$itm3,$itm4,$itm5,$itm6;
+	global $definfo,$atkinfo,$pdata;
+	
+	include_once GAME_ROOT.'./include/game/revattr.func.php';
+	$atkinfo = get_base_att($pdata,$pdata,1,1);
+	$definfo = get_base_def($pdata,$pdata,1,1);
 
 	foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
 	{

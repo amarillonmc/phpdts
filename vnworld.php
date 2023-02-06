@@ -3,6 +3,7 @@
 define('CURSCRIPT', 'vnworld');
 
 require './include/common.inc.php';
+require './include/game/itemplace.func.php';
 require config('vnworld',$gamecfg);
 
 /*** 登陆检测 ***/
@@ -34,6 +35,12 @@ if($vnmode=='none')
 			$temp_carr = $carr;
 			foreach($temp_carr as $cid => $cinfo)
 			{
+				// 格式化素材来源
+				foreach($cinfo['stuff'] as $sid => $snm)
+				{
+					$temp_carr[$cid]['stuff'][$sid] = "<span tooltip=\"".get_item_place($snm)."\">".$snm."</span>";
+				}
+				// 格式化属性
 				if(isset($cinfo['result'][4]) && is_array($cinfo['result'][4]))
 				{
 					foreach($cinfo['result'][4] as $sk)

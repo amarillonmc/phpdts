@@ -67,7 +67,7 @@ if(isset($exmode) && strpos($exmode,'ep')===0)
 		$vlog = $flag;
 		goto error_edit2;
 	}
-	$edit_name = $flag['name'];
+	$edit_name = $flag['name']; $edit_result = $flag['result'][0];
 	unset($flag);
 	//通过检查，打包。
 	$flag = filter_post_mixlist($vsname0,$vsname1,$vsname2,$vsname3,$vsname4,$vrname,$vrk,$vre,$vrs,$vrsk0,$vrsk1,$vrsk2,$vrsk3,$vrsk4);
@@ -102,6 +102,7 @@ if(isset($exmode) && strpos($exmode,'ep')===0)
 		}
 		else 
 		{	
+			if($gmflag) vn_adminlog('编辑了配方',$edit_result);
 			$vlog .= '<span class="yellow">成功编辑了配方！</span><br>';
 			$vdata['url'] = 'vnworld.php?vtips=1';
 		}
@@ -133,7 +134,7 @@ elseif(isset($exmode) && strpos($exmode,'dp')===0)
 	}
 	else 
 	{
-		$edit_name = $flag['name'];
+		$edit_name = $flag['name']; $edit_result = $flag['result'][0];
 		unset($flag);
 		if($edit_name !== $udata['username'])
 		{
@@ -157,6 +158,7 @@ elseif(isset($exmode) && strpos($exmode,'dp')===0)
 		}
 		else 
 		{
+			if($gmflag) vn_adminlog('删除了配方',$edit_result);
 			$vlog = '删除了配方。<br>';
 			$vdata['url'] = 'vnworld.php?vtips=2';
 		}
@@ -195,7 +197,7 @@ elseif(isset($exmode) && strpos($exmode,'cs')===0)
 	}
 	else 
 	{
-		$edit_name = $flag['name'];
+		$edit_name = $flag['name']; $edit_result = $flag['result'][0];
 		unset($flag);
 		$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$edit_name'");
 		if(!$db->num_rows($result))
@@ -212,6 +214,7 @@ elseif(isset($exmode) && strpos($exmode,'cs')===0)
 		}
 		else 
 		{
+			if($gmflag) vn_adminlog('改变了以下配方状态',$edit_result,$change_status);
 			$vlog = '成功变更了配方状态。<br>';
 			$vdata['url'] = 'vnworld.php?vtips=3&vcs='.$change_status.'';
 		}
@@ -548,6 +551,16 @@ function filter_post_mixlist($vsname0,$vsname1,$vsname2,$vsname3,$vsname4,$vrnam
 	//打上检疫标签
 	$newarr['status'] = 0;
 	return $newarr;
+}
+
+function vn_adminlog($op,$an1='',$an2='',$an3=''){
+	global $now,$cuser;
+	$alfile = GAME_ROOT.'./gamedata/adminlog.php';
+	if($op){
+		$aldata = "$now,$cuser,$op,$an1,$an2,$an3,\n";
+		writeover($alfile,$aldata,'ab+');
+	}
+	return;
 }
 
 ?>

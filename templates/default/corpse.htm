@@ -1,12 +1,14 @@
 想要从尸体上拾取什么？<br><br>
 <input type="hidden" name="mode" value="corpse">
-<!--{if $club==20}-->
+<!--{if $allow_destory_corpse && !in_array($w_type,$no_destory_corpse_type)}-->
+<input type="radio" name="command" id="destory" value="destory" <!--{if !$w_money}-->checked<!--{/if}-->><a onclick=sl('destory'); href="javascript:void(0);" >销毁尸体</a><br>
+<!--{elseif $club==20}-->
 <input type="radio" name="command" id="element_split" value="element_split" <!--{if !$w_money}-->checked<!--{/if}-->><a onclick=sl('element_split'); href="javascript:void(0);" >提炼元素</a><br>
 <!--{/if}-->
 <!--{if $loot_depot_flag}-->
 <input type="radio" name="command" id="loot_depot" value="loot_depot"><a onclick=sl('loot_depot'); href="javascript:void(0);" >转移安全箱权限</a><br>
 <!--{/if}-->
-<input type="radio" name="command" id="menu" value="menu" <!--{if !$w_money && $club!=20 }-->checked<!--{/if}-->><a onclick=sl('menu'); href="javascript:void(0);" >返回</a><br><br>
+<input type="radio" name="command" id="menu" value="menu" <!--{if !$w_money && $club!=20 && !$allow_destory_corpse}-->checked<!--{/if}-->><a onclick=sl('menu'); href="javascript:void(0);" >返回</a><br><br>
 <!--{if $w_weps && $w_wepe}-->
 <input type="radio" name="command" id="wep" value="wep"><a onclick=sl('wep'); href="javascript:void(0);" >$w_wep/$w_wepk_words/$w_wepe/$w_weps<!--{if $w_wepsk_words}-->/$w_wepsk_words<!--{/if}--></a><br>
 <!--{/if}-->

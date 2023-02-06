@@ -393,8 +393,11 @@
 	}
 
 	//获取pa的攻击力
-	function get_base_att(&$pa,&$pd,$active)
+	function get_base_att(&$pa,&$pd,$active,$tooltip=0)
 	{
+		if(!isset($pa['wep_kind'])) get_wep_kind($pa);
+
+		# 计算武器面板攻击：
 		//空手 武器伤害=2/3熟练度
 		if($pa['wep_kind'] == 'N') 
 		{
@@ -415,57 +418,95 @@
 		{
 			$pa['wepe_t'] = $pa['wepe'] * 2;
 		}
-		//获取pa社团技能对攻击力的加成
+
+		# 获取pa社团技能对攻击力的加成
 		rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
-		//pa攻击力：
+		# 汇总：：
 		$base_att = $pa['att'] + $pa['wepe_t'] + $att1;
-		global $log;
-			//$log.= "【DEBUG】{$pa['name']}的base_att是{$base_att}，";
-		//计算攻击力修正
-		$base_att = get_base_att_modifier($pa,$pd,$active,$base_att);
-			//$log.= "修正后是{$base_att}。<br>";
+
+		# 初始化tooltip
+		if($tooltip)
+		{
+			$tooltip = "<span tooltip=\" 基础攻击值：{$pa['att']}+{$pa['wepe_t']}";
+			if($att1>0) $tooltip .="+{$att1}";
+			$tooltip .= "\r";
+		}
+		# 计算攻击力修正
+		$base_att = get_base_att_modifier($pa,$pd,$active,$base_att,$tooltip);
 		return $base_att;
 	}
 	
 	//获取pa的攻击力修正
-	function get_base_att_modifier(&$pa,&$pd,$active,$base_att)
+	function get_base_att_modifier(&$pa,&$pd,$active,$base_att,$tooltip=0)
 	{
-		//计算天气、姿态、策略、地点对pa攻击力的修正
+		# 计算天气、姿态、策略、地点对pa攻击力的修正
 		global $weather,$weather_attack_modifier,$pose_attack_modifier,$tactic_attack_modifier,$pls_attack_modifier,$log;
+		global $pose_attack_active,$tactic_attack_active;
 		$base_atk_per = 100;
-		$base_atk_per += $weather_attack_modifier[$weather] ?: 0 ;
-		$base_atk_per += $pose_attack_modifier[$pa['pose']] ?: 0 ;
-		$base_atk_per += $tactic_attack_modifier[$pa['tactic']] ?: 0;
-		$base_atk_per += $pls_attack_modifier[$pa['pls']] ?: 0;
+		//天气修正
+		$wth_atk_per = $weather_attack_modifier[$weather] ?: 0 ;
+		//地点修正
+		$pls_atk_per = $pls_attack_modifier[$pa['pls']] ?: 0;
+		//姿态修正只在先制攻击阶段生效？ //pa身上没有反击标记 代表这是一次先制攻击
+		if(!isset($pa['is_counter']) && $pose_attack_active) $pose_atk_per = $pose_attack_modifier[$pa['pose']] ?: 0 ;
+		//姿态修正始终生效
+		elseif(!$pose_attack_active) $pose_atk_per = $pose_attack_modifier[$pa['pose']] ?: 0 ;
+		//策略修正只在反击阶段生效？ //pa身上没有反击标记 代表这是一次先制攻击
+		if(!empty($pa['is_counter']) && $tactic_attack_active) $tac_atk_per = $tactic_attack_modifier[$pa['tactic']] ?: 0;
+		//策略修正始终生效
+		elseif(!$tactic_attack_active) $tac_atk_per = $tactic_attack_modifier[$pa['tactic']] ?: 0;
+		//上述系数修正最低不低于1%
+		$base_atk_per += $wth_atk_per+$pls_atk_per+$pose_atk_per+$tac_atk_per;
 		$base_atk_per = $base_atk_per > 0 ? $base_atk_per : 1;
-			//$log.= "【DEBUG】{$pa['name']}的atk_per是{$base_atk_per}，";
-		$base_att = round($base_att*($base_atk_per/100));
-			//$log.= "【DEBUG】{$pa['name']}修正后的base_att是{$base_att}，";
-		//计算pa受伤状态对攻击力的修正
-		global $inf_att_p;
-		foreach ($inf_att_p as $inf_ky => $value) 
+
+		# 计算受伤状态对pa攻击力的修正
+		$inf_atk_per = 100;
+		if(!empty($pa['inf']))
 		{
-			if(strpos($pa['inf'], $inf_ky)!==false) $base_att *= $value;
-		}	
+			global $inf_att_p;
+			foreach ($inf_att_p as $inf_ky => $value) 
+			{
+				if(strpos($pa['inf'], $inf_ky)!==false) $inf_atk_per *= $value;
+			}	
+		}
 
-		//计算pa社团技能对攻击力的修正
-		rev_get_clubskill_bonus_p($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$attfac,$deffac);
-		$base_att *= $attfac;
+		# 计算社团技能对pa攻击力的修正
+		$club_atk_per = 100;
+		if(!empty($pa['club']) || !empty($pa['skills']))
+		{
+			rev_get_clubskill_bonus_p($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$attfac,$deffac);
+			$club_atk_per *= $attfac;
+		}
 
+		# 汇总
+		$base_att = round($base_att*($base_atk_per/100)*($inf_atk_per/100)*($club_atk_per/100));
 		$base_att = max(1,$base_att);
-		return $base_att;
+
+		if($tooltip)
+		{
+			$tooltip .= "天气修正：{$wth_atk_per}%\r 地点修正：{$pls_atk_per}%\r 姿态修正：{$pose_atk_per}%\r 策略修正：{$tac_atk_per}%";
+			if($inf_atk_per <> 100) $tooltip .=" \r 异常状态修正：{$inf_atk_per}%";
+			if($club_atk_per <> 100) $tooltip .=" \r 称号技能修正：{$club_atk_per}%";
+			$tooltip .="\">".$base_att."</span>";
+			return $tooltip;
+		}
+		else 
+		{
+			return $base_att;
+		}
 	}
 
 	//获取pd的防御力与修正
-	function get_base_def(&$pa,&$pd,$active)
+	function get_base_def(&$pa,&$pd,$active,$tooltip=0)
 	{
 		global $specialrate,$log;
-		//pd基础防御力：
+		if(!isset($pd['wep_kind'])) get_wep_kind($pd);
+		# pd基础防御力：
 		$base_def = $pd['def'];
-		//pd装备提供防御力：
+		# pd装备提供防御力：
 		$equip_def = $pd['arbe']+$pd['arhe']+$pd['arae']+$pd['arfe'];
-		//是否受pa冲击效果影响：
-		if(in_array('N',$pa['ex_keys']))
+		# 是否受pa冲击效果影响：
+		if(isset($pa['ex_keys']) && in_array('N',$pa['ex_keys']))
 		{
 			$Ndice = diceroll(99);
 			if($Ndice < $specialrate['N'])
@@ -475,51 +516,81 @@
 				$pa['charge_flag'] = 1;
 			}
 		}
-		//获取pd社团技能对防御力的加成
+		# 获取pd社团技能对防御力的加成
 		rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
-		//pd防御力：
+		# 汇总：
 		$total_def = $base_def+$equip_def+$def1;
-			//$log.= "【DEBUG】{$pd['name']}的total_def是{$total_def}，";
-		//计算防御力修正
-		$total_def = get_base_def_modifier($pa,$pd,$active,$total_def);
-			//$log.= "修正后是{$total_def}。<br>";
+
+		# 初始化tooltip
+		if($tooltip)
+		{
+			$tooltip = "<span tooltip=\" 基础防御值：{$base_def}+{$equip_def}";
+			if($def1>0) $tooltip .="+{$def1}";
+			$tooltip .= "\r";
+		}
+		# 计算防御力修正
+		$total_def = get_base_def_modifier($pa,$pd,$active,$total_def,$tooltip);
 		return $total_def;
 	}
 
 	//获取pd的防御力修正
-	function get_base_def_modifier(&$pa,&$pd,$active,$total_def)
+	function get_base_def_modifier(&$pa,&$pd,$active,$total_def,$tooltip=0)
 	{
-		//计算天气、姿态、策略、地点对pd防御力的修正
+		# 计算天气、姿态、策略、地点对pd防御力的修正
 		global $weather,$weather_defend_modifier,$pose_defend_modifier,$tactic_defend_modifier,$pls_defend_modifier,$log;
+		global $pose_defend_active,$tactic_defend_active;
 		$base_def_per = 100;
-		$base_def_per += $weather_defend_modifier[$weather] ?: 0 ;
-			//$log.= "天气修正系数是{$base_def_per}。<br>";
-		$base_def_per += $pose_defend_modifier[$pd['pose']] ?: 0 ;
-			//$log.= "姿势修正系数是{$base_def_per}。<br>";
-		$base_def_per += $tactic_defend_modifier[$pd['tactic']] ?: 0;
-			//$log.= "策略修正系数是{$base_def_per}。<br>";
-		$base_def_per += $pls_defend_modifier[$pd['pls']] ?: 0;
-			//$log.= "地点修正系数是{$base_def_per}。<br>";		
+		//天气修正
+		$wth_def_per = $weather_defend_modifier[$weather] ?: 0 ;
+		//地点修正		
+		$pls_def_per = $pls_defend_modifier[$pd['pls']] ?: 0; 
+		//姿态修正只在受到先制攻击时生效？ //pa身上没有反击标记 代表这是一次先制攻击
+		if(!isset($pa['is_counter']) && $pose_defend_active) $pose_def_per = $pose_defend_modifier[$pd['pose']] ?: 0 ;
+		//姿态修正始终生效
+		elseif(!$pose_defend_active) $pose_def_per = $pose_defend_modifier[$pd['pose']] ?: 0 ;
+		//策略修正只在反击阶段生效？ //pa身上有反击标记 代表这是一次反击攻击
+		if(!empty($pa['is_counter']) && $tactic_defend_active) $tac_def_per = $tactic_defend_modifier[$pd['tactic']] ?: 0;
+		//策略修正始终生效
+		elseif(!$tactic_defend_active) $tac_def_per = $tactic_defend_modifier[$pd['tactic']] ?: 0;
+		//上述各项系数修正最低不低于1%
+		$base_def_per += $wth_def_per+$pls_def_per+$pose_def_per+$tac_def_per;
 		$base_def_per = $base_def_per > 0 ? $base_def_per : 1;
-			//$log.= "最终修正后的系数是{$base_def_per}。<br>";	
-			//0.01的是原来给倍率兜底不是给防御兜底的 什么天才设计
-		$total_def = round($total_def*($base_def_per/100));
-			//$log.= "上述修正后防御为{$total_def}。<br>";
-
-		//计算受伤状态对pd防御力的修正
-		global $inf_def_p;
-		foreach ($inf_def_p as $inf_ky => $value) 
+		
+		# 计算受伤状态对pd防御力的修正
+		$inf_def_per = 100;
+		if(!empty($pd['inf']))
 		{
-			if(strpos($pd['inf'], $inf_ky)!==false) $total_def *= $value;
-		}	
+			global $inf_def_p;
+			foreach($inf_def_p as $inf_ky => $value) 
+			{
+				if(strpos($pd['inf'], $inf_ky)!==false) $inf_def_per *= $value;
+			}
+		}
+		
+		# 计算社团技能对pd防御力的修正
+		$club_def_per = 100;
+		if(!empty($pd['club']) || !empty($pd['skills']))
+		{
+			rev_get_clubskill_bonus_p($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$attfac,$deffac);
+			$club_def_per *= $deffac;
+		}
 
-		//计算社团技能对pd防御力的修正
-		rev_get_clubskill_bonus_p($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$attfac,$deffac);
-		$total_def *= $deffac;
-			//$log.= "社团技能修正后防御为{$total_def}。<br>";
-
+		# 汇总
+		$total_def = round($total_def*($base_def_per/100)*($inf_def_per/100)*($club_def_per/100));
 		$total_def = max(0.01,$total_def);
-		return $total_def;
+
+		if($tooltip)
+		{
+			$tooltip .= "天气修正：{$wth_def_per}% \r 地点修正：{$pls_def_per}% \r 姿态修正：{$pose_def_per}% \r 策略修正：{$tac_def_per}%";
+			if($inf_def_per <> 100) $tooltip .=" \r 异常状态修正：{$inf_def_per}%";
+			if($club_def_per <> 100) $tooltip .=" \r 称号技能修正：{$club_def_per}%";
+			$tooltip .="\">".$total_def."</span>";
+			return $tooltip;
+		}
+		else
+		{
+			return $total_def;
+		}
 	}
 
 	//计算原始伤害
@@ -527,7 +598,7 @@
 	{
 		global $skill_dmg, $dmg_fluc, $weather, $pls, $log;
 
-			//$log.= "【DEBUG】原始伤害计算阶段：{$pa['name']}的攻击系数为{$pa['base_att']}，{$pd['name']}的防御系数为{$pd['base_def']}，";
+		//$log.= "【DEBUG】原始伤害计算阶段：{$pa['name']}的攻击系数为{$pa['base_att']}，{$pd['name']}的防御系数为{$pd['base_def']}，";
 		//原始伤害：(pa基础攻击/pd基础防御) * pa熟练度 * pa熟练度系数
 		$damage = ($pa['base_att'] / $pd['base_def']) * $pa['wep_skill'] * $skill_dmg[$pa['wep_kind']];
 		//获取伤害浮动系数：
@@ -537,7 +608,6 @@
 		//计算伤害浮动：
 		$dmg_factor = (100 + rand ( - $dfluc, $dfluc )) / 100;
 		$damage = round ( $damage * $dmg_factor * rand ( 4, 10 ) / 10 );
-			//echo "【DEBUG】伤害浮动为{$dmg_factor}，原始伤害为{$damage}<br>";
 		//把计算得到的原始伤害保存在$pa['original_dmg']里
 		$pa['original_dmg'] = $damage;
 		return $damage;

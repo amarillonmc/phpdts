@@ -130,9 +130,13 @@ if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemti
 			for ($i=0; $i<=4; $i++)
 			{
 				$mixhelpinfo .= "<td class=\"b3\" ";
-				if ($i==0)  $mixhelpinfo .= "height=20px ";
-				if ($val['stuff'][$i]!='-') $mixhelpinfo .= "title=\"".get_item_place($val['stuff'][$i])."\" ";
-				$mixhelpinfo .= "><span>{$val['stuff'][$i]}</span></td>";
+				if ($i==0)  $mixhelpinfo .= "height=20px";
+				if ($val['stuff'][$i]!='-')
+				{
+					$tooltipinfo = get_item_place($val['stuff'][$i]);
+					if(!empty($tooltipinfo)) $mixhelpinfo .= "><span tooltip=\"".$tooltipinfo."\" ";
+				}
+				$mixhelpinfo .= ">{$val['stuff'][$i]}</span></td>";
 				//修复加入悬浮提示后出现的问题。
 			}
 //			$mixhelpinfo .= "<td class=\"b3\">→</td>

@@ -813,7 +813,7 @@ function itemmix($mlist, $itemselect=-1) {
 			itemreduce('itm'.$val);
 		}
 
-		global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
+		global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$now;
 
 		list($itm0,$itmk0,$itme0,$itms0,$itmsk0) = $minfo['result'];
 		$log .= "<span class=\"yellow\">$itmstr</span>合成了<span class=\"yellow\">{$minfo['result'][0]}</span><br>";
@@ -998,8 +998,8 @@ function itembuy($item,$shop,$bnum=1) {
 
 function getcorpse($item){
 	global $db,$tablepre,$log,$mode;
-	global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$money,$pls,$action;
-	global $club;
+	global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$money,$pls,$action,$rp,$name;
+	global $club,$allow_destory_corpse,$no_destory_corpse_type,$rpup_destory_corpse;
 	$corpseid = strpos($action,'corpse')===0 ? str_replace('corpse','',$action) : str_replace('pacorpse','',$action);
 	if(!$corpseid || strpos($action,'corpse')===false){
 		$log .= '<span class="yellow">你没有遇到尸体，或已经离开现场！</span><br>';
@@ -1030,7 +1030,25 @@ function getcorpse($item){
 		return;
 	}
 
-	if($item == 'element_split')
+	if($item == 'destory')
+	{
+		if(!$allow_destory_corpse || in_array($w_type,$no_destory_corpse_type))
+		{
+			$log.="你还想对这具可怜的尸体干什么？麻烦给死者一点基本的尊重！<br>";
+			$action = '';
+			$mode = 'command';
+			return;
+		}
+		$log.="你销毁了{$edata['name']}的尸体。<br>但这一切值得吗……？<br>";
+		include_once GAME_ROOT.'./include/game/dice.func.php';
+		$rp += diceroll($rpup_destory_corpse);
+		addnews($now,'cdestroy',$name,$edata['name']);
+		destory_corpse($edata);
+		$action = '';
+		$mode = 'command';
+		return;
+	}
+	elseif($item == 'element_split')
 	{
 		if($club != 20)
 		{
