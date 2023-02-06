@@ -300,7 +300,7 @@
 		# 获取属性
 		$pa['ex_equip_keys'] = $pa['ex_wep_keys'] = Array();
 		$pa['ex_equip_keys'] = get_equip_ex_array($pa); //获取pa防具上的所有属性
-		$pa['ex_wep_keys'] = get_wep_ex_array($pa); //获取pd武器、饰品上的所有属性
+		$pa['ex_wep_keys'] = get_wep_ex_array($pa); //获取pa武器、饰品上的所有属性
 
 		$pd['ex_equip_keys'] = $pd['ex_wep_keys'] = Array();
 		$pd['ex_equip_keys'] = get_equip_ex_array($pd);//获取pd防具上的所有属性

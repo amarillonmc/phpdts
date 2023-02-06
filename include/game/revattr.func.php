@@ -431,14 +431,16 @@
 	function get_base_att_modifier(&$pa,&$pd,$active,$base_att)
 	{
 		//计算天气、姿态、策略、地点对pa攻击力的修正
-		global $weather,$weather_attack_modifier,$pose_attack_modifier,$tactic_attack_modifier,$pls_attack_modifier;
-		$wth_atk_per = $weather_attack_modifier[$weather] ?: 0 ;
-		$pose_atk_per = $pose_attack_modifier[$pa['pose']] ?: 0 ;
-		$tac_atk_per = $tactic_attack_modifier[$pa['tactic']] ?: 0;
-		$pls_atk_per = $pls_attack_modifier[$pa['pls']] ?: 0;
-
-		$base_att = round($base_att*((100+$wth_atk_per+$pose_atk_per+$tac_atk_per+$pls_atk_per)/100));
-
+		global $weather,$weather_attack_modifier,$pose_attack_modifier,$tactic_attack_modifier,$pls_attack_modifier,$log;
+		$base_atk_per = 100;
+		$base_atk_per += $weather_attack_modifier[$weather] ?: 0 ;
+		$base_atk_per += $pose_attack_modifier[$pa['pose']] ?: 0 ;
+		$base_atk_per += $tactic_attack_modifier[$pa['tactic']] ?: 0;
+		$base_atk_per += $pls_attack_modifier[$pa['pls']] ?: 0;
+		$base_atk_per = $base_atk_per > 0 ? $base_atk_per : 1;
+			//$log.= "【DEBUG】{$pa['name']}的atk_per是{$base_atk_per}，";
+		$base_att = round($base_att*($base_atk_per/100));
+			//$log.= "【DEBUG】{$pa['name']}修正后的base_att是{$base_att}，";
 		//计算pa受伤状态对攻击力的修正
 		global $inf_att_p;
 		foreach ($inf_att_p as $inf_ky => $value) 
@@ -489,16 +491,19 @@
 	{
 		//计算天气、姿态、策略、地点对pd防御力的修正
 		global $weather,$weather_defend_modifier,$pose_defend_modifier,$tactic_defend_modifier,$pls_defend_modifier,$log;
-		$wth_def_per = $weather_defend_modifier[$weather] ?: 0 ;
-			//$log.= "天气修正系数是{$wth_def_per}。<br>";
-		$pose_def_per = $pose_defend_modifier[$pd['pose']] ?: 0 ;
-			//$log.= "姿势修正系数是{$pose_def_per}。<br>";
-		$tac_def_per = $tactic_defend_modifier[$pd['tactic']] ?: 0;
-			//$log.= "策略修正系数是{$tac_def_per}。<br>";
-		$pls_def_per = $pls_defend_modifier[$pd['pls']] ?: 0;
-			//$log.= "地点修正系数是{$pls_def_per}。<br>";
-
-		$total_def = round($total_def*((100+$wth_def_per+$pose_def_per+$tac_def_per+$pls_def_per)/100));
+		$base_def_per = 100;
+		$base_def_per += $weather_defend_modifier[$weather] ?: 0 ;
+			//$log.= "天气修正系数是{$base_def_per}。<br>";
+		$base_def_per += $pose_defend_modifier[$pd['pose']] ?: 0 ;
+			//$log.= "姿势修正系数是{$base_def_per}。<br>";
+		$base_def_per += $tactic_defend_modifier[$pd['tactic']] ?: 0;
+			//$log.= "策略修正系数是{$base_def_per}。<br>";
+		$base_def_per += $pls_defend_modifier[$pd['pls']] ?: 0;
+			//$log.= "地点修正系数是{$base_def_per}。<br>";		
+		$base_def_per = $base_def_per > 0 ? $base_def_per : 1;
+			//$log.= "最终修正后的系数是{$base_def_per}。<br>";	
+			//0.01的是原来给倍率兜底不是给防御兜底的 什么天才设计
+		$total_def = round($total_def*($base_def_per/100));
 			//$log.= "上述修正后防御为{$total_def}。<br>";
 
 		//计算受伤状态对pd防御力的修正
@@ -593,7 +598,7 @@
 			//获取威力系数：NPC固定为50%
 			$factor = $pa['type'] ? 0.5 : 0.5+($sp_cost/$sp_cost_max/2);
 			//获取伤害变化倍率并扣除体力
-			$dmg_p[]= $factor; 
+			$dmg_p[]= round($factor,2); 
 			$pa['sp'] -= $sp_cost;
 			//输出log
 			$f = round ( 100 * $factor );
@@ -991,7 +996,7 @@
 			if($p != 100)
 			{
 				$log.="<span class=\"yellow\">在「晶莹」的作用下，{$pa['nm']}造成的最终伤害变化至".$p."%！</span><br>";
-				$fin_dmg_p[] = round($p/100);
+				$fin_dmg_p[] = round($p/100,2);
 			}
 		}
 
