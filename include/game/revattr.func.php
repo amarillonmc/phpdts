@@ -1078,8 +1078,6 @@
 	{
 		global $log;
 
-		$fin_dmg = 0;
-
 		# 伤害制御判定：
 		if(in_array('h',$pd['ex_keys']) && $fin_dmg>=1950)
 		{

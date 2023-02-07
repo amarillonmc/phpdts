@@ -38,7 +38,8 @@ if($vnmode=='none')
 				// 格式化素材来源
 				foreach($cinfo['stuff'] as $sid => $snm)
 				{
-					$temp_carr[$cid]['stuff'][$sid] = "<span tooltip=\"".get_item_place($snm)."\">".$snm."</span>";
+					$tooltipinfo = get_item_place($snm);
+					if(!empty($tooltipinfo)) $temp_carr[$cid]['stuff'][$sid] = "<span tooltip=\"".$tooltipinfo."\">".$snm."</span>";
 				}
 				// 格式化属性
 				if(isset($cinfo['result'][4]) && is_array($cinfo['result'][4]))

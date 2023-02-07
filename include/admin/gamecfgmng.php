@@ -11,6 +11,8 @@ if($command == 'edit') {
 		'areaesc'=>'int',
 		'antiAFKertime'=>'int',
 		'corpseprotect'=>'int',
+		'allow_destory_corpse'=>'b',
+		'rpup_destory_corpse'=>'int',
 		'coldtimeon'=>'b',
 		'showcoldtimer'=>'b',
 		'validlimit'=>'int',
@@ -20,7 +22,12 @@ if($command == 'edit') {
 		'hplimit'=>'int',
 		'sleep_time'=>'int',
 		'heal_time'=>'int',
-		'teamlimit'=>'int'
+		'teamlimit'=>'int',
+		'credits2_values'=>'int',
+		'no_self_sponsored'=>'b',
+		'sponsor_title'=>'str',
+		'gnpctype'=>'int',
+		'gnpcsub'=>'int',
 		
 	);
 	$edlist = Array();

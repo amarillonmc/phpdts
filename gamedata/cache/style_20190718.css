@@ -410,11 +410,12 @@ span.drop:hover .dropdown-menu{
 }
 
 /*==========在小头像上悬浮显示大头像==========*/
-span.icon{
+.icon{
 	position: relative;
+	
 }
 /*光标移动到样式上时 显示大头像*/
-span.icon:hover .icona{
+.icon:hover .icona{
 	display: block;
 	background-color: rgba(83, 63, 90, 0.5);
 	border-radius: 10px;

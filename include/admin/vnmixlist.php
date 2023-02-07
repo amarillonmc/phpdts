@@ -119,8 +119,9 @@ function edit_vn_mixilst($varr,$t)
 	global $checkstr;
 	$cont = str_replace('?>','',str_replace('<?','<?php',$checkstr));
 	$cont .= '$vn_mixinfo = ' . var_export($vn_mixinfo,1).";\r\n?>";
-	writeover($cache_file, $cont);
-	chmod($cache_file,0777);
+	file_put_contents($cache_file,$cont,LOCK_EX);
+	//writeover($cache_file, $cont);
+	//chmod($cache_file,0777);
 	unlink($lock_file);
 	return $varr;
 }
@@ -169,8 +170,9 @@ function post_back_vn_cache_file($data,$arr,$t=NULL)
 	sort($carr);
 	$cont = str_replace('?>','',str_replace('<?','<?php',$checkstr));
 	$cont .= '$carr = ' . var_export($carr,1).";\r\n?>";
-	writeover($file, $cont);
-	chmod($file,0777);
+	file_put_contents($file,$cont,LOCK_EX);
+	//writeover($file, $cont);
+	//chmod($file,0777);
 	unlink($lock_file);
 	return 0;
 }

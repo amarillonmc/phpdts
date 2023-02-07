@@ -16,8 +16,9 @@
 		<!--{loop $gshoplist $gshopid $gshopname}-->
 			<optgroup label="$gshopname">
 				<!--{loop shoplist($gshopid,1) $idata}-->
-					<!--{if isset($idata['sid']) && $idata['price']<=$credits2*$credits2_values}-->
-					<option value="$idata['sid']">$idata['item']/$idata['itmk']/$idata['itme']/$idata['itms']<!--{if $idata['itmsk_words']}-->/$idata['itmsk_words']<!--{/if}--> 【价:$idata['price'],数:$idata['num']】</option>
+					<!--{eval $price = ceil($idata['price']/$credits2_values);}-->
+					<!--{if isset($idata['sid']) && $price<=$credits2*$credits2_values}-->
+					<option value="$idata['sid']">$idata['item']/$idata['itmk']/$idata['itme']/$idata['itms']<!--{if $idata['itmsk_words']}-->/$idata['itmsk_words']<!--{/if}--> 【价:{$price},数:$idata['num']】</option>
 					<!--{/if}-->
 				<!--{/loop}-->
 		<!--{/loop}-->

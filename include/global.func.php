@@ -590,7 +590,7 @@ function parse_itm_desc($n,$t,$short=0,$c=NULL)
 			break;
 		//处理名字
 		case $t=='m':
-			$filter_n = preg_replace('/锋利的|电气|毒性|钉|\[.*\]|-改/', '', $n);
+			$filter_n = preg_replace('/锋利的|电气|毒性|\[.*\]|-改/', '', $n);
 			if(isset($iteminfo_tooltip[$filter_n]))
 			{
 				if(is_array($iteminfo_tooltip[$filter_n]))

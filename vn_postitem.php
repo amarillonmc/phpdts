@@ -412,8 +412,9 @@ function writeover_vn_cache_file($carr=Array())
 	$cache_file = config('queue_vnmixitem',$gamecfg);
 	$cont = str_replace('?>','',str_replace('<?','<?php',$checkstr));
 	$cont .= '$carr = ' . var_export($carr,1).";\r\n?>";
-	writeover($cache_file, $cont);
-	chmod($cache_file,0777);
+	//writeover($cache_file, $cont);
+	//chmod($cache_file,0777);
+	file_put_contents($cache_file,$cont,LOCK_EX);
 	unlock_vn_cache_file();
 	return;
 }
@@ -463,8 +464,9 @@ function writeover_vn_mixilst($varr=Array())
 	global $checkstr;
 	$cont = str_replace('?>','',str_replace('<?','<?php',$checkstr));
 	$cont .= '$vn_mixinfo = ' . var_export($vn_mixinfo,1).";\r\n?>";
-	writeover($cache_file, $cont);
-	chmod($cache_file,0777);
+	file_put_contents($cache_file,$cont,LOCK_EX);
+	//writeover($cache_file, $cont);
+	//chmod($cache_file,0777);
 	//unlock_vn_cache_file();
 	return;
 }
@@ -499,7 +501,7 @@ function filter_post_mixlist($vsname0,$vsname1,$vsname2,$vsname3,$vsname4,$vrnam
 		return $vlog;
 	}
 	//检查道具名
-	$vrname = preg_replace('/[,\#;\p{Cc}]+|锋利的|电气|毒性|钉|\[.*\]|[\r\n]|-改|<|>|\"/u','', $vrname);
+	$vrname = preg_replace('/[,\#;\p{Cc}]+|锋利的|电气|毒性|[\r\n]|-改|<|>|\"/u','', $vrname);
 	$vrname = preg_replace('/^\s+|\s+$/m', '', $vrname);
 	if(empty($vrname) || mb_strlen($vrname,'utf-8')>30)
 	{
@@ -520,7 +522,7 @@ function filter_post_mixlist($vsname0,$vsname1,$vsname2,$vsname3,$vsname4,$vrnam
 			if(${'vrsk'.$s} != 'none' && !in_array(${'vrsk'.$s},$sklist)) $sklist[] = ${'vrsk'.$s};
 		}
 		//检查素材名
-		${'vsname'.$s} = preg_replace('/[,\#;\p{Cc}]+|锋利的|电气|毒性|钉|\[.*\]|[\r\n]|-改|<|>|\"/u','',${'vsname'.$s});
+		${'vsname'.$s} = preg_replace('/[,\#;\p{Cc}]+|锋利的|电气|毒性|[\r\n]|-改|<|>|\"/u','',${'vsname'.$s});
 		//只过滤以首格空格开头或以尾部空格结尾的部分，不改变后面内容里的空格
 		${'vsname'.$s} = preg_replace('/^\s+|\s+$/m', '', ${'vsname'.$s});
 		if(empty(${'vsname'.$s}) || mb_strlen(${'vsname'.$s},'utf-8')>30)
