@@ -17,7 +17,9 @@
 					<td width="215" colspan="1" class="b1"><span>{lang gamedate}<!--{if $gamestate == 40 }--><span class="yellow">{lang combo}</span><!--{/if}--><!--{if $gamestate == 50 }--><span class="red">{lang duel}</span><!--{/if}--></span></td>
 				</tr>
 				<tr>
-					<td rowspan="4" colspan="2" width="150" height="80" class="b3"><span><img src="img/$iconImg" border="0" style="width:140;height:80" <!--{if $hp==0}-->style="filter:Xray()"<!--{/if}--> /></span></td>
+					<td rowspan="4" colspan="2" width="150" height="80" class="b3">
+							<img src="img/$iconImg" border="0" style="width:140;height:80" <!--{if $hp==0}-->style="filter:Xray()"<!--{/if}--> />
+					</td>
 					<td width="70" class="b2"><span>{lang level}</span></td>
 					<td width="120" class="b3"><span>Lv. $lvl</span></td>
 					<td width="60" class="b2"><span><!--{if $wp >= 100}-->{lang wp}{lang skill}<!--{else}--><span class="grey">{lang wp}{lang skill}</span><!--{/if}--></span></td>

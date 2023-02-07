@@ -130,9 +130,20 @@ if($command == 'kill' || $command == 'live' || $command == 'del') {
 		foreach($tmp_clbpara as $key=>$res) $clbpara[$key] = $res;
 		$clbpara = json_encode($clbpara);
 	}
-	$db->query("UPDATE {$tablepre}players SET gd='$gd',icon='$icon',club='$club',sNo='$sNo',hp='$hp',mhp='$mhp',sp='$sp',msp='$msp',ss='$ss',mss='$mss',att='$att',def='$def',pgroup='$pgroup',pls='$pls',achievement='$achievement',exp='$exp',clbstatusa='$clbstatusa',clbstatusb='$clbstatusb',clbstatusc='$clbstatusc',clbstatusd='$clbstatusd',clbstatuse='$clbstatuse',clbpara='$clbpara',money='$money',bid='$bid',inf='$inf',rage='$rage',pose='$pose',tactic='$tactic',killnum='$killnum',wp='$wp',wk='$wk',wg='$wg',wc='$wc',wd='$wd',wf='$wf',teamID='$teamID',achievement='$achievement',wep='$wep',wepk='$wepk',wepe='$wepe',weps='$weps',wepsk='$wepsk',arb='$arb',arbk='$arbk',arbe='$arbe',arbs='$arbs',arbsk='$arbsk',arh='$arh',arhk='$arhk',arhe='$arhe',arhs='$arhs',arhsk='$arhsk',ara='$ara',arak='$arak',arae='$arae',aras='$aras',arask='$arask',arf='$arf',arfk='$arfk',arfe='$arfe',arfs='$arfs',arfsk='$arfsk',art='$art',artk='$artk',arte='$arte',arts='$arts',artsk='$artsk',itm0='$itm0',itmk0='$itmk0',itme0='$itme0',itms0='$itms0',itmsk0='$itmsk0',itm1='$itm1',itmk1='$itmk1',itme1='$itme1',itms1='$itms1',itmsk1='$itmsk1',itm2='$itm2',itmk2='$itmk2',itme2='$itme2',itms2='$itms2',itmsk2='$itmsk2',itm3='$itm3',itmk3='$itmk3',itme3='$itme3',itms3='$itms3',itmsk3='$itmsk3',itm4='$itm4',itmk4='$itmk4',itme4='$itme4',itms4='$itms4',itmsk4='$itmsk4',itm5='$itm5',itmk5='$itmk5',itme5='$itme5',itms5='$itms5',itmsk5='$itmsk5',itm6='$itm6',itmk6='$itmk6',itme6='$itme6',itms6='$itms6',itmsk6='$itmsk6' where pid='$pid'");
-	if(!$db->affected_rows()){
-		$cmd_info = "无法修改角色 $name";
+	$effect_flag = 0;
+	$ndata = update_db_player_structure();
+	foreach($ndata as $key)
+	{
+		if($key != 'pid' && isset($$key))
+		{
+			$key_value = $$key;
+			$db->query("UPDATE {$tablepre}players SET $key='$key_value' where pid='$pid'");
+			if($db->affected_rows()) $effect_flag = 1;
+		}
+	}
+	//$db->query("UPDATE {$tablepre}players SET rp='$rp',gd='$gd',icon='$icon',club='$club',sNo='$sNo',hp='$hp',mhp='$mhp',sp='$sp',msp='$msp',ss='$ss',mss='$mss',att='$att',def='$def',pgroup='$pgroup',pls='$pls',achievement='$achievement',lvl='$lvl',exp='$exp',clbstatusa='$clbstatusa',clbstatusb='$clbstatusb',clbstatusc='$clbstatusc',clbstatusd='$clbstatusd',clbstatuse='$clbstatuse',clbpara='$clbpara',money='$money',bid='$bid',inf='$inf',rage='$rage',pose='$pose',tactic='$tactic',killnum='$killnum',wp='$wp',wk='$wk',wg='$wg',wc='$wc',wd='$wd',wf='$wf',teamID='$teamID',achievement='$achievement',wep='$wep',wepk='$wepk',wepe='$wepe',weps='$weps',wepsk='$wepsk',arb='$arb',arbk='$arbk',arbe='$arbe',arbs='$arbs',arbsk='$arbsk',arh='$arh',arhk='$arhk',arhe='$arhe',arhs='$arhs',arhsk='$arhsk',ara='$ara',arak='$arak',arae='$arae',aras='$aras',arask='$arask',arf='$arf',arfk='$arfk',arfe='$arfe',arfs='$arfs',arfsk='$arfsk',art='$art',artk='$artk',arte='$arte',arts='$arts',artsk='$artsk',itm0='$itm0',itmk0='$itmk0',itme0='$itme0',itms0='$itms0',itmsk0='$itmsk0',itm1='$itm1',itmk1='$itmk1',itme1='$itme1',itms1='$itms1',itmsk1='$itmsk1',itm2='$itm2',itmk2='$itmk2',itme2='$itme2',itms2='$itms2',itmsk2='$itmsk2',itm3='$itm3',itmk3='$itmk3',itme3='$itme3',itms3='$itms3',itmsk3='$itmsk3',itm4='$itm4',itmk4='$itmk4',itme4='$itme4',itms4='$itms4',itmsk4='$itmsk4',itm5='$itm5',itmk5='$itmk5',itme5='$itme5',itms5='$itms5',itmsk5='$itmsk5',itm6='$itm6',itmk6='$itmk6',itme6='$itme6',itms6='$itms6',itmsk6='$itmsk6' where pid='$pid'");
+	if(!$effect_flag){
+		$cmd_info = "没有检测到对角色 $name 的修改";
 	} else {
 		adminlog('editpc',$name);
 		addnews($now,'editpc',$name);

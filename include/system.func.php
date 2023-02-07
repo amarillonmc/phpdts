@@ -49,7 +49,7 @@ function rs_game($mode = 0) {
 	}
 	if ($mode & 2) {
 		//echo " - 禁区初始化 - ";
-		global $arealist,$areanum,$weather,$hack,$areatime,$starttime,$startmin,$areaadd,$areahour;
+		global $rswtharr,$arealist,$areanum,$weather,$hack,$areatime,$starttime,$startmin,$areaadd,$areahour;
 		list($sec,$min,$hour,$day,$month,$year,$wday,$yday,$isdst) = localtime($starttime);
 		$areatime = (ceil(($starttime + $areahour*60)/600))*600;//$areahour已改为按分钟计算，ceil是为了让禁区分钟为10的倍数
 		$plsnum = sizeof($plsinfo);
@@ -57,7 +57,7 @@ function rs_game($mode = 0) {
 		shuffle($arealist);
 		array_unshift($arealist,0);
 		$areanum = 0;
-		$weather = rand(0,9);
+		$weather = $rswtharr[array_rand($rswtharr)];
 		$hack = 0;
 		movehtm($areatime);
 	}

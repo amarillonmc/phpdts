@@ -38,6 +38,16 @@
 			<td>{$lang['corpseprotect_comment']}</td>
 		</tr>
 		<tr>
+			<td>{$lang['allow_destory_corpse']}</td>
+			<td><input type="radio" name="allow_destory_corpse" value="1" <!--{if $allow_destory_corpse}-->checked="true"<!--{/if}-->>$lang['on']&nbsp;&nbsp;&nbsp;<input type="radio" name="allow_destory_corpse" value="0" <!--{if !$allow_destory_corpse}-->checked="true"<!--{/if}-->>$lang['off']</td>
+			<td>{$lang['allow_destory_corpse_comment']}</td>
+		</tr>
+		<tr>
+			<td>{$lang['rpup_destory_corpse']}</td>
+			<td><input type="text" name="rpup_destory_corpse" value="{$rpup_destory_corpse}" size="30"></td>
+			<td>{$lang['rpup_destory_corpse_comment']}</td>
+		</tr>
+		<tr>
 			<td>{$lang['coldtimeon']}</td>
 			<td><input type="radio" name="coldtimeon" value="1" <!--{if $coldtimeon}-->checked="true"<!--{/if}-->>$lang['on']&nbsp;&nbsp;&nbsp;<input type="radio" name="coldtimeon" value="0" <!--{if !$coldtimeon}-->checked="true"<!--{/if}-->>$lang['off']</td>
 			<td>{$lang['coldtimeon_comment']}</td>
@@ -86,6 +96,31 @@
 			<td>{$lang['teamlimit']}</td>
 			<td><input type="text" name="teamlimit" value="{$teamlimit}" size="30"></td>
 			<td>{$lang['teamlimit_comment']}</td>
+		</tr>
+		<tr>
+			<td>{$lang['credits2_values']}</td>
+			<td><input type="text" name="credits2_values" value="{$credits2_values}" size="30"></td>
+			<td>{$lang['credits2_values_comment']}</td>
+		</tr>
+		<tr>
+			<td>{$lang['sponsor_title']}</td>
+			<td><input type="text" name="sponsor_title" value="{$sponsor_title}" size="30"></td>
+			<td>{$lang['sponsor_title_comment']}</td>
+		</tr>
+		<tr>
+			<td>{$lang['gnpctype']}</td>
+			<td><input type="text" name="gnpctype" value="{$gnpctype}" size="30"></td>
+			<td>{$lang['gnpctype_comment']}</td>
+		</tr>
+		<tr>
+			<td>{$lang['gnpcsub']}</td>
+			<td><input type="text" name="gnpcsub" value="{$gnpcsub}" size="30"></td>
+			<td>{$lang['gnpcsub_comment']}</td>
+		</tr>
+		<tr>
+			<td>{$lang['no_self_sponsored']}</td>
+			<td><input type="radio" name="no_self_sponsored" value="1" <!--{if $no_self_sponsored}-->checked="true"<!--{/if}-->>$lang['on']&nbsp;&nbsp;&nbsp;<input type="radio" name="no_self_sponsored" value="0" <!--{if !$no_self_sponsored}-->checked="true"<!--{/if}-->>$lang['off']</td>
+			<td>{$lang['no_self_sponsored_comment']}</td>
 		</tr>
 	</table>
 	<input type="submit" value="修改" onclick="$('command').value='edit';">

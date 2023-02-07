@@ -477,7 +477,7 @@
 				}
 				//获取最终伤害的定值变化（伤害制御、剔透）
 				$fin_damage_fix = get_final_dmg_fix($pa,$pd,$active,$damage);
-				if($fin_damage_fix > 0) $damage += $fin_damage_fix;
+				if($fin_damage_fix > 0) $damage = $fin_damage_fix;
 				//存在物理伤害以外的其他伤害 输出一段最终伤害log：
 				if($pdamage != $damage)
 				{

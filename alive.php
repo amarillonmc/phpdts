@@ -32,22 +32,7 @@ while($apdata = $db->fetch_array($result)) {
 
 $adata = Array();
 if($gamblingon){
-	//允许购买投资物品的商店类型
-	$gshoplist = Array
-	(
-		1=>'■ 补给品 ■',2=>'■ 药剂 ■',3=>'■ 钝器 ■',
-		4=>'■ 锐器 ■',5=>'■ 远程兵器 ■',6=>'■ 投掷兵器 ■',
-		7=>'■ 爆炸物 ■',8=>'■ 灵力兵器材料 ■',9=>'■ 防具 ■',
-		10=>'■ 书籍 ■',11=>'■ 电子装备 ■',12=>'■ 杂物 ■',
-		17=>'■ 限量福袋 ■',13=>'■ 埃克法轻工特供武器 ■',14=>'■ 林苍月的提示 ■',
-		15=>'■ Key社纪念品专卖 ■',16=>'■ NPC解锁钥匙 ■',18=>'■ 上级者向物品 ■',
-	);
-	//切糕与游戏币的兑换比率：1切糕=2块钱
-	$credits2_values = 2;
-	//不能赞助自己 1:启用 0:关闭
-	$no_self_sponsored = 0;
-	//赞助者的头衔
-	$sponsor_title = '场外热心玩家';
+	global $gshoplist,$credits2_values,$no_self_sponsored,$sponsor_title,$gnpctype,$gnpcsub;
 	//初始化赌局变量
 	$gbinfo = '';
 	$gbingdata = $gbeddata = $gambled = Array();
@@ -183,7 +168,7 @@ if($gamblingon){
 							$gclb = Array('clbpara'=>Array('sponsor'=>$uid,'post'=>$bet,'postid'=>6),); //记录赞助者的uid、收货方的pid、道具位置
 							$gitem = Array(6,$iteminfo['item'],$iteminfo['itmk'],$iteminfo['itme'],$iteminfo['itms']*$bnum,$iteminfo['itmsk']);//打包快递
 							include_once GAME_ROOT.'./include/system.func.php';
-							$nid = addnpc(90,0,1,$now,$gclb,$gitem,$bdata['pls'])[0];
+							$nid = addnpc($gnpctype,$gnpcsub,1,$now,$gclb,$gitem,$bdata['pls'])[0];
 							$gbinfo .= "快递员已带着你赞助的商品前往{$bdata['name']}所在的位置！谢谢惠顾~<br>";
 							//存一条发快递记录到gambling表里，一个玩家在快递被接收前不能发第二份快递。防止有人狂买低价商品挤爆players表。
 							//有过投注记录
