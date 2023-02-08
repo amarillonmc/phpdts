@@ -532,16 +532,6 @@ function update_db_player_structure($type=0)
 	return $type ? $db_player_structure_types : $db_player_structure;
 }
 //返回一个只有数据库合法字段键名的pdata数组
-/* function player_format_with_db_structure($data){
-	$ndata=Array();
-	$db_player_structure = update_db_player_structure();
-	foreach ($db_player_structure as $key)
-	{
-		if(isset($data[$key]) && is_array($data[$key])) $data[$key]=json_encode($data[$key]);
-		$ndata[$key]=isset($data[$key]) ? $data[$key] : '';
-	}
-	return $ndata;
-} */
 function player_format_with_db_structure($data){
     $ndata=Array();
     $db_player_structure = update_db_player_structure();

@@ -183,6 +183,20 @@ if($mode == 'enter') {
 	}elseif($name == '枪毙的某神' || $name == '精灵们的手指舞') {
 		$art = 'TDG地雷的证明';$artk = 'A'; $arte = 1; $arts = 1; $artsk = 'zZ';
 	}
+
+	# 格式化道具数据
+	if(!empty($itm))
+	{
+		foreach($itm as $i => $value)
+		{
+			${'itm'.$i} = $value; ${'itmk'.$i} = $itmk[$i]; ${'itme'.$i} = $itme[$i]; ${'itms'.$i} = $itms[$i];
+			if(isset($itmsk[$i])) ${'itmsk'.$i} = $itmsk[$i];
+		}
+	}
+
+	$state = 0;
+	$bid = 0;
+	$inf = $teamID = $teamPass = '';
 	
 	//$nick=$udata['nick'];
 	$nicks=$udata['nicks'];
@@ -195,40 +209,45 @@ if($mode == 'enter') {
 			$nick='弱子';
 		}
 	}
+
+	# 初始化头衔tooltip
 	$nickinfo = get_title_desc($nick);
-//	
-//	if(strpos($ip,'124.226.190')===0){
-//		$msp = $sp = 16;$mhp = $hp = 6666;
-//		$att = 1;$def = 1;$lvl = 0;
-//		$money = 0;$club=17;
-//		$itm[1] = '管理员之怒1'; $itmk[1] = 'HH'; $itme[1] = 100; $itms[1] = 30; $itmsk[1] = '';
-//		$itm[2] = '管理员之怒2'; $itmk[2] = 'HS'; $itme[2] = 15; $itms[2] = 30; $itmsk[2] = '';
-//		$itm[3] = '废物'; $itmk[3] = 'Y'; $itme[3] = 1; $itms[3] = 1; $itmsk[3] = '';
-//		$itm[4] = '废物'; $itmk[4] = 'Y'; $itme[4] = 1; $itms[4] = 1; $itmsk[4] = '';
-//		$wep = '啊哈哈哈我已经天下无敌了！';$wepk = 'WF';$wepe = 1;$weps = 8765;$wepsk = '';
-//		$arb = '超级无敌纸防御';$arbk = 'DB'; $arbe = 30000; $arbs = 1; $arbsk = '';
-//		$arh = '超级无敌纸防御';$arhk = 'DH'; $arhe = 30000; $arhs = 1; $arhsk = '';
-//		$ara = '超级无敌纸防御';$arak = 'DA'; $arae = 30000; $aras = 1; $arask = '';
-//		$arf = '超级无敌纸防御';$arfk = 'DF'; $arfe = 30000; $arfs = 1; $arfsk = '';
-//		$art = '不发装备了，这个收好';$artk = 'A'; $arte = 1; $arts = 1; $artsk = 'HcM';
-//	}
 
-//	if ($name == '内衣') {
-//		$itm[3] = '奖品-泽克西斯之荣耀模样的杏仁豆腐'; $itmk[3] = 'HB'; $itme[3] = 50; $itms[3] = 15; $itmsk[2] = 'z';
-//		$itm[4] = '奖品-Flint Lock模样的杏仁豆腐'; $itmk[4] = 'HB'; $itme[4] = 50; $itms[4] = 15; $itmsk[3] = 'z';
-//		$itm[5] = '『灵魂宝石』模样的杏仁豆腐'; $itmk[5] = 'HB'; $itme[5] = 50; $itms[5] = 15; $itmsk[4] = 'Z';
-//		$wep = '奖品-福林洛克';$wepk = 'WP';$wepe = 85;$weps = 85;$wepsk = 'dZ';
-//		$arb = '奖品-黑暗星云之祝福';$arbk = 'DB'; $arbe = 85; $arbs = 85; $arbsk = 'AaZ';
-//		$arh = '奖品-黄色铃铛';$arhk = 'DH'; $arhe = 85; $arhs = 85; $arhsk = 'AaZ';
-//		$ara = '奖品-地元素挂饰';$arak = 'DA'; $arae = 85; $aras = 85; $arask = 'AaZ';
-//		$arf = '奖品-福林克之靴';$arfk = 'DF'; $arfe = 85; $arfs = 85; $arfsk = 'AaZ';
-//		$art = '奖品-泽克西斯菁英';$artk = 'A'; $arte = 85; $arts = 85; $artsk = 'AaZ';
-//	}
-	$state = 0;
-	$bid = 0;
+	# 初始化头衔的入场效果
+	$nickarr =  get_title_valid($nick);
+	if(!empty($nickarr))
+	{
+		foreach($nickarr as $nkey => $nvue)
+		{
+			if($nkey == 'clbpara' && !empty($$nkey))
+			{
+				$$nkey = array_merge($$nkey,$nvue);
+			}
+			else 
+			{
+				if(strpos($nvue,'[:')!==false && strpos($nvue,':]')!==false)
+				{
+					if(!isset($$nkey)) $$nkey = 0;
+					$$nkey = parse_title_valid_operators($$nkey,$nvue);
+				}
+				else 
+				{
+					$$nkey = $nvue;
+				}
+			}
+		}
+	}
 
-	$inf = $teamID = $teamPass = '';
-	$db->query("INSERT INTO {$tablepre}players (name,pass,type,endtime,validtime,gd,sNo,icon,club,hp,mhp,sp,msp,att,def,pls,lvl,`exp`,money,bid,inf,rage,pose,tactic,killnum,state,wp,wk,wg,wc,wd,wf,teamID,teamPass,wep,wepk,wepe,weps,arb,arbk,arbe,arbs,arh,arhk,arhe,arhs,ara,arak,arae,aras,arf,arfk,arfe,arfs,art,artk,arte,arts,itm0,itmk0,itme0,itms0,itm1,itmk1,itme1,itms1,itm2,itmk2,itme2,itms2,itm3,itmk3,itme3,itms3,itm4,itmk4,itme4,itms4,itm5,itmk5,itme5,itms5,itm6,itmk6,itme6,itms6,wepsk,arbsk,arhsk,arask,arfsk,artsk,itmsk0,itmsk1,itmsk2,itmsk3,itmsk4,itmsk5,itmsk6,nick,nicks) VALUES ('$name','$pass','$type','$endtime','$validtime','$gd','$sNo','$icon','$club','$hp','$mhp','$sp','$msp','$att','$def','$pls','$lvl','$exp','$money','$bid','$inf','$rage','$pose','$tactic','$state','$killnum','$wp','$wk','$wg','$wc','$wd','$wf','$teamID','$teamPass','$wep','$wepk','$wepe','$weps','$arb','$arbk','$arbe','$arbs','$arh','$arhk','$arhe','$arhs','$ara','$arak','$arae','$aras','$arf','$arfk','$arfe','$arfs','$art','$artk','$arte','$arts','$itm[0]','$itmk[0]','$itme[0]','$itms[0]','$itm[1]','$itmk[1]','$itme[1]','$itms[1]','$itm[2]','$itmk[2]','$itme[2]','$itms[2]','$itm[3]','$itmk[3]','$itme[3]','$itms[3]','$itm[4]','$itmk[4]','$itme[4]','$itms[4]','$itm[5]','$itmk[5]','$itme[5]','$itms[5]','$itm[6]','$itmk[6]','$itme[6]','$itms[6]','$wepsk','$arbsk','$arhsk','$arask','$arfsk','$artsk','$itmsk[0]','$itmsk[1]','$itmsk[2]','$itmsk[3]','$itmsk[4]','$itmsk[5]','$itmsk[6]','$nick','$nicks')");
+	# 格式化插入player数据
+	$ndata = update_db_player_structure();
+	foreach($ndata as $key)
+	{
+		if(isset($$key)) $ndata[$key] = $$key; 
+	}
+	$ndata = player_format_with_db_structure($ndata);
+	if(!empty($ndata)) $db->array_insert("{$tablepre}players", $ndata);
+	
+	//$db->query("INSERT INTO {$tablepre}players (name,pass,type,endtime,validtime,gd,sNo,icon,club,hp,mhp,sp,msp,att,def,pls,lvl,`exp`,money,bid,inf,rage,pose,tactic,killnum,state,wp,wk,wg,wc,wd,wf,teamID,teamPass,wep,wepk,wepe,weps,arb,arbk,arbe,arbs,arh,arhk,arhe,arhs,ara,arak,arae,aras,arf,arfk,arfe,arfs,art,artk,arte,arts,itm0,itmk0,itme0,itms0,itm1,itmk1,itme1,itms1,itm2,itmk2,itme2,itms2,itm3,itmk3,itme3,itms3,itm4,itmk4,itme4,itms4,itm5,itmk5,itme5,itms5,itm6,itmk6,itme6,itms6,wepsk,arbsk,arhsk,arask,arfsk,artsk,itmsk0,itmsk1,itmsk2,itmsk3,itmsk4,itmsk5,itmsk6,nick,nicks) VALUES ('$name','$pass','$type','$endtime','$validtime','$gd','$sNo','$icon','$club','$hp','$mhp','$sp','$msp','$att','$def','$pls','$lvl','$exp','$money','$bid','$inf','$rage','$pose','$tactic','$state','$killnum','$wp','$wk','$wg','$wc','$wd','$wf','$teamID','$teamPass','$wep','$wepk','$wepe','$weps','$arb','$arbk','$arbe','$arbs','$arh','$arhk','$arhe','$arhs','$ara','$arak','$arae','$aras','$arf','$arfk','$arfe','$arfs','$art','$artk','$arte','$arts','$itm[0]','$itmk[0]','$itme[0]','$itms[0]','$itm[1]','$itmk[1]','$itme[1]','$itms[1]','$itm[2]','$itmk[2]','$itme[2]','$itms[2]','$itm[3]','$itmk[3]','$itme[3]','$itms[3]','$itm[4]','$itmk[4]','$itme[4]','$itms[4]','$itm[5]','$itmk[5]','$itme[5]','$itms[5]','$itm[6]','$itmk[6]','$itme[6]','$itms[6]','$wepsk','$arbsk','$arhsk','$arask','$arfsk','$artsk','$itmsk[0]','$itmsk[1]','$itmsk[2]','$itmsk[3]','$itmsk[4]','$itmsk[5]','$itmsk[6]','$nick','$nicks')");
 	$db->query("UPDATE {$tablepre}users SET lastgame='$gamenum' WHERE username='$name'");
 	global $nick;
 	if($udata['groupid'] >= 6 || $cuser == $gamefounder){

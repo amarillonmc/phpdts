@@ -1207,6 +1207,27 @@ $title_desc = Array
 	'弱子' => Array('img'=>"img/nicktest.png",)
 );
 
+//所有在player表里登记过的合法字段都可以写进里面 //非法内容会被自动过滤掉……大概吧
+//同时，也支持合法的运算符，写在 [::] 内可以自动识别…… //呃试着做了下感觉有风险，还是写死吧，暂时只支持 += -= *= /= 四种吧，应该够用了吧？
+//比如入场时斩熟+50 就写 'wk' => '[:+=:]50',
+$title_valid = Array
+(
+	'弱子' => Array(
+		'clbpara' => Array('cheater' => 1,),
+	),
+	'参展者' => Array(
+		'arb' => '小背包', 'arbk' => 'DB', 'arbe' => 1,  'arbs' => 1, 'arbsk' => '^',
+	),
+	'叶子钦定！	' => Array(
+		'itm5' => '核子面包', 'itmk5' => 'HH', 'itme5' => 233,  'itms5' => 5, 'itmsk5' => '',
+		'itm6' => '核子矿泉水', 'itmk6' => 'HS', 'itme6' => 233,  'itms6' => 5, 'itmsk6' => '',
+	),
+	'寻星者' => Array(
+		'wk' => '[:+=:]50',
+		'wep' => '『寻星勇者』', 'wepk' => 'WK', 'wepe' => 90,  'weps' => 35, 'wepsk' => 'd',
+	),
+);
+
 //club20 元素大师：
 //元素列表 可能需要一些布灵布灵的特效
 $sparkle = '<span class="sparkle">✨</span>';
