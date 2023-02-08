@@ -4,7 +4,7 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
-require './include/game/titles.func.php';
+require_once './include/game/titles.func.php';
 
 function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 	global $week,$nowep,$db,$tablepre,$lwinfo,$plsinfo,$hplsinfo,$wthinfo,$typeinfo,$exdmginf,$newslimit;
