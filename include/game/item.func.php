@@ -4,8 +4,13 @@ if (! defined ( 'IN_GAME' )) {
 	exit ( 'Access Denied' );
 }
 
+include_once GAME_ROOT.'./include/game/titles.func.php';
+
 function itemuse($itmn) {
 	global $mode, $log, $nosta, $pid, $name, $state, $now,$nick,$achievement,$club;
+
+	$nickinfo = get_title_desc($nick);
+
 	if ($itmn < 1 || $itmn > 6) {
 		$log .= '此道具不存在，请重新选择。';
 		$mode = 'command';
@@ -223,7 +228,7 @@ function itemuse($itmn) {
 			$result = $db->query ( "SELECT * FROM {$tablepre}players WHERE pid='$itmsk'" );
 			$wdata = $db->fetch_array ( $result );
 			$log .= "糟糕，<span class=\"yellow\">$itm</span>中被<span class=\"yellow\">{$wdata['name']}</span>掺入了毒药！你受到了<span class=\"dmg\">$damage</span>点伤害！<br>";
-			addnews ( $now, 'poison', $nick.' '.$name, $wdata ['name'], $itm );
+			addnews ( $now, 'poison', $nickinfo.' '.$name, $wdata ['name'], $itm );
 		} else {
 			$log .= "糟糕，<span class=\"yellow\">$itm</span>有毒！你受到了<span class=\"dmg\">$damage</span>点伤害！<br>";
 		}
@@ -888,7 +893,7 @@ function itemuse($itmn) {
 		list($in,$ik,$ie,$is,$isk) = explode(',',$plist1[$rand1]);
 		global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
-		addnews($now,'present',$nick.' '.$name,$itm,$in);
+		addnews($now,'present',$nickinfo.' '.$name,$itm,$in);
 		$itms1--;
 		if ($itms1 <= 0) {
 			$log .= "<span class=\"red\">$itm</span>用光了。<br>";
@@ -905,7 +910,7 @@ function itemuse($itmn) {
 		list($in,$ik,$ie,$is,$isk) = explode(',',$plist1[$rand1]);
 		global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
-		addnews($now,'present',$nick.' '.$name,$itm,$in);
+		addnews($now,'present',$nickinfo.' '.$name,$itm,$in);
 		$itms1--;
 		if ($itms1 <= 0) {
 			$log .= "<span class=\"red\">$itm</span>用光了。<br>";
@@ -1122,7 +1127,7 @@ function itemuse($itmn) {
 			$tm = $now - $corpseprotect;//尸体保护
 			$db->query ( "UPDATE {$tablepre}players SET weps='0',arbs='0',arhs='0',aras='0',arfs='0',arts='0',itms0='0',itms1='0',itms2='0',itms3='0',itms4='0',itms5='0',itms6='0',money='0' WHERE hp <= 0 AND endtime <= $tm" );
 			$cnum = $db->affected_rows ();
-			addnews ( $now, 'corpseclear', $nick.' '.$name, $cnum );
+			addnews ( $now, 'corpseclear', $nickinfo.' '.$name, $cnum );
 			$log .= "使用了<span class=\"yellow\">$itm</span>。<br>突然刮起了一阵怪风，吹走了地上的{$cnum}具尸体！<br>";
 			$itms --;
 			
@@ -1210,7 +1215,7 @@ function itemuse($itmn) {
 				$kind = "提高了{$wep}的<span class=\"yellow\">攻击力</span>！";
 			}
 			$log .= "你使用了<span class=\"yellow\">$itm</span>，{$kind}";
-			addnews ( $now, 'newwep', $nick.' '.$name, $itm, $wep );
+			addnews ( $now, 'newwep', $nickinfo.' '.$name, $itm, $wep );
 			if (strpos ( $wep, '-改' ) === false) {
 				$wep = $wep . '-改';
 			}
@@ -1332,7 +1337,7 @@ function itemuse($itmn) {
 				$wp = $wk = $wg = $wc = $wd = $wf = 8010;
 				$att = $def = 13337;
 				$club = 15;
-				addnews ( $now, 'suisidefail',$nick.' '.$name );
+				addnews ( $now, 'suisidefail',$nickinfo.' '.$name );
 				$itm = $itmk = $itmsk = '';
 				$itme = $itms = 0;
 			} else {
@@ -1418,7 +1423,7 @@ function itemuse($itmn) {
 				death ( 'SCP', '', 0, $itm );
 			} else {
 				$club = 17;
-				addnews ( $now, 'notworthit', $nick.' '.$name );
+				addnews ( $now, 'notworthit', $nickinfo.' '.$name );
 			}
 			$itms --;
 			if($itms <= 0){
@@ -1432,7 +1437,7 @@ function itemuse($itmn) {
 			addnpc ( 7, 0,1);
 			addnpc ( 7, 1,1);
 			addnpc ( 7, 2,1);
-			addnews ($now , 'secphase',$nick.' '.$name);
+			addnews ($now , 'secphase',$nickinfo.' '.$name);
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == '破灭之诗') {
@@ -1444,19 +1449,19 @@ function itemuse($itmn) {
 			include_once GAME_ROOT . './include/game/item2.func.php';
 			$log .= '世界响应着这旋律，产生了异变……<br>';
 			wthchange( $itm,$itmsk);
-			addnews ($now , 'thiphase',$nick.' '.$name);
+			addnews ($now , 'thiphase',$nickinfo.' '.$name);
 			$hack = 1;
 			$log .= '因为破灭之歌的作用，全部锁定被打破了！<br>';
 			//include_once GAME_ROOT.'./include/system.func.php';
 			movehtm();
-			addnews($now,'hack2',$nick.' '.$name);
+			addnews($now,'hack2',$nickinfo.' '.$name);
 			save_gameinfo();
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == '黑色碎片') {
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '你已经呼唤了一个未知的存在，现在寻找并击败她，<br>并且搜寻她的游戏解除钥匙吧！<br>';
-			addnews ($now , 'dfphase', $nick.' '.$name);
+			addnews ($now , 'dfphase', $nickinfo.' '.$name);
 			addnpc ( 12, 0,1);
 			
 			$itm = $itmk = $itmsk = '';
@@ -1796,7 +1801,7 @@ function itemuse($itmn) {
 				$wp = $wk = $wg = $wc = $wd = $wf = 8010;
 				$att = $def = 13337;
 				$club = 15;
-				addnews ( $now, 'suisidefail',$nick.' '.$name );
+				addnews ( $now, 'suisidefail',$nickinfo.' '.$name );
 			}
 			elseif ($itme == 17 || $itme > 22){ //状态机社团以及不存在的社团
 				$log .="但是什么都没有发生！";
@@ -1857,7 +1862,7 @@ function itemuse($itmn) {
 			$wp = $wk = $wg = $wc = $wd = $wf = 8010;
 			$att = $def = 13337;
 			//$club = 15; 因为是神力嘛！↓但是下面这个还是要适用的。
-			addnews ( $now, 'suisidefail',$nick.' '.$name );
+			addnews ( $now, 'suisidefail',$nickinfo.' '.$name );
 			//销毁物品
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;

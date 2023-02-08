@@ -37,7 +37,7 @@
 		<td>
 			<select name="nick">
 				<!--{loop $utlist $key $val}-->
-				<option value="{$val}">$val</option>
+				<option value="{$val}" <!--{if $udata['nick'] == $val}-->selected<!--{/if}-->>$val</option>
 				<!--{/loop}-->
 			</select>
 		</td>

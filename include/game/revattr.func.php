@@ -24,15 +24,21 @@
 		{
 			$w1 = substr ($pa['wepk'], 1, 1 );
 			$w2 = substr ($pa['wepk'], 2, 1 );
-			if ((($w1 == 'G')||($w1=='J')) && ($pa['weps'] == $nosta)) 
+			# 这里是判断双系武器没有弹药的情况下 能否使用第二系武器
+			if((($w1 == 'G')||($w1=='J')) && ($pa['weps'] == $nosta)) 
 			{
-				$pa['wep_kind']= $w2 ? $w2 : 'P';
-				if($pa['wep_kind'] == 'P') $pa['is_wpg'] = true;
+				$pa['wep_kind']= $w2 ? $w2 : $w1;
 			}
 			else 
 			{
 				$pa['wep_kind'] = $w1;
 			}
+		}
+		# 这里是最终判断是否为枪托打人的环节
+		if(($pa['wep_kind'] == 'G' || $pa['wep_kind'] == 'J') && ($pa['weps'] == $nosta))
+		{
+			$pa['wep_kind'] = 'P';
+			$pa['is_wpg'] = 1;
 		}
 		return;
 	}

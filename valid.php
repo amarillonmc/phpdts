@@ -4,6 +4,7 @@ define('CURSCRIPT', 'valid');
 
 require './include/common.inc.php';
 require './include/user.func.php';
+require './include/game/titles.func.php';
 
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
 if($gamestate < 20) { gexit($_ERROR['no_start'],__file__,__line__); }
@@ -27,7 +28,7 @@ if($mode == 'enter') {
 	}	
 
 	$ip = real_ip();
-	$db->query("UPDATE {$tablepre}users SET gender='$gender', icon='$icon', motto='$motto', killmsg='$killmsg', lastword='$lastword' WHERE username='".$udata['username']."'" );
+	$db->query("UPDATE {$tablepre}users SET gender='$gender', nick='$nick', icon='$icon', motto='$motto', killmsg='$killmsg', lastword='$lastword' WHERE username='".$udata['username']."'" );
 	if($validnum >= $validlimit) {
 		gexit($_ERROR['player_limit'],__file__, __line__);
 	}
@@ -183,17 +184,18 @@ if($mode == 'enter') {
 		$art = 'TDG地雷的证明';$artk = 'A'; $arte = 1; $arts = 1; $artsk = 'zZ';
 	}
 	
-	$nick=$udata['nick'];
+	//$nick=$udata['nick'];
 	$nicks=$udata['nicks'];
 	if (($nicks=='')||($nick=='')){
 		$nick='参展者';
 		$nicks='参展者';
 		$db->query("UPDATE {$tablepre}users SET nick='$nick', nicks='$nicks' WHERE username='".$udata['username']."'" );
 	}else{
-	if (strpos($nicks,$nick)===false){
-		$nick='弱子';
+		if (strpos($nicks,$nick)===false){
+			$nick='弱子';
+		}
 	}
-	}
+	$nickinfo = get_title_desc($nick);
 //	
 //	if(strpos($ip,'124.226.190')===0){
 //		$msp = $sp = 16;$mhp = $hp = 6666;
@@ -230,9 +232,9 @@ if($mode == 'enter') {
 	$db->query("UPDATE {$tablepre}users SET lastgame='$gamenum' WHERE username='$name'");
 	global $nick;
 	if($udata['groupid'] >= 6 || $cuser == $gamefounder){
-		addnews($now,'newgm',$nick.' '.$name,"{$sexinfo[$gd]}{$sNo}号",$ip);
+		addnews($now,'newgm',$nickinfo.' '.$name,"{$sexinfo[$gd]}{$sNo}号",$ip,$nick);
 	}else{
-		addnews($now,'newpc',$nick.' '.$name,"{$sexinfo[$gd]}{$sNo}号",$ip);
+		addnews($now,'newpc',$nickinfo.' '.$name,"{$sexinfo[$gd]}{$sNo}号",$ip,$nick);
 	}
 	
 	if($validnum >= $validlimit && $gamestate == 20){
@@ -260,6 +262,7 @@ if($mode == 'enter') {
 		gexit($_ERROR['player_limit'],__file__,__line__);
 	}
 	$iconarray = get_iconlist($icon);
+	$utlist = get_utitlelist();
 	$select_icon = $icon;
 	include template('valid');
 }
