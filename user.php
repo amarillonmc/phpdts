@@ -4,7 +4,7 @@ define('CURSCRIPT', 'user');
 
 require './include/common.inc.php';
 require './include/user.func.php';
-require_once './include/game/titles.func.php';
+include_once GAME_ROOT.'./include/game/titles.func.php';
 
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
 

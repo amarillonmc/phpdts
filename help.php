@@ -27,26 +27,33 @@ foreach($enpcinfo as $ekey => $enpcs)
 {
 	foreach($enpcs as $sname => $enpc)
 	{
-		$npcinfo[$ekey]['sub'][$sname] = $enpc;
+		$npcinfo[$ekey]['esub'][$sname] = $enpc;
+	}
+}
+foreach($anpcinfo as $akey => $anpcs)
+{
+	foreach($anpcs['sub'] as $aid => $anpc)
+	{
+		$npcinfo[$akey]['asub'][$aid] = $anpc;
 	}
 }
 $npcinfo = get_npc_helpinfo($npcinfo);
-$anpcinfo = get_npc_helpinfo($anpcinfo);
+//print_r($npcinfo[14]['esub']);
 
-$ty1[1]=1; $ty1[3]=88; 
+$ty1[1]=1; $ty1[2]=88; 
 $ty2[1]=5; $ty2[2]=6; 
-$ty2a[1]=19; #真红蓝
+$ty2a[1]=Array(19,'asub'); #真红蓝
 $ty3[1]=11;
 $ty4[1]=90; $ty4[2]=92;
 $ty5[1]=2;
 $ty6[1]=14; $ty6[2]=4; 
-$ty6e[1]=14; #女主第二形态情报
+$ty6e[1]=Array(14,'esub'); #女主第二形态情报
 $ty7[1]=13;
 $ty8[1]=15;
 $ty9[1]=22;
 $ty10[1]=21;
 $ty11[1]=89; 
-$ty11e[1]=89; #电掣NPC第二形态情报
+$ty11e[1]=Array(89,'esub'); #电掣NPC第二形态情报
 $ty12[1]=24;
 
 if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemtime($writefile) || filemtime($mapitemfile) > filemtime($writefile) || filemtime($synfile) > filemtime($writefile) || filemtime($ovlfile) > filemtime($writefile) || filemtime($presentfile) > filemtime($writefile) || filemtime($boxfile) > filemtime($writefile)){

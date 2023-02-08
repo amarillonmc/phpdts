@@ -4,7 +4,7 @@ define('CURSCRIPT', 'rank');
 
 require './include/common.inc.php';
 require './include/game.func.php';
-require_once './include/game/titles.func.php';
+include_once GAME_ROOT.'./include/game/titles.func.php';
 
 $result = $db->query("SELECT COUNT(*) FROM {$tablepre}users");
 $count = $db->result($result,0);

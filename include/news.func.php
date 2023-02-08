@@ -4,7 +4,7 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
-require_once './include/game/titles.func.php';
+include_once GAME_ROOT.'./include/game/titles.func.php';
 
 function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 	global $week,$nowep,$db,$tablepre,$lwinfo,$plsinfo,$hplsinfo,$wthinfo,$typeinfo,$exdmginf,$newslimit;
@@ -258,7 +258,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		} elseif($news == 'addnpc') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}乱入战场！</span><br>\n";
 		} elseif($news == 'addnpcs') {
-			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$b}名{$a}加入战斗！</span><br>\n";
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$b}名{$a}乱入战场！</span><br>\n";
 		} elseif($news == 'secphase') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}使用了挑战者之证，让3名幻影执行官加入了战场！打倒他们去获得ID卡来解除游戏吧！</span><br>\n";
 		} elseif($news == 'thiphase') {
