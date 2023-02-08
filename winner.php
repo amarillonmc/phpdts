@@ -3,7 +3,7 @@
 define('CURSCRIPT', 'winner');
 
 require './include/common.inc.php';
-require_once './include/game/titles.func.php';
+include_once GAME_ROOT.'./include/game/titles.func.php';
 
 if(!isset($command)){$command = 'ref';}
 if($command == 'info') {

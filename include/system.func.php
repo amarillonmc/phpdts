@@ -392,6 +392,7 @@ function duel($time = 0,$keyitm = ''){
 		$time = $time == 0 ? $now : $time;
 		$gamestate = 50;
 		save_gameinfo();
+		include_once GAME_ROOT.'./include/game/titles.func.php';
 		$nickinfo = get_title_desc($nick);
 		addnews($time,'duelkey',$nickinfo.' '.$name,$keyitm);
 		addnews($time,'duel');
@@ -565,14 +566,16 @@ function addnpc($type,$sub,$num,$time = 0,$clbstatus=NULL,$aitem=NULL,$apls=NULL
 	if(empty($anpcinfo) || empty($npcinit)){
 		include_once config('addnpc',$gamecfg);
 	}
-	$npc=array_merge($npcinit,$anpcinfo[$type]);
-	//$npcwordlist = Array();
-	if(!$npc){
+	$anpc_namelist = Array();
+	$anpc = array_merge($npcinit,$anpcinfo[$type]);
+	$anpc = array_merge($anpc,$anpc['sub'][$sub]);	
+	if(!$anpc){
 		//echo 'no npc.';
 		return;
 	} else {
-		for($i=0;$i< $num;$i++){
-			$npc = array_merge($npc,$npc['sub'][$sub]);		
+		for($i=0;$i< $num;$i++)
+		{
+			$npc = $anpc;
 			$npc['type'] = $type;
 			$npc['endtime'] = $time;
 			$npc['exp'] = round(($npc['lvl']*2+1)*$GLOBALS['baseexp']);
@@ -623,21 +626,30 @@ function addnpc($type,$sub,$num,$time = 0,$clbstatus=NULL,$aitem=NULL,$apls=NULL
 			$summon_ids[] = $db->insert_id();
 			//获取新生成npc的pid。不知道高并发时会不会出BUG……呃……出BUG了再看看？但是出BUG了我也不会修啊！
 			$newsname=$typeinfo[$type].' '.$npc['name'];
-			addnews($now, 'addnpc', $newsname);
+			if($num > 1)
+			{
+				$anpc_namelist[$newsname] += 1;
+			}
+			else
+			{
+				addnews($now, 'addnpc', $newsname);
+			}
+			unset($npc);
 		}
 	}
-	/*if($num > $npc['num']){
-	//if($num > 1){
-		$newsname=$typeinfo[$type];
-		addnews($time, 'addnpcs', $newsname,$i);
-	}else{
-//		for($i=0;$i< $num;$i++){
-//			addnews($time, 'addnpc', $npcwordlist[$i]);
-//		}
-		//$newsname=$typeinfo[$type].' '.$npc['name'];
-		//addnews($time, 'addnpc', $newsname);
-	}*/
-	return $summon_ids;
+	if($num > 1)
+	{
+		foreach($anpc_namelist as $aname => $anum)
+		{
+			addnews($now, 'addnpcs', $aname, $anum);
+		}
+		unset($anpc_namelist);
+	}
+	else 
+	{
+		return $summon_ids;
+	}
+	return;
 }
 
 function evonpc($type,$name){
