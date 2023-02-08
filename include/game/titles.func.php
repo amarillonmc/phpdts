@@ -21,7 +21,9 @@ function get_title($t,$n){
 	$db->query("UPDATE {$tablepre}users SET nicks='$k' WHERE username='".$n."'" );
 }
 
-function get_title_desc($n){
+//格式化头衔tooltip
+function get_title_desc($n)
+{
 	global $title_desc;
 
 	if(isset($title_desc[$n]))
@@ -53,4 +55,42 @@ function get_title_desc($n){
 	}
 	return $n;
 }
+
+//格式化头衔奖励
+function get_title_valid($n)
+{
+	global $title_valid;
+
+	if(!empty($title_valid[$n]))
+	{
+		return $title_valid[$n];
+	}
+	return;
+}
+
+//应用头衔奖励中的加减乘除变化 $value=原值 $change=变动值
+function parse_title_valid_operators($value,$change)
+{
+	if(strpos($change,'[:')===false || strpos($change,':]')===false) return $change;
+	
+	//先用这种比较搞的方式来实现吧，如果未来有更多需求出现再换一个智能一点的办法
+	if(strpos($change,'[:+=:]')!==false)
+	{
+		$value += str_replace('[:+=:]','',$change);
+	}
+	elseif(strpos($change,'[:-=:]')!==false)
+	{
+		$value -= str_replace('[:-=:]','',$change);
+	}
+	elseif(strpos($change,'[:*=:]')!==false)
+	{
+		$value *= str_replace('[:*=:]','',$change);
+	}
+	elseif(strpos($change,'[:/=:]')!==false)
+	{
+		$value /= str_replace('[:/=:]','',$change);
+	}
+	return round($value);
+}
+
 ?>
