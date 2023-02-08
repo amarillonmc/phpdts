@@ -4,6 +4,7 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
+require './include/game/titles.func.php';
 
 function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 	global $week,$nowep,$db,$tablepre,$lwinfo,$plsinfo,$hplsinfo,$wthinfo,$typeinfo,$exdmginf,$newslimit;
@@ -39,6 +40,9 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		if((strpos($news,'senditem')!==false||strpos($news,'poison')!==false||strpos($news,'trap')!==false||strpos($news,'wth')!==false||strpos($news,'newwep')!==false||strpos($news,'song')!==false||strpos($news,'present')!==false) && isset($c)) $c = parse_itm_desc($c,'m');
 		//合成、使用死斗卡、使用仓库：道具名登记在$b上;
 		if((strpos($news,'mix')!==false||strpos($news,'duelkey')!==false||strpos($news,'depot')===0) && isset($b)) $b = parse_itm_desc($b,'m');
+		
+		//新PC加入战场 格式化nick
+		//卧槽这可怎么搞……只能脏一把了
 
 		//$sec='??';
 		if($news == 'newgame') {

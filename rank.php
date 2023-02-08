@@ -4,6 +4,7 @@ define('CURSCRIPT', 'rank');
 
 require './include/common.inc.php';
 require './include/game.func.php';
+require './include/game/titles.func.php';
 
 $result = $db->query("SELECT COUNT(*) FROM {$tablepre}users");
 $count = $db->result($result,0);
@@ -56,6 +57,7 @@ while($data = $db->fetch_array($result)){
 	//$data['honour'] = $data['honour'] ? init_honourwords($data['honour']) : '';
 	$data['number'] = $n;
 	$data['winrate'] = $data['wingames'] ? round($data['wingames']/$data['validgames']*100).'%' : '0%';
+	$data['nickinfo'] = !empty($data['nick']) ? get_title_desc($data['nick']) : '-';
 	$rankdata[] = $data;
 	$n ++;
 }

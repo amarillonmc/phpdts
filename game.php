@@ -3,6 +3,7 @@
 define('CURSCRIPT', 'game');
 require './include/common.inc.php';
 require GAME_ROOT.'./include/game.func.php';
+require GAME_ROOT.'./include/game/titles.func.php';
 
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); } 
 if($mode == 'quit') {

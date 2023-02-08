@@ -10,7 +10,7 @@ function init_playerdata(){
 	$upexp = round(($lvl*$baseexp)+(($lvl+1)*$baseexp));
 	$lvlupexp = $upexp - $exp;
 	$iconImg = $gd.'_'.$icon.'.gif'; 
-	$iconImgB = $gd.'_'.$icon.'a.gif'; 
+	if(file_exists('img/'.$gd.'_'.$icon.'a.gif')) $iconImgB = $gd.'_'.$icon.'a.gif'; 
 	$ardef = $arbe + $arhe + $arae + $arfe;
 	if(($weather == 8)||($weather == 9)||($weather == 12)) {
 		$fog = true;

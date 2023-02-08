@@ -41,6 +41,11 @@ if($gamestate >= 20){
 //$db->query("ALTER TABLE {$tablepre}users ADD validgames smallint unsigned NOT NULL default '0' AFTER credits");
 //$db->query("ALTER TABLE {$tablepre}users ADD wingames smallint unsigned NOT NULL default '0' AFTER validgames");
 
+//哇 还是老祖宗留下的方法好啊
+$db->query("ALTER TABLE {$tablepre}winners ADD nick text not null AFTER type");
+$db->query("ALTER TABLE {$tablepre}winners ADD ss smallint unsigned NOT NULL default '0' AFTER msp");
+$db->query("ALTER TABLE {$tablepre}winners ADD mss smallint unsigned NOT NULL default '0' AFTER ss");
+
 include template('admin_menu');
 
 ?>

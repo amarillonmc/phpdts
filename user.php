@@ -4,6 +4,7 @@ define('CURSCRIPT', 'user');
 
 require './include/common.inc.php';
 require './include/user.func.php';
+require './include/game/titles.func.php';
 
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
 
@@ -89,6 +90,7 @@ if($mode == 'edit') {
 } else {
 	//$ustate = 'edit';
 	extract($udata);
+	$nickinfo = get_title_desc($nick);
 	$iconarray = get_iconlist($icon);
 	$select_icon = $icon;
 	//这里假定player表里有usertitle字段而且储存方式是这样蛋疼的。具体程序虚子你写。

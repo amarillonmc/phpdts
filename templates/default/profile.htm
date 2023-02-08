@@ -11,7 +11,8 @@
 		<td>
 			<table border="0" width="720" cellspacing="0" cellpadding="0"  valign="middle">
 				<tr>
-					<td width="210" colspan="3" class="b1"><span>{$nick} {$name}</span></td>
+					<!--{eval $nickinfo = get_title_desc($nick);}-->
+					<td width="210" colspan="3" class="b1"><span>{$nickinfo} {$name}</span></td>
 					<td width="100" colspan="1" class="b1"><span>{$sexinfo[$gd]}{$sNo}号</span></td>
 					<td width="95" colspan="2" class="b1"><span>{lang weather}:$wthinfo[$weather]</span></td>
 					<td width="215" colspan="1" class="b1"><span>{lang gamedate}<!--{if $gamestate == 40 }--><span class="yellow">{lang combo}</span><!--{/if}--><!--{if $gamestate == 50 }--><span class="red">{lang duel}</span><!--{/if}--></span></td>

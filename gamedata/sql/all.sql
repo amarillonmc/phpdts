@@ -384,6 +384,7 @@ DROP TABLE IF EXISTS `acbra2_winners`;
 CREATE TABLE `acbra2_winners` (
   `gid` smallint(5) unsigned NOT NULL DEFAULT '0',
   `type` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `nick` text NOT NULL,
   `name` char(15) NOT NULL DEFAULT '',
   `pass` char(32) NOT NULL DEFAULT '',
   `gd` char(1) NOT NULL DEFAULT 'm',
@@ -395,6 +396,8 @@ CREATE TABLE `acbra2_winners` (
   `mhp` smallint(5) unsigned NOT NULL DEFAULT '0',
   `sp` smallint(5) unsigned NOT NULL DEFAULT '0',
   `msp` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `ss` smallint unsigned NOT NULL default '0',
+  `mss` smallint unsigned NOT NULL default '0',
   `att` smallint(5) unsigned NOT NULL DEFAULT '0',
   `def` smallint(5) unsigned NOT NULL DEFAULT '0',
   `pls` tinyint(3) unsigned NOT NULL DEFAULT '0',

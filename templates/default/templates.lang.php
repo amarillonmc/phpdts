@@ -87,6 +87,7 @@ $language = array
 	'gender' => '性别',
 	'icon' => '头像',
 	'sNo' => '学号',
+	'nick' => '头衔',
 	'level' => '等级',
 	'club' => '内定称号',
 	'hp' => '生命',

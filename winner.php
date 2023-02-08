@@ -3,6 +3,8 @@
 define('CURSCRIPT', 'winner');
 
 require './include/common.inc.php';
+require './include/game/titles.func.php';
+
 if(!isset($command)){$command = 'ref';}
 if($command == 'info') {
 	$result = $db->query("SELECT * FROM {$tablepre}winners WHERE gid='$gnum' LIMIT 1");
@@ -22,14 +24,15 @@ if($command == 'info') {
 	}
 } else {
 	if(!isset($start) || !$start){
-		$result = $db->query("SELECT gid,name,icon,gd,wep,wmode,getime,motto,hdp,hdmg,hkp,hkill FROM {$tablepre}winners ORDER BY gid desc LIMIT $winlimit");
+		$result = $db->query("SELECT gid,name,nick,icon,gd,wep,wmode,getime,motto,hdp,hdmg,hkp,hkill FROM {$tablepre}winners ORDER BY gid desc LIMIT $winlimit");
 	} else {
-		$result = $db->query("SELECT gid,name,icon,gd,wep,wmode,getime,motto,hdp,hdmg,hkp,hkill FROM {$tablepre}winners WHERE gid<='$start' ORDER BY gid desc LIMIT $winlimit");
+		$result = $db->query("SELECT gid,name,nick,icon,gd,wep,wmode,getime,motto,hdp,hdmg,hkp,hkill FROM {$tablepre}winners WHERE gid<='$start' ORDER BY gid desc LIMIT $winlimit");
 	}
 	while($wdata = $db->fetch_array($result)) {
 		$wdata['date'] = date("Y-m-d",$wdata['getime']);
 		$wdata['time'] = date("H:i:s",$wdata['getime']);
 		$wdata['iconImg'] = $wdata['gd'] == 'f' ? 'f_'.$wdata['icon'].'.gif' : 'm_'.$wdata['icon'].'.gif';
+		$wdata['nickinfo'] = !empty($wdata['nick']) ? get_title_desc($wdata['nick']) : '-';
 		$winfo[$wdata['gid']] = $wdata;
 	}
 	$listnum = floor($gamenum/$winlimit);

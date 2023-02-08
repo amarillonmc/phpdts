@@ -7,6 +7,7 @@
 	include_once GAME_ROOT.'./include/game/attr.func.php';
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
 	include_once GAME_ROOT.'./include/game/combat.func.php';
+	include_once GAME_ROOT.'./include/game/titles.func.php';
 
 	# 战斗准备流程：
 	# pa、pd分别代表先制发现者与被先制发现者；
@@ -666,8 +667,9 @@
 		$db->query ( "INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$now','$lwname','$dpls','$lastword')" );
 
 		//发送news
-		$kname = $pa['type'] ? $pa['name'] : $pa['nick'].' '.$pa['name'];
-		addnews ($now,'death'.$pd['state'],$pd['name'],$pd['type'],$pa['name'],$pa['wep_name'],$lastword );
+		$kname = $pa['type'] ? $pa['name'] : get_title_desc($pa['nick']).' '.$pa['name'];
+		$dname = $pd['type'] ? $pd['name'] : get_title_desc($pd['nick']).' '.$pd['name'];
+		addnews ($now,'death'.$pd['state'],$pd['name'],$dname,$kname,$pa['wep_name'],$lastword );
 
 		return $lastword;
 	}
@@ -680,6 +682,8 @@
 
 		$revival_flag = 0;
 
+		$dname = $pd['type'] ? $pd['name'] : get_title_desc($pd['nick']).' '.$pd['name'];
+
 		#极光天气下，玩家有10%概率、NPC有1%概率无条件复活
 		if (!$revival_flag && $weather == 17)
 		{
@@ -689,7 +693,7 @@
 			{
 				#奥罗拉复活效果
 				$revival_flag = 17; //保存复活标记为通过奥罗拉复活
-				addnews($now,'aurora_revival',$pd['name']);
+				addnews($now,'aurora_revival',$dname);
 				$pd['hp'] += min($pd['mhp'],max($aurora_dice,1)); 
 				$pd['sp'] += min($pd['msp'],max($aurora_dice,1));
 				$pd['state'] = 0;
@@ -703,7 +707,7 @@
 		{
 			#决死结界复活效果：
 			$revival_flag = 99; //保存复活标记为通过奥罗拉复活
-			addnews($now,'revival',$pd['name']);	//玩家春哥附体称号的处理
+			addnews($now,'revival',$dname);	//玩家春哥附体称号的处理
 			$pd['hp'] = $pd['mhp']; $pd['sp'] = $pd['msp'];
 			$pd['state'] = 0; $pd['club'] = 17;
 			$log .= '<span class="yellow">但是，由于及时按下BOMB键，'.$pd['nm'].'原地满血复活了！</span><br>';
