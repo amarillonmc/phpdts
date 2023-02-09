@@ -107,6 +107,7 @@ if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemti
 		'key'=> array('KEY系道具','lime'),
 		'cube'=> array('方块系道具','yellow'),
 		'item'=> array('其他道具','yellow'),
+		'titles'=> array('头衔奖励相关道具','sienna'),
 		'VN'=> array('玩家原创道具','lime'),
 		);
 	$mixhelpinfo = '';

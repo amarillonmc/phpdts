@@ -1216,15 +1216,69 @@ $title_valid = Array
 		'clbpara' => Array('cheater' => 1,),
 	),
 	'参展者' => Array(
-		'arb' => '小背包', 'arbk' => 'DB', 'arbe' => 1,  'arbs' => 1, 'arbsk' => '^',
+		'arb' => '二次元漫展背包', 'arbk' => 'DB', 'arbe' => 2,  'arbs' => 2, 'arbsk' => '^',
 	),
-	'叶子钦定！	' => Array(
-		'itm5' => '核子面包', 'itmk5' => 'HH', 'itme5' => 233,  'itms5' => 5, 'itmsk5' => '',
-		'itm6' => '核子矿泉水', 'itmk6' => 'HS', 'itme6' => 233,  'itms6' => 5, 'itmsk6' => '',
+	'叶子钦定！' => Array(
+		'itm5' => '核子面包', 'itmk5' => 'HH', 'itme5' => 237,  'itms5' => 5, 'itmsk5' => '',
+		'itm6' => '核子矿泉水', 'itmk6' => 'HS', 'itme6' => 237,  'itms6' => 5, 'itmsk6' => '',
 	),
 	'寻星者' => Array(
 		'wk' => '[:+=:]50',
 		'wep' => '『寻星勇者』', 'wepk' => 'WK', 'wepe' => 90,  'weps' => 35, 'wepsk' => 'd',
+	),
+	'TERRA' => Array(
+		'itm6' => '篝酱的奇迹☆胶带～棍', 'itmk6' => 'WP', 'itme6' => 42,  'itms6' => 300, 'itmsk6' => 'dej',
+	),
+	'越红者' => Array(
+		'itm6' => '红杀铁剑', 'itmk6' => 'WK', 'itme6' => 60,  'itms6' => 30, 'itmsk6' => 'N',
+	),
+	'跨过彩虹' => Array(
+		'itm6' => 'AZURE RONDO模样的杏仁豆腐', 'itmk6' => 'WF', 'itme6' => 233,  'itms6' => 1, 'itmsk6' => 'd',
+	),
+	'l33t' => Array(
+		'itm1' => '键 希望弹模样的杏仁豆腐', 'itmk1' => 'WC', 'itme1' => 500,  'itms1' => 1, 'itmsk1' => 'z',
+		'itm2' => '键 燃烧弹模样的杏仁豆腐', 'itmk2' => 'WF', 'itme2' => 500,  'itms2' => 1, 'itmsk2' => 'z',
+		'itm3' => '键 生命弹模样的杏仁豆腐', 'itmk3' => 'WG', 'itme3' => 500,  'itms3' => 1, 'itmsk3' => 'z',
+		'itm4' => '键 未来弹模样的杏仁豆腐', 'itmk4' => 'WP', 'itme4' => 500,  'itms4' => 1, 'itmsk4' => 'z',
+		'itm5' => '键 催泪弹模样的杏仁豆腐', 'itmk5' => 'WD', 'itme5' => 500,  'itms5' => 1, 'itmsk5' => 'z',
+		'itm6' => '键 旅途弹模样的杏仁豆腐', 'itmk6' => 'WK', 'itme6' => 500,  'itms6' => 1, 'itmsk6' => 'z',
+	),
+	'赌玉狂魔' => Array(
+		'money' => '[:+=:]3210',
+		'wep' => '增殖之腿', 'wepk' => 'WCP', 'wepe' => 10,  'weps' => '∞', 'wepsk' => 'd',
+	),
+	'美食家' => Array(
+		'itm1' => '裱花布里欧修', 'itmk1' => 'HH', 'itme1' => 255,  'itms1' => 10, 'itmsk1' => 'z',
+		'itm2' => '埃斯卡依云斐济水', 'itmk2' => 'HS', 'itme2' => 255,  'itms2' => 20, 'itmsk2' => 'z',
+		'itm6' => '强效西柚汁', 'itmk3' => 'HB', 'itme6' => 127,  'itms6' => 15, 'itmsk6' => 'z',
+	),
+	'殴系爱好者' => Array(
+		'wp' => '[:+=:]50',
+		'itm6' => '「铁拳无敌」称号卡', 'itmk6' => 'ZB', 'itme6' => 1,  'itms6' => 1, 'itmsk6' => '',
+	),
+	'斩系爱好者' => Array(
+		'wk' => '[:+=:]50',
+		'itm6' => '「见敌必斩」称号卡', 'itmk6' => 'ZB', 'itme6' => 2,  'itms6' => 1, 'itmsk6' => '',
+	),
+	'投系爱好者' => Array(
+		'wc' => '[:+=:]50',
+		'itm6' => '「灌篮高手」称号卡', 'itmk6' => 'ZB', 'itme6' => 3,  'itms6' => 1, 'itmsk6' => '',
+	),
+	'爆系爱好者' => Array(
+		'wd' => '[:+=:]50',
+		'itm6' => '「拆弹专家」称号卡', 'itmk6' => 'ZB', 'itme6' => 5,  'itms6' => 1, 'itmsk6' => '',
+	),
+	'射系爱好者' => Array(
+		'wg' => '[:+=:]50',
+		'itm6' => '「狙击鹰眼」称号卡', 'itmk6' => 'ZB', 'itme6' => 4,  'itms6' => 1, 'itmsk6' => '',
+	),
+	'灵系爱好者' => Array(
+		'wf' => '[:+=:]50',
+		'itm6' => '「超能力者」称号卡', 'itmk6' => 'ZB', 'itme6' => 9,  'itms6' => 1, 'itmsk6' => '',
+	),
+	'实用主义者' => Array(
+		'wp' => '[:+=:]25','wk' => '[:+=:]25','wc' => '[:+=:]25','wd' => '[:+=:]25','wg' => '[:+=:]25','wf' => '[:+=:]25',
+		'itm6' => 'SPECIAL TECH 「特选科技」', 'itmk6' => 'p0O1', 'itme6' => 1,  'itms6' => 1, 'itmsk6' => '',
 	),
 );
 

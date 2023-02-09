@@ -345,7 +345,16 @@ $mixinfo = array
 	array('class' => 'ocg', 'stuff' => array('正义盟军 光明守望者 ★8 -仮','☆八星认证☆'),'result' => array('正义盟军 光明守望者 ★8','WC08',260,'∞','rZ'),),
 	array('class' => 'ocg', 'stuff' => array('救世魔龙 -仮','☆十星认证☆'),'result' => array('「救世魔龙」 ★10','WC10',950,'∞','uf'),),
 	array('class' => 'ocg', 'stuff' => array('救世星龙 -仮','☆十星认证☆','★神卡认证★'),'result' => array('『流天类星龙』 ★12','WC12',4000,'∞','mcrwZ'),),
-	
+
+	array('class' => 'titles', 'stuff' => array('键 希望弹模样的杏仁豆腐','☆爆裂模式☆','★神卡认证★'),'result' => array('键 希望弹','WC',5000,998,'zdfkc'),),
+	array('class' => 'titles', 'stuff' => array('键 燃烧弹模样的杏仁豆腐','☆爆裂模式☆','★神卡认证★'),'result' => array('键 燃烧弹','WF',4800,'∞','Nfzr'),),
+	array('class' => 'titles', 'stuff' => array('键 生命弹模样的杏仁豆腐','☆爆裂模式☆','★神卡认证★'),'result' => array('键 生命弹','WG',5000,998,'zdrfk'),),
+	array('class' => 'titles', 'stuff' => array('键 未来弹模样的杏仁豆腐','☆爆裂模式☆','★神卡认证★'),'result' => array('键 未来弹','WP',5000,'∞','rcdfN'),),
+	array('class' => 'titles', 'stuff' => array('键 催泪弹模样的杏仁豆腐','☆爆裂模式☆','★神卡认证★'),'result' => array('键 约定弹','WD',5000,998,'rkdz'),),
+	array('class' => 'titles', 'stuff' => array('键 旅途弹模样的杏仁豆腐','☆爆裂模式☆','★神卡认证★'),'result' => array('键 旅途弹','WK',5000,998,'zdNkc'),),
+	array('class' => 'titles', 'stuff' => array('AZURE RONDO模样的杏仁豆腐','☆爆裂模式☆','★神卡认证★'),'result' => array('『AZURE RONDO · AQUAMARINE』Mk-II','WFK',1999,9999,'rknv'),),
+	array('class' => 'titles', 'stuff' => array('红杀铁剑','某种电子零件','造雾设备'),'result' => array('喷气式红杀铁剑','WGK',368,102,'jdNu'),),
+
 	
 	array('class' => 'hidden', 'stuff' => array('红宝石方块','蓝宝石方块','绿宝石方块','非法枪械部件'),'result' => array('『宝石光束炮-试作型』','WG',1800,144,'ndo'),),
 	
