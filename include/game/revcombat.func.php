@@ -98,7 +98,7 @@
 		# 战斗发起者是NPC时
 		if($pa['type'])
 		{
-			$log .= npc_chat ($pa['type'],$pa['name'],'attack');
+			$log .= npc_chat_rev ($pa,$pd,'attack');
 			//换装判定
 			npc_changewep_rev($pa,$pd,$active);
 		}
@@ -145,7 +145,7 @@
 				if ($counter_dice < $counter) 
 				{
 					$log .= "<span class=\"red\">{$pd['nm']}的反击！</span><br>";
-					$log .= npc_chat ($pd['type'],$pd['nm'], 'defend' );
+					if($pd['type']) $log .= npc_chat_rev ($pd,$pa, 'defend' );
 					# 反击打击实行
 					# 因为这时候进攻方(造成伤害)的一方是pd，所以向第一个位置传入pd，向第二个位置(防守方)传入pa。
 					$pd['is_counter'] = 1; //给pd一个反击标记，代表这是反击造成的伤害
@@ -153,14 +153,14 @@
 				} 
 				else 
 				{
-					$log .= npc_chat ($pd['type'],$pd['nm'], 'escape' );
+					$log .= npc_chat_rev ($pd,$pa, 'escape' );
 					$log .= "<span class=\"red\">{$pd['nm']}处于无法反击的状态，逃跑了！</span><br>";
 				}
 			} 
 			# 不满足射程
 			else 
 			{
-				$log .= npc_chat($pd['type'],$pd['nm'], 'cannot' );
+				$log .= npc_chat_rev($pd,$pa, 'cannot' );
 				$log .= "<span class=\"red\">{$pd['nm']}攻击范围不足，不能反击，逃跑了！</span><br>";
 			}
 		}
@@ -205,11 +205,13 @@
 			if($active)
 			{
 				$w_log = "手持<span class=\"red\">{$pa['wep_name']}</span>的<span class=\"yellow\">{$pa['name']}</span>向你袭击！<br>你受到其<span class=\"yellow\">$att_dmg</span>点攻击，对其做出了<span class=\"yellow\">$def_dmg</span>点反击。<br>";
+				if(isset($pd['lvlup_log'])) $w_log .= $pd['lvlup_log'];
 				logsave ($pd['pid'],$now,$w_log,'c');
 			}
 			else
 			{
 				$w_log = "你发现了手持<span class=\"red\">{$pd['wep_name']}</span>的<span class=\"yellow\">{$pd['name']}</span>并且先发制人！<br>你对其做出<span class=\"yellow\">$att_dmg</span>点攻击，受到其<span class=\"yellow\">$def_dmg</span>点反击。<br>";
+				if(isset($pa['lvlup_log'])) $w_log .= $pa['lvlup_log'];
 				logsave ($pa['pid'],$now,$w_log,'c');
 			}
 		}
@@ -315,23 +317,21 @@
 			$pa['skdr_flag'] = $pd['skdr_flag'] = 1;
 		}
 		# 灵魂抽取判定
-		if(in_array('*',$pa['ex_wep_keys']) || in_array('*',$pd['ex_wep_keys']))
+		if(in_array('*',array_merge($pa['ex_wep_keys'],$pa['ex_equip_keys'])) || in_array('*',array_merge($pd['ex_wep_keys'],$pd['ex_equip_keys'])))
 		{
 			$log .= "<span class=\"yellow\">灵魂抽取使双方的武器和饰物属性全部失效！</span><br>";
-			$pa['ex_wep_keys'] = $pd['ex_wep_keys'] = Array();
 			$pa['sldr_flag'] = $pd['sldr_flag'] = 1;
 		}
 		# 精神抽取判定
-		if(in_array('-',$pa['ex_equip_keys']) || in_array('-',$pd['ex_equip_keys']))
+		if(in_array('-',array_merge($pa['ex_wep_keys'],$pa['ex_equip_keys'])) || in_array('-',array_merge($pd['ex_wep_keys'],$pd['ex_equip_keys'])))
 		{
 			$log .= "<span class=\"yellow\">精神抽取使双方的防具属性全部失效！</span><br>";
-			$pa['ex_equip_keys'] = $pd['ex_equip_keys'] = Array();
 			$pa['mdr_flag'] = $pd['mdr_flag'] = 1;
 		}
-		// PS:三抽检定现在没有做彼此保留的额外判定。因为单独写在这里太丑陋了。
-		// 因此如果一件武器/防具上同时带有3抽，有可能会被灵抽/精抽洗掉对方的效果。但是现在游戏里还没有这样的装备，所以等出问题了再解决。
-
-		//三抽检定过后把2个属性数组合并，不然每次都要拖着一长串
+		# 灵、精抽应用
+		if(isset($pa['sldr_flag']) || isset($pd['sldr_flag'])) $pa['ex_wep_keys'] = $pd['ex_wep_keys'] = Array();
+		if(isset($pa['mdr_flag']) || isset($pd['mdr_flag'])) $pa['ex_equip_keys'] = $pd['ex_equip_keys'] = Array();
+		# 三抽检定过后把2个属性数组合并，不然每次都要拖着一长串
 		$pa['ex_keys'] = array_merge($pa['ex_wep_keys'],$pa['ex_equip_keys']); unset($pa['ex_wep_keys']); unset($pa['ex_equip_keys']);
 		$pd['ex_keys'] = array_merge($pd['ex_wep_keys'],$pd['ex_equip_keys']); unset($pd['ex_wep_keys']); unset($pd['ex_equip_keys']);
 		
@@ -495,9 +495,8 @@
 			//防守方(pd)受到伤害后的事件（防具耐久下降、受伤）
 			get_hurt_events($pa,$pd,$active);
 			//经验结算
-			$is_player_flag = $pa['type'] ? 0 : 1;
-			exprgup ( $pa['lvl'], $pd['lvl'], $pa['exp'], $is_player_flag , $pd['rage']);
-		} 
+			exprgup_rev ($pa,$pd,$active);
+		}
 		else 
 		{
 			$damage = 0;
@@ -526,7 +525,7 @@
 			# NPC二阶段处理：
 			if($pd['club'] == 99 && $pd['type'])
 			{
-				$log .= npc_chat ($pd['type'],$pd['name'], 'death' );
+				$log .= npc_chat_rev ($pd,$pa, 'death' );
 				include_once GAME_ROOT . './include/system.func.php';
 				$npcdata = evonpc ($pd['type'],$pd['name']);
 				$log .= '<span class="yellow">'.$pd['name'].'却没死去，反而爆发出真正的实力！</span><br>';
@@ -577,7 +576,7 @@
 					else 
 					{
 						//死者是NPC，加载NPC遗言
-						$log .= npc_chat ($pd['type'],$pd['name'], 'death' );
+						$log .= npc_chat_rev ($pd,$pa, 'death' );
 					}
 					$deathnum ++;
 
@@ -592,7 +591,7 @@
 					}
 					else
 					{
-						$log .= npc_chat ($pa['type'],$pa['name'],'kill');
+						$log .= npc_chat_rev ($pa,$pd,'kill');
 					}
 
 					# 杀人rp结算
@@ -774,6 +773,111 @@
 		return;
 	}
 
+	# 战斗经验结算
+	function exprgup_rev(&$pa,&$pd,$active) 
+	{
+		global $log,$baseexp;
+		$expup = round ( ($pd['lvl'] - $pa['lvl']) / 3 );
+		$expup = $expup > 0 ? $expup : 1;
+		$pa['exp'] += $expup;
+		//$log .= "$isplayer 的经验值增加 $expup 点<br>";
+
+		//升到下级所需的exp 直接在这里套公式计算 不用global了
+		$pa['upexp'] = round(($pa['lvl']*$baseexp)+(($pa['lvl']+1)*$baseexp));
+
+		if ($pa['exp'] >= $pa['upexp']) 
+		{
+			lvlup_rev ($pa,$pd,$active);
+		}
+		//大的打小的怒气反而涨的快 什么逻辑？狂扁小朋友喔？
+		$rgup = round (($pa['lvl'] - $pd['lvl'])/3);
+		$rg += $rgup > 0 ? $rgup : 1;
+		return;
+	}
+
+	# 战斗等级提升
+	function lvlup_rev (&$pa,&$pd,$active) 
+	{
+		global $log,$baseexp;
+		$up_exp_temp = round ( (2 * $pa['lvl'] + 1) * $baseexp );
+		if ($pa['exp'] >= $up_exp_temp && $pa['lvl'] < 255) 
+		{
+			$sklanginfo = Array ('wp' => '殴熟', 'wk' => '斩熟', 'wg' => '射熟', 'wc' => '投熟', 'wd' => '爆熟', 'wf' => '灵熟', 'all' => '全系熟练度' );
+			$sknlist = Array (1 => 'wp', 2 => 'wk', 3 => 'wc', 4 => 'wg', 5 => 'wd', 9 => 'wf', 16 => 'all' );
+			$skname = $sknlist [$pa['club']];
+			//升级判断
+			$lvup = 1 + floor (($pa['exp'] - $up_exp_temp)/$baseexp/2);
+			$lvup = $lvup > 255 - $pa['lvl'] ? 255 - $pa['lvl'] : $lvup;
+			$lvuphp = $lvupatt = $lvupdef = $lvupskill = $lvupsp = $lvupspref = 0;
+			//升级数值计算
+			for($i = 0; $i < $lvup; $i += 1) 
+			{
+				if ($pa['club'] == 13) {
+					$lvuphp += rand ( 14, 18 );
+				} else {
+					$lvuphp += rand ( 8, 10 );
+				}
+				$lvupsp += rand( 4,6);
+				if ($pa['club'] == 14) {
+					$lvupatt += rand ( 4, 6 );
+					$lvupdef += rand ( 5, 8 );
+				} else {
+					$lvupatt += rand ( 2, 4 );
+					$lvupdef += rand ( 3, 5 );
+				}
+				
+				if ($skname == 'all') {
+					$lvupskill += rand ( 2, 4 );
+				} elseif ($skname == 'wd' || $skname == 'wf') {
+					$lvupskill += rand ( 3, 5 );
+				}elseif($skname){
+					$lvupskill += rand ( 4, 6 );
+				}
+				$lvupspref += round($pa['msp'] * 0.1);		
+			}
+			//应用升级
+			$pa['lvl'] += $lvup;
+			$up_exp_temp = round ( (2 * $pa['lvl'] + 1) * $baseexp );
+			if ($pa['lvl'] >= 255) {
+				$pa['lvl'] = 255;
+				$pa['exp'] = $up_exp_temp;
+			}
+			$pa['upexp'] = $up_exp_temp;
+			$pa['hp'] += $lvuphp;
+			$pa['mhp'] += $lvuphp;
+			$pa['sp'] += $lvupsp;
+			$pa['msp'] += $lvupsp;
+			$pa['att'] += $lvupatt;
+			$pa['def'] += $lvupdef;
+			$pa['skillpoint'] += $lvup;
+			if ($skname == 'all') {
+				$pa['wp'] += $lvupskill;
+				$pa['wk'] += $lvupskill;
+				$pa['wg'] += $lvupskill;
+				$pa['wc'] += $lvupskill;
+				$pa['wd'] += $lvupskill;
+				$pa['wf'] += $lvupskill;
+			} elseif ($skname) {
+				$pa[$skname] += $lvupskill;
+			}
+			$pa['sp'] = min($lvupspref+$pa['sp'],$pa['msp']);
+			
+			if ($skname) {
+				$sklog = "，{$sklanginfo[$skname]}+{$lvupskill}";
+			}
+			$lvlup_log = "<span class=\"yellow\">{$pa['nm']}升了{$lvup}级！生命上限+{$lvuphp}，体力上限+{$lvupsp}，攻击+{$lvupatt}，防御+{$lvupdef}{$sklog}，体力恢复了{$lvupspref}，获得了{$lvup}点技能点！</span><br>";
+			if(!$pa['type'])
+			{
+				if($pa['nm'] == '你') $log.= $lvlup_log;
+				else $pa['lvlup_log'] = $lvlup_log;
+			}
+		} elseif ($pa['lvl'] >= 255) {
+			$pa['lvl'] = 255;
+			$exp = $up_exp_temp;
+		}
+		return;
+	}
+
 	# NPC自动换装
 	#说实话没有完全看懂，但是能跑就行
 	function npc_changewep_rev(&$pa,&$pd,$acitve)
@@ -862,6 +966,91 @@
 			}
 		}
 		return;
+	}
+
+	# NPC喊话
+	# pa指npc pd指另一视角
+	function npc_chat_rev(&$pa,&$pd,$mode='') 
+	{
+		global $npcchat;
+		if(!empty($npcchat[$pa['type']][$pa['name']])) 
+		{
+			$nchat = $npcchat[$pa['type']][$pa['name']];
+			$chatcolor = $nchat['color'];
+			$npcwords = !empty($chatcolor) ? "<span class = \"{$chatcolor}\">" : '<span>';
+			switch ($mode) 
+			{
+				case 'attack' :
+					if (!isset($pa['first_meet'])) 
+					{
+						$npcwords .= "{$nchat[0]}";
+						$pa['first_meet'] = 1;
+					} 
+					elseif ($pa['hp'] > ($pa['mhp'] / 2)) 
+					{
+						$dice = rand ( 1, 2 );
+						$npcwords .= "{$nchat[$dice]}";
+					} 
+					else 
+					{
+						$dice = rand ( 3, 4 );
+						$npcwords .= "{$nchat[$dice]}";
+					}
+					break;
+				case 'defend' :
+					if (!isset($pa['first_meet'])) 
+					{
+						$npcwords .= "{$nchat[0]}";
+						$pa['first_meet'] = 1;
+					}
+					elseif($pa['hp'] > ($pa['mhp'] / 2)) 
+					{
+						$dice = rand ( 5, 6 );
+						$npcwords .= "{$nchat[$dice]}";
+					} 
+					else 
+					{
+						$dice = rand ( 7, 8 );
+						$npcwords .= "{$nchat[$dice]}";
+					}
+					break;
+				case 'death' :
+					$npcwords .= "{$nchat[9]}";
+					break;
+				case 'escape' :
+					$npcwords .= "{$nchat[10]}";
+					break;
+				case 'cannot' :
+					$npcwords .= "{$nchat[11]}";
+					break;
+				case 'critical' :
+					$npcwords .= "{$nchat[12]}";
+					break;
+				case 'kill' :
+					$npcwords .= "{$pa['nm']}对{$pd['nm']}说道：{$nchat[13]}";
+					break;
+			}
+			$npcwords .= '</span><br>';
+			return $npcwords;
+		} 
+		elseif ($mode == 'death') 
+		{
+			global $lwinfo;
+			if (is_array($lwinfo[$pa['type']])) 
+			{
+				$lastword = $lwinfo[$pa['type']][$pa['name']];
+			} 
+			else 
+			{
+				$lastword = $lwinfo[$pa['type']];
+			}
+			$npcwords = "<span class=\"yellow\">“{$lastword}”</span><br>";
+			return $npcwords;
+		}
+		else 
+		{
+			return;
+		}
 	}
 
 ?>

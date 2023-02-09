@@ -323,11 +323,15 @@
 		# 黑熊吃香蕉事件：
 		if($pa['type'] && in_array('X',$pa['ex_keys']))
 		{
-			if ($pa['wep'] == '燕返262') $log.="<img src=\"img/other/262.png\"><br>";
-			$damage = 999983;
-			$pd['sp_death_flag'] = 1; #这个标记用于影响是否复活或登记特殊死法的判断
-			$log .= "造成<span class=\"red\">$damage</span>点伤害！<br>";
-			return $damage;
+			$x_dice = diceroll(99);
+			if($x_dice >= 90)
+			{
+				if ($pa['wep'] == '燕返262') $log.="<img src=\"img/other/262.png\"><br>";
+				$damage = 999983;
+				$pd['sp_death_flag'] = 1; #这个标记用于影响是否复活或登记特殊死法的判断
+				$log .= "造成<span class=\"red\">$damage</span>点伤害！<br>";
+				return $damage;
+			}
 		}
 
 		# 真红暮防御事件：
@@ -712,7 +716,7 @@
 				$p = $pa['club'] == 9 ? 2 : 1.5;
 				$dmg_p[]= $p; 
 				//输出log
-				$log .= npc_chat ($pa['type'],$pa['nm'],'critical');
+				$log .= npc_chat_rev ($pa,$pd,'critical');
 				$log .= "{$pa['nm']}消耗<span class=\"yellow\">{$rage_min_cost}</span>点怒气，";
 				if ($pa['club'] == 9) $log .= "<span class=\"red\">发动必杀技！</span><br>";
 				else $log .= "<span class=\"red\">使出重击！</span><br>";

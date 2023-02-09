@@ -18,7 +18,7 @@
 	//不可以被拆解的NPC类型
 	$no_type_to_e_list = Array();
 	//不可以被拆解的【道具】（关键词匹配）
-	$no_itm_to_e_list = Array();
+	$no_itm_to_e_list = Array('提示纸条',);
 	//不可以被拆解的【道具类别】
 	$no_itmk_to_e_list = Array('N','WN','p','fy','ygo');
 	//不可以被拆解的【道具属性】
