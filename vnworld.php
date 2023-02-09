@@ -38,8 +38,15 @@ if($vnmode=='none')
 				// 格式化素材来源
 				foreach($cinfo['stuff'] as $sid => $snm)
 				{
+					include_once config('npc',$gamecfg);
+					include_once config('addnpc',$gamecfg);
+					include_once config('evonpc',$gamecfg);
 					$tooltipinfo = get_item_place($snm);
-					if(!empty($tooltipinfo)) $temp_carr[$cid]['stuff'][$sid] = "<span tooltip=\"".$tooltipinfo."\">".$snm."</span>";
+					if(!empty($tooltipinfo))
+					{
+						$temp_carr[$cid]['stuff'][$sid] = "<span tooltip=\"".$tooltipinfo."\">".$snm."</span>";
+					}
+					$tooltipinfo = '';
 				}
 				// 格式化属性
 				if(isset($cinfo['result'][4]) && is_array($cinfo['result'][4]))

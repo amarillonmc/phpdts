@@ -26,9 +26,9 @@
 			<td>姓名</td>
 			<td>{$npc['name']}</td>
 			<td>武器</td>
-			<td><input size="20" type="text" name="wep" value="{$npc['wep']}" maxlength="250"></td>
+			<td><input size="20" type="text" name="wep" list="vsnamelist" value="{$npc['wep']}" maxlength="250"></td>
 			<td>包裹1</td>
-			<td><input size="20" type="text" name="itm1" value="{$npc['itm1']}" maxlength="250"></td>
+			<td><input size="20" type="text" name="itm1" list="vsnamelist" value="{$npc['itm1']}" maxlength="250"></td>
 		</tr>
 		<tr>		
 			<td>性别</td>
@@ -66,9 +66,9 @@
 			<td>生命</td>
 			<td><input size="20" type="text" name="hp" value="{$npc['hp']}" maxlength="20"></td>
 			<td>防具(体)</td>
-			<td><input size="20" type="text" name="arb" value="{$npc['arb']}" maxlength="250"></td>
+			<td><input size="20" type="text" name="arb" list="vsnamelist" value="{$npc['arb']}" maxlength="250"></td>
 			<td>包裹2</td>
-			<td><input size="20" type="text" name="itm2" value="{$npc['itm2']}" maxlength="250"></td>
+			<td><input size="20" type="text" name="itm2" list="vsnamelist" value="{$npc['itm2']}" maxlength="250"></td>
 		</tr>
 		<tr>
 			<td>最大生命</td>
@@ -106,9 +106,9 @@
 			<td>基础防御</td>
 			<td><input size="20" type="text" name="def" value="{$npc['def']}" maxlength="20"></td>
 			<td>防具(头)</td>
-			<td><input size="20" type="text" name="arh" value="{$npc['arh']}" maxlength="250"></td>
+			<td><input size="20" type="text" name="arh" list="vsnamelist" value="{$npc['arh']}" maxlength="250"></td>
 			<td>包裹3</td>
-			<td><input size="20" type="text" name="itm3" value="{$npc['itm3']}" maxlength="250"></td>
+			<td><input size="20" type="text" name="itm3" list="vsnamelist" value="{$npc['itm3']}" maxlength="250"></td>
 		</tr>
 		<tr>
 			<td>位置</td>
@@ -146,9 +146,9 @@
 			<td>对手</td>
 			<td><input size="20" type="text" name="bid" value="{$npc['bid']}" maxlength="20"></td>
 			<td>防具(腕)</td>
-			<td><input size="20" type="text" name="ara" value="{$npc['ara']}" maxlength="250"></td>
+			<td><input size="20" type="text" name="ara" list="vsnamelist" value="{$npc['ara']}" maxlength="250"></td>
 			<td>包裹4</td>
-			<td><input size="20" type="text" name="itm4" value="{$npc['itm4']}" maxlength="250"></td>
+			<td><input size="20" type="text" name="itm4" list="vsnamelist" value="{$npc['itm4']}" maxlength="250"></td>
 		</tr>
 		<tr>
 			<td>受伤</td>
@@ -186,9 +186,9 @@
 			<td>杀人数</td>
 			<td><input size="20" type="text" name="killnum" value="{$npc['killnum']}" maxlength="20"></td>
 			<td>防具(足)</td>
-			<td><input size="20" type="text" name="arf" value="{$npc['arf']}" maxlength="250"></td>
+			<td><input size="20" type="text" name="arf" list="vsnamelist" value="{$npc['arf']}" maxlength="250"></td>
 			<td>包裹5</td>
-			<td><input size="20" type="text" name="itm5" value="{$npc['itm5']}" maxlength="250"></td>
+			<td><input size="20" type="text" name="itm5" list="vsnamelist" value="{$npc['itm5']}" maxlength="250"></td>
 		</tr>
 		<tr>
 			<td>殴熟</td>
@@ -226,9 +226,9 @@
 			<td>爆熟</td>
 			<td><input size="20" type="text" name="wd" value="{$npc['wd']}" maxlength="20"></td>
 			<td>饰品</td>
-			<td><input size="20" type="text" name="art" value="{$npc['art']}" maxlength="250"></td>
+			<td><input size="20" type="text" name="art" list="vsnamelist" value="{$npc['art']}" maxlength="250"></td>
 			<td>包裹6</td>
-			<td><input size="20" type="text" name="itm6" value="{$npc['itm6']}" maxlength="250"></td>
+			<td><input size="20" type="text" name="itm6" list="vsnamelist" value="{$npc['itm6']}" maxlength="250"></td>
 		</tr>
 		<tr>
 			<td>灵熟</td>
@@ -282,6 +282,11 @@
 			<td>社团参数集</td>
 			<td><textarea cols="20" rows="4" style="overflow:auto" name="str_clbpara">{$npc['str_clbpara']}</textarea></td>
 		</tr>
+		<datalist id="vsnamelist">
+			<!--{loop $temp_item_namelist $in}-->
+				<option value="$in">
+			<!--{/loop}-->
+		</datalist>
 	</table>
 	<input type="submit" value="修改NPC数值" onclick="$('command').value = 'submitedit'">
 </form> 

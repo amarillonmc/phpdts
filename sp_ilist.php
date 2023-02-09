@@ -143,8 +143,7 @@ function get_itm_namelist()
 		include_once config('npc',$gamecfg);
 		include_once config('addnpc',$gamecfg);
 		include_once config('evonpc',$gamecfg);
-		$nownpclist = Array();
-		$nownpclist = $npcinfo+$anpcinfo;
+		$nownpclist = $npcinfo;
 		foreach($enpcinfo as $ekey => $enpcs)
 		{
 			foreach($enpcs as $sname => $enpc)
@@ -152,10 +151,18 @@ function get_itm_namelist()
 				$nownpclist[$ekey]['sub'][$sname] = $enpc;
 			}
 		}
+		foreach($anpcinfo as $akey => $anpcs)
+		{
+			foreach($anpcs['sub'] as $aid => $anpc)
+			{
+				$nownpclist[$akey]['sub']['a'.$aid] = $anpc;
+			}
+		}
 		foreach($nownpclist as $npcs)
 		{
 			foreach(array('wep','arb','arh','ara','arf','art','itm1','itm2','itm3','itm4','itm5','itm6') as $nipval)
 			{
+				if(isset($npcs[$nipval]) && !in_array($npcs[$nipval],$iarr)) $iarr[] = $npcs[$nipval];
 				if(!empty($npcs['sub'])) 
 				{
 					foreach($npcs['sub'] as $npc)
@@ -163,9 +170,17 @@ function get_itm_namelist()
 						if(isset($npc[$nipval]) && !in_array($npc[$nipval],$iarr)) $iarr[] = $npc[$nipval];
 					}
 				}
-				else 
+			}
+		}
+		//头衔附赠
+		global $title_valid;
+		foreach($title_valid as $tv => $tvarr)
+		{
+			foreach($tvarr as $tvkey => $tvitm)
+			{
+				if(in_array($tvkey,array('wep','arb','arh','ara','arf','art','itm1','itm2','itm3','itm4','itm5','itm6')) && !in_array($tvitm,$iarr))
 				{
-					if(isset($npcs[$nipval]) && !in_array($npcs[$nipval],$iarr)) $iarr[] = $npcs[$nipval];
+					$iarr[] = $tvitm;
 				}
 			}
 		}

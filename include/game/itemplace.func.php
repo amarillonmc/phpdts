@@ -3,7 +3,7 @@ if (! defined ( 'IN_GAME' )) {
 	exit ( 'Access Denied' );
 }
 
-function get_npc_helpinfo($nlist)
+function get_npc_helpinfo($nlist,$tooltip=1)
 {
 	global $plsinfo,$hplsinfo,$gamecfg,$iteminfo,$clubinfo;
 	//登记非功能性地点信息时合并隐藏地点
@@ -16,127 +16,141 @@ function get_npc_helpinfo($nlist)
 		{
 			foreach(Array('sub','asub','esub') as $tsub)
 			{
-				foreach($npcs[$tsub] as $n => $npc)
+				if(!empty($npcs[$tsub]))
 				{
-					$snpc = array_merge($npcs,$npc);
-					unset($snpc['sub']);unset($snpc['asub']);unset($snpc['esub']);
-					foreach(Array('p','k','g','c','d','f') as $val)
+					foreach($npcs[$tsub] as $n => $npc)
 					{
-						if(isset($snpc['w'.$val]))
+						$snpc = array_merge($npcs,$npc);
+						unset($snpc['sub']);unset($snpc['asub']);unset($snpc['esub']);
+						foreach(Array('p','k','g','c','d','f') as $val)
 						{
-							if(isset($snpc['skill']))
+							if(isset($snpc['w'.$val]))
 							{
-								$snpc['skill'] .= '(?)';
+								if(isset($snpc['skill']))
+								{
+									$snpc['skill'] .= '(?)';
+								}
+								else 
+								{
+									$snpc['skill'] = '不定';
+								}
+								break;
+							}
+						}
+						if($snpc['gd'] == 'm' || $snpc['gd'] == 'f')
+						{
+							$snpc['gd'] = $snpc['gd']=='m' ? '男' : '女';
+						}
+						else 
+						{
+							$snpc['gd'] = '未知';
+						}
+						if(isset($snpc['pls']))
+						{
+							if($tsub == 'esub')
+							{
+								$snpc['pls'] = '原地';
 							}
 							else 
 							{
-								$snpc['skill'] = '不定';
+								$snpc['pls'] = $snpc['pls']==99 ? '随机' : $plsinfo[$snpc['pls']];
 							}
-							break;
+							
 						}
-					}
-					if($snpc['gd'] == 'm' || $snpc['gd'] == 'f')
-					{
-						$snpc['gd'] = $snpc['gd']=='m' ? '男' : '女';
-					}
-					else 
-					{
-						$snpc['gd'] = '未知';
-					}
-					$snpc['pls'] = $snpc['pls']==99 ? '随机' : $plsinfo[$snpc['pls']];
-					$snpc['club'] = $snpc['club']==99 ? '第一形态' : $clubinfo[$snpc['club']];
-					//合并装备名
-					foreach(Array('wep','arb','arh','ara','arf','art') as $t1) 
-					{
-						foreach(Array('','k','e','s','sk') as $t2)
+						if(isset($snpc['club'])) $snpc['club'] = $snpc['club']==99 ? '第一形态' : $clubinfo[$snpc['club']];
+						//合并装备名
+						foreach(Array('wep','arb','arh','ara','arf','art') as $t1) 
 						{
-							if(isset($snpc[$t1.$t2]))
+							foreach(Array('','k','e','s','sk') as $t2)
 							{
-								//为装备名添加tooltip效果
-								if($t2 == '')
+								if(isset($snpc[$t1.$t2]))
 								{
-									$snpc[$t1.$t2] = parse_itm_desc($snpc[$t1.$t2],'m');
-								}
-								//为装备类别添加tooltip效果
-								elseif($t2 == 'k')
-								{
-									foreach($iteminfo as $info_key => $info_value)
+									//为装备名添加tooltip效果
+									if($t2 == '' && $tooltip)
 									{
-										if(strpos($snpc[$t1.$t2],$info_key)===0)
+										$snpc[$t1.$t2] = parse_itm_desc($snpc[$t1.$t2],'m');
+									}
+									//为装备类别添加tooltip效果
+									elseif($t2 == 'k'  && $tooltip)
+									{
+										foreach($iteminfo as $info_key => $info_value)
 										{
-											$snpc[$t1.$t2] = parse_itm_desc($info_key,'k');
-											break;
+											if(strpos($snpc[$t1.$t2],$info_key)===0)
+											{
+												$snpc[$t1.$t2] = parse_itm_desc($info_key,'k');
+												break;
+											}
+										}
+									}
+									//为装备属性添加tooltip效果
+									elseif($t2 == 'sk' && $tooltip)
+									{
+										$tmpsk = get_itmsk_array($snpc[$t1.$t2]);
+										foreach($tmpsk as $sk)
+										{
+											if(!empty($snpc[$t1.$t2.'_words']))
+											{
+												$snpc[$t1.$t2.'_words'] .= "+".parse_itm_desc($sk,'sk');
+											}
+											else
+											{
+												$snpc[$t1.$t2.'_words'] = parse_itm_desc($sk,'sk');
+											}
 										}
 									}
 								}
-								//为装备属性添加tooltip效果
-								elseif($t2 == 'sk')
+								else 
 								{
-									$tmpsk = get_itmsk_array($snpc[$t1.$t2]);
-									foreach($tmpsk as $sk)
-									{
-										if(!empty($snpc[$t1.$t2.'_words']))
-										{
-											$snpc[$t1.$t2.'_words'] .= "+".parse_itm_desc($sk,'sk');
-										}
-										else
-										{
-											$snpc[$t1.$t2.'_words'] = parse_itm_desc($sk,'sk');
-										}
-									}
+									$snpc[$t1.$t2] = '-';
 								}
-							}
-							else 
-							{
-								$snpc[$t1.$t2] = '-';
 							}
 						}
-					}
-					//合并道具名
-					for($ni=0;$ni<=6;$ni++)
-					{
-						foreach(Array('','k','e','s','sk') as $t2)
+						//合并道具名
+						for($ni=0;$ni<=6;$ni++)
 						{
-							if(isset($snpc['itm'.$t2.$ni]))
+							foreach(Array('','k','e','s','sk') as $t2)
 							{
-								//为装备名添加tooltip效果
-								if($t2 == '')
+								if(isset($snpc['itm'.$t2.$ni]))
 								{
-									$snpc['itm'.$t2.$ni] = parse_itm_desc($snpc['itm'.$t2.$ni],'m');
-								}
-								//为装备类别添加tooltip效果
-								elseif($t2 == 'k')
-								{
-									foreach($iteminfo as $info_key => $info_value)
+									//为装备名添加tooltip效果
+									if($t2 == '' && $tooltip)
 									{
-										if(strpos($snpc['itm'.$t2.$ni],$info_key)===0)
+										$snpc['itm'.$t2.$ni] = parse_itm_desc($snpc['itm'.$t2.$ni],'m');
+									}
+									//为装备类别添加tooltip效果
+									elseif($t2 == 'k' && $tooltip)
+									{
+										foreach($iteminfo as $info_key => $info_value)
 										{
-											$snpc['itm'.$t2.$ni] = parse_itm_desc($info_key,'k');
-											break;
+											if(strpos($snpc['itm'.$t2.$ni],$info_key)===0)
+											{
+												$snpc['itm'.$t2.$ni] = parse_itm_desc($info_key,'k');
+												break;
+											}
 										}
 									}
-								}
-								//为装备属性添加tooltip效果
-								elseif($t2 == 'sk')
-								{
-									$tmpsk = get_itmsk_array($snpc['itm'.$t2.$ni]);
-									foreach($tmpsk as $sk)
+									//为装备属性添加tooltip效果
+									elseif($t2 == 'sk' && $tooltip)
 									{
-										if(!empty($snpc['itm'.$t2.$ni.'_words']))
+										$tmpsk = get_itmsk_array($snpc['itm'.$t2.$ni]);
+										foreach($tmpsk as $sk)
 										{
-											$snpc['itm'.$t2.$ni.'_words'] .= "+".parse_itm_desc($sk,'sk');
-										}
-										else
-										{
-											$snpc['itm'.$t2.$ni.'_words'] = parse_itm_desc($sk,'sk');
+											if(!empty($snpc['itm'.$t2.$ni.'_words']))
+											{
+												$snpc['itm'.$t2.$ni.'_words'] .= "+".parse_itm_desc($sk,'sk');
+											}
+											else
+											{
+												$snpc['itm'.$t2.$ni.'_words'] = parse_itm_desc($sk,'sk');
+											}
 										}
 									}
 								}
 							}
 						}
+						$tnlist[$i][$tsub][$n] = $snpc;
+						unset($snpc);
 					}
-					$tnlist[$i][$tsub][$n] = $snpc;
-					unset($snpc);
 				}
 			}
 		}
@@ -257,13 +271,32 @@ function get_item_place($which)
 				}
 			}				
 		}
-	}
+	}*/
 	//NPC掉落
-	include_once config('npc',$gamecfg);
-	include_once config('addnpc',$gamecfg);
-	include_once config('evonpc',$gamecfg);
-	$nownpclist = Array();
-	$nownpclist = $npcinfo+$anpcinfo;
+	$result .= get_item_npcdrop($which);
+	//头衔附赠
+	global $title_valid;
+	foreach($title_valid as $tv => $tvarr)
+	{
+		foreach($tvarr as $tvkey => $tvitm)
+		{
+			if(in_array($tvkey,array('wep','arb','arh','ara','arf','art','itm1','itm2','itm3','itm4','itm5','itm6')) && ($which == $tvitm))
+			{
+				$result.="头衔【{$tv}】的入场奖励 \r";
+				break;
+			}
+		}
+	}
+	if ($which == "悲叹之种") $result.="通过使用『灵魂宝石』强化物品失败获得 \r";
+	return $result;
+}
+
+function get_item_npcdrop($which)
+{
+	global $npcinfo,$anpcinfo,$enpcinfo,$typeinfo;
+
+	$result = '';
+	$nownpclist = $npcinfo;
 	foreach($enpcinfo as $ekey => $enpcs)
 	{
 		foreach($enpcs as $sname => $enpc)
@@ -271,7 +304,14 @@ function get_item_place($which)
 			$nownpclist[$ekey]['sub'][$sname] = $enpc;
 		}
 	}
-	foreach($nownpclist as $npcs)
+	foreach($anpcinfo as $akey => $anpcs)
+	{
+		foreach($anpcs['sub'] as $aid => $anpc)
+		{
+			$nownpclist[$akey]['sub']['a'.$aid] = $anpc;
+		}
+	}
+	foreach($nownpclist as $ntype => $npcs)
 	{
 		foreach(array('wep','arb','arh','ara','arf','art','itm1','itm2','itm3','itm4','itm5','itm6') as $nipval)
 		{
@@ -279,16 +319,20 @@ function get_item_place($which)
 			{
 				foreach($npcs['sub'] as $npc)
 				{
-					if (isset($npc[$nipval]) && $npc[$nipval]==$which)
+					$npc = array_merge($npcs,$npc);
+					if(isset($npc[$nipval]) && ($which == $npc[$nipval]))
 					{
-						$result.="击败NPC {$npc['name']}时获得 \r";
-						break;
+						$nresult ="击败{$npc['name']}后拾取 \r";
+						if(strpos($result,$nresult)===false)
+						{
+							$result .= $nresult;
+						}
 					}
 				}
 			}
 		}
-	}*/
-	if ($which=="悲叹之种") $result.="通过使用『灵魂宝石』强化物品失败获得 \r";
+	}
+
 	return $result;
 }
 ?>

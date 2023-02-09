@@ -15,6 +15,14 @@ if($command != 'submitedit'){
 	$npcdata = dbsearch($start,$checkmode,$checkinfo);
 }
 
+$in_file = config('itmlist',$gamecfg);
+if(!file_exists($in_file))
+{
+	require 'sp_ilist.php';
+	get_itm_namelist();
+}
+include_once($in_file);
+$temp_item_namelist = $item_namelist;
 
 if($command == 'kill' || $command == 'live' || $command == 'del') {
 	$operlist = $operlist2 = $dfaillist = $gfaillist = array();
