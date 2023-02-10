@@ -15,6 +15,7 @@ $presentfile = config('present',$gamecfg);
 $boxfile = config('box',$gamecfg);
 $vnmixfile = config('vnmixitem',$gamecfg);
 include_once $mixfile;
+include_once $vnmixfile;
 $writefile = GAME_ROOT.TPLDIR.'/mixhelp.htm';
 
 include_once config('npc',$gamecfg);
@@ -88,7 +89,6 @@ if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemti
 			}
 			$mixitem[$mix['class']][] = array('stuff' => $mix['stuff'], 'result' => array($mix['result'][0],$mixitmk,$mix['result'][2],$mix['result'][3],$mixitmsk));
 		}
-		
 	}
 	
 	$mixclass = array(
@@ -108,7 +108,6 @@ if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemti
 		'cube'=> array('方块系道具','yellow'),
 		'item'=> array('其他道具','yellow'),
 		'titles'=> array('头衔奖励相关道具','sienna'),
-		'VN'=> array('玩家原创道具','lime'),
 		);
 	$mixhelpinfo = '';
 	foreach($mixitem as $class => $list){
@@ -150,6 +149,81 @@ if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemti
 //			$mixhelpinfo .= "<td class=\"b3\">→</td>
 //					<td class=\"b3\" title=\"{$val['result'][1]}/{$val['result'][2]}/{$val['result'][3]}{$itmskword}\"><span>{$val['result'][0]}</span></td>
 //					<td class=\"b3\"><span>{$val['result'][1]}/{$val['result'][2]}/{$val['result'][3]}{$itmskword}</span></td>
+			$mixhelpinfo .= "<td class=\"b3\">→</td>
+			<td class=\"b3\"><span>{$val['result'][0]}</span></td>
+			<td class=\"b3\"><span>{$val['result'][1]}/{$val['result'][2]}/{$val['result'][3]}{$itmskword}</span></td>
+				</tr>
+				";
+		}
+		$mixhelpinfo .= "</table>\n";
+	}
+
+	$mixhelpinfo .= "\r <br><span class='evergreen'>此外，游戏中还包含由玩家提交的原创合成：</span><br> \r";
+
+	# 玩家原创合成部分
+	foreach($vn_mixinfo as $mix)
+	{
+		if($mix['class'] !== 'hidden')
+		{
+			//名字
+			$mix['result'][0] = parse_itm_desc($mix['result'][0],'m');
+			//类别
+			foreach($iteminfo as $info_key => $info_value){
+				if(strpos($mix['result'][1],$info_key)===0){
+					$mixitmk = parse_itm_desc($info_key,'k');
+					break;
+				}
+			}
+			//属性
+			$mixitmsk = '';
+			if(!empty($mix['result'][4]) && !is_numeric($mix['result'][4])){
+				$mix_sk = get_itmsk_array($mix['result'][4]); $mixitmsk = '';
+				foreach($mix_sk as $sk_value)
+				{
+					if(!empty($mixitmsk)) $mixitmsk .= '+'.parse_itm_desc($sk_value,'sk');
+					else $mixitmsk = parse_itm_desc($sk_value,'sk');
+				}
+			}
+			$vmixitem[$mix['class']][] = array('name' => $mix['name'], 'stuff' => $mix['stuff'], 'result' => array($mix['result'][0],$mixitmk,$mix['result'][2],$mix['result'][3],$mixitmsk));
+		}
+	}
+	
+	foreach($vmixitem as $class => $list){
+		$classname = $mixclass[$class][0];
+		$classcolor = $mixclass[$class][1];
+		$mixhelpinfo .= "<p><span class=\"$classcolor\">{$classname}合成表 - 玩家原创</span>：</p>\n";
+		$mixhelpinfo .= 
+		"<table>
+			<tr>
+				<td class=\"b1\" width=100px><span>配方作者</span></td>
+				<td class=\"b1\" height=20px><span>合成材料一</span></td>
+				<td class=\"b1\"><span>合成材料二</span></td>
+				<td class=\"b1\"><span>合成材料三</span></td>
+				<td class=\"b1\"><span>合成材料四</span></td>
+				<td class=\"b1\"><span>合成材料五</span></td>
+				<td class=\"b1\"></td>
+				<td class=\"b1\"><span>合成结果</span></td>
+				<td class=\"b1\"><span>物品属性</span></td>
+			</tr>
+			";
+		foreach($list as $val){
+			if(!empty($val['result'][4])){$itmskword = '/'.$val['result'][4];}
+			else{$itmskword = '';}
+			if(!isset($val['stuff'][2])){$val['stuff'][2] = '-';}
+			if(!isset($val['stuff'][3])){$val['stuff'][3] = '-';}
+			if(!isset($val['stuff'][4])){$val['stuff'][4] = '-';}
+			$mixhelpinfo .= "<tr><td class=\"b3\">{$val['name']}</td>";
+			for ($i=0; $i<=4; $i++)
+			{
+				$mixhelpinfo .= "<td class=\"b3\" ";
+				if ($i==0)  $mixhelpinfo .= "height=20px";
+				if ($val['stuff'][$i]!='-')
+				{
+					$tooltipinfo = get_item_place($val['stuff'][$i]);
+					if(!empty($tooltipinfo)) $mixhelpinfo .= "><span tooltip=\"".$tooltipinfo."\" ";
+				}
+				$mixhelpinfo .= ">{$val['stuff'][$i]}</span></td>";
+			}
 			$mixhelpinfo .= "<td class=\"b3\">→</td>
 			<td class=\"b3\"><span>{$val['result'][0]}</span></td>
 			<td class=\"b3\"><span>{$val['result'][1]}/{$val['result'][2]}/{$val['result'][3]}{$itmskword}</span></td>

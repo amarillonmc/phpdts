@@ -61,6 +61,10 @@ $rageinfo = Array('平静','愤怒','暴怒','已经死亡');
 $wepeinfo = Array('不值一提','略有威胁','威力可观','无敌神器');
 $poseinfo = Array('通常','作战姿态','强袭姿态','探物姿态','偷袭姿态','治疗姿态','✧狂飙姿态✧');
 $tacinfo = Array('通常','','重视防御','重视反击','重视躲避');
+//不会生成在危险地图的NPC（女主）
+$hidding_typelist = Array(14);
+//不会因躲避禁区、追杀玩家等原因离开地图的NPC（红暮、■、执行官、英灵（没有巫师）、SCP、种火）
+$sentinel_typelist = Array(1,4,7,9,13,20,21,22,88,92);
 $typeinfo = Array(
 	0=>'参战者',
 	1=>'红杀将军',
@@ -1283,7 +1287,6 @@ $title_valid = Array
 );
 
 //club20 元素大师：
-//元素列表 可能需要一些布灵布灵的特效
 $sparkle = '<span class="sparkle">✨</span>';
 $elements_info = Array
 (
@@ -1294,6 +1297,8 @@ $elements_info = Array
 	4 => $sparkle.'<span class="mtgwhite">昼闪闪</span>'.$sparkle,
 	5 => $sparkle.'<span class="mtgblack">夜静静</span>'.$sparkle,
 );
+//NPC在躲避禁区、追杀玩家时不会进入的危险区（默认：无月之影、SCP、雏菊、英灵殿）
+$deepzones = Array(0,32,33,34);
 //安全箱位置
 $depots = Array(5,28);
 $shops = Array(0,14,27);

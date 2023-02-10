@@ -386,10 +386,15 @@ function discover($schmode = 0) {
 	global $art,$pls,$now,$log,$mode,$command,$cmd,$event_obbs,$weather,$pls,$club,$pose,$tactic,$inf,$item_obbs,$enemy_obbs,$trap_min_obbs,$trap_max_obbs,$bid,$db,$tablepre,$gamestate,$corpseprotect,$action,$skills,$rp,$aidata;
 	$event_dice = rand(0,99);
 	if(($event_dice < $event_obbs)||(($art!="Untainted Glory")&&($pls==34)&&($gamestate != 50))){
+		//echo "进入事件判定<br>";
 		include_once GAME_ROOT.'./include/game/event.func.php';
-		event();
-		$mode = 'command';
-		return;
+		$event_flag = event();
+		//触发了事件，中止探索推进
+		if($event_flag)
+		{
+			$mode = 'command';
+			return;
+		}
 	}
 	
 	include_once GAME_ROOT. './include/game/aievent.func.php';//AI事件
@@ -417,6 +422,7 @@ function discover($schmode = 0) {
 	
 	$trap_dice=rand(0,99);//随机数，开始判断是否踩陷阱
 	if($trap_dice < $trap_max_obbs){ //踩陷阱概率最大值
+		//echo "进入踩陷阱判定<br>";
 		$trapresult = $db->query("SELECT * FROM {$tablepre}maptrap WHERE pls = '$pls' ORDER BY itmk DESC");
 //		$traplist = Array();
 //		while($trap0 = $db->fetch_array($result)){
@@ -510,6 +516,7 @@ function discover($schmode = 0) {
 	$mode_dice = rand(0,99);
 	if($mode_dice < $schmode) 
 	{
+		//echo "进入遇敌判定<br>";
 		global $pid,$corpse_obbs,$teamID,$fog,$bid,$gamestate;
 		global $clbpara,$clbstatusa,$clbstatusb,$clbstatusc,$clbstatusd,$clbstatuse;
 
@@ -653,6 +660,7 @@ function discover($schmode = 0) {
 		$mode = 'command';
 		return;
 	} else {
+		//echo "进入道具判定<br>";
 		$find_r = get_find_r($weather,$pls,$pose,$tactic,$club,$inf);
 		$find_obbs = $item_obbs + $find_r;
 		$item_dice = rand(0,99);
