@@ -56,6 +56,8 @@
 	}
 
 	# 战斗流程：
+	# 注意：无论任何情况，都不要在rev_combat()执行完之前插入return！如果想要跳过战斗阶段，请使用goto battle_finish_flag;
+	# 如果无论如何都要提前return，请完整执行一遍 #保存双方状态 这一块的内容；
 	function rev_combat(&$pa,&$pd,$active,$wep_kind='',$log_print=1) 
 	{
 		global $db,$tablepre,$now,$mode,$main,$cmd,$log;
@@ -175,8 +177,8 @@
 		{
 			$pd['hp'] = 0;
 			//提前进行战斗结果判断。注意：这里的pa、pd顺序。
-			$att_result = rev_combat_result($pa,$pd,$active);
-		}	
+			$def_result = rev_combat_result($pa,$pd,$active);
+		}
 		# 没有暴毙，结算反击伤害
 		elseif(isset($def_dmg))
 		{
@@ -427,7 +429,7 @@
 				//获取攻击方(pa)能造成的属性伤害类型
 				$pa['ex_attack_keys'] = get_base_ex_att_array($pa,$pd,$active);
 				//攻击方(pa)存在属性伤害：
-				if($pa['ex_attack_keys'])
+				if(!empty($pa['ex_attack_keys']))
 				{	
 					//获取攻击方(pa)在造成属性伤害前触发的事件（检查pd身上是否有防御属性，pa是否触发了属穿）
 					deal_ex_damage_prepare_events($pa,$pd,$active);
@@ -668,7 +670,7 @@
 		//发送news
 		$kname = $pa['type'] ? $pa['name'] : get_title_desc($pa['nick']).' '.$pa['name'];
 		$dname = $pd['type'] ? $pd['name'] : get_title_desc($pd['nick']).' '.$pd['name'];
-		addnews ($now,'death'.$pd['state'],$pd['name'],$dname,$kname,$pa['wep_name'],$lastword );
+		addnews ($now,'death'.$pd['state'],$dname,$dtype,$kname,$pa['wep_name'],$lastword );
 
 		return $lastword;
 	}
@@ -791,7 +793,7 @@
 		}
 		//大的打小的怒气反而涨的快 什么逻辑？狂扁小朋友喔？
 		$rgup = round (($pa['lvl'] - $pd['lvl'])/3);
-		$rg += $rgup > 0 ? $rgup : 1;
+		$pa['rage'] += $rgup > 0 ? $rgup : 1;
 		return;
 	}
 

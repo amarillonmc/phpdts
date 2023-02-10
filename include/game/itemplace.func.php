@@ -192,13 +192,29 @@ function get_item_place($which)
 		}
 	include_once config('mixitem',$gamecfg);
 	global $mixinfo;
-	if(is_array($mixinfo))
+	if(!empty($mixinfo))
 	{
 		foreach($mixinfo as $lst)
 		{
 			if ($lst['result'][0]==$which || $lst['result'][0]==$which.' ')
 			{
 				$result.="通过合成获取 \r";
+				break;
+			}
+		}
+	}
+	include_once config('vnmixitem',$gamecfg);
+	if(!empty($vn_mixinfo))
+	{
+		foreach($vn_mixinfo as $vlst)
+		{
+			if ($vlst['result'][0]==$which || $vlst['result'][0]==$which.' ')
+			{
+				$vresult ="通过合成获取 \r";
+				if(strpos($result,$vresult)===false)
+				{
+					$result .= $vresult;
+				}
 				break;
 			}
 		}
