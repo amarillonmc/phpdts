@@ -5,7 +5,8 @@
 	<!--{if !empty($temp_mixinfo)}-->
 	<table class="admin">
 		<tr>
-			<th><span>提交者</span></th>
+			<th width="100px"><span>提交者</span></th>
+			<th width="60px"><span>道具分组</span></th>
 			<th><span>$stuff_tips[0]</span></th>
 			<th><span>$stuff_tips[1]</span></th>
 			<th><span>$stuff_tips[2]</span></th>
@@ -13,11 +14,12 @@
 			<th><span>$stuff_tips[4]</span></th>
 			<th width="25px"><span></span></th>
 			<th><span>$result_tips[0]</span></th>
-			<th width="35px">调整<span></span></th>
+			<th width="45px">调整<span></span></th>
 		</tr>
 		<!--{loop $temp_mixinfo $key $arr}-->
 				<tr>
 					<td style="text-align: center;">$arr['name']</td>
+					<td style="text-align: center;">$vrclassinfo[$arr['class']][0]</td>
 					<td style="text-align: center;"><!--{if isset($arr['stuff'][0])}-->$arr['stuff'][0]<!--{else}-->-<!--{/if}--></td>
 					<td style="text-align: center;"><!--{if isset($arr['stuff'][1])}-->$arr['stuff'][1]<!--{else}-->-<!--{/if}--></span></td>
 					<td style="text-align: center;"><!--{if isset($arr['stuff'][2])}-->$arr['stuff'][2]<!--{else}-->-<!--{/if}--></span></td>
@@ -25,7 +27,7 @@
 					<td style="text-align: center;"><!--{if isset($arr['stuff'][4])}-->$arr['stuff'][4]<!--{else}-->-<!--{/if}--></td>
 					<td style="text-align: center;"> → </td>
 					<td style="text-align: center;">$arr['result'][0]/$arr['result'][1]/$arr['result'][2]/$arr['result'][3]<!--{if isset($arr['result'][4])}-->/$arr['result'][4]<!--{/if}--></td>
-					<td width="35px">
+					<td style="text-align: center;">
 						<!--<input type="submit" value="编辑" onclick="$('vncmd').value='edit_$key'">-->
 						<input type="submit" value="回退" onclick="$('vncmd').value='del_$key'">
 					</td>

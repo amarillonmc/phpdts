@@ -45,6 +45,7 @@
             <td class="b1"><span>$result_tips[6]</span></td>
             <td class="b1"><span>$result_tips[7]</span></td>
             <td class="b1"><span>$result_tips[8]</span></td>
+            <td class="b1"><span>$result_tips[9]</span></td>
         </tr>
         <tr>
             <td class="b3" width=20px>↪</td>
@@ -96,6 +97,13 @@
                 <select name="vrsk4">
 					<!--{loop $temp_vn_itemspkinfo $sk $skinfo}-->
 					<option value="$sk" <!--{if $sk===$uvrsk4}-->selected<!--{/if}-->>$skinfo
+                    <!--{/loop}-->
+                </select>
+            </td>
+            <td class="b3">
+                <select name="vrck">
+					<!--{loop $vrclassinfo $ck $vcarr}-->
+					<option value="$ck" <!--{if $ck===$uvrck}-->selected<!--{/if}-->>$vcarr[0]
                     <!--{/loop}-->
                 </select>
             </td>

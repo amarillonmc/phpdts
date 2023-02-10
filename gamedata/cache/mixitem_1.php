@@ -374,11 +374,11 @@ $mixinfo = array
 	array('class' => 'hidden', 'stuff' => array('［ｒｍ］','［－ｒ］','［－ｆ］'),'result' => array('【E.S.C.A.P.E】','Y',1,1,),),
 	);
 
-	$vn_file = GAME_ROOT.'./gamedata/cache/vnmixitem_1.php';
+	/*$vn_file = GAME_ROOT.'./gamedata/cache/vnmixitem_1.php';
 	if(file_exists($vn_file))
 	{
 		include_once $vn_file;
 		//$mixinfo += $vn_mixinfo;
 		$mixinfo = array_merge($mixinfo,$vn_mixinfo);
-	}
+	}*/
 ?>

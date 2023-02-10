@@ -30,7 +30,7 @@ for($i=0;$i<=4;$i++)
 	${'uvs'.$i} = '';
 	${'uvrsk'.$i} = 0;
 }
-$uvrn = ''; $uvrk = 0; $uvre = 1; $uvrs = 0;
+$uvrn = ''; $uvrk = 0; $uvre = 1; $uvrs = 0; $uvrck = 'item';
 
 //初始化允许选择的道具类别、属性
 $temp_vn_iteminfo = $gmflag ? $vn_iteminfo+$vn_gm_iteminfo : $vn_iteminfo;
@@ -70,7 +70,7 @@ if(isset($exmode) && strpos($exmode,'ep')===0)
 	$edit_name = $flag['name']; $edit_result = $flag['result'][0];
 	unset($flag);
 	//通过检查，打包。
-	$flag = filter_post_mixlist($vsname0,$vsname1,$vsname2,$vsname3,$vsname4,$vrname,$vrk,$vre,$vrs,$vrsk0,$vrsk1,$vrsk2,$vrsk3,$vrsk4);
+	$flag = filter_post_mixlist($vsname0,$vsname1,$vsname2,$vsname3,$vsname4,$vrname,$vrk,$vre,$vrs,$vrsk0,$vrsk1,$vrsk2,$vrsk3,$vrsk4,$vrck);
 	if($flag && !is_array($flag) || ((!isset($flag['result'])) || !isset($flag['stuff'])))
 	{	//有非法参数，报错
 		$vlog = $flag;
@@ -254,7 +254,9 @@ elseif($vnmode=='编辑') //哇靠！从总览界面传回来的编辑申请。�
 			if(isset($edit_arr['stuff'][$i])) ${'uvs'.$i} = $edit_arr['stuff'][$i];
 			if(isset($edit_arr['result'][4][$i])) ${'uvrsk'.$i} = $edit_arr['result'][4][$i];
 		}
-		$uvrn = $edit_arr['result'][0]; $uvrk = $edit_arr['result'][1]; $uvre = $edit_arr['result'][2]; $uvrs = $edit_arr['result'][3]=='∞' ? 0 : $edit_arr['result'][3];
+		$uvrn = $edit_arr['result'][0]; $uvrk = $edit_arr['result'][1]; $uvre = $edit_arr['result'][2]; 
+		$uvrs = $edit_arr['result'][3]=='∞' ? 0 : $edit_arr['result'][3];
+		$uvrck = isset($edit_arr['class']) ? $edit_arr['class'] : 'item';
 	}
 	error_edit1:
 	include template('vn_postitem');
@@ -270,7 +272,7 @@ elseif($vnmode=='postmode')
 		goto errorlog;
 	}
 	//检查参数合法性并打包
-	$flag = filter_post_mixlist($vsname0,$vsname1,$vsname2,$vsname3,$vsname4,$vrname,$vrk,$vre,$vrs,$vrsk0,$vrsk1,$vrsk2,$vrsk3,$vrsk4);
+	$flag = filter_post_mixlist($vsname0,$vsname1,$vsname2,$vsname3,$vsname4,$vrname,$vrk,$vre,$vrs,$vrsk0,$vrsk1,$vrsk2,$vrsk3,$vrsk4,$vrck);
 	if($flag && !is_array($flag) || ((!isset($flag['result'])) || !isset($flag['stuff'])))
 	{	//参数非法，返回log
 		$vlog = $flag;
@@ -433,7 +435,7 @@ function writeover_vn_mixilst($varr=Array())
 		$vn_mixinfo = Array();
 	}
 	$narr = Array();
-	$narr['class'] = 'VN';
+	$narr['class'] = isset($varr['class']) ? $varr['class'] : 'item';
 	foreach($varr as $key=>$arr)
 	{
 		if($key == 'stuff')
@@ -479,14 +481,19 @@ function unlock_vn_cache_file()
 }
 
 //检查输入的素材合法性。非法返回log，合法返回一个打包好的数组。
-function filter_post_mixlist($vsname0,$vsname1,$vsname2,$vsname3,$vsname4,$vrname,$vrk,$vre,$vrs,$vrsk0,$vrsk1,$vrsk2,$vrsk3,$vrsk4)
+function filter_post_mixlist($vsname0,$vsname1,$vsname2,$vsname3,$vsname4,$vrname,$vrk,$vre,$vrs,$vrsk0,$vrsk1,$vrsk2,$vrsk3,$vrsk4,$vrck)
 {
-	global $gmflag,$temp_vn_iteminfo,$temp_vn_itemspkinfo,$result_tips;
+	global $gmflag,$temp_vn_iteminfo,$temp_vn_itemspkinfo,$result_tips,$vrclassinfo;
 	$vlog = ''; $slist = Array(); $sklist = Array();
 	//检查道具用途
 	if(!isset($vrk) || !isset($temp_vn_iteminfo[$vrk]))
 	{
 		$vlog = '<span class="red">错误：输入了无效的'.$result_tips[1].'。</span><br>';
+		return $vlog;
+	}
+	if(!isset($vrck) || !isset($vrclassinfo[$vrck]))
+	{
+		$vlog = '<span class="red">错误：输入了无效的'.$result_tips[9].'。</span><br>';
 		return $vlog;
 	}
 	//检查道具效果、耐久
@@ -541,6 +548,8 @@ function filter_post_mixlist($vsname0,$vsname1,$vsname2,$vsname3,$vsname4,$vrnam
 	}
 	//通过合法性检测 导入新配方
 	$newarr = Array();
+	//导入合成分类
+	$newarr['class'] = $vrck;
 	//导入合成素材
 	foreach($slist as $st) $newarr['stuff'][] = $st;
 	//导入合成结果

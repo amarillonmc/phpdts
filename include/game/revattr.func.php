@@ -430,7 +430,10 @@
 		}
 
 		# 获取pa社团技能对攻击力的加成
-		rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
+		if(!empty($pa['skills']))
+		{
+			rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
+		}
 		# 汇总：：
 		$base_att = $pa['att'] + $pa['wepe_t'] + $att1;
 
@@ -527,7 +530,10 @@
 			}
 		}
 		# 获取pd社团技能对防御力的加成
-		rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
+		if(!empty($pd['skills']))
+		{
+			rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
+		}
 		# 汇总：
 		$total_def = $base_def+$equip_def+$def1;
 

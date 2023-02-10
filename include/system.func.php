@@ -112,7 +112,19 @@ function rs_game($mode = 0) {
 					}
 					//$npc['wp'] = $npc['wk'] = $npc['wg'] = $npc['wc'] = $npc['wd'] = $npc['wf'] = $npc['skill'];
 					if($npc['gd'] == 'r'){$npc['gd'] = rand(0,1) ? 'm':'f';}
-					do{$rpls=rand(1,$plsnum-1);}while ($rpls==34);
+					//初始化NPC所在位置
+					global $hidding_typelist,$deepzones;
+					//女主不会刷新在危险区域
+					if(in_array($npc['type'],$hidding_typelist))
+					{
+						do{
+							$rpls=rand(1,$plsnum-1);
+						}while (in_array($rpls,$deepzones));
+					}
+					else 
+					{
+						do{$rpls=rand(1,$plsnum-1);}while ($rpls==34);
+					}
 					if($npc['pls'] == 99){$npc['pls'] = $rpls; }
 					$npc['state'] = 0;
 					$npc=player_format_with_db_structure($npc);
@@ -289,6 +301,7 @@ function rs_sttime() {
 function add_once_area($atime) {
 	//实际上GAMEOVER的判断是在common.inc.php里
 	global $db,$tablepre,$now,$gamestate,$areaesc,$arealist,$areanum,$arealimit,$areaadd,$plsinfo,$weather,$hack,$validnum,$alivenum,$deathnum;
+	global $deepzones,$sentinel_typelist,$npc_away_from_deepzones;
 	
 	if (($gamestate > 10)&&($now > $atime)) {
 		$plsnum = sizeof($plsinfo) - 1;
@@ -349,8 +362,21 @@ function add_once_area($atime) {
 					do{$pls = $arealist[rand($areanum+1,$plsnum)];}while ($pls==34);
 					$db->query("UPDATE {$tablepre}players SET pls='$pls' WHERE pid=$pid ");
 					}
-				} elseif($sub['type'] != 1 && $sub['type'] != 7 && $sub['type'] != 9 && $sub['type'] != 13 && $sub['type'] != 20 && $sub['type'] != 21 && $sub['type'] != 88 && $sub['type'] != 22 && $sub['type'] != 92) {
-					do{$pls = $arealist[rand($areanum+1,$plsnum)];}while ($pls==34);
+				//躲避禁区判定
+				//} elseif($sub['type'] != 1 && $sub['type'] != 7 && $sub['type'] != 9 && $sub['type'] != 13 && $sub['type'] != 20 && $sub['type'] != 21 && $sub['type'] != 88 && $sub['type'] != 22 && $sub['type'] != 92) {
+				}elseif(!in_array($sub['type'],$sentinel_typelist)){
+					if($npc_away_from_deepzones)
+					{	//开启了NPC不会因躲避禁区移动到危险地图的功能
+						do{
+							$pls = $arealist[rand($areanum+1,$plsnum)];
+						}while (in_array($pls,$deepzones));
+					}
+					else 
+					{
+						do{
+							$pls = $arealist[rand($areanum+1,$plsnum)];
+						}while ($pls==34);
+					}
 					$db->query("UPDATE {$tablepre}players SET pls='$pls' WHERE pid=$pid");
 				}
 			}
