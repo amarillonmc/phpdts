@@ -562,9 +562,9 @@
 				# 没有复活的情况下，执行完后续击杀事件：
 				if(!$revival_flag)
 				{
-					global $alivenum,$deathnum;
+					global $now,$alivenum,$deathnum;
 					$pd['hp'] = 0;
-
+					$pd['endtime'] = $pd['deathtime'] = $now;
 					# 初始化遗言
 					if (!$pd['type'])
 					{
