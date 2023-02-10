@@ -400,8 +400,12 @@ function discover($schmode = 0) {
 	include_once GAME_ROOT. './include/game/aievent.func.php';//AI事件
 	$aidata = false;//用于判断天然呆AI（冴冴这样的）是否已经来到你身后并且很生气
 	aievent(20);//触发AI事件的概率
-	if(is_array($aidata)){
-		include_once GAME_ROOT.'./include/game/attr.func.php';
+	if(is_array($aidata))
+	{
+		//触发了AI追击事件
+		$edata = $aidata;
+		goto battle_flag;
+		/*include_once GAME_ROOT.'./include/game/attr.func.php';
 		$active_r = get_active_r($weather,$pls,$pose,$tactic,$club,$inf,$aidata['pose']);
 		include_once GAME_ROOT.'./include/game/clubskills.func.php';
 		$active_r *= get_clubskill_bonus_active($club,$skills,$aidata['club'],$aidata['skills']);
@@ -417,7 +421,7 @@ function discover($schmode = 0) {
 			include_once GAME_ROOT.'./include/game/combat.func.php';
 			combat(0);
 			return;
-		}
+		}*/
 	}
 	
 	$trap_dice=rand(0,99);//随机数，开始判断是否踩陷阱
@@ -606,6 +610,7 @@ function discover($schmode = 0) {
 				//发现敌人
 				else 
 				{
+					battle_flag:
 					$active_r = get_active_r($weather,$pls,$pose,$tactic,$club,$inf,$edata['pose']);
 					include_once GAME_ROOT.'./include/game/clubskills.func.php';
 					$active_r *= get_clubskill_bonus_active($club,$skills,$edata['club'],$edata['skills']);

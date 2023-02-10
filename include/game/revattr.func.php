@@ -433,15 +433,16 @@
 		if(!empty($pa['skills']))
 		{
 			rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
+			$pa['att'] += $att1;
 		}
 		# 汇总：：
-		$base_att = $pa['att'] + $pa['wepe_t'] + $att1;
+		$base_att = $pa['att'] + $pa['wepe_t'];
 
 		# 初始化tooltip
 		if($tooltip)
 		{
 			$tooltip = "<span tooltip=\" 基础攻击值：{$pa['att']}+{$pa['wepe_t']}";
-			if($att1>0) $tooltip .="+{$att1}";
+			if(!empty($att1)) $tooltip .="+{$att1}";
 			$tooltip .= "\r";
 		}
 		# 计算攻击力修正
@@ -533,15 +534,16 @@
 		if(!empty($pd['skills']))
 		{
 			rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
+			$base_def += $def1;
 		}
 		# 汇总：
-		$total_def = $base_def+$equip_def+$def1;
+		$total_def = $base_def+$equip_def;
 
 		# 初始化tooltip
 		if($tooltip)
 		{
 			$tooltip = "<span tooltip=\" 基础防御值：{$base_def}+{$equip_def}";
-			if($def1>0) $tooltip .="+{$def1}";
+			if(!empty($def1)) $tooltip .="+{$def1}";
 			$tooltip .= "\r";
 		}
 		# 计算防御力修正

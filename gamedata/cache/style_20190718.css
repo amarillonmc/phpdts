@@ -63,6 +63,10 @@ table.admin td.tdtitle {
 	TEXT-ALIGN: center;
 }
 
+table.dialogue {
+	border-color: rgba(232, 161, 233, 0.6);
+}
+
 .typewriter {
 	color: #fff;
 	overflow: hidden; /* Ensures the content is not revealed until the animation */
@@ -389,8 +393,8 @@ span.drop:hover .dropdown-menu{
 /*下拉菜单样式本体*/
 .dropdown-menu{
 	display: none;
-	background-size: 0; background-clip: border-box; background-color: rgba(83, 63, 90, 0.8);
-	top:17px; left:-10px; border-radius: 5px;
+	background-size: 0; background-clip: border-box; background-color: rgba(151, 101, 169, 0.8);
+	top:17px; left:-10px; border-radius: 3px;
 	width: 90px; max-width: 90px; 
 	z-index:4; position: absolute;
 }
