@@ -600,9 +600,12 @@
 					get_killer_rp($pa,$pd,$active);
 					# 执行死亡事件（灵魂绑定等）
 					check_death_events($pa,$pd,$active);
-					# 检查成就
-					include_once GAME_ROOT.'./include/game/achievement.func.php';
-					check_battle_achievement($pa['name'],$pd['type'],$pd['name'],$pa['wep_name']);	
+					# 检查成就 大补丁：击杀者是玩家时才会检查成就
+					if(!$pa['type'])
+					{
+						include_once GAME_ROOT.'./include/game/achievement.func.php';
+						check_battle_achievement($pa['name'],$pd['type'],$pd['name'],$pa['wep_name']);	
+					}
 					# 保存游戏进行状态
 					include_once GAME_ROOT.'./include/system.func.php';
 					save_gameinfo();
