@@ -28,10 +28,10 @@ input {cursor: crosshair;}
 .mapspanred{color:#f00;position:relative;font-size: 9pt;line-height:16px}
 .mapspanlime{color:#0f0;position:relative;font-size: 9pt;line-height:16px}
 .mapspanyellow{color:#ff0;position:relative;font-size: 9pt;line-height:16px}
-.minimapspanclan{color:#00ffff;position:relative;font: 7pt "微软雅黑";line-height:14px}
-.minimapspanred{color:#f00;position:relative;font: 7pt "微软雅黑";line-height:14px}
-.minimapspanlime{color:#0f0;position:relative;font: 7pt "微软雅黑";line-height:14px}
-.minimapspanyellow{color:#ff0;position:relative;font: 7pt "微软雅黑";line-height:14px}
+.minimapspanclan{color:#00ffff;position:relative;font:bold 7pt "微软雅黑";line-height:14px}
+.minimapspanred{color:#f00;position:relative;font:bold 7pt "微软雅黑";line-height:14px}
+.minimapspanlime{color:#0f0;position:relative;font:bold 7pt "微软雅黑";line-height:14px}
+.minimapspanyellow{color:#ff0;position:relative;font:bold 7pt "微软雅黑";line-height:14px}
 
 .b1 span{position:relative;}
 .b2 span{position:relative;}

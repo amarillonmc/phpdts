@@ -541,7 +541,7 @@ function init_bgm($force_update=0)
 		# 生成播放器与播放队列 太野蛮了……嘻嘻……
 		if(!empty($bgmlink) && !empty($bgmtype))
 		{
-			$bgmplayer = <<<EOT
+$bgmplayer = <<<EOT
 			<audio id="gamebgm" autoplay controls onplay="$('gamebgm').volume=$volume_r;" onplaying="$('gamebgm').volume=$volume_r;">
 				<source id="gbgm" src="$bgmlink" type="$bgmtype">
 			</audio>
@@ -555,11 +555,9 @@ function init_bgm($force_update=0)
 EOT;
 			foreach($bgmarr as $bgmid2 => $bgms)
 			{
-				$bgmplayer .= <<<EOT
-				<div id="bnm{$bgmid2}">{$bgms['name']}</div>
-				<div id="bgm{$bgmid2}">{$bgms['url']}</div>
-				<div id="bt{$bgmid2}">{$bgms['type']}</div>
-EOT;	
+$bgmplayer .= "<div id=\"bnm{$bgmid2}\">{$bgms['name']}</div>
+				<div id=\"bgm{$bgmid2}\">{$bgms['url']}</div>
+				<div id=\"bt{$bgmid2}\">{$bgms['type']}</div>";
 			}
 		}
 		return $bgmplayer;
@@ -572,8 +570,8 @@ EOT;
 
 function init_mapdata(){
 	global $pls,$plsinfo,$xyinfo,$hack,$arealist,$areanum,$areaadd;
-	global $mapcontent;
 
+	$mpp = Array();
 	$mapvcoordinate = Array('A','B','C','D','E','F','G','H','I','J');
 	for($i=0;$i<count($plsinfo);$i++)
 	{
@@ -587,9 +585,8 @@ function init_mapdata(){
 		$position=explode('-',$xyinfo[$i]);
 		$mpp[$position[0]][$position[1]]=$i;
 	}
-	$mapcontent = <<<EOT
-	<TABLE border="1" cellspacing="0" cellpadding="0" background="map/neomap.jpg" style="padding-left: 5px; float:left;background-size:478px 418px;position:relative;background-repeat:no-repeat;background-position:right bottom;">
-EOT;	
+
+	$mapcontent = '<TABLE border="1" cellspacing="0" cellpadding="0" background="map/neomap.jpg" style="padding-left: 5px; float:left;background-size:478px 418px;position:relative;background-repeat:no-repeat;background-position:right bottom;">';	
 	$mapcontent .= '<TR align="center"><TD colspan="11" height="24" class=b1 align=center>战场地图</TD></TR>';
 	$mapcontent .= '<TR align="center">
 			<TD width="42" height="36" class=map align=center><div class=nttx>坐标</div></TD>';
@@ -603,9 +600,7 @@ EOT;
 		for($j=1;$j<=10;$j++){
 			if(isset($mpp[$mapvcoordinate[$i]][$j]))
 			{
-$mapcontent .= <<<EOT
-					<td width="42" height="36" class="map2" align=middle><a onclick="closeDialog($('terminal'));$('mode').value='command';$('command').value='move';$('moveto').value='{$mpp[$mapvcoordinate[$i]][$j]}';postCmd('gamecmd','command.php');this.disabled=true;"><span class="{$plscolor[$mpp[$mapvcoordinate[$i]][$j]]}">{$plsinfo[$mpp[$mapvcoordinate[$i]][$j]]}</span></a></td>
-EOT;
+				$mapcontent .="<td width=\"42\" height=\"36\" class=\"map2\" align=\"middle\"><a onclick=\"closeDialog($('terminal'));$('mode').value='command';$('command').value='move';$('moveto').value='{$mpp[$mapvcoordinate[$i]][$j]}';postCmd('gamecmd','command.php');this.disabled=true;\"><span class=\"{$plscolor[$mpp[$mapvcoordinate[$i]][$j]]}\">{$plsinfo[$mpp[$mapvcoordinate[$i]][$j]]}</span></a></td>";
 			}else{
 				$mapcontent .= '<td width="42" height="36" class="map2" align=middle><IMG src="map/blank.gif" width="42" height="36" border=0></td>';
 			}
