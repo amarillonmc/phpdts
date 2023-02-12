@@ -650,6 +650,7 @@ function get_itmsk_strlen($sk_value,$max_length=5)
 //将clbpara转为数组
 function get_clbpara($para)
 {
+	if(empty($para)) $para = Array();
 	if(!is_array($para)) return json_decode($para,true);
 	else return $para;
 }

@@ -1,0 +1,42 @@
+<dialog id="terminal" style="max-width: 90%;max-height: 80%;">
+        <div><span class="grey">正在播放：～ <span id="bgmname">$bgmname</span> ～</span></div>
+        <center>
+        <!--{eval $mapdata = init_mapdata();}-->
+        $mapdata 
+        <!--站场地图：单格width:42;height:36;-->
+        <table border="1" cellspacing="0" cellpadding="0" width="120px" height="24px" style="padding-left: 10px; padding-right: 5px; padding-bottom: 5px;float:right;position:relative;">
+            <tr align="center">
+                <TD colspan="2" width="84" height="24" class=b1 align=center>播放控制</TD>
+            </tr>
+            <tr width="84" height="36" class="map">
+                <td td colspan="2">
+                    <span class="eicon" onclick="changeBGM(-1);">⏮️</span>
+                    <span class="eicon" onclick="$('gamebgm').play();">▶️</span>
+                    <span class="eicon" onclick="$('gamebgm').pause();">⏸️</span>
+                    <span class="eicon" onclick="changeBGM();">⏭️</span>
+                </td>
+            </tr>
+            <tr width="84" height="12" style="border: none;"></tr>
+            <tr>
+                <TD colspan="2" width="84" height="24" class=b1 align=center>音量调节</TD>
+            </tr>
+            <tr width="84" height="36" class="map">
+                <td colspan="2">
+                    <span class="eicon" onmousedown="downVolume();showVolume();">⏬</span>
+                    <span id="volume_num">{$volume}%</span>
+                    <span class="eicon" onmousedown="upVolume();showVolume();">⏫</span>
+                </td>
+            </tr>
+            <tr width="84" height="12" style="border: none;"></tr>
+            <!--<tr class="map">
+                <td height="200" rowspan="11">  
+                </td>
+                <td height="200" rowspan="11">  
+                   <input type="range" class="range" min="0" max="100" value="100" style="position: absolute;left: -6%;top: 76%; width:180px;transform: rotate(-90deg);">
+                </td>
+            </tr> -->
+        </table>
+        </center>
+    <img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('terminal'))">
+</dialog>
+

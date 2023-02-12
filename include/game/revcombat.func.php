@@ -723,6 +723,15 @@
 	{
 		global $db,$tablepre,$log,$now,$nosta;
 
+		# 静流下线事件：
+		if($pd['type'] == 15)
+		{
+			//静流AI
+			global $gamevars;
+			$gamevars['sanmadead'] = 1;
+			save_gameinfo();
+		}
+
 		# 快递被劫事件：
 		if(isset($pd['clbpara']['post'])) 
 		{	

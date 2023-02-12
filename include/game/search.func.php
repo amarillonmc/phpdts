@@ -6,10 +6,8 @@ if(!defined('IN_GAME')) {
 
 function move($moveto = 99) {
 	global $lvl,$log,$pls,$pgroup,$plsinfo,$hplsinfo,$inf,$hp,$mhp,$sp,$def,$club,$arealist,$areanum,$hack,$areainfo,$gamestate,$pose,$weather;
-	global $gamestate;
-	$f=false;
-	if ($pls==34 && $gamestate<50) $f=true;
-	if ($moveto==34 && $gamestate<50) $f=true;
+	global $gamestate,$gamecfg;
+	
 	$plsnum = sizeof($plsinfo);
 
 	if($pls == $moveto)
@@ -179,10 +177,10 @@ function move($moveto = 99) {
 	}
 	
 	$log .= $areainfo[$pls].'<br>';	
-	if ($f) {
-		if (CURSCRIPT !== 'botservice') $log.="<span id=\"HsUipfcGhU\"></span>";	//刷新页面标记
-		return;
-	}
+	//if ($f) {
+	//	if (CURSCRIPT !== 'botservice') $log.="<span id=\"HsUipfcGhU\"></span>";	//刷新页面标记
+	//	return;
+	//}
 	$enemyrate = 40;
 	if($gamestate == 40){$enemyrate += 20;}
 	elseif($gamestate == 50){$enemyrate += 40;}
