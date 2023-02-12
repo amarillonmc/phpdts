@@ -355,9 +355,45 @@ function getEmitmeR(type=0) {
 		$('sr_warning').innerHTML = '';
 		if(r>79 || r<21)
 		{
-			$('sr_warning').innerHTML = '警告：过度干预可能引发灾难性的后果！';
+			$('sr_warning').innerHTML = '警告：过度干预可能引发灾难性的后果！<br>';
 		}
 	}
+}
+
+function upVolume(){ 
+	var v = $('gamebgm').volume;
+	$('gamebgm').volume = Math.min(1,v+0.05);
+	$('gamebgm').volume = $('gamebgm').volume.toFixed(2);
+} 
+
+function downVolume(){ 
+	var v = $('gamebgm').volume;
+	$('gamebgm').volume = Math.max(0,v-0.05);
+	$('gamebgm').volume = $('gamebgm').volume.toFixed(2);
+} 
+
+function showVolume(){
+	var v = $('gamebgm').volume;
+	s = Math.round(v*100);
+	$('volume_num').innerHTML = s+'%';
+}
+
+//查了下才发现可以用parseJSON()……但是这样不也挺好吗^ ^
+function changeBGM(mode=1){
+	x = Math.floor($('nowbgm').innerHTML) + Math.floor(mode);
+	if(x > $('bgmnums').innerHTML || x<0)
+	{
+		x = '0';
+	}
+	$('nowbgm').innerHTML = x;
+	var newsrc = 'bgm'+x;
+	var newt = 'bt'+x;
+	var newname = 'bnm'+x;
+	$('gbgm').src = $(newsrc).innerHTML;
+	$('gbgm').type = $(newt).innerHTML;
+	$('bgmname').innerHTML = $(newname).innerHTML;
+	$('gamebgm').load();
+	$('gamebgm').play();
 }
 
 //1

@@ -81,4 +81,5 @@
 <!--{elseif $club == 99}-->
 	<input type="button" class="cmdbutton" id="sp_pbomb" name="sp_pbomb" value="X 按钮" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_pbomb';postCmd('gamecmd','command.php');this.disabled=true;">
 <!--{/if}-->
-
+<br />
+<input type="button" class="cmdbutton" id="sp_terminal" name="sp_terminal" value="子面板" onclick="showModalDialog($('terminal'));postCmd('gamecmd','command.php');this.disabled=true;">

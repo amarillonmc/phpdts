@@ -197,7 +197,11 @@ if($mode == 'enter') {
 	$state = 0;
 	$bid = 0;
 	$inf = $teamID = $teamPass = '';
-	
+
+	# 初始化曲集
+	include_once config('audio',$gamecfg);
+	$clbpara['valid_bgmbook'] = $regular_bgm;
+	$clbpara['bgmbook'] = $clbpara['valid_bgmbook'];
 	//$nick=$udata['nick'];
 	$nicks=$udata['nicks'];
 	if (($nicks=='')||($nick=='')){

@@ -86,6 +86,7 @@ if($hp <= 0){
 	$mode = 'itemmain';
 } else {
 	$mode = 'command';
+	$command = 'enter';
 }
 
 $cmd = $main = '';
@@ -118,7 +119,6 @@ elseif((strpos($action,'neut')===0)){
 	}	
 }
 if($hp > 0 && $coldtimeon && $showcoldtimer && $rmcdtime){$log .= "行动冷却时间：<span id=\"timer\" class=\"yellow\">0.0</span>秒<script type=\"text/javascript\">demiSecTimerStarter($rmcdtime);</script><br>";}
-
 if ($club==0)
 {
 	include_once GAME_ROOT.'./include/game/clubslct.func.php';

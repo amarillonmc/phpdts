@@ -126,15 +126,11 @@ if($hp > 0){
 					$mode = 'rest';
 				}
 			} elseif($command == 'itemmain') {
-				if(($club == 20 && $itemcmd == 'itemmix') || ($club != 20 && ($itemcmd == 'elementmix' || $itemcmd == 'elementbag')))
-				{
+				if(($club == 20 && $itemcmd == 'itemmix') || ($club != 20 && ($itemcmd == 'elementmix' || $itemcmd == 'elementbag'))){
 					$log .= "你的手突然掐住了你的头左右摇摆！<br><span class='yellow'>“你还想要干什么，啊？你还想要干什么！！”</span><br>看来你的手和脑子之间起了一点小摩擦。<br><br>";
 					$mode = 'command';
-				}
-				else 
-				{	
-					if($club == 20)
-					{
+				}else {	
+					if($club == 20){
 						global $elements_info;
 						include_once GAME_ROOT.'./include/game/elementmix.func.php';
 						$emax = get_emix_itme_max();
@@ -324,15 +320,9 @@ if($hp > 0){
 						//echo '【DEBUG】传入阶段：值系数'.$er.'上限系数：'.$emr.'<br>';
 						element_mix($e_mixlist,$emr,$er);
 					}
-					else
-					{
-						$log.="至少要放入一份元素。<br>";
-					}
+					else{$log.="至少要放入一份元素。<br>";}
 				}
-				else 
-				{
-					$log.="你挠了挠头，没搞懂自己到底要干什么。<br>";
-				}
+				else {$log.="你挠了挠头，没搞懂自己到底要干什么。<br>";}
 				$mode='command';
 			} elseif($command == 'elementbag') {
 				if($club == 20)
@@ -570,10 +560,17 @@ if($hp > 0){
 		$endtime = $now;
 		$cmdnum ++;
 		//var_dump($pdata['action']);
-		player_save($pdata);
 		//$db->query("UPDATE {$tablepre}players SET endtime='$now',cdsec='$cdsec',cdmsec='$cdmsec',cdtime='$cdtime',club='$club',hp='$hp',mhp='$mhp',sp='$sp',msp='$msp',att='$att',def='$def',pls='$pls',lvl='$lvl',exp='$exp',money='$money',rp='$rp',bid='$bid',inf='$inf',rage='$rage',pose='$pose',tactic='$tactic',state='$state',killnum='$killnum',wp='$wp',wk='$wk',wg='$wg',wc='$wc',wd='$wd',wf='$wf',teamID='$teamID',teamPass='$teamPass',wep='$wep',wepk='$wepk',wepe='$wepe',weps='$weps',wepsk='$wepsk',arb='$arb',arbk='$arbk',arbe='$arbe',arbs='$arbs',arbsk='$arbsk',arh='$arh',arhk='$arhk',arhe='$arhe',arhs='$arhs',arhsk='$arhsk',ara='$ara',arak='$arak',arae='$arae',aras='$aras',arask='$arask',arf='$arf',arfk='$arfk',arfe='$arfe',arfs='$arfs',arfsk='$arfsk',art='$art',artk='$artk',arte='$arte',arts='$arts',artsk='$artsk',itm0='$itm0',itmk0='$itmk0',itme0='$itme0',itms0='$itms0',itmsk0='$itmsk0',itm1='$itm1',itmk1='$itmk1',itme1='$itme1',itms1='$itms1',itmsk1='$itmsk1',itm2='$itm2',itmk2='$itmk2',itme2='$itme2',itms2='$itms2',itmsk2='$itmsk2',itm3='$itm3',itmk3='$itmk3',itme3='$itme3',itms3='$itms3',itmsk3='$itmsk3',itm4='$itm4',itmk4='$itmk4',itme4='$itme4',itms4='$itms4',itmsk4='$itmsk4',itm5='$itm5',itmk5='$itmk5',itme5='$itme5',itms5='$itms5',itmsk5='$itmsk5',itm6='$itm6',itmk6='$itmk6',itme6='$itme6',itms6='$itms6',itmsk6='$itmsk6' where pid='$pid'");
 	}
-	
+	//检查是否需要重生成播放器
+	$bgm_player = init_bgm();
+	if(!empty($bgm_player))
+	{
+		global $volume,$bgmname;
+		$gamedata['innerHTML']['bgmname'] = $bgmname;
+		$gamedata['innerHTML']['volume_num'] = $volume.'%';
+		$gamedata['innerHTML']['ingamebgm'] = $bgm_player;
+	}
 	//显示指令执行结果
 	$gamedata['innerHTML']['notice'] = ob_get_contents();
 	if($coldtimeon && $showcoldtimer && $rmcdtime){
@@ -582,10 +579,9 @@ if($hp > 0){
 	if($hp > 0 && $coldtimeon && $showcoldtimer && $rmcdtime){
 		$log .= "行动冷却时间：<span id=\"timer\" class=\"yellow\">0.0</span>秒<br>";
 	}
-	
+	player_save($pdata);
 }
 init_profile();
-
 if($hp <= 0) {
 	$dtime = date("Y年m月d日H时i分s秒",$endtime);
 	$kname='';
