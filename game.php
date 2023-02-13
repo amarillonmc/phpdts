@@ -38,6 +38,7 @@ if($gamestate == 0) {
 extract($pdata);
 init_playerdata();
 init_profile();
+$clbpara = get_clbpara($clbpara);
 
 $log = '';
 //读取聊天信息

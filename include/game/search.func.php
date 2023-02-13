@@ -382,6 +382,7 @@ function search(){
 
 function discover($schmode = 0) {
 	global $art,$pls,$now,$log,$mode,$command,$cmd,$event_obbs,$weather,$pls,$club,$pose,$tactic,$inf,$item_obbs,$enemy_obbs,$trap_min_obbs,$trap_max_obbs,$bid,$db,$tablepre,$gamestate,$corpseprotect,$action,$skills,$rp,$aidata;
+	global $clbpara;
 	$event_dice = rand(0,99);
 	if(($event_dice < $event_obbs)||(($art!="Untainted Glory")&&($pls==34)&&($gamestate != 50))){
 		//echo "进入事件判定<br>";
@@ -393,6 +394,18 @@ function discover($schmode = 0) {
 			$mode = 'command';
 			return;
 		}
+	}
+
+	# 判定移动、探索、事件后的BGM变化
+	include_once config('audio',$gamecfg);
+	if(array_key_exists($pls,$pls_bgm))
+	{
+		$clbpara['pls_bgmbook'] = $pls_bgm[$pls];
+	}
+	else
+	{
+		if(isset($clbpara['pls_bgmbook'])) 
+			unset($clbpara['pls_bgmbook']);
 	}
 	
 	include_once GAME_ROOT. './include/game/aievent.func.php';//AI事件
@@ -520,7 +533,7 @@ function discover($schmode = 0) {
 	{
 		//echo "进入遇敌判定<br>";
 		global $pid,$corpse_obbs,$teamID,$fog,$bid,$gamestate;
-		global $clbpara,$clbstatusa,$clbstatusb,$clbstatusc,$clbstatusd,$clbstatuse;
+		global $clbstatusa,$clbstatusb,$clbstatusc,$clbstatusd,$clbstatuse;
 
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pls='$pls' AND pid!='$pid'");
 		if(!$db->num_rows($result)){

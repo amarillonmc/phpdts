@@ -1866,6 +1866,19 @@ function itemuse($itmn) {
 			//销毁物品
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
+		} elseif ($itm == '事件BGM替换器'){
+			// 这是一个触发事件BGM的案例，只要输入$clbpara['event_bgmbook'] = Array('事件曲集名'); 即可将当前曲集替换为特殊事件BGM
+			// 特殊事件曲集'event_bgmbook'的优先级高于地图曲集'pls_bgmbook'，前者存在时后者不会生效
+			global $clbpara;
+			include_once config('audio',$gamecfg);
+			$log.="【DEBUG】你目前的播放列表被替换为了{$event_bgm['test'][0]}！<br>特殊的事件曲集不会被其他曲集覆盖，除非你使用下面的道具。<br>";
+			$clbpara['event_bgmbook'] = $event_bgm['test'];
+		} elseif ($itm == '事件BGM还原器'){
+			// 这是一个取消事件BGM的案例，只要unset($clbpara['event_bgmbook']);就可以将当前曲集替换为地图曲集或默认曲集；
+			// 如果你想播放另一个事件曲集，也可以$clbpara['event_bgmbook'] = Array('另一个事件曲集名');
+			global $clbpara;
+			$log.="【DEBUG】你目前的播放列表还原为了默认播放列表！<br>";
+			unset($clbpara['event_bgmbook']);
 		} elseif ($itm == '测试用元素口袋'){
 			global $elements_info;
 			$log.="【DEBUG】你不知道从哪里摸出来一大堆元素！<br>";
@@ -1922,15 +1935,6 @@ function itemuse($itmn) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 			//-----------------------//
-		} elseif ($itm == '电子蛐蛐测试装置') {
-			//这是一个测试用道具 设置好$nid（先手者pid）和$eid（挨打者pid）后可以看这两个人打架 把其中一个设置成自己的pid就可以亲自下场 //自己下场现在有BUG
-			//$nid：先手攻击者的pid；$eid：挨打者的pid
-			//如果$nid打死了$eid的话，尸体会由你来摸，这不是BUG，是一个暂时缺少条件判断的特性。
-			global $pid;
-			$nid = $pid; $eid = 2;
-			include_once GAME_ROOT.'./include/game/revcombat.func.php';
-			rev_combat_prepare($nid,$eid);
-			return;
 		} elseif ($itm == '提示纸条A') {
 			$log .= '你读着纸条上的内容：<br>“执行官其实都是幻影，那个红暮的身上应该有召唤幻影的玩意。”<br>“用那个东西然后打倒幻影的话能用游戏解除钥匙出去吧。”<br>';
 		} elseif ($itm == '提示纸条B') {
