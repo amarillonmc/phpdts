@@ -6,7 +6,14 @@ if(!defined('IN_GAME')) exit('Access Denied');
 # 未配置的默认播放音量（单位：百分比）
 $default_volume = 20;
 
-# 会播放BGM的地图（优先级高）
+# 会播放BGM的事件（优先级最高——会覆盖默认曲集） 
+# 具体触发时用不用这个数组都无所谓，可以直接调用： $clbpara['event_bgmbook'] = Array('指定事件曲集名');
+$event_bgm = Array
+(
+	'test' => Array('event'),
+);
+
+# 会播放BGM的地图（优先级高——会覆盖默认曲集）
 $pls_bgm = Array
 (
 	# 在英灵殿会播放对应曲集

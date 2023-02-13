@@ -479,36 +479,43 @@ function init_bgm($force_update=0)
 {
 	global $volume,$bgmname,$bgmlink,$bgmtype,$gamecfg;
 	global $pls,$command,$clbpara;
-	include_once config('audio',$gamecfg);
+	include config('audio',$gamecfg);
+
+	$clbpara = get_clbpara($clbpara);
 
 	# 初始化
+	$event_flag = 0;
 	$bgmname = $bgmlink = $bgmtype = $bgmplayer = $bgmnums = '';
 
-	# 移动时，检查是否需要更新播放列表
-	if($command == 'move' && isset($clbpara['bgmbook']))
+	# 存在最优先的事件BGM队列
+	if(isset($clbpara['event_bgmbook']))
 	{
-		# 重置当前播放列表
-		$oldbook = $clbpara['bgmbook'];
-		$clbpara['bgmbook'] = $clbpara['valid_bgmbook'];
-		# 检查当前地图是否存在BGM，如有，将其加入地图曲集
-		if(array_key_exists($pls,$pls_bgm))
+		# 检查是否需要更新播放列表
+		if(array_diff($clbpara['bgmbook'],$clbpara['event_bgmbook']))
 		{
-			shuffle($pls_bgm[$pls]);
-			foreach($pls_bgm[$pls] as $pbook) 
-			{
-				$clbpara['bgmbook'][] = $pbook;
-			}
-			# 将播放列表的第一位设置为地图BGM
-			shuffle($bgmbook[$pls_bgm[$pls][0]]);
-			$bgmid = $bgmbook[$pls_bgm[$pls][0]][0];
-			$nowbgmname = $bgmlist[$bgmid]['name'];
-			$bgmlink = $bgmlist[$bgmid]['url'];
-			$bgmtype = $bgmlist[$bgmid]['type'];
+			# 重置当前播放列表
+			$clbpara['bgmbook'] = $clbpara['event_bgmbook'];
+			$force_update = 1;
 		}
-		# 如果移动后的生成播放列表与旧播放列表比较存在变化，则重新生成播放器
-		# 这个逻辑比较绕，因为存在【从没BGM的地图进入/离开没BGM地图】和【从没BGM的地图离开/进入有BGM的地图】等等好几种情况。当然还有优化空间，但是留给以后的我去想吧……
-		if(array_diff($clbpara['bgmbook'],$oldbook) || array_diff($oldbook,$clbpara['bgmbook']))
+	}
+	# 存在次优先的地图BGM队列
+	elseif(isset($clbpara['pls_bgmbook']))
+	{
+		# 检查是否需要更新播放列表
+		if(array_diff($clbpara['bgmbook'],$clbpara['pls_bgmbook']))
 		{
+			# 重置当前播放列表
+			$clbpara['bgmbook'] = $clbpara['pls_bgmbook'];
+			$force_update = 1;
+		}
+	}
+	# 检查是否需要更新默认BGM列表
+	else
+	{
+		if(empty($clbpara['bgmbook']) || array_diff($clbpara['bgmbook'],$clbpara['valid_bgmbook']))
+		{
+			# 重置当前播放列表
+			$clbpara['bgmbook'] = $clbpara['valid_bgmbook'];
 			$force_update = 1;
 		}
 	}
@@ -532,16 +539,16 @@ function init_bgm($force_update=0)
 		$nowbgm = 0;
 		# 初始化首位BGM
 		shuffle($bgmarr);
-		if(empty($bgmname))$bgmname = $bgmarr[0]['name'];
-		if(empty($bgmlink)) $bgmlink = $bgmarr[0]['url'];
-		if(empty($bgmtype)) $bgmtype = $bgmarr[0]['type'];
+		$bgmname = $bgmarr[0]['name'];
+		$bgmlink = $bgmarr[0]['url'];
+		$bgmtype = $bgmarr[0]['type'];
 		#初始化默认音量
 		$volume = isset($player_volume) ? $player_volume : $default_volume;
 		$volume_r = round($volume/100,2);
 		# 生成播放器与播放队列 太野蛮了……嘻嘻……
 		if(!empty($bgmlink) && !empty($bgmtype))
 		{
-			$bgmplayer = <<<EOT
+$bgmplayer = <<<EOT
 			<audio id="gamebgm" autoplay controls onplay="$('gamebgm').volume=$volume_r;" onplaying="$('gamebgm').volume=$volume_r;">
 				<source id="gbgm" src="$bgmlink" type="$bgmtype">
 			</audio>
@@ -555,11 +562,9 @@ function init_bgm($force_update=0)
 EOT;
 			foreach($bgmarr as $bgmid2 => $bgms)
 			{
-				$bgmplayer .= <<<EOT
-				<div id="bnm{$bgmid2}">{$bgms['name']}</div>
-				<div id="bgm{$bgmid2}">{$bgms['url']}</div>
-				<div id="bt{$bgmid2}">{$bgms['type']}</div>
-EOT;	
+$bgmplayer .= "<div id=\"bnm{$bgmid2}\">{$bgms['name']}</div>
+				<div id=\"bgm{$bgmid2}\">{$bgms['url']}</div>
+				<div id=\"bt{$bgmid2}\">{$bgms['type']}</div>";
 			}
 		}
 		return $bgmplayer;
@@ -572,8 +577,8 @@ EOT;
 
 function init_mapdata(){
 	global $pls,$plsinfo,$xyinfo,$hack,$arealist,$areanum,$areaadd;
-	global $mapcontent;
 
+	$mpp = Array();
 	$mapvcoordinate = Array('A','B','C','D','E','F','G','H','I','J');
 	for($i=0;$i<count($plsinfo);$i++)
 	{
@@ -587,9 +592,8 @@ function init_mapdata(){
 		$position=explode('-',$xyinfo[$i]);
 		$mpp[$position[0]][$position[1]]=$i;
 	}
-	$mapcontent = <<<EOT
-	<TABLE border="1" cellspacing="0" cellpadding="0" background="map/neomap.jpg" style="padding-left: 5px; float:left;background-size:478px 418px;position:relative;background-repeat:no-repeat;background-position:right bottom;">
-EOT;	
+
+	$mapcontent = '<TABLE border="1" cellspacing="0" cellpadding="0" background="map/neomap.jpg" style="padding-left: 5px; float:left;background-size:478px 418px;position:relative;background-repeat:no-repeat;background-position:right bottom;">';	
 	$mapcontent .= '<TR align="center"><TD colspan="11" height="24" class=b1 align=center>战场地图</TD></TR>';
 	$mapcontent .= '<TR align="center">
 			<TD width="42" height="36" class=map align=center><div class=nttx>坐标</div></TD>';
@@ -603,9 +607,7 @@ EOT;
 		for($j=1;$j<=10;$j++){
 			if(isset($mpp[$mapvcoordinate[$i]][$j]))
 			{
-$mapcontent .= <<<EOT
-					<td width="42" height="36" class="map2" align=middle><a onclick="closeDialog($('terminal'));$('mode').value='command';$('command').value='move';$('moveto').value='{$mpp[$mapvcoordinate[$i]][$j]}';postCmd('gamecmd','command.php');this.disabled=true;"><span class="{$plscolor[$mpp[$mapvcoordinate[$i]][$j]]}">{$plsinfo[$mpp[$mapvcoordinate[$i]][$j]]}</span></a></td>
-EOT;
+				$mapcontent .="<td width=\"42\" height=\"36\" class=\"map2\" align=\"middle\"><a onclick=\"closeDialog($('terminal'));$('mode').value='command';$('command').value='move';$('moveto').value='{$mpp[$mapvcoordinate[$i]][$j]}';postCmd('gamecmd','command.php');this.disabled=true;\"><span class=\"{$plscolor[$mpp[$mapvcoordinate[$i]][$j]]}\">{$plsinfo[$mpp[$mapvcoordinate[$i]][$j]]}</span></a></td>";
 			}else{
 				$mapcontent .= '<td width="42" height="36" class="map2" align=middle><IMG src="map/blank.gif" width="42" height="36" border=0></td>';
 			}
