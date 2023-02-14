@@ -809,7 +809,8 @@ function itemmix($mlist, $itemselect=-1) {
 	}
 	$itmstr = substr($itmstr,0,-1);
 		
-	if(!$mixflag) {
+	if(!$mixflag || $club == 20) {
+		//Added an additional check here so even Club20 somehow entered itemmix, nothing can be made.
 		$log .= "<span class=\"yellow\">$itmstr</span>不能合成！<br>";
 		$mode = 'itemmix';
 	} else {
