@@ -87,9 +87,8 @@ if($hp <= 0){
 	$mode = 'itemmain';
 } else {
 	$mode = 'command';
-	$command = 'enter';
 }
-
+$command = 'enter';
 $cmd = $main = '';
 if((strpos($action,'corpse')===0 || strpos($action,'pacorpse')===0) && $gamestate<40){
 	$cid = strpos($action,'corpse')===0 ? str_replace('corpse','',$action) : str_replace('pacorpse','',$action);
@@ -125,6 +124,11 @@ if ($club==0)
 	include_once GAME_ROOT.'./include/game/clubslct.func.php';
 	getclub($name,$c1,$c2,$c3);
 	$clubavl[0]=0; $clubavl[1]=$c1; $clubavl[2]=$c2; $clubavl[3]=$c3;
+}
+if(isset($clbpara['dialogue']))
+{
+	include_once config('dialogue',$gamecfg);
+	$dialogue_id = $clbpara['dialogue'];
 }
 	
 include template('game');

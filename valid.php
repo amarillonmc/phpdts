@@ -202,6 +202,7 @@ if($mode == 'enter') {
 	include_once config('audio',$gamecfg);
 	$clbpara['valid_bgmbook'] = $regular_bgm;
 	$clbpara['bgmbook'] = $clbpara['valid_bgmbook'];
+	$clbpara['volume'] = isset($udata['volume']) ? $udata['volume'] : 20;
 	//$nick=$udata['nick'];
 	$nicks=$udata['nicks'];
 	if (($nicks=='')||($nick=='')){

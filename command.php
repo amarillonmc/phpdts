@@ -6,7 +6,8 @@ require './include/common.inc.php';
 //$t_s=getmicrotime();
 //require_once GAME_ROOT.'./include/JSON.php';
 require GAME_ROOT.'./include/game.func.php';
-require config('combatcfg',$gamecfg);
+include config('combatcfg',$gamecfg);
+include config('dialogue',$gamecfg);
 
 //判断是否进入游戏
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); } 
@@ -94,7 +95,11 @@ if($hp > 0){
 		$rmcdtime = $nowmtime >= $cdover ? 0 : $cdover - $nowmtime;
 	}
 	
-	if($coldtimeon && $rmcdtime > 0 && (strpos($command,'move')===0 || strpos($command,'search')===0 || (strpos($command,'itm')===0)&&($command != 'itemget') || strpos($sp_cmd,'sp_weapon')===0 || strpos($command,'song')===0)){
+	//执行动作前检查是否有无法跳过且未阅览过的对话框
+	if(isset($clbpara['noskip_dialogue']) && strpos($command,'end_dialogue')===false)
+	{
+		$dialogue_id = $clbpara['dialogue'];
+	}elseif($coldtimeon && $rmcdtime > 0 && (strpos($command,'move')===0 || strpos($command,'search')===0 || (strpos($command,'itm')===0)&&($command != 'itemget') || strpos($sp_cmd,'sp_weapon')===0 || strpos($command,'song')===0)){
 		$log .= '<span class="yellow">冷却时间尚未结束！</span><br>';
 		$mode = 'command';
 	}else{
@@ -243,7 +248,32 @@ if($hp > 0){
 				} else{
 					teamcheck();
 				}
-			}
+			} elseif(strpos($command,'consle') === 0) {
+				if(isset($clbpara['console']))
+				{
+					$cls_cmd = substr($command,7);
+					include_once GAME_ROOT.'./include/game/console.func.php';
+					if($cls_cmd == 'wthchange'){console_wthchange($cwth);}
+					elseif($cls_cmd == 'dbutton'){console_dbutton();}
+					elseif($cls_cmd == 'radar'){
+						include_once GAME_ROOT.'./include/game/item2.func.php';
+						newradar(2);
+					}elseif($cls_cmd == 'search'){
+						$cls_cmd_kind = substr($csc,7);
+						console_searching($cls_cmd_kind,$csnm,$cstype);
+					}elseif(strpos($cls_cmd,'areactrl')===0){
+						$cls_cmd_kind = substr($cls_cmd,8);
+						console_areacontrol($cls_cmd_kind);
+					}
+				}
+				else{
+					$mode='command';
+				}
+			} elseif(strpos($command,'end_dialogue') === 0) {
+				//$log.="【DEBUG】关闭了对话框。";
+				if(isset($dialogue_log[$clbpara['dialogue']])) $log.= $dialogue_log[$clbpara['dialogue']];
+				unset($clbpara['dialogue']); unset($clbpara['noskip_dialogue']);
+			} 
 		} elseif($mode == 'item') {
 			include_once GAME_ROOT.'./include/game/item2.func.php';
 			$item = substr($command,3);
@@ -298,27 +328,20 @@ if($hp > 0){
 					else  itemmix($mixlist);
 				}
 			} elseif($command == 'elementmix') {
-				if($club == 20)
-				{
+				if($club == 20){
 					$e_mixlist = Array();
-					foreach($elements_info as $e_key=>$e_info)
-					{
+					foreach($elements_info as $e_key=>$e_info){
 						global ${'element'.$e_key};
 						$m_e_key = $e_key + 1;//这样就不用污染原本的js了
 						if(isset(${'emitm'.$e_key.'_num'})) ${'emitm'.$e_key.'_num'} = round( ${'emitm'.$e_key.'_num'});
-						if(${'mitm'.$m_e_key}>=0 && ${'element'.$e_key} && ${'emitm'.$e_key.'_num'}>0 && ${'emitm'.$e_key.'_num'}<=${'element'.$e_key})
-						{
-							//打入参与合成的元素编号与数量
-							$e_mixlist[$e_key] = ${'emitm'.$e_key.'_num'};
+						if(${'mitm'.$m_e_key}>=0 && ${'element'.$e_key} && ${'emitm'.$e_key.'_num'}>0 && ${'emitm'.$e_key.'_num'}<=${'element'.$e_key}){
+							$e_mixlist[$e_key] = ${'emitm'.$e_key.'_num'}; //打入参与合成的元素编号与数量
 						}
 					}
-					if(count($e_mixlist)>0)
-					{
-						//echo '【DEBUG】提交阶段：值系数'.$emitme_r.'上限系数：'.$emitme_max_r.'上限勾选状态：'.$change_emax.'值勾选状态：'.$change_emr.'<br>';
+					if(count($e_mixlist)>0){
 						$er = ($lvl>=15 && $emitme_r && $change_emr>0) ? $emitme_r : NULL;
 						$emr = ($lvl>=5 && $emitme_max_r && $change_emax>0) ? $emitme_max_r : NULL;
 						include_once GAME_ROOT.'./include/game/elementmix.func.php';
-						//echo '【DEBUG】传入阶段：值系数'.$er.'上限系数：'.$emr.'<br>';
 						element_mix($e_mixlist,$emr,$er);
 					}
 					else{$log.="至少要放入一份元素。<br>";}
@@ -326,8 +349,7 @@ if($hp > 0){
 				else {$log.="你挠了挠头，没搞懂自己到底要干什么。<br>";}
 				$mode='command';
 			} elseif($command == 'elementbag') {
-				if($club == 20)
-				{
+				if($club == 20){
 					include_once GAME_ROOT.'./include/game/elementmix.func.php';
 					print_elements_info();
 				}
@@ -361,13 +383,25 @@ if($hp > 0){
 		} elseif($mode == 'special') {
 			include_once GAME_ROOT.'./include/game/special.func.php';
 			if(strpos($command,'pose') === 0) {
-				$pose = substr($command,4,1);
-				$log .= "基础姿态变为<span class=\"yellow\">$poseinfo[$pose]</span>。<br> ";
-				$mode = 'command';
+				$cpose = substr($command,4,1);
+				if(in_array($cpose,$apose)){
+					$pose = $cpose;
+					$log .= "基础姿态变为<span class=\"yellow\">$poseinfo[$pose]</span>。<br> ";
+					$mode = 'command';
+				}else{
+					$log .= "<span class=\"yellow\">这个姿势太奇怪了！</span><br> ";
+					$mode = 'command';
+				}
 			} elseif(strpos($command,'tac') === 0) {
-				$tactic = substr($command,3,1);
-				$log .= "应战策略变为<span class=\"yellow\">$tacinfo[$tactic]</span>。<br> ";
-				$mode = 'command';
+				$ctac = substr($command,3,1);
+				if(in_array($ctac,$atac)){
+					$tactic = $ctac;
+					$log .= "应战策略变为<span class=\"yellow\">$tacinfo[$tactic]</span>。<br> ";
+					$mode = 'command';
+				}else{
+					$log .= "<span class=\"yellow\">这种策略太奇怪了！</span><br> ";
+					$mode = 'command';
+				}
 			} elseif(strpos($command,'inf') === 0) {
 				$infpos = substr($command,3,1);
 				chginf($infpos);
@@ -396,10 +430,7 @@ if($hp > 0){
 		} elseif($mode == 'combat') {
 			include_once GAME_ROOT.'./include/game/combat.func.php';
 			combat(1,$command);
-			include_once GAME_ROOT.'./include/game/revcombat.func.php';
-			combat(1,$command);
 		} elseif($mode == 'revcombat'){
-			global $action;
 			if(strpos($action,'enemy')===0)
 			{
 				$enemyid = str_replace('enemy','',$action);
@@ -472,7 +503,6 @@ if($hp > 0){
 			include_once GAME_ROOT.'./include/game/depot.func.php';
 			if(in_array($pls,$depots))
 			{
-				global $name,$type;
 				$saveitem_list = depot_getlist($name,$type);
 				switch($command)
 				{
@@ -567,10 +597,12 @@ if($hp > 0){
 	$bgm_player = init_bgm();
 	if(!empty($bgm_player))
 	{
-		global $volume,$bgmname;
-		$gamedata['innerHTML']['bgmname'] = $bgmname;
-		$gamedata['innerHTML']['volume_num'] = $volume.'%';
 		$gamedata['innerHTML']['ingamebgm'] = $bgm_player;
+	}
+	//检查执行动作后是否有对话框产生
+	if(isset($clbpara['dialogue']))
+	{
+		$dialogue_id = $clbpara['dialogue'];
 	}
 	//显示指令执行结果
 	$gamedata['innerHTML']['notice'] = ob_get_contents();

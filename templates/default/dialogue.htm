@@ -1,0 +1,56 @@
+<dialog id="dialogue" style="width: 460px; max-width: 90%;max-height: 80%;">
+<p><center>
+<!--{eval $maxdkey = count($dialogues[$dialogue_id]);}-->
+
+<!-- 对白分段显示 -->
+<!--{loop $dialogues[$dialogue_id] $dkey $dinfo}-->
+<div id="d{$dkey}" <!--{if $dkey == 0}--> style="" <!--{else}-->  style="display: none;"  <!--{/if}-->>
+    <table class="map" border="1" style="text-align: center;"><tr>
+    <!-- 带头像对白 -->
+    <!--{if isset($dialogue_icon[$dialogue_id][$dkey])}--> 
+        <td>
+            <img style="width:140px;height:80px;" src="$dialogue_icon[$dialogue_id][$dkey]">
+        </td>
+        <td style="border: 1px; width:280px;height:80px;text-align: left; padding: 3% 6%;">
+            $dinfo
+        </td>
+    <!-- 无头像对白 -->
+    <!--{else}-->
+        <td class="" style="width:320px;height:80px;text-align: center; padding: 3% 6%;">
+            $dinfo
+        </td>
+    <!--{/if}--> 
+    </tr></table>
+    <br>
+    <!--{if $dkey > 0}-->
+        <input type="button" class="cmdbutton" style="margin-right: 5%;" value="上一页" onclick="changePages($dkey,$dkey-1);">
+    <!--{/if}-->
+    <!--{if (($dkey < ($maxdkey-1)) || (isset($dialogue_branch[$dialogue_id])))}-->
+        <input type="button" class="cmdbutton" value="下一页" onclick="changePages($dkey,$dkey+1);">
+    <!--{elseif isset($dialogue_end[$dialogue_id])}-->
+        $dialogue_end[$dialogue_id]    
+    <!--{/if}-->
+</div>
+ <!--{/loop}-->
+
+<!-- 选择肢显示 -->
+ <!--{if isset($dialogue_branch[$dialogue_id])}-->
+<div id="d{$maxdkey}" style="display: none;">
+    <table border="0" style="text-align: center;"><tr><td style="width:280px;height:80px; text-align: center; padding: 3% 6%;">
+    <!--{loop $dialogue_branch[$dialogue_id] $bkey $binfo}-->
+        $binfo
+     <!--{/loop}-->
+    </td></tr></table>
+</div>
+<!--{/if}-->
+
+</center></p>
+<!--{if (isset($dialogue_branch[$dialogue_id]) || isset($dialogue_end[$dialogue_id]))}-->
+    <img class="dialog-background" src="img/profile.gif" onclick="">
+<!--{else}-->
+    <img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('dialogue'));$('command').value='end_dialogue';postCmd('gamecmd','command.php');this.disabled=true;">
+<!--{/if}-->
+</dialog>
+<script>
+    $('dialogue').showModal();
+</script>

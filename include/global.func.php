@@ -296,7 +296,8 @@ function load_gameinfo() {
 	$weather = $gameinfo['weather'];
 	$hack = $gameinfo['hack'];
 	$gamevars = $gameinfo['gamevars'];
-	$gamevars = Array('sanmaact' => $gamevars & 1, 'sanmadead' => $gamevars & 2);
+	$gamevars = json_decode($gamevars,true);
+	if(isset($gamevars['sanmaact']) && isset($gamevars['sanmadead'])) unset($gamevars['sanmaact']);
 	$combonum = $gameinfo['combonum'];
 	return;
 }
@@ -326,8 +327,8 @@ function save_gameinfo() {
 	$gameinfo['afktime'] = $afktime;
 	$gameinfo['optime'] = $optime;
 	$gameinfo['weather'] = $weather;
-	$gamevars0 = ($gamevars['sanmaact'] ? 1 : 0) + ($gamevars['sanmadead'] ? 2 : 0);
-	$gameinfo['gamevars'] = $gamevars0;
+	//$gamevars0 = ($gamevars['sanmaact'] ? 1 : 0) + ($gamevars['sanmadead'] ? 2 : 0);
+	$gameinfo['gamevars'] = json_encode($gamevars);
 	$gameinfo['hack'] = $hack;
 	$gameinfo['combonum'] = $combonum;
 	$db->array_update("{$tablepre}game",$gameinfo,1);

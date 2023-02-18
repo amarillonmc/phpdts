@@ -41,7 +41,7 @@ function rs_game($mode = 0) {
 		//重设连斗判断死亡数
 		$combonum = $deathlimit;
 		//重设游戏剧情开关
-		$gamevars = 0;
+		$gamevars = Array();
 		save_gameinfo();
 		
 		
@@ -301,7 +301,7 @@ function rs_sttime() {
 function add_once_area($atime) {
 	//实际上GAMEOVER的判断是在common.inc.php里
 	global $db,$tablepre,$now,$gamestate,$areaesc,$arealist,$areanum,$arealimit,$areaadd,$plsinfo,$weather,$hack,$validnum,$alivenum,$deathnum;
-	global $deepzones,$sentinel_typelist,$npc_away_from_deepzones;
+	global $gamevars,$deepzones,$sentinel_typelist,$npc_away_from_deepzones;
 	
 	if (($gamestate > 10)&&($now > $atime)) {
 		$plsnum = sizeof($plsinfo) - 1;
@@ -337,10 +337,11 @@ function add_once_area($atime) {
 		} else {
 			$weather = rand(0,9);
 			if($hack > 0){$hack--;}
+			//重置控制面板可用次数
+			if(isset($gamevars['apis']) && isset($gamevars['api'])) $gamevars['api'] = $gamevars['apis'];
 			$areaaddlist = array_slice($arealist,$areanum+1,$areaadd);
 			$areanum += $areaadd;
 			movehtm();
-			//addnews($atime,'addarea',$areaaddlist,$weather);
 			addnews($atime, 'addarea',$areaaddlist,$weather);
 			storyputchat($now,'areaadd');
 			systemputchat($atime,'areaadd',$areaaddlist);

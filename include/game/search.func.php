@@ -7,7 +7,7 @@ if(!defined('IN_GAME')) {
 function move($moveto = 99) {
 	global $lvl,$log,$pls,$pgroup,$plsinfo,$hplsinfo,$inf,$hp,$mhp,$sp,$def,$club,$arealist,$areanum,$hack,$areainfo,$gamestate,$pose,$weather;
 	global $gamestate,$gamecfg;
-	
+
 	$plsnum = sizeof($plsinfo);
 
 	if($pls == $moveto)
@@ -29,7 +29,7 @@ function move($moveto = 99) {
 	else
 	{
 		//玩家位于标准地点组内
-		if(($moveto == 'main')||($moveto < 0 )||($moveto >= $plsnum))
+		if((!array_key_exists($moveto,$plsinfo))||($moveto == 'main')||($moveto < 0 )||($moveto >= $plsnum))
 		{
 			$log .= '请选择正确的移动地点。<br>';
 			return;
@@ -382,7 +382,7 @@ function search(){
 
 function discover($schmode = 0) {
 	global $art,$pls,$now,$log,$mode,$command,$cmd,$event_obbs,$weather,$pls,$club,$pose,$tactic,$inf,$item_obbs,$enemy_obbs,$trap_min_obbs,$trap_max_obbs,$bid,$db,$tablepre,$gamestate,$corpseprotect,$action,$skills,$rp,$aidata;
-	global $clbpara;
+	global $clbpara,$gamecfg;
 	$event_dice = rand(0,99);
 	if(($event_dice < $event_obbs)||(($art!="Untainted Glory")&&($pls==34)&&($gamestate != 50))){
 		//echo "进入事件判定<br>";
@@ -583,6 +583,7 @@ function discover($schmode = 0) {
 				else 
 				{
 					//直接略过决斗者
+					global $artk;
 					if ((!$edata['type'])&&($artk=='XX')&&(($edata['artk']!='XX')||($edata['art']!=$name))&&($gamestate<50)) continue;
 					if (($artk!='XX')&&($edata['artk']=='XX')&&($gamestate<50)) continue;
 					//计算活人发现率
@@ -610,7 +611,7 @@ function discover($schmode = 0) {
 					return;
 				} 
 				//发现中立NPC或友军 TODO：把这里条件判断挪到一个函数里
-				elseif($edata['clbpara']['post'] == $pid)
+				elseif(isset($edata['clbpara']['post']) && $edata['clbpara']['post'] == $pid)
 				{
 					$bid = $edata['pid'];
 					$action = 'neut'.$edata['pid'];

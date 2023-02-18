@@ -20,7 +20,7 @@ $mltwk = '泛用兵器';
 
 
 //游戏状态描述
-$gstate = Array(0 => '<font color="grey">已结束</font>',10 => '即将开始',20 => '开放激活',30 => '人数已满',40=> '<font color="yellow">连斗中</font>',50=>'<font color="red">死斗中</font>',60=>'<font color="red">紧急状态！</font>');
+$gstate = Array(0 => '<font color="grey">已结束</font>',10 => '即将开始',20 => '开放激活',30 => '停止激活',40=> '<font color="yellow">连斗中</font>',50=>'<font color="red">死斗中</font>',60=>'<font color="red">紧急状态！</font>');
 $gwin = Array(0 => '程序故障', 1 => '全部死亡',2 => '最后幸存',3 => '锁定解除',4 => '无人参加',5 => '核爆全灭',6 => 'GM中止',7=>'幻境解离');
 $week = Array('日','一','二','三','四','五','六');
 $clubinfo = Array(
@@ -55,12 +55,15 @@ $rswtharr = Array(0,2,3,4,7);
 $wthinfo = Array('晴天','大晴','多云','小雨','暴雨','台风','雷雨','下雪','起雾','浓雾','<span class="yellow">瘴气</span>','<span class="red">龙卷风</span>','<span class="clan">暴风雪</span>','<span class="blue">冰雹</span>','<span class="linen">离子暴</span>','<span class="green">辐射尘</span>','<span class="purple">臭氧洞</span>','<span class="gold">极光</span>');
 $sexinfo = Array(0=> '未定', 'm' => '男生', 'f' => '女生');
 $raceinfo = Array(0=> '人类', 1=> '兽人', 2=> '妖精', 3=> '龙', 4=> '鱼人', 5=> 'ＡＩ');
-$hpinfo = Array('并无大碍','伤痕累累','生命危险','已经死亡');
+$hpinfo = Array('<span class="clan">并无大碍</span>','<span class="yellow">伤痕累累</span>','<span class="red">生命危险</span>','<span class="red">已经死亡</span>');
 $spinfo = Array('精力充沛','略有疲惫','精疲力尽','已经死亡');
 $rageinfo = Array('平静','愤怒','暴怒','已经死亡');
 $wepeinfo = Array('不值一提','略有威胁','威力可观','无敌神器');
-$poseinfo = Array('通常','作战姿态','强袭姿态','探物姿态','偷袭姿态','治疗姿态','✧狂飙姿态✧');
+$poseinfo = Array('通常','作战姿态','强袭姿态','探物姿态','偷袭姿态','治疗姿态','✧狂飙姿态✧','哨戒姿态');
 $tacinfo = Array('通常','','重视防御','重视反击','重视躲避');
+//可供玩家选择的姿态、策略
+$apose = Array(0,1,3,4,5,6);
+$atac = Array(0,2,3,4);
 //不会生成在危险地图的NPC（女主）
 $hidding_typelist = Array(14);
 //不会因躲避禁区、追杀玩家等原因离开地图的NPC（红暮、■、执行官、英灵（没有巫师）、SCP、种火）
@@ -1207,7 +1210,7 @@ $title_desc = Array
 (
 	# class-样式 title-提示悬浮框 img-图片url，会覆盖样式与悬浮框 
 	'参展者' => Array('title'=>"参展者就是参加会展的人……你还记得自己是来参加动漫展的吧？"),
-	'补给掠夺者' => Array('class'=>'yellow', 'title'=>"你是真能吃啊！"),
+	'补给掠夺者' => Array('class'=>'', 'title'=>"你是真能吃啊！"),
 	'弱子' => Array('img'=>"img/nicktest.png",)
 );
 

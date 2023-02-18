@@ -73,7 +73,8 @@ if($mode == 'edit') {
 		}
 	}
 	if ($icon>$iconlimit) $icon=0;
-	$db->query("UPDATE {$tablepre}users SET gender='$gender', icon='$icon',{$passqry}motto='$motto',  killmsg='$killmsg', lastword='$lastword', credits='$credits', credits2='$credits2' ,nick='$nick' WHERE username='$cuser'");
+	$volume = round(min(100,max(0,$volume)));
+	$db->query("UPDATE {$tablepre}users SET gender='$gender', icon='$icon',{$passqry}motto='$motto',  killmsg='$killmsg', lastword='$lastword', credits='$credits', credits2='$credits2' ,nick='$nick', volume='$volume' WHERE username='$cuser'");
 	if($db->affected_rows()){
 		$gamedata['innerHTML']['info'] .= $_INFO['data_success'];
 	}else{

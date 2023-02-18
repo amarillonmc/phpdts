@@ -110,8 +110,12 @@ table.dialogue {
 .evergreen{color:#98fb98;font: bold 10pt "微软雅黑" serif;line-height:16px}
 .evergreen2{color:#98fb98;font:18pt "微软雅黑" serif;}
 .lightgreen{color:#8AE234;font: bold 10pt "微软雅黑" serif;line-height:16px}
-.magenta{color:#FF00FF;font: bold 10pt "微软雅黑" serif;line-height:16px}
+.magenta{color:#FF1493;font: bold 10pt "微软雅黑" serif;line-height:16px}
 .sienna{color:#EE7942;font: bold 10pt "微软雅黑" serif;line-height:16px}
+.orange{color:#FFA500;font: bold 10pt "微软雅黑" serif;line-height:16px}
+.darkviolet{color:#9400D3;font: bold 10pt "微软雅黑" serif;line-height:16px}
+.darkcyan{color:#008B8B;font: bold 10pt "微软雅黑" serif;line-height:16px}
+.seagreen{color:#4EEE94;font: bold 10pt "微软雅黑" serif;line-height:16px}
 .dmg {color:#ff0000;font: bold 10pt "微软雅黑" serif;}
 .grey{color:#999; font: bold 10pt "微软雅黑" serif;line-height:16px}
 .linen{color:rgb(200,192,184); font: bold 10pt "微软雅黑" serif;line-height:16px}
@@ -358,7 +362,7 @@ background-image: url("../../img/footer_line.gif");
 	border-width: 0px;
 }
 
-/*==========tooltip样式 摆脱title了！==========*/
+/* tooltip样式 摆脱title了！ */
 span[tooltip] {
     position: relative;
 }
@@ -373,7 +377,7 @@ span[tooltip]:hover:before {
     width: 160px; max-width: 160px; z-index: 3; position: absolute;  z-index: 5;
 }
 
-/*==========下拉菜单样式==========*/
+/* 下拉菜单样式 */
 .headerlink{
 	font-family: "微软雅黑";
 }
@@ -407,7 +411,7 @@ span.drop:hover .dropdown-menu{
 	font: bold 10pt "微软雅黑" serif; color: white; overflow-x:hidden; overflow-y:auto; text-shadow:3px 3px 3px #231e1e; text-align: center;
 }
 
-/*==========在小头像上悬浮显示大头像==========*/
+/* 在小头像上悬浮显示大头像 */
 .icon{
 	position: relative;
 	
@@ -430,7 +434,7 @@ span.drop:hover .dropdown-menu{
 	display: none;
 }
 
-/*==========用dialog实现的气泡框==========*/
+/* 用dialog实现的气泡框 */
 dialog{
 	position: fixed;
 	max-width: 50%;
@@ -458,7 +462,7 @@ dialog::backdrop{
 	z-index:-2;
 }
 
-/*==========滑动选择器（半废弃）==========*/
+/* 滑动选择器（半废弃） */
 input.range{
 	margin: 5px;
 	width: 100%;
@@ -468,7 +472,7 @@ input.range{
 	box-shadow:0 0 5px 1px rgba(0, 0, 0, 0.5);
 }
 
-/*==========EmojiIcon==========*/
+/* EmojiIcon */
 .eicon{
 	filter: grayscale(100%) brightness(133%) blur(0px);
 	font-size: 125%;
@@ -481,4 +485,37 @@ input.range{
 	background-color: rgba(153, 153, 153, 0.5);
 	border-radius: 5%;
 	box-shadow: 0px 2px 6px #999;
+}
+
+.blurtext{
+	align-self: center;
+	filter: opacity(75%) blur(2px);
+}
+.lockmap {
+	background:url("../../img/lock.png") center;background-color:rgba(17,17,17,0.5);
+	filter:opacity(75%) brightness(75%);BORDER: #111 1px solid;text-align: center;font: bold 10pt "微软雅黑" serif;
+	transition: 0.5s;
+}
+.lockmap:hover{
+	filter: opacity(100%) brightness(100%);
+}
+
+.dangerbutton{
+	padding: 2rem 2rem;
+	border: 0;
+	border-radius: 50%;
+	box-shadow: 0px 0px 40px 0px rgba(255, 0, 0, 0.45);
+	text-align: center;
+	font: bold 10pt "微软雅黑";
+	text-shadow:2px 2px 2px #000000;
+	color: rgb(166, 166, 166);
+	background-color: rgba(255, 0, 0, 0.45);
+	letter-spacing: .1rem;
+	transition: 1s;
+   }
+   
+.dangerbutton:hover {
+	filter: brightness(130%);
+	box-shadow: 0px 0px 40px 0px red;
+	background-color: rgba(255, 0, 0, 0.75);
 }

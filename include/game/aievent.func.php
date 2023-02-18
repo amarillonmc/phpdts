@@ -20,7 +20,7 @@ function aievent($rate){
 	
 	//echo "进入AIEVENT";
 	//TESTCASE: IF GOLDEN MINION SURVIVES: DO NOTHING.
-	if(!$gamevars['sanmaact']){//$sanmaact = 0表示静流没放出，需要判断小兵状态，$sanmaact = 1表示静流已放出
+	if(!isset($gamevars['sanmaact']) && !isset($gamevars['sanmadead'])){//$sanmaact = 0表示静流没放出，需要判断小兵状态，$sanmaact = 1表示静流已放出
 		$checkMinionSurvive = "SELECT * FROM {$tablepre}players WHERE `type` =91 AND `name` = 'AC专业职人'";
 		$ifMinionSurvive = $db->query($checkMinionSurvive);
 		$minionHP = $db->fetch_array($ifMinionSurvive);
@@ -37,7 +37,7 @@ function aievent($rate){
 			$gamevars['sanmaact'] = 1;
 			save_gameinfo();
 		}
-	}elseif(!$gamevars['sanmadead']){
+	}elseif(!isset($gamevars['sanmadead'])){
 		
 		//echo "静流已放出。";
 		$checkSanma = $db->query("SELECT * FROM {$tablepre}players WHERE type = 15 AND name = '【SANMA_TK】'");

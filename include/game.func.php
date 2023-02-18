@@ -6,7 +6,7 @@ if(!defined('IN_GAME')) {
 
 function init_playerdata(){
 	global $lvl,$baseexp,$exp,$gd,$icon,$arbe,$arhe,$arae,$arfe,$weather,$fog,$weps,$arbs,$log,$upexp,$lvlupexp,$iconImg,$iconImgB,$ardef;
-	global $clbpara;
+	global $pls,$weather,$pose,$tactic,$clbpara;
 
 	$upexp = round(($lvl*$baseexp)+(($lvl+1)*$baseexp));
 	$lvlupexp = $upexp - $exp;
@@ -38,8 +38,8 @@ function init_profile(){
 	global $nospk,$wepsk_words,$arbsk_words,$arhsk_words,$arask_words,$arfsk_words,$artsk_words,$itmsk0_words,$itmsk1_words,$itmsk2_words,$itmsk3_words,$itmsk4_words,$itmsk5_words,$itmsk6_words;
 	global $wepk_words,$arbk_words,$arhk_words,$arak_words,$arfk_words,$artk_words,$itmk0_words,$itmk1_words,$itmk2_words,$itmk3_words,$itmk4_words,$itmk5_words,$itmk6_words;
 	global $wep,$arb,$arh,$ara,$arf,$art,$itm0,$itm1,$itm2,$itm3,$itm4,$itm5,$itm6;
-	global $definfo,$atkinfo,$pdata;
-	
+	global $clbpara,$weather,$definfo,$atkinfo,$pdata;
+
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
 	$atkinfo = get_base_att($pdata,$pdata,1,1);
 	$definfo = get_base_def($pdata,$pdata,1,1);
@@ -184,6 +184,8 @@ function init_profile(){
 	$newhpimg = '<img src="img/red2.gif" style="position:absolute; clip:rect('.$newhppre.'px,55px,160px,0px);">';
 	$newsppre = 5+floor(151*(1-$sp/$msp));
 	$newspimg = '<img src="img/yellow2.gif" style="position:absolute; clip:rect('.$newsppre.'px,55px,160px,0px);">';
+
+	$clbpara = get_clbpara($clbpara);
 
 	return;
 }
@@ -477,11 +479,10 @@ function init_rev_battle($ismeet = 0)
 
 function init_bgm($force_update=0)
 {
-	global $volume,$bgmname,$bgmlink,$bgmtype,$gamecfg;
-	global $pls,$command,$clbpara;
+	global $pls,$command,$clbpara,$gamecfg;
 	include config('audio',$gamecfg);
 
-	$clbpara = get_clbpara($clbpara);
+	//$clbpara = get_clbpara($clbpara);
 
 	# 初始化
 	$event_flag = 0;
@@ -543,7 +544,7 @@ function init_bgm($force_update=0)
 		$bgmlink = $bgmarr[0]['url'];
 		$bgmtype = $bgmarr[0]['type'];
 		#初始化默认音量
-		$volume = isset($player_volume) ? $player_volume : $default_volume;
+		$volume = isset($clbpara['volume']) ? $clbpara['volume'] : $default_volume;
 		$volume_r = round($volume/100,2);
 		# 生成播放器与播放队列 太野蛮了……嘻嘻……
 		if(!empty($bgmlink) && !empty($bgmtype))

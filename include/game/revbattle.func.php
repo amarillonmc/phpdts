@@ -27,7 +27,17 @@
 		extract($edata,EXTR_PREFIX_ALL,'w'); extract($sdata,EXTR_PREFIX_ALL,'s');
 		init_rev_battle();
 
-		$log .= "你发现了敌人<span class=\"red\">{$w_name}</span>！<br>对方好像完全没有注意到你！<br>";
+		//检查是敌对或中立单位
+		if($edata['pose'] == 7)
+		{
+			$log.="你发现了<span class=\"lime\">{$w_name}</span>！<br>对方看起来对你没有敌意。<br>";
+			$neut_flag = 1;
+		}
+		else
+		{
+			$log.="你发现敌人了<span class=\"red\">{$w_name}</span>！<br>对方好像完全没有注意到你！<br>";
+			$neut_flag = 0;
+		}
 
 		//初始化玩家攻击方式信息
 		$w1 = substr($s_wepk,1,1);

@@ -453,22 +453,22 @@
 	//获取pa的攻击力修正
 	function get_base_att_modifier(&$pa,&$pd,$active,$base_att,$tooltip=0)
 	{
+		global $weather,$log,$gamecfg;
+		include config('combatcfg',$gamecfg);
 		# 计算天气、姿态、策略、地点对pa攻击力的修正
-		global $weather,$weather_attack_modifier,$pose_attack_modifier,$tactic_attack_modifier,$pls_attack_modifier,$log;
-		global $pose_attack_active,$tactic_attack_active;
 		$base_atk_per = 100;
 		//天气修正
-		$wth_atk_per = $weather_attack_modifier[$weather] ?: 0 ;
+		$wth_atk_per = isset($weather_attack_modifier[$weather]) ? $weather_attack_modifier[$weather] : 0 ;
 		//地点修正
-		$pls_atk_per = $pls_attack_modifier[$pa['pls']] ?: 0;
+		$pls_atk_per = isset($pls_attack_modifier[$pa['pls']]) ? $pls_attack_modifier[$pa['pls']] : 0;
 		//姿态修正只在先制攻击阶段生效？ //pa身上没有反击标记 代表这是一次先制攻击
-		if(!isset($pa['is_counter']) && $pose_attack_active) $pose_atk_per = $pose_attack_modifier[$pa['pose']] ?: 0 ;
+		if(!isset($pa['is_counter']) && $pose_attack_active) $pose_atk_per = isset($pose_attack_modifier[$pa['pose']]) ? $pose_attack_modifier[$pa['pose']] : 0 ;
 		//姿态修正始终生效
-		elseif(!$pose_attack_active) $pose_atk_per = $pose_attack_modifier[$pa['pose']] ?: 0 ;
+		elseif(!$pose_attack_active) $pose_atk_per = isset($pose_attack_modifier[$pa['pose']]) ? $pose_attack_modifier[$pa['pose']] : 0 ;
 		//策略修正只在反击阶段生效？ //pa身上没有反击标记 代表这是一次先制攻击
-		if(!empty($pa['is_counter']) && $tactic_attack_active) $tac_atk_per = $tactic_attack_modifier[$pa['tactic']] ?: 0;
+		if(!empty($pa['is_counter']) && $tactic_attack_active) $tac_atk_per = isset($tactic_attack_modifier[$pa['tactic']]) ? $tactic_attack_modifier[$pa['tactic']] : 0;
 		//策略修正始终生效
-		elseif(!$tactic_attack_active) $tac_atk_per = $tactic_attack_modifier[$pa['tactic']] ?: 0;
+		elseif(!$tactic_attack_active) $tac_atk_per = isset($tactic_attack_modifier[$pa['tactic']]) ? $tactic_attack_modifier[$pa['tactic']] : 0;
 		//上述系数修正最低不低于1%
 		$base_atk_per += $wth_atk_per+$pls_atk_per+$pose_atk_per+$tac_atk_per;
 		$base_atk_per = $base_atk_per > 0 ? $base_atk_per : 1;
@@ -554,22 +554,22 @@
 	//获取pd的防御力修正
 	function get_base_def_modifier(&$pa,&$pd,$active,$total_def,$tooltip=0)
 	{
+		global $weather,$log,$gamecfg;
+		include config('combatcfg',$gamecfg);
 		# 计算天气、姿态、策略、地点对pd防御力的修正
-		global $weather,$weather_defend_modifier,$pose_defend_modifier,$tactic_defend_modifier,$pls_defend_modifier,$log;
-		global $pose_defend_active,$tactic_defend_active;
 		$base_def_per = 100;
 		//天气修正
-		$wth_def_per = $weather_defend_modifier[$weather] ?: 0 ;
+		$wth_def_per = isset($weather_defend_modifier[$weather]) ? $weather_defend_modifier[$weather] : 0 ;
 		//地点修正		
-		$pls_def_per = $pls_defend_modifier[$pd['pls']] ?: 0; 
+		$pls_def_per = isset($pls_defend_modifier[$pd['pls']]) ? $pls_defend_modifier[$pd['pls']] : 0; 
 		//姿态修正只在受到先制攻击时生效？ //pa身上没有反击标记 代表这是一次先制攻击
-		if(!isset($pa['is_counter']) && $pose_defend_active) $pose_def_per = $pose_defend_modifier[$pd['pose']] ?: 0 ;
+		if(!isset($pa['is_counter']) && $pose_defend_active) $pose_def_per = isset($pose_defend_modifier[$pd['pose']]) ? $pose_defend_modifier[$pd['pose']] : 0 ;
 		//姿态修正始终生效
-		elseif(!$pose_defend_active) $pose_def_per = $pose_defend_modifier[$pd['pose']] ?: 0 ;
+		elseif(!$pose_defend_active) $pose_def_per = isset($pose_defend_modifier[$pd['pose']]) ? $pose_defend_modifier[$pd['pose']] : 0 ;
 		//策略修正只在反击阶段生效？ //pa身上有反击标记 代表这是一次反击攻击
-		if(!empty($pa['is_counter']) && $tactic_defend_active) $tac_def_per = $tactic_defend_modifier[$pd['tactic']] ?: 0;
+		if(!empty($pa['is_counter']) && $tactic_defend_active) $tac_def_per = isset($tactic_defend_modifier[$pd['tactic']]) ? $tactic_defend_modifier[$pd['tactic']] : 0;
 		//策略修正始终生效
-		elseif(!$tactic_defend_active) $tac_def_per = $tactic_defend_modifier[$pd['tactic']] ?: 0;
+		elseif(!$tactic_defend_active) $tac_def_per = isset($tactic_defend_modifier[$pd['tactic']]) ? $tactic_defend_modifier[$pd['tactic']] : 0;
 		//上述各项系数修正最低不低于1%
 		$base_def_per += $wth_def_per+$pls_def_per+$pose_def_per+$tac_def_per;
 		$base_def_per = $base_def_per > 0 ? $base_def_per : 1;

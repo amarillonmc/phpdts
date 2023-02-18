@@ -1441,8 +1441,10 @@ function itemuse($itmn) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == '破灭之诗') {
-			global $hack,$rp;
+			global $hack,$rp,$clbpara,$gamevars;
 			$rp = 0;
+			$clbpara['dialogue'] = 'thiphase';
+			$clbpara['console'] = 1;  
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '在你唱出那单一的旋律的霎那，<br>整个虚拟世界起了翻天覆地的变化……<br>';
 			addnpc ( 4, 0,1);
@@ -1451,8 +1453,8 @@ function itemuse($itmn) {
 			wthchange( $itm,$itmsk);
 			addnews ($now , 'thiphase',$nickinfo.' '.$name);
 			$hack = 1;
+			$gamevars['apis'] = $gamevars['api'] = 5;
 			$log .= '因为破灭之歌的作用，全部锁定被打破了！<br>';
-			//include_once GAME_ROOT.'./include/system.func.php';
 			movehtm();
 			addnews($now,'hack2',$nickinfo.' '.$name);
 			save_gameinfo();

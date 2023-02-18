@@ -257,6 +257,7 @@ function kill($death, $dname, $dtype = 0, $dpid = 0, $annex = '', &$revival_flag
 	{
 		if($dtype == 15){//静流AI
 			global $gamevars;
+			unset($gamevars['act']);
 			$gamevars['sanmadead'] = 1;
 			save_gameinfo();
 		}
