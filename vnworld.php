@@ -57,6 +57,9 @@ if($vnmode=='none')
 						else $temp_carr[$cid]['spkinfo'] = parse_itm_desc($sk,'sk');
 					}
 				}
+				// 汇总合成结果至一段内
+				$temp_carr[$cid]['result'][0] = $cinfo['result'][0].'/'.$temp_vniteminfo[$cinfo['result'][1]].'/'.$cinfo['result'][2].'/'.$cinfo['result'][3];
+				if(isset($temp_carr[$cid]['spkinfo'])) $temp_carr[$cid]['result'][0].='/'.$temp_carr[$cid]['spkinfo'];
 			}
 		}
 	}

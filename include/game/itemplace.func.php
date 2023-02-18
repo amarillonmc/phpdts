@@ -190,33 +190,26 @@ function get_item_place($which)
 				$result.="{$area}禁起在商店中出售({$price}元) \r";
 			}
 		}
-	include_once config('mixitem',$gamecfg);
-	global $mixinfo;
-	if(!empty($mixinfo))
+	include config('mixitem',$gamecfg);
+	foreach($mixinfo as $lst)
 	{
-		foreach($mixinfo as $lst)
+		if ($lst['result'][0]==$which || $lst['result'][0]==$which.' ')
 		{
-			if ($lst['result'][0]==$which || $lst['result'][0]==$which.' ')
-			{
-				$result.="通过合成获取 \r";
-				break;
-			}
+			$result.="通过合成获取 \r";
+			break;
 		}
 	}
-	include_once config('vnmixitem',$gamecfg);
-	if(!empty($vn_mixinfo))
+	include config('vnmixitem',$gamecfg);
+	foreach($vn_mixinfo as $vlst)
 	{
-		foreach($vn_mixinfo as $vlst)
+		if ($vlst['result'][0]==$which || $vlst['result'][0]==$which.' ')
 		{
-			if ($vlst['result'][0]==$which || $vlst['result'][0]==$which.' ')
+			$vresult ="通过合成获取 \r";
+			if(strpos($result,$vresult)===false)
 			{
-				$vresult ="通过合成获取 \r";
-				if(strpos($result,$vresult)===false)
-				{
-					$result .= $vresult;
-				}
-				break;
+				$result .= $vresult;
 			}
+			break;
 		}
 	}
 	$file=config('synitem',$gamecfg);

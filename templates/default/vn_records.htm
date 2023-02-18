@@ -18,10 +18,6 @@
 		<td class="b1">$stuff_tips[4]</td>
 		<td class="b1" width="25px"></td>
 		<td class="b1">$result_tips[0]</td>
-		<td class="b1">$result_tips[1]</td>
-		<td class="b1">$result_tips[2]</td>
-		<td class="b1">$result_tips[3]</td>
-		<td class="b1">$log_tips[0]</td>
 		<td class="b1" width="45px">编辑</td>
 		<td class="b1">$log_tips[2]</td>
 	</tr>
@@ -36,10 +32,6 @@
 			<td class="b3"><!--{if isset($cinfo['stuff'][4])}-->$cinfo['stuff'][4]<!--{else}-->-<!--{/if}--></td>
 			<td class="b3"> → </td>
 			<td class="b3">$cinfo['result'][0]</td>
-			<td class="b3">$temp_vniteminfo[$cinfo['result'][1]]</td>
-			<td class="b3">$cinfo['result'][2]</td>
-			<td class="b3">$cinfo['result'][3]</td>
-			<td class="b3"><!--{if isset($cinfo['spkinfo'])}-->$cinfo['spkinfo']<!--{else}-->-<!--{/if}--></td>
 			<td class="b3">
 				<!--{if ($cinfo['name']==$udata['username']||$udata['groupid']>=$vnmix_editor_group||$udata['username']==$gamefounder) && $cinfo['status']!=1}-->
 				<form method="post" action="vn_postitem.php" name="vn_postitem" onsubmit="vn_postitem.php" style="margin: 0px">

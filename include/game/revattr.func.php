@@ -680,11 +680,12 @@
 				//获取理论消耗体力最大值：
 				$sp_cost_max = $sp_cost_r*$pa['wepe'];
 				//获取实际消耗体力：
-				$sp_cost = min(ceil($sp_cost_max),$pa['sp']-1);
-				$log .= "消耗{$sp_cost}点体力，";
+				$sp_cost = min($sp_cost_max,$pa['sp']-1);
+				$log_sp_cost = round($sp_cost);
+				$log .= "消耗{$log_sp_cost}点体力，";
 			}
 			//获取威力系数：NPC固定为50%
-			$factor = $pa['type'] ? 0.5 : 0.5+($sp_cost/$sp_cost_max/2);
+			$factor = $pa['type'] ? 0.5 : 0.5+round(($sp_cost/$sp_cost_max)/2,1);
 			//获取伤害变化倍率并扣除体力
 			$dmg_p[]= round($factor,2); 
 			$pa['sp'] -= $sp_cost;
