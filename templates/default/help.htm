@@ -11,9 +11,7 @@
 
 <div class="subtitle">{lang help}</div>
 
-
 <HR>
-
 
 <TABLE class=menutbl style="BORDER-COLLAPSE: collapse" cellSpacing=0
 	cellPadding=0 align=center border=0>
@@ -3331,7 +3329,19 @@ insert into acbra2_game (gamenum) values (0);
 </div>
 <a href="https://bbs.brdts.online/?forum-2.htm">更新履历</a><br>
 
-
+<script>
+// 你杀了我吧
+// 获取所有带有'span[tooltip]'样式的元素
+var tooltipElements = document.querySelectorAll('span[tooltip]');
+// 循环迭代每个元素
+for (var i = 0; i < tooltipElements.length; i++) {
+  var tooltipElement = tooltipElements[i];
+  // 将样式更改为'span[tooltip2]'
+  tooltipElement.setAttribute('tooltip2', tooltipElement.getAttribute('tooltip'));
+  tooltipElement.removeAttribute('tooltip');
+}
+</script>
+	
 
 <form method="post" name="backindex" action="index.php"><input
 	type="submit" name="enter" value="{lang backindex}"></form>

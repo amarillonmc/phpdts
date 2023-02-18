@@ -185,7 +185,7 @@
     						<TD class=b2 height="26"><span><!--{if $wepk_words}-->$wepk_words<!--{else}-->$mltwk<!--{/if}--></span></TD>
                 <TD class=b3>
                 	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $wepe}--><span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offwep';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
-                	<span><!--{if $weps}-->$wep<!--{else}-->$nowep<!--{/if}--></span>
+                	<span><!--{if $weps}-->$wep_words<!--{else}-->$nowep<!--{/if}--></span>
                 </TD>
                 <TD class=b3><span>$wepsk_words</span></TD>
                 <TD class=b3><span>$wepe</span></TD>
@@ -195,7 +195,7 @@
     	          <TD class=b2 height="26"><span><!--{if $arbs}-->$iteminfo['DB']<!--{else}--><span class="grey">$iteminfo['DB']</span><!--{/if}--></span></TD>
                 <TD class=b3>
                 	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $arbe}--><span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offarb';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
-                	<span><!--{if $arbs}-->$arb<!--{else}-->$noarb<!--{/if}--></span>
+                	<span><!--{if $arbs}-->$arb_words<!--{else}-->$noarb<!--{/if}--></span>
                 </TD>
                 <TD class=b3><span>$arbsk_words</span></TD>
                 <TD class=b3><span>$arbe</span></TD>
@@ -205,7 +205,7 @@
     						<TD class=b2 height="26"><span><!--{if $arhs}-->$iteminfo['DH']<!--{else}--><span class="grey">$iteminfo['DH']</span><!--{/if}--></span></TD>
                 <TD class=b3>
                 	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $arhs}--><span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offarh';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
-                	<span><!--{if $arhs}-->$arh<!--{else}-->$noitm<!--{/if}--></span>
+                	<span><!--{if $arhs}-->$arh_words<!--{else}-->$noitm<!--{/if}--></span>
                 </TD>
                 <TD class=b3><span>$arhsk_words</span></TD>
                 <TD class=b3><span>$arhe</span></TD>
@@ -215,7 +215,7 @@
     			  		<TD class=b2 height="26"><span><!--{if $aras}-->$iteminfo['DA']<!--{else}--><span class="grey">$iteminfo['DA']</span><!--{/if}--></span></TD>
                 <TD class=b3>
                 	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $aras}--><span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offara';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
-                	<span><!--{if $aras}-->$ara<!--{else}-->$noitm<!--{/if}--></span>
+                	<span><!--{if $aras}-->$ara_words<!--{else}-->$noitm<!--{/if}--></span>
                 </TD>
                 <TD class=b3><span>$arask_words</span></TD>
                 <TD class=b3><span>$arae</span></TD>
@@ -225,7 +225,7 @@
     						<TD class=b2 height="26"><span><!--{if $arfs}-->$iteminfo['DF']<!--{else}--><span class="grey">$iteminfo['DF']</span><!--{/if}--></span></TD>
                 <TD class=b3>
                 	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $arfs}--><span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offarf';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
-                	<span><!--{if $arfs}-->$arf<!--{else}-->$noitm<!--{/if}--></span>
+                	<span><!--{if $arfs}-->$arf_words<!--{else}-->$noitm<!--{/if}--></span>
                 </TD>
                 <TD class=b3><span>$arfsk_words</span></TD>
                 <TD class=b3><span>$arfe</span></TD>
@@ -235,7 +235,7 @@
     						<TD class=b2 height="26"><span><!--{if $arts}-->$artk_words<!--{else}--><span class="grey">$iteminfo['A']</span><!--{/if}--></span></TD>
                 <TD class=b3>
                 	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $arts}--><span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offart';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
-                	<span><!--{if $arts}-->$art<!--{else}-->$noitm<!--{/if}--></span>
+                	<span><!--{if $arts}-->$art_words<!--{else}-->$noitm<!--{/if}--></span>
                 </TD>
                 <TD class=b3><span>$artsk_words</span></TD>
                 <TD class=b3><span>$arte</span></TD>
@@ -254,42 +254,42 @@
 							</TR>
 							<tr>          			  
 								<TD class=b2 height="26"><span><!--{if $itmk1_words}-->$itmk1_words<!--{else}--><span class="grey">{lang pack}1</span><!--{/if}--></span></TD>
-								<TD class=b3><span><!--{if $itms1}-->$itm1<!--{else}-->$noitm<!--{/if}--></span></TD>
+								<TD class=b3><span><!--{if $itms1}-->$itm1_words<!--{else}-->$noitm<!--{/if}--></span></TD>
 								<TD class=b3><span>$itmsk1_words</span></TD>
 								<TD class=b3><span>$itme1</span></TD>
 								<TD class=b3><span>$itms1</span></TD>
 							</tr>
 							<tr>
 								<TD class=b2 height="26"><span><!--{if $itmk2_words}-->$itmk2_words<!--{else}--><span class="grey">{lang pack}2</span><!--{/if}--></span></TD>
-								<TD class=b3><span><!--{if $itms2}-->$itm2<!--{else}-->$noitm<!--{/if}--></span></TD>
+								<TD class=b3><span><!--{if $itms2}-->$itm2_words<!--{else}-->$noitm<!--{/if}--></span></TD>
 								<TD class=b3><span>$itmsk2_words</span></TD>
 								<TD class=b3><span>$itme2</span></TD>
 								<TD class=b3><span>$itms2</span></TD>
 							</tr>
 							<tr>          			  
 								<TD class=b2 height="26"><span><!--{if $itmk3_words}-->$itmk3_words<!--{else}--><span class="grey">{lang pack}3</span><!--{/if}--></span></TD>
-								<TD class=b3><span><!--{if $itms3}-->$itm3<!--{else}-->$noitm<!--{/if}--></span></TD>
+								<TD class=b3><span><!--{if $itms3}-->$itm3_words<!--{else}-->$noitm<!--{/if}--></span></TD>
 								<TD class=b3><span>$itmsk3_words</span></TD>
 								<TD class=b3><span>$itme3</span></TD>
 								<TD class=b3><span>$itms3</span></TD>
 							</tr>
 							<tr>          	
 								<TD class=b2 height="26"><span><!--{if $itmk4_words}-->$itmk4_words<!--{else}--><span class="grey">{lang pack}4</span><!--{/if}--></span></TD>
-								<TD class=b3><span><!--{if $itms4}-->$itm4<!--{else}-->$noitm<!--{/if}--></span></TD>
+								<TD class=b3><span><!--{if $itms4}-->$itm4_words<!--{else}-->$noitm<!--{/if}--></span></TD>
 								<TD class=b3><span>$itmsk4_words</span></TD>
 								<TD class=b3><span>$itme4</span></TD>
 								<TD class=b3><span>$itms4</span></TD>
 							</tr>
 							<tr>          			  
 								<TD class=b2 height="26"><span><!--{if $itmk5_words}-->$itmk5_words<!--{else}--><span class="grey">{lang pack}5</span><!--{/if}--></span></TD>
-								<TD class=b3><span><!--{if $itms5}-->$itm5<!--{else}-->$noitm<!--{/if}--></span></TD>
+								<TD class=b3><span><!--{if $itms5}-->$itm5_words<!--{else}-->$noitm<!--{/if}--></span></TD>
 								<TD class=b3><span>$itmsk5_words</span></TD>
 								<TD class=b3><span>$itme5</span></TD>
 								<TD class=b3><span>$itms5</span></TD>
 							</tr>
 							<tr>          			  
 								<TD class=b2 height="26"><span><!--{if $itmk6_words}-->$itmk6_words<!--{else}--><span class="grey">{lang pack}6</span><!--{/if}--></span></TD>
-								<TD class=b3><span><!--{if $itms6}-->$itm6<!--{else}-->$noitm<!--{/if}--></span></TD>
+								<TD class=b3><span><!--{if $itms6}-->$itm6_words<!--{else}-->$noitm<!--{/if}--></span></TD>
 								<TD class=b3><span>$itmsk6_words</span></TD>
 								<TD class=b3><span>$itme6</span></TD>
 								<TD class=b3><span>$itms6</span></TD>
