@@ -308,7 +308,13 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		} elseif($news == 'loot_depot') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"grey\">{$a}将{$b}生前存放在安全箱里的东西转移到了自己的名下。哇……真是世风日下，道德沦丧啊！</span><br>\n";
 		} elseif($news == 'cdestroy') {
-			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red b\">{$a}把{$b}的尸体销毁了</span><br>\n";
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">{$a}把{$b}的尸体销毁了</span><br>\n";
+		} elseif($news == 'csl_wthchange') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"orange\">{$a}发送了控制指令，战场的天气变成了{$wthinfo[$b]}！</span><br>\n";
+		} elseif($news == 'csl_hack') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"orange\">{$a}发送了控制指令，全部禁区解除！</span><br>\n";
+		} elseif($news == 'csl_addarea') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"orange\">{$a}发送了控制指令，下一回禁区提前到来了！</span><br>\n";
 		} else {
 			$newsinfo .= "<li>$time,$news,$a,$b,$c,$d<br>\n";
 		}

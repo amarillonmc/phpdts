@@ -126,10 +126,8 @@
 					<td class="b3">
 						<span>
 							<select id="pose" name="pose" onchange="$('mode').value='special';$('command').value=$('pose').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
-								<!--{loop $poseinfo $key $value}-->
-									<!--{if ($value)&&($value!='强袭姿态')}-->
-									<option value="pose$key"<!--{if $pose == $key}-->selected<!--{/if}-->>$value
-									<!--{/if}-->
+								<!--{loop $apose $key}-->
+									<option value="pose$key"<!--{if $pose == $key}-->selected<!--{/if}-->>$poseinfo[$key]
 								<!--{/loop}-->
 							</select>
 						</span>
@@ -144,10 +142,8 @@
 					<td class="b3">
 						<span>
 							<select id="tactic" name="tactic" onchange="$('mode').value='special';$('command').value=$('tactic').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
-								<!--{loop $tacinfo $key $value}-->
-									<!--{if $value}-->
-									<option value="tac$key"<!--{if $tactic == $key}-->selected<!--{/if}-->>$value
-									<!--{/if}-->
+								<!--{loop $atac $key}-->
+									<option value="tac$key"<!--{if $tactic == $key}-->selected<!--{/if}-->>$tacinfo[$key]
 								<!--{/loop}-->
 							</select>
 						</span>

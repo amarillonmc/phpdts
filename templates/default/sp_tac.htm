@@ -2,10 +2,8 @@
 
 <input type="hidden" name="mode" value="special">
 <input type="radio" name="command" id="menu" value="menu" checked><a onclick=sl('menu'); href="javascript:void(0);" >返回</a><br><br>
-<!--{loop $tacinfo $key $value}-->
-<!--{if $value}-->
-<input type="radio" name="command" id="tac$key" value="tac$key"><a onclick=sl('tac$key'); href="javascript:void(0);" >$value </a><br>
-<!--{/if}-->
+<!--{loop $atac $key}-->
+<input type="radio" name="command" id="tac$key" value="tac$key"><a onclick=sl('tac$key'); href="javascript:void(0);" >$tacinfo[$key]</a><br>
 <!--{/loop}-->
 
  

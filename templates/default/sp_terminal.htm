@@ -1,12 +1,14 @@
 <dialog id="terminal" style="max-width: 90%;max-height: 80%;">
-        <div><span class="grey">正在播放：～ <span id="bgmname">$bgmname</span> ～</span></div>
         <center>
+        <div><span class="grey">正在播放：～ <span id="bgmname"></span> ～</span></div>
+        <!-- 战场地图 -->
         <!--{eval $mapdata = init_mapdata();}-->
         $mapdata 
-        <!--站场地图：单格width:42;height:36;-->
+        <!-- 控制菜单 -->
         <table border="1" cellspacing="0" cellpadding="0" width="120px" height="24px" style="padding-left: 10px; padding-right: 5px; padding-bottom: 5px;float:right;position:relative;">
+            <!-- 音乐控制指令 -->
             <tr align="center">
-                <TD colspan="2" width="84" height="24" class=b1 align=center>播放控制</TD>
+                <TD colspan="2" width="84" height="24" class="b1" align=center>播放控制</TD>
             </tr>
             <tr width="84" height="36" class="map">
                 <td td colspan="2">
@@ -16,27 +18,80 @@
                     <span class="eicon" onclick="changeBGM();">⏭️</span>
                 </td>
             </tr>
-            <tr width="84" height="12" style="border: none;"></tr>
+            <!-- <tr width="84" height="12" style="border: none;"></tr> -->
             <tr>
                 <TD colspan="2" width="84" height="24" class=b1 align=center>音量调节</TD>
             </tr>
             <tr width="84" height="36" class="map">
                 <td colspan="2">
                     <span class="eicon" onmousedown="downVolume();showVolume();">⏬</span>
-                    <span id="volume_num">{$volume}%</span>
+                    <span id="volume_num">{$clbpara['volume']}%</span>
                     <span class="eicon" onmousedown="upVolume();showVolume();">⏫</span>
                 </td>
             </tr>
-            <tr width="84" height="12" style="border: none;"></tr>
-            <!--<tr class="map">
-                <td height="200" rowspan="11">  
+            <!-- 战场控制指令 -->
+            <!--{if isset($clbpara['console'])}-->
+            <tr>
+                <TD colspan="2" width="84" height="24" class=b1 align=center>可用信道</TD>
+            </tr>
+            <tr width="84" height="28" class="map">
+                <td colspan="2">
+                    <span class="<!--{if $gamevars['api'] == 0}-->red<!--{else}-->lime<!--{/if}-->">$gamevars['api']/$gamevars['apis']</span>
                 </td>
-                <td height="200" rowspan="11">  
-                   <input type="range" class="range" min="0" max="100" value="100" style="position: absolute;left: -6%;top: 76%; width:180px;transform: rotate(-90deg);">
+            </tr>
+            <tr>
+                <TD colspan="2" width="84" height="24" class=b1 align=center>天气控制</TD>
+            </tr>
+            <tr width="84" height="30" class="map">
+                <td colspan="2">
+                    <select id="cwth" name="cwth" style="width:72px" onchange="closeDialog($('terminal'));$('mode').value='command';$('command').value='consle_wthchange';postCmd('gamecmd','command.php');">
+                        <!--{loop $wthinfo $n $wth}-->
+                        <option value="$n"<!--{if $weather == $n}--> selected<!--{/if}-->> {$wth} </option>
+                        <!--{/loop}-->
+                    </select>
                 </td>
-            </tr> -->
+            </tr>
+            <tr>
+                <TD colspan="2" width="84" height="24" class=b1 align=center>数据控制</TD>
+            </tr>
+            <tr width="84" height="36" class="map">
+                <td width="42">
+                    <input type="button" value="数据检索" onclick="closeDialog($('terminal'));showModalDialog($('consle_search'));">
+                </td>
+                <td width="42">
+                    <input type="button" value="生命探测" onclick="closeDialog($('terminal'));$('command').value='consle_radar';postCmd('gamecmd','command.php');this.disabled=true;">
+                </td>
+            </tr>
+            <tr>
+                <TD colspan="2" width="84" height="24" class=b1 align=center>禁区控制</TD>
+            </tr>
+            <tr width="84" height="36" class="map">
+                <td width="42">
+                    <input type="button" value="增设禁区" onclick="closeDialog($('terminal'));$('command').value='consle_areactrl1';postCmd('gamecmd','command.php');this.disabled=true;">
+                </td>
+                <td width="42">
+                    <input type="button" value="解除禁区" onclick="closeDialog($('terminal'));$('command').value='consle_areactrl0';postCmd('gamecmd','command.php');this.disabled=true;">
+                </td>
+            </tr>
+            <tr width="84" height="84" class="map">
+                <td colspan="2">
+                    <!--{if !isset($clbpara['nobutton'])}-->
+                    <div class="dangerbutton" onclick="closeDialog($('terminal'));$('command').value='consle_dbutton';postCmd('gamecmd','command.php');this.disabled=true;">DON'T PUSH<br>危险勿触</div>
+                    <!--{else}-->
+                    <div class="lockmap"><img src="img/lock.png" ></div>
+                    <!--{/if}-->
+                </td>
+            </tr>
+            <!--{else}-->
+            <tr width="84" height="318" rowspan="7" class="lockmap">
+                <TD colspan="2" width="72" height="300" align=center class="blurtext"></TD>
+            </tr>
+            <!--{/if}-->
         </table>
         </center>
+        <script>
+            getBgmVolume();
+        </script>
     <img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('terminal'))">
 </dialog>
 

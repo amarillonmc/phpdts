@@ -41,11 +41,24 @@ if($gamestate >= 20){
 //$db->query("ALTER TABLE {$tablepre}users ADD validgames smallint unsigned NOT NULL default '0' AFTER credits");
 //$db->query("ALTER TABLE {$tablepre}users ADD wingames smallint unsigned NOT NULL default '0' AFTER validgames");
 
-//哇 还是老祖宗留下的方法好啊
 //UNCOMMENT THOSE WHEN YELLOWLIFE IS PUSHED TO MOMOBAKO-SERIES
-//$db->query("ALTER TABLE {$tablepre}winners ADD nick text not null AFTER type");
-//$db->query("ALTER TABLE {$tablepre}winners ADD ss smallint unsigned NOT NULL default '0' AFTER msp");
-//$db->query("ALTER TABLE {$tablepre}winners ADD mss smallint unsigned NOT NULL default '0' AFTER ss");
+//winner表新增字段
+$result = $db->query("DESCRIBE {$tablepre}winners nick");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD nick text not null AFTER type");
+$result = $db->query("DESCRIBE {$tablepre}winners ss");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD ss mediumint unsigned NOT NULL default '0' AFTER msp");
+$result = $db->query("DESCRIBE {$tablepre}winners mss");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD mss smallint unsigned NOT NULL default '0' AFTER ss");
+$result = $db->query("DESCRIBE {$tablepre}winners skillpoint");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD skillpoint smallint unsigned NOT NULL default '0' AFTER nick");
+
+//user表新增字段
+$result = $db->query("DESCRIBE {$tablepre}users volume");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}users ADD volume smallint(3) unsigned NOT NULL default '20' AFTER nicks");
+
+//game表结构变动
+$db->query("ALTER TABLE {$tablepre}game DROP gamevars");
+$db->query("ALTER TABLE {$tablepre}game ADD gamevars text NOT NULL AFTER combonum");
 
 include template('admin_menu');
 

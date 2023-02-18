@@ -281,6 +281,14 @@ function showData(sdata){
 	{
 		window.location.reload();
 	}
+	if($('nowbgm'))
+	{
+		getBgmVolume();
+	}
+	if($('dialogue'))
+	{
+		$('dialogue').showModal();
+	}
 }
 
 var refchat = null;
@@ -394,6 +402,21 @@ function changeBGM(mode=1){
 	$('bgmname').innerHTML = $(newname).innerHTML;
 	$('gamebgm').load();
 	$('gamebgm').play();
+}
+
+function getBgmVolume(){
+	var nowid = $('nowbgm').innerHTML;
+	var bname = 'bnm' + nowid;
+	$('bgmname').innerHTML = $(bname).innerHTML;
+	$('volume_num').innerHTML = $('gamebgm').volume*100 + '%';
+}
+
+function changePages(nowpage,nextpage)
+{
+	var np = 'd'+nowpage;
+	var pp = 'd'+nextpage;
+	$(np).style.display="none";
+	$(pp).style.display="block";
 }
 
 //1

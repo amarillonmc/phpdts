@@ -60,7 +60,7 @@ function poison($itmn = 0) {
 	return;
 }
 
-function wthchange($itm,$itmsk){
+function wthchange($itm,$itmsk,$wlog=1){
 	global $now,$log,$weather, $wthinfo, $name,$nick;
 	$weathertd = $weather;
 	if($weather >= 14 && $weather <= 17){
@@ -103,7 +103,7 @@ function wthchange($itm,$itmsk){
 			include_once GAME_ROOT . './include/system.func.php';
 			save_gameinfo ();
 			addnews ( $now, 'wthchange', get_title_desc($nick).' '.$name, $weather, $itm );
-			$log .= "你使用了<span class=\"yellow\">{$itm}</span>。<br />天气突然转变成了<span class=\"red\">$wthinfo[$weather]</span>！<br />";
+			if($wlog) $log .= "你使用了<span class=\"yellow\">{$itm}</span>。<br />天气突然转变成了<span class=\"red\">$wthinfo[$weather]</span>！<br />";
 		}
 	}
 	return;

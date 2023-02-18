@@ -82,4 +82,15 @@
 	<input type="button" class="cmdbutton" id="sp_pbomb" name="sp_pbomb" value="X 按钮" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_pbomb';postCmd('gamecmd','command.php');this.disabled=true;">
 <!--{/if}-->
 <br />
-<input type="button" class="cmdbutton" id="sp_terminal" name="sp_terminal" value="子面板" onclick="showModalDialog($('terminal'));postCmd('gamecmd','command.php');this.disabled=true;">
+
+<!-- 对话框 -->
+<!--{if isset($dialogue_id)}-->
+{template dialogue}
+<!--{/if}-->
+
+<!-- 子面板 -->
+<input type="button" class="cmdbutton" id="sp_terminal" name="sp_terminal" value="子面板" onclick="showModalDialog($('terminal'));">
+{template sp_terminal}
+<!--{if isset($gamevars['apis'])}-->
+{template sp_console_search}
+<!--{/if}-->
