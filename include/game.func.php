@@ -46,7 +46,8 @@ function init_profile(){
 
 	foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
 	{
-		${$value} = parse_itm_desc(${$value},'m');
+		global ${$value.'_words'};
+		${$value.'_words'} = parse_itm_desc(${$value},'m');
 	}
 
 	foreach (Array('wepk','arbk','arhk','arak','arfk','artk','itmk0','itmk1','itmk2','itmk3','itmk4','itmk5','itmk6') as $k_value) {
@@ -96,67 +97,6 @@ function init_profile(){
 
 	$ardef = $arbe + $arhe + $arae + $arfe;
 	$karma = ($rp * $killnum - $def )+ $att;
-
-//	$infdata = '';
-//	
-//	if(strpos($inf,'h') !== false || strpos($inf,'b') !== false ||strpos($inf,'a') !== false ||strpos($inf,'f') !== false){
-//		//$infdata = '<span class="red b">';
-//		$infimg .= '<img src="img/injured.gif" style="position:absolute;top:0;left:10;width:84;height:20">';
-//		if(strpos($inf,'h') !== false){
-//			$infdata .= $infinfo['h'];
-//			$infimg .= '<img src="img/hurt.gif" style="position:absolute;top:0;left:121;width:37;height:37">';
-//		}
-//		if(strpos($inf,'a') !== false){
-//			$infdata .= $infinfo['a'];
-//			$infimg .= '<img src="img/hurt.gif" style="position:absolute;top:17;left:102;width:37;height:37">';
-//		}
-//		if(strpos($inf,'b') !== false){
-//			$infdata .= $infinfo['b'];
-//			$infimg .= '<img src="img/hurt.gif" style="position:absolute;top:43;left:121;width:37;height:37">';
-//		}
-//		if(strpos($inf,'f') !== false){
-//			$infdata .= $infinfo['f'];
-//			$infimg .= '<img src="img/hurt.gif" style="position:absolute;top:111;left:121;width:37;height:37">';
-//		}
-//	} else {
-//		$infimg .= '<img src="img/injured2.gif" style="position:absolute;top:0;left:10;width:84;height:20">';
-//	}
-//	//$infdata .= '</span>';
-//	if(strpos($inf,'p') !== false) {
-//		$infdata .= $infinfo['p'];
-//		//$infdata .= "<span class=\"purple b\">{$infinfo['p']}</span>";
-//		$infimg .= '<img src="img/p.gif" style="position:absolute;top:20;left:4;width:98;height:20">';
-//	} else {
-//		$infimg .= '<img src="img/p2.gif" style="position:absolute;top:20;left:4;width:98;height:20">';
-//	}
-//	if(strpos($inf,'u') !== false) {
-//		$infdata .= $infinfo['u'];
-//		//$infdata .= "<span class=\"red b\">{$infinfo['u']}</span>";
-//		$infimg .= '<img src="img/u.gif" style="position:absolute;top:40;left:11;width:81;height:20">';
-//	} else {
-//		$infimg .= '<img src="img/u2.gif" style="position:absolute;top:40;left:11;width:81;height:20">';
-//	}
-//	if(strpos($inf,'i') !== false) {
-//		$infdata .= $infinfo['i'];
-//		//$infdata .= "<span class=\"clan b\">{$infinfo['i']}</span>";
-//		$infimg .= '<img src="img/i.gif" style="position:absolute;top:60;left:13;width:77;height:20">';
-//	} else {
-//		$infimg .= '<img src="img/i2.gif" style="position:absolute;top:60;left:13;width:77;height:20">';
-//	}
-//	if(strpos($inf,'e') !== false) {
-//		$infdata .= $infinfo['e'];
-//		//$infdata .= "<span class=\"yellow b\">{$infinfo['e']}</span>";
-//		$infimg .= '<img src="img/e.gif" style="position:absolute;top:80;left:2;width:101;height:20">';
-//	} else {
-//		$infimg .= '<img src="img/e2.gif" style="position:absolute;top:80;left:2;width:101;height:20">';
-//	}
-//	if(strpos($inf,'w') !== false) {
-//		$infdata .= $infinfo['w'];
-//		$infimg .= '<img src="img/w.gif" style="position:absolute;top:100;left:3;width:100;height:20">';
-//	} else {
-//		$infimg .= '<img src="img/w2.gif" style="position:absolute;top:100;left:3;width:100;height:20">';
-//	}
-
 
 	$hpcolor = 'clan';
 	if($hp <= 0 ){
