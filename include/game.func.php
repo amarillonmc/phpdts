@@ -640,6 +640,3 @@ function destory_corpse(&$edata)
 	}
 	return;
 }
-
-
-?>

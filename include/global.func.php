@@ -405,10 +405,27 @@ function getchat($last,$team='',$limit=0) {
 		} elseif($chat['type'] == '5') {
 			$msg = "<span class=\"yellow\">【{$chatinfo[$chat['type']]}】{$chat['msg']}".date("\(H:i:s\)",$chat['time']).'</span><br>';
 		}
+		//表情
+		$msg = preg_replace('/\[(\w+)\]/', "<img src='img/emoticons/$1.png'>", $msg);
 		$chatdata['msg'][$chat['cid']] = $msg;
 	}
 	return $chatdata;
 }
+
+//获取表情
+function get_emdata()
+{
+	global $emdata;
+	$emdir = 'img/emoticons/';
+	$emfiles = glob($emdir . '*.png');
+	$emdata = array();
+	foreach ($emfiles as $emfile) {
+		$name = basename($emfile, '.png');
+		$emdata[] = "<img src='$emdir$name.png' alt='$name' onClick=\"insertEm('$name')\">";
+  	}
+	return $emdata;
+}
+
 
 function storyputchat($time,$type){
 	global $db,$tablepre,$now,$syschatinfo,$gamestate,$rdown,$bdown,$ldown,$kdown;
