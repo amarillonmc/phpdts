@@ -38,6 +38,9 @@ if(($sendmode == 'send')&&$chatmsg) {
 if(!$chatdata) {
 	$chatdata = getchat($lastcid,$teamID);
 }
+if(!$emdata) {	
+	$emdata = get_emdata();
+}
 ob_clean();
 //$json = new Services_JSON();
 //$jgamedata = $json->encode($chatdata);
