@@ -43,6 +43,31 @@
 		return;
 	}
 
+	//获取武器射程
+	function get_wep_range(&$pa)
+	{
+		global $rangeinfo;
+		$range = isset($rangeinfo[$pa['wep_kind']]) ? $rangeinfo[$pa['wep_kind']] : -1;
+		return $range;
+	}
+
+	//获取战斗轮次：仅供追击/鏖战机制使用
+	function get_battle_turns(&$pa,&$pd,$active)
+	{
+		$turns = $pa['clbpara']['battle_turns'] == $pd['clbpara']['battle_turns'] ? $pa['clbpara']['battle_turns'] : max($pa['clbpara']['battle_turns'],$pd['clbpara']['battle_turns']);
+		return $turns;
+	}
+
+	//计算战场距离：仅供追击/鏖战机制使用
+	function get_battle_range(&$pa,&$pd,$active)
+	{
+		//战场距离 = (双方射程差值 - 战斗回合数) * 10
+		$range = abs($pa['wep_range'] - $pd['wep_range']);
+		$turns = get_battle_turns($pa,$pd,$active);
+		$range = max(0,$range-$turns);
+		return $range;
+	}
+
 	//获取防具上的属性
 	//如果你想设计一个在战斗中能临时获得属性的机制，请在这两个函数执行完毕后，把属性加入返回的结果内。除非你希望技能的机制优先级高于三抽的判定。
 	function get_equip_ex_array(&$pa)
@@ -684,6 +709,10 @@
 				$log_sp_cost = round($sp_cost);
 				$log .= "消耗{$log_sp_cost}点体力，";
 			}
+			else 
+			{
+				$sp_cost = 0;
+			}
 			//获取威力系数：NPC固定为50%
 			$factor = $pa['type'] ? 0.5 : 0.5+round(($sp_cost/$sp_cost_max)/2,1);
 			//获取伤害变化倍率并扣除体力
@@ -1135,7 +1164,7 @@
 	}
 
 	//攻击方(pa)在造成伤害后触发的事件
-	function attack_finish_events($pa,$pd,$active)
+	function attack_finish_events(&$pa,&$pd,$active)
 	{
 		global $log;
 
@@ -1235,6 +1264,57 @@
 			return 1;	
 		}
 		return 0;
+	}
+
+	//判断pd是否满足反击pa的基础条件（姿态）
+	function check_can_counter(&$pa,&$pd,$active)
+	{
+		# 治疗姿态、哨戒姿态、躲避策略不能反击
+		if($pd['pose'] == 5 || $pd['pose'] == 7) return 0;
+		if($pd['tactic'] == 4) return 0;
+		return 1;
+	}
+
+	//判断pa是否处于pd的反击射程内
+	function check_in_counter_range(&$pa,&$pd,$active)
+	{
+		if($pd['wep_range'] >= $pa['wep_range'] && $pa['wep_range'] != 0) return 1;
+		return 0;
+	}
+
+	//获取pd成功对pa发起反击的概率
+	function get_counter_rev(&$pa,&$pd,$active)
+	{
+		global $counter_obbs,$inf_counter_p,$pose_counter_modifier,$tactic_counter_modifier;
+
+		# 获取攻击方式的基础反击率：
+		$counter = $counter_obbs[$pd['wep_kind']];
+
+		# 获取姿态、策略对反击率的修正：
+		$counter += $pose_counter_modifier[$pd['pose']];
+		$counter += $tactic_counter_modifier[$pd['tactic']];
+
+		# 计算双方射程差对反击率的影响：（高射程武器受低射程武器攻击时，反击率下降(双方射程差x10)%，最低不会低于8%）
+		if($pd['wep_range'] > $pa['wep_range'] && $counter > 8)
+		{
+			$counter = $counter - (($pd['wep_range'] - $pa['wep_range'])*10);
+			$counter = max(8,$counter);
+		}
+
+		# 获取社团技能对反击率的修正
+		$counter *= rev_get_clubskill_bonus_counter($pd['club'],$pd['skills'],$pd,$pa['club'],$pa['skills'],$pa);
+
+		# 获取异常状态对反击率的影响
+		if(!empty($pd['inf']))
+		{
+			foreach ($inf_counter_p as $inf_ky => $value) 
+			{
+				if(strpos($pd['inf'], $inf_ky)!==false) $counter *= $value;
+			}	
+		}
+
+		//echo "{$pd['nm']}对{$pa['nm']}的反击率是{$counter}%<br>";
+		return $counter;
 	}
 
 ?>

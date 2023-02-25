@@ -12,6 +12,8 @@ include config('dialogue',$gamecfg);
 //判断是否进入游戏
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); } 
 
+unset($pdata);
+
 $result = $db->query("SELECT * FROM {$tablepre}players WHERE name = '$cuser' AND type = 0");
 
 if(!$db->num_rows($result)) { header("Location: valid.php");exit(); }
@@ -80,13 +82,13 @@ if($hp > 0){
 	}
 
 	//PORT
-		//判断背包内道具是否超限
-		if(strpos($arbsk,'^')!==false && $arbs && $arbe){
-			global $itmnumlimit;
-			$itmnumlimit = $arbe>=$arbs ? $arbs : $arbe;
-			include_once GAME_ROOT.'./include/game/itembag.func.php';
-			overnumlimit();
-		}
+	//判断背包内道具是否超限
+	if(strpos($arbsk,'^')!==false && $arbs && $arbe){
+		global $itmnumlimit;
+		$itmnumlimit = $arbe>=$arbs ? $arbs : $arbe;
+		include_once GAME_ROOT.'./include/game/itembag.func.php';
+		overnumlimit();
+	}
 	
 	//判断冷却时间是否过去
 	if($coldtimeon){
@@ -94,7 +96,12 @@ if($hp > 0){
 		$nowmtime = floor(getmicrotime()*1000);
 		$rmcdtime = $nowmtime >= $cdover ? 0 : $cdover - $nowmtime;
 	}
-	
+	//执行动作前，身上存在追击标记时，直接进入追击判定
+	if(strpos($action,'chase')!==false && $mode !== 'revcombat')
+	{
+		$command = 'chase';
+		goto chase_flag;
+	}
 	//执行动作前检查是否有无法跳过且未阅览过的对话框
 	if(isset($clbpara['noskip_dialogue']) && strpos($command,'end_dialogue')===false)
 	{
@@ -104,7 +111,7 @@ if($hp > 0){
 		$mode = 'command';
 	}else{
 		//进入指令判断
-		if($mode !== 'combat' && $mode !== 'revcombat' && $mode !== 'corpse' && strpos($action,'pacorpse')===false && $mode !== 'senditem'){
+		if(strpos($action,'chase')===false && $mode !== 'combat' && $mode !== 'revcombat' && $mode !== 'corpse' && strpos($action,'pacorpse')===false && $mode !== 'senditem'){
 			$action = '';
 		}
 		if($command == 'menu') {
@@ -431,11 +438,11 @@ if($hp > 0){
 			include_once GAME_ROOT.'./include/game/combat.func.php';
 			combat(1,$command);
 		} elseif($mode == 'revcombat'){
-			if(strpos($action,'enemy')===0)
-			{
-				$enemyid = str_replace('enemy','',$action);
-			}
-			if(!$enemyid || (strpos($action,'enemy')===false))
+			chase_flag:
+			$enemyid = NULL;
+			if(strpos($action,'enemy')===0) $enemyid = str_replace('enemy','',$action);
+			if(strpos($action,'chase')===0) $enemyid = str_replace('chase','',$action);
+			if(!$enemyid)
 			{
 				$log .= "<span class=\"yellow b\">你没有遇到敌人，或已经离开战场！</span>{$enemyid}<br>";
 				goto back_flag;
@@ -445,18 +452,23 @@ if($hp > 0){
 				$log .= "对方不存在！<br>";
 				goto back_flag;
 			}
-
 			$edata = $db->fetch_array($result);
 			if ($edata ['pls'] != $pls) 
 			{
 				$log .= "<span class=\"yellow b\">" . $edata ['name'] . "</span>已经离开了<span class=\"yellow b\">$plsinfo[$pls]</span>。<br>";
-			} 
-			elseif ($edata ['hp'] <= 0)
+				goto back_flag;
+			}
+			if ($edata ['hp'] <= 0)
 			{
 				$log .= "<span class=\"red b\">" . $edata ['name'] . "</span>已经死亡，不能被攻击。<br>";
 				include_once GAME_ROOT . './include/game/battle.func.php';
 				$action = 'corpse'.$edata['pid'];
 				findcorpse($edata);
+			}
+			elseif ($command == 'chase') 
+			{
+				include_once GAME_ROOT.'./include/game/revbattle.func.php';
+				findenemy_rev($edata);
 			}
 			elseif ($command == 'back') 
 			{

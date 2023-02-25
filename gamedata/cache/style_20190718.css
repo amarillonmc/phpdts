@@ -369,20 +369,7 @@ span[tooltip] {
 span[tooltip]:hover:before {
     content: attr(tooltip);
 	padding: 5px;
-	font: bold 10pt "微软雅黑" serif; color: white; 
-	white-space:pre-line;
-	text-shadow:3px 3px 3px #3b3535; text-align: center; text-fill-color: white; -webkit-text-fill-color: white;
-	background-size: 0; background-clip: border-box; background-color: rgba(198, 114, 199, 0.8);
-	border-radius: 4px; z-index: 50;
-	transform: translate(-5px, 20px);
-    width: 160px; max-width: 160px; position: fixed;
-}
-span[tooltip2] {
-    position: relative;
-}
-span[tooltip2]:hover:before {
-    content: attr(tooltip2);
-	padding: 5px;
+	overflow: visible;
 	font: bold 10pt "微软雅黑" serif; color: white; 
 	white-space:pre-line;
 	text-shadow:3px 3px 3px #3b3535; text-align: center; text-fill-color: white; -webkit-text-fill-color: white;

@@ -52,9 +52,9 @@ if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD mss s
 $result = $db->query("DESCRIBE {$tablepre}winners skillpoint");
 if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD skillpoint smallint unsigned NOT NULL default '0' AFTER nick");
 
-//user表新增字段
+//user表结构变动
 $result = $db->query("DESCRIBE {$tablepre}users volume");
-if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}users ADD volume smallint(3) unsigned NOT NULL default '20' AFTER nicks");
+if($db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}users DROP volume");
 
 //game表结构变动
 $db->query("ALTER TABLE {$tablepre}game DROP gamevars");

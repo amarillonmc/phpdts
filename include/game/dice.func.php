@@ -16,7 +16,12 @@ function diceroll($dice){
     global $rp, $nick;
     global $log;
     global $nikstatusa, $nikstatuse;
-    $result = rand(0, $dice);
+    if(version_compare(PHP_VERSION,'7.0.0','<')){
+        $result = rand(0, $dice);
+    }else{
+        //强壮随机数！
+        $result = random_int(0, $dice);
+    }
 
     //process 孤注一掷
     if($nikstatusa == 1){

@@ -73,8 +73,9 @@ if($mode == 'edit') {
 		}
 	}
 	if ($icon>$iconlimit) $icon=0;
-	$volume = round(min(100,max(0,$volume)));
-	$db->query("UPDATE {$tablepre}users SET gender='$gender', icon='$icon',{$passqry}motto='$motto',  killmsg='$killmsg', lastword='$lastword', credits='$credits', credits2='$credits2' ,nick='$nick', volume='$volume' WHERE username='$cuser'");
+	$volume = round($volume/100,2); $volume = round(min(1,max(0,$volume)),2);
+	gsetcookie('volume',$volume,86400*30,0);
+	$db->query("UPDATE {$tablepre}users SET gender='$gender', icon='$icon',{$passqry}motto='$motto',  killmsg='$killmsg', lastword='$lastword', credits='$credits', credits2='$credits2' ,nick='$nick' WHERE username='$cuser'");
 	if($db->affected_rows()){
 		$gamedata['innerHTML']['info'] .= $_INFO['data_success'];
 	}else{

@@ -105,6 +105,16 @@ if((strpos($action,'corpse')===0 || strpos($action,'pacorpse')===0) && $gamestat
 		}
 	}	
 }
+elseif((strpos($action,'chase')!==false)){
+	$enemyid = str_replace('chase','',$action);
+	$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$enemyid' AND hp>0 AND pls='$pls'");
+	if($db->num_rows($result)>0){
+		$edata = $db->fetch_array($result);
+		include_once GAME_ROOT.'./include/game/revbattle.func.php';
+		findenemy_rev($edata);
+		$main = 'battle_rev';
+	}
+}
 elseif((strpos($action,'neut')===0)){
 	$nid = str_replace('neut','',$action);
 	if($nid){

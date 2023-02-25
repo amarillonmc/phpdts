@@ -422,8 +422,6 @@ function init_bgm($force_update=0)
 	global $pls,$command,$clbpara,$gamecfg;
 	include config('audio',$gamecfg);
 
-	//$clbpara = get_clbpara($clbpara);
-
 	# 初始化
 	$event_flag = 0;
 	$bgmname = $bgmlink = $bgmtype = $bgmplayer = $bgmnums = '';
@@ -484,8 +482,8 @@ function init_bgm($force_update=0)
 		$bgmlink = $bgmarr[0]['url'];
 		$bgmtype = $bgmarr[0]['type'];
 		#初始化默认音量
-		$volume = isset($clbpara['volume']) ? $clbpara['volume'] : $default_volume;
-		$volume_r = round($volume/100,2);
+		$volume = isset($_COOKIE["volume"]) ? filter_var($_COOKIE["volume"],FILTER_VALIDATE_FLOAT)*100 : $default_volume;
+		$volume_r = isset($volume) ? round($volume/100,2) : round($default_volume/100,2);
 		# 生成播放器与播放队列 太野蛮了……嘻嘻……
 		if(!empty($bgmlink) && !empty($bgmtype))
 		{
@@ -571,18 +569,34 @@ function get_remaincdtime($pid){
 	}	
 }
 
-//用于将当前玩家数据保存至数据库
-function current_player_save(){
+//通过pid抓取指定玩家/NPC数据
+function fetch_playerdata_by_pid($pid)
+{
 	global $db,$tablepre;
-	$pdata = Array();
+	$result = $db->query("SELECT pid FROM {$tablepre}players WHERE pid = '$pid'");
+	if(!$db->num_rows($result)) return NULL;
+	$pdata = $db->fetch_array($result);
+	if(!empty($pdata['clbpara'])) $pdata['clbpara'] = get_clbpara($pdata['clbpara']);
+	return $pdata;
+}
+//用于读取当前玩家数据的数组结构（不进行过滤）
+function current_player_load(){
 	$data = update_db_player_structure();
 	foreach($data as $key)
 	{
 		global $$key;
-		$pdata[$key]= $$key;
+		$data[$key]= $$key;
 	}
+	return $data;
+}
+//用于将当前玩家数据保存至数据库（会进行过滤）
+function current_player_save(){
+	global $db,$tablepre;
+	$pdata = current_player_load();
 	$pdata = player_format_with_db_structure($pdata);
+	$pid = $pdata['pid'];
 	$db->array_update("{$tablepre}players",$pdata,"pid='$pid'");
+	if(!empty($pdata['clbpara'])) $pdata['clbpara'] = get_clbpara($pdata['clbpara']);
 	return $pdata;
 }
 //用于将指定player数据存回数据库
@@ -597,7 +611,7 @@ function player_save($data){
 	}
 	return;
 }
-//用于刷新当前玩家数据
+//用于刷新当前玩家数据（待修改）
 function player_load($data)
 {
 	$ndata = player_format_with_db_structure($data);
@@ -605,6 +619,7 @@ function player_load($data)
 	{
 		global $$key;
 		$$key = $value;
+		if($key == 'clbpara' && !empty($$key)) $$key = get_clbpara($$key);
 	}
 	return;
 }

@@ -4,20 +4,53 @@
 		exit('Access Denied');
 	}
 
+	//获取pa对pd的先制攻击概率
+	function get_active_r_rev(&$pa,&$pd)
+	{
+		global $active_obbs,$weather,$gamecfg;
+		include config('combatcfg',$gamecfg);
+		# 获取基础先攻率：
+		$active_r = $active_obbs;
+		# 计算天气对先攻率的修正：
+		$wth_ar = $weather_active_r[$weather] ?: 0;
+		# 计算pa姿态对于先攻率的修正：
+		$a_pose_ar = $pose_active_modifier[$pa['pose']] ?: 0;
+		# 计算pd姿态对于先攻率的修正：
+		$d_pose_ar = $pose_active_modifier[$pd['pose']] ?: 0;
+		# 基础汇总：
+		$active_r += $wth_ar + $a_pose_ar - $d_pose_ar;
+		# 计算pa身上的异常状态对先攻率的修正：（pd身上的异常状态不会影响pa的先制率，这个机制以后考虑改掉）
+		$inf_ar = 1;
+		if(!empty($pa['inf']))
+		{
+		
+			foreach ($inf_active_p as $inf_ky => $value) 
+			{
+				if(strpos($pa['inf'], $inf_ky)!==false){$inf_ar *= $value;}
+			}
+		}
+		# 计算社团技能对于先攻率的修正：
+		include_once GAME_ROOT.'./include/game/clubskills.func.php';
+		$clbskill_ar = 1;
+		$clbskill_ar *= get_clubskill_bonus_active($pa['club'],$pa['skills'],$pd['club'],$pd['skills']);
+		# 修正汇总：
+		$active_r = round($active_r * $clbskill_ar * $inf_ar);
+		# 计算先攻率上下限：
+		$active_r = max(min($active_r,96),4);
+		//echo 'active:'.$active_r.' <br>';
+		return $active_r;
+	}
+
 	//发现敌人
 	function findenemy_rev($edata) 
 	{
 		global $db,$tablepre;
 		global $fog,$pid,$log,$mode,$main,$cmd,$battle_title,$attinfo,$skillinfo,$nosta;
 
-		$battle_title = '发现敌人';
-
 		//获取并保存当前玩家数据
 		$sdata = current_player_save();
-
 		//格式化双方clbpara
 		$sdata['clbpara'] = get_clbpara($sdata['clbpara']); $edata['clbpara'] = get_clbpara($edata['clbpara']);
-
 		//格式化对战双方数据
 		$init_data = update_db_player_structure();
 		foreach(Array('w_','s_') as $p)
@@ -25,19 +58,14 @@
 			foreach ($init_data as $i) global ${$p.$i};
 		}
 		extract($edata,EXTR_PREFIX_ALL,'w'); extract($sdata,EXTR_PREFIX_ALL,'s');
-		init_rev_battle();
+		//初始化界面与log
+		$battle_title = init_battle_title($sdata,$edata);
+		$log .= init_battle_log($sdata,$edata);
+		if(strpos($sdata['action'],'chase')!==false) init_rev_battle(1);
+		else init_rev_battle();
 
 		//检查是敌对或中立单位
-		if($edata['pose'] == 7)
-		{
-			$log.="你发现了<span class=\"lime\">{$w_name}</span>！<br>对方看起来对你没有敌意。<br>";
-			$neut_flag = 1;
-		}
-		else
-		{
-			$log.="你发现敌人了<span class=\"red\">{$w_name}</span>！<br>对方好像完全没有注意到你！<br>";
-			$neut_flag = 0;
-		}
+		$neut_flag = $edata['pose'] == 7 ? 1 : 0;
 
 		//初始化玩家攻击方式信息
 		$w1 = substr($s_wepk,1,1);
@@ -108,5 +136,48 @@
 		ob_clean();
 		$main = 'battle_rev';
 		return;
+	}
+
+	// 初始化战斗界面标题
+	function init_battle_title($pa,$pd)
+	{
+		if(strpos($pa['action'],'chase')!==false)
+		{
+			if(strpos($pa['action'],'pchase')!==false) $title = '陷入鏖战';
+			else $title = '乘胜追击';
+		}
+		else 
+		{
+			$title = '发现敌人';
+		}
+		return $title;
+	}
+
+	// 初始化战斗界面log
+	function init_battle_log($pa,$pd)
+	{
+		if(strpos($pa['action'],'chase')!==false)
+		{
+			if(strpos($pa['action'],'pchase')!==false)
+			{
+				$battle_log = "但是<span class=\"red\">{$pd['name']}</span>在你身后紧追不舍！<br>";
+			}
+			else 
+			{
+				$battle_log = "你再度锁定了<span class=\"red\">{$pd['name']}</span>！<br>";
+			}
+		}
+		else 
+		{
+			if($pd['pose'] == 7)
+			{
+				$battle_log ="你发现了<span class=\"lime\">{$pd['name']}</span>！<br>对方看起来对你没有敌意。<br>";
+			}
+			else
+			{
+				$battle_log ="你发现敌人了<span class=\"red\">{$pd['name']}</span>！<br>对方好像完全没有注意到你！<br>";
+			}
+		}
+		return $battle_log;
 	}
 ?>
