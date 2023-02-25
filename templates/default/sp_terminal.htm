@@ -24,9 +24,9 @@
             </tr>
             <tr width="84" height="36" class="map">
                 <td colspan="2">
-                    <span class="eicon" onmousedown="downVolume();showVolume();">⏬</span>
-                    <span id="volume_num">{$clbpara['volume']}%</span>
-                    <span class="eicon" onmousedown="upVolume();showVolume();">⏫</span>
+                    <span class="eicon" onmousedown="changeVolume(-0.05);">⏬</span>
+                    <span id="volume_num"><!--{eval $volume = isset($_COOKIE["volume"]) ? filter_var($_COOKIE["volume"],FILTER_VALIDATE_FLOAT)*100 : 20; $v = isset($volume) ? $volume.'%' : '20%';}-->$v</span>
+                    <span class="eicon" onmousedown="changeVolume(0.05);">⏫</span>
                 </td>
             </tr>
             <!-- 战场控制指令 -->
@@ -90,7 +90,7 @@
         </table>
         </center>
         <script>
-            getBgmVolume();
+            showBGMname();
         </script>
     <img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('terminal'))">
 </dialog>

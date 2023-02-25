@@ -11,6 +11,8 @@
 			<div id="main">
 				<!--{if $main=='battle'}-->
 					{template battle}
+				<!--{elseif $main=='battle_rev'}-->
+					{template battle_rev}
 				<!--{else}-->
 					{template profile}
 				<!--{/if}-->
@@ -31,7 +33,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td valign="top" class="b3" height="540" style="text-align: left;overflow:auto;overflow-x:hidden;">
+					<td valign="top" class="b3" height="540" style="text-align: left;overflow:visible;overflow-x:visible;">
 						<div id="log">$log</div>
 						<div>
 							<form method="post" id="gamecmd" name="gamecmd" style="margin: 0px" >

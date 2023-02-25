@@ -132,16 +132,16 @@
 		} 
 
 		# 反击流程判断：$att_result>0，且敌人非治疗姿态或重视躲藏才会触发反击。 TODO：为反击条件新建一个函数
-		if (($pd['hp'] > 0) && ($pd['pose'] != 5) && ($pd['tactic'] != 4) && $att_result>0) 
+		if ($pd['hp']>0 && $att_result>0 && check_can_counter($pa,$pd,$active)) 
 		{
-			global $rangeinfo;
-			# 通过武器射程判断是否满足反击条件。 TODO：为武器射程判断新建一个函数
-			if ($rangeinfo [$pa['wep_kind']] <= $rangeinfo [$pd['wep_kind']] && $rangeinfo [$pa['wep_kind']] !== 0) 
+			# 反击者是NPC时，进行换装判断
+			if($pd['type']) npc_changewep_rev($pd,$pa,$active);
+			# 初始化pa、pd射程：
+			$pa['wep_range'] = get_wep_range($pa); $pd['wep_range'] = get_wep_range($pd);
+			if (check_in_counter_range($pa,$pd,$active)) 
 			{
-				# 计算基础反击率
-				$counter = get_counter ($pd['wep_kind'], $pd['tactic'], $pd['club'], $pd['inf']);
-				# 计算社团技能对基础反击率的修正
-				$counter *= rev_get_clubskill_bonus_counter($pd['club'],$pd['skills'],$pd,$pa['club'],$pa['skills'],$pa);
+				# 计算反击率
+				$counter = get_counter_rev($pa,$pd,$active);
 				# 掷骰
 				$counter_dice = diceroll(99);
 				if ($counter_dice < $counter) 
@@ -155,13 +155,15 @@
 				} 
 				else 
 				{
+					$pd['cannot_counter'] = 1;
 					$log .= npc_chat_rev ($pd,$pa, 'escape' );
-					$log .= "<span class=\"red\">{$pd['nm']}处于无法反击的状态，逃跑了！</span><br>";
+					$log .= "<span class=\"red\">{$pd['nm']}没能抓住机会反击，逃跑了！</span><br>";
 				}
 			} 
 			# 不满足射程
 			else 
 			{
+				$pd['cannot_counter'] = 1;
 				$log .= npc_chat_rev($pd,$pa, 'cannot' );
 				$log .= "<span class=\"red\">{$pd['nm']}攻击范围不足，不能反击，逃跑了！</span><br>";
 			}
@@ -169,8 +171,15 @@
 		# 不满足基础反击条件
 		elseif($pd['hp']>0  && $att_result>0) 
 		{
-			$log .= "<span class=\"red\">{$pd['nm']}没有反击，转身逃开了！</span><br>";
+			$pd['cannot_counter'] = 1;
+			$log .= "<span class=\"red\">{$pd['nm']}转身逃开了！</span><br>";
 		}
+
+		# pd为NPC，且不满足反击条件时，判断pa是否进行追击
+		/*if(isset($pd['cannot_counter']) && (($pd['type']&&!$pa['type'])||($pa['type']&&!$pd['type'])))
+		{
+			$pa['action'] = 'chase'.$pd['pid'];
+		}*/
 
 		# 存在暴毙标识：反击方(pd)在反击过程中未造成伤害就暴毙，可能是因为触发了武器直死。
 		if(isset($pd['gg_flag']))
@@ -245,14 +254,6 @@
 			}
 		}
 
-		# 主视角不是玩家，可能是玩家召唤的NPC帮手。将身上的印记传给玩家。
-		if(!$pa['type'] && $active)
-		{
-			//主视角-pa是NPC的情况下，把身上的标记传递给玩家
-			global $action;
-			$action = $pa['action'];
-		}
-
 		# 保存双方状态
 		if ($active)
 		{
@@ -269,6 +270,8 @@
 
 		# 刷新玩家状态
 		if(!$sdata['type']) player_load($sdata);
+		# 主视角不是玩家，可能是玩家召唤的NPC帮手。将身上的印记传给玩家。
+		elseif($sdata['type'] && $active) $action = $sdata['action'];
 
 		# 刷新界面显示 蛋疼度+233
 		$init_data = update_db_player_structure();
@@ -283,11 +286,16 @@
 		# 根据玩家身上的标记($action) 判断接下来要跳转的页面
 		if(substr($action,0,6)=='corpse')
 		{
+			// 发现尸体
 			include_once GAME_ROOT . './include/game/battle.func.php';
 			findcorpse($edata);
 		}
 		else 
 		{
+			// 转入追击状态
+			if(strpos($action,'chase')!==false) $chase_flag = 1;
+			// 否则脱离战斗状态 清空标记
+			else $action = '';
 			include template('battleresult');
 			$cmd = ob_get_contents();
 			ob_clean();
@@ -672,7 +680,7 @@
 
 		//发送news
 		$kname = $pa['type'] ? $pa['name'] : get_title_desc($pa['nick']).' '.$pa['name'];
-		$dname = $pd['type'] ? $pd['name'] : get_title_desc($pd['nick']).' '.$pd['name'];
+		//$dname = $pd['type'] ? $pd['name'] : get_title_desc($pd['nick']).' '.$pd['name'];
 		addnews ($now,'death'.$pd['state'],$dname,$dtype,$kname,$pa['wep_name'],$lastword );
 
 		return $lastword;
@@ -818,7 +826,7 @@
 		{
 			$sklanginfo = Array ('wp' => '殴熟', 'wk' => '斩熟', 'wg' => '射熟', 'wc' => '投熟', 'wd' => '爆熟', 'wf' => '灵熟', 'all' => '全系熟练度' );
 			$sknlist = Array (1 => 'wp', 2 => 'wk', 3 => 'wc', 4 => 'wg', 5 => 'wd', 9 => 'wf', 16 => 'all' );
-			$skname = $sknlist [$pa['club']];
+			$skname = isset($sknlist[$pa['club']]) ? $sknlist[$pa['club']] : 0;
 			//升级判断
 			$lvup = 1 + floor (($pa['exp'] - $up_exp_temp)/$baseexp/2);
 			$lvup = $lvup > 255 - $pa['lvl'] ? 255 - $pa['lvl'] : $lvup;
@@ -864,22 +872,27 @@
 			$pa['att'] += $lvupatt;
 			$pa['def'] += $lvupdef;
 			$pa['skillpoint'] += $lvup;
-			if ($skname == 'all') {
-				$pa['wp'] += $lvupskill;
-				$pa['wk'] += $lvupskill;
-				$pa['wg'] += $lvupskill;
-				$pa['wc'] += $lvupskill;
-				$pa['wd'] += $lvupskill;
-				$pa['wf'] += $lvupskill;
-			} elseif ($skname) {
-				$pa[$skname] += $lvupskill;
+			if(!empty($skname))
+			{
+				if ($skname == 'all') {
+					$pa['wp'] += $lvupskill;
+					$pa['wk'] += $lvupskill;
+					$pa['wg'] += $lvupskill;
+					$pa['wc'] += $lvupskill;
+					$pa['wd'] += $lvupskill;
+					$pa['wf'] += $lvupskill;
+				} elseif ($skname) {
+					$pa[$skname] += $lvupskill;
+				}
 			}
 			$pa['sp'] = min($lvupspref+$pa['sp'],$pa['msp']);
 			
 			if ($skname) {
 				$sklog = "，{$sklanginfo[$skname]}+{$lvupskill}";
 			}
-			$lvlup_log = "<span class=\"yellow\">{$pa['nm']}升了{$lvup}级！生命上限+{$lvuphp}，体力上限+{$lvupsp}，攻击+{$lvupatt}，防御+{$lvupdef}{$sklog}，体力恢复了{$lvupspref}，获得了{$lvup}点技能点！</span><br>";
+			$lvlup_log = "<span class=\"yellow\">{$pa['nm']}升了{$lvup}级！生命上限+{$lvuphp}，体力上限+{$lvupsp}，攻击+{$lvupatt}，防御+{$lvupdef}";
+			if(isset($sklog)) $lvlup_log .= $sklog;
+			$lvlup_log .= "，体力恢复了{$lvupspref}，获得了{$lvup}点技能点！</span><br>";
 			if(!$pa['type'])
 			{
 				if($pa['nm'] == '你') $log.= $lvlup_log;
@@ -995,11 +1008,11 @@
 			switch ($mode) 
 			{
 				case 'attack' :
-					if (!isset($pa['first_meet'])) 
+					if (empty($pa['itmsk0'])) 
 					{
 						$npcwords .= "{$nchat[0]}";
-						$pa['first_meet'] = 1;
-					} 
+						$pa['itmsk0'] = 1;
+					}
 					elseif ($pa['hp'] > ($pa['mhp'] / 2)) 
 					{
 						$dice = rand ( 1, 2 );
@@ -1012,10 +1025,10 @@
 					}
 					break;
 				case 'defend' :
-					if (!isset($pa['first_meet'])) 
+					if (empty($pa['itmsk0']))
 					{
 						$npcwords .= "{$nchat[0]}";
-						$pa['first_meet'] = 1;
+						$pa['itmsk0'] = 1;
 					}
 					elseif($pa['hp'] > ($pa['mhp'] / 2)) 
 					{

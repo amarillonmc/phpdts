@@ -174,11 +174,17 @@
 	//把道具打散成元素 改下传入的参数其实也可以拆装备
 	function split_item_to_elements($iid=NULL)
 	{
+		global $club,$log,$rp,$mode,$name;
+		if($club != 20)
+		{
+			$log .= "你的手突然掐住了你的头左右摇摆！<br><span class='yellow'>“你还想要干什么，啊？你还想要干什么！！”</span><br>看来你的手和脑子之间起了一点小摩擦。<br><br>";
+			$mode = 'command';
+			return;
+		}
 		$i_arr = Array();
 		if(isset($iid))
 		{
 			global $elements_info,$itmk_to_e_list;
-			global $log,$rp,$mode;
 			global ${'itm'.$iid},${'itmk'.$iid},${'itme'.$iid},${'itms'.$iid},${'itmsk'.$iid};
 			if(!${'itms'.$iid})
 			{

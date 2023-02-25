@@ -44,6 +44,7 @@
 	</tr>
 	<tr>
 		<td>{lang bgmvolume}</td>
-		<td><input style="width: 45px;" size="2" type="number" name="volume" min="0" max="100" value="{$volume}">% {lang bgmvolume_comment}</td>
+		<!--{eval $volume = isset($_COOKIE["volume"]) ? filter_var($_COOKIE["volume"],FILTER_VALIDATE_FLOAT)*100 : 20; $v = isset($volume) ? $volume : 20;}-->
+		<td><input style="width: 45px;" size="2" type="number" name="volume" min="0" max="100" value="{$v}">% {lang bgmvolume_comment}</td>
 	</tr>
 </table> 

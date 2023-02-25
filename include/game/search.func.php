@@ -623,19 +623,24 @@ function discover($schmode = 0) {
 				else 
 				{
 					battle_flag:
-					$active_r = get_active_r($weather,$pls,$pose,$tactic,$club,$inf,$edata['pose']);
-					include_once GAME_ROOT.'./include/game/clubskills.func.php';
-					$active_r *= get_clubskill_bonus_active($club,$skills,$edata['club'],$edata['skills']);
-					if ($active_r>96) $active_r=96;
+					//$active_r = get_active_r($weather,$pls,$pose,$tactic,$club,$inf,$edata['pose']);
+					//include_once GAME_ROOT.'./include/game/clubskills.func.php';
+					//$active_r *= get_clubskill_bonus_active($club,$skills,$edata['club'],$edata['skills']);
+					//if ($active_r>96) $active_r=96;
+					include_once GAME_ROOT.'./include/game/dice.func.php';
+					include_once GAME_ROOT.'./include/game/revbattle.func.php';
+					//获取并保存当前玩家数据
+					$sdata = current_player_save();
+					//计算先攻概率
+					$active_r = get_active_r_rev($sdata,$edata);
 					$bid = $edata['pid'];
-					$active_dice = rand(0,99);
+					$active_dice = diceroll(99);
 					//先制
 					if($active_dice < $active_r) 
 					{
 						$action = 'enemy'.$edata['pid'];
 						#include_once GAME_ROOT.'./include/game/battle.func.php';
 						#findenemy($edata);
-						include_once GAME_ROOT.'./include/game/revbattle.func.php';
 						findenemy_rev($edata);
 						return;
 					} 
@@ -652,7 +657,7 @@ function discover($schmode = 0) {
 						#include_once GAME_ROOT.'./include/game/combat.func.php';
 						#combat(0);
 						include_once GAME_ROOT.'./include/game/revcombat.func.php';
-						rev_combat_prepare($edata,NULL,0);
+						rev_combat_prepare($edata,$sdata,0);
 						return;
 					}
 				}

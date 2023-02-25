@@ -224,16 +224,26 @@ function sl(id) {
 //	alive = alivedata.parseJSON();
 //	$('alivelist').innerHTML = alive;
 //}
-
+var lastRun = 0; var delay = 50;
 function postCmd(formName,sendto){
 	var oXmlHttp = zXmlHttp.createRequest();
 	var sBody = getRequestBody(document.forms[formName]);
 	oXmlHttp.open("post", sendto, true);
 	oXmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	const now = Date.now();
+	if (lastRun && now - lastRun < delay) {
+		//console.log('上次响应时间：' + lastRun + ' ' + delay + '毫秒内无法重复执行。' + '当前时间刻：' + now);
+		return;
+	}
+	lastRun = now;
+	//console.log('执行了一次指令，当前时间：' + now);
 	oXmlHttp.onreadystatechange = function () {
 		if (oXmlHttp.readyState == 4) {
 			if (oXmlHttp.status == 200) {
-				showData(oXmlHttp.responseText);
+				if (oXmlHttp.responseText!='')
+				{
+					showData(oXmlHttp.responseText);
+				}
 			} else {
 				showNotice(oXmlHttp.statusText);
 			}
@@ -280,10 +290,6 @@ function showData(sdata){
 	if ($('HsUipfcGhU'))	//ˢ��ҳ����
 	{
 		window.location.reload();
-	}
-	if($('nowbgm'))
-	{
-		getBgmVolume();
 	}
 	if($('dialogue'))
 	{
@@ -368,22 +374,23 @@ function getEmitmeR(type=0) {
 	}
 }
 
-function upVolume(){ 
+function changeVolume(cv){ 
 	var v = $('gamebgm').volume;
-	$('gamebgm').volume = Math.min(1,v+0.05);
-	$('gamebgm').volume = $('gamebgm').volume.toFixed(2);
-} 
-
-function downVolume(){ 
-	var v = $('gamebgm').volume;
-	$('gamebgm').volume = Math.max(0,v-0.05);
-	$('gamebgm').volume = $('gamebgm').volume.toFixed(2);
-} 
-
-function showVolume(){
-	var v = $('gamebgm').volume;
+	v = v+cv;
+	v = Math.min(1,v); v = Math.max(0,v); 	v = v.toFixed(2);
+	Cookie.setCookie("volume",v, {
+		expireHours: 24*30,
+		path: "/",
+	});
 	s = Math.round(v*100);
+	$('gamebgm').volume = v;
 	$('volume_num').innerHTML = s+'%';
+}
+
+function showBGMname(){
+	var nowid = $('nowbgm').innerHTML;
+	var bname = 'bnm' + nowid;
+	$('bgmname').innerHTML = $(bname).innerHTML;
 }
 
 //查了下才发现可以用parseJSON()……但是这样不也挺好吗^ ^
@@ -402,13 +409,6 @@ function changeBGM(mode=1){
 	$('bgmname').innerHTML = $(newname).innerHTML;
 	$('gamebgm').load();
 	$('gamebgm').play();
-}
-
-function getBgmVolume(){
-	var nowid = $('nowbgm').innerHTML;
-	var bname = 'bnm' + nowid;
-	$('bgmname').innerHTML = $(bname).innerHTML;
-	$('volume_num').innerHTML = $('gamebgm').volume*100 + '%';
 }
 
 function changePages(nowpage,nextpage)

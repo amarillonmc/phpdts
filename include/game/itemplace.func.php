@@ -199,17 +199,20 @@ function get_item_place($which)
 			break;
 		}
 	}
-	include config('vnmixitem',$gamecfg);
-	foreach($vn_mixinfo as $vlst)
+	if(file_exists(config('vnmixitem',$gamecfg)))
 	{
-		if ($vlst['result'][0]==$which || $vlst['result'][0]==$which.' ')
+		include config('vnmixitem',$gamecfg);
+		foreach($vn_mixinfo as $vlst)
 		{
-			$vresult ="通过合成获取 \r";
-			if(strpos($result,$vresult)===false)
+			if ($vlst['result'][0]==$which || $vlst['result'][0]==$which.' ')
 			{
-				$result .= $vresult;
+				$vresult ="通过合成获取 \r";
+				if(strpos($result,$vresult)===false)
+				{
+					$result .= $vresult;
+				}
+				break;
 			}
-			break;
 		}
 	}
 	$file=config('synitem',$gamecfg);
