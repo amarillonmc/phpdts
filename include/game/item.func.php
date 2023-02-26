@@ -1871,8 +1871,8 @@ function itemuse($itmn) {
 		} elseif ($itm == '事件BGM替换器'){
 			// 这是一个触发事件BGM的案例，只要输入$clbpara['event_bgmbook'] = Array('事件曲集名'); 即可将当前曲集替换为特殊事件BGM
 			// 特殊事件曲集'event_bgmbook'的优先级高于地图曲集'pls_bgmbook'，前者存在时后者不会生效
-			global $clbpara;
-			include_once config('audio',$gamecfg);
+			global $clbpara,$event_bgm;
+			//include_once config('audio',$gamecfg);
 			$log.="【DEBUG】你目前的播放列表被替换为了{$event_bgm['test'][0]}！<br>特殊的事件曲集不会被其他曲集覆盖，除非你使用下面的道具。<br>";
 			$clbpara['event_bgmbook'] = $event_bgm['test'];
 		} elseif ($itm == '事件BGM还原器'){

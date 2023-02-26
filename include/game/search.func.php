@@ -397,7 +397,8 @@ function discover($schmode = 0) {
 	}
 
 	# 判定移动、探索、事件后的BGM变化
-	include_once config('audio',$gamecfg);
+	//include_once config('audio',$gamecfg);
+	global $pls_bgm;
 	if(array_key_exists($pls,$pls_bgm))
 	{
 		$clbpara['pls_bgmbook'] = $pls_bgm[$pls];

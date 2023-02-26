@@ -80,7 +80,7 @@ function event(){
 		}else{
 			$log = ($log . "万幸，你没跌进池中。<BR>");
 		}
-		
+		$event = 1;
 	} elseif($pls == 8) { //白穗神社
 	} elseif($pls == 9) { //墓地
 	} elseif($pls == 10) { //麦斯克林

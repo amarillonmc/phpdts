@@ -63,7 +63,7 @@ function get_npc_helpinfo($nlist,$tooltip=1)
 						{
 							foreach(Array('','k','e','s','sk') as $t2)
 							{
-								if(isset($snpc[$t1.$t2]))
+								if(!empty($snpc[$t1.$t2]))
 								{
 									//为装备名添加tooltip效果
 									if($t2 == '' && $tooltip)
@@ -110,7 +110,7 @@ function get_npc_helpinfo($nlist,$tooltip=1)
 						{
 							foreach(Array('','k','e','s','sk') as $t2)
 							{
-								if(isset($snpc['itm'.$t2.$ni]))
+								if(!empty($snpc['itm'.$t2.$ni]))
 								{
 									//为装备名添加tooltip效果
 									if($t2 == '' && $tooltip)

@@ -718,8 +718,8 @@
 		if (!$revival_flag && $pd['club']==99 && !$pd['type'])	
 		{
 			#决死结界复活效果：
-			$revival_flag = 99; //保存复活标记为通过奥罗拉复活
-			addnews($now,'revival',$dname);	//玩家春哥附体称号的处理
+			$revival_flag = 99; //保存复活标记为通过称号复活
+			addnews($now,'revival',$dname);	
 			$pd['hp'] = $pd['mhp']; $pd['sp'] = $pd['msp'];
 			$pd['state'] = 0; $pd['club'] = 17;
 			$log .= '<span class="yellow">但是，由于及时按下BOMB键，'.$pd['nm'].'原地满血复活了！</span><br>';

@@ -419,12 +419,13 @@ function init_rev_battle($ismeet = 0)
 
 function init_bgm($force_update=0)
 {
-	global $pls,$command,$clbpara,$gamecfg;
-	include config('audio',$gamecfg);
+	global $pls,$command,$clbpara,$gamecfg,$bgmname;
+	global $default_volume,$event_bgm,$pls_bgm,$parea_bgm,$regular_bgm,$bgmbook,$bgmlist;
+	//include config('audio',$gamecfg);
 
 	# 初始化
 	$event_flag = 0;
-	$bgmname = $bgmlink = $bgmtype = $bgmplayer = $bgmnums = '';
+	$bgmid = $bgmlink = $bgmtype = $bgmplayer = $bgmnums = '';
 
 	# 存在最优先的事件BGM队列
 	if(isset($clbpara['event_bgmbook']))
@@ -471,6 +472,7 @@ function init_bgm($force_update=0)
 				$bgmarr[$bgmid]['name'] = $bgmlist[$bgmid]['name'];
 				$bgmarr[$bgmid]['url'] = $bgmlist[$bgmid]['url'];
 				$bgmarr[$bgmid]['type'] = $bgmlist[$bgmid]['type'];
+				$bgmarr[$bgmid]['id'] = $bgmid;
 			}
 		}
 		# 计数当前播放队列中的BGM数
@@ -481,6 +483,10 @@ function init_bgm($force_update=0)
 		$bgmname = $bgmarr[0]['name'];
 		$bgmlink = $bgmarr[0]['url'];
 		$bgmtype = $bgmarr[0]['type'];
+		$bgmid = $bgmarr[0]['id'];
+		$json_bgmarr = json_encode($bgmarr);
+		# 将当前播放的BGM编号保存于缓存内 留待以后用作播放记忆
+		gsetcookie('nowbgmid',$bgmid,0,0);
 		#初始化默认音量
 		$volume = isset($_COOKIE["volume"]) ? filter_var($_COOKIE["volume"],FILTER_VALIDATE_FLOAT)*100 : $default_volume;
 		$volume_r = isset($volume) ? round($volume/100,2) : round($default_volume/100,2);
@@ -488,23 +494,19 @@ function init_bgm($force_update=0)
 		if(!empty($bgmlink) && !empty($bgmtype))
 		{
 $bgmplayer = <<<EOT
-			<audio id="gamebgm" autoplay controls onplay="$('gamebgm').volume=$volume_r;" onplaying="$('gamebgm').volume=$volume_r;">
+			<audio id="gamebgm" autoplay controls onplay="$('gamebgm').volume=$volume_r;">
 				<source id="gbgm" src="$bgmlink" type="$bgmtype">
 			</audio>
-			<div id="bgmnums">$bgmnums</div>
-			<div id="nowbgm">$nowbgm</div>
+			<div id="bgmlist">$json_bgmarr</div>
+			<div id="nowbgm">0</div>
 			<script>
+				$('gamebgm').volume = $volume_r;
+				$('bgmname').innerHTML = $bgmname;
 				gamebgm.addEventListener('ended', function () {
 					changeBGM();
 				}, false);
 			</script>
 EOT;
-			foreach($bgmarr as $bgmid2 => $bgms)
-			{
-$bgmplayer .= "<div id=\"bnm{$bgmid2}\">{$bgms['name']}</div>
-				<div id=\"bgm{$bgmid2}\">{$bgms['url']}</div>
-				<div id=\"bt{$bgmid2}\">{$bgms['type']}</div>";
-			}
 		}
 		return $bgmplayer;
 	}

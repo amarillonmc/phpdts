@@ -387,26 +387,22 @@ function changeVolume(cv){
 	$('volume_num').innerHTML = s+'%';
 }
 
-function showBGMname(){
-	var nowid = $('nowbgm').innerHTML;
-	var bname = 'bnm' + nowid;
-	$('bgmname').innerHTML = $(bname).innerHTML;
-}
-
-//查了下才发现可以用parseJSON()……但是这样不也挺好吗^ ^
 function changeBGM(mode=1){
-	x = Math.floor($('nowbgm').innerHTML) + Math.floor(mode);
-	if(x > $('bgmnums').innerHTML || x<0)
-	{
-		x = '0';
+	var bgmlist = JSON.parse($('bgmlist').innerHTML);
+	var nowbgm = Math.round($('nowbgm').innerHTML);
+	nowbgm = nowbgm + mode;
+	if(nowbgm < 0){
+		nowbgm = bgmlist.length - 1;
+	}else{
+		nowbgm = nowbgm % bgmlist.length;
 	}
-	$('nowbgm').innerHTML = x;
-	var newsrc = 'bgm'+x;
-	var newt = 'bt'+x;
-	var newname = 'bnm'+x;
-	$('gbgm').src = $(newsrc).innerHTML;
-	$('gbgm').type = $(newt).innerHTML;
-	$('bgmname').innerHTML = $(newname).innerHTML;
+	$('gbgm').src = bgmlist[nowbgm].url;
+	$('gbgm').type = bgmlist[nowbgm].type;
+	$('nowbgm').innerHTML = nowbgm;
+	Cookie.setCookie("nowbgmid",bgmlist[nowbgm].id, {
+		path: "/",
+	});
+	$('bgmname').innerHTML = bgmlist[nowbgm].name;
 	$('gamebgm').load();
 	$('gamebgm').play();
 }

@@ -6,7 +6,7 @@ require GAME_ROOT.'./include/game.func.php';
 require_once GAME_ROOT.'./include/game/titles.func.php';
 
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); } 
-if($mode == 'quit') {
+if(isset($mode) && $mode == 'quit') {
 
 	gsetcookie('user','');
 	gsetcookie('pass','');

@@ -6,8 +6,6 @@ require './include/common.inc.php';
 //$t_s=getmicrotime();
 //require_once GAME_ROOT.'./include/JSON.php';
 require GAME_ROOT.'./include/game.func.php';
-include config('combatcfg',$gamecfg);
-include config('dialogue',$gamecfg);
 
 //判断是否进入游戏
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); } 
