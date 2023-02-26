@@ -1,6 +1,9 @@
 <dialog id="terminal" style="max-width: 90%;max-height: 80%;">
         <center>
-        <div><span class="grey">正在播放：～ <span id="bgmname"></span> ～</span></div>
+        <!--{if !isset($bgmname)}-->
+            <!--{eval $nowbgmid = isset($_COOKIE["nowbgmid"]) ? filter_var($_COOKIE["nowbgmid"],FILTER_VALIDATE_INT) : 0; $bgmname = $bgmlist[$nowbgmid]['name'];}-->
+        <!--{/if}-->
+        <div><span class="grey">正在播放：～ <span id="bgmname">$bgmname</span> ～</span></div>
         <!-- 战场地图 -->
         <!--{eval $mapdata = init_mapdata();}-->
         $mapdata 
@@ -89,9 +92,6 @@
             <!--{/if}-->
         </table>
         </center>
-        <script>
-            showBGMname();
-        </script>
     <img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('terminal'))">
 </dialog>
 

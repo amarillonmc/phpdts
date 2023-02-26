@@ -44,6 +44,9 @@ unset($dbhost, $dbuser, $dbpw, $dbname, $pconnect);
 require GAME_ROOT.'./gamedata/system.php';
 require config('resources',$gamecfg);
 require config('gamecfg',$gamecfg);
+require config('combatcfg',$gamecfg);
+require config('dialogue',$gamecfg);
+require config('audio',$gamecfg);
 
 include GAME_ROOT.'./gamedata/combatinfo.php';
 

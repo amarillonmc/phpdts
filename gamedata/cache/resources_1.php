@@ -64,8 +64,8 @@ $tacinfo = Array('通常','','重视防御','重视反击','重视躲避');
 //可供玩家选择的姿态、策略
 $apose = Array(0,1,3,4,5,6);
 $atac = Array(0,2,3,4);
-//不会生成在危险地图的NPC（女主）
-$hidding_typelist = Array(14);
+//不会生成在危险地图的NPC（执行官、女主）
+$hidding_typelist = Array(7,14);
 //不会因躲避禁区、追杀玩家等原因离开地图的NPC（红暮、■、执行官、英灵（没有巫师）、SCP、种火）
 $sentinel_typelist = Array(1,4,7,9,13,20,21,22,88,92);
 $typeinfo = Array(

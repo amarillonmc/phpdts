@@ -588,6 +588,7 @@ function movehtm($atime = 0) {
 
 function addnpc($type,$sub,$num,$time = 0,$clbstatus=NULL,$aitem=NULL,$apls=NULL) {
 	global $now,$db,$tablepre,$log,$plsinfo,$typeinfo,$anpcinfo,$npcinit,$arealist,$areanum,$gamecfg;
+	global $hidding_typelist,$deepzones;
 	$time = $time == 0 ? $now : $time;
 	$plsnum = sizeof($plsinfo);
 	if(empty($anpcinfo) || empty($npcinit)){
@@ -623,7 +624,16 @@ function addnpc($type,$sub,$num,$time = 0,$clbstatus=NULL,$aitem=NULL,$apls=NULL
 					$npc['pls'] = 0;
 				}else{
 					shuffle($areaarr);
+					//特定NPC不会生成在危险区域
 					$npc['pls'] = $areaarr[0];
+					if(in_array($npc['type'],$hidding_typelist))
+					{
+						while(in_array($npc['pls'],$deepzones))
+						{
+							shuffle($areaarr);
+							$npc['pls'] = $areaarr[0];
+						}
+					}
 				}
 				//$npc['pls'] = rand(1,$plsnum-1);
 			}	
