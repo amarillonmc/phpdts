@@ -105,8 +105,10 @@ if((strpos($action,'corpse')===0 || strpos($action,'pacorpse')===0) && $gamestat
 		}
 	}	
 }
-elseif((strpos($action,'chase')!==false)){
-	$enemyid = str_replace('chase','',$action);
+elseif(strpos($action,'chase')!==false || strpos($action,'dfight')!==false){
+	if(strpos($action,'chase')===0) $enemyid = str_replace('chase','',$action);
+	if(strpos($action,'pchase')===0) $enemyid = str_replace('pchase','',$action);
+	if(strpos($action,'dfight')===0) $enemyid = str_replace('dfight','',$action);
 	$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$enemyid' AND hp>0 AND pls='$pls'");
 	if($db->num_rows($result)>0){
 		$edata = $db->fetch_array($result);

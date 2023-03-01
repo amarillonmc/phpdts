@@ -4,41 +4,72 @@
 		exit('Access Denied');
 	}
 
-	//获取pa对pd的先制攻击概率
-	function get_active_r_rev(&$pa,&$pd)
+	//战斗中切换武器
+	function change_wep_in_battle($s=2)
 	{
-		global $active_obbs,$weather,$gamecfg;
-		include config('combatcfg',$gamecfg);
-		# 获取基础先攻率：
-		$active_r = $active_obbs;
-		# 计算天气对先攻率的修正：
-		$wth_ar = $weather_active_r[$weather] ?: 0;
-		# 计算pa姿态对于先攻率的修正：
-		$a_pose_ar = $pose_active_modifier[$pa['pose']] ?: 0;
-		# 计算pd姿态对于先攻率的修正：
-		$d_pose_ar = $pose_active_modifier[$pd['pose']] ?: 0;
-		# 基础汇总：
-		$active_r += $wth_ar + $a_pose_ar - $d_pose_ar;
-		# 计算pa身上的异常状态对先攻率的修正：（pd身上的异常状态不会影响pa的先制率，这个机制以后考虑改掉）
-		$inf_ar = 1;
-		if(!empty($pa['inf']))
+		global $log,$nosta;
+		global $wep,$wepk,$wepe,$weps,$wepsk;
+		global $wep2,$wep2k,$wep2e,$wep2s,$wep2sk;
+		# 初始化主武器名
+		$eqp = 'wep';
+		# 初始化副武器名
+		$seqp = 'wep'.$s;
+		$seqpk = $seqp.'k';
+		$seqpe = $seqp.'e';
+		$seqps = $seqp.'s';
+		$seqpsk = $seqp.'sk';
+		# 保存副武器数据
+		$swep=${$seqp}; $swepk=${$seqpk};
+		$swepe=${$seqpe}; $sweps=${$seqps}; $swepsk=${$seqpsk};
+		# 主武器为空、副武器不为空的情况下，直接替换为副武器
+		if(($wepk == 'WN' || !$weps) && ($swepk != 'WN'))
 		{
-		
-			foreach ($inf_active_p as $inf_ky => $value) 
+			${$eqp} = $swep; ${$seqp} = '拳头';
+			${$eqp.'k'} = $swepk; ${$seqpk} = 'WN';
+			${$eqp.'e'} = $swepe; ${$seqpe} = 0;
+			${$eqp.'s'} = $sweps; ${$seqps} = $nosta;
+			${$eqp.'sk'} = $swepsk; ${$seqpsk} = '';
+			$log.="你将{$wep}拿在了手上。<br>";
+		}
+		# 主武器不为空的情况下，副武器替换为主武器
+		elseif($wepk != 'WN')
+		{
+			${$seqp} = ${$eqp}; ${$eqp} = $swep; 
+			${$seqpk} = ${$eqp.'k'}; ${$eqp.'k'} = $swepk;
+			${$seqpe} = ${$eqp.'e'}; ${$eqp.'e'} = $swepe; 
+			${$seqps} = ${$eqp.'s'}; ${$eqp.'s'} = $sweps; 
+			${$seqpsk} = ${$eqp.'sk'}; ${$eqp.'sk'} = $swepsk; 
+			$log.="你将{$wep2}收了起来";
+			if($wepk != 'WN') $log .="，将{$wep}拿在了手上";
+			$log.="。<br>";
+		}
+		else 
+		{
+			$log.="你没有装备副武器！去给自己找一个吧！<br>";
+		}
+		return;
+	}
+
+	//战斗中逃跑
+	function escape_from_enemy(&$pa,&$pd)
+	{
+		global $action,$clbpara,$chase_escape_obbs,$log;
+		include_once GAME_ROOT.'./include/game/dice.func.php';
+		# 在受追击/鏖战状态下逃跑有概率失败
+		if(strpos($action,'pchase')===0 || strpos($action,'dfight')===0)
+		{
+			$escape_dice = diceroll(99);
+			if($escape_dice < $chase_escape_obbs)
 			{
-				if(strpos($pa['inf'], $inf_ky)!==false){$inf_ar *= $value;}
+				$log .= "你尝试逃跑，但是敌人在你身后紧追不舍！<br>";
+				$pa['fail_escape'] = 1;
+				return 0;
 			}
 		}
-		# 计算社团技能对于先攻率的修正：
-		include_once GAME_ROOT.'./include/game/clubskills.func.php';
-		$clbskill_ar = 1;
-		$clbskill_ar *= get_clubskill_bonus_active($pa['club'],$pa['skills'],$pd['club'],$pd['skills']);
-		# 修正汇总：
-		$active_r = round($active_r * $clbskill_ar * $inf_ar);
-		# 计算先攻率上下限：
-		$active_r = max(min($active_r,96),4);
-		//echo 'active:'.$active_r.' <br>';
-		return $active_r;
+		$log .= "你逃跑了。";
+		$action = '';
+		unset($clbpara['battle_turns']);
+		return 1;
 	}
 
 	//发现敌人
@@ -61,7 +92,7 @@
 		//初始化界面与log
 		$battle_title = init_battle_title($sdata,$edata);
 		$log .= init_battle_log($sdata,$edata);
-		if(strpos($sdata['action'],'chase')!==false) init_rev_battle(1);
+		if(strpos($sdata['action'],'chase')!==false || strpos($sdata['action'],'dfight')!==false) init_rev_battle(1);
 		else init_rev_battle();
 
 		//检查是敌对或中立单位
@@ -143,8 +174,12 @@
 	{
 		if(strpos($pa['action'],'chase')!==false)
 		{
-			if(strpos($pa['action'],'pchase')!==false) $title = '陷入鏖战';
+			if(strpos($pa['action'],'pchase')!==false) $title = '遭到追击';
 			else $title = '乘胜追击';
+		}
+		if(strpos($pa['action'],'dfight')!==false)
+		{
+			$title = '陷入鏖战';
 		}
 		else 
 		{
@@ -166,6 +201,10 @@
 			{
 				$battle_log = "你再度锁定了<span class=\"red\">{$pd['name']}</span>！<br>";
 			}
+		}
+		elseif(strpos($pa['action'],'dfight')!==false)
+		{
+			$battle_log = "你与<span class=\"red\">{$pd['name']}</span>相互对峙着！<br>";
 		}
 		else 
 		{

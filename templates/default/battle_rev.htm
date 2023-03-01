@@ -48,6 +48,19 @@
 					<td height="20px" class="b2"><span>{lang inf}</span></td>
 					<td class="b3"><span><!--{if $w_infdata}-->$w_infdata<!--{else}-->无<!--{/if}--></span></td>
 				</tr>
+				<tr>
+				<!--{if isset($s_clbpara['battle_turns'])}-->
+					<td class="b2" height=20px><span>战斗回合</span></td>
+					<td class="b3"><span>$s_clbpara['battle_turns']</span></td>
+				<!--{else}-->
+					<td height=20px></td>
+					<td></td>
+				<!--{/if}-->
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
 			</table>
 		</td>
 	</tr>

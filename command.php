@@ -95,7 +95,7 @@ if($hp > 0){
 		$rmcdtime = $nowmtime >= $cdover ? 0 : $cdover - $nowmtime;
 	}
 	//执行动作前，身上存在追击标记时，直接进入追击判定
-	if(strpos($action,'chase')!==false && $mode !== 'revcombat')
+	if((strpos($action,'chase')!==false || strpos($action,'dfight')!==false) && $mode !== 'revcombat')
 	{
 		$command = 'chase';
 		goto chase_flag;
@@ -109,12 +109,12 @@ if($hp > 0){
 		$mode = 'command';
 	}else{
 		//进入指令判断
-		if(strpos($action,'chase')===false && $mode !== 'combat' && $mode !== 'revcombat' && $mode !== 'corpse' && strpos($action,'pacorpse')===false && $mode !== 'senditem'){
+		if(strpos($action,'chase')===false && strpos($action,'dfight')===false && $mode !== 'combat' && $mode !== 'revcombat' && $mode !== 'corpse' && strpos($action,'pacorpse')===false && $mode !== 'senditem'){
 			$action = '';
 		}
 		if($command == 'menu') {
 			$mode = 'command';
-			$action = '';
+			//$action = '';
 		} elseif($mode == 'command') {
 			if($command == 'move') {
 				include_once GAME_ROOT.'./include/game/search.func.php';
@@ -384,6 +384,10 @@ if($hp > 0){
 				}else{
 					$log.="<span class='red'>你身上没有背包，或是没有将背包装备上！<br>";
 				}
+			} elseif(strpos($command,'changewep') !==false) {
+				include_once GAME_ROOT.'./include/game/revbattle.func.php';
+				change_wep_in_battle();
+				$mode = 'command';
 			}
 		} elseif($mode == 'special') {
 			include_once GAME_ROOT.'./include/game/special.func.php';
@@ -440,6 +444,8 @@ if($hp > 0){
 			$enemyid = NULL;
 			if(strpos($action,'enemy')===0) $enemyid = str_replace('enemy','',$action);
 			if(strpos($action,'chase')===0) $enemyid = str_replace('chase','',$action);
+			if(strpos($action,'pchase')===0) $enemyid = str_replace('pchase','',$action);
+			if(strpos($action,'dfight')===0) $enemyid = str_replace('dfight','',$action);
 			if(!$enemyid)
 			{
 				$log .= "<span class=\"yellow b\">你没有遇到敌人，或已经离开战场！</span>{$enemyid}<br>";
@@ -463,6 +469,12 @@ if($hp > 0){
 				$action = 'corpse'.$edata['pid'];
 				findcorpse($edata);
 			}
+			elseif ($command == 'changewep') 
+			{
+				include_once GAME_ROOT.'./include/game/revbattle.func.php';
+				change_wep_in_battle();
+				findenemy_rev($edata);
+			}
 			elseif ($command == 'chase') 
 			{
 				include_once GAME_ROOT.'./include/game/revbattle.func.php';
@@ -470,15 +482,25 @@ if($hp > 0){
 			}
 			elseif ($command == 'back') 
 			{
-				$log .= "你逃跑了。";
-				$action = '';
-				back_flag:
-				$mode = 'command';
+				//$log .= "你逃跑了。";
+				include_once GAME_ROOT . './include/game/revbattle.func.php';
+				$flag = escape_from_enemy($pdata,$edata);
+				if($flag)
+				{
+					back_flag:
+					$mode = 'command';
+				}
+				else 
+				{
+					include_once GAME_ROOT . './include/game/revcombat.func.php';
+					rev_combat_prepare($pdata,$edata,0);
+				}
 			}
 			else
 			{
+				if(!empty($message)) $pdata['message'] = $message;
 				include_once GAME_ROOT . './include/game/revcombat.func.php';
-				rev_combat_prepare($pdata,$edata,1,$command,$message);
+				rev_combat_prepare($pdata,$edata,1,$command);
 			}
 		} elseif($mode == 'rest') {
 			include_once GAME_ROOT.'./include/state.func.php';

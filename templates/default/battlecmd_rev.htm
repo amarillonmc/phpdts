@@ -8,9 +8,14 @@
     </div>
 <!--{else}-->
     <div id="enemy">
-        <input type="button" class="cmdbutton" style="width:100" name="w1" value="{$attinfo[$w1]}" onclick="$('command').value='$w1';postCmd('gamecmd','command.php');this.disabled=true;"><br>
+        <input type="button" class="cmdbutton" style="width:100" name="w1" value="{$attinfo[$w1]}" onclick="$('command').value='$w1';postCmd('gamecmd','command.php');this.disabled=true;">
+        <!--{if $s_wep2s}-->
+        <input type="button" class="cmdbutton" style="padding-left: 5px; width:100" name="w1" value="切换副武器" onclick="$('command').value='changewep';postCmd('gamecmd','command.php');this.disabled=true;">
+        <!--{/if}-->
+        <br>
         <!--{if $w2}-->
-        <input type="button" class="cmdbutton" style="width:100" name="w2" value="{$attinfo[$w2]}" onclick="$('command').value='$w2';postCmd('gamecmd','command.php');this.disabled=true;"><br>
+        <input type="button" class="cmdbutton" style="width:100" name="w2" value="{$attinfo[$w2]}" onclick="$('command').value='$w2';postCmd('gamecmd','command.php');this.disabled=true;">
+        <br>
         <!--{/if}-->
     </div>
 <!--{/if}-->
