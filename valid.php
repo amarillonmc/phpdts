@@ -64,6 +64,7 @@ if($mode == 'enter') {
 	$icon = $icon ? $icon : rand(1,$iconlimit);
 	$club = 0;
 
+	$wep2 = '拳头'; $wep2k = 'WN'; $wep2e = 0; $wep2s = $nosta; $wep2sk = '';
 	$arb = $gd == 'm' ? '男生校服' : '女生校服';
 	$arbk = 'DB'; $arbe = 5; $arbs = 15; $arbsk = '';
 	$arh = $ara = $arf = $art = '';

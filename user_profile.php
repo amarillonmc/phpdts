@@ -50,6 +50,10 @@ for ($i=0; $i<$achievement_count; $i++)
 {
 	$cpl[$i]=check_achievement($i,$n);
 	$prc[$i]=fetch_achievement($i,$n);
+	//$ncp[$i]['s'] = $cpl[$i];
+	//$ncp[$i]['v'] = $prc[$i];
 }
+//$ncp = json_encode($ncp);
+//$db->query("UPDATE {$tablepre}users SET achrev='$ncp' WHERE username='$n'" );	
 include template('user_profile');
 

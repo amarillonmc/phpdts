@@ -186,6 +186,7 @@
                 <TD class=b3>
                 	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $wepe}--><span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offwep';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
                 	<span><!--{if $weps}-->$wep_words<!--{else}-->$nowep<!--{/if}--></span>
+					<span class="eicon" onclick="$('mode').value='itemmain';$('command').value='changewep';postCmd('gamecmd','command.php');return false;">🔃</span>
                 </TD>
                 <TD class=b3><span>$wepsk_words</span></TD>
                 <TD class=b3><span>$wepe</span></TD>

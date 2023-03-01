@@ -30,7 +30,7 @@ while($apdata = $db->fetch_array($result)) {
 	$alivedata[$apdata['pid']] = $apdata;
 }
 
-$adata = Array();
+$adata = Array(); if(!isset($gbmode)) $gbmode = 'none';
 if($gamblingon){
 	global $gshoplist,$credits2_values,$no_self_sponsored,$sponsor_title,$gnpctype,$gnpcsub;
 	//初始化赌局变量
@@ -121,7 +121,7 @@ if($gamblingon){
 						if($gbmode == 'gsponsor')
 						{
 							//使用切糕点外卖
-							if ($gbudata['bitm'] || $gbudata['bnid'] ) 
+							if (!empty($gbudata['bitm']) || !empty($gbudata['bnid']) ) 
 							{
 								$gbinfo .= '你派出去的快递员还没回来，耐心等等吧！<br>'; 
 								goto gb_result;
@@ -248,7 +248,7 @@ if($gamblingon){
 				}
 			}		
 		}
-		$adata['innerHTML']['gbinfo'] .= $gbinfo;
+		$adata['innerHTML']['gbinfo'] = $gbinfo;
 	}else{
 		$gbinfo .= $_ERROR['no_login'];
 	}

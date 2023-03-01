@@ -9,11 +9,107 @@
 	include_once GAME_ROOT.'./include/game/combat.func.php';
 	include_once GAME_ROOT.'./include/game/titles.func.php';
 
+	// 判断追击/鏖战/协战机制下双方的先制顺序、并注册对应状态
+	// *追击先制率补正：原始先制率+(战场距离x10)%
+	function check_revcombat_status(&$pa,&$pd,$active)
+	{
+		# 初始化先攻参数
+		$active_r = 0;
+		$active_dice = diceroll(99);
+		# 计算战场距离
+		$range = get_battle_range($pa,$pd,$active);
+		# pa或pd身上存在鏖战标记、或战场距离为0
+		if(strpos($pa['action'],'dfight')===0 || strpos($pd['action'],'dfight')===0 || !$range)
+		{
+			# 添加鏖战状态
+			$pa['is_dfight'] = $pd['is_dfight'] = 1;
+			# 获取鏖战状态下pa对pd的先制率
+			$active_r = get_active_r_rev($pa,$pd,1);
+			# 如果pa身上存在逃跑失败的标记，则pa先制率降低50……这是偷懒行为，未来的你记得改掉
+			if(isset($pa['fail_escape'])) $active_r -= 50;
+			# 判断是否先制
+			$active = $active_dice < $active_r ? 1 : 0 ;
+		}
+		# pa为玩家，身上存在追击标记 或 pd为玩家，身上存在受追击标记
+		elseif(strpos($pa['action'],'chase')===0 || strpos($pd['action'],'pchase')===0)
+		{
+			# 添加追击状态
+			$pa['is_chase'] = 1; $pd['is_pchase'] = 1;
+			# 获取追击状态下pa对pd的先制率
+			$active_r = get_active_r_rev($pa,$pd,2);
+			# 如果pd身上存在逃跑失败的标记，则pa先制率提升50
+			if(isset($pd['fail_escape'])) $active_r += 50;
+			# 判断是否先制
+			$active = $active_dice < $active_r ? 1 : 0 ;
+			# pa先制失败，双方转入鏖战状态
+			if(!$active)
+			{
+				unset($pa['is_chase']);unset($pd['is_pchase']);
+				$pa['is_dfight'] = $pd['is_dfight'] = 1;
+			}
+		}
+		# 清除双方标记
+		$pa['action'] = $pd['action'] = '';
+		# 返回先制值
+		return $active;
+	}
+
+	// 判断是否转入追击/鏖战流程
+	function check_can_chase(&$pa,&$pd,$active)
+	{
+		global $chase_obbs,$dfight_obbs,$log;
+		$chase_flag = 0;
+		$dice = diceroll(99);
+		# 进攻方(pa)或防守方(pd)已存在鏖战标记、或防守方(pd)成功反击了进攻方(pa)的攻击，检查是否维持&转入鏖战状态
+		if((isset($pa['is_dfight']) || isset($pd['is_dfight']) || isset($pd['is_counter'])))
+		{
+			if($dice < $dfight_obbs)
+			{
+				# 满足鏖战条件，检查pa是玩家还是NPC，并赋予对应标记
+				if($active) $pa['action'] = 'dfight'.$pd['pid'];
+				else $pd['action'] = 'dfight'.$pa['pid'];
+				$chase_flag = 1;
+				$log.= "<span class='red'>{$pa['nm']}与{$pd['nm']}相互对峙着！</span><br>";
+			}
+			else 
+			{
+				$log.= "<span class='grey'>{$pd['nm']}从{$pa['nm']}的视野里消失了。</span><br>";
+			}
+		}
+		# 进攻方(pa)持有非爆武器，且防守方(pd)未能及时反击，检查是否触发追击
+		if(!$chase_flag && !empty($pa['wep_range']) && isset($pd['cannot_counter']))
+		{
+			if($dice < $dfight_obbs)
+			{
+				# 满足追击条件，检查pa是玩家还是NPC，并赋予对应标记
+				if($active) $pa['action'] = 'chase'.$pd['pid'];
+				else $pd['action'] = 'pchase'.$pa['pid'];
+				$chase_flag = 1;
+				$log.= "<span class='red'>但是{$pa['nm']}紧紧跟在{$pd['nm']}身后！</span><br>";
+			}
+			else 
+			{
+				$log.= "<span class='grey'>{$pd['nm']}从{$pa['nm']}的视野里消失了。</span><br>";
+			}
+		}
+		if($chase_flag)
+		{
+			# 满足追击/鏖战条件，判定战斗轮次步进
+			change_battle_turns($pa,$pd,$active);
+		}
+		else 
+		{
+			# 不满足追击/鏖战条件，重置战斗轮次
+			rs_battle_turns($pa,$pd);
+		}
+		return;
+	}
+
 	# 战斗准备流程：
 	# pa、pd分别代表先制发现者与被先制发现者；
 	# active用于判断当前的主视角(玩家、战斗界面下方那一栏)对应pa还是pd；
 	# actvie=1代表主视角是pa，否则主视角是pd；
-	function rev_combat_prepare($pa,$pd,$active,$wep_kind='',$msg='',$log_print=1) 
+	function rev_combat_prepare($pa,$pd,$active,$wep_kind='',$log_print=1) 
 	{
 		global $db,$tablepre,$log,$mode,$main,$cmd,$battle_title;
 
@@ -48,28 +144,58 @@
 			$main = 'battle_rev';
 		}
 
-		# 加入喊话
-		if(!empty($msg)) $pa['message'] = $msg;
+		# 初始化双方的真实攻击方式wep_kind，传入了攻击方式/主动技的情况下，在这里判断传入参数的合法性。
+		get_wep_kind($pa,$wep_kind); 
+		$pa['wep_range'] = get_wep_range($pa);
+		get_wep_kind($pd); 
+		$pd['wep_range'] = get_wep_range($pd);
 
-		# 进入战斗流程
-		rev_combat($pa,$pd,$active,$wep_kind,$log_print);
+		# 传入pa为玩家、pd为NPC，且存在鏖战/追击标志时，判断战斗流程类型（标准/追击/鏖战/协战）
+		if(!$pa['type'] && $pd['type'] && (strpos($pa['action'],'dfight')!==false || strpos($pa['action'],'chase')!==false))
+		{
+			# 玩家正在追击NPC，或两人进入鏖战状态，判定先攻
+			if(strpos($pa['action'],'chase')===0 || strpos($pa['action'],'dfight')!==false)
+			{
+				# 传入参数，第一位为pa(玩家)，第二位为pd(NPC)，传出active
+				$active = check_revcombat_status($pa,$pd,$active);
+				if($active)
+					rev_combat($pa,$pd,$active,$log_print);
+				else
+					rev_combat($pd,$pa,$active,$log_print);
+			}
+			# NPC正在追击玩家，判定NPC是否为先攻
+			else
+			{
+				# 传入参数，第一位为pd(NPC)，第二位为pa(玩家)，传出1-active
+				$active = check_revcombat_status($pd,$pa,$active);
+				if($active)
+					rev_combat($pd,$pa,1-$active,$log_print);
+				else
+					rev_combat($pa,$pd,1-$active,$log_print);
+			}
+		}
+		# 进入标准战斗流程
+		else 
+		{	
+			rev_combat($pa,$pd,$active,$log_print);
+		}
 	}
 
 	# 战斗流程：
 	# 注意：无论任何情况，都不要在rev_combat()执行完之前插入return！如果想要跳过战斗阶段，请使用goto battle_finish_flag;
 	# 如果无论如何都要提前return，请完整执行一遍 #保存双方状态 这一块的内容；
-	function rev_combat(&$pa,&$pd,$active,$wep_kind='',$log_print=1) 
+	function rev_combat(&$pa,&$pd,$active,$log_print=1) 
 	{
 		global $db,$tablepre,$now,$mode,$main,$cmd,$log;
 		global $hdamage,$hplayer;
-		global $infinfo,$plsinfo,$hplsinfo,$nosta;
+		global $infinfo,$plsinfo,$hplsinfo,$nosta,$chase_obbs,$dfight_obbs;
 
 		# 登记非功能性地点信息时合并隐藏地点
 		foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
 
 		# 登记称谓：之后的流程里已经用不到active了（大概）
-		$pa['nm'] = (!$pa['type'] && $active) ? '你' : $pa['name'];
-		$pd['nm'] = (!$pd['type'] && !$active && $pa['nm']!=='你') ? '你' : $pd['name'];
+		$pa['nm'] = (!$pa['type'] && $active) ? '你' : $pa['name']; 
+		$pd['nm'] = (!$pd['type'] && !$active && $pa['nm']!=='你') ? '你' : $pd['name']; 
 
 		# 在初始化战斗阶段触发的事件。即：无论是否反击都只会触发1次的事件。如果返回值小于0，则中断战斗。
 		$cp_flag = combat_prepare_events($pa,$pd,$active);
@@ -89,12 +215,34 @@
 			}
 			else 
 			{
-				$log .= "{$pa['nm']}向<span class=\"red\">{$pd['nm']}</span>发起了攻击！<br>";
+				if(isset($pa['is_chase']))
+				{
+					$log .= "{$pa['nm']}再度向<span class=\"red\">{$pd['nm']}</span>发起攻击！<br>";
+				}
+				elseif(isset($pa['is_dfight']))
+				{
+					$log .= "{$pa['nm']}抓住机会抢先向<span class=\"red\">{$pd['nm']}</span>发起攻击！<br>";
+				}
+				else 
+				{
+					$log .= "{$pa['nm']}向<span class=\"red\">{$pd['nm']}</span>发起攻击！<br>";
+				}
 			}
 		}
 		else
 		{
-			$log .= "<span class=\"red\">{$pa['nm']}</span>突然向{$pd['nm']}袭来！<br>";
+			if(isset($pa['is_chase']))
+			{
+				$log .= "<span class=\"red\">{$pa['nm']}</span>再度向{$pd['nm']}袭来！<br>";
+			}
+			elseif(isset($pa['is_dfight']))
+			{
+				$log .= "但是<span class=\"red\">{$pa['nm']}</span>抢先对{$pd['nm']}发起攻击！<br>";
+			}
+			else
+			{
+				$log .= "<span class=\"red\">{$pa['nm']}</span>突然向{$pd['nm']}袭来！<br>";
+			}
 		}
 	
 		# 战斗发起者是NPC时
@@ -104,10 +252,6 @@
 			//换装判定
 			npc_changewep_rev($pa,$pd,$active);
 		}
-		
-		# 初始化双方的真实攻击方式wep_kind，传入了攻击方式/主动技的情况下，在这里判断传入参数的合法性。
-		get_wep_kind($pa,$wep_kind);
-		get_wep_kind($pd);
 
 		# 打击流程
 		# 这里的第一个参数指的是进攻方(造成伤害的一方)；第二个参数指的是防守方(承受伤害的一方)。active已经没用了。
@@ -136,8 +280,6 @@
 		{
 			# 反击者是NPC时，进行换装判断
 			if($pd['type']) npc_changewep_rev($pd,$pa,$active);
-			# 初始化pa、pd射程：
-			$pa['wep_range'] = get_wep_range($pa); $pd['wep_range'] = get_wep_range($pd);
 			if (check_in_counter_range($pa,$pd,$active)) 
 			{
 				# 计算反击率
@@ -175,12 +317,6 @@
 			$log .= "<span class=\"red\">{$pd['nm']}转身逃开了！</span><br>";
 		}
 
-		# pd为NPC，且不满足反击条件时，判断pa是否进行追击
-		/*if(isset($pd['cannot_counter']) && (($pd['type']&&!$pa['type'])||($pa['type']&&!$pd['type'])))
-		{
-			$pa['action'] = 'chase'.$pd['pid'];
-		}*/
-
 		# 存在暴毙标识：反击方(pd)在反击过程中未造成伤害就暴毙，可能是因为触发了武器直死。
 		if(isset($pd['gg_flag']))
 		{
@@ -195,6 +331,12 @@
 			$pa['hp'] = max(0,$pa['hp']-$def_dmg);
 			//判断是否触发击杀或复活。增补：$active已经没有用了，不用管它。
 			$def_result = rev_combat_result($pd,$pa,1-$active);
+		}
+
+		# 攻击、反击的战斗结果判断均非0时：检查是否触发追击/鏖战事件
+		if($att_result && (!isset($def_result)||!empty($def_result)) && $chase_obbs && $dfight_obbs)
+		{
+			check_can_chase($pa,$pd,$active);
 		}
 
 		# 检查是否更新最高伤害情报
@@ -286,6 +428,8 @@
 		# 根据玩家身上的标记($action) 判断接下来要跳转的页面
 		if(substr($action,0,6)=='corpse')
 		{
+			// 清除战斗轮记录
+			unset($clbpara['battle_turns']);
 			// 发现尸体
 			include_once GAME_ROOT . './include/game/battle.func.php';
 			findcorpse($edata);
@@ -293,9 +437,16 @@
 		else 
 		{
 			// 转入追击状态
-			if(strpos($action,'chase')!==false) $chase_flag = 1;
+			if(strpos($action,'chase')!==false || strpos($action,'dfight')!==false)
+			{
+				$chase_flag = 1;
+			}
 			// 否则脱离战斗状态 清空标记
-			else $action = '';
+			else
+			{
+				unset($clbpara['battle_turns']);
+				$action = '';
+			}
 			include template('battleresult');
 			$cmd = ob_get_contents();
 			ob_clean();
@@ -989,7 +1140,8 @@
 				$pa['itme'.$c] = $pa['wepe']; $pa['itms'.$c] = $pa['weps'];
 				$pa['wep'] = $chosen[1]; $pa['wepk'] = $chosen[2]; $pa['wepe'] = $chosen[3]; $pa['weps'] = $chosen[4]; $pa['wepsk'] = $chosen[5];
 				$pa['wep_kind'] = get_wep_kind($pa);
-				$log .= "<span class=\"yellow\">{$pa['nm']}</span>将手中的<span class=\"yellow\">{$oldwep}</span>卸下，装备了<span class=\"yellow\">{$pa['wep']}</span>！<br>";
+				$pa['wep_range'] = get_wep_range($pa);
+				$pa['change_wep_log'] = "<span class=\"yellow\">{$pa['nm']}</span>将手中的<span class=\"yellow\">{$oldwep}</span>卸下，装备了<span class=\"yellow\">{$pa['wep']}</span>！<br>";
 			}
 		}
 		return;

@@ -47,24 +47,8 @@
 	function get_wep_range(&$pa)
 	{
 		global $rangeinfo;
-		$range = isset($rangeinfo[$pa['wep_kind']]) ? $rangeinfo[$pa['wep_kind']] : -1;
-		return $range;
-	}
-
-	//获取战斗轮次：仅供追击/鏖战机制使用
-	function get_battle_turns(&$pa,&$pd,$active)
-	{
-		$turns = $pa['clbpara']['battle_turns'] == $pd['clbpara']['battle_turns'] ? $pa['clbpara']['battle_turns'] : max($pa['clbpara']['battle_turns'],$pd['clbpara']['battle_turns']);
-		return $turns;
-	}
-
-	//计算战场距离：仅供追击/鏖战机制使用
-	function get_battle_range(&$pa,&$pd,$active)
-	{
-		//战场距离 = (双方射程差值 - 战斗回合数) * 10
-		$range = abs($pa['wep_range'] - $pd['wep_range']);
-		$turns = get_battle_turns($pa,$pd,$active);
-		$range = max(0,$range-$turns);
+		if(empty($pa['wep_kind'])) $pa['wep_kind'] = get_wep_kind($pa);
+		$range = isset($rangeinfo[$pa['wep_kind']]) ? $rangeinfo[$pa['wep_kind']] : NULL;
 		return $range;
 	}
 
@@ -706,7 +690,7 @@
 				$sp_cost_max = $sp_cost_r*$pa['wepe'];
 				//获取实际消耗体力：
 				$sp_cost = min($sp_cost_max,$pa['sp']-1);
-				$log_sp_cost = round($sp_cost);
+				$log_sp_cost = ceil($sp_cost);
 				$log .= "消耗{$log_sp_cost}点体力，";
 			}
 			else 
@@ -717,7 +701,7 @@
 			$factor = $pa['type'] ? 0.5 : 0.5+round(($sp_cost/$sp_cost_max)/2,1);
 			//获取伤害变化倍率并扣除体力
 			$dmg_p[]= round($factor,2); 
-			$pa['sp'] -= $sp_cost;
+			if(isset($log_sp_cost)) $pa['sp'] -= $log_sp_cost;
 			//输出log
 			$f = round ( 100 * $factor );
 			$log .= "发挥了灵力武器{$f}％的威力！<br>";
@@ -932,12 +916,12 @@
 	{
 		global $ex_attack;
 		$ex_keys =Array();
-		foreach($ex_attack as $ex)
+		foreach($pa['ex_keys'] as $ex)
 		{
-			if(in_array($ex,$pa['ex_keys']))
+			if(in_array($ex,$ex_attack))
 			{
-				//去除该条件后不会过滤重复属性 即可以造成多次同属性伤害
-				if(!in_array($ex,$ex_keys)) $ex_keys[]= $ex; 
+				//把$ex_attack和$pa['ex_keys']位置调换可过滤重复属性，现在不会过滤
+				$ex_keys[]= $ex; 
 			}
 		}
 		return $ex_keys;
@@ -1266,7 +1250,54 @@
 		return 0;
 	}
 
-	//判断pd是否满足反击pa的基础条件（姿态）
+	//获取pa对pd的先制攻击概率，
+	// $mode 0-标准战斗 1-鏖战 2-追击（追击&鏖战基础先制率不受天气姿态影响）
+	function get_active_r_rev(&$pa,&$pd,$mode=0)
+	{
+		global $active_obbs,$weather,$gamecfg,$chase_active_obbs;
+		include config('combatcfg',$gamecfg);
+		if(!$mode)
+		{
+			# 获取基础先攻率：
+			$active_r = $active_obbs;
+			# 计算天气对先攻率的修正：
+			$wth_ar = $weather_active_r[$weather] ?: 0;
+			# 计算pa姿态对于先攻率的修正：
+			$a_pose_ar = $pose_active_modifier[$pa['pose']] ?: 0;
+			# 计算pd姿态对于先攻率的修正：
+			$d_pose_ar = $pose_active_modifier[$pd['pose']] ?: 0;
+			# 基础汇总：
+			$active_r += $wth_ar + $a_pose_ar - $d_pose_ar;
+		}
+		else
+		{
+			$active_r = $chase_active_obbs;
+			# 计算追击状态下pa对pd的先攻加成。默认：战场距离*10%
+			if($mode == 2) $range_ar += get_battle_range($pa,$pd,1) * 10;
+		}
+		# 计算pa身上的异常状态对先攻率的修正：（pd身上的异常状态不会影响pa的先制率，这个机制以后考虑改掉）
+		$inf_ar = 1;
+		if(!empty($pa['inf']))
+		{
+		
+			foreach ($inf_active_p as $inf_ky => $value) 
+			{
+				if(strpos($pa['inf'], $inf_ky)!==false){$inf_ar *= $value;}
+			}
+		}
+		# 计算社团技能对于先攻率的修正：
+		include_once GAME_ROOT.'./include/game/clubskills.func.php';
+		$clbskill_ar = 1;
+		$clbskill_ar *= get_clubskill_bonus_active($pa['club'],$pa['skills'],$pd['club'],$pd['skills']);
+		# 修正汇总：
+		$active_r = round($active_r * $clbskill_ar * $inf_ar);
+		# 计算先攻率上下限：
+		$active_r = max(min($active_r,96),4);
+		//echo 'active:'.$active_r.' <br>';
+		return $active_r;
+	}
+
+	// 判断pd是否满足反击pa的基础条件（最高优先级）
 	function check_can_counter(&$pa,&$pd,$active)
 	{
 		# 治疗姿态、哨戒姿态、躲避策略不能反击
@@ -1275,14 +1306,16 @@
 		return 1;
 	}
 
-	//判断pa是否处于pd的反击射程内
+	// 判断pa是否处于pd的反击射程内（次优先级）
 	function check_in_counter_range(&$pa,&$pd,$active)
 	{
-		if($pd['wep_range'] >= $pa['wep_range'] && $pa['wep_range'] != 0) return 1;
+		if(!empty($pa['wep_range']) && $pd['wep_range'] >= $pa['wep_range']) return 1;
+		# 鏖战状态下无视射程反击（爆系武器除外）
+		if((isset($pd['is_dfight']) || isset($pa['is_dfight'])) && !empty($pd['wep_range'])) return 1;
 		return 0;
 	}
 
-	//获取pd成功对pa发起反击的概率
+	// 获取pd成功对pa发起反击的概率
 	function get_counter_rev(&$pa,&$pd,$active)
 	{
 		global $counter_obbs,$inf_counter_p,$pose_counter_modifier,$tactic_counter_modifier;
@@ -1301,6 +1334,9 @@
 			$counter = max(8,$counter);
 		}
 
+		# 鏖战状态下，将基础反击率修正为100
+		if(isset($pd['is_dfight']) || isset($pa['is_dfight'])) $counter = 100;
+
 		# 获取社团技能对反击率的修正
 		$counter *= rev_get_clubskill_bonus_counter($pd['club'],$pd['skills'],$pd,$pa['club'],$pa['skills'],$pa);
 
@@ -1317,4 +1353,58 @@
 		return $counter;
 	}
 
+	//计算战场距离：仅供追击/鏖战机制使用
+	function get_battle_range(&$pa,&$pd,$active)
+	{
+		//战场距离 = (双方射程差值 - 战斗回合数) * 10
+		if(!isset($pa['wep_range'])) $pa['wep_range'] = get_wep_range($pa);
+		if(!isset($pd['wep_range'])) $pd['wep_range'] = get_wep_range($pd);
+		$range = abs($pa['wep_range'] - $pd['wep_range']);
+		$turns = get_battle_turns($pa,$pd,$active);
+		$range = max(0,$range-$turns);
+		return $range;
+	}
+
+	//获取战斗轮次：仅供追击/鏖战机制使用
+	function get_battle_turns(&$pa,&$pd,$active)
+	{
+		if(!isset($pa['clbpara']['battle_turns']) || !isset($pd['clbpara']['battle_turns']))
+		{
+			change_battle_turns($pa,$pd,$active);
+		}
+		# 如果敌我双方记录的战斗轮次不同步，选择其中更小的一方……这是因为逃跑时可能不会重置NPC的战斗轮次。
+		# 或许本来也不用重置NPC的战斗轮次……？
+		$turns = $pa['clbpara']['battle_turns'] == $pd['clbpara']['battle_turns'] ? $pa['clbpara']['battle_turns'] : min($pa['clbpara']['battle_turns'],$pd['clbpara']['battle_turns']);
+		return $turns;
+	}
+
+	//战斗轮步进
+	function change_battle_turns(&$pa,&$pd,$active)
+	{
+		if(!isset($pa['clbpara']['battle_turns']))
+		{
+			$pa['clbpara']['battle_turns'] = 0;
+		}
+		else 
+		{
+			$pa['clbpara']['battle_turns'] ++;
+		}
+		if(!isset($pd['clbpara']['battle_turns']))
+		{
+			$pd['clbpara']['battle_turns'] = 0;
+		}
+		else 
+		{
+			$pd['clbpara']['battle_turns'] ++;
+		}
+		return;
+	}
+
+	//重置战斗回合
+	function rs_battle_turns(&$pa,&$pd)
+	{
+		if(isset($pa['clbpara']['battle_turns'])) unset($pa['clbpara']['battle_turns']);
+		if(isset($pd['clbpara']['battle_turns'])) unset($pd['clbpara']['battle_turns']);
+		return;
+	}
 ?>

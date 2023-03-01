@@ -630,6 +630,7 @@ function discover($schmode = 0) {
 					//if ($active_r>96) $active_r=96;
 					include_once GAME_ROOT.'./include/game/dice.func.php';
 					include_once GAME_ROOT.'./include/game/revbattle.func.php';
+					include_once GAME_ROOT.'./include/game/revattr.func.php';
 					//获取并保存当前玩家数据
 					$sdata = current_player_save();
 					//计算先攻概率
@@ -637,7 +638,7 @@ function discover($schmode = 0) {
 					$bid = $edata['pid'];
 					$active_dice = diceroll(99);
 					//先制
-					if($active_dice < $active_r) 
+					if($active_dice < $active_r)
 					{
 						$action = 'enemy'.$edata['pid'];
 						#include_once GAME_ROOT.'./include/game/battle.func.php';
