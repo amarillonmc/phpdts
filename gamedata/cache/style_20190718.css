@@ -438,13 +438,13 @@ span.drop:hover .dropdown-menu{
 
 /* 用dialog实现的气泡框 */
 dialog{
-	position: fixed;
-	max-width: 50%;
-	max-height: 75%;
-	font:10pt 微软雅黑 serif; 
-	border: #000 0px none; color: #fff; border-radius: 4px;
-	background-color:rgba(17, 17, 17, 0.85);
-	box-shadow: 0px 2px 6px #999;
+	position:fixed; left:0px; top:0px;
+	max-width: 80%; max-height: 80%;
+	margin:auto auto; padding: 15px;
+	font:10pt 微软雅黑 serif; text-align: left; overflow-x:hidden; overflow-y:auto;
+	border: #000 0px none; color: #fff; border-radius: 5px;
+	background-color:rgba(17, 17, 17, 0.9); *BACKGROUND:rgb(17,17,17); *filter:alpha(opacity=50);
+	box-shadow: 0px 2px 6px rgb(87, 87, 87);
 	z-index:20;
 }
 dialog::backdrop{
@@ -478,7 +478,7 @@ input.range{
 .eicon{
 	filter: grayscale(100%) brightness(133%) blur(0px);
 	font-size: 125%;
-	transition: all 0.3s;	
+	transition: 0.3s;	
 }
 .eicon:hover{
 	filter: grayscale(100%) brightness(166%) blur(0px);
@@ -489,19 +489,19 @@ input.range{
 	box-shadow: 0px 2px 6px #999;
 }
 
+/* 子面板相关 */
 .blurtext{
 	align-self: center;
-	filter: opacity(75%) blur(2px);
+	filter: opacity(20%) blur(3px);
 }
 .lockmap {
 	background:url("../../img/lock.png") center;background-color:rgba(17,17,17,0.5);
-	filter:opacity(75%) brightness(75%);BORDER: #111 1px solid;text-align: center;font: bold 10pt "微软雅黑" serif;
+	filter:opacity(90%) brightness(75%);BORDER: #111 1px solid;text-align: center;font: bold 10pt "微软雅黑" serif;
 	transition: 0.5s;
 }
 .lockmap:hover{
-	filter: opacity(100%) brightness(100%);
+	filter: opacity(100%) brightness(125%);
 }
-
 .dangerbutton{
 	padding: 2rem 2rem;
 	border: 0;
@@ -514,10 +514,51 @@ input.range{
 	background-color: rgba(255, 0, 0, 0.45);
 	letter-spacing: .1rem;
 	transition: 1s;
-   }
-   
+}
 .dangerbutton:hover {
 	filter: brightness(130%);
 	box-shadow: 0px 0px 40px 0px red;
 	background-color: rgba(255, 0, 0, 0.75);
+}
+
+/* 技能（移植） */
+table.skilltable{
+	height:100%; width:100%; 
+	border:0;margin:0;border-collapse:collapse;border-spacing:0;
+}
+table.skilltable td{padding:0;}
+td.skilldesc_left{}
+td.skilldesc_right{width:96px;}
+span.skilldesc
+{
+	margin:8px auto;
+	display:block;
+}
+div.skilldesc{margin:8px auto;display:block;}
+div.skill_unacquired
+{
+	position:relative; left:0px; top:0px; 
+	background-color:#ffffff; 
+	height:100%; width:100%; 
+	filter:alpha(opacity=18); -moz-opacity:0.18; opacity:0.18; -khtml-opacity: 0.18;
+}
+div.skill_unacquired_transparent
+{
+	position:relative; left:0px; top:0px; 
+	height:100%; width:100%; 
+}
+div.skill_unacquired_hint
+{
+	position:absolute; left:0px; top:0px; height:100%; width:100%;
+}
+div.skill_unacquired_hint_transparent
+{
+	position:absolute; left:0px; top:0px; height:100%; width:100%;
+	background-color:#000000; 
+	filter:alpha(opacity=0.1); -moz-opacity:0.1; opacity:0.1; -khtml-opacity: 0.1;
+}
+div.skilllearn_desc_container{
+	text-align:center;
+	width:420px;z-index:100;position:fixed;
+	filter:alpha(opacity=95); opacity:0.95; background-color:#000000
 }

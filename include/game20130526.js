@@ -41,6 +41,7 @@ function demiSecTimer(){
 		var dsec = Math.floor((ms%1000)/100);
 		$('timer').innerHTML = sec + '.' + dsec;
 	}	else {
+		ms = 0;
 		clearInterval(timerid);
 		delete timerid;
 	}
@@ -295,6 +296,11 @@ function showData(sdata){
 	{
 		$('dialogue').showModal();
 	}
+	if($('open-dialog'))
+	{
+		dialogid = $('open-dialog').innerHTML;
+		showModalDialog($(dialogid));
+	}
 }
 
 var refchat = null;
@@ -415,4 +421,40 @@ function changePages(nowpage,nextpage)
 	$(pp).style.display="block";
 }
 
-//1
+////////////////////////////////////////////////////////////////////////
+///////////////////////////称号技能鼠标悬浮特效////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+function skill_unacquired_mouseover(e)
+{
+	var children = this.childNodes;
+	for (var i = 0; i < children.length; i++) 
+	{
+		var child = children[i];
+		if (child.className == 'skill_unacquired') 
+		{
+			child.className = 'skill_unacquired_transparent';
+		}
+		if (child.className == 'skill_unacquired_hint') 
+		{
+			child.className = 'skill_unacquired_hint_transparent';
+		}
+	}
+}
+
+function skill_unacquired_mouseout(e)
+{
+	var children = this.childNodes;
+	for (var i = 0; i < children.length; i++) 
+	{
+		var child = children[i];
+		if (child.className == 'skill_unacquired_transparent') 
+		{
+			child.className = 'skill_unacquired'; 
+		}
+		if (child.className == 'skill_unacquired_hint_transparent') 
+		{
+			child.className = 'skill_unacquired_hint';
+		}
+	}
+}

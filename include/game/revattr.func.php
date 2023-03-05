@@ -6,6 +6,7 @@
 
 	include_once GAME_ROOT.'./include/game/dice.func.php';
 	include_once GAME_ROOT.'./include/game/clubskills.func.php';
+	include_once GAME_ROOT.'./include/game/revclubskills.func.php';
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
 	include_once GAME_ROOT.'./include/game/revattr_extra.func.php';
 
@@ -40,16 +41,33 @@
 			$pa['wep_kind'] = 'P';
 			$pa['is_wpg'] = 1;
 		}
-		return;
+		return $pa['wep_kind']; //保险起见……
 	}
 
 	//获取武器射程
 	function get_wep_range(&$pa)
 	{
 		global $rangeinfo;
-		if(empty($pa['wep_kind'])) $pa['wep_kind'] = get_wep_kind($pa);
+		if(empty($pa['wep_kind'])) get_wep_kind($pa);
 		$range = isset($rangeinfo[$pa['wep_kind']]) ? $rangeinfo[$pa['wep_kind']] : NULL;
 		return $range;
+	}
+
+	//获取武器对应熟练度
+	function get_wep_skill(&$pa)
+	{
+		global $skillinfo;
+		if(empty($pa['wep_kind'])) get_wep_kind($pa);
+		# 获取真实熟练度 保存在$pa['wep_skill']内
+		if ($pa['club'] == 18)
+		{
+			$wep_skill = round($pa[$skillinfo[$pa['wep_kind']]]*0.7+($pa['wp']+$pa['wk']+$pa['wc']+$pa['wg']+$pa['wd']+$pa['wf'])*0.3);
+		}
+		else
+		{
+			$wep_skill = $pa[$skillinfo[$pa['wep_kind']]];
+		}
+		return $wep_skill;
 	}
 
 	//获取防具上的属性
@@ -97,9 +115,33 @@
 		return $skarr;
 	}
 
+	//获取额外属性，该属性不受三抽影响
+	function get_extra_ex_array(&$pa)
+	{
+		global $log;
+		# 百战技能特效
+		if(isset($pa['skill_c1_veteran']))
+		{
+			$sk_def = get_skillpara('c1_veteran','choice',$pa);
+			if($sk_def)
+			{
+				global $itemspkinfo;
+				$pa['ex_keys'][] = $sk_def;
+				//$log .= "百战使{$pa['nm']}拥有了【{$itemspkinfo[$sk_def]}】属性！<br>";
+			}
+		}
+		return;
+	}
+
 	//在初始化战斗阶段触发的事件。即：无论是否反击都只会触发1次的事件。
 	function combat_prepare_events(&$pa,&$pd,$active)
 	{
+		# 社团技能初始化（主动型/战斗技）
+		if(isset($pa['bskill'])) attr_extra_active_skills($pa,$pd,$active);
+		if(isset($pd['bskill'])) attr_extra_active_skills($pd,$pa,$active); //这可能吗……？总之先写上没错……
+		# 社团技能初始化（被动型）（最好不要在这个阶段输出log，把log和成功触发的标记保存进对应角色里，到实际结算效果时再显示。）
+		if(!empty($pa['clbpara']['skill'])) attr_extra_passive_skills($pa,$pd,$active);
+		if(!empty($pd['clbpara']['skill'])) attr_extra_passive_skills($pd,$pa,$active);
 		
 		# 百命猫 初始化事件： 每次初始化战斗时都会提升等级与怒气
 		if (($pa['type'] == 89 && $pa['name']=='是TSEROF啦！') || ($pd['type'] == 89 && $pd['name']=='是TSEROF啦！'))
@@ -420,6 +462,7 @@
 		//空手 武器伤害=2/3熟练度
 		if($pa['wep_kind'] == 'N') 
 		{
+			if(!isset($pa['wep_skill'])) $pa['wep_skill'] = get_wep_skill($pa);
 			$pa['wepe_t'] = round($pa['wep_skill']*2/3);	
 		} 
 		//射系 武器伤害=面板数值
@@ -539,20 +582,34 @@
 				$pa['charge_flag'] = 1;
 			}
 		}
-		# 获取pd社团技能对防御力的加成
+		# 获取pd社团技能对防御力的加成（旧）
 		if(!empty($pd['skills']))
 		{
 			rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
-			$base_def += $def1;
+		}
+		# 获取pd社团技能对防御力的加成（新）
+		if(!empty($pd['clbpara']['skill']))
+		{
+			# 「格挡」技能加成
+			if(!check_skill_unlock('c1_def',$pd))
+			{
+				global $cskills;
+				$def_trans_rate = $cskills['c1_def']['vars']['trans'];
+				$def_maxtrans = $cskills['c1_def']['vars']['maxtrans'];
+				$sk_def = min($def_maxtrans, $def_trans_rate * $pd['wepe'] / 100);
+			}
 		}
 		# 汇总：
 		$total_def = $base_def+$equip_def;
+		if(!empty($def1)) $total_def += $def1;
+		if(!empty($sk_def)) $total_def += $sk_def;
 
 		# 初始化tooltip
 		if($tooltip)
 		{
 			$tooltip = "<span tooltip=\" 基础防御值：{$base_def}+{$equip_def}";
 			if(!empty($def1)) $tooltip .="+{$def1}";
+			if(!empty($sk_def)) $tooltip .="\r「格挡」：+{$sk_def}";
 			$tooltip .= "\r";
 		}
 		# 计算防御力修正
@@ -670,7 +727,7 @@
 	//计算伤害倍率变化（攻击方）
 	function get_damage_p_rev(&$pa,&$pd,$active) 
 	{
-		global $log;
+		global $log,$cskills;
 
 		//每一条伤害倍率判定变化提示会以$dmg_p[]= $r;的形式放入伤害倍率数组内，
 		//在输出成log时会显示为：总计造成了100x0.5x1.2...=111点伤害 的形式
@@ -755,6 +812,18 @@
 			$dmg_p[]= $p; 
 			//输出log
 			$log .= "{$pa['hitrate_max_times']}次连续攻击命中<span class=\"yellow\">{$pa['hitrate_times']}</span>次！";
+		}
+
+		#「猛击」判定：
+		if(isset($pa['skill_c1_crit']))
+		{
+			// 获取猛击技能等级……整个函数吧
+			$sk_lvl = get_skilllvl('c1_crit',$pa);
+			// 获取猛击倍率
+			$sk_p = 1 + (get_skillvars('c1_crit','attgain',$sk_lvl) / 100);
+			$dmg_p[]= $sk_p; 
+			//输出log
+			$log .= $pa['skill_c1_crit_log'];
 		}
 
 		return $dmg_p;
@@ -1110,6 +1179,21 @@
 	{
 		global $log;
 
+		# 「闷棍」技能效果：
+		if(isset($pa['skill_c1_bjack']))
+		{
+			if($pd['sp'] < $pd['msp'])
+			{
+				$sk_dmg = $pd['msp'] - $pd['sp'];
+				$log.="闷棍对体力不支的{$pd['nm']}造成了<span class=\"yellow\">{$sk_dmg}</span>点额外伤害！<br>";
+				$fin_dmg += $sk_dmg;
+			}
+			else 
+			{
+				$log.="闷棍没有造成额外伤害！<br>";
+			}
+		}
+
 		# 伤害制御判定：
 		if(in_array('h',$pd['ex_keys']) && $fin_dmg>=1950)
 		{
@@ -1178,6 +1262,32 @@
 	function get_hurt_events(&$pa,&$pd,$active) 
 	{
 		global $log,$infatt_rev,$infinfo;
+
+		# 「灭气」技能效果
+		if(isset($pa['skill_c1_burnsp']))
+		{
+			$pd['sp'] = max($pd['sp']-round($pa['final_damage']*2/3),1);
+			//$log .= "<span class='yellow'>「灭气」使{$pd['nm']}的体力降低了！</span><br>";
+		}
+
+		# 「猛击」眩晕效果
+		if(isset($pa['skill_c1_crit']))
+		{
+			$sk_lvl = get_skilllvl('c1_crit',$pa);
+			$sk_lst = get_skillvars('c1_crit','stuntime',$sk_lvl);
+			getclubskill('inf_dizzy',$pd['clbpara']);
+			$pd['clbpara']['lasttimes']['inf_dizzy'] = $sk_lst;
+			// 猛击logsave……先放这，以后再整理
+			global $now;
+			if(!$pd['type'] && $pd['nm']!='你')
+			{
+				$pd['logsave'] .= "并且{$pa['nm']}凶猛的一击直接将你打晕了过去！<br>";
+			}
+			elseif(!$pa['type'] && $pa['nm']!='你')
+			{
+				$pa['logsave'] .= "你凶猛的一击直接将{$pd['nm']}打晕了过去！</span><br>";
+			}
+		}
 
 		# 真蓝凝防守事件：
 		if($pd['type'] == 19 && $pd['name'] == '蓝凝')
@@ -1250,11 +1360,18 @@
 		return 0;
 	}
 
+	//受到技能异常（眩晕、石化）
+	function get_skill_inf(&$pa,$sk,$times,$type=0)
+	{
+		# 受到眩晕效果
+		
+	}
+
 	//获取pa对pd的先制攻击概率，
 	// $mode 0-标准战斗 1-鏖战 2-追击（追击&鏖战基础先制率不受天气姿态影响）
 	function get_active_r_rev(&$pa,&$pd,$mode=0)
 	{
-		global $active_obbs,$weather,$gamecfg,$chase_active_obbs;
+		global $log,$active_obbs,$weather,$gamecfg,$chase_active_obbs;
 		include config('combatcfg',$gamecfg);
 		if(!$mode)
 		{
@@ -1293,6 +1410,17 @@
 		$active_r = round($active_r * $clbskill_ar * $inf_ar);
 		# 计算先攻率上下限：
 		$active_r = max(min($active_r,96),4);
+
+		# 计算pd身上的特殊异常（技能类）对先攻率的修正：
+		if(!empty($pd['clbpara']['skill']))
+		{
+			# 眩晕状态下必被先手
+			if(in_array('inf_dizzy',$pd['clbpara']['skill']))
+			{
+				$log.="{$pd['name']}正处于眩晕状态！<br>";
+				$active_r = 100;
+			}
+		}
 		//echo 'active:'.$active_r.' <br>';
 		return $active_r;
 	}
@@ -1300,9 +1428,24 @@
 	// 判断pd是否满足反击pa的基础条件（最高优先级）
 	function check_can_counter(&$pa,&$pd,$active)
 	{
-		# 治疗姿态、哨戒姿态、躲避策略不能反击
-		if($pd['pose'] == 5 || $pd['pose'] == 7) return 0;
-		if($pd['tactic'] == 4) return 0;
+		# 治疗姿态、躲避策略不能反击
+		if($pd['pose'] == 5 || $pd['tactic'] == 4)
+		{
+			$pd['cannot_counter_log'] = "{$pd['nm']}处于无法反击的状态！转身逃开了！";
+			return 0;
+		}
+		# 哨戒姿态不会反击，但是会生气……
+		if($pd['pose'] == 7)
+		{
+			$pd['cannot_counter_log'] = "{$pd['nm']}看起来非常生气！还是离他远点吧……";
+			return 0;
+		}
+		# 被「偷袭」技能攻击、或正处于眩晕状态时，无法反击
+		if(isset($pa['skill_c1_sneak']) || isset($pd['skill_inf_dizzy']))
+		{
+			$pd['cannot_counter_log'] = "{$pd['nm']}正处于眩晕状态，无法反击！";
+			return 0;
+		}
 		return 1;
 	}
 

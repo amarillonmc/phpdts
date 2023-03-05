@@ -45,6 +45,7 @@ require GAME_ROOT.'./gamedata/system.php';
 require config('resources',$gamecfg);
 require config('gamecfg',$gamecfg);
 require config('combatcfg',$gamecfg);
+require config('clubskills',$gamecfg);
 require config('dialogue',$gamecfg);
 require config('audio',$gamecfg);
 

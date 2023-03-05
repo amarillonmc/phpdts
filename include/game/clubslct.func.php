@@ -52,10 +52,28 @@ function getclub($who, &$c1, &$c2, &$c3)
 	if ($c2>$c3) swap($c2,$c3);
 }
 
-function updateskill()
+function changeclub($clb,&$data=NULL)
 {
-	global $club, $wp, $wk, $wc, $wg, $wd, $wf, $money, $hp, $mhp, $att, $def;
-	if ($club==1) $wp+=50;
+	if(empty($data))
+	{
+		global $club;
+		lostclub();
+		$club = $clb;
+		updateskill();
+	}
+	else 
+	{
+		lostclub($data);
+		$data['club'] = $clb;
+		updateskill($data);
+	}
+}
+
+function updateskill(&$data=NULL)
+{
+	
+	global $club, $wp, $wk, $wc, $wg, $wd, $wf, $money, $hp, $mhp, $att, $def ,$clbpara, $club_skillslist;
+	if ($club==1) {$wp+=50;}
 	if ($club==2) $wk+=50;
 	if ($club==3) $wc+=50;
 	if ($club==4) $wg+=50;
@@ -65,6 +83,39 @@ function updateskill()
 	if ($club==16) { $wp+=25; $wk+=25; $wc+=25; $wg+=25; $wd+=25; $wf+=25; }
 	if ($club==13) { $mhp+=250; $hp+=250; }
 	if ($club==14) { $att+=300; $def+=300; }
+	
+	# 变更社团时 获取社团技能
+	include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+	if(empty($data))
+	{
+		$cks = $club_skillslist[$club];
+		foreach($cks as $sk) getclubskill($sk,$clbpara);
+	}
+	else 
+	{
+		$cks = $club_skillslist[$data['club']];
+		foreach($cks as $sk) getclubskill($sk,$data['clbpara']);
+	}
+}
+
+function lostclub(&$data=NULL)
+{
+	global $club ,$clbpara, $club_skillslist;
+	if(!$club) return 0;
+	# 丢失原社团时 注销社团技能
+	include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+	if(empty($data))
+	{
+		$cks = $club_skillslist[$club];
+		foreach($cks as $sk) lostclubskill($sk,$clbpara);
+		$club = 0;
+	}
+	else 
+	{
+		$cks = $club_skillslist[$data['club']];
+		foreach($cks as $sk) lostclubskill($sk,$data['clbpara']);
+		$data['club'] = 0;
+	}
 }
 
 function selectclub($id)

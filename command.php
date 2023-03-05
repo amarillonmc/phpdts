@@ -10,8 +10,6 @@ require GAME_ROOT.'./include/game.func.php';
 //判断是否进入游戏
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); } 
 
-unset($pdata);
-
 $result = $db->query("SELECT * FROM {$tablepre}players WHERE name = '$cuser' AND type = 0");
 
 if(!$db->num_rows($result)) { header("Location: valid.php");exit(); }
@@ -41,11 +39,11 @@ if($gamestate == 0) {
 }
 
 //初始化各变量
+$pdata['clbpara'] = get_clbpara($pdata['clbpara']);
 extract($pdata,EXTR_REFS);
 $log = $cmd = $main = '';
 $gamedata = array();
 init_playerdata();
-$clbpara = get_clbpara($clbpara);
 
 //读取玩家互动信息
 $result = $db->query("SELECT lid,time,log FROM {$tablepre}log WHERE toid = '$pid' AND prcsd = 0 ORDER BY time,lid");
@@ -94,6 +92,17 @@ if($hp > 0){
 		$nowmtime = floor(getmicrotime()*1000);
 		$rmcdtime = $nowmtime >= $cdover ? 0 : $cdover - $nowmtime;
 	}
+
+	//如果身上存在时效性技能，检查技能是否超时
+	if($hp > 0 && !empty($clbpara['lasttimes'])) check_skilllasttimes();
+	//应用眩晕状态效果
+	if($hp > 0 && in_array('inf_dizzy',$clbpara['skill']))
+	{
+		$dizzy_times = (($clbpara['starttimes']['inf_dizzy'] + $clbpara['lasttimes']['inf_dizzy']) - $now)*1000;
+		$log .= '<span class="yellow">你现在处于眩晕状态，什么都做不了！</span><br>眩晕状态持续时间还剩：<span id="timer" class="yellow">'.$dizzy_times.'</span>秒<br><script type="text/javascript">demiSecTimerStarter('.$dizzy_times.');</script>';
+		goto cd_flag;
+	}
+
 	//执行动作前，身上存在追击标记时，直接进入追击判定
 	if((strpos($action,'chase')!==false || strpos($action,'dfight')!==false) && $mode !== 'revcombat')
 	{
@@ -106,6 +115,7 @@ if($hp > 0){
 		$dialogue_id = $clbpara['dialogue'];
 	}elseif($coldtimeon && $rmcdtime > 0 && (strpos($command,'move')===0 || strpos($command,'search')===0 || (strpos($command,'itm')===0)&&($command != 'itemget') || strpos($sp_cmd,'sp_weapon')===0 || strpos($command,'song')===0)){
 		$log .= '<span class="yellow">冷却时间尚未结束！</span><br>';
+		cd_flag:
 		$mode = 'command';
 	}else{
 		//进入指令判断
@@ -582,6 +592,32 @@ if($hp > 0){
 			upgradeclubskills($command);
 			calcskills($skarr);
 			$p12[1]=1; $p12[2]=2;
+			$mode = 'command';
+		} elseif ($mode == 'revskpts') {
+			include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+			if(strpos($command,'upgskill_')!==false)
+			{
+				$sk = substr($command,9);
+				if(isset(${$command.'_nums'}))
+				{
+					${$command.'_nums'} = (int)${$command.'_nums'};
+					upgclbskills($sk,${$command.'_nums'});
+				} 
+				else 
+				{
+					upgclbskills($sk);
+				}
+			}
+			elseif(strpos($command,'actskill_')!==false)
+			{
+				$sk = substr($command,9);
+				if(isset($cskills[$sk]) && !check_skill_unlock($sk,$pdata))
+				{
+					include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
+					if($sk == 'c1_veteran') skill_c1_veteran_act($c1_veteran_choice);
+				}
+			}
+			$mode = 'command';
 		} elseif ($mode == 'sp_pbomb') {
 			include_once GAME_ROOT.'./include/game/special.func.php';
 			if ($command=="YES") press_bomb();
@@ -638,8 +674,8 @@ if($hp > 0){
 	}
 	//显示指令执行结果
 	$gamedata['innerHTML']['notice'] = ob_get_contents();
-	if($coldtimeon && $showcoldtimer && $rmcdtime){
-		$gamedata['timer'] = $rmcdtime;
+	if(($coldtimeon && $showcoldtimer && $rmcdtime) || isset($dizzy_times)){
+		$gamedata['timer'] = isset($dizzy_times) ? $dizzy_times : $rmcdtime;
 	}
 	if($hp > 0 && $coldtimeon && $showcoldtimer && $rmcdtime){
 		$log .= "行动冷却时间：<span id=\"timer\" class=\"yellow\">0.0</span>秒<br>";
@@ -683,6 +719,8 @@ if($hp <= 0) {
 	//$gamedata['cmd'] .= '<br><br><input type="button" id="submit" onClick="postCommand();return false;" value="提交">';
 }
 
+//存在 $opendialog 时 尝试打开id为 $opendialog 值的悬浮窗口
+if(isset($opendialog)){$log.="<span style=\"display:none\" id=\"open-dialog\">{$opendialog}</span>";}
 
 if(isset($url)){$gamedata['url'] = $url;}
 $gamedata['innerHTML']['pls'] = (!isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup])) ? $hplsinfo[$pgroup][$pls] : $plsinfo[$pls];

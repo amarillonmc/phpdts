@@ -6,10 +6,75 @@
 
 	include_once GAME_ROOT.'./include/game/dice.func.php';
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
+	include_once GAME_ROOT.'./include/game/revclubskills.func.php';
 
-	//revattr_extra.func.php: 记录NPC特殊战斗机制
+	//revattr_extra.func.php: 记录NPC特殊战斗机制...玩家战斗技也先放这里了 嘻嘻
 	//Q：为什么要把每个NPC的特殊战斗机制都新建一个函数保存？
 	//A：也不是每个都要这么干……这个做法主要用于存在大段log、多段判定的机制，分离出来一是方便定位这个NPC的相关机制在哪个阶段执行，二是确保原流程的可读性；
+
+	# 技能判定（主动型）
+	function attr_extra_active_skills(&$pa,&$pd,$active,$sk='')
+	{
+		global $log,$cskills;
+		# 检查主动技合法性
+		if(isset($pa['bskill']))
+		{
+			if(!check_skill_unlock($pa['bskill'],$pa) && !check_skill_active($pa['bskill'],$pa))
+			{
+				$bsk = $pa['bskill'];
+				$bsk_name = $cskills[$bsk]['name'];
+				# 扣除怒气
+				$bsk_cost = get_skillvars($bsk,'ragecost');
+				if($bsk_cost) $pa['rage'] -= $bsk_cost;
+				# 成功释放主动技，应用标记
+				$pa['skill_'.$bsk] = 1;
+				$log .= "<span class=\"lime\">{$pa['nm']}消耗{$bsk_cost}点怒气，对{$pd['nm']}发动了技能「{$bsk_name}」！</span><br>";
+			}
+			else 
+			{
+				# 主动技不满足使用条件或来源非法，直接注销标记
+				unset($pa['bskill']);
+			}
+		}
+		return;
+	}
+
+	# 技能判定（被动型）：这里通常只判定技能是否生效，如生效，提供一个标记
+	function attr_extra_passive_skills(&$pa,&$pd,$active,$sk='')
+	{
+		global $cskills;
+		if(!empty($pa['clbpara']['skill']))
+		{
+			# 遍历pa技能队列 检查是否解锁
+			foreach($pa['clbpara']['skill'] as $sk)
+			{
+				# 对于解锁技能，如果有特殊触发条件，在这里加入判定，否则会默认给一个触发标记
+				if(!check_skill_unlock($sk,$pa) && (get_skilltags($sk,'passive') || get_skilltags($sk,'inf')))
+				{
+					# 「猛击」特殊判定
+					if($sk == 'c1_crit')
+					{
+						$sk_dice = diceroll(99);
+						# 「偷袭」或「闷棍」技能生效时，「猛击」必定触发；
+						$sk_obbs = isset($pa['skill_c1_sneak'])||isset($pa['skill_c1_bjack']) ? 100 : get_skillvars('c1_crit','rate');
+						# 成功触发时
+						if($sk_dice < $sk_obbs)
+						{
+							$pa['skill_c1_crit'] = 1;
+							$pa['skill_c1_crit_log'] = "<span class=\"yellow b\">{$pa['nm']}朝着{$pd['nm']}打出了凶猛的一击！<span class=\"cyan b\">{$pd['nm']}被打晕了过去！</span></span><br>";
+						}
+					}
+					# 其他非特判技能，默认给一个触发标记
+					else 
+					{
+						$pa['skill_'.$sk] = 1;
+						//$pa['skill_'.$sk.'_log'] = "";
+					}
+				}
+			}
+		}
+		return;
+	}
 
 	# 真红暮特殊判定
 	function attr_extra_19_crimson(&$pa,&$pd,$active,$phase=0)

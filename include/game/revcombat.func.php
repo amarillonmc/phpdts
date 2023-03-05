@@ -85,7 +85,7 @@
 				if($active) $pa['action'] = 'chase'.$pd['pid'];
 				else $pd['action'] = 'pchase'.$pa['pid'];
 				$chase_flag = 1;
-				$log.= "<span class='red'>但是{$pa['nm']}紧紧跟在{$pd['nm']}身后！</span><br>";
+				$log.= "<span class='red'>但是{$pa['nm']}紧追着{$pd['nm']}不放！</span><br>";
 			}
 			else 
 			{
@@ -142,6 +142,13 @@
 			init_rev_battle(1);
 			$battle_title = '战斗发生';
 			$main = 'battle_rev';
+		}
+
+		# 如果传入了主动技参数，在这里登记
+		if(strpos($wep_kind,'bskill_') === 0)
+		{
+			$bskill = substr($wep_kind,7);
+			$pa['bskill'] = $bskill;
 		}
 
 		# 初始化双方的真实攻击方式wep_kind，传入了攻击方式/主动技的情况下，在这里判断传入参数的合法性。
@@ -314,7 +321,8 @@
 		elseif($pd['hp']>0  && $att_result>0) 
 		{
 			$pd['cannot_counter'] = 1;
-			$log .= "<span class=\"red\">{$pd['nm']}转身逃开了！</span><br>";
+			if(isset($pd['cannot_counter_log'])) $log .= "<span class=\"red\">".$pd['cannot_counter_log']."</span><br>";
+			else $log .= "<span class=\"red\">{$pd['nm']}转身逃开了！</span><br>";
 		}
 
 		# 存在暴毙标识：反击方(pd)在反击过程中未造成伤害就暴毙，可能是因为触发了武器直死。
@@ -358,12 +366,14 @@
 			if($active)
 			{
 				$w_log = "手持<span class=\"red\">{$pa['wep_name']}</span>的<span class=\"yellow\">{$pa['name']}</span>向你袭击！<br>你受到其<span class=\"yellow\">$att_dmg</span>点攻击，对其做出了<span class=\"yellow\">$def_dmg</span>点反击。<br>";
+				if(isset($pd['logsave'])) $w_log .= $pd['logsave'];
 				if(isset($pd['lvlup_log'])) $w_log .= $pd['lvlup_log'];
 				logsave ($pd['pid'],$now,$w_log,'c');
 			}
 			else
 			{
 				$w_log = "你发现了手持<span class=\"red\">{$pd['wep_name']}</span>的<span class=\"yellow\">{$pd['name']}</span>并且先发制人！<br>你对其做出<span class=\"yellow\">$att_dmg</span>点攻击，受到其<span class=\"yellow\">$def_dmg</span>点反击。<br>";
+				if(isset($pa['logsave'])) $w_log .= $pa['logsave'];
 				if(isset($pa['lvlup_log'])) $w_log .= $pa['lvlup_log'];
 				logsave ($pa['pid'],$now,$w_log,'c');
 			}
@@ -496,6 +506,9 @@
 		$pa['ex_keys'] = array_merge($pa['ex_wep_keys'],$pa['ex_equip_keys']); unset($pa['ex_wep_keys']); unset($pa['ex_equip_keys']);
 		$pd['ex_keys'] = array_merge($pd['ex_wep_keys'],$pd['ex_equip_keys']); unset($pd['ex_wep_keys']); unset($pd['ex_equip_keys']);
 		
+		# 检查是否存在额外属性（可能来源于技能）
+		get_extra_ex_array($pa);  get_extra_ex_array($pd); 
+		
 		# 在计算命中流程开始前判定的事件，分两种：（以后看情况要不要分成两个函数）
 		# 第一种：进攻方(pa)在进攻前因为某种缘故受到伤害、甚至暴毙（直死、DOT结算等） 。判断是否继续进攻流程；
 		# 如果需要登记特殊的死法，请给死者(比如pa)赋一个$pa['gg_flag'] = '死法编号'; 这样在后续的流程里会自动判定特殊死亡事件，如果没有登记特殊死法，会按照正常的战死流程登记；
@@ -505,15 +518,9 @@
 		$flag = hitrate_prepare_events($pa,$pd,$active);
 		if($flag < 0) return $flag;
 
-		# 获取真实熟练度 保存在$pa['wep_skill']内。TODO：将熟练度计算汇总到一个函数内
-		if ($pa['club'] == 18)
-		{
-			$pa['wep_skill']=round($pa[$skillinfo[$pa['wep_kind']]]*0.7+($pa['wp']+$pa['wk']+$pa['wc']+$pa['wg']+$pa['wd']+$pa['wf'])*0.3);
-		}
-		else
-		{
-			$pa['wep_skill']=$pa[$skillinfo[$pa['wep_kind']]];
-		}
+		# 获取pa真实熟练度 保存在$pa['wep_skill']内
+		$pa['wep_skill'] = get_wep_skill($pa);
+
 		# 应用技抽效果
 		if(isset($pa['skdr_flag']) || isset($pd['skdr_flag']))
 		{
@@ -656,7 +663,9 @@
 			//防守方(pd)受到伤害后的事件（防具耐久下降、受伤）
 			get_hurt_events($pa,$pd,$active);
 			//经验结算
-			exprgup_rev ($pa,$pd,$active);
+			expup_rev($pa,$pd,$active);
+			//怒气结算
+			rgup_rev($pa,$pd,$active);
 		}
 		else 
 		{
@@ -872,7 +881,7 @@
 			$revival_flag = 99; //保存复活标记为通过称号复活
 			addnews($now,'revival',$dname);	
 			$pd['hp'] = $pd['mhp']; $pd['sp'] = $pd['msp'];
-			$pd['state'] = 0; $pd['club'] = 17;
+			$pd['state'] = 0; changeclub(17,$pd);
 			$log .= '<span class="yellow">但是，由于及时按下BOMB键，'.$pd['nm'].'原地满血复活了！</span><br>';
 			return $revival_flag;
 		}
@@ -946,8 +955,28 @@
 		return;
 	}
 
+	# 战斗怒气结算
+	function rgup_rev(&$pa,&$pd,$active)
+	{
+		# 计算pa(攻击方)因攻击行为获得的怒气
+		# pa(攻击方)拥有重击辅助属性，每次攻击额外获得1~2点怒气
+		if(!empty($pa['ex_keys']) && in_array('c',$pa['ex_keys']))
+		{
+			$pa_rgup = rand(1,2);
+			$pa['rage'] = min(255,$pa['rage']+$pa_rgup);
+		}
+		# 计算pd(防守方)因挨打获得的怒气
+		$rgup = round(($pa['lvl'] - $pd['lvl'])/3);
+		# 单次获得怒气上限：15
+		$rgup = min(15,max(1,$rgup));
+		# 「灭气」技能效果
+		if(isset($pd['skill_c1_burnsp'])) $rgup += rand(1,2);
+		$pd['rage'] = min(255,$pd['rage']+$rgup);
+		return;
+	}
+
 	# 战斗经验结算
-	function exprgup_rev(&$pa,&$pd,$active) 
+	function expup_rev(&$pa,&$pd,$active) 
 	{
 		global $log,$baseexp;
 		$expup = round ( ($pd['lvl'] - $pa['lvl']) / 3 );
@@ -962,9 +991,6 @@
 		{
 			lvlup_rev ($pa,$pd,$active);
 		}
-		//大的打小的怒气反而涨的快 什么逻辑？狂扁小朋友喔？
-		$rgup = round (($pa['lvl'] - $pd['lvl'])/3);
-		$pa['rage'] += $rgup > 0 ? $rgup : 1;
 		return;
 	}
 
@@ -1139,8 +1165,9 @@
 				$pa['itm'.$c] = $pa['wep']; $pa['itmk'.$c] = $pa['wepk']; $pa['itmsk'.$c] = $pa['wepsk'];
 				$pa['itme'.$c] = $pa['wepe']; $pa['itms'.$c] = $pa['weps'];
 				$pa['wep'] = $chosen[1]; $pa['wepk'] = $chosen[2]; $pa['wepe'] = $chosen[3]; $pa['weps'] = $chosen[4]; $pa['wepsk'] = $chosen[5];
-				$pa['wep_kind'] = get_wep_kind($pa);
+				get_wep_kind($pa);
 				$pa['wep_range'] = get_wep_range($pa);
+				$pa['wep_skill'] = get_wep_skill($pa);
 				$pa['change_wep_log'] = "<span class=\"yellow\">{$pa['nm']}</span>将手中的<span class=\"yellow\">{$oldwep}</span>卸下，装备了<span class=\"yellow\">{$pa['wep']}</span>！<br>";
 			}
 		}
