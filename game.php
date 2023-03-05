@@ -133,7 +133,18 @@ elseif((strpos($action,'neut')===0)){
 }
 if($hp > 0 && $coldtimeon && $showcoldtimer && $rmcdtime){$log .= "行动冷却时间：<span id=\"timer\" class=\"yellow\">0.0</span>秒<script type=\"text/javascript\">demiSecTimerStarter($rmcdtime);</script><br>";}
 //如果身上存在时效性技能，检查技能是否超时
-if($hp > 0 && !empty($clbpara['lasttimes'])) check_skilllasttimes();
+if($hp > 0 && !empty($clbpara['lasttimes']))
+{
+	$flag = check_skilllasttimes();
+	if($flag)
+	{
+		$pdata = current_player_save();
+		$pdata['clbpara'] = get_clbpara($pdata['clbpara']);
+		extract($pdata);
+		init_playerdata();
+		init_profile();
+	}
+}
 if($hp > 0 && in_array('inf_dizzy',$clbpara['skill']))
 {
 	$dizzy_times = (($clbpara['starttimes']['inf_dizzy'] + $clbpara['lasttimes']['inf_dizzy']) - $now)*1000;
