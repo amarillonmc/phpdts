@@ -699,7 +699,6 @@ function check_skilllasttimes(&$data=NULL)
 				lostclubskill($sk,$para);
 				$sk_name = $cskills[$sk]['name'];
 				$log.="<span class='yellow'>{$nm}从{$sk_name}状态中恢复了！</span><br>";
-				return 1;
 			}
 		}
 	}
