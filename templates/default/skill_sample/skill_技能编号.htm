@@ -1,0 +1,45 @@
+<!-- 注意：大部分技能可以直接通过编辑配置文件完成 -->
+<!-- 可能的、需要新建模板的情况：你的技能需要在面板内执行比较复杂的、单靠配置文件无法实现的操作 -->
+<tr>
+    <td class="b1" width="40">
+        <span>技能名</span>
+    </td>
+    <td>
+     <!-- ↓↓↓ 存在解锁条件的技能才需要有这一部分 ↓↓↓ -->
+        <!--{eval $unlock_技能编号_flag = check_skill_unlock('技能编号',$pdata);}-->
+        <!--{if $unlock_技能编号_flag}-->
+        <div style="position:relative; height:100%; width:100%;" onmouseover="skill_unacquired_mouseover.call(this,event)" onmouseout="skill_unacquired_mouseout.call(this,event)">
+        <div class="skill_unacquired">
+        <!--{/if}-->
+     <!-- ↑↑↑ 存在解锁条件的技能才需要有这一部分 ↑↑↑ -->
+            <table class="skilltable">
+                <tr>
+                    <td class="skilldesc_left b3">
+                        <span class="skilldesc">
+                        <span tooltip="关于标签的介绍" class="gold">【技能标签 没有不需要写】</span>
+                        技能介绍
+                        </span>
+                    </td>
+                    <td class="skilldesc_right b3">
+                        <input type="number" name="技能编号_nums" style="width:40px" value="1">		
+                        <input type="button" onclick="$('mode').value='revskpts';$('command').value='技能编号';postCmd('gamecmd','command.php');this.disabled=true;" value="技能操作按钮名">
+                    </td>
+                </tr>
+            </table>
+    <!-- ↓↓↓ 存在解锁条件的技能才需要有这一部分 ↓↓↓ -->
+        <!--{if $unlock_技能编号_flag}-->
+        </div>
+        <div class="skill_unacquired_hint">
+            <table class="skilltable">
+                <tr>
+                    <td valign="center" align="center">
+                        <span class="yellow">未满足解锁条件时显示的文本</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        </div>
+        <!--{/if}-->
+    <!-- ↑↑↑ 存在解锁条件的技能才需要有这一部分 ↑↑↑ -->
+    </td>
+</tr>

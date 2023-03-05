@@ -59,8 +59,8 @@ if($mode == 'enter') {
 	$exp = $areanum * 20;
 	$money = 20;
 	$rage = 0;
-	$pose = 0;
-	$tactic = 0;
+	$pose = 3;
+	$tactic = 2;
 	$icon = $icon ? $icon : rand(1,$iconlimit);
 	$club = 0;
 

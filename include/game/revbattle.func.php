@@ -76,7 +76,7 @@
 	function findenemy_rev($edata) 
 	{
 		global $db,$tablepre;
-		global $fog,$pid,$log,$mode,$main,$cmd,$battle_title,$attinfo,$skillinfo,$nosta;
+		global $fog,$pid,$log,$mode,$main,$cmd,$battle_title,$attinfo,$skillinfo,$nosta,$cskills;
 
 		//获取并保存当前玩家数据
 		$sdata = current_player_save();
@@ -97,6 +97,39 @@
 
 		//检查是敌对或中立单位
 		$neut_flag = $edata['pose'] == 7 ? 1 : 0;
+
+		//初始化玩家战斗技列表
+		if(!empty($sdata['clbpara']['skill']))
+		{
+			include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+			$battle_skills = Array();
+			$sk_nums = 0;
+			foreach($sdata['clbpara']['skill'] as $sk)
+			{
+				//遍历玩家技能，寻找带有战斗技标签的技能
+				if(get_skilltags($sk,'battle'))
+				{
+					$sk_desc = '';
+					//先检查技能是否满足解锁条件
+					$unlock = check_skill_unlock($sk,$sdata);
+					if($unlock)
+					{
+						$sk_desc .= is_array($cskills[$sk]['lockdesc']) ? $cskills[$sk]['lockdesc'][$unlock] : $cskills[$sk]['lockdesc'];
+					}
+					//再检查技能是否满足激活条件
+					else
+					{
+						$unlock = check_skill_active($sk,$sdata);
+						if($unlock) $sk_desc .= $unlock;
+					}
+					//技能可以使用，输出介绍文本
+					if(empty($sk_desc)) $sk_desc = parse_skilldesc($sk,$sdata,1);
+					//存入可使用战斗技队列，顺序：是否可使用、技能名、技能介绍文本
+					$battle_skills[$sk_nums] = Array($unlock,$sk,$sk_desc);
+					$sk_nums++;
+				}
+			}
+		}
 
 		//初始化玩家攻击方式信息
 		$w1 = substr($s_wepk,1,1);

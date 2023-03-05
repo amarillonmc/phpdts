@@ -124,6 +124,11 @@ function config($file = '', $cfg = 1) {
 	return $cfgfile;
 }
 
+function tempfile($file = '') {
+	$tempfile = file_exists(GAME_ROOT."./templates/default/{$file}.htm") ? GAME_ROOT."./templates/default/{$file}.htm" : 0;
+	return $tempfile;
+}
+
 function dir_clear($dir) {
 	$directory = dir($dir);
 	while($entry = $directory->read()) {
@@ -388,6 +393,7 @@ function getchat($last,$team='',$limit=0) {
 		//if(!$chatdata['lastcid']){$chatdata['lastcid'] = $chat['cid'];}
 		if($chatdata['lastcid'] < $chat['cid']){$chatdata['lastcid'] = $chat['cid'];}
 		$chat['msg'] = htmlspecialchars($chat['msg']);
+		$chat['msg'] = preg_replace('/\[(\w+)\]/', "<img src='img/emoticons/$1.png'>",$chat['msg']);
 		if($chat['type'] == '0') {
 			$msg = "【{$chatinfo[$chat['type']]}】{$chat['send']}：{$chat['msg']}".date("\(H:i:s\)",$chat['time']).'<br>';
 		} elseif($chat['type'] == '1') {
@@ -406,7 +412,7 @@ function getchat($last,$team='',$limit=0) {
 			$msg = "<span class=\"yellow\">【{$chatinfo[$chat['type']]}】{$chat['msg']}".date("\(H:i:s\)",$chat['time']).'</span><br>';
 		}
 		//表情
-		$msg = preg_replace('/\[(\w+)\]/', "<img src='img/emoticons/$1.png'>", $msg);
+		//$msg = preg_replace('/\[(\w+)\]/', "<img src='img/emoticons/$1.png'>", $msg);
 		$chatdata['msg'][$chat['cid']] = $msg;
 	}
 	return $chatdata;
@@ -649,7 +655,7 @@ function get_itmsk_array($sk_value)
 }
 
 //还原itmsk为字符串 $max_length:字符串长度上限 
-function get_itmsk_strlen($sk_value,$max_length=5)
+function get_itmsk_strlen($sk_value,$max_length=30)
 {
 	global $itemspkinfo;
 	$ret = ''; $sk_count = 0;

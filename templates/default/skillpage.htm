@@ -1,0 +1,35 @@
+<dialog id="skillpage" style="width: 568px; max-width: 90%;max-height: 80%;">
+
+<p style="margin-left:0px; margin-top:0px; margin-right:0px; margin-bottom:0px;">
+<!--{if !empty($pdata['clbpara']['skill'])}-->
+
+    你目前有<span class="lime b">$skillpoint</span>点技能点供自由分配，升级时可以获取新的技能点。<br>
+    以下是你的技能列表。<br><br>
+
+    <table class="skilltable" style="width:559px">
+        <tr>
+            <td class="b1" width="40">
+                <span>名称</span>
+            </td>
+            <td class="b1">
+                <span>技能详情</span>
+            </td>
+        </tr>
+        <!--{loop $clbpara['skill'] $sknm}-->
+        <!--{eval $skdata = init_clubskillsdata($sknm,$pdata);}-->
+            <!--{if is_array($skdata)}-->
+                <!--{eval include template($skdata[0]);}-->
+            <!--{elseif !empty($skdata)}-->
+                $skdata
+            <!--{/if}-->
+        <!--{/loop}-->
+    </table>
+<!--{else}-->
+
+    <br>你目前没有任何技能，先选择一个内定称号吧！<br>
+
+<!--{/if}-->
+    <br>提示：点击技能界面外任意位置或按ESC键即可返回主界面<br>
+</p>
+<img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('skillpage'));this.disabled=true;">
+</dialog>
