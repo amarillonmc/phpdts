@@ -96,7 +96,7 @@ if($hp > 0){
 	//如果身上存在时效性技能，检查技能是否超时
 	if($hp > 0 && !empty($clbpara['lasttimes'])) check_skilllasttimes();
 	//应用眩晕状态效果
-	if($hp > 0 && in_array('inf_dizzy',$clbpara['skill']))
+	if($hp > 0 && !empty($clbpara['skill']) && in_array('inf_dizzy',$clbpara['skill']))
 	{
 		$dizzy_times = (($clbpara['starttimes']['inf_dizzy'] + $clbpara['lasttimes']['inf_dizzy']) - $now)*1000;
 		$log .= '<span class="yellow">你现在处于眩晕状态，什么都做不了！</span><br>眩晕状态持续时间还剩：<span id="timer" class="yellow">'.$dizzy_times.'</span>秒<br><script type="text/javascript">demiSecTimerStarter('.$dizzy_times.');</script>';
