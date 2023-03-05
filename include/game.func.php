@@ -40,10 +40,6 @@ function init_profile(){
 	global $wep,$arb,$arh,$ara,$arf,$art,$itm0,$itm1,$itm2,$itm3,$itm4,$itm5,$itm6;
 	global $clbpara,$weather,$definfo,$atkinfo,$pdata;
 
-	include_once GAME_ROOT.'./include/game/revattr.func.php';
-	$atkinfo = get_base_att($pdata,$pdata,1,1);
-	$definfo = get_base_def($pdata,$pdata,1,1);
-
 	foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
 	{
 		global ${$value.'_words'};
@@ -126,6 +122,10 @@ function init_profile(){
 	$newspimg = '<img src="img/yellow2.gif" style="position:absolute; clip:rect('.$newsppre.'px,55px,160px,0px);">';
 
 	$clbpara = get_clbpara($clbpara);
+
+	include_once GAME_ROOT.'./include/game/revattr.func.php';
+	$atkinfo = get_base_att($pdata,$pdata,1,1);
+	$definfo = get_base_def($pdata,$pdata,1,1);
 
 	return;
 }
@@ -534,7 +534,7 @@ function init_mapdata(){
 		$mpp[$position[0]][$position[1]]=$i;
 	}
 
-	$mapcontent = '<TABLE border="1" cellspacing="0" cellpadding="0" background="map/neomap.jpg" style="padding-left: 5px; float:left;background-size:478px 418px;position:relative;background-repeat:no-repeat;background-position:right bottom;">';	
+	$mapcontent = '<TABLE border="1" cellspacing="0" cellpadding="0" background="map/neomap.jpg" style="background-size:478px 418px;position:relative;background-repeat:no-repeat;background-position:right bottom;">';	
 	$mapcontent .= '<TR align="center"><TD colspan="11" height="24" class=b1 align=center>战场地图</TD></TR>';
 	$mapcontent .= '<TR align="center">
 			<TD width="42" height="36" class=map align=center><div class=nttx>坐标</div></TD>';
@@ -559,6 +559,107 @@ function init_mapdata(){
 	return $mapcontent;
 }
 
+function init_clubskillsdata($sk,$data)
+{
+	$sk_dir = 'skill_'.$sk;
+	# 本地存在对应的技能模板，返回模板
+	if(file_exists(GAME_ROOT."./templates/default/".$sk_dir.".htm"))
+	{
+		return Array($sk_dir);
+	}
+	# 本地不存在模板，按照预设信息生成一个
+	else 
+	{
+		include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+		global $cskills;
+		# 要检查的技能没有登记过 视为无效技能
+		if(!array_key_exists($sk,$cskills)) return 0;
+		if(!empty($data)) $data['clbpara'] = get_clbpara($data['clbpara']);
+		# 获取技能信息
+		$cskill = $cskills[$sk];
+		$sk_name = $cskill['name'];
+		# 技能存在等级时
+		if(isset($cskill['maxlvl']))
+		{
+			$max_lvl_flag = 0;
+			$now_clvl = get_skilllvl($sk,$data);
+			if($now_clvl >= $cskill['maxlvl']) $max_lvl_flag = 1;
+		}
+		# 获取技能描述
+		$sk_desc = parse_skilldesc($sk,$data);
+		# 生成技能模板
+		$sk_temp = <<<EOT
+<tr>
+    <td class="b1" width="40">
+        <span>{$sk_name}</span>
+    </td>
+	<td>
+EOT;
+		# 检查技能是否存在解锁条件
+		if(!empty($cskill['unlock']))
+		{
+			# 检查技能是否解锁，返回值不为0则未解锁
+			$unlock_flag = check_skill_unlock($sk,$data);
+			if($unlock_flag)
+			{
+				$unlock_flag = is_array($cskill['lockdesc']) ? $cskill['lockdesc'][$unlock_flag] : $cskill['lockdesc'];
+				$sk_temp .= <<<EOT
+                <div style="position:relative; height:100%; width:100%;" onmouseover="skill_unacquired_mouseover.call(this,event)" onmouseout="skill_unacquired_mouseout.call(this,event)">
+                <div class="skill_unacquired">
+EOT;
+			}
+		}
+		$sk_temp .= <<<EOT
+        <table class="skilltable">
+            <tr>
+                <td class="skilldesc_left b3">
+                    <span class="skilldesc">
+                    {$sk_desc}
+                    </span>
+                </td>
+				<td class="skilldesc_right b3"> \r
+EOT;
+		# 检查技能是否存在复数输入框
+		if(!empty($cskill['num_input']) && empty($max_lvl_flag))
+		{
+			$sk_temp .= "<input type=\"number\" name=\"upgskill_{$sk}_nums\" style=\"width:40px\" value=\"1\"> \r";
+		}
+		# 检查技能是否存在操作按钮
+		if(!empty($cskill['input']) && empty($max_lvl_flag))
+		{
+			$sk_input = $cskill['input'];
+			$sk_temp .= "<input type=\"button\" onclick=\"$('mode').value='revskpts';$('command').value='upgskill_{$sk}';postCmd('gamecmd','command.php');this.disabled=true;\" value=\"{$sk_input}\"> \r";
+		}
+		$sk_temp .= <<<EOT
+				</td>
+			</tr>
+        </table>
+EOT;
+		if(!empty($cskill['unlock']) && $unlock_flag)
+		{
+			$sk_temp .= <<<EOT
+			</div>
+			<div class="skill_unacquired_hint">
+				<table class="skilltable">
+					<tr>
+						<td valign="center" align="center"><span class="yellow">{$unlock_flag}</span></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+EOT;	
+		}
+		$sk_temp .= <<<EOT
+</tr>
+EOT;		
+		//$htm_sk_dir = GAME_ROOT.TPLDIR.'/'.$sk_dir.'.htm';
+		//writeover($htm_sk_dir,$sk_temp);
+		//return $sk_dir;
+		return $sk_temp;
+	}
+	return 0;
+}
+
 function get_remaincdtime($pid){
 	$psdata = get_pstate($pid);
 	if($psdata){
@@ -569,6 +670,39 @@ function get_remaincdtime($pid){
 	}else{
 		return 0;
 	}	
+}
+
+// 检查时效性技能是否达到时限
+function check_skilllasttimes(&$data=NULL)
+{
+	global $cskills,$log,$now,$name;
+	if(empty($data))
+	{
+		global $clbpara;
+		$para = &$clbpara;
+		$nm = '你';
+	}
+	else 
+	{
+		$para = &$data['clbpara'];
+		$nm = &$data['name'];
+	}
+	if(!empty($para['lasttimes']))
+	{
+		include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+		foreach($para['lasttimes'] as $sk => $lts)
+		{
+			$stm = isset($para['starttimes'][$sk]) ? $para['starttimes'][$sk] : 0;
+			# 技能已达到时效，失去该技能，并清空相关内容
+			if($now > $lts+$stm)
+			{
+				lostclubskill($sk,$para);
+				$sk_name = $cskills[$sk]['name'];
+				$log.="<span class='yellow'>{$nm}从{$sk_name}状态中恢复了！</span><br>";
+			}
+		}
+	}
+	return;
 }
 
 //通过pid抓取指定玩家/NPC数据

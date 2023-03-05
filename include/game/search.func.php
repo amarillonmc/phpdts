@@ -633,6 +633,8 @@ function discover($schmode = 0) {
 					include_once GAME_ROOT.'./include/game/revattr.func.php';
 					//获取并保存当前玩家数据
 					$sdata = current_player_save();
+					//刷新敌人时效性状态
+					if(!empty($edata['clbpara']['lasttimes'])) check_skilllasttimes($edata);
 					//计算先攻概率
 					$active_r = get_active_r_rev($sdata,$edata);
 					$bid = $edata['pid'];

@@ -45,7 +45,7 @@ if(!isset($cmd)){
 				$ustate = 'check';
 				gsetcookie('user',$username);
 				gsetcookie('pass',$password);
-				gsetcookie('volume',20,86400*30,0);
+				gsetcookie('volume',0.2,86400*30,0);
 			}else{
 				$gamedata['innerHTML']['info'] = $_ERROR['db_failure'];
 				$gamedata['innerHTML']['info'] .= ob_get_contents();

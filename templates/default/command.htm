@@ -94,3 +94,7 @@
 <!--{if isset($gamevars['apis'])}-->
 {template sp_console_search}
 <!--{/if}-->
+
+<!-- 技能面板 -->
+<input type="button" class="cmdbutton" id="skillstable" name="skillstable" value="技能表" onclick="showModalDialog($('skillpage'));">
+{template skillpage}

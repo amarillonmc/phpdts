@@ -1,0 +1,56 @@
+<tr>
+    <td class="b1" width="40">
+        <span>百战</span>
+    </td>
+    <td>
+        <!--{eval $unlock_c1_veteran_flag = check_skill_unlock('c1_veteran',$pdata);}-->
+        <!--{eval $para = get_clbpara($pdata['clbpara']); $nchoice = $para['skillpara']['c1_veteran']['choice'];}-->
+        <!--{if $unlock_c1_veteran_flag}-->
+        <div style="position:relative; height:100%; width:100%;" onmouseover="skill_unacquired_mouseover.call(this,event)" onmouseout="skill_unacquired_mouseout.call(this,event)">
+        <div class="skill_unacquired">
+        <!--{/if}-->
+            <table class="skilltable">
+                <tr>
+                    <td class="skilldesc_left b3">
+                        <span class="skilldesc">
+                        <span tooltip="满足条件时自动触发" class="gold">【被动技】</span>
+                        选择任一单体减半防御属性，你视为具有它。<br>
+                        当前选择是：<span class="yellow b"><!--{if !empty($nchoice)}-->$itemspkinfo[$nchoice]<!--{else}-->无<!--{/if}--></span>
+                        &nbsp;
+                        变更选择为：
+                        <select name="c1_veteran_choice" id="c1_veteran_choice" onchange="$('mode').value='revskpts';$('command').value='actskill_c1_veteran';postCmd('gamecmd','command.php');this.disabled=true;">
+                        <!--{if empty($nchoice)}-->
+                        <option value="" selected>无<br />
+                        <!--{/if}-->
+                        <!--{loop $cskills['c1_veteran']['vars']['defkind'] $key}-->
+                            <!--{if $key != $nchoice}-->
+                            <option value="$key">$itemspkinfo[$key]<br />
+                            <!--{else}-->
+                            <option value="$key" selected>$itemspkinfo[$key]<br />
+                            <!--{/if}-->
+                        <!--{/loop}-->
+                        </select>
+                        &nbsp;
+                        可随时改变
+                        <br>
+                        </span>
+                    </td>
+                    <td class="skilldesc_right b3">
+                    </td>
+                </tr>
+            </table>
+        <!--{if $unlock_c1_veteran_flag}-->
+        </div>
+        <div class="skill_unacquired_hint">
+            <table class="skilltable">
+                <tr>
+                    <td valign="center" align="center">
+                        <span class="yellow b">18级时解锁</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        </div>
+        <!--{/if}-->
+    </td>
+</tr>
