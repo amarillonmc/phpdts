@@ -365,9 +365,10 @@
 		{
 			if($active)
 			{
-				$w_log = "手持<span class=\"red\">{$pa['wep_name']}</span>的<span class=\"yellow\">{$pa['name']}</span>向你袭击！<br>你受到其<span class=\"yellow\">$att_dmg</span>点攻击，对其做出了<span class=\"yellow\">$def_dmg</span>点反击。<br>";
+				$w_log = "手持<span class=\"red\">{$pa['wep_name']}</span>的<span class=\"yellow\">{$pa['name']}</span>向你袭击！<br>";
 				if(isset($pd['logsave'])) $w_log .= $pd['logsave'];
 				if(isset($pd['lvlup_log'])) $w_log .= $pd['lvlup_log'];
+				$w_log .= "你受到其<span class=\"yellow\">$att_dmg</span>点攻击，对其做出了<span class=\"yellow\">$def_dmg</span>点反击。<br>";
 				logsave ($pd['pid'],$now,$w_log,'c');
 			}
 			else
@@ -375,6 +376,7 @@
 				$w_log = "你发现了手持<span class=\"red\">{$pd['wep_name']}</span>的<span class=\"yellow\">{$pd['name']}</span>并且先发制人！<br>你对其做出<span class=\"yellow\">$att_dmg</span>点攻击，受到其<span class=\"yellow\">$def_dmg</span>点反击。<br>";
 				if(isset($pa['logsave'])) $w_log .= $pa['logsave'];
 				if(isset($pa['lvlup_log'])) $w_log .= $pa['lvlup_log'];
+				$w_log .= "你受到其<span class=\"yellow\">$att_dmg</span>点攻击，对其做出了<span class=\"yellow\">$def_dmg</span>点反击。<br>";
 				logsave ($pa['pid'],$now,$w_log,'c');
 			}
 		}
@@ -646,12 +648,19 @@
 				}
 				//获取最终伤害的定值变化（伤害制御、剔透）
 				$fin_damage_fix = get_final_dmg_fix($pa,$pd,$active,$damage);
-				if($fin_damage_fix > 0) $damage = $fin_damage_fix;
+				if($fin_damage_fix > 0) 
+				{
+					$o_damage = $damage;
+					$damage = $fin_damage_fix;
+				}
 				//存在物理伤害以外的其他伤害 输出一段最终伤害log：
 				if($pdamage != $damage)
 				{
-					if(isset($fd_log) && !$fin_damage_fix) $log .= "<span class=\"yellow\">造成的总伤害：{$fd_log}＝<span class=\"red\">$damage</span>。</span><br>";
-					else $log .= "<span class=\"yellow\">造成的总伤害：<span class=\"red\">$damage</span>。</span><br>";
+					$log .= "<span class=\"yellow\">造成的总伤害：";
+					if(isset($fd_log)) $log .= $fd_log.'＝';
+					$log .= "<span class=\"red\">{$damage}";
+					if(isset($o_damage) && $o_damage != $damage) $log .= "（{$o_damage}）";
+					$log .= "</span>。</span><br>";
 				}
 			}
 			//将造成的最终伤害登记在$pa['final_damage']内

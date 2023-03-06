@@ -122,7 +122,7 @@
 		# 百战技能特效
 		if(isset($pa['skill_c1_veteran']))
 		{
-			$sk_def = get_skillpara('c1_veteran','choice',$pa);
+			$sk_def = get_skillpara('c1_veteran','choice',$pa['clbpara']);
 			if($sk_def)
 			{
 				global $itemspkinfo;
@@ -276,6 +276,8 @@
 		$hitrate = min($hitrate_max_obbs[$pa['wep_kind']],$hitrate);
 		//获取社团技能对基础命中率的修正
 		$hitrate *= rev_get_clubskill_bonus_hitrate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
+		//获取社团技能对基础命中率的修正（新）
+		$hitrate *= get_clbskill_hitrate($pa,$pd,$active,$hitrate);
 		//异常状态状态修正
 		foreach ($inf_htr_p as $inf_ky => $value) 
 		{
@@ -296,6 +298,8 @@
 		$hitratebonus = 0.8;
 		//获取社团技能对连击命中率衰减系数的修正
 		$hitratebonus *= rev_get_clubskill_bonus_hitrate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
+		//获取社团技能对连击命中率衰减系数的修正（新）
+		$hitratebonus *= get_clbskill_r_hitrate($pa,$pd,$active,$hitratebonus);
 
 		//获取基础致伤率（防具耐久损伤率）系数
 		$inf_r = $infobbs[$pa['wep_kind']];
@@ -316,6 +320,12 @@
 			if($pa['weps']==$nosta) $wep_imp_obbs *= 2;
 			//社团技能对武器损伤系数的修正
 			$wep_imp_obbs *= rev_get_clubskill_bonus_imprate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
+			//社团技能对武器损伤系数的修正（新）
+			# 「解牛」技能效果：
+			if(isset($pa['skill_c2_butcher']))
+			{
+				$wep_imp_obbs *= get_skillvars('c2_butcher','wepimpr');
+			}
 		}
 		else 
 		{
@@ -689,8 +699,14 @@
 		$dfluc = $dmg_fluc [$pa['wep_kind']];
 		//获取社团技能对伤害浮动系数的修正：
 		$dfluc += rev_get_clubskill_bonus_fluc($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd);
-		//计算伤害浮动：
-		$dmg_factor = (100 + rand ( - $dfluc, $dfluc )) / 100;
+		//获取社团技能对伤害浮动系数的修正（新）：
+		$dfluc += get_clbskill_fluc($pa,$pd,$active);
+		//计算具体伤害浮动：
+		$dfluc = rand(-$dfluc,$dfluc);
+		//「舞钢」效果判定：
+		if(isset($pa['skill_c2_intuit']) && $dfluc < 0) $dfluc = abs($dfluc);
+		//汇总
+		$dmg_factor = (100 + $dfluc) / 100;
 		$damage = round ( $damage * $dmg_factor * rand ( 4, 10 ) / 10 );
 		//把计算得到的原始伤害保存在$pa['original_dmg']里
 		$pa['original_dmg'] = $damage;
@@ -899,6 +915,14 @@
 				$pa['pierce_flag'] = 1;
 			}
 		}
+
+		# 「强袭」效果判定：
+		if(isset($pa['skill_c2_raiding']) && isset($pd['phy_def_flag']) && $pd['phy_def_flag'] != 2)
+		{
+			$pd['phy_def_flag'] = 0;
+			$log .= "{$pa['nm']}的攻击无视了{$pd['nm']}的伤害减半效果！<br>";
+		}
+
 		return;
 	}
 
@@ -1069,6 +1093,14 @@
 				$pa['ex_pierce_flag'] = 1;
 			}
 		}
+
+		# 「强袭」效果判定：
+		if(isset($pa['skill_c2_raiding']) && isset($pd['ex_def_flag']) && $pd['ex_def_flag'] != 2)
+		{
+			$pd['ex_def_flag'] = 0;
+			$log .= "{$pa['nm']}的攻击无视了{$pd['nm']}的属性伤害减半效果！<br>";
+		}
+
 		return;
 	}
 
@@ -1096,6 +1128,8 @@
 			$dmginf = '';
 			//计算单个属性的基础属性伤害： 基础伤害 + 效果↔伤害系数修正 + 熟练↔伤害系数修正
 			$ex_dmg = $ex_base_dmg[$ex] + $pa['wepe']/$ex_wep_dmg[$ex] + $pa['wep_skill']/$ex_skill_dmg[$ex];
+			//计算社团技能对单个属性基础伤害的补正
+			$ex_dmg += get_clbskill_ex_base_dmg_fix($pa,$pd,$active,$ex);
 			//计算单个属性能造成的基础伤害上限
 			if($ex_max_dmg[$ex]>0 && $ex_dmg>$ex_max_dmg[$ex]) $ex_dmg = $ex_max_dmg[$ex];
 
@@ -1153,6 +1187,30 @@
 		global $log;
 		$fin_dmg_p = Array();
 
+		# 「强袭」效果判定：
+		if(isset($pa['skill_c2_raiding']))
+		{
+			$sk_p = get_skillvars('c2_raiding','findmgr');
+			$p = 1+($sk_p / 100);
+			$log.= "<span class='yellow'>「强袭」使{$pa['nm']}造成的最终伤害提高了{$sk_p}%！</span><br>";
+			$fin_dmg_p[] = $p;
+		}
+
+		# 「歼灭」效果判定：
+		if(isset($pa['skill_buff_annihil']))
+		{
+			# 「歼灭」有两段效果，一段为概率触发，一段为固定触发，所以只在概率触发的位置判定概率。
+			$sk_dice = diceroll(99);
+			$sk_obbs = get_skillvars('buff_annihil','rate');
+			if($sk_dice < $sk_obbs)
+			{
+				$sk_p = get_skillvars('buff_annihil','findmgr');
+				$p = $sk_p / 100;
+				$log.= "<span class='red'>暴击！</span><span class='lime'>「歼灭」使{$pa['nm']}造成的最终伤害提高了{$sk_p}%！</span><br>";
+				$fin_dmg_p[] = $p;
+			}
+		}
+
 		# 书中虫防守事件：移动到最终伤害系数变化阶段了
 		if($pd['type'] == 89 && ($pd['name'] == '高中生·白神' || $pd['name'] == '白神·讨价还价'))
 		{
@@ -1192,6 +1250,13 @@
 			{
 				$log.="闷棍没有造成额外伤害！<br>";
 			}
+		}
+		# 「解牛」技能效果：
+		if(isset($pa['skill_c2_butcher']))
+		{
+			$sk_dmg = get_skillvars('c2_butcher','fixdmg') + $pa['lvl'];
+			$log.='<span class="yellow">「解牛」附加了'.$sk_dmg.'点伤害！</span><br>';
+			$fin_dmg += $sk_dmg;
 		}
 
 		# 伤害制御判定：
@@ -1281,11 +1346,11 @@
 			global $now;
 			if(!$pd['type'] && $pd['nm']!='你')
 			{
-				$pd['logsave'] .= "并且{$pa['nm']}凶猛的一击直接将你打晕了过去！<br>";
+				$pd['logsave'] .= "凶猛的一击直接将你打晕了过去！<br>";
 			}
 			elseif(!$pa['type'] && $pa['nm']!='你')
 			{
-				$pa['logsave'] .= "你凶猛的一击直接将{$pd['nm']}打晕了过去！</span><br>";
+				$pa['logsave'] .= "你凶猛的一击直接将<span class=\"yellow\">{$pd['name']}}</span>打晕了过去！<br>";
 			}
 		}
 
@@ -1440,8 +1505,14 @@
 			$pd['cannot_counter_log'] = "{$pd['nm']}看起来非常生气！还是离他远点吧……";
 			return 0;
 		}
-		# 被「偷袭」技能攻击、或正处于眩晕状态时，无法反击
-		if(isset($pa['skill_c1_sneak']) || isset($pd['skill_inf_dizzy']))
+		# 被偷袭无法反击
+		if(isset($pa['skill_c1_sneak']))
+		{
+			$pd['cannot_counter_log'] = "{$pd['nm']}无法反击！";
+			return 0;
+		}
+		# 处于眩晕状态时，无法反击
+		if(isset($pd['skill_inf_dizzy']))
 		{
 			$pd['cannot_counter_log'] = "{$pd['nm']}正处于眩晕状态，无法反击！";
 			return 0;
@@ -1455,6 +1526,17 @@
 		if(!empty($pa['wep_range']) && $pd['wep_range'] >= $pa['wep_range']) return 1;
 		# 鏖战状态下无视射程反击（爆系武器除外）
 		if((isset($pd['is_dfight']) || isset($pa['is_dfight'])) && !empty($pd['wep_range'])) return 1;
+		#「直感」触发后可以超射程反击：
+		if(isset($pd['skill_c2_intuit']))
+		{
+			$sk_dice = diceroll(99);
+			$sk_lvl = get_skilllvl('c2_intuit',$pd);
+			$sk_obbs = get_skillvars('c2_intuit','rangerate',$sk_lvl);
+			if($sk_dice < $sk_obbs) 
+			{
+				return 1;
+			}
+		}
 		return 0;
 	}
 
@@ -1482,6 +1564,8 @@
 
 		# 获取社团技能对反击率的修正
 		$counter *= rev_get_clubskill_bonus_counter($pd['club'],$pd['skills'],$pd,$pa['club'],$pa['skills'],$pa);
+		# 获取社团技能对反击率的修正（新）
+		$counter *= get_clbskill_counterate($pa,$pd,$active,$counter);
 
 		# 获取异常状态对反击率的影响
 		if(!empty($pd['inf']))

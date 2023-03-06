@@ -54,7 +54,7 @@ function getclub($who, &$c1, &$c2, &$c3)
 
 function changeclub($clb,&$data=NULL)
 {
-	if(empty($data))
+	if(!isset($data))
 	{
 		global $club;
 		lostclub();
@@ -104,7 +104,7 @@ function lostclub(&$data=NULL)
 	if(!$club) return 0;
 	# 丢失原社团时 注销社团技能
 	include_once GAME_ROOT.'./include/game/revclubskills.func.php';
-	if(empty($data))
+	if(!isset($data))
 	{
 		$cks = $club_skillslist[$club];
 		foreach($cks as $sk) lostclubskill($sk,$clbpara);

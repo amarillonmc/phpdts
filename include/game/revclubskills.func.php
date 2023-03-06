@@ -9,14 +9,9 @@
 	include_once GAME_ROOT.'./include/game/dice.func.php';
 
 	# 获得指定技能 $sk：技能名；$para：$clbpara
-	function getclubskill($sk,&$para=NULL)
+	function getclubskill($sk,&$para)
 	{
 		global $now,$cskills;
-		if(!$para)
-		{
-			global $clbpara;
-			$para = &$clbpara;
-		}
 		if(isset($cskills[$sk]) && (empty($para['skill']) || !in_array($sk,$para['skill'])))
 		{
 			$para['skill'][] = $sk;
@@ -31,8 +26,8 @@
 			{
 				foreach($cskills[$sk]['slast'] as $ltkey => $lt)
 				{
-					# 定义初次获得时间戳
-					if($ltkey == 'lasttimes') $para['starttimes'][$sk] = $now;
+					# 预设不是以回合为单位的 设置初始时间戳
+					if($ltkey != 'lastturns') $para['starttimes'][$sk] = $now;
 					# 防呆
 					if($ltkey == 'lasttimes' || $ltkey == 'lastturns') $para[$ltkey][$sk] = $lt;
 				}
@@ -42,15 +37,23 @@
 	}
 
 	# 失去指定技能 $sk：技能名；$para：$clbpara
-	function lostclubskill($sk,&$para=NULL)
+	function lostclubskill($sk,&$para)
 	{
-		if(!$para)
-		{
-			global $clbpara;
-			$para = &$clbpara;
-		}
+		global $cskills;
 		if(in_array($sk,$para['skill']))
 		{
+			# 检查技能丢失时是否要执行事件
+			if(isset($cskills[$sk]['lostevents']))
+			{
+				foreach($cskills[$sk]['lostevents'] as $event)
+				{
+					if(strpos($event,'unactive_')===0)
+					{
+						$uskid = substr($event,9);
+						set_skillpara($uskid,'active',0,$para);
+					}
+				}
+			}
 			$sk_key = array_search($sk,$para['skill']);
 			unset($para['skill'][$sk_key]);
 			# 失去指定技能时，注销对应技能参数
@@ -98,7 +101,7 @@
 	# 升级指定技能 $sk：技能名；$nums：升级次数
 	function upgclbskills($sk,$nums=1)
 	{
-		global $log,$club,$clbpara,$skillpoint,$gamecfg;
+		global $log,$club,$clbpara,$skillpoint,$gamecfg,$now;
 		global $cskills;
 
 		# 合法性检查
@@ -107,6 +110,8 @@
 
 		# 获取技能信息
 		$cskill = $cskills[$sk];
+		# 获取技能升级后文本
+		$clog = isset($cskill['log']) ? $cskill['log'] : '升级成功！<br>';
 		# 检查技能是否存在等级
 		if(isset($cskill['maxlvl']))
 		{
@@ -118,23 +123,23 @@
 			}
 		}
 		# 获取技能此次升级需要消耗的技能点
-		$cost = isset($now_clvl) ? $cskill['cost'][$now_clvl] :  $cskill['cost'];
-		if($nums > 1) $cost *= $nums; 
-		if($cost > $skillpoint)
+		if(isset($cskill['cost']))
 		{
-			$log .= "技能点不足。<br>";
-			return;
+			$cost = isset($now_clvl) ? $cskill['cost'][$now_clvl] :  $cskill['cost'];
+			if($nums > 1) $cost *= $nums; 
+			if($cost > $skillpoint)
+			{
+				$log .= "技能点不足。<br>";
+				return;
+			}
+			$clog = str_replace("[:cost:]",$cost,$clog);
 		}
-		
-		# 获取技能升级后文本
-		$clog = $cskill['log'];
-		$clog = str_replace("[:cost:]",$cost,$clog);
 		# 检查技能升级后会触发的事件：
 		if(isset($cskill['events']))
 		{
 			foreach($cskill['events'] as $event)
 			{
-				$flag = upgclbskills_events($event);
+				$flag = upgclbskills_events($event,$sk);
 			}
 			# 会触发多个事件时，只要有一个事件成功触发就会继续升级流程
 			if(!$flag) return;
@@ -174,7 +179,7 @@
 			}
 		}
 		# 扣除技能点
-		$skillpoint -= $cost;
+		if(!empty($cost)) $skillpoint -= $cost;
 		$log .= $clog;
 		# 存在复选框的技能，升级后重载技能页面
 		if(isset($cskill['num_input']))
@@ -186,12 +191,13 @@
 	}
 
 	# 升级指定技能会触发的事件，返回0时代表无法升级技能
-	function upgclbskills_events($event)
+	function upgclbskills_events($event,$sk)
 	{
-		global $log;
+		global $log,$cskills,$clbpara;
+		# 事件：治疗
 		if($event == 'heal')
 		{
-			# 升级治疗技能时，回复满生命、体力，并清空所有异常状态
+			# 事件效果：回复满生命、体力，并清空所有异常状态
 			global $hp,$mhp,$sp,$msp,$inf;
 			$heal_flag = 0;
 			if(!empty($inf))
@@ -209,6 +215,54 @@
 			if(!$heal_flag)
 			{
 				$log .= "你不需要使用这个技能！<br>";
+				return 0;
+			}
+			return 1;
+		}
+		# 事件：获取指定技能
+		if(strpos($event,'getskill_') === 0)
+		{
+			# 事件效果：获取一个登记过的技能
+			$gskid = substr($event,9);
+			if(isset($cskills[$gskid]))
+			{
+				getclubskill($gskid,$clbpara);
+			}
+			else 
+			{
+				$log .= "技能{$gskid}不存在！这可能是一个BUG，请联系管理员。<br>";
+				return 0;
+			}
+			return 1;
+		}
+		# 事件：为指定技能设置开始时间
+		if(strpos($event,'setstarttimes_') === 0)
+		{
+			$gskid = substr($event,14);
+			if(isset($cskills[$gskid])) 
+			{
+				set_starttimes($gskid,$clbpara);
+			}
+			else 
+			{
+				$log .= "技能{$gskid}不存在！这可能是一个BUG，请联系管理员。<br>";
+				return 0;
+			}
+			return 1;
+		}
+		# 事件：为指定技能设置持续时间
+		if(strpos($event,'setlasttimes_') === 0)
+		{
+			$gskarr = substr($event,13);
+			$gskarr = explode('+',$gskarr);
+			$gskid = $gskarr[0]; $gsklst = $gskarr[1];
+			if(isset($cskills[$gskid]) && $gsklst) 
+			{
+				set_lasttimes($gskid,$gsklst,$clbpara);
+			}
+			else 
+			{
+				$log .= "技能{$gskid}不存在或持续时间{$gsklst}无效！这可能是一个BUG，请联系管理员。<br>";
 				return 0;
 			}
 		}
@@ -247,13 +301,26 @@
 			$log.="你不能升级此技能。<br>";
 			return 0;
 		}
+		# 检查冷却技能是否解锁
+		if(check_skill_unlock($sk))
+		{
+			$cskill = $cskills[$sk];
+			if(is_array($unlock_flag))
+			{
+				$unlock_cd = $unlock_flag[1]; $unlock_flag = $unlock_flag[0];
+			}
+			$unlock_flag = is_array($cskill['lockdesc']) ? $cskill['lockdesc'][$unlock_flag] : $cskill['lockdesc'];
+			$log .= $unlock_flag;
+			return 0;
+		}
 		return 1;
 	}
 
 	# 技能是否解锁，返回为0时解锁，否则返回对应的未满足条件  $sk：技能名；$data：角色数据
-	function check_skill_unlock($sk,$data)
+	function check_skill_unlock($sk,$data=NULL)
 	{
-		global $cskills;
+		global $cskills,$now;
+		if(!$data) $data = current_player_save();
 		$data['clbpara'] = get_clbpara($data['clbpara']);
 		if(!in_array($sk,$data['clbpara']['skill']))
 		{
@@ -264,13 +331,32 @@
 			$unlock = $cskills[$sk]['unlock'];
 			foreach($unlock as $key => $lock)
 			{
-				if(strpos($key,'+')!==false) 
+				if($key == 'skillcooldown')
+				{
+					$st = get_starttimes($sk,$data['clbpara']);
+					if($st)
+					{
+						$cd = get_skillvars($sk,'cd');
+						if($now < $st+$cd)
+						{
+							$last_cd = $st+$cd-$now;
+							return Array($key,$last_cd);
+						}
+					}
+				}
+				elseif(strpos($key,'+')!==false) 
 				{
 					$arr_key = explode("+",$key);
 					foreach($arr_key as $skey)
 					{
 						$lock = str_replace("[:".$skey.":]","\$data['".$skey."']",$lock);
 					}
+					if(!eval("return ($lock);")) return $key;
+				}
+				elseif(strpos($key,'-')!==false)
+				{
+					$arr_key = explode("-",$key);
+					$lock = str_replace("[:".$arr_key[1].":]","\$data['clbpara']['{$arr_key[0]}']['{$sk}']['".$arr_key[1]."']",$lock);
 					if(!eval("return ($lock);")) return $key;
 				}
 				else 
@@ -302,7 +388,7 @@
 	}
 
 	# 获取指定技能标签 $sk：技能名；$stag：要寻找的特定标签；(非必须)$para：$clbpara
-	function get_skilltags($sk,$stag='',&$para=NULL)
+	function get_skilltags($sk,$stag='')
 	{
 		global $cskills;
 		$cskill = $cskills[$sk];
@@ -335,10 +421,61 @@
 	}
 
 	# 获取保存在clbpara内的指定技能参数  $sk：技能名；$skpara：指定技能参数；$data：角色数据
-	function get_skillpara($sk,$skpara,$data)
+	function get_skillpara($sk,$skpara,$para)
 	{
-		if(isset($data['clbpara']['skillpara'][$sk][$skpara])) return $data['clbpara']['skillpara'][$sk][$skpara];
+		if(isset($para['skillpara'][$sk][$skpara])) return $para['skillpara'][$sk][$skpara];
 		return 0;
+	}
+
+	# 变更保存在clbpara['skillpara']内的指定技能参数
+	function set_skillpara($sk,$skpara,$skdata,&$para)
+	{
+		$para['skillpara'][$sk][$skpara] = $skdata;
+		return;
+	}
+
+	# 获取指定技能的开始时间
+	function get_starttimes($sk,$para)
+	{
+		if(isset($para['starttimes'][$sk])) return $para['starttimes'][$sk];
+		return 0;
+	}
+
+	# 设定指定技能的开始时间
+	function set_starttimes($sk,&$para,$times=0)
+	{
+		global $now;
+		$t = $times ? $times : $now;
+		$para['starttimes'][$sk] = $t;
+		return;
+	}
+
+	# 获取指定技能持续时间
+	function get_lasttimes($sk,$para)
+	{
+		if(isset($para['lasttimes'][$sk])) return $para['lasttimes'][$sk];
+		return 0;
+	}
+
+	# 变更保存在clbpara['lasttimes']内的指定技能持续时间
+	function set_lasttimes($sk,$skdata,&$para)
+	{
+		$para['lasttimes'][$sk] = $skdata;
+		return;
+	}
+
+	# 获取指定技能持续回合
+	function get_lastturns($sk,$para)
+	{
+		if(isset($para['lastturns'][$sk])) return $para['lastturns'][$sk];
+		return 0;
+	}
+
+	# 变更保存在clbpara['lastturns']内的指定技能持续回合
+	function set_lastturns($sk,$skdata,&$para)
+	{
+		$para['lastturns'][$sk] = $skdata;
+		return;
 	}
 
 	# 获取指定技能等级
@@ -351,7 +488,7 @@
 	# 格式化指定技能描述文本 $shortdesc：不显示等级、标签描述
 	function parse_skilldesc($sk,$data,$shortdesc=0)
 	{
-		global $cskills;
+		global $cskills,$cskills_tags,$now;
 		# 初始化技能描述
 		$cskill = $cskills[$sk];
 		$sk_desc = $shortdesc && isset($cskill['bdesc']) ? $cskill['bdesc'] : $cskill['desc'];
@@ -361,9 +498,7 @@
 			$tag_desc = '';
 			foreach($cskill['tags'] as $sk_tag)
 			{
-				if($sk_tag == 'battle') $tag_desc .= '<span tooltip="可以在战斗中主动使用" class="gold">【战斗技】</span>';
-				if($sk_tag == 'active') $tag_desc .= '<span tooltip="不能在追击/鏖战状态下使用" class="gold">【先制】</span>';
-				if($sk_tag == 'passive') $tag_desc .= '<span tooltip="满足条件时自动触发" class="gold">【被动技】</span>';
+				if(isset($cskills_tags[$sk_tag])) $tag_desc .= $cskills_tags[$sk_tag];
 			}
 			if(!empty($tag_desc)) $tag_desc .= ' ';
 		}
@@ -395,6 +530,14 @@
 		# 技能存在其他静态参数时
 		if(isset($cskill['vars']))
 		{
+			# 技能存在关联技能，且关联技能有静态参数，一并处理
+			if(isset($cskill['link']))
+			{
+				foreach($cskill['link'] as $lksk)
+				{
+					if(isset($cskills[$lksk]['vars'])) $cskill['vars'] = array_merge($cskill['vars'],$cskills[$lksk]['vars']);
+				}
+			}
 			foreach($cskill['vars'] as $key => $var)
 			{
 				# 静态参数是数组的情况下 选用当前等级对应的参数
@@ -403,7 +546,34 @@
 				$sk_desc = str_replace("[:".$key.":]",$var,$sk_desc);
 			}
 		}
-		# 如果输入了玩家数据，则可以根据数据判定技能关联，否则关联默认属性
+		# 技能存在动态参数
+		if(isset($cskill['pvars']))
+		{
+			foreach($cskill['pvars'] as $pvar)
+			{
+				if($pvar == 'lasttimes' || $pvar == 'starttimes' || $pvar == 'lastturns')
+				{
+					if(isset($data['clbpara'][$pvar][$sk]))
+					{
+						$tpvar = $data['clbpara'][$pvar][$sk];
+						if($pvar == 'lasttimes')
+						{
+							$tpvar = $data['clbpara']['starttimes'][$sk] + $tpvar - $now;
+						}
+						$sk_desc = str_replace("[^".$pvar."^]",$tpvar,$sk_desc);
+					}
+				}	
+				else 
+				{
+					if(isset($data[$pvar]))
+					{
+						$sk_desc = str_replace("[^".$pvar."^]",$data[$pvar],$sk_desc);
+					}
+				}
+
+			}
+		}
+		# 技能存在关联属性
 		if(isset($cskill['status']))
 		{
 			# 检查技能升级是否会直接影响属性：

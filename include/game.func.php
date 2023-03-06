@@ -602,7 +602,12 @@ EOT;
 			$unlock_flag = check_skill_unlock($sk,$data);
 			if($unlock_flag)
 			{
+				if(is_array($unlock_flag))
+				{
+					$unlock_cd = $unlock_flag[1]; $unlock_flag = $unlock_flag[0];
+				}
 				$unlock_flag = is_array($cskill['lockdesc']) ? $cskill['lockdesc'][$unlock_flag] : $cskill['lockdesc'];
+				if(isset($unlock_cd)) $unlock_flag = str_replace("[:cd:]","$unlock_cd",$unlock_flag);
 				$sk_temp .= <<<EOT
                 <div style="position:relative; height:100%; width:100%;" onmouseover="skill_unacquired_mouseover.call(this,event)" onmouseout="skill_unacquired_mouseout.call(this,event)">
                 <div class="skill_unacquired">
@@ -676,7 +681,7 @@ function get_remaincdtime($pid){
 function check_skilllasttimes(&$data=NULL)
 {
 	global $cskills,$log,$now,$name;
-	if(empty($data))
+	if(!isset($data))
 	{
 		global $clbpara;
 		$para = &$clbpara;
@@ -687,23 +692,31 @@ function check_skilllasttimes(&$data=NULL)
 		$para = &$data['clbpara'];
 		$nm = &$data['name'];
 	}
+	$pure_flag = 0;
 	if(!empty($para['lasttimes']))
 	{
 		include_once GAME_ROOT.'./include/game/revclubskills.func.php';
 		foreach($para['lasttimes'] as $sk => $lts)
 		{
 			$stm = isset($para['starttimes'][$sk]) ? $para['starttimes'][$sk] : 0;
-			# 技能已达到时效，失去该技能，并清空相关内容
+			# 技能已达到时效
 			if($now > $lts+$stm)
 			{
-				lostclubskill($sk,$para);
 				$sk_name = $cskills[$sk]['name'];
-				$log.="<span class='yellow'>{$nm}从{$sk_name}状态中恢复了！</span><br>";
-				return 1;
+				if(get_skilltags($sk,'buff'))
+				{
+					$log.="技能<span class='yellow'>「{$sk_name}」</span>的持续效果结束了！<br>";
+				}
+				else 
+				{
+					$log.="{$nm}从<span class='yellow'>「{$sk_name}」</span>状态中恢复了！<br>";
+				}
+				lostclubskill($sk,$para);
+				$pure_flag = 1;
 			}
 		}
 	}
-	return;
+	return $pure_flag;
 }
 
 //通过pid抓取指定玩家/NPC数据
