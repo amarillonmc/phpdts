@@ -1,7 +1,39 @@
 {
     "name": "nmforce/phpdts",
-    "description": "New repo for Yellow Version of phpbr",
+    "type": "project",
+    "description": "",
+    "autoload": {
+        "psr-4": {
+            "NMForce\\PHPDTS\\": "src"
+        }
+    },
+    "scripts": {
+        "post-update-cmd": [
+            "NMForce\\PHPDTS\\Installer::postUpdate",
+            "NMForce\\PHPDTS\\Installer::copyEnvFile"
+        ],
+        "post-create-project-cmd": [
+            "App\\Installer::copyEnvFile"
+        ]
+    },
     "require": {
-        "paragonie/random_compat": ">=2"
+        "paragonie/random_compat": "v2.0.21",
+        "vlucas/phpdotenv": "^5.5",
+        "yiisoft/aliases": "^3.0",
+        "yiisoft/config": "^1.1",
+        "yiisoft/log": "^2.0"
+    },
+    "require-dev": {
+        "rector/rector": "^0.15.23",
+        "yiisoft/yii-runner-console": "^2.0"
+    },
+    "extra": {
+        "config-plugin-file": "config/configuration.php"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "yiisoft/config": true
+        }
     }
 }
