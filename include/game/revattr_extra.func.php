@@ -28,7 +28,12 @@
 				if($bsk_cost) $pa['rage'] -= $bsk_cost;
 				# 成功释放主动技，应用标记
 				$pa['skill_'.$bsk] = 1;
-				$log .= "<span class=\"lime\">{$pa['nm']}消耗{$bsk_cost}点怒气，对{$pd['nm']}发动了技能「{$bsk_name}」！</span><br>";
+				$log .= "<span class=\"lime\">{$pa['nm']}对{$pd['nm']}发动了技能「{$bsk_name}」！</span><br>";
+				# 检查是否需要addnews
+				addnews($now,'bsk_'.$bsk,$pa['name'],$pd['name']);
+				# 检查是否需要进行logsave
+				if(!$pd['type'] && $pd['nm']!='你') $pd['logsave'] .= "<span class=\"yellow\">{$pa['name']}</span>对你发动了技能<span class=\"red\">「{$bsk_name}」</span>！";
+				elseif(!$pa['type'] && $pa['nm']!='你') $pa['logsave'] .= "你对<span class=\"yellow\">{$pd['name']}</span>发动了技能<span class=\"red\">「{$bsk_name}」</span>！";
 			}
 			else 
 			{
@@ -49,7 +54,7 @@
 			foreach($pa['clbpara']['skill'] as $sk)
 			{
 				# 对于解锁技能，如果有特殊触发条件，在这里加入判定，否则会默认给一个触发标记
-				if(!check_skill_unlock($sk,$pa) && (get_skilltags($sk,'passive') || get_skilltags($sk,'inf')))
+				if((get_skilltags($sk,'passive') || get_skilltags($sk,'buff') || get_skilltags($sk,'inf')) && !check_skill_unlock($sk,$pa))
 				{
 					# 「猛击」特殊判定
 					if($sk == 'c1_crit')
@@ -74,6 +79,76 @@
 			}
 		}
 		return;
+	}
+
+	# 获取社团技能对基础反击率的修正（新）
+	function get_clbskill_counterate(&$pa,&$pd,$active,$counterate)
+	{
+		#「直感」效果判定：
+		if(isset($pa['skill_c2_intuit']))
+		{
+			$sk_lvl = get_skilllvl('c2_intuit',$pa);
+			//获取反击倍率加成
+			$sk_r = 1 + (get_skillvars('c2_intuit','countergain',$sk_lvl) / 100);
+			$counterate *= $sk_r;
+		}
+		return $counterate;
+	}
+
+	# 获取社团技能对基础命中率的修正（新）
+	function get_clbskill_hitrate(&$pa,&$pd,$active,$hitrate)
+	{
+		#「直感」效果判定：
+		if(isset($pa['skill_c2_intuit']))
+		{
+			$sk_lvl = get_skilllvl('c2_intuit',$pa);
+			//获取命中倍率加成
+			$sk_r = 1 + (get_skillvars('c2_intuit','accgain',$sk_lvl) / 100);
+			$hitrate *= $sk_r;
+		}
+		return $hitrate;
+	}
+
+	# 获取社团技能对连击命中率的修正（新）
+	function get_clbskill_r_hitrate(&$pa,&$pd,$active,$hitrate)
+	{
+		#「直感」效果判定：
+		if(isset($pa['skill_c2_intuit']))
+		{
+			$sk_lvl = get_skilllvl('c2_intuit',$pa);
+			//获取连击命中率加成
+			$sk_r = 1 + (get_skillvars('c2_intuit','rbgain',$sk_lvl) / 100);
+			$hitrate *= $sk_r;
+		}
+		return $hitrate;
+	}
+
+	# 获取社团技能对伤害浮动的修正（新）
+	function get_clbskill_fluc(&$pa,&$pd,$active)
+	{
+		#「直感」效果判定：
+		if(isset($pa['skill_c2_intuit']))
+		{
+			$sk_lvl = get_skilllvl('c2_intuit',$pa);
+			//获取伤害浮动加成
+			$sk_fix = get_skillvars('c2_intuit','flucgain',$sk_lvl);
+			return $sk_fix;
+		}
+		return 0;
+	}
+	
+	# 获取社团技能对单个属性基础伤害的定值补正
+	function get_clbskill_ex_base_dmg_fix(&$pa,&$pd,$active,$key)
+	{
+		$ex_dmg_fix = 0;
+		# 「歼灭」效果判定：
+		if(isset($pa['skill_buff_annihil']))
+		{
+			global $ex_wep_dmg;
+			$sk_var = round($pa['att']/$ex_wep_dmg[$key]);
+			$ex_dmg_fix += $sk_var;
+		}
+		return $ex_dmg_fix;
 	}
 
 	# 真红暮特殊判定

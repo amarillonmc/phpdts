@@ -7,7 +7,7 @@ if(!defined('IN_GAME')) exit('Access Denied');
 $club_skillslist = Array
 (
 	1  => Array('s_hp','s_ad','f_heal','c1_def','c1_crit','c1_sneak','c1_burnsp','c1_bjack','c1_veteran'), #'铁拳无敌',
-	2  => Array('s_hp','s_ad','f_heal'), #'见敌必斩',
+	2  => Array('s_hp','s_ad','f_heal','c2_butcher','c2_intuit','c2_raiding','c2_master','c2_annihil'), #'见敌必斩',
 	3  => Array('s_hp','s_ad','f_heal'), #'灌篮高手',
 	4  => Array('s_hp','s_ad','f_heal'), #'狙击鹰眼',
 	5  => Array('s_hp','s_ad','f_heal'), #'拆弹专家',
@@ -47,6 +47,17 @@ $cskills_wlist = Array
 
 );
 
+# 社团技能标签介绍：
+$cskills_tags = Array
+(
+	'battle' => '<span tooltip="可以在战斗中主动使用" class="gold">【战斗技】</span>',
+	'passive' => '<span tooltip="满足条件时自动触发" class="gold">【被动技】</span>',
+	'active' => '<span tooltip="需主动启用才能产生效果" class="gold">【主动技】</span>',
+	//'cd' => '<span tooltip="隐藏标签：有此标签的技能会在载入时检查是否处于冷却状态" class="gold">【冷却技】</span>',
+	'openning' => '<span tooltip="仅在先制发现敌人时可用" class="gold">【开幕技】</span>',
+	//'buff' => '<span tooltip="隐藏标签：代表这是一个临时性状态" class="gold">【状态】</span>',
+);
+
 # 技能登记：
 $cskills = Array
 (
@@ -54,38 +65,29 @@ $cskills = Array
 	/*'技能编号' => Array
 	( 	
 		'name' => '技能名', //（必填）技能名
-		'tags' => Array('battle','active','passive','inf','hidden'), //（非必填）定义一个技能带有的标签
-			// battle: 战斗技，会显示在战斗指令界面；
-			// active: 战斗技，但不能在追击/鏖战中使用；
-			// passive: 被动技能，在战斗中会自动判断是否生效；
-			// inf: 状态技能，在战斗中会自动判断是否生效。和被动技的区别暂时还没有……；
-			// hidden：隐藏技能，不会在面板中显示。暂时没有实现
-
-		'maxlvl' => 0, //（非必填）定义一个技能为可升级技能，并定义该技能的等级上限。注意：带有等级上限的技能如果设置了'cost'，'cost'的值必须是一个数组，对应每等级升级时需消耗的技能点
+		'tags' => Array(), //（非必填）定义一个技能带有的标签
 		'desc' => '', //（非必填）技能介绍，显示在技能面板上，可以使用[: :]设置一些静态参数，会在生成时自动替换对应参数。
 			// [:cost:]：消耗的技能点
 			// [:effect:]：增加指定属性
 			// [:effect:]att ：增加对应属性，可以将att替换为'effect'内定义过的键名
 			// [::]：还可以替换为任意'vars'内定义过的键名
 
-		'lockdesc' => '', //（需解锁技能必填）不满足解锁条件时的介绍
 		'bdesc' => '', //（战斗技必填）显示在战斗界面上的短介绍，战斗技必填
-		'log' => '', //（可升级/操作技能必填）升级/操作技能后显示的提示文本
+		'maxlvl' => 0, //（非必填）定义一个技能为可升级技能，并定义该技能的等级上限。注意：带有等级上限的技能如果设置了'cost'，'cost'的值必须是一个数组，对应每等级升级时需消耗的技能点
 		'cost' => 1, //（可升级/操作技能必填）升级/操作技能要花费的技能点，如果设置过'maxlvl'，这里应该设置成一个Array
 		'input' => '升级',//（可升级/操作技能必填）自动生成模板时，对应操作按钮的名字，不存在时不会生成按钮
 		'num_input' => 1,//（非必填）自动生成模板时，是否会为其生成数字输入框（便于快速提交多次升级）
+		'log' => '', //（可升级/操作技能必填）升级/操作技能后显示的提示文本
+
 		'status' => Array('hp','mhp'),//（非必填）每次升级时，直接提升的玩家属性。
 			// 和头衔入场奖励类似，支持所有在数据库中登记过的字段名
 			// 如果输入了Array('para' => Array('lvl'))，代表升级时会提升该技能的等级
-
 		'effect' => Array(0 => Array('att' => 4, 'def' => 6),13 => Array('att' => 9, 'def' => 12),),//（非必填）每次升级时，直接提升的玩家属性对应的值。
 			// 键名为 0 时，代表默认情况下会增加的对应属性值。键值可以是一个由字段名构成的数组。也可以只是一个数字——代表会增加所有'status'中登记的属性值
 			// 键名为 其他数字 时，代表该数字对应【社团】会增加的属性值
-			
 		'events' => Array(''); //（非必填）每次升级时会触发的事件，目前只有一个'heal'，代表全恢复
-		'unlock' => Array('lvl' => '[:lvl:] >= 3',), //（非必填）技能解锁条件，键名和键值[::]内的内容要相同。键值须为PHP支持的条件判断语句。支持“或”类型判断，请参考下方例子。
-			// Array('wepk+wep_kind' => "[:wepk:] == 'WP' || [:wep_kind:] == 'P'",), 键名中的+是分隔符，处理时会依此将条件分割为数组，替换键值内的判断语句
 
+		'link' => Array(), //（非必填）技能的关联对象：技能在生成介绍模板时，会同时从关联对象中获取静态参数
 		'vars' => Array(), //（非必填）技能内预设的静态参数，比如'ragecost'怒气消耗。预设的参数可以自动填充'desc'中对应[::]的内容
 		'svars' => Array(), //（非必填）初次获得技能时，保存在clbpara['skillpara']['技能编号']中的动态技能参数。可以用来定义技能的使用次数等。
 		'slast' => Array('lasttimes' => 0,'lastturns' => 0,), //（非必填）初次获得时效性技能时，保存在clbpara内的数据。暂时只支持以下参数：
@@ -93,16 +95,18 @@ $cskills = Array
 			// 'lastturns' => 0,  代表技能持续的回合，保存在clbpara['lastturns']['技能编号']中
 			// 时效性技能才初次霍德师，还会获得一个等于当前时间戳的'starttimes'，保存在clbpara['starttimes']['技能编号']中
 			// 玩家在行动时会判断时效性技能是否结束，NPC敌人在被玩家发现时会判断时效性技能是否结束，并在战斗开始前保存状态
-
+		'lockdesc' => '', //（需解锁技能必填）不满足解锁条件时的介绍
+		'unlock' => Array('lvl' => '[:lvl:] >= 3',), //（非必填）技能解锁条件，键名和键值[::]内的内容要相同。键值须为PHP支持的条件判断语句。支持“或”类型判断，请参考下方例子。
+			// Array('wepk+wep_kind' => "[:wepk:] == 'WP' || [:wep_kind:] == 'P'",), 键名中的+是分隔符，处理时会依此将条件分割为数组，替换键值内的判断语句
 	),*/
 	's_hp' => Array
 	(
 		'name' => '生命',
 		'desc' => '每消耗<span class="lime">[:cost:]</span>技能点，生命上限<span class="yellow">+[:effect:]</span>点',
-		'log' => '消耗了<span class="lime">[:cost:]</span>点技能点，你的生命上限增加了<span class="yellow">[:effect:]</span>点。<br>',
 		'cost' => 1,
 		'input' => '升级',
 		'num_input' => 1,
+		'log' => '消耗了<span class="lime">[:cost:]</span>点技能点，你的生命上限增加了<span class="yellow">[:effect:]</span>点。<br>',
 		'status' => Array('hp','mhp'),
 		'effect' => Array(
 			0 => 3, # 默认每消耗cost点技能点可增加3点生命值与最大生命值
@@ -113,10 +117,10 @@ $cskills = Array
 	(
 		'name' => '攻防',
 		'desc' => '每消耗<span class="lime">[:cost:]</span>技能点，基础攻击<span class="yellow">+[:effect:]att</span>点，基础防御<span class="yellow">+[:effect:]def</span>点',
-		'log' => '消耗了<span class="lime">[:cost:]</span>点技能点，你的基础攻击增加了<span class="yellow">[:effect:]att</span>点，基础防御增加了<span class="yellow">[:effect:]def</span>点。<br>',
 		'cost' => 1,
 		'input' => '升级',
 		'num_input' => 1,
+		'log' => '消耗了<span class="lime">[:cost:]</span>点技能点，你的基础攻击增加了<span class="yellow">[:effect:]att</span>点，基础防御增加了<span class="yellow">[:effect:]def</span>点。<br>',
 		'status' => Array('att','def'),
 		'effect' => Array(
 			0 => Array('att' => 4, 'def' => 6),
@@ -127,9 +131,9 @@ $cskills = Array
 	(
 		'name' => '自愈',
 		'desc' => '消耗<span class="lime">[:cost:]</span>技能点，解除全部受伤与异常状态，并完全恢复生命与体力',
-		'log' => '消耗了<span class="lime">[:cost:]</span>技能点。<br>',
 		'cost' => 1,
 		'input' => '治疗',
+		'log' => '消耗了<span class="lime">[:cost:]</span>技能点。<br>',
 		'events' => Array('heal'),
 	),
 	'c1_def' => Array
@@ -137,12 +141,11 @@ $cskills = Array
 		'name' => '格挡',
 		'tags' => Array('passive'),
 		'desc' => '持殴系武器时，武器效果值的<span class="yellow">[:trans:]%</span>计入防御力(最多[:maxtrans:]点)<br>',
-		'lockdesc' => '武器不适用，持<span class="yellow">殴系武器</span>时生效',
-		'log' => '<br>',
 		'vars' => Array(
 			'trans' => 40, //效&防转化率
 			'maxtrans' => 2000, //转化上限
 		),
+		'lockdesc' => '武器不适用，持<span class="yellow">殴系武器</span>时生效',
 		'unlock' => Array(
 			'wepk+wep_kind' => "[:wepk:] == 'WP' || [:wepk:] == 'WCP' || [:wepk:] == 'WKP' || [:wep_kind:] == 'P'",
 		),
@@ -151,25 +154,25 @@ $cskills = Array
 	(
 		'name' => '猛击',
 		'tags' => Array('passive'),
-		'maxlvl' => 2,
 		'desc' => '持殴系武器战斗时<span class="yellow">[:rate:]%</span>几率触发，触发则物理伤害增加<span class="yellow">[:attgain:]%</span>，<br>
 		且晕眩敌人<span class="cyan">[:stuntime:]</span>秒。晕眩状态下敌人无法进行任何行动或战斗。<br></span>',
-		'lockdesc' => '武器不适用，持<span class="yellow">殴系武器</span>时可发动',
-		'log' => '升级成功。<br>',
+		'maxlvl' => 2,
 		'cost' => Array(10,11,-1),
 		'input' => '升级',
+		'log' => '升级成功。<br>',
 		'status' => Array('para' => Array('lvl')),
 		'effect' => Array(
 			0 => Array('lvl' => 1),
+		),
+		'svars' => Array(
+			'lvl' => 0, //初次获得时等级为0
 		),
 		'vars' => Array(
 			'attgain' => Array(20,50,80), //物理伤害增加
 			'stuntime' => Array(1,1,2), //晕眩时间（单位:秒）
 			'rate' => 25, //触发率
 		),
-		'svars' => Array(
-			'lvl' => 0, //初次获得时等级为0
-		),
+		'lockdesc' => '武器不适用，持<span class="yellow">殴系武器</span>时可发动',
 		'unlock' => Array(
 			'wepk+wep_kind' => "[:wepk:] == 'WP' || [:wepk:] == 'WCP' || [:wepk:] == 'WKP' || [:wep_kind:] == 'P'",
 		),
@@ -177,17 +180,16 @@ $cskills = Array
 	'c1_sneak' => Array
 	(
 		'name' => '偷袭',
-		'tags' => Array('battle','active'),
+		'tags' => Array('battle','opening'),
 		'desc' => '本次攻击必定触发技能“<span class="yellow">猛击</span>”且不会被反击。<br>
 		持殴系武器方可发动，发动消耗<span class="yellow">[:ragecost:]</span>点怒气。<br>',
 		'bdesc' => '必定触发技能“<span class="yellow">猛击</span>”且不会被反击。消耗<span class="red">[:ragecost:]</span>怒气',
+		'vars' => Array(
+			'ragecost' => 25, //消耗怒气
+		),
 		'lockdesc' => Array(
 			'lvl' => '3级时解锁',
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">殴系武器</span>时可发动',
-		),
-		'log' => '<br>',
-		'vars' => Array(
-			'ragecost' => 25, //消耗怒气
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 3',
@@ -200,15 +202,14 @@ $cskills = Array
 		'tags' => Array('passive'),
 		'desc' => '持殴系武器攻击后敌人体力减少<span class="yellow">伤害值的[:burnspr:]%</span>点<br>
 		被攻击时你额外获得<span class="yellow">[:mingrg:]～[:maxgrg:]点</span>怒气',
-		'lockdesc' => Array(
-			'lvl' => '6级时解锁',
-			'wepk+wep_kind' => '武器不适用，持<span class="yellow">殴系武器</span>时可发动',
-		),
-		'log' => '<br>',
 		'vars' => Array(
 			'burnspr' => 33, //体力减少&伤害占比
 			'mingrg' => 1, //最小怒气增益
 			'maxgrg' => 2, //最大怒气增益
+		),
+		'lockdesc' => Array(
+			'lvl' => '6级时解锁',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">殴系武器</span>时可发动',
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 6',
@@ -223,13 +224,12 @@ $cskills = Array
 		并对敌人额外造成(<span class="yellow">敌方体力上限减当前体力</span>)点的最终伤害。<br>
 		持钝器方可发动，发动消耗<span class="yellow">[:ragecost:]</span>点怒气。',
 		'bdesc' => '必定触发技能“<span class="yellow">猛击</span>”，并附加(<span class="yellow">敌方体力上限减当前体力</span>)点伤害。消耗<span class="red">[:ragecost:]</span>怒气',
+		'vars' => Array(
+			'ragecost' => 85, //消耗怒气
+		),
 		'lockdesc' => Array(
 			'lvl' => '11级时解锁',
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">殴系武器</span>时可发动',
-		),
-		'log' => '<br>',
-		'vars' => Array(
-			'ragecost' => 85, //消耗怒气
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 11',
@@ -251,13 +251,153 @@ $cskills = Array
 			'lvl' => '[:lvl:] >= 18',
 		),
 	),
+	'c2_butcher' => Array
+	(
+		'name' => '解牛',
+		'tags' => Array('battle'),
+		'desc' => '本次攻击附加<span class="yellow">([:fixdmg:]+[^lvl^])</span>点的最终伤害，且武器损耗率减半。<br>
+		持斩系武器方可发动，消耗<span class="yellow">[:ragecost:]</span>点怒气',
+		'bdesc' => '本次攻击附加<span class="yellow">[:fixdmg:]+[^lvl^]</span>点伤害，且武器损耗率减半，消耗<span class="red">[:ragecost:]</span>怒气',
+		'vars' => Array(
+			'ragecost' => 5, 
+			'fixdmg' => 30, //基础固定伤害
+			'wepimpr' => 0.5, //武器损耗率
+		),
+		'pvars' => Array('lvl'),
+		'lockdesc' => '武器不适用，持<span class="yellow">斩系武器</span>时可发动',
+		'unlock' => Array(
+			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
+		),
+	),
+	'c2_intuit' => Array
+	(
+		'name' => '直感',
+		'tags' => Array('passive'),
+		'desc' => '持斩系武器时，你的命中率<span class="yellow">+[:accgain:]%</span>，反击率<span class="yellow">+[:countergain:]%</span>，<br>
+		连击命中率惩罚降低<span class="yellow">[:rbgain:]%</span>，武器伤害浮动范围<span class="yellow">+[:flucgain:]%</span>，<br>
+		有<span class="yellow">[:rangerate:]%</span>概率允许超射程反击(爆系除外)<br>',
+		'maxlvl' => 6,
+		'cost' => Array(4,4,4,4,5,5,-1),
+		'input' => '升级',
+		'log' => '升级成功。<br>',
+		'status' => Array('para' => Array('lvl')),
+		'effect' => Array(
+			0 => Array('lvl' => 1),
+		),
+		'svars' => Array(
+			'lvl' => 0, //初次获得时等级为0
+		),
+		'vars' => Array(
+			'accgain' => Array(0,2,4,6,8,11,14), //命中增益
+			'rbgain' => Array(0,2,4,6,8,10,12), //连击命中惩罚降低
+			'flucgain' => Array(0,5,10,15,20,25,30), //伤害浮动修正
+			'rangerate' => Array(0,20,40,60,80,100,100), //超射程反击率
+			'countergain' => Array(0,2,3,4,10,12,30), //基础反击率
+		),
+		'lockdesc' => '武器不适用，持<span class="yellow">斩系武器</span>时生效',
+		'unlock' => Array(
+			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
+		),
+	),
+	'c2_raiding' => Array
+	(
+		'name' => '强袭',
+		'tags' => Array('battle'),
+		'desc' => '本次攻击无视减半类防御属性，最终伤害<span class="yellow">+[:findmgr:]%</span>',
+		'bdesc' => '本次攻击攻击最终伤害<span class="yellow">+[:findmgr:]%</span>，无视敌方减半类防御属性；消耗<span class="red">[:ragecost:]</span>怒气',
+		'vars' => Array(
+			'ragecost' => 70, 
+			'findmgr' => 40, //最终伤害加成
+		),
+		'lockdesc' => Array(
+			'lvl' => '15级时解锁',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">斩系武器</span>时可发动',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 15',
+			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
+		),
+	),
+	'c2_master' => Array
+	(
+		'name' => '舞钢',
+		'tags' => Array('passive'),
+		'desc' => '使用斩系武器时，你的武器伤害浮动不会出现负值。',
+		'lockdesc' => Array(
+			'lvl' => '15级时解锁',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">斩系武器</span>时生效',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 15',
+			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
+		),
+	),
+	'c2_annihil' => Array
+	(
+		'name' => '歼灭',
+		'tags' => Array('active','cd'),
+		'desc' => '发动后获得增益效果：<br>
+		持斩系武器时，你的攻击有<span class="yellow">[:rate:]%</span>概率造成<span class="red b">[:findmgr:]%</span>最终伤害；<br>
+		计算属性伤害时你的基础攻击力将视作武器攻击力。<br>
+		增益效果持续时间<span class="yellow">[:lasttimes:]</span>秒，冷却时间<span class="clan">[:cd:]</span>秒。<br>',
+		'input' => '发动',
+		'log' => '<span class="lime">技能「歼灭」发动成功。</span><br>',
+		'status' => Array('para' => Array('active')),
+		'effect' => Array(
+			0 => Array('active' => 1),
+		),
+		'events' => Array('setstarttimes_c2_annihil','getskill_buff_annihil'),
+		'link' => Array('buff_annihil'),
+		'vars' => Array(
+			'lasttimes' => 200, //持续时间 仅供介绍文本显示用
+			'cd' => 900, //冷却时间
+		),
+		'svars' => Array(
+			'active' => 0, 
+		),
+		'lockdesc' => Array(
+			'lvl' => '21级时解锁',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">斩系武器</span>时可发动',
+			'skillpara-active' => '技能发动中！',
+			'skillcooldown' => '技能冷却中！<br>剩余冷却时间：<span class="red">[:cd:]</span> 秒',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 21',
+			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
+			'skillpara-active' => '[:active:] <= 0',
+			'skillcooldown' => 0,
+		),
+	),
+	'buff_annihil' => Array
+	(
+		'name' => '歼灭',
+		'tags' => Array('buff'),
+		'desc' => '<span class="lime">「歼灭」生效中！<br>
+		增益效果剩余时间：<span class="yellow">[^lasttimes^]</span> 秒</span>',
+		'vars' => Array(
+			'rate' => 20, //发动概率
+			'findmgr' => 200, //最终伤害加成
+		),
+		'slast' => Array(
+			'lasttimes' => 200, //真正作用的持续时间
+		),
+		'pvars' => Array('lasttimes'),
+		'lostevents' => Array('unactive_c2_annihil'),
+		'lockdesc' => Array(
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">斩系武器</span>时生效',
+		),
+		'unlock' => Array(
+			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
+		),
+	),
 	'inf_dizzy' => Array
 	(
 		'name' => '眩晕',
 		'tags' => Array('inf'),
-		'desc' => '你感到头晕目眩，无法进行任何行动或战斗！<br>眩晕状态持续时间还剩<span class="red">[:lasttimes:]</span>秒',
+		'desc' => '你感到头晕目眩，无法进行任何行动或战斗！<br>眩晕状态持续时间还剩<span class="red">[^lasttimes^]</span>秒',
+		'pvars' => Array('lasttimes'),
 		'slast' => Array(
-			'lasttimes' => 0, //技能的持续时间由其他因素决定 这里仅留作占位
+			'lasttimes' => 0, //真正作用的持续时间
 		),
 	),
 );

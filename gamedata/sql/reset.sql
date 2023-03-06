@@ -10,10 +10,10 @@ CREATE TABLE bra_log (
   type char(1) NOT NULL default '',
   prcsd tinyint(1) unsigned NOT NULL default 0,
  `time` int(10) unsigned NOT NULL default '0',
- `log` varchar(255) NOT NULL default '',
+ `log` text NOT NULL default '',
 
   PRIMARY KEY  (lid)
-) ENGINE=HEAP;
+) ENGINE=MyISAM;
 
 --
 -- 表的结构 `bra_chat`
@@ -77,7 +77,7 @@ DROP TABLE IF EXISTS bra_newsinfo;
 CREATE TABLE bra_newsinfo (
   nid smallint unsigned NOT NULL auto_increment,
  `time` int(10) unsigned NOT NULL default '0',
- `news` char(15) NOT NULL default '',
+ `news` char(30) NOT NULL default '',
  `a` varchar(255) NOT NULL default '',
  `b` varchar(255) NOT NULL default '',
  `c` varchar(255) NOT NULL default '',
