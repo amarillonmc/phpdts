@@ -566,25 +566,125 @@ function player_format_with_db_structure($data){
     }
     return $ndata;
 }
+function parse_info_desc($info,$type,$vars='',$short=0)
+{
+	global $iteminfo,$itemspkinfo,$cskills;
+	global $tps_name,$tps_names,$tps_ik,$tps_isk;
+
+	# 处理名字
+	if($type == 'm')
+	{
+		$tinfo = preg_replace('/锋利的|电气|毒性|\[\+.*\]|-改/', '', $info);
+		if(isset($tps_name[$tinfo]) && isset($tps_names[$tps_name[$tinfo]]))
+		{
+			$ts = $tps_names[$tps_name[$tinfo]];
+			$tinfo_f = isset($ts['class']) ? "class=\"{$ts['class']}\"" : '';
+			$tinfo_tp = isset($ts['title']) ? "tooltip=\"{$ts['title']}\"" : '';
+			return "<span {$tinfo_tp} {$tinfo_f}>{$tinfo}</span>";
+		}
+		elseif(isset($tps_name[$tinfo]))
+		{
+			$tinfo_f = isset($tps_name[$tinfo]['class']) ? "class=\"{$tps_name[$tinfo]['class']}\"" : '';
+			$tinfo_tp = isset($tps_name[$tinfo]['title']) ? "tooltip=\"{$tps_name[$tinfo]['title']}\"" : '';
+			return "<span {$tinfo_tp} {$tinfo_f}>{$info}</span>";
+		}
+		return $info;
+	}
+	# 处理类别
+	if($type == 'k')
+	{
+		foreach($iteminfo as $info_key => $info_value)
+		{
+			if(strpos($info,$info_key)===0) 
+			{
+				$v_info = $info_key;
+				break;
+			}
+		}
+		# 类别不存在样式或提示时，用大类尝试一下
+		if(!isset($tps_ik[$info])) $info = $v_info;
+		$info_f = isset($tps_ik[$info]['class']) ? "class=\"{$tps_ik[$info]['class']}\"" : '';
+		$info_tp = isset($tps_ik[$info]['title']) ? "tooltip=\"{$tps_ik[$info]['title']}\"" : '';
+		if(!isset($iteminfo[$info])) $info = $v_info;
+		return "<span {$info_tp} {$info_f}>{$iteminfo[$info]}</span>";
+	}
+	# 处理属性
+	if($type == 'sk')
+	{
+		$ret = '-^-';
+		# 处理该数量以上的属性时，将属性格式变为+...+的缩写
+		$short_nums = 4;
+		# 技能书特殊处理
+		if($vars == 'VS')
+		{
+			if(!empty($info) && isset($cskills[$info]))
+			{
+				$sk = $cskills[$info];  $sknm = $cskills[$info]['name'];
+				return "<span tooltip=\"阅读后可习得技能「{$sknm}」\">知识</span>";
+			}
+			return "--";
+		}
+		# 正常处理属性
+		else
+		{
+			# 数组化
+			if(!is_array($info)) $info = get_itmsk_array($info); 
+			# 计数
+			$sk_max = count($info); $sk_nums = 0; 
+			$sk_info = '';
+			foreach($info as $sk)
+			{
+				$csk = $itemspkinfo[$sk];
+				# 检查属性有没有特殊样式
+				if(isset($tps_isk[$sk]['class'])) $csk = "<span class=\"".$tps_isk[$sk]['class']."\">".$csk."</span>"; 
+				# 将属性加入显示队列
+				$sk_info .= $csk;
+				# 如果不是最后一个属性 显示一个 + 号
+				if($sk_nums<$sk_max-1) $sk_info .= '+';
+				# 检查属性有没有tooltip
+				if(isset($tps_isk[$sk]['title']))
+				{
+					if($sk_max > 1)
+					{
+						$sk_tp .= "【{$itemspkinfo[$sk]}】".$tps_isk[$sk]['title'];
+						if($sk_nums<$sk_max-1) $sk_tp .= "\r";
+					}
+					else 
+					{
+						$sk_tp = $tps_isk[$sk]['title'];
+					}
+				}
+				$sk_nums++;
+			}
+			if(!empty($sk_info)) $ret = $sk_info;
+			if($sk_max > $short_nums && $short) $ret = $itemspkinfo[$info[0]]."+...+".$itemspkinfo[end($info)];
+			if(!empty($sk_tp)) 
+			{
+				$ret = "<span tooltip=\"{$sk_tp}\">{$ret}</span>";
+			}
+		}
+		return $ret;
+	}
+	return $info;
+}
+
 //为显示在主界面、尸体发现界面、游戏帮助界面的道具名、道具类、道具属性添加额外描述
 //传入$n=道具名/类/属性；$t='m'(使用名称数组)/'k'(类别)/'sk'(属性)；$short=1(传入的$n为数组情况下才有效，缩写属性)；$class(如果传入的$n没有匹配的样式,则应用该样式)
-function parse_itm_desc($n,$t,$short=0,$c=NULL)
+function parse_itm_desc($n,$t,$s=0,$c=NULL)
 {
-	global $iteminfo,$itemspkinfo;
-	//我再也不敢把变量名起的又臭又长了
-	global $iteminfo_tooltip,$itemkinfo_tooltip,$itemspkinfo_tooltip,$iteminfo_tooltip_desc;
+	global $iteminfo,$itemspkinfo,$cskills;
+	global $tps_name,$tps_ik,$tps_isk,$tps_names;
 	$span = "<span "; $p1 = "tooltip=\""; $p2 = "class=\""; $ret1 = ''; $ret2 = ''; $ret = '';
 	switch($t)
 	{
 		//处理类别
 		case $t=='k':
-			if(isset($itemkinfo_tooltip[$n]['title'])) $ret1 = $itemkinfo_tooltip[$n]['title']."\"";				
-			if(isset($itemkinfo_tooltip[$n]['class'])) $ret2 = $itemkinfo_tooltip[$n]['class']."\"";
+			if(isset($tps_ik[$n]['title'])) $ret1 = $tps_ik[$n]['title']."\"";				
+			if(isset($tps_ik[$n]['class'])) $ret2 = $tps_ik[$n]['class']."\"";
 			$n = $iteminfo[$n];
 			break;
 		//处理属性
 		case $t=='sk':
-			//如果传入的n为数组，且开启缩写模式，则输出一段缩写
 			if($short && is_array($n) && count($n)>1)
 			{
 				$sk1 = $itemspkinfo[current($n)]; $sk2 = $itemspkinfo[end($n)]; $skn = '';
@@ -597,25 +697,25 @@ function parse_itm_desc($n,$t,$short=0,$c=NULL)
 			}
 			else
 			{
-				if(isset($itemspkinfo_tooltip[$n]['title'])) $ret1= $itemspkinfo_tooltip[$n]['title']."\"";
-				if(isset($itemspkinfo_tooltip[$n]['class'])) $ret2= $itemspkinfo_tooltip[$n]['class']."\"";
+				if(isset($tps_isk[$n]['title'])) $ret1= $tps_isk[$n]['title']."\"";
+				if(isset($tps_isk[$n]['class'])) $ret2= $tps_isk[$n]['class']."\"";
 				$n = $itemspkinfo[$n];
 			}
 			break;
 		//处理名字
 		case $t=='m':
-			$filter_n = preg_replace('/锋利的|电气|毒性|\[.*\]|-改/', '', $n);
-			if(isset($iteminfo_tooltip[$filter_n]))
+			$fn = preg_replace('/锋利的|电气|毒性|\[.*\]|-改/', '', $n);
+			if(isset($tps_name[$fn]))
 			{
-				if(is_array($iteminfo_tooltip[$filter_n]))
+				if(is_array($tps_name[$fn]))
 				{
-					if(isset($iteminfo_tooltip[$filter_n]['title'])) $ret1= $iteminfo_tooltip[$filter_n]['title']."\"";
-					if(isset($iteminfo_tooltip[$filter_n]['class'])) $ret2= $iteminfo_tooltip[$filter_n]['class']."\"";
+					if(isset($tps_name[$fn]['title'])) $ret1= $tps_name[$fn]['title']."\"";
+					if(isset($tps_name[$fn]['class'])) $ret2= $tps_name[$fn]['class']."\"";
 				}
-				elseif(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]))
+				elseif(isset($tps_names[$tps_name[$fn]]))
 				{	//使用可复用描述 越来越离谱了
-					if(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['title'])) $ret1= $iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['title']."\"";
-					if(isset($iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['class'])) $ret2= $iteminfo_tooltip_desc[$iteminfo_tooltip[$filter_n]]['class']."\"";
+					if(isset($tps_names[$tps_name[$fn]]['title'])) $ret1= $tps_names[$tps_name[$fn]]['title']."\"";
+					if(isset($tps_names[$tps_name[$fn]]['class'])) $ret2= $tps_names[$tps_name[$fn]]['class']."\"";
 				}
 			}
 			break;

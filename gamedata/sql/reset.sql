@@ -41,10 +41,10 @@ DROP TABLE IF EXISTS bra_mapitem;
 CREATE TABLE bra_mapitem (
   iid mediumint unsigned NOT NULL auto_increment,
   itm char(30) NOT NULL default '',
-  itmk char(5) not null default '',
-  itme mediumint unsigned NOT NULL default '0',
-  itms char(5) not null default '0',
-  itmsk char(5) not null default '',
+  itmk char(40) not null default '',
+  itme int(10) unsigned NOT NULL DEFAULT '0',
+  itms char(10) not null default '0',
+  itmsk char(40) not null default '',
   pls tinyint unsigned not null default '0',
   
   PRIMARY KEY  (iid)
@@ -59,10 +59,10 @@ DROP TABLE IF EXISTS bra_maptrap;
 CREATE TABLE bra_maptrap (
   tid mediumint unsigned NOT NULL auto_increment,
   itm char(30) NOT NULL default '',
-  itmk char(5) not null default '',
-  itme smallint unsigned NOT NULL default '0',
-  itms char(5) not null default '0',
-  itmsk char(5) not null default '',
+  itmk char(40) not null default '',
+  itme int(10) unsigned NOT NULL DEFAULT '0',
+  itms char(10) not null default '0',
+  itmsk char(40) not null default '',
   pls tinyint unsigned not null default '0',
   
   PRIMARY KEY  (tid)
@@ -115,9 +115,9 @@ DROP TABLE IF EXISTS bra_itemdepot;
 CREATE TABLE bra_itemdepot (
   iid mediumint unsigned NOT NULL auto_increment,
   itm varchar(30) NOT NULL default '',
-  itmk varchar(15) not null default '',
+  itmk varchar(40) not null default '',
   itme int(10) unsigned NOT NULL default '0',
-  itms varchar(10) not null default '0',
+  itms char(10) not null default '0',
   itmsk varchar(40) not null default '',
   itmowner char(15) NOT NULL DEFAULT '',
   itmpw char(5) NOT NULL DEFAULT '',

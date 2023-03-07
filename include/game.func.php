@@ -42,52 +42,42 @@ function init_profile(){
 
 	foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
 	{
-		global ${$value.'_words'};
-		${$value.'_words'} = parse_itm_desc(${$value},'m');
-	}
-
-	foreach (Array('wepk','arbk','arhk','arak','arfk','artk','itmk0','itmk1','itmk2','itmk3','itmk4','itmk5','itmk6') as $k_value) {
-		if(${$k_value})
+		if(strpos($value,'itm')!==false)
 		{
-			${$k_value.'_words'} = '';
-			foreach($iteminfo as $info_key => $info_value)
-			{
-				if(strpos(${$k_value},$info_key)===0){
-					${$k_value.'_words'} = parse_itm_desc($info_key,'k');
-					break;
-				}
-			}
-		} else {
-			${$k_value.'_words'} = '';
+			$k_value = str_replace('itm','itmk',$value);
+			$s_value = str_replace('itm','itms',$value);
+			$sk_value = str_replace('itm','itmsk',$value);
 		}
-	}
-	
-	foreach (Array('wepsk','arbsk','arhsk','arask','arfsk','artsk','itmsk0','itmsk1','itmsk2','itmsk3','itmsk4','itmsk5','itmsk6') as $sk_value) {
-		if(${$sk_value} && is_numeric(${$sk_value}) === false){
-			${$sk_value.'_words'} = '';
-			//取我数组斧来
-			$tmpsk = get_itmsk_array(${$sk_value});
-			if(count($tmpsk)>3)
+		else 
+		{
+			$k_value = $value.'k';
+			$s_value = $value.'s';
+			$sk_value = $value.'sk';
+		}
+		global $$s_value;
+		if(!empty($$s_value))
+		{
+			global ${$value.'_words'};
+			# 初始化名称样式
+			${$value.'_words'} = parse_info_desc($$value,'m');
+			# 初始化类别样式
+			if(${$k_value})
 			{
-				//在装备、道具栏内的道具超过3个属性时，显示为+...+的缩写……不然属性多起来太丑了！！
-				${$sk_value.'_words'} = parse_itm_desc($tmpsk,'sk',1);
-			}
+				${$k_value.'_words'} = parse_info_desc($$k_value,'k');
+			} 
 			else 
 			{
-				foreach($tmpsk as $sk)
-				{
-					if(!empty(${$sk_value.'_words'}))
-					{
-						${$sk_value.'_words'} .= "+".parse_itm_desc($sk,'sk');
-					}
-					else
-					{
-						${$sk_value.'_words'} = parse_itm_desc($sk,'sk');
-					}
-				}
+				${$k_value.'_words'} = '';
 			}
-		} else {
-			${$sk_value.'_words'} =$nospk;
+			# 初始化属性样式
+			if(${$sk_value} && is_numeric(${$sk_value}) === false)
+			{
+				${$sk_value.'_words'} = parse_info_desc($$sk_value,'sk',$$k_value,1);
+			} 
+			else 
+			{
+				${$sk_value.'_words'} = $nospk;
+			}
 		}
 	}
 
@@ -224,18 +214,18 @@ function init_battle($ismeet = 0){
 	
 	//在战斗界面中加载敌我双方武器tooltip
 	global $wep_words,$wepk_words,$w_wep_words,$w_wepk_words;
-	$wep_words = parse_itm_desc($wep,'m'); $wepk_words = parse_itm_desc($wepk,'k');
+	$wep_words = parse_info_desc($wep,'m'); $wepk_words = parse_info_desc($wepk,'k');
 	if(!$fog||$ismeet) {
 		//非雾天显示敌人武器情报
-		$w_wep_words = parse_itm_desc($w_wep,'m');
-		$w_wepk_words = parse_itm_desc($w_wepk,'k');
+		$w_wep_words = parse_info_desc($w_wep,'m');
+		$w_wepk_words = parse_info_desc($w_wepk,'k');
 		//如果有的话 初始化第三方武器情报 
 		if(isset($n_type))
 		{
 			global $n_wep_words,$n_wepk_words,$n_iconImg;
 			$n_iconImg = $n_type ? 'n_'.$n_icon.'.gif' : $n_gd.'_'.$n_icon.'.gif';
-			$n_wep_words = parse_itm_desc($n_wep,'m');
-			$n_wepk_words = parse_itm_desc($n_wepk,'k');
+			$n_wep_words = parse_info_desc($n_wep,'m');
+			$n_wepk_words = parse_info_desc($n_wepk,'k');
 		}
 		$w_sNoinfo = "$typeinfo[$w_type]({$sexinfo[$w_gd]}{$w_sNo}号)";
 	 	$w_i = $w_type > 0 ? 'n' : $w_gd;
@@ -364,8 +354,8 @@ function init_rev_battle($ismeet = 0)
 				${$p.'wepestate'} = "$wepeinfo[0]";
 		}
 		//更新武器名、武器类别情报
-		${$p.'wep_words'} = parse_itm_desc(${$p.'wep'},'m');
-		${$p.'wepk_words'} = parse_itm_desc(${$p.'wepk'},'k');
+		${$p.'wep_words'} = parse_info_desc(${$p.'wep'},'m');
+		${$p.'wepk_words'} = parse_info_desc(${$p.'wepk'},'k');
 		//更新编号情报
 		${$p.'sNoinfo'} = $typeinfo[${$p.'type'}]."(".$sexinfo[${$p.'gd'}].${$p.'sNo'}."号)";
 		//更新头像情报

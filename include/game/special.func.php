@@ -492,23 +492,25 @@ function shoplist($sn,$getlist=NULL) {
 		$itemdata[$i]['price']= $club == 11 ? round($itemlist['price']*0.75) : $itemlist['price'];
 		$itemdata[$i]['area']=$itemlist['area'];
 		$itemdata[$i]['item']=$itemlist['item'];
-		$itemdata[$i]['item_words']= parse_itm_desc($itemdata[$i]['item'],'m');
+		$itemdata[$i]['item_words']= parse_info_desc($itemdata[$i]['item'],'m');
 		$itemdata[$i]['itme']=$itemlist['itme'];
 		$itemdata[$i]['itms']=$itemlist['itms'];
 		//list($sid,$kind,$num,$price,$area,$item,$itmk,$itme,$itms,$itmsk)=explode(',',$itemlist);
-		foreach($iteminfo as $info_key => $info_value){
+		/*foreach($iteminfo as $info_key => $info_value){
 			if(strpos($itemlist['itmk'],$info_key)===0){
 				if(isset($getlist)) $itemdata[$i]['itmk'] = $info_value;
 				$itemdata[$i]['itmk_words'] = parse_itm_desc($info_key,'k');
 				break;
 			}
-		}
+		}*/
+		$itemdata[$i]['itmk_words'] = parse_info_desc($itemlist['itmk'],'k');
 		$itemdata[$i]['itmsk_words'] = '';
 		if($itemlist['itmsk'] && ! is_numeric($itemlist['itmsk'])){
 			if(!isset($getlist))
 			{
-				$tmp_sk = get_itmsk_array($itemlist['itmsk']);
-				foreach($tmp_sk as $sk) $itemdata[$i]['itmsk_words'].= parse_itm_desc($sk,'sk');
+				$itemdata[$i]['itmsk_words'] = parse_info_desc($itemlist['itmsk'],'sk',$itemlist['itmk']);
+				//$tmp_sk = get_itmsk_array($itemlist['itmsk']);
+				//foreach($tmp_sk as $sk) $itemdata[$i]['itmsk_words'].= parse_itm_desc($sk,'sk');
 			}
 			else 
 			{

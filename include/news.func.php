@@ -34,12 +34,12 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 
 		//登记非功能性地点信息时合并隐藏地点 为什么会有两个news.func.php？？？
 		foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
-		//死法（除DN外）：道具名登记在$d上；第四个参数：没有检查到特殊样式的给一个红色
-		if(strpos($news,'death')!==false && $news!=='death28' && isset($d)) $d = parse_itm_desc($d,'m',0,"red");
+		//死法（除DN外）：道具名登记在$d上；
+		if(strpos($news,'death')!==false && $news!=='death28' && isset($d)) $d = parse_info_desc($d,'m');
 		//赠送道具、吃到毒补给、陷阱、改变天气、强化武器、唱歌、打开礼物盒：道具名登记在$c上；
-		if((strpos($news,'senditem')!==false||strpos($news,'poison')!==false||strpos($news,'trap')!==false||strpos($news,'wth')!==false||strpos($news,'newwep')!==false||strpos($news,'song')!==false||strpos($news,'present')!==false) && isset($c)) $c = parse_itm_desc($c,'m');
+		if((strpos($news,'senditem')!==false||strpos($news,'poison')!==false||strpos($news,'trap')!==false||strpos($news,'wth')!==false||strpos($news,'newwep')!==false||strpos($news,'song')!==false||strpos($news,'present')!==false) && isset($c)) $c = parse_info_desc($c,'m');
 		//合成、使用死斗卡、使用仓库：道具名登记在$b上;
-		if((strpos($news,'mix')!==false||strpos($news,'duelkey')!==false||strpos($news,'depot')===0) && isset($b)) $b = parse_itm_desc($b,'m');
+		if((strpos($news,'mix')!==false||strpos($news,'duelkey')!==false||strpos($news,'depot')===0) && isset($b)) $b = parse_info_desc($b,'m');
 		
 		//新PC加入战场 格式化nick
 		//卧槽这可怎么搞……只能脏一把了
@@ -116,17 +116,17 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			} elseif($news == 'death20') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>用<span class=\"red\">$nowep</span>击飞";
 			} elseif($news == 'death21') {
-				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>使用{$d}殴打致死";
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>使用<span class=\"red\">{$d}</span>殴打致死";
 			} elseif($news == 'death22') {
-				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>使用{$d}斩杀";
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>使用<span class=\"red\">{$d}</span>斩杀";
 			} elseif($news == 'death23') {
-				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>使用{$d}射杀";
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>使用<span class=\"red\">{$d}</span>射杀";
 			} elseif($news == 'death24') {
-				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>投掷{$d}致死";
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>投掷<span class=\"red\">{$d}</span>致死";
 			} elseif($news == 'death25') {
-				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>埋设{$d}伏击炸死";
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>埋设<span class=\"red\">{$d}</span>伏击炸死";
 			} elseif($news == 'death29') {
-				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>发动{$d}以灵力杀死";
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被<span class=\"yellow\">$c</span>发动<span class=\"red\">{$d}</span>以灵力杀死";
 			} elseif($news == 'death39') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>在与<span class=\"yellow\">$c</span>的战斗中因<span class=\"red\">武器反噬</span>意外身亡";
 			} elseif($news == 'death26') {
@@ -319,6 +319,10 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$bsk = substr($news,4);
 			$bname = $cskills[$bsk]['name'];
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"clan\">{$a}对{$b}发动了技能<span class=\"yellow\">「{$bname}」</span>！</span><br>\n";
+		} elseif(strpos($news,'getsk_')===0) {
+			$bsk = substr($news,6);
+			$bname = $cskills[$bsk]['name'];
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}通过翻阅{$b}学会了技能<span class=\"lime\">「{$bname}」</span>！</span><br>\n";
 		} else {
 			$newsinfo .= "<li>$time,$news,$a,$b,$c,$d<br>\n";
 		}

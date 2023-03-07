@@ -5,6 +5,9 @@
 <!--{elseif $allow_destory_corpse && !in_array($w_type,$no_destory_corpse_type)}-->
 <input type="radio" name="command" id="destory" value="destory" <!--{if !$w_money}-->checked<!--{/if}-->><a onclick=sl('destory'); href="javascript:void(0);" >销毁尸体</a><br>
 <!--{/if}-->
+<!--{if $cstick_flag}-->
+<input type="radio" name="command" id="cstick" value="cstick"><a onclick=sl('cstick'); href="javascript:void(0);" ><span tooltip="消耗100点怒气，将这具尸体变成一把殴系武器">抡起尸体！</span></a><br>
+<!--{/if}-->
 <!--{if $loot_depot_flag}-->
 <input type="radio" name="command" id="loot_depot" value="loot_depot"><a onclick=sl('loot_depot'); href="javascript:void(0);" >转移安全箱权限</a><br>
 <!--{/if}-->
