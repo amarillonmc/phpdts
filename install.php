@@ -1,5 +1,5 @@
 <?php
-
+require __DIR__ . '/vendor/autoload.php';
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 //set_magic_quotes_runtime(0);
 //ini_set('date.timezone','Asia/Shanghai');
@@ -496,6 +496,7 @@ if(!$action) {
 				$bbsurl = setconfig($_POST['bbsurl']);
 				$gameurl = setconfig($_POST['gameurl']);
 				$moveut = (int)$_POST['moveut'];
+        $salt = bin2hex(random_bytes(16)); 
 
 				$fp = fopen('./config.inc.php', 'r');
 				$configfile = fread($fp, filesize('./config.inc.php'));
@@ -510,6 +511,8 @@ if(!$action) {
 				$configfile = preg_replace("/[$]bbsurl\s*\=\s*[\"'].*?[\"'];/is", "\$bbsurl = '$bbsurl';", $configfile);
 				$configfile = preg_replace("/[$]gameurl\s*\=\s*[\"'].*?[\"'];/is", "\$gameurl = '$gameurl';", $configfile);
 				$configfile = preg_replace("/[$]moveut\s*\=\s*-?[0-9]+;/is", "\$moveut = $moveut;", $configfile);
+        $configfile = preg_replace("/[$]salt\s*\=\s*[\"'].*?[\"'];/is", "\$salt = '$salt';", $configfile);
+    
 
 				$fp = fopen('./config.inc.php', 'w');
 				fwrite($fp, trim($configfile));
@@ -639,11 +642,9 @@ if(!$action) {
 		fclose($fp);
 
 		$configfile = preg_replace("/[$]dbname\s*\=\s*[\"'].*?[\"'];/is", "\$dbname = '$dbname';", $configfile);
-
 		$fp = fopen('./config.inc.php', 'w');
 		fwrite($fp, trim($configfile));
 		fclose($fp);
-
 	}
 
 	include './config.inc.php';
