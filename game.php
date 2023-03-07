@@ -36,7 +36,7 @@ if($gamestate == 0) {
 }
 
 $pdata['clbpara'] = get_clbpara($pdata['clbpara']);
-extract($pdata);
+extract($pdata,EXTR_REFS);
 init_playerdata();
 init_profile();
 
@@ -140,7 +140,7 @@ if($hp > 0 && !empty($clbpara['lasttimes']))
 	{
 		$pdata = current_player_save();
 		$pdata['clbpara'] = get_clbpara($pdata['clbpara']);
-		extract($pdata);
+		extract($pdata,EXTR_REFS);
 		init_playerdata();
 		init_profile();
 	}

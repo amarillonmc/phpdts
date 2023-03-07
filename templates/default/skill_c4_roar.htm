@@ -1,0 +1,50 @@
+<!-- 注意：大部分技能可以直接通过编辑配置文件完成 -->
+<!-- 可能的、需要新建模板的情况：你的技能需要在面板内执行比较复杂的、单靠配置文件无法实现的操作 -->
+<tr>
+    <td class="b1" width="40">
+        <span>{$cskills['c4_roar']['name']}</span>
+    </td>
+    <td>
+        <!--{eval $unlock_c4_roar_flag = check_skill_unlock('c4_roar',$pdata);}-->
+        <!--{if $unlock_c4_roar_flag}-->
+        <div style="position:relative; height:100%; width:100%;" onmouseover="skill_unacquired_mouseover.call(this,event)" onmouseout="skill_unacquired_mouseout.call(this,event)">
+        <div class="skill_unacquired">
+        <!--{/if}-->
+            <table class="skilltable">
+                <tr>
+                    <td class="skilldesc_left b3">
+                        <span class="skilldesc">
+                        <!--{eval $c4_roar_desc = parse_skilldesc('c4_roar',$pdata);}-->
+                        $c4_roar_desc
+                        </span>
+                    </td>
+                    <td class="skilldesc_right b3">
+                    <!--{if !empty($unlock_c4_roar_flag) && $unlock_c4_roar_flag == 'skillpara|c4_roar-active'}-->
+                        <input type="button" style="width:47px;margin-right:25px;float:right;" value="解锁">
+                    <!--{/if}-->
+                    </td>
+                </tr>
+            </table>
+        <!--{if $unlock_c4_roar_flag}-->
+        </div>
+        <div class="skill_unacquired_hint">
+            <table class="skilltable">
+                <tr>
+                    <td valign="center" align="center">
+                        <span class="yellow">
+                            <!--{eval $c4_roar_lockdesc = $cskills['c4_roar']['lockdesc'][$unlock_c4_roar_flag];}-->
+                            $c4_roar_lockdesc
+                        </span>
+                    </td>
+                    <!--{if !empty($unlock_c4_roar_flag) && $unlock_c4_roar_flag == 'skillpara|c4_roar-active'}-->
+                    <td class="skilldesc_right">
+                        <input type="button" style="width:47px;margin-right:25px;float:right;" value="解锁" onclick="$('mode').value='revskpts';$('command').value='actskill_c4_roar';postCmd('gamecmd','command.php');this.disabled=true;">
+                    </td>
+                    <!--{/if}-->
+                </tr>
+            </table>
+        </div>
+        </div>
+        <!--{/if}-->
+    </td>
+</tr>

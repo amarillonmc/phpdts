@@ -152,30 +152,19 @@
 			# 遍历该技能关联属性
 			foreach($cskill['status'] as $snm)
 			{
-				# $snm为数组时，代表关联的属性是技能参数 - $clbpara['skillpara']['技能名']['参数名']
-				if(is_array($snm))
-				{
-					foreach($snm as $skey)
-					{
-						$clbpara['skillpara'][$sk][$skey] += $ceffect[$skey];
-					}
-				}
-				else 
-				{
-					global $$snm;
-					# $ceffect为数组时，视为技能升级时会使多个属性增加不同值
-					if(is_array($ceffect))
-					{
-						$$snm += $ceffect[$snm]*$nums;
-						$clog = str_replace("[:effect:]".$snm,$ceffect[$snm]*$nums,$clog);
-					}
-					# 否则技能所影响的属性都增加相同值
-					else
-					{
-						$$snm += $ceffect*$nums;
-						$clog = str_replace("[:effect:]",$ceffect*$nums,$clog);
-					}
-				}
+				# 格式化属性名
+				$snm_key = parse_skillrules($snm,'','clbpara');
+				global $$snm_key;
+				# 如属性值为数组，则按照登记取值
+				$seffect = is_array($ceffect[$snm]) ? $ceffect[$snm][$now_clvl] : $ceffect[$snm];
+				# 格式化属性值
+				$seffect = parse_skilloperator($seffect);
+				$so = is_array($seffect) ? $seffect[0] : ''; 
+				$svars = is_array($seffect) ? $seffect[1] : $seffect;
+				# 计算属性变化
+				eval("$$snm_key = $$snm_key $so $svars*$nums;");
+				# 替换升级后文本
+				$clog = str_replace("[:{$snm}:]",$svars*$nums,$clog);
 			}
 		}
 		# 扣除技能点
@@ -331,6 +320,7 @@
 			$unlock = $cskills[$sk]['unlock'];
 			foreach($unlock as $key => $lock)
 			{
+				# 特判：计算技能冷却时间
 				if($key == 'skillcooldown')
 				{
 					$st = get_starttimes($sk,$data['clbpara']);
@@ -344,29 +334,64 @@
 						}
 					}
 				}
-				elseif(strpos($key,'+')!==false) 
+				# 正常计算
+				else
 				{
-					$arr_key = explode("+",$key);
-					foreach($arr_key as $skey)
+					# 第一层：检查共有几个须置换条件
+					$arr = strpos($key,'+')!==false ? explode("+",$key) : Array($key);
+					foreach($arr as $skey)
 					{
-						$lock = str_replace("[:".$skey.":]","\$data['".$skey."']",$lock);
+						#第二层：格式化置换条件对应的置换内容
+						$skey_value = parse_skillrules($skey);
+						#第三层：置换对应内容
+						$lock = str_replace("[:{$skey}:]",$skey_value,$lock);
 					}
-					if(!eval("return ($lock);")) return $key;
-				}
-				elseif(strpos($key,'-')!==false)
-				{
-					$arr_key = explode("-",$key);
-					$lock = str_replace("[:".$arr_key[1].":]","\$data['clbpara']['{$arr_key[0]}']['{$sk}']['".$arr_key[1]."']",$lock);
-					if(!eval("return ($lock);")) return $key;
-				}
-				else 
-				{
-					$lock = str_replace("[:".$key.":]","\$data['".$key."']",$lock);
 					if(!eval("return ($lock);")) return $key;
 				}
 			}
 		}
 		return 0;
+	}
+
+	function parse_skillrules($key,$prefix="\$data",$prefix2="['clbpara']")
+	{
+		//传入值内有'-'号，代表是clbpara内的内容
+		if(strpos($key,'-')!==false)
+		{
+			$key = explode('-',$key);
+			$key_key = $key[0]; $key_value = $key[1];
+			//检查key_key内是否有“|”号
+			if(strpos($key_key,'|')!==false)
+			{
+				//key_key内有“|”号 代表置换内容的第二层键名另有指代
+				$key_key = explode('|',$key_key);
+				$key_a_key = $key_key[0]; $key_sec_key = $key_key[1];
+				$key = $prefix.$prefix2."['{$key_a_key}']['{$key_sec_key}']['{$key_value}']";
+			}
+			else 
+			{
+				//key_key内没有“:”号 置换内容只停留在第一层
+				$key = $prefix.$prefix2."['{$key_key}']['{$key_value}']";
+			}
+		}
+		//传入值是标准字段，直接导出
+		else 
+		{
+			if(empty($prefix)) return $key;
+			else $key = $prefix."['{$key}']";
+		}
+		return $key;
+	}
+
+	function parse_skilloperator($key)
+	{
+		//检查传入值内是否有分隔符
+		if(strpos($key,'::')!==false)
+		{
+			$key = explode('::',$key);
+			return $key;
+		}
+		return $key;
 	}
 
 	# 技能是否可激活，返回0时为可激活，否则返回对应的未满足条件 $sk：技能名；$data：角色数据
@@ -576,24 +601,19 @@
 		# 技能存在关联属性
 		if(isset($cskill['status']))
 		{
-			# 检查技能升级是否会直接影响属性：
+			# 检查社团是否会直接影响属性：
 			$ceffect = !empty($data) && isset($cskill['effect'][$data['club']]) ? $cskill['effect'][$data['club']] : $cskill['effect'][0];
 			# 遍历技能关联属性，替换介绍文本内的数值
 			foreach($cskill['status'] as $snm)
 			{
-				if(!is_array($snm))
-				{
-					# $ceffect为数组时，视为技能升级时会使多个属性增加不同值
-					if(is_array($ceffect))
-					{
-						$sk_desc = str_replace("[:effect:]".$snm,$ceffect[$snm],$sk_desc);
-					}
-					# 否则技能所影响的属性都增加相同值
-					else
-					{
-						$sk_desc = str_replace("[:effect:]",$ceffect,$sk_desc);
-					}
-				}
+				# 如属性值为数组，则按照等级取值
+				$seffect = is_array($ceffect[$snm]) ? $ceffect[$snm][$now_clvl] : $ceffect[$snm];
+				# 格式化属性值
+				$seffect = parse_skilloperator($seffect);
+				$so = is_array($seffect) ? $seffect[0] : ''; 
+				$svars = is_array($seffect) ? $seffect[1] : $seffect;
+				# 替换描述文本
+				$sk_desc = str_replace("[:{$snm}:]",$svars,$sk_desc);
 			}
 		}
 		return $sk_desc;

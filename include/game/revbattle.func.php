@@ -114,6 +114,7 @@
 					$unlock = check_skill_unlock($sk,$sdata);
 					if($unlock)
 					{
+						if(get_skilltags($sk,'unlock_battle_hidden')) continue;
 						$sk_desc .= is_array($cskills[$sk]['lockdesc']) ? $cskills[$sk]['lockdesc'][$unlock] : $cskills[$sk]['lockdesc'];
 					}
 					//再检查技能是否满足激活条件

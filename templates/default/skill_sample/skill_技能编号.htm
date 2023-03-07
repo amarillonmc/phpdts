@@ -2,7 +2,7 @@
 <!-- 可能的、需要新建模板的情况：你的技能需要在面板内执行比较复杂的、单靠配置文件无法实现的操作 -->
 <tr>
     <td class="b1" width="40">
-        <span>技能名</span>
+        <span>{$cskills['技能编号']['name']}</span>
     </td>
     <td>
      <!-- ↓↓↓ 存在解锁条件的技能才需要有这一部分 ↓↓↓ -->
@@ -16,11 +16,13 @@
                 <tr>
                     <td class="skilldesc_left b3">
                         <span class="skilldesc">
-                        <span tooltip="关于标签的介绍" class="gold">【技能标签 没有不需要写】</span>
-                        技能介绍
+                        <!-- 技能介绍，自己填任意内容或使用下面的方式 -->
+                        <!--{eval $技能编号_desc = parse_skilldesc('技能编号',$pdata);}-->
+                        $技能编号_desc
                         </span>
                     </td>
                     <td class="skilldesc_right b3">
+                         <!-- 技能按钮，没有可以不填 -->
                         <input type="number" name="技能编号_nums" style="width:40px" value="1">		
                         <input type="button" onclick="$('mode').value='revskpts';$('command').value='技能编号';postCmd('gamecmd','command.php');this.disabled=true;" value="技能操作按钮名">
                     </td>
@@ -33,7 +35,11 @@
             <table class="skilltable">
                 <tr>
                     <td valign="center" align="center">
-                        <span class="yellow">未满足解锁条件时显示的文本</span>
+                        <span class="yellow">
+                            <!-- 未满足解锁条件时显示的文本，自己填或使用下面的方式 -->
+                            <!--{eval $技能编号_lockdesc = $cskills['技能编号']['lockdesc'][$unlock_技能编号_flag];}-->
+                            $技能编号_lockdesc
+                        </span>
                     </td>
                 </tr>
             </table>

@@ -595,26 +595,22 @@ if($hp > 0){
 			$mode = 'command';
 		} elseif ($mode == 'revskpts') {
 			include_once GAME_ROOT.'./include/game/revclubskills.func.php';
-			if(strpos($command,'upgskill_')!==false)
+			$sk = substr($command,9);
+			if(isset($cskills[$sk]))
 			{
-				$sk = substr($command,9);
-				if(isset(${$command.'_nums'}))
+				if(strpos($command,'upgskill_')!==false)
 				{
-					${$command.'_nums'} = (int)${$command.'_nums'};
-					upgclbskills($sk,${$command.'_nums'});
-				} 
-				else 
-				{
-					upgclbskills($sk);
+					# 升级技能
+					$nums = isset(${$command.'_nums'}) ? (int)${$command.'_nums'} : 1;
+					upgclbskills($sk,$nums);
+				
 				}
-			}
-			elseif(strpos($command,'actskill_')!==false)
-			{
-				$sk = substr($command,9);
-				if(isset($cskills[$sk]) && !check_skill_unlock($sk,$pdata))
+				elseif(strpos($command,'actskill_')!==false)
 				{
+					# 其他特殊技能按钮
 					include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
 					if($sk == 'c1_veteran') skill_c1_veteran_act($c1_veteran_choice);
+					elseif($sk == 'c4_roar' || $sk == 'c4_sniper') skill_c4_unlock($sk);
 				}
 			}
 			$mode = 'command';
