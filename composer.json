@@ -1,0 +1,7 @@
+{
+    "name": "nmforce/phpdts",
+    "description": "New repo for Yellow Version of phpbr",
+    "require": {
+        "paragonie/random_compat": ">=2"
+    }
+}
