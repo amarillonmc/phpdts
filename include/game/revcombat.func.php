@@ -592,6 +592,9 @@
 				$log.="<span class=\"red\">$damage</span>点伤害！<br>";
 				//最终物理伤害
 				$pdamage = $damage;
+
+				# 物理伤害计算结束后、加载预受伤事件……：
+				get_hurt_prepare_events($pa,$pd,$active);
 				
 				# 属性伤害计算部分：
 				//获取攻击方(pa)能造成的属性伤害类型
@@ -603,34 +606,57 @@
 					deal_ex_damage_prepare_events($pa,$pd,$active);
 					//获取攻击方(pa)能造成的属性伤害
 					$ex_damage = get_original_ex_dmg($pa,$pd,$active);
-
-					//存在大于1种属性伤害，输出一段 A+B+C=D 样式的文本
-					$total_ex_damage = 0;
-					if(is_array($ex_damage))
+					//攻击方(pa)能造成了多次属性伤害的情况下，进行后续判断
+					if(is_array($ex_damage) || $ex_damage > 1)
 					{
-						if(count($ex_damage)>1)
+						//获取攻击方(pa)能造成的属性伤害加成
+						$ex_damage_p = get_ex_dmg_p($pa,$pd,$active);
+						//存在大于1种属性伤害，输出一段 A+B+C=D 样式的文本，并将所有属性伤害保存在 $total_ex_damage 内
+						if(is_array($ex_damage))
 						{
-							$log .= "造成了";
-							$elog = '';
-							foreach($ex_damage as $edmg)
+							$total_ex_damage = 0;
+							if(count($ex_damage)>1)
 							{
-								$total_ex_damage += $edmg;
-								if(!empty($elog)) $elog .= "＋".$edmg;
-								else $elog = $edmg;
+								$elog = '';
+								foreach($ex_damage as $edmg)
+								{
+									$total_ex_damage += $edmg;
+									if(!empty($elog)) $elog .= "＋".$edmg;
+									else $elog .= $edmg;
+								}
+								$elog = '造成了'.$elog;
 							}
-							$log .= $elog."＝<span class=\"red\">{$total_ex_damage}</span>点属性伤害！<br>";
+							else 
+							{
+								$total_ex_damage = $ex_damage[0];
+							}
+							//将 $total_ex_damage 存回 $ex_damage
+							$ex_damage = $total_ex_damage;
 						}
-						else 
+						//存在对最终属性伤害的修正，输出一段 A×BxC=D 或 (A+B+C)×A×B=D 样式的文本
+						if(!empty($ex_damage_p))
 						{
-							$total_ex_damage = $ex_damage[0];
+							if(isset($elog))
+							{
+								$elog = str_replace("造成了","造成了(",$elog);
+								$elog = $elog.')';
+							}
+							else 
+							{
+								$elog = "造成了{$ex_damage}";
+							}
+							foreach($ex_damage_p as $edmg_p)
+							{
+								$ex_damage *= $edmg_p;
+								$elog .= "×{$edmg_p}";
+							}
 						}
+						$ex_damage = round($ex_damage);
+						//存在额外的属性伤害文本，输出
+						if(isset($elog)) $log .= $elog."＝<span class=\"red\">{$ex_damage}</span>点属性伤害！<br>";
 					}
-					else 
-					{
-						$total_ex_damage = $ex_damage;
-					}
-					//最终属性伤害
-					$damage += $total_ex_damage;
+					//并入最终伤害
+					$damage += $ex_damage;
 				}
 
 				#最终伤害计算部分：
@@ -959,6 +985,15 @@
 				$pd['itm'.$i] = $pd['itmk'.$i] = $pd['itmsk'.$i] = '';
 				$pd['itme'.$i] = $pd['itms'.$i] = 0;
 			}
+		}
+
+		#「掠夺」判定：
+		if(isset($pa['skill_c4_loot']))
+		{
+			//获取抢钱率
+			$sk_p = get_skillvars('c4_loot','goldr');
+			$lootgold = $pa['lvl'] * $sk_p;
+			$log.="<span class='yellow'>「掠夺」使{$pa['nm']}获得了{$lootgold}元！</span><br>";
 		}
 
 		return;

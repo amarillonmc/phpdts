@@ -50,6 +50,13 @@
 		global $rangeinfo;
 		if(empty($pa['wep_kind'])) get_wep_kind($pa);
 		$range = isset($rangeinfo[$pa['wep_kind']]) ? $rangeinfo[$pa['wep_kind']] : NULL;
+		#「穿杨」效果判定：
+		if(isset($pa['skill_c4_sniper']))
+		{
+			//获取命中倍率加成
+			$sk_rn = get_skillvars('c4_sniper','rangegain');
+			$range += $sk_rn;
+		}
 		return $range;
 	}
 
@@ -119,7 +126,7 @@
 	function get_extra_ex_array(&$pa)
 	{
 		global $log;
-		# 百战技能特效
+		# 「百战」效果判定：
 		if(isset($pa['skill_c1_veteran']))
 		{
 			$sk_def = get_skillpara('c1_veteran','choice',$pa['clbpara']);
@@ -129,6 +136,12 @@
 				$pa['ex_keys'][] = $sk_def;
 				//$log .= "百战使{$pa['nm']}拥有了【{$itemspkinfo[$sk_def]}】属性！<br>";
 			}
+		}
+		#「穿杨」效果判定：
+		if(isset($pa['skill_c4_sniper']) && in_array('r',$pa['ex_keys']))
+		{
+			$key = array_search('r',$pa['ex_keys']);
+			unset($pa['ex_keys'][$key]);
 		}
 		return;
 	}
@@ -277,7 +290,7 @@
 		//获取社团技能对基础命中率的修正
 		$hitrate *= rev_get_clubskill_bonus_hitrate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
 		//获取社团技能对基础命中率的修正（新）
-		$hitrate *= get_clbskill_hitrate($pa,$pd,$active,$hitrate);
+		$hitrate = get_clbskill_hitrate($pa,$pd,$active,$hitrate);
 		//异常状态状态修正
 		foreach ($inf_htr_p as $inf_ky => $value) 
 		{
@@ -299,15 +312,19 @@
 		//获取社团技能对连击命中率衰减系数的修正
 		$hitratebonus *= rev_get_clubskill_bonus_hitrate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
 		//获取社团技能对连击命中率衰减系数的修正（新）
-		$hitratebonus *= get_clbskill_r_hitrate($pa,$pd,$active,$hitratebonus);
+		$hitratebonus = get_clbskill_r_hitrate($pa,$pd,$active,$hitratebonus);
 
 		//获取基础致伤率（防具耐久损伤率）系数
 		$inf_r = $infobbs[$pa['wep_kind']];
 		//获取社团技能对致伤率（防具耐久损伤率）的修正
 		$inf_r *= rev_get_clubskill_bonus_imfrate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
+		//获取社团技能对致伤率（防具耐久损伤率）的修正（新）
+		$inf_r = get_clbskill_infrate($pa,$pd,$active,$inf_r);
 		//获取基础致伤效果（每次致伤会损耗多少点防具耐久）
-		$inf_points = rev_get_clubskill_bonus_imftime($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
-
+		$inf_points = 1;
+		//$inf_points = rev_get_clubskill_bonus_imftime($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
+		//获取社团技能对基础致伤效果（每次致伤会损耗多少点防具耐久）的修正（新）
+		$inf_points = get_clbskill_inftimes($pa,$pd,$active,$inf_points);
 		//获取武器损耗类型
 		$wep_imp = $wepimprate[$pa['wep_kind']];
 		//武器是损耗型而非消耗型
@@ -841,7 +858,36 @@
 			//输出log
 			$log .= $pa['skill_c1_crit_log'];
 		}
-
+		#「瞄准」判定：
+		if(isset($pa['skill_c4_aiming']))
+		{
+			//获取瞄准倍率
+			$sk_p = get_skillvars('c4_aiming','phydmgr');
+			$p = 1 + ($sk_p / 100);
+			$dmg_p[]= $p; 
+			//输出log
+			$log.="<span class='yellow'>「瞄准」使{$pa['nm']}造成的物理伤害提高了{$sk_p}%！</span><br>";
+		}
+		#「咆哮」判定：
+		if(isset($pa['skill_c4_roar']))
+		{
+			//获取倍率
+			$sk_p = get_skillvars('c4_roar','phydmgr');
+			$p = 1 + ($sk_p / 100);
+			$dmg_p[]= $p; 
+			//输出log
+			$log.="<span class='yellow'>「咆哮」使{$pa['nm']}造成的物理伤害提高了{$sk_p}%！</span><br>";
+		}
+		#「穿杨」判定：
+		if(isset($pa['skill_c4_sniper']))
+		{
+			//获取倍率
+			$sk_p = get_skillvars('c4_sniper','phydmgr');
+			$p = 1 + ($sk_p / 100);
+			$dmg_p[]= $p; 
+			//输出log
+			$log.="<span class='yellow'>「穿杨」使{$pa['nm']}造成的物理伤害提高了{$sk_p}%！</span><br>";
+		}
 		return $dmg_p;
 	}
 
@@ -923,6 +969,20 @@
 			$log .= "{$pa['nm']}的攻击无视了{$pd['nm']}的伤害减半效果！<br>";
 		}
 
+		#「穿杨」效果判定：
+		if(isset($pa['skill_c4_sniper']) && !isset($pa['pierce_flag']) && !empty($pd['phy_def_flag']))
+		{
+			$dice = diceroll(99);
+			# 冴冴说这应该是odds……但是对不起，已经太迟了……^ ^;
+			$obbs = get_skillvars('c4_sniper','prfix');
+			if($dice < $obbs)
+			{
+				$pa['pierce_flag'] = 1;
+				$pd['phy_def_flag'] = 0;
+				$log .= "<span class=\"yellow\">{$pa['nm']}的攻击贯穿了{$pd['nm']}的防具！</span><br>";
+			}
+		}
+
 		return;
 	}
 
@@ -1002,6 +1062,48 @@
 		}
 
 		return $dmg_p;
+	}
+
+	//预受伤事件：
+	//提取判断pd是否防具受损、受伤，但log在结尾统一输出
+	function get_hurt_prepare_events(&$pa,&$pd,$active)
+	{
+		global $infatt_rev;
+		# pa致伤次数＞0时，计算pd防具受损或致伤情况
+		if($pa['inf_times']>0)
+		{
+			//获取可致伤部位
+			$inf_parts = $infatt_rev[$pa['wep_kind']];
+			$inf_att = Array();
+			for($i=0;$i<$pa['inf_times'];$i++)
+			{
+				//随机选择一个可致伤的部位
+				$aim = rand(0,count($inf_parts)-1);
+				$inf_aim = $inf_parts[$aim];
+				//对应部位致伤次数+1
+				$inf_att[$inf_aim] = isset($inf_att[$inf_aim]) ? $inf_att[$inf_aim]+1 : 1;
+			}
+			//记载防具受损、受伤情况
+			if(!empty($inf_att))
+			{
+				$pd['armor_hurt'] = Array('arb' => 0,'arh' => 0,'ara' => 0,'arf' => 0,);
+ 				foreach($inf_att as $ipt => $times)
+				{
+					$which = 'ar'.$ipt;
+					if(!isset(${'temp_'.$which.'s'})) ${'temp_'.$which.'s'} = $pd[$which.'s'];
+					if(${'temp_'.$which.'s'} > 0)
+					{
+						${'temp_'.$which.'s'} -= $times;
+						$pd['armor_hurt'][$which] += $times;
+					}
+					else
+					{
+						$pd['inf_hurt'][$ipt] = 1;
+					}
+				}
+			}
+		}
+		return;
 	}
 
 	//获取pa能造成的属性伤害队列
@@ -1181,6 +1283,24 @@
 		return $total_ex_dmg;
 	}
 
+	//计算属性总伤害加成
+	function get_ex_dmg_p(&$pa,&$pd,$active)
+	{
+		global $log;
+		$ex_dmg_p = Array();
+		#「咆哮」判定：
+		if(isset($pa['skill_c4_roar']))
+		{
+			//获取倍率
+			$sk_p = get_skillvars('c4_roar','exdmgr');
+			$p = 1 + ($sk_p / 100);
+			$ex_dmg_p[]= $p; 
+			//输出log
+			$log.="<span class='yellow'>「咆哮」使{$pa['nm']}造成的属性伤害提高了{$sk_p}%！</span><br>";
+		}
+		return $ex_dmg_p;
+	}
+
 	//计算最终伤害的系数变化
 	function get_final_dmg_p(&$pa,&$pd,$active)
 	{
@@ -1191,11 +1311,13 @@
 		if(isset($pa['skill_c2_raiding']))
 		{
 			$sk_p = get_skillvars('c2_raiding','findmgr');
-			$p = 1+($sk_p / 100);
-			$log.= "<span class='yellow'>「强袭」使{$pa['nm']}造成的最终伤害提高了{$sk_p}%！</span><br>";
-			$fin_dmg_p[] = $p;
+			if($sk_p)
+			{
+				$p = 1+($sk_p / 100);
+				$log.= "<span class='yellow'>「强袭」使{$pa['nm']}造成的最终伤害提高了{$sk_p}%！</span><br>";
+				$fin_dmg_p[] = $p;
+			}
 		}
-
 		# 「歼灭」效果判定：
 		if(isset($pa['skill_buff_annihil']))
 		{
@@ -1205,8 +1327,27 @@
 			if($sk_dice < $sk_obbs)
 			{
 				$sk_p = get_skillvars('buff_annihil','findmgr');
-				$p = $sk_p / 100;
-				$log.= "<span class='red'>暴击！</span><span class='lime'>「歼灭」使{$pa['nm']}造成的最终伤害提高了{$sk_p}%！</span><br>";
+				if($sk_p)
+				{
+					$p = $sk_p / 100;
+					$log.= "<span class='red'>暴击！</span><span class='lime'>「歼灭」使{$pa['nm']}造成的最终伤害提高了{$sk_p}%！</span><br>";
+					$fin_dmg_p[] = $p;
+				}
+			}
+		}
+		#「破甲」效果判定：
+		if(isset($pa['skill_c4_break']) && !empty($pd['inf_hurt']))
+		{
+			$sk_lvl = get_skilllvl('c4_break',$pa);
+			//获取伤害加成
+			$sk_p = get_skillvars('c4_break','infdmgr',$sk_lvl);
+			//获取致伤处
+			$inf_p = count($pd['inf_hurt']);
+			$sk_p *= $inf_p;
+			if($sk_p)
+			{
+				$p = 1+($sk_p / 100);
+				$log.= "<span class='yellow'>「破甲」使{$pa['nm']}造成的最终伤害提高了{$sk_p}%！</span><br>";
 				$fin_dmg_p[] = $p;
 			}
 		}
@@ -1293,6 +1434,13 @@
 			}
 		}
 
+		# 「爆头」技能效果
+		if(isset($pa['skill_c4_headshot']) && $fin_dmg > $pd['hp']*0.85 && $fin_dmg < $pd['hp'])
+		{
+			$fin_dmg =  $pd['hp'];
+			$log .= "<span class=\"yellow\">{$pa['nm']}的攻击直接将{$pd['nm']}爆头！</span><br>";
+		}
+
 		return $fin_dmg;
 	}
 
@@ -1360,35 +1508,22 @@
 			attr_extra_19_azure($pa,$pd,$active);
 		}
 		
-		# pa致伤次数＞0时，计算pd防具受损或致伤情况
-		if($pa['inf_times']>0)
+		# pd存在防具受损况，在这里应用
+		if(!empty($pd['armor_hurt']))
 		{
-			//获取可致伤部位
-			$inf_parts = $infatt_rev[$pa['wep_kind']];
-			$inf_att = Array();
-			for($i=0;$i<$pa['inf_times'];$i++)
+			foreach($pd['armor_hurt'] as $which => $times) armor_hurt($pd,$which,$times);
+		}
+
+		# pd存在受伤情况，在这里应用
+		if(!empty($pd['inf_hurt']))
+		{
+			foreach($pd['inf_hurt'] as $which => $times)
 			{
-				//随机选择一个可致伤的部位
-				$aim = rand(0,count($inf_parts)-1);
-				$inf_aim = $inf_parts[$aim];
-				//对应部位致伤次数+1
-				$inf_att[$inf_aim] = isset($inf_att[$inf_aim]) ? $inf_att[$inf_aim]+1 : 1;
-			}
-			//应用防具损伤/致伤效果
-			foreach($inf_att as $ipt => $times)
-			{
-				$which = 'ar'.$ipt;
-				if($pd[$which.'s'] > 0)
-				{
-					armor_hurt($pd,$which,$times);
-				}
-				else 
-				{
-					$flag = get_inf_rev($pd,$ipt);
-					if($flag) $log .= "{$pd['nm']}的<span class=\"red\">$infinfo[$ipt]</span>部受伤了！<br>";
-				}
+				$flag = get_inf_rev($pd,$which);
+				if($flag) $log .= "{$pd['nm']}的<span class=\"red\">$infinfo[$which]</span>部受伤了！<br>";
 			}
 		}
+
 		return;
 	}
 
@@ -1565,7 +1700,7 @@
 		# 获取社团技能对反击率的修正
 		$counter *= rev_get_clubskill_bonus_counter($pd['club'],$pd['skills'],$pd,$pa['club'],$pa['skills'],$pa);
 		# 获取社团技能对反击率的修正（新）
-		$counter *= get_clbskill_counterate($pa,$pd,$active,$counter);
+		$counter = get_clbskill_counterate($pa,$pd,$active,$counter);
 
 		# 获取异常状态对反击率的影响
 		if(!empty($pd['inf']))

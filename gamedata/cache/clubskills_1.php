@@ -9,7 +9,7 @@ $club_skillslist = Array
 	1  => Array('s_hp','s_ad','f_heal','c1_def','c1_crit','c1_sneak','c1_burnsp','c1_bjack','c1_veteran'), #'铁拳无敌',
 	2  => Array('s_hp','s_ad','f_heal','c2_butcher','c2_intuit','c2_raiding','c2_master','c2_annihil'), #'见敌必斩',
 	3  => Array('s_hp','s_ad','f_heal'), #'灌篮高手',
-	4  => Array('s_hp','s_ad','f_heal'), #'狙击鹰眼',
+	4  => Array('s_hp','s_ad','f_heal','c4_stable','c4_break','c4_aiming','c4_loot','c4_roar','c4_sniper','c4_headshot'), #'狙击鹰眼',
 	5  => Array('s_hp','s_ad','f_heal'), #'拆弹专家',
 	6  => Array('s_hp','s_ad','f_heal'), #'宛如疾风',
 	7  => Array('s_hp','s_ad','f_heal'), #'锡安成员',
@@ -56,6 +56,7 @@ $cskills_tags = Array
 	//'cd' => '<span tooltip="隐藏标签：有此标签的技能会在载入时检查是否处于冷却状态" class="gold">【冷却技】</span>',
 	'openning' => '<span tooltip="仅在先制发现敌人时可用" class="gold">【开幕技】</span>',
 	//'buff' => '<span tooltip="隐藏标签：代表这是一个临时性状态" class="gold">【状态】</span>',
+	//'unlock_battle_hidden' => '<span tooltip="隐藏标签：未解锁时不会在战斗界面显示" class="gold">【隐藏】</span>',
 );
 
 # 技能登记：
@@ -68,9 +69,8 @@ $cskills = Array
 		'tags' => Array(), //（非必填）定义一个技能带有的标签
 		'desc' => '', //（非必填）技能介绍，显示在技能面板上，可以使用[: :]设置一些静态参数，会在生成时自动替换对应参数。
 			// [:cost:]：消耗的技能点
-			// [:effect:]：增加指定属性
-			// [:effect:]att ：增加对应属性，可以将att替换为'effect'内定义过的键名
-			// [::]：还可以替换为任意'vars'内定义过的键名
+			// [::]：还可以替换为任意'effect'、'vars'内定义过的键名
+			// [^^]：可以被替换为在'pvars'内定义过的角色数据，比如lvl
 
 		'bdesc' => '', //（战斗技必填）显示在战斗界面上的短介绍，战斗技必填
 		'maxlvl' => 0, //（非必填）定义一个技能为可升级技能，并定义该技能的等级上限。注意：带有等级上限的技能如果设置了'cost'，'cost'的值必须是一个数组，对应每等级升级时需消耗的技能点
@@ -81,15 +81,15 @@ $cskills = Array
 
 		'status' => Array('hp','mhp'),//（非必填）每次升级时，直接提升的玩家属性。
 			// 和头衔入场奖励类似，支持所有在数据库中登记过的字段名
-			// 如果输入了Array('para' => Array('lvl'))，代表升级时会提升该技能的等级
+			// 依 skillpara|c1_crit-lvl 格式设定，可以改变储存在clbpara内的内容。具体格式为：键名|技能名-子键名 如没有子键名只需要填 键名|技能名
 		'effect' => Array(0 => Array('att' => 4, 'def' => 6),13 => Array('att' => 9, 'def' => 12),),//（非必填）每次升级时，直接提升的玩家属性对应的值。
 			// 键名为 0 时，代表默认情况下会增加的对应属性值。键值可以是一个由字段名构成的数组。也可以只是一个数字——代表会增加所有'status'中登记的属性值
-			// 键名为 其他数字 时，代表该数字对应【社团】会增加的属性值
-		'events' => Array(''); //（非必填）每次升级时会触发的事件，目前只有一个'heal'，代表全恢复
-
+			// 键名为 其他数字 时，代表该数字对应 社团 会增加的属性值
+		'events' => Array(''); //（非必填）每次升级时会触发的事件
 		'link' => Array(), //（非必填）技能的关联对象：技能在生成介绍模板时，会同时从关联对象中获取静态参数
 		'vars' => Array(), //（非必填）技能内预设的静态参数，比如'ragecost'怒气消耗。预设的参数可以自动填充'desc'中对应[::]的内容
 		'svars' => Array(), //（非必填）初次获得技能时，保存在clbpara['skillpara']['技能编号']中的动态技能参数。可以用来定义技能的使用次数等。
+		'pvars' => Array(), //（非必填）技能会受到对应的角色数据影响，可见技能-解牛；
 		'slast' => Array('lasttimes' => 0,'lastturns' => 0,), //（非必填）初次获得时效性技能时，保存在clbpara内的数据。暂时只支持以下参数：
 			// 'lasttimes' => 0,  代表技能持续的时间，保存在clbpara['lasttimes']['技能编号']中
 			// 'lastturns' => 0,  代表技能持续的回合，保存在clbpara['lastturns']['技能编号']中
@@ -102,29 +102,29 @@ $cskills = Array
 	's_hp' => Array
 	(
 		'name' => '生命',
-		'desc' => '每消耗<span class="lime">[:cost:]</span>技能点，生命上限<span class="yellow">+[:effect:]</span>点',
+		'desc' => '每消耗<span class="lime">[:cost:]</span>技能点，生命上限<span class="yellow">+[:hp:]</span>点',
 		'cost' => 1,
 		'input' => '升级',
 		'num_input' => 1,
-		'log' => '消耗了<span class="lime">[:cost:]</span>点技能点，你的生命上限增加了<span class="yellow">[:effect:]</span>点。<br>',
+		'log' => '消耗了<span class="lime">[:cost:]</span>点技能点，你的生命上限增加了<span class="yellow">[:hp:]</span>点。<br>',
 		'status' => Array('hp','mhp'),
 		'effect' => Array(
-			0 => 3, # 默认每消耗cost点技能点可增加3点生命值与最大生命值
-			13 => 6,# 根性兄贵每消耗cost点技能点可增加6点生命值与最大生命值
+			0 => Array( 'hp' => '+=::3', 'mhp' => '+=::3',), 
+			13 => Array( 'hp' => '+=::6', 'mhp' => '+=::6',), 
 		),
 	),
 	's_ad' => Array
 	(
 		'name' => '攻防',
-		'desc' => '每消耗<span class="lime">[:cost:]</span>技能点，基础攻击<span class="yellow">+[:effect:]att</span>点，基础防御<span class="yellow">+[:effect:]def</span>点',
+		'desc' => '每消耗<span class="lime">[:cost:]</span>技能点，基础攻击<span class="yellow">+[:att:]</span>点，基础防御<span class="yellow">+[:def:]</span>点',
 		'cost' => 1,
 		'input' => '升级',
 		'num_input' => 1,
-		'log' => '消耗了<span class="lime">[:cost:]</span>点技能点，你的基础攻击增加了<span class="yellow">[:effect:]att</span>点，基础防御增加了<span class="yellow">[:effect:]def</span>点。<br>',
+		'log' => '消耗了<span class="lime">[:cost:]</span>点技能点，你的基础攻击增加了<span class="yellow">[:att:]</span>点，基础防御增加了<span class="yellow">[:def:]</span>点。<br>',
 		'status' => Array('att','def'),
 		'effect' => Array(
-			0 => Array('att' => 4, 'def' => 6),
-			14 => Array('att' => 9, 'def' => 12),
+			0 => Array('att' => '+=::4', 'def' => '+=::6'),
+			14 => Array('att' => '+=::9', 'def' => '+=::12'),
 		),
 	),
 	'f_heal' => Array
@@ -159,10 +159,10 @@ $cskills = Array
 		'maxlvl' => 2,
 		'cost' => Array(10,11,-1),
 		'input' => '升级',
-		'log' => '升级成功。<br>',
-		'status' => Array('para' => Array('lvl')),
+		'log' => '<span class="yellow">技能「猛击」升级成功。</span>',
+		'status' => Array('skillpara|c1_crit-lvl'),
 		'effect' => Array(
-			0 => Array('lvl' => 1),
+			0 => Array('skillpara|c1_crit-lvl' => '+=::1'),
 		),
 		'svars' => Array(
 			'lvl' => 0, //初次获得时等级为0
@@ -255,7 +255,7 @@ $cskills = Array
 	(
 		'name' => '解牛',
 		'tags' => Array('battle'),
-		'desc' => '本次攻击附加<span class="yellow">([:fixdmg:]+[^lvl^])</span>点的最终伤害，且武器损耗率减半。<br>
+		'desc' => '本次攻击附加<span class="yellow">([:fixdmg:]+<span tooltip="基于你目前的等级">[^lvl^]</span>)</span>点的最终伤害，且武器损耗率减半。<br>
 		持斩系武器方可发动，消耗<span class="yellow">[:ragecost:]</span>点怒气',
 		'bdesc' => '本次攻击附加<span class="yellow">[:fixdmg:]+[^lvl^]</span>点伤害，且武器损耗率减半，消耗<span class="red">[:ragecost:]</span>怒气',
 		'vars' => Array(
@@ -279,10 +279,10 @@ $cskills = Array
 		'maxlvl' => 6,
 		'cost' => Array(4,4,4,4,5,5,-1),
 		'input' => '升级',
-		'log' => '升级成功。<br>',
-		'status' => Array('para' => Array('lvl')),
+		'log' => '<span class="yellow">技能「直感」升级成功。</span>',
+		'status' => Array('skillpara|c2_intuit-lvl'),
 		'effect' => Array(
-			0 => Array('lvl' => 1),
+			0 => Array('skillpara|c2_intuit-lvl' => '+=::1'),
 		),
 		'svars' => Array(
 			'lvl' => 0, //初次获得时等级为0
@@ -342,9 +342,9 @@ $cskills = Array
 		增益效果持续时间<span class="yellow">[:lasttimes:]</span>秒，冷却时间<span class="clan">[:cd:]</span>秒。<br>',
 		'input' => '发动',
 		'log' => '<span class="lime">技能「歼灭」发动成功。</span><br>',
-		'status' => Array('para' => Array('active')),
+		'status' => Array('skillpara|c2_annihil-active'),
 		'effect' => Array(
-			0 => Array('active' => 1),
+			0 => Array('skillpara|c2_annihil-active' => '=::1'),
 		),
 		'events' => Array('setstarttimes_c2_annihil','getskill_buff_annihil'),
 		'link' => Array('buff_annihil'),
@@ -358,13 +358,13 @@ $cskills = Array
 		'lockdesc' => Array(
 			'lvl' => '21级时解锁',
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">斩系武器</span>时可发动',
-			'skillpara-active' => '技能发动中！',
+			'skillpara|c2_annihil-active' => '技能发动中！',
 			'skillcooldown' => '技能冷却中！<br>剩余冷却时间：<span class="red">[:cd:]</span> 秒',
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 21',
 			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
-			'skillpara-active' => '[:active:] <= 0',
+			'skillpara|c2_annihil-active' => 'empty([:skillpara|c2_annihil-active:])',
 			'skillcooldown' => 0,
 		),
 	),
@@ -388,6 +388,180 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
+		),
+	),
+	'c4_stable' => Array
+	(
+		'name' => '静息',
+		'tags' => Array('passive'),
+		'desc' => '持射系武器时，你的命中率<span class="yellow">+[:accgain:]%</span>，连击命中率惩罚降低<span class="yellow">[:rbgain:]%</span><br>',
+		'maxlvl' => 6,
+		'cost' => Array(2,2,3,3,4,5,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">技能「静息」升级成功。</span><br>',
+		'status' => Array('skillpara|c4_stable-lvl','skillpara|c4_stable-costcount'),
+		'effect' => Array(
+			0 => Array(
+				'skillpara|c4_stable-lvl' => '+=::1',
+				'skillpara|c4_stable-costcount' => Array('=::2','=::4','=::7','=::10','=::14','=::19','=::19'),
+			),
+		),
+		'svars' => Array(
+			'lvl' => 0, //初次获得时等级为0
+			'costcount' => 0, //初次获得时花费点数为0
+		),
+		'vars' => Array(
+			'accgain' => Array(0,2,4,6,8,10,12), //命中增益
+			'rbgain' => Array(0,2,4,6,8,10,12), //连击命中惩罚降低
+		),
+		'lockdesc' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+		'unlock' => Array(
+			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+		),
+	),
+	'c4_break' => Array
+	(
+		'name' => '破甲',
+		'tags' => Array('passive'),
+		'desc' => '持射系武器时，你的攻击致伤率<span class="yellow">[:infrgain:]</span>，造成的防具损坏效果<span class="yellow">+[:inftfix:]</span><br>
+		战斗中每造成敌人一处受伤，最终伤害增加<span class="yellow">[:infdmgr:]%</span>',
+		'maxlvl' => 3,
+		'cost' => Array(6,6,7,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">技能「破甲」升级成功。</span><br>',
+		'status' => Array('skillpara|c4_break-lvl','skillpara|c4_break-costcount'),
+		'effect' => Array(
+			0 => Array(
+				'skillpara|c4_break-lvl' => '+=::1',
+				'skillpara|c4_break-costcount' => Array('=::6','=::12','=::19','=::19'),
+			),
+		),
+		'svars' => Array(
+			'lvl' => 0, //初次获得时等级为0
+			'costcount' => 0, //初次获得时花费点数为0
+		),
+		'vars' => Array(
+			'infrgain' => Array(0,50,100,150), //致伤率提高
+			'inftfix' => Array(0,1,2,4), //额外耐久削减
+			'infdmgr' => Array(0,10,20,30), //每处致伤提高最终伤害
+		),
+		'lockdesc' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+		'unlock' => Array(
+			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+		),
+	),
+	'c4_aiming' => Array
+	(
+		'name' => '瞄准',
+		'tags' => Array('battle'),
+		'desc' => '本次攻击物理伤害<span class="yellow">+[:phydmgr:]</span>，命中率<span class="yellow">+[:accgain:]%</span><br>
+		使用射系武器方可发动，消耗<span class="yellow">[:ragecost:]</span>点怒气',
+		'bdesc' => '本次攻击物理伤害<span class="yellow">+[:phydmgr:]%</span>，<br>命中率<span class="yellow">+[:accgain:]%</span><br>
+		消耗<span class="red">[:ragecost:]</span>怒气',
+		'vars' => Array(
+			'ragecost' => 20, 
+			'accgain' => 15, //命中增益
+			'phydmgr' => 20, //物理伤害加成
+		),
+		'lockdesc' => Array(
+			'lvl' => '3级时解锁',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 3',
+			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+		),
+	),
+	'c4_loot' => Array
+	(
+		'name' => '掠夺',
+		'tags' => Array('passive'),
+		'desc' => '当你在战斗中击杀敌人时，你立即获得<span class="yellow">(<span tooltip="基于你目前的等级">[^lvl^]</span>×[:goldr:])</span>点金钱。',
+		'vars' => Array(
+			'goldr' => 2, 
+		),
+		'pvars' => Array('lvl'),
+		'lockdesc' => Array(
+			'lvl' => '8级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 8',
+		),
+	),
+	'c4_roar' => Array
+	(
+		'name' => '咆哮',
+		'tags' => Array('battle','unlock_battle_hidden'),
+		'desc' => '本次攻击物理伤害<span class="yellow">+[:phydmgr:]%</span>，属性伤害<span class="yellow">+[:exdmgr:]%</span>，<br>
+		防具损坏效果<span class="yellow">+[:inftfix:]</span>。使用射系武器方可发动，消耗<span class="yellow">[:ragecost:]</span>点怒气',
+		'bdesc' => '物理伤害<span class="yellow">+[:phydmgr:]%</span>，属性伤害<span class="yellow">+[:exdmgr:]%</span>，
+		防具损坏效果<span class="yellow">+[:inftfix:]</span>。消耗<span class="red">[:ragecost:]</span>怒气',
+		'vars' => Array(
+			'ragecost' => 75, 
+			'inftfix' => 2, 
+			'phydmgr' => 20, //物理伤害加成
+			'exdmgr' => 80, //属性伤害加成
+			'disableskill' => 'c4_sniper',
+		),
+		'lockdesc' => Array(
+			'skillpara|c4_roar-disable' => '已无法使用该技能！',
+			'skillpara|c4_roar-active' => '点击「解锁」获得此技能，之后将无法使用技能「穿杨」<br>',
+			'lvl' => '已解锁，15级后可用',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+		),
+		'unlock' => Array(
+			'skillpara|c4_roar-disable' => 'empty([:skillpara|c4_roar-disable:])',
+			'skillpara|c4_roar-active' => '!empty([:skillpara|c4_roar-active:])',
+			'lvl' => '[:lvl:] >= 15',
+			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+		),
+	),
+	'c4_sniper' => Array
+	(
+		'name' => '穿杨',
+		'tags' => Array('battle','unlock_battle_hidden'),
+		'desc' => '物理伤害<span class="yellow">+[:phydmgr:]%</span>，命中率<span class="yellow">+[:accgain:]%</span>，射程<span class="yellow">+[:rangegain:]</span>，<span class="yellow">连击</span>无效，<br>
+		但<span class="yellow">[:prfix:]%概率贯穿</span>。使用远程武器/重型枪械方可发动，消耗<span class="yellow">[:ragecost:]</span>点怒气',
+		'bdesc' => '物理伤害<span class="yellow">+[:phydmgr:]%</span>，命中率<span class="yellow">+[:accgain:]%</span>，射程<span class="yellow">+[:rangegain:]</span>，<span class="yellow">连击</span>无效，
+		但<span class="yellow">[:prfix:]%概率贯穿</span>。消耗<span class="yellow">[:ragecost:]</span>点怒气',
+		'vars' => Array(
+			'ragecost' => 95, 
+			'rangegain' => 1,
+			'phydmgr' => 80, //物理伤害加成
+			'accgain' => 20, //命中率加成
+			'prfix' => 90, //贯穿触发率定值
+			'disableskill' => 'c4_roar',
+		),
+		'lockdesc' => Array(
+			'skillpara|c4_sniper-disable' => '已无法使用该技能！',
+			'skillpara|c4_sniper-active' => "点击「解锁」获得此技能，之后将无法使用技能「咆哮」<br>",
+			'lvl' => '已解锁，15级后可用',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+		),
+		'unlock' => Array(
+			'skillpara|c4_sniper-disable' => 'empty([:skillpara|c4_sniper-disable:])',
+			'skillpara|c4_sniper-active' => '!empty([:skillpara|c4_sniper-active:])',
+			'lvl' => '[:lvl:] >= 15',
+			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+		),
+	),
+	'c4_headshot' => Array
+	(
+		'name' => '爆头',
+		'tags' => Array('passive'),
+		'desc' => '使用射系武器造成超过<span class="yellow">[:killline:]%</span>目标当前生命值的伤害时，自动将其秒杀',
+		'vars' => Array(
+			'killline' => 85, 
+		),
+		'lockdesc' => Array(
+			'lvl' => '15级时解锁',
+			'skillpara|c4_stable-costcount+skillpara|c4_break-costcount' => '在「静息」和「破甲」上共计花费至少15技能点以解锁',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 15',
+			'skillpara|c4_stable-costcount+skillpara|c4_break-costcount' => '[:skillpara|c4_stable-costcount:]+[:skillpara|c4_break-costcount:] >= 15',
+			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
 		),
 	),
 	'inf_dizzy' => Array

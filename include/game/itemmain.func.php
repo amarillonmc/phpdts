@@ -1202,7 +1202,7 @@ function armor_hurt(&$pa,$which,$hurtvalue,$check_sk=0)
 {
 	global $log,$nosta;
 
-	if(!empty($pa[$which.'s']))
+	if(!empty($pa[$which.'s']) && !empty($hurtvalue))
 	{
 		//无限耐久的防具可以抵挡1次任意点损耗
 		if ($pa[$which.'s'] == $nosta)

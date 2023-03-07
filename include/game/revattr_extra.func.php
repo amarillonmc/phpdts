@@ -106,6 +106,28 @@
 			$sk_r = 1 + (get_skillvars('c2_intuit','accgain',$sk_lvl) / 100);
 			$hitrate *= $sk_r;
 		}
+		#「静息」效果判定：
+		if(isset($pa['skill_c4_stable']))
+		{
+			$sk_lvl = get_skilllvl('c4_stable',$pa);
+			//获取命中倍率加成
+			$sk_r = 1 + (get_skillvars('c4_stable','accgain',$sk_lvl) / 100);
+			$hitrate *= $sk_r;
+		}
+		#「瞄准」效果判定：
+		if(isset($pa['skill_c4_aiming']))
+		{
+			//获取命中倍率加成
+			$sk_r = 1 + (get_skillvars('c4_aiming','accgain') / 100);
+			$hitrate *= $sk_r;
+		}
+		#「穿杨」效果判定：
+		if(isset($pa['skill_c4_sniper']))
+		{
+			//获取命中倍率加成
+			$sk_r = 1 + (get_skillvars('c4_sniper','accgain') / 100);
+			$hitrate *= $sk_r;
+		}
 		return $hitrate;
 	}
 
@@ -120,7 +142,50 @@
 			$sk_r = 1 + (get_skillvars('c2_intuit','rbgain',$sk_lvl) / 100);
 			$hitrate *= $sk_r;
 		}
+		#「静息」效果判定：
+		if(isset($pa['skill_c4_stable']))
+		{
+			$sk_lvl = get_skilllvl('c4_stable',$pa);
+			//获取连击命中率加成
+			$sk_r = 1 + (get_skillvars('c4_stable','rbgain',$sk_lvl) / 100);
+			$hitrate *= $sk_r;
+		}
 		return $hitrate;
+	}
+
+	# 获取社团技能对致伤率（防具耐久损伤率）的修正（新）
+	function get_clbskill_infrate(&$pa,&$pd,$active,$infrate)
+	{
+		#「破甲」效果判定：
+		if(isset($pa['skill_c4_break']))
+		{
+			$sk_lvl = get_skilllvl('c4_break',$pa);
+			//获取致伤率加成
+			$sk_r = 1 + (get_skillvars('c4_break','infrgain',$sk_lvl) / 100);
+			$infrate *= $sk_r;
+		}
+		return $infrate;
+	}
+
+	# 获取社团技能对基础致伤效果（每次致伤会损耗多少点防具耐久）的修正（新）
+	function get_clbskill_inftimes(&$pa,&$pd,$active,$inftimes)
+	{
+		#「破甲」效果判定：
+		if(isset($pa['skill_c4_break']))
+		{
+			$sk_lvl = get_skilllvl('c4_break',$pa);
+			//获取致伤效果加成
+			$sk_fix = get_skillvars('c4_break','inftfix',$sk_lvl);
+			$inftimes += $sk_fix;
+		}
+		#「咆哮」效果判定：
+		if(isset($pa['skill_c4_roar']))
+		{
+			//获取致伤效果加成
+			$sk_fix = get_skillvars('c4_roar','inftfix');
+			$inftimes += $sk_fix;
+		}
+		return $inftimes;
 	}
 
 	# 获取社团技能对伤害浮动的修正（新）
