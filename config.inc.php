@@ -3,13 +3,13 @@
 // [EN]	Set below parameters according to your account information provided by your hosting
 // [CH] 以下变量请根据空间商提供的账号参数修?如有疑问,请联系服务器提供?
 
-	$dbhost = 'db';			// database server
+	$dbhost = 'localhost';			// database server
 						// 数据库服务器
 
 	$dbuser = 'root';			// database username
 						// 数据库用户名
 
-	$dbpw = 'mylittlepony';			// database password
+	$dbpw = '';			// database password
 						// 数据库密?
 
 	$dbname = 'acdts3';			// database name
@@ -64,7 +64,7 @@
 // [EN] !ATTENTION! Preservation or debugging for developing
 // [CH] 切勿修改以下变量,仅供程序开发调试用!
 
-	$database = 'mysqli';			// 'mysql' for MySQL version and 'pgsql' for PostgreSQL version
+	$database = 'pdo';			// 'mysql' for MySQL version and 'pgsql' for PostgreSQL version
 						// MySQL 版本请设?'mysql', PgSQL 版本请设?'pgsql'
 
 	$charset = 'utf-8';			// default character set, 'gbk', 'big5', 'utf-8' are available
@@ -93,7 +93,7 @@
 
 	$errorinfo = 0;				//是否开启错误信息提示，1为开启，0为关闭。开启会泄漏游戏安装路径
 // 以下为salt，请勿修改。
-	$salt = '281bf5959e8b8f6979295c45f53da1c3';
+	$salt = '3012becebcc626720409336f6375bcdd';
 
 // ============================================================================
 

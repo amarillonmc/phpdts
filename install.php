@@ -676,7 +676,7 @@ if(!$action) {
 	$curr_mysql_version = $db->result($query, 0);
   if(version_compare($curr_mysql_version, '3.23', '<')) {
 		$msg .= "<font color=\"#FF0000\">$lang[mysql_version_323]</font>\t";
-		$quit = TRUE;
+		//$quit = TRUE;
 	}
 
 	$curr_disk_space = intval(diskfreespace('.') / (1024 * 1024)).'M';
@@ -759,7 +759,7 @@ if(!$action) {
 		$dbpriv_droptable = $lang['yes'];
 	}
 
-	$query - $db->query("SELECT COUNT(*) FROM $tablepre"."users", 'SILENT');
+	//$query - $db->query("SELECT COUNT(*) FROM $tablepre"."users", 'SILENT');
 	if(!$db->error()) {
 		$msg .= "<font color=\"#FF0000\">$lang[db_not_null]</font>\t";
 		$alert = " onSubmit=\"return confirm('$lang[db_drop_table_confirm]');\"";
