@@ -112,6 +112,32 @@ function rs_game($mode = 0) {
 					}
 					//$npc['wp'] = $npc['wk'] = $npc['wg'] = $npc['wc'] = $npc['wd'] = $npc['wf'] = $npc['skill'];
 					if($npc['gd'] == 'r'){$npc['gd'] = rand(0,1) ? 'm':'f';}
+
+					# NPC技能初始化
+		
+					// 社团技能初始化
+					global $club_skillslist;
+					if(isset($club_skillslist[$npc['club']]))
+					{
+						if(empty($npc['clbpara'])) $npc['clbpara']['skill'] = Array();
+						$npc_csk = $club_skillslist[$npc['club']];
+						foreach($npc_csk as $sk) getclubskill($sk,$npc['clbpara']);
+					}
+					// 自定技能初始化
+					global $cskills;
+					if(!empty($npc['clubskill']))
+					{
+						foreach($npc['clubskill'] as $sk) getclubskill($sk,$npc['clbpara']);
+					}
+					// 自定技能参数初始化
+					if(!empty($npc['clubskillpara']))
+					{
+						foreach($npc['clubskillpara'] as $sk => $skarr)
+						{
+							foreach($skarr as $skpara => $skvalue) set_skillpara($sk,$skpara,$skvalue,$npc['clbpara']);
+						}
+					}
+					
 					//初始化NPC所在位置
 					global $hidding_typelist,$deepzones;
 					//女主不会刷新在危险区域
@@ -126,6 +152,7 @@ function rs_game($mode = 0) {
 						do{$rpls=rand(1,$plsnum-1);}while ($rpls==34);
 					}
 					if($npc['pls'] == 99){$npc['pls'] = $rpls; }
+
 					$npc['state'] = 0;
 					$npc=player_format_with_db_structure($npc);
 					$db->array_insert("{$tablepre}players", $npc);

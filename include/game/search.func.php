@@ -628,7 +628,7 @@ function discover($schmode = 0) {
 					//include_once GAME_ROOT.'./include/game/clubskills.func.php';
 					//$active_r *= get_clubskill_bonus_active($club,$skills,$edata['club'],$edata['skills']);
 					//if ($active_r>96) $active_r=96;
-					include_once GAME_ROOT.'./include/game/dice.func.php';
+					//include_once GAME_ROOT.'./include/game/dice.func.php';
 					include_once GAME_ROOT.'./include/game/revbattle.func.php';
 					include_once GAME_ROOT.'./include/game/revattr.func.php';
 					//获取并保存当前玩家数据

@@ -8,7 +8,7 @@ $club_skillslist = Array
 (
 	1  => Array('s_hp','s_ad','f_heal','c1_def','c1_crit','c1_sneak','c1_burnsp','c1_bjack','c1_veteran'), #'铁拳无敌',
 	2  => Array('s_hp','s_ad','f_heal','c2_butcher','c2_intuit','c2_raiding','c2_master','c2_annihil'), #'见敌必斩',
-	3  => Array('s_hp','s_ad','f_heal'), #'灌篮高手',
+	3  => Array('s_hp','s_ad','f_heal','c3_pitchpow','c3_enchant','c3_potential','c3_hawkeye','c3_offset','c3_numerous'), #'灌篮高手',
 	4  => Array('s_hp','s_ad','f_heal','c4_stable','c4_break','c4_aiming','c4_loot','c4_roar','c4_sniper','c4_headshot'), #'狙击鹰眼',
 	5  => Array('s_hp','s_ad','f_heal'), #'拆弹专家',
 	6  => Array('s_hp','s_ad','f_heal'), #'宛如疾风',
@@ -52,7 +52,7 @@ $cskills_tags = Array
 (
 	'battle' => '<span tooltip="可以在战斗中主动使用" class="gold">【战斗技】</span>',
 	'passive' => '<span tooltip="满足条件时自动触发" class="gold">【被动技】</span>',
-	'active' => '<span tooltip="需主动启用才能产生效果" class="gold">【主动技】</span>',
+	'active' => '<span tooltip="在主动启动后才会产生效果" class="gold">【主动技】</span>',
 	//'cd' => '<span tooltip="隐藏标签：有此标签的技能会在载入时检查是否处于冷却状态" class="gold">【冷却技】</span>',
 	'openning' => '<span tooltip="仅在先制发现敌人时可用" class="gold">【开幕技】</span>',
 	//'buff' => '<span tooltip="隐藏标签：代表这是一个临时性状态" class="gold">【状态】</span>',
@@ -370,7 +370,7 @@ $cskills = Array
 	),
 	'buff_annihil' => Array
 	(
-		'name' => '歼灭',
+		'name' => '[状态]歼灭',
 		'tags' => Array('buff'),
 		'desc' => '<span class="lime">「歼灭」生效中！<br>
 		增益效果剩余时间：<span class="yellow">[^lasttimes^]</span> 秒</span>',
@@ -388,6 +388,172 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
+		),
+	),
+	'c3_pitchpow' => Array
+	(
+		'name' => '臂力',
+		'tags' => Array('passive'),
+		'desc' => '手持投系武器时，反击率<span class="yellow">+[:countergain:]%</span>',
+		'maxlvl' => 6,
+		'cost' => Array(2,2,2,2,3,3,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">技能「臂力」升级成功。</span>',
+		'status' => Array('skillpara|c3_pitchpow-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c3_pitchpow-lvl' => '+=::1'),
+		),
+		'svars' => Array(
+			'lvl' => 0, //初次获得时等级为0
+		),
+		'vars' => Array(
+			'countergain' => Array(0,20,40,60,80,100,125), 
+		),
+		'lockdesc' => '武器不适用，持<span class="yellow">投系武器</span>时生效',
+		'unlock' => Array(
+			'wepk+wep_kind' => "[:wepk:] == 'WC' || [:wepk:] == 'WCF' || [:wepk:] == 'WCP' || [:wep_kind:] == 'C'",
+		),
+	),
+	'c3_enchant' => Array
+	(
+		'name' => '附魔',
+		'tags' => Array('battle','passive'),
+		'desc' => '<span tooltip="主动发动时，若角色身上不存在伤害类属性，则会为其临时附加一项随机属性。"><span class="grey">[附加提示]</span>
+		主动发动时，<br>在本次施加的下列属性中随机选择一种，<br>你持投系武器造成的该属性伤害永久<span class="yellow">+[:exdmggain:]%</span>(最高[:exdmgmax:]%)。<br>
+		持投掷兵器时生效，消耗<span class="yellow">[:ragecost:]</span>点怒气。<br>
+		目前各属性加成统计：<br></span>',
+		'bdesc' => '<span tooltip="主动发动时，若角色身上不存在伤害类属性，则会为其临时附加一项随机属性。"><span class="grey">[附加提示]</span>
+		发动后将使某一随机属性伤害永久<span class="yellow">+[:exdmggain:]%</span>；消耗<span class="red">[:ragecost:]</span>怒气</span>',
+		'vars' => Array(
+			'ragecost' => 8, 
+			'exdmggain' => 3, //单项属性伤害加成
+			'exdmgmax' => 150, //单项属性伤害加成上限
+			'exdmgarr' => Array( //单项属性与加成的对应关系
+				'u' => 'ur', 'f' => 'ur',
+				'i' => 'ir', 'k' => 'ir',
+				'e' => 'er',
+				'p' => 'pr',
+				'w' => 'wr',
+				'd' => 'dr',
+			),
+			'exdmgdesc' => Array( //介绍该附魔对应的加成关系
+				'u' => '火焰/灼焰', 
+				'i' => '冻气/冰华', 
+				'p' => '毒性',
+				'w' => '音波',
+				'e' => '电气',
+				'd' => '爆炸',
+			),
+		),
+		'svars' => Array(
+			'ur' => 0, 
+			'ir' => 0, 
+			'pr' => 0, 
+			'er' => 0, 
+			'wr' => 0, 
+			'dr' => 0, 
+			'active_t' => 0,//技能发动次数
+		),
+		'lockdesc' => Array(
+			'lvl' => '5级时解锁',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">投系武器</span>时生效',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 5',
+			'wepk+wep_kind' => "[:wepk:] == 'WC' || [:wepk:] == 'WCF' || [:wepk:] == 'WCP' || [:wep_kind:] == 'C'",
+		),
+	),
+	'c3_potential' => Array
+	(
+		'name' => '潜能',
+		'tags' => Array('battle'),
+		'desc' => '本次攻击必中且物理伤害<span class="yellow">+[:phydmgr:]%</span><br>
+		持投系武器方可发动，消耗<span class="yellow">[:ragecost:]</span>点怒气',
+		'bdesc' => '攻击必中且物理伤害<span class="yellow">+[:phydmgr:]%</span><br>消耗<span class="red">[:ragecost:]</span>怒气',
+		'vars' => Array(
+			'ragecost' => 70, 
+			'phydmgr' => 20, 
+		),
+		'lockdesc' => Array(
+			'lvl' => '7级时解锁',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">投系武器</span>时生效',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 7',
+			'wepk+wep_kind' => "[:wepk:] == 'WC' || [:wepk:] == 'WCF' || [:wepk:] == 'WCP' || [:wep_kind:] == 'C'",
+		),
+	),
+	'c3_hawkeye' => Array
+	(
+		'name' => '枭眼',
+		'tags' => Array('passive'),
+		'desc' => '如果你的武器射程不小于敌人，你对其先制攻击率<span class="yellow">+[:activer:]%</span>，<br>
+		其攻击你时命中率<span class="yellow">-[:accloss:]%</span>，连击命中率惩罚<span class="yellow">+[:rbloss:]%</span>',
+		'vars' => Array(
+			'activer' => 10, 
+			'accloss' => 12, 
+			'rbloss' => 8,
+		),
+		'lockdesc' => Array(
+			'lvl' => '9级时解锁',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">投系武器</span>时生效',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 9',
+			'wepk+wep_kind' => "[:wepk:] == 'WC' || [:wepk:] == 'WCF' || [:wepk:] == 'WCP' || [:wep_kind:] == 'C'",
+		),
+	),
+	'c3_offset' => Array
+	(
+		'name' => '对撞',
+		'tags' => Array('active'),
+		'desc' => '持投系武器时，你有<span class="yellow">(<span tooltip="取决于你的投系熟练度">[^wc^]</span>×[:chancegainr:])%</span>的几率(<span class="yellow">上限[:maxchance:]%</span>)，<br>
+		在受到伤害时抵挡<span class="yellow">(武器效果值的平方根×[:wepeffectr:])</span>点伤害(<span class="yellow">上限[:maxeffect:]点</span>)。<br>
+		成功抵挡伤害时，会使武器效果降低<span class="red">[:wepsloss:]%</span><br>
+		点击右侧的<span class="yellow">“切换”</span>按键可以随时激活或禁用该技能。<br>
+		[^skill-active^]',
+		'input' => '切换',
+		'log' => '<span class="yellow">切换了「对撞」的状态。</span>',
+		'events' => Array('active|c3_offset'),
+		'vars' => Array(
+			'maxeffect' => 3000,
+			'wepeffectr' => 10,
+			'wepsloss' => 3,
+			'minchance' => 0,
+			'maxchance' => 70,
+			'chancegainr' => 0.1,
+		),
+		'svars' => Array(
+			'active' => 0, 
+		),
+		'pvars' => Array('wc','skill-active'),
+		'lockdesc' => Array(
+			'lvl' => '13级时解锁',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">投系武器</span>时生效',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 13',
+			'wepk+wep_kind' => "[:wepk:] == 'WC' || [:wepk:] == 'WCF' || [:wepk:] == 'WCP' || [:wep_kind:] == 'C'",
+		),
+	),
+	'c3_numerous' => Array
+	(
+		'name' => '百出',
+		'tags' => Array('passive'),
+		'desc' => '持投系武器时物理伤害<span class="yellow b">+([:dmgr:]×[:skillpara|c3_enchant-active_t:])%</span><br>
+		其中<span class="yellow">×</span>后的数值是你发动<span class="yellow">“附魔”</span>的次数<br>',
+		'vars' => Array(
+			'dmgr' => 2,
+		),
+		'pvars' => Array('skillpara|c3_enchant-active_t'),
+		'lockdesc' => Array(
+			'skillpara|c3_enchant-ur+skillpara|c3_enchant-ir+skillpara|c3_enchant-pr+skillpara|c3_enchant-er+skillpara|c3_enchant-wr+skillpara|c3_enchant-dr' => '“附魔”中最高的属性伤害加成达到120%时解锁',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">投系武器</span>时生效',
+		),
+		//……
+		'unlock' => Array(
+			'skillpara|c3_enchant-ur+skillpara|c3_enchant-ir+skillpara|c3_enchant-pr+skillpara|c3_enchant-er+skillpara|c3_enchant-wr+skillpara|c3_enchant-dr' => '[:skillpara|c3_enchant-ur:] >= 120 || [:skillpara|c3_enchant-ir:] >= 120 || [:skillpara|c3_enchant-er:] >= 120 || [:skillpara|c3_enchant-wr:] >= 120 || [:skillpara|c3_enchant-pr:] >= 120 || [:skillpara|c3_enchant-dr:] >= 120',
+			'wepk+wep_kind' => "[:wepk:] == 'WC' || [:wepk:] == 'WCF' || [:wepk:] == 'WCP' || [:wep_kind:] == 'C'",
 		),
 	),
 	'c4_stable' => Array
@@ -575,12 +741,6 @@ $cskills = Array
 			'ragecost' => 100, 
 			'limit' => 2000,
 			'notype' => Array(88,92),//不能用来抡的NPC
-		),
-		'lockdesc' => Array(
-			'rage' => '怒气不足，需要<span class="red">100</span>点怒气才能使用',
-		),
-		'unlock' => Array(
-			'rage' => '[:rage:] > 100',
 		),
 	),
 	'inf_dizzy' => Array

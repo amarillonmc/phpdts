@@ -574,13 +574,13 @@ function parse_info_desc($info,$type,$vars='',$short=0)
 	# 处理名字
 	if($type == 'm')
 	{
-		$tinfo = preg_replace('/锋利的|电气|毒性|\[\+.*\]|-改/', '', $info);
-		if(isset($tps_name[$tinfo]) && isset($tps_names[$tps_name[$tinfo]]))
+		$tinfo = !isset($tps_name[$info]) && !isset($tps_names[$info]) ? preg_replace('/锋利的|电气|毒性|\[\+.*\]|-改/', '', $info) : $info;
+		if(isset($tps_name[$tinfo]) && !is_array($tps_name[$tinfo]) && isset($tps_names[$tps_name[$tinfo]]))
 		{
 			$ts = $tps_names[$tps_name[$tinfo]];
 			$tinfo_f = isset($ts['class']) ? "class=\"{$ts['class']}\"" : '';
 			$tinfo_tp = isset($ts['title']) ? "tooltip=\"{$ts['title']}\"" : '';
-			return "<span {$tinfo_tp} {$tinfo_f}>{$tinfo}</span>";
+			return "<span {$tinfo_tp} {$tinfo_f}>{$info}</span>";
 		}
 		elseif(isset($tps_name[$tinfo]))
 		{
@@ -611,7 +611,7 @@ function parse_info_desc($info,$type,$vars='',$short=0)
 	# 处理属性
 	if($type == 'sk')
 	{
-		$ret = '-^-';
+		$ret = '--';
 		# 处理该数量以上的属性时，将属性格式变为+...+的缩写
 		$short_nums = 4;
 		# 技能书特殊处理
@@ -631,7 +631,7 @@ function parse_info_desc($info,$type,$vars='',$short=0)
 			if(!is_array($info)) $info = get_itmsk_array($info); 
 			# 计数
 			$sk_max = count($info); $sk_nums = 0; 
-			$sk_info = '';
+			$sk_info = ''; $sk_tp = '';
 			foreach($info as $sk)
 			{
 				$csk = $itemspkinfo[$sk];

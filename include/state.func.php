@@ -228,7 +228,7 @@ function kill($death, $dname, $dtype = 0, $dpid = 0, $annex = '', &$revival_flag
 	//依次判定复活效果
 	if (!$revival_flag && $weather == 17)
 	{
-		include_once GAME_ROOT.'./include/game/dice.func.php';
+		//include_once GAME_ROOT.'./include/game/dice.func.php';
 		$aurora_rate = $dtype ? 1 : 10; //NPC概率1% 玩家概率10%
 		$aurora_dice = diceroll(100);
 		if($aurora_dice<=$aurora_rate)

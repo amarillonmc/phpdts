@@ -3,7 +3,7 @@
 	if(!defined('IN_GAME')) {
 		exit('Access Denied');
 	}
-	include_once GAME_ROOT.'./include/game/dice.func.php';
+	//include_once GAME_ROOT.'./include/game/dice.func.php';
 	include_once GAME_ROOT.'./include/game/attr.func.php';
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
 	include_once GAME_ROOT.'./include/game/combat.func.php';
@@ -674,7 +674,7 @@
 				}
 				//获取最终伤害的定值变化（伤害制御、剔透）
 				$fin_damage_fix = get_final_dmg_fix($pa,$pd,$active,$damage);
-				if($fin_damage_fix > 0) 
+				if($fin_damage_fix != $damage) 
 				{
 					$o_damage = $damage;
 					$damage = $fin_damage_fix;

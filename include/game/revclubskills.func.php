@@ -6,7 +6,7 @@
 
 	# 新社团技能：
 
-	include_once GAME_ROOT.'./include/game/dice.func.php';
+	//include_once GAME_ROOT.'./include/game/dice.func.php';
 
 	# 获得指定技能 $sk：技能名；$para：$clbpara
 	function getclubskill($sk,&$para)
@@ -58,21 +58,13 @@
 			$sk_key = array_search($sk,$para['skill']);
 			unset($para['skill'][$sk_key]);
 			# 失去指定技能时，注销对应技能参数
-			if(!empty($para['skillpara'][$sk]))
-			{
-				unset($para['skillpara'][$sk]);
-			}
+			if(!empty($para['skillpara'][$sk])) unset($para['skillpara'][$sk]);
+			# 失去指定技能时，注销对应技能开始时间
+			if(!empty($para['starttimes'][$sk])) unset($para['starttimes'][$sk]);
 			# 失去指定技能时，注销对应技能持续时间
-			if(!empty($para['lasttimes'][$sk]))
-			{
-				unset($para['lasttimes'][$sk]);
-				unset($para['starttimes'][$sk]);
-			}
+			if(!empty($para['lasttimes'][$sk])) unset($para['lasttimes'][$sk]);
 			# 失去指定技能时，注销对应技能持续回合
-			if(!empty($para['lastturns'][$sk]))
-			{
-				unset($para['lastturns'][$sk]);
-			}
+			if(!empty($para['lastturns'][$sk])) unset($para['lastturns'][$sk]);
 		}
 		return;
 	}
@@ -256,6 +248,15 @@
 				return 0;
 			}
 		}
+		# 事件：切换技能的激活状态
+		if(strpos($event,'active|') === 0)
+		{
+			$event = explode('|',$event); $sk = $event[1];
+			$now_active = get_skillpara($sk,'active',$clbpara);
+			$active = $now_active ? 0 : 1;
+			$log .= $active ? "<span class='yellow'>技能已激活！</span><br>" : "<span class='yellow'>停用了技能效果。</span><br>" ; 
+			set_skillpara($sk,'active',$active,$clbpara);
+		}
 		return 1;
 	}
 
@@ -310,10 +311,11 @@
 	function check_skill_unlock($sk,$data=NULL)
 	{
 		global $cskills,$now;
-		if(!$data) $data = current_player_save();
+		if(empty($data)) $data = current_player_save();
 		$data['clbpara'] = get_clbpara($data['clbpara']);
-		if(!in_array($sk,$data['clbpara']['skill']))
+		if(empty($data['clbpara']['skill']) || !in_array($sk,$data['clbpara']['skill']))
 		{
+			//echo "技能{$sk}未解锁<br>";
 			return "技能未解锁！<br>";
 		}
 		if(!empty($cskills[$sk]['unlock']))
@@ -395,8 +397,8 @@
 		return $key;
 	}
 
-	# 技能是否可激活，返回0时为可激活，否则返回对应的未满足条件 $sk：技能名；$data：角色数据
-	function check_skill_active($sk,$data)
+	# 技能是否满足消耗条件，返回0时为可激活，否则返回对应的未满足条件 $sk：技能名；$data：角色数据
+	function check_skill_cost($sk,$data)
 	{
 		global $cskills;
 		# 不满足激活条件输出的文本，先写在这里，之后挪到配置文件里
@@ -456,7 +458,11 @@
 	# 变更保存在clbpara['skillpara']内的指定技能参数
 	function set_skillpara($sk,$skpara,$skdata,&$para)
 	{
-		$para['skillpara'][$sk][$skpara] = $skdata;
+		# 要有这个技能才能设置参数
+		if(in_array($sk,$para['skill']))
+		{
+			$para['skillpara'][$sk][$skpara] = $skdata;
+		}
 		return;
 	}
 
@@ -567,7 +573,18 @@
 			foreach($cskill['vars'] as $key => $var)
 			{
 				# 静态参数是数组的情况下 选用当前等级对应的参数
-				if(is_array($var)) $var = $var[$now_clvl];
+				if(is_array($var)) 
+				{
+					if(isset($now_clvl))
+					{
+						$var = $var[$now_clvl];
+					}
+					else 
+					{
+						# 静态参数是数组，但是却没有传入技能等级，说明可能是其他类型的参数，直接跳过
+						continue;
+					}
+				}
 				# 替换描述文本
 				$sk_desc = str_replace("[:".$key.":]",$var,$sk_desc);
 			}
@@ -589,6 +606,23 @@
 						$sk_desc = str_replace("[^".$pvar."^]",$tpvar,$sk_desc);
 					}
 				}	
+				elseif($pvar == 'skill-active')
+				{
+					if(isset($data['clbpara']['skillpara'][$sk]['active']))
+					{
+						$tpvar = $data['clbpara']['skillpara'][$sk]['active'];
+						$tpdesc = $tpvar ? "<span class='clan'>【技能效果已启用】</span>" : "<span class='grey'>【技能效果已关闭】</span>";
+						$sk_desc = str_replace("[^".$pvar."^]",$tpdesc,$sk_desc);
+					}
+				}
+				elseif(strpos($pvar,'skillpara') !== false)
+				{
+					# 格式化置换条件对应的置换内容
+					$skey_value = parse_skillrules($pvar);
+					$skey_value = eval("return $skey_value;");
+					# 置换对应内容
+					$sk_desc = str_replace("[:{$pvar}:]",$skey_value,$sk_desc);
+				}
 				else 
 				{
 					if(isset($data[$pvar]))

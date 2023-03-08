@@ -3,7 +3,7 @@ if (! defined ( 'IN_GAME' )) {
 	exit ( 'Access Denied' );
 }
 
-include_once GAME_ROOT.'./include/game/dice.func.php';
+//include_once GAME_ROOT.'./include/game/dice.func.php';
 
 function getskills(&$arr)
 {

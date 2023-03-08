@@ -594,7 +594,6 @@ if($hp > 0){
 			$p12[1]=1; $p12[2]=2;
 			$mode = 'command';
 		} elseif ($mode == 'revskpts') {
-			include_once GAME_ROOT.'./include/game/revclubskills.func.php';
 			$sk = substr($command,9);
 			if(isset($cskills[$sk]))
 			{

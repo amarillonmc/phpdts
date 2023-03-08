@@ -85,7 +85,7 @@ function updateskill(&$data=NULL)
 	if ($club==14) { $att+=300; $def+=300; }
 	
 	# 变更社团时 获取社团技能
-	include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+	//include_once GAME_ROOT.'./include/game/revclubskills.func.php';
 	if(empty($data))
 	{
 		$cks = $club_skillslist[$club];
@@ -103,7 +103,7 @@ function lostclub(&$data=NULL)
 	global $club ,$clbpara, $club_skillslist;
 	if(!$club) return 0;
 	# 丢失原社团时 注销社团技能
-	include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+	//include_once GAME_ROOT.'./include/game/revclubskills.func.php';
 	if(!isset($data))
 	{
 		$cks = $club_skillslist[$club];
