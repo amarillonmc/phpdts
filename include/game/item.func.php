@@ -604,7 +604,7 @@ function itemuse($itmn) {
 			global $cskills,$clbpara;
 			if(!empty($itmsk) && isset($cskills[$itmsk]))
 			{
-				include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+	
 				$flag = getclubskill($itmsk,$clbpara);
 				if($flag)
 				{
@@ -819,7 +819,7 @@ function itemuse($itmn) {
 		if(strpos( $itmk, 'ps' ) === 0){//银色盒子
 			include_once config('randomitem',$gamecfg);
 			//1st case of the new diceroll system.
-			include_once GAME_ROOT.'./include/game/dice.func.php';
+			//include_once GAME_ROOT.'./include/game/dice.func.php';
 			$dice = diceroll(100);
 			//$dice = rand(1,100);
 			if($dice <= 75){//一般物品
@@ -875,7 +875,7 @@ function itemuse($itmn) {
 			}else{ #防呆
 				include_once config('randomO1',$gamecfg);
 			}
-			include_once GAME_ROOT.'./include/game/dice.func.php';
+			//include_once GAME_ROOT.'./include/game/dice.func.php';
 			$dice = diceroll(1000);
 			if($dice <= 550){//一般物品
 				$itemflag = $itmlow;

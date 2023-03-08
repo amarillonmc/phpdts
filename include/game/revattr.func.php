@@ -4,9 +4,9 @@
 		exit('Access Denied');
 	}
 
-	include_once GAME_ROOT.'./include/game/dice.func.php';
+	//include_once GAME_ROOT.'./include/game/dice.func.php';
 	include_once GAME_ROOT.'./include/game/clubskills.func.php';
-	include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+	//include_once GAME_ROOT.'./include/game/revclubskills.func.php';
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
 	include_once GAME_ROOT.'./include/game/revattr_extra.func.php';
 
@@ -53,7 +53,7 @@
 		#「穿杨」效果判定：
 		if(isset($pa['skill_c4_sniper']))
 		{
-			//获取命中倍率加成
+			//获取射程加成
 			$sk_rn = get_skillvars('c4_sniper','rangegain');
 			$range += $sk_rn;
 		}
@@ -125,7 +125,7 @@
 	//获取额外属性，该属性不受三抽影响
 	function get_extra_ex_array(&$pa)
 	{
-		global $log;
+		global $log,$itemspkinfo;
 		# 「百战」效果判定：
 		if(isset($pa['skill_c1_veteran']))
 		{
@@ -307,7 +307,7 @@
 	{
 		global $nosta,$wepimprate,$infobbs;
 
-		//获取基础连击命中率衰减系数
+		//获取基础连击命中率衰减系数：注意，这个值越高衰减越慢
 		$hitratebonus = 0.8;
 		//获取社团技能对连击命中率衰减系数的修正
 		$hitratebonus *= rev_get_clubskill_bonus_hitrate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
@@ -339,7 +339,7 @@
 			$wep_imp_obbs *= rev_get_clubskill_bonus_imprate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
 			//社团技能对武器损伤系数的修正（新）
 			# 「解牛」技能效果：
-			if(isset($pa['skill_c2_butcher']))
+			if(isset($pa['bskill_c2_butcher']))
 			{
 				$wep_imp_obbs *= get_skillvars('c2_butcher','wepimpr');
 			}
@@ -615,16 +615,13 @@
 			rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
 		}
 		# 获取pd社团技能对防御力的加成（新）
-		if(!empty($pd['clbpara']['skill']))
+		# 「格挡」技能加成
+		if(isset($pd['skill_c1_def']))
 		{
-			# 「格挡」技能加成
-			if(!check_skill_unlock('c1_def',$pd))
-			{
-				global $cskills;
-				$def_trans_rate = $cskills['c1_def']['vars']['trans'];
-				$def_maxtrans = $cskills['c1_def']['vars']['maxtrans'];
-				$sk_def = min($def_maxtrans, $def_trans_rate * $pd['wepe'] / 100);
-			}
+			global $cskills;
+			$def_trans_rate = $cskills['c1_def']['vars']['trans'];
+			$def_maxtrans = $cskills['c1_def']['vars']['maxtrans'];
+			$sk_def = min($def_maxtrans, $def_trans_rate * $pd['wepe'] / 100);
 		}
 		# 汇总：
 		$total_def = $base_def+$equip_def;
@@ -858,34 +855,44 @@
 			//输出log
 			$log .= $pa['skill_c1_crit_log'];
 		}
+		#「潜能」判定：
+		if(isset($pa['bskill_c3_potential']))
+		{
+			$sk_p = get_skillvars('c3_potential','phydmgr');
+			$p = 1 + ($sk_p / 100);
+			$dmg_p[]= $p; 
+			$log.="<span class='yellow'>{$pa['nm']}爆发潜能打出了致命一击！</span><br>";
+		}
+		#「百出」判定：
+		if(isset($pa['skill_c3_numerous']))
+		{
+			$sk_p = get_skillvars('c3_numerous','dmgr')*get_skillpara('c3_enchant','active_t',$pa['clbpara']);
+			$p = 1 + ($sk_p / 100);
+			$dmg_p[]= $p; 
+			$log.="<span class='yellow'>{$pa['nm']}打得{$pd['nm']}落花流水，物理伤害增加了{$sk_p}%！</span><br>";
+		}
 		#「瞄准」判定：
 		if(isset($pa['skill_c4_aiming']))
 		{
-			//获取瞄准倍率
 			$sk_p = get_skillvars('c4_aiming','phydmgr');
 			$p = 1 + ($sk_p / 100);
 			$dmg_p[]= $p; 
-			//输出log
 			$log.="<span class='yellow'>「瞄准」使{$pa['nm']}造成的物理伤害提高了{$sk_p}%！</span><br>";
 		}
 		#「咆哮」判定：
 		if(isset($pa['skill_c4_roar']))
 		{
-			//获取倍率
 			$sk_p = get_skillvars('c4_roar','phydmgr');
 			$p = 1 + ($sk_p / 100);
 			$dmg_p[]= $p; 
-			//输出log
 			$log.="<span class='yellow'>「咆哮」使{$pa['nm']}造成的物理伤害提高了{$sk_p}%！</span><br>";
 		}
 		#「穿杨」判定：
 		if(isset($pa['skill_c4_sniper']))
 		{
-			//获取倍率
 			$sk_p = get_skillvars('c4_sniper','phydmgr');
 			$p = 1 + ($sk_p / 100);
 			$dmg_p[]= $p; 
-			//输出log
 			$log.="<span class='yellow'>「穿杨」使{$pa['nm']}造成的物理伤害提高了{$sk_p}%！</span><br>";
 		}
 		return $dmg_p;
@@ -963,7 +970,7 @@
 		}
 
 		# 「强袭」效果判定：
-		if(isset($pa['skill_c2_raiding']) && isset($pd['phy_def_flag']) && $pd['phy_def_flag'] != 2)
+		if(isset($pa['bskill_c2_raiding']) && isset($pd['phy_def_flag']) && $pd['phy_def_flag'] != 2)
 		{
 			$pd['phy_def_flag'] = 0;
 			$log .= "{$pa['nm']}的攻击无视了{$pd['nm']}的伤害减半效果！<br>";
@@ -1109,7 +1116,7 @@
 	//获取pa能造成的属性伤害队列
 	function get_base_ex_att_array(&$pa,&$pd,$active)
 	{
-		global $ex_attack;
+		global $ex_attack,$log,$itemspkinfo;
 		$ex_keys =Array();
 		foreach($pa['ex_keys'] as $ex)
 		{
@@ -1118,6 +1125,34 @@
 				//把$ex_attack和$pa['ex_keys']位置调换可过滤重复属性，现在不会过滤
 				$ex_keys[]= $ex; 
 			}
+		}
+		# 「附魔」效果判定：
+		if(isset($pa['bskill_c3_enchant']))
+		{
+			// 用于获取属性对应的附魔加成
+			$exdmgarr = get_skillvars('c3_enchant','exdmgarr');
+			$exarr = get_skillvars('c3_enchant','exdmgdesc');
+			$flip_exdmgarr = array_flip($exdmgarr);
+			// 身上不存在伤害类属性，给一个随机属性
+			if(empty($ex_keys) || !array_intersect($ex_keys,$flip_exdmgarr))
+			{
+				$pa['skill_c3_enchant_ex'] = array_rand($exarr);
+				$ex_keys[] = $pa['skill_c3_enchant_ex'];
+				$log .= "<span class='lime'>技能「附魔」附加了<span class='yellow'>{$itemspkinfo[$pa['skill_c3_enchant_ex']]}</span>属性！</span><br>";
+			}
+			if(!isset($pa['skill_c3_enchant_ex'])) $pa['skill_c3_enchant_ex'] = array_rand($exarr);
+			// 检查是否提升属性伤害增益
+			$exr_gain = get_skillvars('c3_enchant','exdmggain');
+			$exr_gain_max = get_skillvars('c3_enchant','exdmgmax');
+			// 检查属性伤害增益是否达到上限
+			$now_exr = get_skillpara('c3_enchant',$exdmgarr[$pa['skill_c3_enchant_ex']],$pa['clbpara']);
+			if($now_exr + $exr_gain < $exr_gain_max)
+			{
+				set_skillpara('c3_enchant',$exdmgarr[$pa['skill_c3_enchant_ex']],$now_exr + $exr_gain,$pa['clbpara']);
+				$log .= "<span class='lime'>{$pa['nm']}的<span class='yellow'>{$exarr[$pa['skill_c3_enchant_ex']]}</span>伤害永久提升了{$exr_gain}%！</span><br>";
+			}
+			// 使用次数+1
+			set_skillpara('c3_enchant','active_t',get_skillpara('c3_enchant','active_t',$pa['clbpara'])+1,$pa['clbpara']);
 		}
 		return $ex_keys;
 	}
@@ -1197,7 +1232,7 @@
 		}
 
 		# 「强袭」效果判定：
-		if(isset($pa['skill_c2_raiding']) && isset($pd['ex_def_flag']) && $pd['ex_def_flag'] != 2)
+		if(isset($pa['bskill_c2_raiding']) && isset($pd['ex_def_flag']) && $pd['ex_def_flag'] != 2)
 		{
 			$pd['ex_def_flag'] = 0;
 			$log .= "{$pa['nm']}的攻击无视了{$pd['nm']}的属性伤害减半效果！<br>";
@@ -1230,13 +1265,15 @@
 			$dmginf = '';
 			//计算单个属性的基础属性伤害： 基础伤害 + 效果↔伤害系数修正 + 熟练↔伤害系数修正
 			$ex_dmg = $ex_base_dmg[$ex] + $pa['wepe']/$ex_wep_dmg[$ex] + $pa['wep_skill']/$ex_skill_dmg[$ex];
+			//计算社团技能对单个属性基础伤害的系数补正
+			$ex_dmg *= get_clbskill_ex_base_dmg_r($pa,$pd,$active,$ex);
 			//计算社团技能对单个属性基础伤害的补正
 			$ex_dmg += get_clbskill_ex_base_dmg_fix($pa,$pd,$active,$ex);
 			//计算单个属性能造成的基础伤害上限
 			if($ex_max_dmg[$ex]>0 && $ex_dmg>$ex_max_dmg[$ex]) $ex_dmg = $ex_max_dmg[$ex];
 
 			//计算得意武器类型修正
-			if($ex_good_wep[$ex] == $pa['wep_kind']) $ex_dmg *= 2;
+			if(isset($ex_good_wep[$ex]) && $ex_good_wep[$ex] == $pa['wep_kind']) $ex_dmg *= 2;
 			//计算已经进入的异常状态对属性攻击伤害的影响
 			if(isset($ex_inf[$ex]) && strpos($pd['inf'],$ex_inf[$ex])!==false && isset($ex_inf_punish[$ex]))
 			{
@@ -1308,7 +1345,7 @@
 		$fin_dmg_p = Array();
 
 		# 「强袭」效果判定：
-		if(isset($pa['skill_c2_raiding']))
+		if(isset($pa['bskill_c2_raiding']))
 		{
 			$sk_p = get_skillvars('c2_raiding','findmgr');
 			if($sk_p)
@@ -1379,7 +1416,7 @@
 		global $log;
 
 		# 「闷棍」技能效果：
-		if(isset($pa['skill_c1_bjack']))
+		if(isset($pa['bskill_c1_bjack']))
 		{
 			if($pd['sp'] < $pd['msp'])
 			{
@@ -1393,13 +1430,31 @@
 			}
 		}
 		# 「解牛」技能效果：
-		if(isset($pa['skill_c2_butcher']))
+		if(isset($pa['bskill_c2_butcher']))
 		{
 			$sk_dmg = get_skillvars('c2_butcher','fixdmg') + $pa['lvl'];
 			$log.='<span class="yellow">「解牛」附加了'.$sk_dmg.'点伤害！</span><br>';
 			$fin_dmg += $sk_dmg;
 		}
-
+		#「对撞」技能效果：
+		if(isset($pd['askill_c3_offset']))
+		{
+			$dice = diceroll(99);
+			$obbs = min(get_skillvars('c3_offset','minchance') + $pd['wc'] * get_skillvars('c3_offset','chancegainr'),get_skillvars('c3_offset','maxchance'));
+			if($dice < $obbs)
+			{
+				$offset_dmg = min(round(sqrt($pd['wepe'])*get_skillvars('c3_offset','wepeffectr')),get_skillvars('c3_offset','maxeffect'));
+				$offset_dmg = min($fin_dmg,$offset_dmg);
+				$log .= "<span class='yellow'>但{$pd['nm']}及时掷出手中的{$pd['wep']}，抵消了<span class='red'>{$offset_dmg}</span>点伤害！</span><br>";
+				//扣除对撞所消耗的效果
+				if(!empty(get_skillvars('c3_offset','wepsloss')))
+				{
+					$weploss = round($pd['wepe'] * (get_skillvars('c3_offset','wepsloss')/100));
+					weapon_loss($pd,$weploss,1);
+				}
+				$fin_dmg -= $offset_dmg;
+			}
+		}
 		# 伤害制御判定：
 		if(in_array('h',$pd['ex_keys']) && $fin_dmg>=1950)
 		{
@@ -1596,7 +1651,6 @@
 		$inf_ar = 1;
 		if(!empty($pa['inf']))
 		{
-		
 			foreach ($inf_active_p as $inf_ky => $value) 
 			{
 				if(strpos($pa['inf'], $inf_ky)!==false){$inf_ar *= $value;}
@@ -1606,6 +1660,8 @@
 		include_once GAME_ROOT.'./include/game/clubskills.func.php';
 		$clbskill_ar = 1;
 		$clbskill_ar *= get_clubskill_bonus_active($pa['club'],$pa['skills'],$pd['club'],$pd['skills']);
+		# 计算社团技能对于先攻率的修正（新）：
+		$clbskill_ar *= get_clbskill_activerate($pa,$pd);
 		# 修正汇总：
 		$active_r = round($active_r * $clbskill_ar * $inf_ar);
 		# 计算先攻率上下限：
@@ -1641,7 +1697,7 @@
 			return 0;
 		}
 		# 被偷袭无法反击
-		if(isset($pa['skill_c1_sneak']))
+		if(isset($pa['bskill_c1_sneak']))
 		{
 			$pd['cannot_counter_log'] = "{$pd['nm']}无法反击！";
 			return 0;

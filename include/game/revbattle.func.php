@@ -54,7 +54,7 @@
 	function escape_from_enemy(&$pa,&$pd)
 	{
 		global $action,$clbpara,$chase_escape_obbs,$log;
-		include_once GAME_ROOT.'./include/game/dice.func.php';
+		//include_once GAME_ROOT.'./include/game/dice.func.php';
 		# 在受追击/鏖战状态下逃跑有概率失败
 		if(strpos($action,'pchase')===0 || strpos($action,'dfight')===0)
 		{
@@ -101,7 +101,7 @@
 		//初始化玩家战斗技列表
 		if(!empty($sdata['clbpara']['skill']))
 		{
-			include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+
 			$battle_skills = Array();
 			$sk_nums = 0;
 			foreach($sdata['clbpara']['skill'] as $sk)
@@ -120,7 +120,7 @@
 					//再检查技能是否满足激活条件
 					else
 					{
-						$unlock = check_skill_active($sk,$sdata);
+						$unlock = check_skill_cost($sk,$sdata);
 						if($unlock) $sk_desc .= $unlock;
 					}
 					//技能可以使用，输出介绍文本

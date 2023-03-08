@@ -5,7 +5,7 @@
         <span>{$cskills['c4_sniper']['name']}</span>
     </td>
     <td>
-        <!--{eval $unlock_c4_sniper_flag = check_skill_unlock('c4_sniper',$pdata);}-->
+        <!--{eval $unlock_c4_sniper_flag = check_skill_unlock('c4_sniper',$uidata);}-->
         <!--{if $unlock_c4_sniper_flag}-->
         <div style="position:relative; height:100%; width:100%;" onmouseover="skill_unacquired_mouseover.call(this,event)" onmouseout="skill_unacquired_mouseout.call(this,event)">
         <div class="skill_unacquired">
@@ -14,7 +14,7 @@
                 <tr>
                     <td class="skilldesc_left b3">
                         <span class="skilldesc">
-                        <!--{eval $c4_sniper_desc = parse_skilldesc('c4_sniper',$pdata);}-->
+                        <!--{eval $c4_sniper_desc = parse_skilldesc('c4_sniper',$uidata);}-->
                         $c4_sniper_desc
                         </span>
                     </td>

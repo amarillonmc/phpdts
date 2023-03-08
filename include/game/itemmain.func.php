@@ -1045,7 +1045,7 @@ function getcorpse($item){
 			return;
 		}
 		$log.="你销毁了{$edata['name']}的尸体。<br>但这一切值得吗……？<br>";
-		include_once GAME_ROOT.'./include/game/dice.func.php';
+		//include_once GAME_ROOT.'./include/game/dice.func.php';
 		$rp += diceroll($rpup_destory_corpse);
 		addnews($now,'cdestroy',$name,$edata['name']);
 		destory_corpse($edata);

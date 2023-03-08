@@ -6,7 +6,7 @@
 
 	# 新社团技能 - 特殊社团技能处理：
 
-	include_once GAME_ROOT.'./include/game/dice.func.php';
+	//include_once GAME_ROOT.'./include/game/dice.func.php';
 
 	# 「百战」技能判定
 	function skill_c1_veteran_act($choice)
@@ -50,7 +50,7 @@
 			$log .= "无法重复解锁。<br>";
 			return;
 		}
-		include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+		//include_once GAME_ROOT.'./include/game/revclubskills.func.php';
 		set_skillpara($csk,'active',1,$pdata['clbpara']);
 		set_skillpara(get_skillvars($csk,'disableskill'),'disable',1,$pdata['clbpara']);
 		$log .= "<span class='yellow'>已解锁技能「{$cskills[$csk]['name']}」！</span><br>";
@@ -61,13 +61,14 @@
 	function skill_tl_cstick_act(&$edata)
 	{
 		global $log,$pdata,$cskills;
-		include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+		//include_once GAME_ROOT.'./include/game/revclubskills.func.php';
 		$lock = check_skill_unlock('tl_cstick',$pdata);
 		if(!$lock)
 		{
 			# 扣除怒气
 			$pdata['rage'] -= get_skillvars('tl_cstick','ragecost');
-			addnews($now,'bsk_tl_cstick',$pdata['name'],$edata['name']);
+			addnews($now,'bsk_tl_cstick',$pdata['name'],$edata['name'].'的尸体');
+			addnews($now,'cstick',$pdata['name'],$edata['name'].'的尸体');
 			# 炼到了不该炼的尸体
 			if(in_array($edata['type'],get_skillvars('tl_cstick','notype')))
 			{
@@ -82,6 +83,7 @@
 			$pdata['itmk0'] = 'WP'; 
 			$pdata['itme0'] = round($edata['msp']); 
 			$pdata['itms0'] = round($edata['mhp']); 
+			$pdata['itmsk0'] = '';
 			$dice = diceroll(99);
 			$N_obbs = pow($edata['lvl'],1.3);
 			$z_obbs = !$edata['type'] ? pow($edata['lvl'],1.3) : pow($edata['lvl'],1.15);

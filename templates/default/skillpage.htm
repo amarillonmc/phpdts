@@ -1,7 +1,8 @@
 <dialog id="skillpage" style="width: 568px; max-width: 90%;max-height: 80%;">
 
 <p style="margin-left:0px; margin-top:0px; margin-right:0px; margin-bottom:0px;">
-<!--{if !empty($pdata['clbpara']['skill'])}-->
+<!--{eval $uidata = $pdata;}-->
+<!--{if !empty($uidata['clbpara']['skill'])}-->
 
     你目前有<span class="lime b">$skillpoint</span>点技能点供自由分配，升级时可以获取新的技能点。<br>
     以下是你的技能列表。<br><br>
@@ -16,7 +17,7 @@
             </td>
         </tr>
         <!--{loop $clbpara['skill'] $sknm}-->
-        <!--{eval $skdata = init_clubskillsdata($sknm,$pdata);}-->
+        <!--{eval $skdata = init_clubskillsdata($sknm,$uidata);}-->
             <!--{if is_array($skdata)}-->
                 <!--{eval include template($skdata[0]);}-->
             <!--{elseif !empty($skdata)}-->

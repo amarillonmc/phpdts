@@ -147,7 +147,7 @@ function findcorpse(&$w_pdata){
 				} 
 				else 
 				{
-					${$sk_value.'_words'} = $nospk;
+					${$sk_value.'_words'} = '';
 				}
 			}
 		}
@@ -183,11 +183,9 @@ function findcorpse(&$w_pdata){
 			$loot_depot_flag = depot_getlist($w_name,$w_type) ? 1 : 0;
 		}
 		global $pdata;
-		include_once GAME_ROOT.'./include/game/revclubskills.func.php';
-		if(!check_skill_unlock('tl_cstick',$pdata))
-		{
-			$cstick_flag = in_array($w_type,get_skillvars('tl_cstick','notype')) ? 0 : 1;
-		}
+		//include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+		$cstick_flag = 0;
+		if(!check_skill_unlock('tl_cstick',$pdata) && !check_skill_cost('tl_cstick',$pdata)) $cstick_flag = in_array($w_type,get_skillvars('tl_cstick','notype')) ? 0 : 1;
 		include template('corpse');
 		$cmd = ob_get_contents();
 		ob_clean();

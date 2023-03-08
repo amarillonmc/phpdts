@@ -30,6 +30,21 @@ $npcinfo = array
 		'num' => 1,
 		'pass' => 'bra',
 		'club' => 4,
+		'clubskill' => Array(),
+		'clubskillpara' => Array
+		(
+			'c4_stable' => Array(
+				'lvl' => 5,
+				'costcount' => 14,
+			),
+			'c4_break' => Array(
+				'lvl' => 3,
+				'costcount' => 19,
+			),
+			'c4_roar' => Array(
+				'active' => 1,
+			),
+		),
 		'skills' => 66,
 		'bid' => 0,
 		'inf' => '',

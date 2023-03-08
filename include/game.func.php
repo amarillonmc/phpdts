@@ -560,7 +560,7 @@ function init_clubskillsdata($sk,$data)
 	# 本地不存在模板，按照预设信息生成一个
 	else 
 	{
-		include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+		//include_once GAME_ROOT.'./include/game/revclubskills.func.php';
 		global $cskills;
 		# 要检查的技能没有登记过 视为无效技能
 		if(!array_key_exists($sk,$cskills)) return 0;
@@ -690,7 +690,7 @@ function check_skilllasttimes(&$data=NULL)
 	$pure_flag = 0;
 	if(!empty($para['lasttimes']))
 	{
-		include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+		//include_once GAME_ROOT.'./include/game/revclubskills.func.php';
 		foreach($para['lasttimes'] as $sk => $lts)
 		{
 			$stm = isset($para['starttimes'][$sk]) ? $para['starttimes'][$sk] : 0;

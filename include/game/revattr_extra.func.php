@@ -4,9 +4,9 @@
 		exit('Access Denied');
 	}
 
-	include_once GAME_ROOT.'./include/game/dice.func.php';
+	//include_once GAME_ROOT.'./include/game/dice.func.php';
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
-	include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+	//include_once GAME_ROOT.'./include/game/revclubskills.func.php';
 
 	//revattr_extra.func.php: 记录NPC特殊战斗机制...玩家战斗技也先放这里了 嘻嘻
 	//Q：为什么要把每个NPC的特殊战斗机制都新建一个函数保存？
@@ -19,7 +19,7 @@
 		# 检查主动技合法性
 		if(isset($pa['bskill']))
 		{
-			if(!check_skill_unlock($pa['bskill'],$pa) && !check_skill_active($pa['bskill'],$pa))
+			if(!check_skill_unlock($pa['bskill'],$pa) && !check_skill_cost($pa['bskill'],$pa))
 			{
 				$bsk = $pa['bskill'];
 				$bsk_name = $cskills[$bsk]['name'];
@@ -27,7 +27,7 @@
 				$bsk_cost = get_skillvars($bsk,'ragecost');
 				if($bsk_cost) $pa['rage'] -= $bsk_cost;
 				# 成功释放主动技，应用标记
-				$pa['skill_'.$bsk] = 1;
+				$pa['bskill_'.$bsk] = 1;
 				$log .= "<span class=\"lime\">{$pa['nm']}对{$pd['nm']}发动了技能「{$bsk_name}」！</span><br>";
 				# 检查是否需要addnews
 				addnews($now,'bsk_'.$bsk,$pa['name'],$pd['name']);
@@ -53,6 +53,7 @@
 			# 遍历pa技能队列 检查是否解锁
 			foreach($pa['clbpara']['skill'] as $sk)
 			{
+				# passive、buff、inf标签技能通用判定
 				# 对于解锁技能，如果有特殊触发条件，在这里加入判定，否则会默认给一个触发标记
 				if((get_skilltags($sk,'passive') || get_skilltags($sk,'buff') || get_skilltags($sk,'inf')) && !check_skill_unlock($sk,$pa))
 				{
@@ -61,13 +62,18 @@
 					{
 						$sk_dice = diceroll(99);
 						# 「偷袭」或「闷棍」技能生效时，「猛击」必定触发；
-						$sk_obbs = isset($pa['skill_c1_sneak'])||isset($pa['skill_c1_bjack']) ? 100 : get_skillvars('c1_crit','rate');
+						$sk_obbs = isset($pa['bskill_c1_sneak'])||isset($pa['bskill_c1_bjack']) ? 100 : get_skillvars('c1_crit','rate');
 						# 成功触发时
 						if($sk_dice < $sk_obbs)
 						{
 							$pa['skill_c1_crit'] = 1;
 							$pa['skill_c1_crit_log'] = "<span class=\"yellow b\">{$pa['nm']}朝着{$pd['nm']}打出了凶猛的一击！<span class=\"cyan b\">{$pd['nm']}被打晕了过去！</span></span><br>";
 						}
+					}
+					# 「枭眼」特殊判定：射程不小于对方时激活效果
+					elseif($sk == 'c3_hawkeye' && $pa['wep_range'] >= $pd['wep_range'])
+					{
+						$pa['skill_c3_hawkeye'] = 1;
 					}
 					# 其他非特判技能，默认给一个触发标记
 					else 
@@ -76,9 +82,45 @@
 						//$pa['skill_'.$sk.'_log'] = "";
 					}
 				}
+				# active标签技能通用判定
+				if(get_skilltags($sk,'active') && !empty(get_skillpara($sk,'active',$pa['clbpara'])) && !check_skill_unlock($sk,$pa))
+				{
+					$pa['askill_'.$sk] = 1;
+				}
 			}
 		}
 		return;
+	}
+
+	# 获取社团技能对先攻率（pa是否先攻pd）的修正（新）
+	function get_clbskill_activerate(&$pa,&$pd)
+	{
+		$r = 1;
+		# pa持有「枭眼」时的效果判定：
+		if(!check_skill_unlock('c3_hawkeye',$pa))
+		{
+			//计算双方射程差
+			$pa['wep_range'] = get_wep_range($pa); 
+			$pd['wep_range'] = get_wep_range($pd); 
+			if($pa['wep_range'] >= $pd['wep_range'])
+			{
+				$sk_r = get_skillvars('c3_hawkeye','activer');
+				$r += $sk_r/100;
+			}
+		}
+		# pd持有「枭眼」时的效果判定：
+		if(!check_skill_unlock('c3_hawkeye',$pd))
+		{
+			//计算双方射程差
+			$pa['wep_range'] = get_wep_range($pa); 
+			$pd['wep_range'] = get_wep_range($pd); 
+			if($pa['wep_range'] < $pd['wep_range'])
+			{
+				$sk_r = get_skillvars('c3_hawkeye','activer');
+				$r -= $sk_r/100;
+			}
+		}
+		return $r;
 	}
 
 	# 获取社团技能对基础反击率的修正（新）
@@ -92,17 +134,31 @@
 			$sk_r = 1 + (get_skillvars('c2_intuit','countergain',$sk_lvl) / 100);
 			$counterate *= $sk_r;
 		}
+		#「臂力」效果判定：
+		if(isset($pa['skill_c3_pitchpow']))
+		{
+			$sk_lvl = get_skilllvl('c3_pitchpow',$pa);
+			//获取反击倍率加成
+			$sk_r = 1 + (get_skillvars('c3_pitchpow','countergain',$sk_lvl) / 100);
+			$counterate *= $sk_r;
+		}
 		return $counterate;
 	}
 
 	# 获取社团技能对基础命中率的修正（新）
 	function get_clbskill_hitrate(&$pa,&$pd,$active,$hitrate)
 	{
+		# 加成：
+		#「潜能」效果判定：
+		if(isset($pa['bskill_c3_potential']))
+		{
+			//原来必中是这个意思……
+			return 10000;
+		}
 		#「直感」效果判定：
 		if(isset($pa['skill_c2_intuit']))
 		{
 			$sk_lvl = get_skilllvl('c2_intuit',$pa);
-			//获取命中倍率加成
 			$sk_r = 1 + (get_skillvars('c2_intuit','accgain',$sk_lvl) / 100);
 			$hitrate *= $sk_r;
 		}
@@ -110,22 +166,27 @@
 		if(isset($pa['skill_c4_stable']))
 		{
 			$sk_lvl = get_skilllvl('c4_stable',$pa);
-			//获取命中倍率加成
 			$sk_r = 1 + (get_skillvars('c4_stable','accgain',$sk_lvl) / 100);
 			$hitrate *= $sk_r;
 		}
 		#「瞄准」效果判定：
 		if(isset($pa['skill_c4_aiming']))
 		{
-			//获取命中倍率加成
 			$sk_r = 1 + (get_skillvars('c4_aiming','accgain') / 100);
 			$hitrate *= $sk_r;
 		}
 		#「穿杨」效果判定：
 		if(isset($pa['skill_c4_sniper']))
 		{
-			//获取命中倍率加成
 			$sk_r = 1 + (get_skillvars('c4_sniper','accgain') / 100);
+			$hitrate *= $sk_r;
+		}
+
+		# 减益：
+		#「枭眼」效果判定：
+		if(isset($pd['skill_c3_hawkeye']))
+		{
+			$sk_r = 1 - (get_skillvars('c3_hawkeye','accloss') / 100);
 			$hitrate *= $sk_r;
 		}
 		return $hitrate;
@@ -134,6 +195,13 @@
 	# 获取社团技能对连击命中率的修正（新）
 	function get_clbskill_r_hitrate(&$pa,&$pd,$active,$hitrate)
 	{
+		# 加成：
+		#「潜能」效果判定：
+		if(isset($pa['bskill_c3_potential']))
+		{
+			//潜能激活时连击无衰减
+			return 1;
+		}
 		#「直感」效果判定：
 		if(isset($pa['skill_c2_intuit']))
 		{
@@ -148,6 +216,13 @@
 			$sk_lvl = get_skilllvl('c4_stable',$pa);
 			//获取连击命中率加成
 			$sk_r = 1 + (get_skillvars('c4_stable','rbgain',$sk_lvl) / 100);
+			$hitrate *= $sk_r;
+		}
+		# 减益：
+		#「枭眼」效果判定：
+		if(isset($pd['skill_c3_hawkeye']))
+		{
+			$sk_r = 1 - (get_skillvars('c3_hawkeye','rbloss') / 100);
 			$hitrate *= $sk_r;
 		}
 		return $hitrate;
@@ -201,7 +276,25 @@
 		}
 		return 0;
 	}
-	
+
+	# 计算社团技能对单个属性基础伤害的系数补正
+	function get_clbskill_ex_base_dmg_r(&$pa,&$pd,$active,$key)
+	{
+		$ex_dmg_r = 1;
+		# 「附魔」效果判定：
+		if(isset($pa['skill_c3_enchant']))
+		{
+			$exdmgarr = get_skillvars('c3_enchant','exdmgarr');
+			if(isset($exdmgarr[$key]) && !empty(get_skillpara('c3_enchant',$exdmgarr[$key],$pa['clbpara'])))
+			{
+				$ex_r = get_skillpara('c3_enchant',$exdmgarr[$key],$pa['clbpara']);
+				$ex_dmg_r += $ex_r/100;
+				//echo "【DEBUG】附魔使{$key}伤害提高了{$ex_r}%<br>";
+			}
+		}
+		return $ex_dmg_r;
+	}
+
 	# 获取社团技能对单个属性基础伤害的定值补正
 	function get_clbskill_ex_base_dmg_fix(&$pa,&$pd,$active,$key)
 	{
