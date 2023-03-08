@@ -58,94 +58,36 @@ function get_npc_helpinfo($nlist,$tooltip=1)
 							
 						}
 						if(isset($snpc['club'])) $snpc['club'] = $snpc['club']==99 ? '第一形态' : $clubinfo[$snpc['club']];
-						//合并装备名
-						foreach(Array('wep','arb','arh','ara','arf','art') as $t1) 
+						//格式化装备、道具名
+						foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
 						{
-							foreach(Array('','k','e','s','sk') as $t2)
+							if(strpos($value,'itm')!==false)
 							{
-								if(!empty($snpc[$t1.$t2]))
+								$k_value = str_replace('itm','itmk',$value);
+								$e_value = str_replace('itm','itme',$value);
+								$s_value = str_replace('itm','itms',$value);
+								$sk_value = str_replace('itm','itmsk',$value);
+							}
+							else 
+							{
+								$e_value = $value.'e';
+								$k_value = $value.'k';
+								$s_value = $value.'s';
+								$sk_value = $value.'sk';
+							}
+							if(!empty($snpc[$s_value]))
+							{
+								//添加tooltip效果
+								if($tooltip)
 								{
-									//为装备名添加tooltip效果
-									if($t2 == '' && $tooltip)
-									{
-										$snpc[$t1.$t2] = parse_itm_desc($snpc[$t1.$t2],'m');
-									}
-									//为装备类别添加tooltip效果
-									elseif($t2 == 'k'  && $tooltip)
-									{
-										foreach($iteminfo as $info_key => $info_value)
-										{
-											if(strpos($snpc[$t1.$t2],$info_key)===0)
-											{
-												$snpc[$t1.$t2] = parse_itm_desc($info_key,'k');
-												break;
-											}
-										}
-									}
-									//为装备属性添加tooltip效果
-									elseif($t2 == 'sk' && $tooltip)
-									{
-										$tmpsk = get_itmsk_array($snpc[$t1.$t2]);
-										foreach($tmpsk as $sk)
-										{
-											if(!empty($snpc[$t1.$t2.'_words']))
-											{
-												$snpc[$t1.$t2.'_words'] .= "+".parse_itm_desc($sk,'sk');
-											}
-											else
-											{
-												$snpc[$t1.$t2.'_words'] = parse_itm_desc($sk,'sk');
-											}
-										}
-									}
-								}
-								else 
-								{
-									$snpc[$t1.$t2] = '-';
+									if(!empty($snpc[$value])) $snpc[$value] = parse_info_desc($snpc[$value],'m');
+									if(!empty($snpc[$sk_value])) $snpc[$sk_value.'_words'] = parse_info_desc($snpc[$sk_value],'sk',$snpc[$k_value]);
+									if(!empty($snpc[$k_value])) $snpc[$k_value] = parse_info_desc($snpc[$k_value],'k');
 								}
 							}
-						}
-						//合并道具名
-						for($ni=0;$ni<=6;$ni++)
-						{
-							foreach(Array('','k','e','s','sk') as $t2)
+							else 
 							{
-								if(!empty($snpc['itm'.$t2.$ni]))
-								{
-									//为装备名添加tooltip效果
-									if($t2 == '' && $tooltip)
-									{
-										$snpc['itm'.$t2.$ni] = parse_itm_desc($snpc['itm'.$t2.$ni],'m');
-									}
-									//为装备类别添加tooltip效果
-									elseif($t2 == 'k' && $tooltip)
-									{
-										foreach($iteminfo as $info_key => $info_value)
-										{
-											if(strpos($snpc['itm'.$t2.$ni],$info_key)===0)
-											{
-												$snpc['itm'.$t2.$ni] = parse_itm_desc($info_key,'k');
-												break;
-											}
-										}
-									}
-									//为装备属性添加tooltip效果
-									elseif($t2 == 'sk' && $tooltip)
-									{
-										$tmpsk = get_itmsk_array($snpc['itm'.$t2.$ni]);
-										foreach($tmpsk as $sk)
-										{
-											if(!empty($snpc['itm'.$t2.$ni.'_words']))
-											{
-												$snpc['itm'.$t2.$ni.'_words'] .= "+".parse_itm_desc($sk,'sk');
-											}
-											else
-											{
-												$snpc['itm'.$t2.$ni.'_words'] = parse_itm_desc($sk,'sk');
-											}
-										}
-									}
-								}
+								$snpc[$t1.$t2] = '-';
 							}
 						}
 						$tnlist[$i][$tsub][$n] = $snpc;

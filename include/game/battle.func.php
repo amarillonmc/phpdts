@@ -112,7 +112,46 @@ function findcorpse(&$w_pdata){
 	{	
 		$main = 'battle';
 		$log .= '你发现了<span class="red">'.$w_name.'</span>的尸体！<br>';
-		foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $w_value) 
+		foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
+		{
+			$value = 'w_'.$value;
+			if(strpos($value,'itm')!==false)
+			{
+				$k_value = str_replace('itm','itmk',$value);
+				$s_value = str_replace('itm','itms',$value);
+				$sk_value = str_replace('itm','itmsk',$value);
+			}
+			else 
+			{
+				$k_value = $value.'k';
+				$s_value = $value.'s';
+				$sk_value = $value.'sk';
+			}
+			if(!empty($$s_value))
+			{
+				# 初始化名称样式
+				${$value.'_words'} = parse_info_desc($$value,'m');
+				# 初始化类别样式
+				if(${$k_value})
+				{
+					${$k_value.'_words'} = parse_info_desc($$k_value,'k');
+				} 
+				else 
+				{
+					${$k_value.'_words'} = '';
+				}
+				# 初始化属性样式
+				if(${$sk_value} && is_numeric(${$sk_value}) === false)
+				{
+					${$sk_value.'_words'} = parse_info_desc($$sk_value,'sk',$$k_value,1);
+				} 
+				else 
+				{
+					${$sk_value.'_words'} = $nospk;
+				}
+			}
+		}
+		/*foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $w_value) 
 		{
 			if(isset(${$w_value})) ${$w_value} = parse_itm_desc(${$w_value},'m');
 		}
@@ -136,12 +175,18 @@ function findcorpse(&$w_pdata){
 					${$w_sk_value.'_words'} .= parse_itm_desc($sk,'sk');
 				}
 			}
-		}
+		}*/
 		include_once GAME_ROOT.'./include/game/depot.func.php';
 		$loot_depot_flag = 0;
 		if(in_array($w_type,$can_lootdepot_type))
 		{
 			$loot_depot_flag = depot_getlist($w_name,$w_type) ? 1 : 0;
+		}
+		global $pdata;
+		include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+		if(!check_skill_unlock('tl_cstick',$pdata))
+		{
+			$cstick_flag = in_array($w_type,get_skillvars('tl_cstick','notype')) ? 0 : 1;
 		}
 		include template('corpse');
 		$cmd = ob_get_contents();

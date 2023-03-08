@@ -635,16 +635,16 @@
 
 <p><a name="道具说明"><span class="subtitle2">10.道具说明</span></a></p>
 <p>道具有以下几种类型：<br>
-<span tooltip="$itemkinfo_tooltip['HH']['title']" class="yellow">『生命恢复』</span> 使用后按道具的效果值恢复生命。<br>
-<span tooltip="$itemkinfo_tooltip['HS']['title']" class="yellow">『体力恢复』</span> 使用后按道具的效果值恢复体力。<br>
-<span tooltip="$itemkinfo_tooltip['HB']['title']" class="yellow">『命体恢复』</span> 使用后同时恢复生命和体力。<br>
+<span tooltip="$tps_ik['HH']['title']" class="yellow">『生命恢复』</span> 使用后按道具的效果值恢复生命。<br>
+<span tooltip="$tps_ik['HS']['title']" class="yellow">『体力恢复』</span> 使用后按道具的效果值恢复体力。<br>
+<span tooltip="$tps_ik['HB']['title']" class="yellow">『命体恢复』</span> 使用后同时恢复生命和体力。<br>
 小提示：所有的恢复类道具，都有可能含毒。如果使用了带毒的恢复类道具，不仅不能恢复生命或者体力，还会损失一定的生命，并且进入“中毒”状态。<br>
 <br>
-<span tooltip="$itemkinfo_tooltip['C']['title']" class="yellow">『药剂』</span>
+<span tooltip="$tps_ik['C']['title']" class="yellow">『药剂』</span>
 根据药剂类型的不同，使用后能够去除异常状态。如果不在异常状态，服用药剂完全无效。<br>
-<span tooltip="$itemkinfo_tooltip['V']['title']" class="yellow">『技能书籍』</span>
+<span tooltip="$tps_ik['V']['title']" class="yellow">『技能书籍』</span>
 使用后，能够按一定比例增加玩家的熟练度。如果玩家熟练度较高，技能书的效果会降低，甚至倒扣熟练度。<br>
-<span tooltip="$itemkinfo_tooltip['M']['title']" class="yellow">『强化药物』</span>
+<span tooltip="$tps_ik['M']['title']" class="yellow">『强化药物』</span>
 使用后，能够按一定比例增加玩家的各项能力。如果玩家各项能力较高，能力药的效果会降低，甚至倒扣能力值。<br>
 <br>
 <span class="yellow">『武器』</span>
@@ -653,24 +653,24 @@
 使用后装备在身体上，增加防御力，并保护该部位不会受伤。分为体，头，腕，足四个部位。<br>
 <span class="yellow">『饰品』</span> 使用后佩戴在身体上，部分饰物有特殊用途。<br>
 <br>
-<span tooltip="$itemkinfo_tooltip['T']['title']" class="yellow">『陷阱』</span> 使用后会在当前地区设下陷阱。<br>
+<span tooltip="$tps_ik['T']['title']" class="yellow">『陷阱』</span> 使用后会在当前地区设下陷阱。<br>
 <br>
-<span tooltip="$itemkinfo_tooltip['EW']['title']" class="yellow">『天气控制』</span> 使用后将改变当前天气，可改变当前天气。“驱云弹”会将天气变为<span class="yellow b">『大晴』</span>，“造雾设备”会将天气变为<span class="grey b">『起雾』或『浓雾』</span>，其他天气道具也有各自的效果。<br>
+<span tooltip="$tps_ik['EW']['title']" class="yellow">『天气控制』</span> 使用后将改变当前天气，可改变当前天气。“驱云弹”会将天气变为<span class="yellow b">『大晴』</span>，“造雾设备”会将天气变为<span class="grey b">『起雾』或『浓雾』</span>，其他天气道具也有各自的效果。<br>
 但当天气处于<span class="blue">“冰雹”</span>、<span class="red">“龙卷风”</span>、<span class="yellow">“瘴气”</span>、<span class="clan">“暴风雪”</span>、<span class="gold">“极光”</span>时，无法使用天气设备改变天气。<BR>
 <br>
-<span tooltip="$itemkinfo_tooltip['EE']['title']" class="yellow">『电脑设备』</span> 使用后有一定概率能够<span class="yellow b">解封当前禁区</span>，让玩家可以进入禁区探索，但这一危险行动有一定概率导致该设备毁坏，甚至杀死玩家！<br>
+<span tooltip="$tps_ik['EE']['title']" class="yellow">『电脑设备』</span> 使用后有一定概率能够<span class="yellow b">解封当前禁区</span>，让玩家可以进入禁区探索，但这一危险行动有一定概率导致该设备毁坏，甚至杀死玩家！<br>
 电脑设备使用后会消耗电力（效果值），电力降到0则需要用『电池』充电才能继续使用。<br>
 <br>
-<span tooltip="$itemkinfo_tooltip['ER']['title']" class="yellow">『探测仪器』</span> 道具名一般是<span class="yellow b">“生命探测器”或者“广域生命探测器”</span>。前者使用后可以看到玩家所在地区的其他玩家以及各类NPC的数目，而后者的视野更是扩展到全地图。<br>
+<span tooltip="$tps_ik['ER']['title']" class="yellow">『探测仪器』</span> 道具名一般是<span class="yellow b">“生命探测器”或者“广域生命探测器”</span>。前者使用后可以看到玩家所在地区的其他玩家以及各类NPC的数目，而后者的视野更是扩展到全地图。<br>
 无论是PVP还是PVE，掌握对手动向都是至关重要的，因而寻找/合成广域生命探测器是高水平玩家必做的事。<br>
 探测仪器使用后会消耗电力（效果值），电力降到0则需要用『探测器电池』充电才能继续使用。<br>
 <br>
 <span class="yellow">『弹药』</span> 使用后可为手中装备的射系武器，即<span class="yellow b">『远程兵器』</span>和<span class="yellow b">『重型枪械』</span>补充弹药。<br>
-分为<span tooltip="$itemkinfo_tooltip['GB']['title']" class="clan">『手枪弹药』</span>、
-<span tooltip="$itemkinfo_tooltip['GBr']['title']" class="clan">『机枪弹药』</span>、
-<span tooltip="$itemkinfo_tooltip['GBe']['title']" class="clan">『能源弹药』</span>、
-<span tooltip="$itemkinfo_tooltip['GBi']['title']" class="clan">『气体弹药』</span>和
-<span tooltip="$itemkinfo_tooltip['GBh']['title']" class="clan">『重型弹药』</span>五种，
+分为<span tooltip="$tps_ik['GB']['title']" class="clan">『手枪弹药』</span>、
+<span tooltip="$tps_ik['GBr']['title']" class="clan">『机枪弹药』</span>、
+<span tooltip="$tps_ik['GBe']['title']" class="clan">『能源弹药』</span>、
+<span tooltip="$tps_ik['GBi']['title']" class="clan">『气体弹药』</span>和
+<span tooltip="$tps_ik['GBh']['title']" class="clan">『重型弹药』</span>五种，
 分别对应不同类型和属性的枪械。将鼠标悬浮在它们上可以看到详细介绍。<br>
 射系武器用尽弹药后如果继续攻击，则会当做钝器使用，不仅属性无效，攻击力还会迅速下降，因此使用射系武器时请保证弹药充足！<br>
 <br>
@@ -890,20 +890,20 @@
 射系武器有<span class="yellow">“子弹”</span>的设定，当武器耐久非“无限”时才能作为枪械进行射击。<BR>
 如果射系武器子弹用尽，在游戏中耐久值将显示为“无限”。此时射系武器只能直接作为钝器攻击，攻击力会飞速下降。<BR>
 根据射系武器所拥有的属性的不同，需要的子弹类型也不同，请注意收集。<BR>
-带“电击”或者“音波”属性的射系武器，需要<span tooltip="$itemkinfo_tooltip['GBe']['title']" class="clan">『能源弹药』</span>；<BR>
-带“火焰”或者“冰冻”属性的射系武器，需要<span tooltip="$itemkinfo_tooltip['GBi']['title']" class="clan">『气体弹药』</span>；<BR>
-除此之外，连续攻击的射系武器属于“机枪”，需要<span tooltip="$itemkinfo_tooltip['GBr']['title']" class="clan">『机枪弹药』</span>；<BR>
-不管带有何种属性，只要类别属于“重型枪械”，就需要<span tooltip="$itemkinfo_tooltip['GBh']['title']" class="clan">『重型弹药』</span>。<BR>
-这些类型之外的射系武器属于手枪，用<span tooltip="$itemkinfo_tooltip['GB']['title']" class="clan">『手枪弹药』</span>就可以装填。<BR>
-此外，还存在属性为<span tooltip="$itemspkinfo_tooltip['o']['title']" class="clan">“一发”</span>的枪械，这种枪械不能装填弹药，弹药用尽就永远无法作为枪械攻击。<BR>
+带“电击”或者“音波”属性的射系武器，需要<span tooltip="$tps_ik['GBe']['title']" class="clan">『能源弹药』</span>；<BR>
+带“火焰”或者“冰冻”属性的射系武器，需要<span tooltip="$tps_ik['GBi']['title']" class="clan">『气体弹药』</span>；<BR>
+除此之外，连续攻击的射系武器属于“机枪”，需要<span tooltip="$tps_ik['GBr']['title']" class="clan">『机枪弹药』</span>；<BR>
+不管带有何种属性，只要类别属于“重型枪械”，就需要<span tooltip="$tps_ik['GBh']['title']" class="clan">『重型弹药』</span>。<BR>
+这些类型之外的射系武器属于手枪，用<span tooltip="$tps_ik['GB']['title']" class="clan">『手枪弹药』</span>就可以装填。<BR>
+此外，还存在属性为<span tooltip="$tps_isk['o']['title']" class="clan">“一发”</span>的枪械，这种枪械不能装填弹药，弹药用尽就永远无法作为枪械攻击。<BR>
 根据子弹类型的不同，弹夹上限也不同。<BR>
 装填子弹的方法是装备射系武器并「使用」子弹。<BR>
 <BR>
 投系，爆系和灵系的武器，属于<span class="yellow">消耗品</span>，每攻击一次数量都会减少。当然也存在可以无限攻击的这三类武器。<BR>
 <BR>
-部分道具如<span tooltip="$iteminfo_tooltip_desc[4]['title']" class="clan">“磨刀石”</span>、
-<span tooltip="$iteminfo_tooltip_desc[3]['title']" class="clan">“钉”</span>、
-<span tooltip="$iteminfo_tooltip['武器师安雅的奖赏']['title']" class="clan">“武器师安雅的奖赏”</span>等，都能<span class="yellow">强化武器</span>，使用方法是装备武器然后使用特殊道具即可。具体情况见“特殊道具”。
+部分道具如<span tooltip="$tps_names[4]['title']" class="clan">“磨刀石”</span>、
+<span tooltip="$tps_names[3]['title']" class="clan">“钉”</span>、
+<span tooltip="$tps_name['武器师安雅的奖赏']['title']" class="clan">“武器师安雅的奖赏”</span>等，都能<span class="yellow">强化武器</span>，使用方法是装备武器然后使用特殊道具即可。具体情况见“特殊道具”。
 </p>
 <BR>
 <p><a name="属性"><span class="subtitle2">12.属性</span></a></p>
@@ -931,7 +931,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['r']['title']">连击</span>
+		<span tooltip="$tps_isk['r']['title']">连击</span>
 		</td>
 		<td class="b3">
 		<span>进行2-6次连续攻击</span>
@@ -945,7 +945,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['N']['title']">冲击</span>
+		<span tooltip="$tps_isk['N']['title']">冲击</span>
 		</td>
 		<td class="b3">
 		<span>计算伤害时对方装备防御力减半</span>
@@ -959,7 +959,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['n']['title']">贯穿</span>
+		<span tooltip="$tps_isk['n']['title']">贯穿</span>
 		</td>
 		<td class="b3">
 		<span>计算伤害时无视对方装备的防御、抹消属性</span>
@@ -973,7 +973,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['y']['title']">破格</span>
+		<span tooltip="$tps_isk['y']['title']">破格</span>
 		</td>
 		<td class="b3">
 		<span>计算伤害时无视对方装备的属性防御、抹消属性</span>
@@ -987,7 +987,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['S']['title']">消音</span>
+		<span tooltip="$tps_isk['S']['title']">消音</span>
 		</td>
 		<td class="b3">
 		<span>远程武器特有的属性，攻击时不会发出枪声。</span>
@@ -1001,7 +1001,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['o']['title']">一发</span>
+		<span tooltip="$tps_isk['o']['title']">一发</span>
 		</td>
 		<td class="b3">
 		<span>远程武器特有的属性，该武器无法装填弹药，弹药用完就只能当钝器使用。</span>
@@ -1015,7 +1015,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['d']['title']">爆炸</span>
+		<span tooltip="$tps_isk['d']['title']">爆炸</span>
 		</td>
 		<td class="b3">
 		<span>产生额外的伤害</span>
@@ -1029,7 +1029,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['u']['title']">火焰</span>
+		<span tooltip="$tps_isk['u']['title']">火焰</span>
 		</td>
 		<td class="b3">
 		<span>攻击附带火焰伤害</span>
@@ -1043,7 +1043,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['i']['title']">冻气</span>
+		<span tooltip="$tps_isk['i']['title']">冻气</span>
 		</td>
 		<td class="b3">
 		<span>攻击附带冻气伤害</span>
@@ -1057,7 +1057,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['p']['title']">带毒</span>
+		<span tooltip="$tps_isk['p']['title']">带毒</span>
 		</td>
 		<td class="b3">
 		<span>攻击附带毒性伤害</span>
@@ -1071,7 +1071,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['e']['title']">电击</span>
+		<span tooltip="$tps_isk['e']['title']">电击</span>
 		</td>
 		<td class="b3">
 		<span>攻击附带电气伤害</span>
@@ -1085,7 +1085,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['w']['title']">音波</span>
+		<span tooltip="$tps_isk['w']['title']">音波</span>
 		</td>
 		<td class="b3">
 		<span>攻击附带音波伤害</span>
@@ -1099,7 +1099,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['f']['title']">灼焰</span>
+		<span tooltip="$tps_isk['f']['title']">灼焰</span>
 		</td>
 		<td class="b3">
 		<span>攻击附带额外火焰伤害，无法被防御</span>
@@ -1113,7 +1113,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['k']['title']">冰华</span>
+		<span tooltip="$tps_isk['k']['title']">冰华</span>
 		</td>
 		<td class="b3">
 		<span>攻击附带额外冻气伤害，无法被防御</span>
@@ -1127,7 +1127,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['X']['title']">直死</span>
+		<span tooltip="$tps_isk['X']['title']">直死</span>
 		</td>
 		<td class="b3">
 		<span>使用该武器攻击时，有一定概率导致自己直接死亡</span>
@@ -1160,7 +1160,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['A']['title']">全系防御</span>
+		<span tooltip="$tps_isk['A']['title']">全系防御</span>
 		</td>
 		<td class="b3">
 		<span>所有六种武器类型的伤害减半</span>
@@ -1171,7 +1171,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['B']['title']">伤害抹消</span>
+		<span tooltip="$tps_isk['B']['title']">伤害抹消</span>
 		</td>
 		<td class="b3">
 		<span>将受到的普通攻击的伤害减至最少，接近神一般的存在</span>
@@ -1182,7 +1182,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['P']['title']">防殴</span>
+		<span tooltip="$tps_isk['P']['title']">防殴</span>
 		</td>
 		<td class="b3">
 		<span>钝器的伤害减半、对空手/拳无效</span>
@@ -1193,7 +1193,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['K']['title']">防斩</span>
+		<span tooltip="$tps_isk['K']['title']">防斩</span>
 		</td>
 		<td class="b3">
 		<span>锐器的伤害减半</span>
@@ -1204,7 +1204,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['G']['title']">防弹</span>
+		<span tooltip="$tps_isk['G']['title']">防弹</span>
 		</td>
 		<td class="b3">
 		<span>远程武器的伤害减半</span>
@@ -1215,7 +1215,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['C']['title']">防投</span>
+		<span tooltip="$tps_isk['C']['title']">防投</span>
 		</td>
 		<td class="b3">
 		<span>投掷武器的伤害减半</span>
@@ -1226,7 +1226,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['D']['title']">防爆</span>
+		<span tooltip="$tps_isk['D']['title']">防爆</span>
 		</td>
 		<td class="b3">
 		<span>爆炸物和爆炸属性的伤害减半</span>
@@ -1237,7 +1237,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['F']['title']">防符</span>
+		<span tooltip="$tps_isk['F']['title']">防符</span>
 		</td>
 		<td class="b3">
 		<span>灵力武器的伤害减半</span>
@@ -1248,7 +1248,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['a']['title']">属性防御</span>
+		<span tooltip="$tps_isk['a']['title']">属性防御</span>
 		</td>
 		<td class="b3">
 		<span>所有属性攻击的伤害减半，且不会中异常状态</span>
@@ -1259,7 +1259,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['b']['title']">属性抹消</span>
+		<span tooltip="$tps_isk['b']['title']">属性抹消</span>
 		</td>
 		<td class="b3">
 		<span>将受到的属性攻击的伤害减至最少，并且防御异常状态，接近神一般的存在</span>
@@ -1270,7 +1270,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['U']['title']">防火</span>
+		<span tooltip="$tps_isk['U']['title']">防火</span>
 		</td>
 		<td class="b3">
 		<span>火焰属性的伤害减半，且不会烧伤</span>
@@ -1281,7 +1281,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['I']['title']">防冻</span>
+		<span tooltip="$tps_isk['I']['title']">防冻</span>
 		</td>
 		<td class="b3">
 		<span>冻气属性的伤害减半，且不会冻结</span>
@@ -1292,7 +1292,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['q']['title']">防毒</span>
+		<span tooltip="$tps_isk['q']['title']">防毒</span>
 		</td>
 		<td class="b3">
 		<span>带毒属性的伤害减半，且不会中毒</span>
@@ -1303,7 +1303,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['E']['title']">绝缘</span>
+		<span tooltip="$tps_isk['E']['title']">绝缘</span>
 		</td>
 		<td class="b3">
 		<span>电气属性的伤害减半，且不会身体麻痹</span>
@@ -1314,7 +1314,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['W']['title']">隔音</span>
+		<span tooltip="$tps_isk['W']['title']">隔音</span>
 		</td>
 		<td class="b3">
 		<span>音波属性的伤害减半，且不会混乱</span>
@@ -1325,7 +1325,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['g']['title']">同志</span>
+		<span tooltip="$tps_isk['g']['title']">同志</span>
 		</td>
 		<td class="b3">
 		<span>如果玩家性别与敌人性别相同则会无法全力攻击；反之则可能造成暴击。</span>
@@ -1336,7 +1336,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['l']['title']">热恋</span>
+		<span tooltip="$tps_isk['l']['title']">热恋</span>
 		</td>
 		<td class="b3">
 		<span>如果玩家性别与敌人性别不同则会无法全力攻击；反之则可能造成暴击。</span>
@@ -1347,7 +1347,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['c']['title']">重击辅助</span>
+		<span tooltip="$tps_isk['c']['title']">重击辅助</span>
 		</td>
 		<td class="b3">
 		<span>减少重击和发动必杀技消耗的怒气，增加重击发生的概率</span>
@@ -1358,7 +1358,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['H']['title']">HP制御</span>
+		<span tooltip="$tps_isk['H']['title']">HP制御</span>
 		</td>
 		<td class="b3">
 		<span>减少反噬伤害损失的HP</span>
@@ -1369,7 +1369,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['M']['title']">陷阱探测</span>
+		<span tooltip="$tps_isk['M']['title']">陷阱探测</span>
 		</td>
 		<td class="b3">
 		<span>增加遭遇陷阱时的回避率</span>
@@ -1380,7 +1380,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['m']['title']">陷阱迎击</span>
+		<span tooltip="$tps_isk['m']['title']">陷阱迎击</span>
 		</td>
 		<td class="b3">
 		<span>遭遇陷阱时可以免疫伤害</span>
@@ -1402,7 +1402,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['z']['title']">天然</span>
+		<span tooltip="$tps_isk['z']['title']">天然</span>
 		</td>
 		<td class="b3">
 		<span>使用后会变成冴冴一样的天然呆</span>
@@ -1413,7 +1413,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['Z']['title']">菁英</span>
+		<span tooltip="$tps_isk['Z']['title']">菁英</span>
 		</td>
 		<td class="b3">
 		<span>带有此属性的物品可以用“宝石”系道具强化效果值</span>
@@ -1424,7 +1424,7 @@
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span tooltip="$itemspkinfo_tooltip['x']['title']">奇迹</span>
+		<span tooltip="$tps_isk['x']['title']">奇迹</span>
 		</td>
 		<td class="b3">
 		<span>人类，可以超越神么？……</span>

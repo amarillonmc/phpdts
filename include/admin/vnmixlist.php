@@ -34,13 +34,14 @@ if(file_exists($cache_file))
 					$sk_arr = Array();
 					if(!empty($vn_info[4]))
 					{
-						$sk_arr = get_itmsk_array($vn_info[4]);
+						//$sk_arr = get_itmsk_array($vn_info[4]);
 						$temp_mixinfo[$vn_key][$vn_type][4] = '';
-						foreach($sk_arr as $sk_value)
+						$temp_mixinfo[$vn_key][$vn_type][4] = parse_info_desc($vn_info[4],'sk',$vn_info[1]);
+						/*foreach($sk_arr as $sk_value)
 						{
 							if(!empty($temp_mixinfo[$vn_key][$vn_type][4])) $temp_mixinfo[$vn_key][$vn_type][4] .= '+'.parse_itm_desc($sk_value,'sk');
 							else $temp_mixinfo[$vn_key][$vn_type][4] = parse_itm_desc($sk_value,'sk');
-						}
+						}*/
 					}
 				}
 			}

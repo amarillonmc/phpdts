@@ -62,14 +62,7 @@ if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemti
 	foreach($mixinfo as $mix){
 		if($mix['class'] !== 'hidden'){
 			//名字
-			$mix['result'][0] = parse_itm_desc($mix['result'][0],'m');
-			//类别
-			foreach($iteminfo as $info_key => $info_value){
-				if(strpos($mix['result'][1],$info_key)===0){
-					$mixitmk = parse_itm_desc($info_key,'k');
-					break;
-				}
-			}
+			$mix['result'][0] = parse_info_desc($mix['result'][0],'m');
 			//属性
 			$mixitmsk = '';
 			if(!empty($mix['result'][4]) && !is_numeric($mix['result'][4])){
@@ -80,13 +73,22 @@ if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemti
 					}
 				}
 				if(!empty($mixitmsk)){$mixitmsk = substr($mixitmsk,0,-1);}*/
-				$mix_sk = get_itmsk_array($mix['result'][4]); $mixitmsk = '';
+				/*$mix_sk = get_itmsk_array($mix['result'][4]); $mixitmsk = '';
 				foreach($mix_sk as $sk_value)
 				{
 					if(!empty($mixitmsk)) $mixitmsk .= '+'.parse_itm_desc($sk_value,'sk');
 					else $mixitmsk = parse_itm_desc($sk_value,'sk');
-				}
+				}*/
+				$mixitmsk = parse_info_desc($mix['result'][4],'sk',$mix['result'][1]);
 			}
+			//类别
+			$mixitmk = parse_info_desc($mix['result'][1],'k');
+			/*foreach($iteminfo as $info_key => $info_value){
+				if(strpos($mix['result'][1],$info_key)===0){
+					$mixitmk = parse_itm_desc($info_key,'k');
+					break;
+				}
+			}*/
 			$mixitem[$mix['class']][] = array('stuff' => $mix['stuff'], 'result' => array($mix['result'][0],$mixitmk,$mix['result'][2],$mix['result'][3],$mixitmsk));
 		}
 	}
@@ -166,24 +168,27 @@ if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemti
 		if($mix['class'] !== 'hidden')
 		{
 			//名字
-			$mix['result'][0] = parse_itm_desc($mix['result'][0],'m');
-			//类别
-			foreach($iteminfo as $info_key => $info_value){
-				if(strpos($mix['result'][1],$info_key)===0){
-					$mixitmk = parse_itm_desc($info_key,'k');
-					break;
-				}
-			}
+			//$mix['result'][0] = parse_itm_desc($mix['result'][0],'m');
+			$mix['result'][0] = parse_info_desc($mix['result'][0],'m');
 			//属性
 			$mixitmsk = '';
 			if(!empty($mix['result'][4]) && !is_numeric($mix['result'][4])){
-				$mix_sk = get_itmsk_array($mix['result'][4]); $mixitmsk = '';
+				/*$mix_sk = get_itmsk_array($mix['result'][4]); $mixitmsk = '';
 				foreach($mix_sk as $sk_value)
 				{
 					if(!empty($mixitmsk)) $mixitmsk .= '+'.parse_itm_desc($sk_value,'sk');
 					else $mixitmsk = parse_itm_desc($sk_value,'sk');
-				}
+				}*/
+				$mixitmsk = parse_info_desc($mix['result'][4],'sk',$mix['result'][1]);
 			}
+			//类别
+			$mixitmk = parse_info_desc($mix['result'][1],'k');
+			/*foreach($iteminfo as $info_key => $info_value){
+				if(strpos($mix['result'][1],$info_key)===0){
+					$mixitmk = parse_itm_desc($info_key,'k');
+					break;
+				}
+			}*/
 			$vmixitem[$mix['class']][] = array('name' => $mix['name'], 'stuff' => $mix['stuff'], 'result' => array($mix['result'][0],$mixitmk,$mix['result'][2],$mix['result'][3],$mixitmsk));
 		}
 	}

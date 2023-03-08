@@ -32,8 +32,9 @@
 					if($ltkey == 'lasttimes' || $ltkey == 'lastturns') $para[$ltkey][$sk] = $lt;
 				}
 			}
+			return 1;
 		}
-		return;
+		return 0;
 	}
 
 	# 失去指定技能 $sk：技能名；$para：$clbpara
@@ -313,7 +314,7 @@
 		$data['clbpara'] = get_clbpara($data['clbpara']);
 		if(!in_array($sk,$data['clbpara']['skill']))
 		{
-			return 1;
+			return "技能未解锁！<br>";
 		}
 		if(!empty($cskills[$sk]['unlock']))
 		{

@@ -1069,6 +1069,15 @@ function getcorpse($item){
 		return;
 	}
 
+	if($item == 'cstick')
+	{
+		include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
+		skill_tl_cstick_act($edata);
+		$action = '';
+		$mode = 'command';
+		return;
+	}
+
 	if($item == 'loot_depot')
 	{
 		global $name,$type;

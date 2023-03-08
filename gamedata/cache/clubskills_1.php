@@ -564,6 +564,25 @@ $cskills = Array
 			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
 		),
 	),
+	'tl_cstick' => Array
+	(
+		'name' => '抡尸',
+		'tags' => Array('passive'),
+		'desc' => '发现尸体时，可消耗<span class="red">[:ragecost:]</span>点怒气将尸体作为<span class="yellow">殴系武器</span>拔出。<br>
+		武器的<span class="yellow">效耐</span>取决于尸体的<span class="yellow">最大生命</span>与<span class="yellow">体力</span>，上限为<span class="red">[:limit:]</span>点。<br>
+		优秀的尸源有概率为武器附加<span class="yellow">冲击</span>与<span class="yellow">精英</span>属性',
+		'vars' => Array(
+			'ragecost' => 100, 
+			'limit' => 2000,
+			'notype' => Array(88,92),//不能用来抡的NPC
+		),
+		'lockdesc' => Array(
+			'rage' => '怒气不足，需要<span class="red">100</span>点怒气才能使用',
+		),
+		'unlock' => Array(
+			'rage' => '[:rage:] > 100',
+		),
+	),
 	'inf_dizzy' => Array
 	(
 		'name' => '眩晕',

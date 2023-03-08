@@ -48,17 +48,22 @@ if($vnmode=='none')
 					}
 					$tooltipinfo = '';
 				}
+				// 格式化名称
+				$cinfo['result'][0] = parse_info_desc($cinfo['result'][0],'m');
+				// 格式化类别
+				$cinfo['result'][1] = parse_info_desc($cinfo['result'][1],'k');
 				// 格式化属性
 				if(isset($cinfo['result'][4]) && is_array($cinfo['result'][4]))
 				{
-					foreach($cinfo['result'][4] as $sk)
+					$temp_carr[$cid]['spkinfo'] = parse_info_desc($cinfo['result'][4],'sk',$cinfo['result'][1]);
+					/*foreach($cinfo['result'][4] as $sk)
 					{
 						if(!empty($temp_carr[$cid]['spkinfo'])) $temp_carr[$cid]['spkinfo'] .= '+'.parse_itm_desc($sk,'sk');
-						else $temp_carr[$cid]['spkinfo'] = parse_itm_desc($sk,'sk');
-					}
+						else $temp_carr[$cid]['spkinfo'] = parse_info_desc($sk,'sk');
+					}*/
 				}
 				// 汇总合成结果至一段内
-				$temp_carr[$cid]['result'][0] = $cinfo['result'][0].'/'.$temp_vniteminfo[$cinfo['result'][1]].'/'.$cinfo['result'][2].'/'.$cinfo['result'][3];
+				$temp_carr[$cid]['result'][0] = $cinfo['result'][0].'/'.$cinfo['result'][1].'/'.$cinfo['result'][2].'/'.$cinfo['result'][3];
 				if(isset($temp_carr[$cid]['spkinfo'])) $temp_carr[$cid]['result'][0].='/'.$temp_carr[$cid]['spkinfo'];
 			}
 		}

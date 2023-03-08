@@ -600,14 +600,37 @@ function itemuse($itmn) {
 			}
 			$wf += $vefct; //$itme; 
 			$wsname = "灵击熟练度";
+		} elseif (strpos ( $itmk, 'VS' ) === 0) {
+			global $cskills,$clbpara;
+			if(!empty($itmsk) && isset($cskills[$itmsk]))
+			{
+				include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+				$flag = getclubskill($itmsk,$clbpara);
+				if($flag)
+				{
+					$log.="哇！没想到这本书里竟然介绍了<span class='yellow'>「{$cskills[$itmsk]['name']}」</span>的原理！<br>获得了技能<span class='yellow'>「{$cskills[$itmsk]['name']}」</span>！<br>你心满意足地把<span class='red'>{$itm}</span>吃进了肚里。<br>";
+					addnews($now,'getsk_'.$itmsk,$name,$itm);
+				}
+				else 
+				{
+					$log.="什么嘛！原来里面都是些你看过的东西了，你没有从书中学到任何新东西。<br>你一怒之下把这本破书撕了个稀巴烂！<br>";
+				}
+			}
+			else 
+			{
+				$log.="但是你横看竖看，也弄不明白作者到底想表达什么！<br>你一怒之下把这本破书撕了个稀巴烂！<br>";
+			}
 		}
-		if ($vefct > 0) {
-			$log .= "嗯，有所收获。<br>你的{$wsname}提高了<span class=\"yellow\">$vefct</span>点！<br>";
-		} elseif ($vefct == 0) {
-			$log .= "对你来说书里的内容过于简单了。<br>你的熟练度没有任何提升。<br>";
-		} else {
-			$vefct = - $vefct;
-			$log .= "对你来说书里的内容过于简单了。<br>而且由于盲目相信书上的知识，你反而被编写者的纰漏所误导了！<br>你的{$wsname}下降了<span class=\"red\">$vefct</span>点！<br>";
+		if(isset($vefct))
+		{
+			if ($vefct > 0) {
+				$log .= "嗯，有所收获。<br>你的{$wsname}提高了<span class=\"yellow\">$vefct</span>点！<br>";
+			} elseif ($vefct == 0) {
+				$log .= "对你来说书里的内容过于简单了。<br>你的熟练度没有任何提升。<br>";
+			} else {
+				$vefct = - $vefct;
+				$log .= "对你来说书里的内容过于简单了。<br>而且由于盲目相信书上的知识，你反而被编写者的纰漏所误导了！<br>你的{$wsname}下降了<span class=\"red\">$vefct</span>点！<br>";
+			}
 		}
 		if ($itms != $nosta) {
 			$itms --;
