@@ -637,16 +637,21 @@ EOT;
 			<div class="skill_unacquired_hint">
 				<table class="skilltable">
 					<tr>
-						<td valign="center" align="center"><span class="yellow">{$unlock_flag}</span></td>
+EOT;
+			$sk_temp .= "<td valign=\"center\" align=\"center\"><span class=\"yellow\">{$unlock_flag}</span></td>";
+			/*$sk_temp .= <<<EOT
 					</tr>
 				</table>
 			</div>
 		</div>
-EOT;	
+EOT;*/	
+			$sk_temp .= "
+					</tr>
+			</table>
+		</div>
+	</div>";
 		}
-		$sk_temp .= <<<EOT
-</tr>
-EOT;		
+		$sk_temp .= "</tr>";
 		//$htm_sk_dir = GAME_ROOT.TPLDIR.'/'.$sk_dir.'.htm';
 		//writeover($htm_sk_dir,$sk_temp);
 		//return $sk_dir;
