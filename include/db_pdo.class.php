@@ -5,6 +5,7 @@ if (! defined ( 'IN_GAME' )) { exit ( 'Access Denied' ); }
 class dbstuff {
 	private $con = NULL;
 	private $stmt = NULL;
+	private $result = NULL;
 	public $query_log = array();
 	
 	function connect($dbhost, $dbuser, $dbpw, $dbname = '', $pconnect = 0) {
@@ -47,8 +48,9 @@ class dbstuff {
         }
 
         try {
-            $sth = $this->con->prepare($sql);
-            $result = $sth->execute();
+			
+            $this->stmt = $this->con->prepare($sql);
+            $this->result = $this->stmt->execute();
 
             if (strpos($sql, 'UPDATE') === 0) {
                 if (strpos($sql, 'users') !== false && strpos($sql, 'room') !== false) {
@@ -57,11 +59,11 @@ class dbstuff {
                 }
             }
 
-            if (!$result && $type != 'SILENT') {
+            if (!$this->result && $type != 'SILENT') {
                 $this->halt('MySQL Query Error', $sql);
             }
 
-            return $sth;
+            return $this->stmt;
         } catch (PDOException $e) {
             $this->halt($e->getMessage(), $sql);
         }
@@ -205,7 +207,7 @@ class dbstuff {
 	}
 	
 	function affected_rows() {
-		return $this->con->rowCount();
+		return $this->stmt->rowCount();
 	}
 	
 	function error() {
