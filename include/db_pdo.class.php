@@ -219,8 +219,9 @@ class dbstuff {
 	}
 	
 	function result($query, $row) {
-		$query->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_ABS, $row);
-		return $query->fetchColumn();
+		$query->execute();
+		$result = $query->fetchAll(PDO::FETCH_NUM);
+		return $result[$row][0];
 	}
 	
 	
