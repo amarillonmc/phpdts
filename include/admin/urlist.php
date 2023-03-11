@@ -34,7 +34,7 @@ if($urcmd){
 		$resultinfo = '第'.$startno.'条-第'.$endno.'条记录';
 	}
 }
-if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del') {
+if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del' || $urcmd == 'checkach') {
 	$operlist = $gfaillist = $ffaillist = array();
 	for($i=0;$i<$showlimit;$i++){
 		if(isset(${'user_'.$i})) {
@@ -46,6 +46,35 @@ if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del') {
 					$urdata[$i]['groupid'] = 1;
 				}elseif($urcmd == 'del'){
 					unset($urdata[$i]);
+				}elseif($urcmd == 'checkach'){
+					$adata = $urdata[$i]; $n = $urdata[$i]['username'];
+					$adata['achrev'] = json_decode($adata['achrev'],true);
+					$new_ach = Array(); $cpl = Array(); $prc = Array();
+					//手动变化成就储存结构
+					if(!empty($adata['achievement']) && empty($adata['achrev']))
+					{
+						include_once GAME_ROOT.'./include/game/achievement.func.php';
+						$alist = get_achlist();
+						foreach($alist as $a => $aarr)
+						{
+							if($a <= 57)
+							{
+								$cpl[$a]=check_achievement($a,$n);
+								$prc[$a]=fetch_achievement($a,$n);
+								//新成就储存结构内，只会保存有进度的成就
+								if(!empty($cpl[$a]) || !empty($prc[$a]))
+								{
+									// 到达999阶段的成就 替换为配置中预设的达成等级
+									if($cpl[$a] == 999) $cpl[$a] = $aarr['lvl'] ?: count($aarr['name']);
+									$new_ach[$a]['l'] = $cpl[$a] ?: 0;
+									$new_ach[$a]['v'] = $prc[$a] ?: 0;
+								}
+							}
+						}
+						$new_ach = json_encode($new_ach);
+						$db->query("UPDATE {$tablepre}users SET achrev='$new_ach' WHERE username='".$n."'" );
+					}
+					//$new_ach = '';
 				}
 //				adminlog('banur',$urdata[$i]['username']);
 			}elseif(isset($urdata[$i]) && $urdata[$i]['uid'] == ${'user_'.$i}){
@@ -66,8 +95,10 @@ if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del') {
 		}elseif($urcmd == 'del'){
 			$operword = '删除';
 			$qryword = "DELETE FROM {$tablepre}users ";
+		}elseif($urcmd == 'checkach'){
+			$cmd_info .= " 帐户 $opernames 调整了成就储存结构";
 		}
-		if($operlist){
+		if($operlist && $urcmd != 'checkach'){
 			$qrywhere = '('.implode(',',array_keys($operlist)).')';
 			$opernames = implode(',',($operlist));
 			$db->query("$qryword WHERE uid IN $qrywhere");
