@@ -29,6 +29,7 @@ function gameerrorhandler($code, $msg, $file, $line){
 
 function gexit($message = '',$file = '', $line = 0) {
 	global $charset,$title,$extrahead,$allowcsscache,$errorinfo;
+	global $gameversion,$cuser,$cpass;
 	include template('error');
 	exit();
 }

@@ -621,7 +621,7 @@
 					$skey_value = parse_skillrules($pvar);
 					$skey_value = eval("return $skey_value;");
 					# 置换对应内容
-					$sk_desc = str_replace("[:{$pvar}:]",$skey_value,$sk_desc);
+					$sk_desc = str_replace("[^{$pvar}^]",$skey_value,$sk_desc);
 				}
 				else 
 				{

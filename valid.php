@@ -27,6 +27,33 @@ if($mode == 'enter') {
 		if($db->num_rows($result) > $iplimit) { gexit($_ERROR['ip_limit'],__file__,__line__); }
 	}	
 
+	// 加入游戏时，检查是否需要转化新版成就数据结构
+	if(!empty($udata['achievement']) && empty($udata['achrev']))
+	{
+		include_once GAME_ROOT.'./include/game/achievement.func.php';
+		$alist = get_achlist();
+		$new_ach = Array();$cpl = Array(); $prc = Array();
+		foreach($alist as $i => $iarr)
+		{
+			if($i <= 57)
+			{
+				$cpl[$i]=check_achievement($i,$n);
+				$prc[$i]=fetch_achievement($i,$n);
+				//新成就储存结构内，只会保存有进度的成就
+				if(!empty($cpl[$i]) || !empty($prc[$i]))
+				{
+					// 到达999阶段的成就 替换为配置中预设的达成等级
+					if($cpl[$i] == 999) $cpl[$i] = $iarr['lvl'] ?: count($iarr['name']);
+					$new_ach[$i]['l'] = $cpl[$i] ?: 0;
+					$new_ach[$i]['v'] = $prc[$i] ?: 0;
+				}
+			}
+		}
+		$new_ach = json_encode($new_ach);
+		$db->query("UPDATE {$tablepre}users SET achrev='$new_ach' WHERE username='".$udata['username']."'" );
+		$cpl = Array(); $prc = Array();
+	}
+
 	$ip = real_ip();
 	$db->query("UPDATE {$tablepre}users SET gender='$gender', nick='$nick', icon='$icon', motto='$motto', killmsg='$killmsg', lastword='$lastword' WHERE username='".$udata['username']."'" );
 	if($validnum >= $validlimit) {
@@ -73,13 +100,13 @@ if($mode == 'enter') {
 	$arhe = $arae = $arfe = $arte = 0;
 	$arhs = $aras = $arfs = $arts = 0;
 	
-	//获取已经完成的成就
-	include_once GAME_ROOT.'./include/game/achievement.func.php';
+	//获取已经完成的成就 已废弃
+	/*include_once GAME_ROOT.'./include/game/achievement.func.php';
 	$achievement = $udata['achievement'];
 	if (!valid_achievement($achievement)) {
 		$achievement=init_achievement($achievement);
 		$db->query("UPDATE {$tablepre}users SET achievement='$achievement' WHERE username='".$name."'" );		//如果第一次游戏，初始化成就
-	}
+	}*/
 	for ($i=0; $i<=6; $i++){$itm[$i] = $itmk[$i] = $itmsk[$i] = ''; $itme[$i] = $itms[$i] = 0;}
 	$itm[1] = '面包'; $itmk[1] = 'HH'; $itme[1] = 120; $itms[1] = 15;
 	$itm[2] = '矿泉水'; $itmk[2] = 'HS'; $itme[2] = 140; $itms[2] = 15;

@@ -279,7 +279,7 @@ function combat($active = 1, $wep_kind = '') {
 				$log .= npc_chat ( $w_type,$w_name, 'death' );
 			
 				include_once GAME_ROOT.'./include/game/achievement.func.php';
-				check_battle_achievement($name,$w_type,$w_name,$wep_temp);
+				check_battle_achievement_rev($pa,$pd);	
 
 				if(!$w_type){
 					if($w_rp < 80){

@@ -19,22 +19,33 @@
 		</td>
 	</tr>
 	</table>
+	<!-- 成就显示界面（新） -->
 	<table>
-	<tr><td>
-		{template user_end_achievement}
-	</td></tr>
-	<tr><td>
-		{template user_battle_achievement}
-	</td></tr>
-	<tr><td>
-		{template user_mixitem_achievement}
-	</td></tr>
-	<tr><td>
-		{template user_lifetime_achievement}
-	</td></tr>
-	<tr><td>
-		{template user_other_achievement}
-	</td></tr>
+		<!--{loop $atype $tid $tarr}-->
+		<tr>
+			<td>
+			<div class="subtitle" align="left">{$tarr['name']}</div>
+			{$tarr['desc']}
+			<table border="1">
+				<!--{loop $tarr['ach'] $key $aid}-->
+					<!--{if !$key%3}--><tr><!--{/if}-->
+					<!--{eval $adata = init_achtabledata($aid);}-->
+					     <!--{if is_array($adata)}-->
+							<td width="300" align="left" valign="top">
+								<!--{eval include template($adata[0]);}-->
+							</td>
+						<!--{else}-->
+							<td width="300" align="left" valign="top">
+								<!--成就编号{$aid}加载错误。<br>请联系管理员。-->
+								<!--{eval include template('achievement_temp');}-->
+							</td>
+						<!--{/if}-->
+					<!--{if ($key == count($tarr['ach'])-1 || (!(($key+1)%3) && $key!=0))}--></tr><!--{/if}-->
+				<!--{/loop}-->
+			</table>
+			</td>
+		</tr>
+		<!--{/loop}-->
 	</table>
 </center>
 {template footer}

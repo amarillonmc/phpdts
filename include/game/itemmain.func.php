@@ -834,7 +834,7 @@ function itemmix($mlist, $itemselect=-1) {
 		
 		//检查成就
 		include_once GAME_ROOT.'./include/game/achievement.func.php';
-		check_mixitem_achievement($name,$itm0);
+		check_mixitem_achievement_rev($name,$itm0);
 		
 		itemget();
 	}

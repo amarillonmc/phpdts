@@ -8,8 +8,8 @@
 		<TR height="20">
 			<TD class="b1" width="30px"><span>回</span></TD>
 			<TD class="b1" width="60px"><span>胜利方式</span></TD>
-			<TD class="b1" width="95px"><span>优胜者名</span></TD>
 			<TD class="b1" width="75px"><span>头衔</span></TD>
+			<TD class="b1" width="95px"><span>优胜者名</span></TD>
 			<TD class="b1" width="80px"><span>头像</span></TD>
 			<TD class="b1"><span>游戏结束时间</span></TD>
 			<TD class="b1"><span>胜利者留言</span></TD>
@@ -22,8 +22,21 @@
 		<TR height="20">
 			<TD class="b2" ><span>$gid</span></TD>
 			<TD class="b3" ><span>$gwin[$info['wmode']]</span></TD>
-			<TD class="b3"  style="white-space: nowrap;"><!--{if $info['name']}--><span class="evergreen"><u><a href="user_profile.php?playerID=$info['name']">$info['name']</a></u></span><!--{else}--><span class="grey">无</span><!--{/if}--></TD>
-			<TD class="b3" ><span>$info['nickinfo']</span></TD>
+			<TD class="b3" ><!--{if !empty($info['nickinfo'])}--><span>$info['nickinfo']<!--{else}--><span class="grey">-</span><!--{/if}--></TD>
+			<TD class="b3"  style="white-space: nowrap;">
+				<!--{if $info['name']}-->
+					<!--{if is_array($info['name'])}-->
+						<span>{$info['teamID']}</span><br>
+						<!--{loop $info['name'] $tname}-->
+							<span class="evergreen"><u><a href="user_profile.php?playerID=$tname">$tname</a></u></span><br>
+						<!--{/loop}-->
+					<!--{else}-->
+						<span class="evergreen"><u><a href="user_profile.php?playerID=$info['name']">$info['name']</a></u></span>
+					<!--{/if}-->
+				<!--{else}-->
+					<span class="grey">无</span>
+				<!--{/if}-->
+			</TD>
 			<TD class="b3"><span><img src="img/$info['iconImg']" style="width:70;height:40;"></span></TD>
 			<TD class="b3"><span>$info['date']</span><br><span>$info['time']</span></TD>
 			<TD class="b3" ><!--{if $info['motto']}--><span class="white">$info['motto']</span><!--{else}--><span class="grey">无</span><!--{/if}--></TD>

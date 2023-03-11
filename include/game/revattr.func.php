@@ -1619,18 +1619,47 @@
 	function get_skill_inf(&$pa,$sk,$times,$type=0)
 	{
 		# 受到眩晕效果
-		
 	}
 
-	//获取pa对pd的先制攻击概率，
+	// 获取pd面对pa时的躲避率
+	function get_hide_r_rev(&$pa,&$pd,$mode=0)
+	{
+		global $weather_hide_r,$pls_hide_modifier,$pose_hide_modifier,$tactic_hide_modifier;
+		
+		# 获取基础躲避率
+		$hide_r = 0;
+		# 计算天气对躲避率的修正
+		$wth_r = $weather_hide_r[$weather] ?: 0 ;
+		# 计算地点对躲避率的修正
+		//$pls_r = $pls_hide_modifier[$pd['pls']] ?: 0 ;
+		$pls_r = 0;//暂时不应用地点躲避率 等遇敌率也重做之后再说
+		# 计算pd姿态对于躲避率的修正：
+		$pose_r = $pose_hide_modifier[$pd['pose']] ?: 0;
+		# 计算pd策略对于躲避率的修正：
+		$tac_r = $tactic_hide_modifier[$pd['tactic']] ?: 0;
+		# 基础汇总：
+		$hide_r += $wth_ar + $pose_r + $tac_r;
+
+		include_once GAME_ROOT.'./include/game/clubskills.func.php';
+		# 计算社团技能对躲避率的系数修正（旧）：
+		$hide_r *= get_clubskill_bonus_hide($pd['club'],$pd['skills']);
+		# 计算社团技能对躲避率的定值修正：
+		$hide_r = get_clbskill_hide_rate_fix($pa,$pd,$hide_r); 
+		
+		//echo "hide_r = {$hide_r}<br>";
+		return $hide_r;
+	}
+
+	// 获取pa对pd的先制攻击概率
 	// $mode 0-标准战斗 1-鏖战 2-追击（追击&鏖战基础先制率不受天气姿态影响）
 	function get_active_r_rev(&$pa,&$pd,$mode=0)
 	{
 		global $log,$active_obbs,$weather,$gamecfg,$chase_active_obbs;
 		include config('combatcfg',$gamecfg);
+
+		# 获取基础先攻率：
 		if(!$mode)
 		{
-			# 获取基础先攻率：
 			$active_r = $active_obbs;
 			# 计算天气对先攻率的修正：
 			$wth_ar = $weather_active_r[$weather] ?: 0;
@@ -1647,26 +1676,25 @@
 			# 计算追击状态下pa对pd的先攻加成。默认：战场距离*10%
 			if($mode == 2) $range_ar += get_battle_range($pa,$pd,1) * 10;
 		}
+
+		# 计算社团技能对于先攻率的系数修正（旧）：
+		$active_r *= get_clubskill_bonus_active($pa['club'],$pa['skills'],$pd['club'],$pd['skills']);
+		# 计算社团技能对于先攻率的定值修正（新）：
+		$active_r = get_clbskill_active_rate_fix($pa,$pd,$active_r);
+
+		# 计算先攻率上下限：
+		$active_r = max(min($active_r,96),4);
+
 		# 计算pa身上的异常状态对先攻率的修正：（pd身上的异常状态不会影响pa的先制率，这个机制以后考虑改掉）
-		$inf_ar = 1;
 		if(!empty($pa['inf']))
 		{
+			$inf_ar = 1;
 			foreach ($inf_active_p as $inf_ky => $value) 
 			{
 				if(strpos($pa['inf'], $inf_ky)!==false){$inf_ar *= $value;}
 			}
+			$active_r *= $inf_ar;
 		}
-		# 计算社团技能对于先攻率的修正：
-		include_once GAME_ROOT.'./include/game/clubskills.func.php';
-		$clbskill_ar = 1;
-		$clbskill_ar *= get_clubskill_bonus_active($pa['club'],$pa['skills'],$pd['club'],$pd['skills']);
-		# 计算社团技能对于先攻率的修正（新）：
-		$clbskill_ar *= get_clbskill_activerate($pa,$pd);
-		# 修正汇总：
-		$active_r = round($active_r * $clbskill_ar * $inf_ar);
-		# 计算先攻率上下限：
-		$active_r = max(min($active_r,96),4);
-
 		# 计算pd身上的特殊异常（技能类）对先攻率的修正：
 		if(!empty($pd['clbpara']['skill']))
 		{
@@ -1677,7 +1705,8 @@
 				$active_r = 100;
 			}
 		}
-		//echo 'active:'.$active_r.' <br>';
+		
+		//echo 'active = '.$active_r.' <br>';
 		return $active_r;
 	}
 
@@ -1697,7 +1726,7 @@
 			return 0;
 		}
 		# 被偷袭无法反击
-		if(isset($pa['bskill_c1_sneak']))
+		if(isset($pa['bskill_c1_stalk']))
 		{
 			$pd['cannot_counter_log'] = "{$pd['nm']}无法反击！";
 			return 0;
