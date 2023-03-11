@@ -327,7 +327,7 @@ function syncro($sb){
 	else {addnews($now,'overmix',get_title_desc($nick).' '.$name,$itm0);}
 			//检查成就
 			include_once GAME_ROOT.'./include/game/achievement.func.php';
-			check_mixitem_achievement($name,$itm0);
+			check_mixitem_achievement_rev($name,$itm0);
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
 	itemget();
 	return;

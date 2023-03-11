@@ -2151,7 +2151,7 @@ function itemuse($itmn) {
 	}
 	
 	include_once GAME_ROOT.'./include/game/achievement.func.php';
-	check_item_achievement($name,$i,$ie,$is,$ik,$isk);
+	check_item_achievement_rev($name,$i,$ie,$is,$ik,$isk);
 		
 	$mode = 'command';
 	return;

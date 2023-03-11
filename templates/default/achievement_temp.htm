@@ -1,0 +1,74 @@
+<table>
+<tr>
+    <!--{eval $alvl = $cpl[$aid]; $rlvl = $alvl == 999 ? $alist[$aid]['lvl']-1 : $alvl;}-->
+    <td>
+        <!--{if file_exists("img/ach/".$aid."_".$alvl.".gif") }-->
+            <!-- 存在预设的对应阶段图标 -->
+            <img src="img/ach/{$aid}_{$alvl}.gif">
+        <!--{elseif file_exists("img/ach/".$aid."_".$rlvl.".gif") }-->
+            <!-- 完成后的成就，不存在完成阶段图标，但是存在上一阶段图标 -->
+            <img src="img/ach/{$aid}_{$rlvl}.gif">
+        <!--{elseif $alvl && file_exists("img/ach/".$aid.".gif") }-->
+            <!-- 没有定义阶段，但是有通用阶段图标 -->
+            <img src="img/ach/{$aid}.gif">
+        <!--{else}-->
+            <!-- 否则使用默认图标 -->
+            <!--{if !empty($alvl) }-->
+                <img src="img/achievement_0.gif">
+            <!--{else}-->
+                <img src="img/achievement_not_done.gif">
+            <!--{/if}-->
+        <!--{/if}-->
+    </td>
+    <td valign="top" align="left">
+        <!-- 当前阶段成就名 -->
+        <!--{if empty($alist[$aid]['name'][$alvl]) }-->
+        <b>{$alist[$aid]['name'][$rlvl]}</b>
+        <!--{else}-->
+        <b>{$alist[$aid]['name'][$alvl]}</b>
+        <!--{/if}-->
+        <!--{if !empty($alist[$aid]['lvldesc'][$alvl]) }-->
+            <!-- 存在预设的对应阶段的完成状态描述文本 -->
+            {$alist[$aid]['lvlname'][$alvl]}
+        <!--{else}-->
+            <!-- 否则使用默认描述文本 -->
+            <!--{if ($alvl == $alist[$aid]['lvl']) }-->
+                <span class="lime">[完成]</span>
+            <!--{elseif (!empty($alvl))}-->
+                <span class="clan">[进行中]</span>
+            <!--{else}-->
+                <span class="red">[未完成]</span>
+            <!--{/if}-->
+        <!--{/if}-->
+        <br>
+        <!-- 当前阶段成就完成情况 -->
+        <font color="yellow">
+        <!--{if !empty($alist[$aid]['request'][$alvl]) }-->
+                <!--{eval $areq = $alist[$aid]['request'][$alvl]; $areq = str_replace("[:request:]",$prc[$aid],$areq);}-->
+                {$areq} 
+        <!--{else}-->
+                目前进度：{$prc[$aid]}次
+        <!--{/if}-->
+        </font>
+        <br>
+        <!-- 当前阶段达成奖励 -->
+        <font color="olive">
+            奖励：
+            <!--{if $alist[$aid]['c1'][$rlvl] }-->
+                积分{$alist[$aid]['c1'][$rlvl]}
+            <!--{/if}-->
+
+            <!--{if $alist[$aid]['c2'][$rlvl] }-->
+                切糕{$alist[$aid]['c2'][$rlvl]}
+            <!--{/if}-->
+
+            <!--{if $alist[$aid]['title'][$rlvl] }-->
+                <span class="evergreen">称号 {$alist[$aid]['title'][$rlvl]}</span>
+            <!--{/if}-->
+        </font>
+        <br>
+        <!-- 当前阶段达成需求描述 -->
+        {$alist[$aid]['desc'][$rlvl]} 
+</td>
+</tr>
+</table>

@@ -6,11 +6,12 @@ if(!defined('IN_GAME')) exit('Access Denied');
 # 社团变更时可获得的技能清单：
 $club_skillslist = Array
 (
-	1  => Array('s_hp','s_ad','f_heal','c1_def','c1_crit','c1_sneak','c1_burnsp','c1_bjack','c1_veteran'), #'铁拳无敌',
+	1  => Array('s_hp','s_ad','f_heal','c1_def','c1_crit','c1_stalk','c1_burnsp','c1_bjack','c1_veteran'), #'铁拳无敌',
 	2  => Array('s_hp','s_ad','f_heal','c2_butcher','c2_intuit','c2_raiding','c2_master','c2_annihil'), #'见敌必斩',
 	3  => Array('s_hp','s_ad','f_heal','c3_pitchpow','c3_enchant','c3_potential','c3_hawkeye','c3_offset','c3_numerous'), #'灌篮高手',
 	4  => Array('s_hp','s_ad','f_heal','c4_stable','c4_break','c4_aiming','c4_loot','c4_roar','c4_sniper','c4_headshot'), #'狙击鹰眼',
-	5  => Array('s_hp','s_ad','f_heal'), #'拆弹专家',
+	5 => Array('s_hp','s_ad','f_heal'),
+	//5  => Array('s_hp','s_ad','f_heal','c5_sneak','c5_caution','c5_review','c5_focus','c5_higheg','c5_double'), #'拆弹专家',
 	6  => Array('s_hp','s_ad','f_heal'), #'宛如疾风',
 	7  => Array('s_hp','s_ad','f_heal'), #'锡安成员',
 	8  => Array('s_hp','s_ad','f_heal'), #'黑衣组织',
@@ -20,7 +21,7 @@ $club_skillslist = Array
 	12 => Array('s_hp','s_ad','f_heal'), #'全能骑士',
 	13 => Array('s_hp','s_ad','f_heal'), #'根性兄贵',
 	14 => Array('s_hp','s_ad','f_heal'), #'肌肉兄贵',
-	15 => Array('s_hp','s_ad','f_heal'), #'<span class="L5">L5状态</span>',
+	15 => Array('f_heal'), #'<span class="L5">L5状态</span>',
 	16 => Array('s_hp','s_ad','f_heal'), #'全能骑士',
 	17 => Array('f_heal'), #'走路萌物',
 	18 => Array('s_hp','s_ad','f_heal'), #'天赋异禀',
@@ -55,6 +56,7 @@ $cskills_tags = Array
 	'active' => '<span tooltip="在主动启动后才会产生效果" class="gold">【主动技】</span>',
 	//'cd' => '<span tooltip="隐藏标签：有此标签的技能会在载入时检查是否处于冷却状态" class="gold">【冷却技】</span>',
 	'openning' => '<span tooltip="仅在先制发现敌人时可用" class="gold">【开幕技】</span>',
+	'limit' => '<span tooltip="每局游戏内可发动次数有限" class="gold">【限次技】</span>',
 	//'buff' => '<span tooltip="隐藏标签：代表这是一个临时性状态" class="gold">【状态】</span>',
 	//'unlock_battle_hidden' => '<span tooltip="隐藏标签：未解锁时不会在战斗界面显示" class="gold">【隐藏】</span>',
 );
@@ -177,7 +179,7 @@ $cskills = Array
 			'wepk+wep_kind' => "[:wepk:] == 'WP' || [:wepk:] == 'WCP' || [:wepk:] == 'WKP' || [:wep_kind:] == 'P'",
 		),
 	),
-	'c1_sneak' => Array
+	'c1_stalk' => Array
 	(
 		'name' => '偷袭',
 		'tags' => Array('battle','opening'),
@@ -487,10 +489,10 @@ $cskills = Array
 	(
 		'name' => '枭眼',
 		'tags' => Array('passive'),
-		'desc' => '如果你的武器射程不小于敌人，你对其先制攻击率<span class="yellow">+[:activer:]%</span>，<br>
+		'desc' => '如果你的武器射程不小于敌人，你对其先制攻击率<span class="yellow">+[:actgain:]%</span>，<br>
 		其攻击你时命中率<span class="yellow">-[:accloss:]%</span>，连击命中率惩罚<span class="yellow">+[:rbloss:]%</span>',
 		'vars' => Array(
-			'activer' => 10, 
+			'actgain' => 10, 
 			'accloss' => 12, 
 			'rbloss' => 8,
 		),
@@ -540,7 +542,7 @@ $cskills = Array
 	(
 		'name' => '百出',
 		'tags' => Array('passive'),
-		'desc' => '持投系武器时物理伤害<span class="yellow b">+([:dmgr:]×[:skillpara|c3_enchant-active_t:])%</span><br>
+		'desc' => '持投系武器时物理伤害<span class="yellow b">+([:dmgr:]×[^skillpara|c3_enchant-active_t^])%</span><br>
 		其中<span class="yellow">×</span>后的数值是你发动<span class="yellow">“附魔”</span>的次数<br>',
 		'vars' => Array(
 			'dmgr' => 2,
@@ -728,6 +730,125 @@ $cskills = Array
 			'lvl' => '[:lvl:] >= 15',
 			'skillpara|c4_stable-costcount+skillpara|c4_break-costcount' => '[:skillpara|c4_stable-costcount:]+[:skillpara|c4_break-costcount:] >= 15',
 			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+		),
+	),
+	'c5_sneak' => Array
+	(
+		'name' => '潜行',
+		'tags' => Array('passive'),
+		'desc' => '你的隐蔽率提高<span class="yellow">[:hidegain:]%</span>，主动攻击时先攻率提高<span class="yellow">[:actgain:]%</span>',
+		'maxlvl' => 5,
+		'cost' => Array(2,3,3,4,4,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">技能「潜行」升级成功。</span><br>',
+		'status' => Array('skillpara|c5_sneak-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c5_sneak-lvl' => '+=::1',),
+		),
+		'svars' => Array('lvl' => 0),
+		'vars' => Array(
+			'hidegain' => Array(0,2,4,6,8,10), 
+			'actgain' => Array(0,2,4,6,8,10), 
+		),
+	),
+	'c5_caution' => Array
+	(
+		'name' => '谨慎',
+		'tags' => Array('passive'),
+		'desc' => '你的陷阱回避率提高<span class="yellow">[:evgain:]%</span>，陷阱重复使用率提高<span class="yellow">[:reugain:]%</span>',
+		'maxlvl' => 5,
+		'cost' => Array(2,2,2,3,3,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">技能「谨慎」升级成功。</span><br>',
+		'status' => Array('skillpara|c5_caution-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c5_caution-lvl' => '+=::1',),
+		),
+		'svars' => Array('lvl' => 0),
+		'vars' => Array(
+			'evgain' => Array(0,2,4,6,8,10), 
+			'reugain' => Array(0,4,8,12,16,20), 
+		),
+	),
+	'c5_review' => Array
+	(
+		'name' => '反思',
+		'tags' => Array('passive'),
+		'desc' => '使用爆系武器时，<br>即使攻击没有命中，也可以获得[:expgain:]点经验值',
+		'vars' => Array(
+			'expgain' => 1, 
+		),
+		'lockdesc' => Array(
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">爆系武器</span>时生效',
+		),
+		'unlock' => Array(
+			'wepk+wep_kind' => "[:wepk:] == 'WD' || [:wepk:] == 'WDG' || [:wepk:] == 'WDF' || (!empty([:wep_kind:]) && [:wep_kind:] == 'D')",
+		),
+	),
+	'c5_focus' => Array
+	(
+		'name' => '专注',
+		'tags' => Array('passive'),
+		'desc' => '你可随意于下列三个状态间切换：',
+		'svars' => Array(
+			'choice' => 0, 
+		),
+		'vars' => Array(
+			'meetgain' => 15,
+			'itmgain' => 15,
+		),
+		'lockdesc' => Array(
+			'lvl' => '3级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 3',
+		),
+	),
+	'c5_higheg' => Array
+	(
+		'name' => '高能',
+		'tags' => Array('battle'),
+		'desc' => '本次攻击中爆炸属性伤害无视一切加成减成<br>
+		使用爆系武器方可发动，消耗<span class="yellow">[:ragecost:]</span>点怒气。',
+		'bdesc' => '本次攻击中爆炸属性伤害无视一切加成减成；消耗<span class="red">[:ragecost:]</span>怒气',
+		'vars' => Array(
+			'ragecost' => 40, 
+		),
+		'lockdesc' => Array(
+			'lvl' => '6级时解锁',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">爆系武器</span>时生效',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 6',
+			'wepk+wep_kind' => "[:wepk:] == 'WD' || [:wepk:] == 'WDG' || [:wepk:] == 'WDF' || (!empty([:wep_kind:]) && [:wep_kind:] == 'D')",
+		),
+	),
+	'c5_double' => Array
+	(
+		'name' => '双响',
+		'tags' => Array('battle','limit'),
+		'desc' => '本局已发动<span class="yellow">[^skillpara|c5_double-active_t^]/[:maxactive_t:]次</span><br>使用爆系武器方可发动，连续攻击[:chase_t:]次。',
+		'bdesc' => '本次战斗你将连续攻击[:chase_t:]次；本局已发动<span class="yellow">[^skillpara|c5_double-active_t^]/[:maxactive_t:]</span>次',
+		'svars' => Array(
+			'active_t' => 0,
+		),
+		'vars' => Array(
+			'ragecost' => 0, 
+			'chase_t' => 2,
+			'maxactive_t' => 2,
+		),
+		'pvars' => Array(
+			'skillpara|c5_double-active_t',
+		),
+		'lockdesc' => Array(
+			'skillpara|c5_double-active_t' => '已无法发动该技能',
+			'lvl' => '19级时解锁',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">爆系武器</span>时生效',
+		),
+		'unlock' => Array(
+			'skillpara|c5_double-active_t' => '[:skillpara|c5_double-active_t:] < 2',
+			'lvl' => '[:lvl:] >= 19',
+			'wepk+wep_kind' => "[:wepk:] == 'WD' || [:wepk:] == 'WDG' || [:wepk:] == 'WDF' || (!empty([:wep_kind:]) && [:wep_kind:] == 'D')",
 		),
 	),
 	'tl_cstick' => Array

@@ -62,7 +62,7 @@
 					{
 						$sk_dice = diceroll(99);
 						# 「偷袭」或「闷棍」技能生效时，「猛击」必定触发；
-						$sk_obbs = isset($pa['bskill_c1_sneak'])||isset($pa['bskill_c1_bjack']) ? 100 : get_skillvars('c1_crit','rate');
+						$sk_obbs = isset($pa['bskill_c1_stalk'])||isset($pa['bskill_c1_bjack']) ? 100 : get_skillvars('c1_crit','rate');
 						# 成功触发时
 						if($sk_dice < $sk_obbs)
 						{
@@ -92,10 +92,22 @@
 		return;
 	}
 
-	# 获取社团技能对先攻率（pa是否先攻pd）的修正（新）
-	function get_clbskill_activerate(&$pa,&$pd)
+	# 获取社团技能对躲避率（pd是否躲避pa）的定值修正（新）
+	function get_clbskill_hide_rate_fix(&$pa,&$pd,$r)
 	{
-		$r = 1;
+		#pd持有「潜行」时的效果判定：
+		if(!check_skill_unlock('c5_sneak',$pd))
+		{
+			$sk_lvl = get_skilllvl('c5_sneak',$pd);
+			$sk_r = get_skillvars('c5_sneak','hidegain',$sk_lvl);
+			$r += $sk_r;
+		}
+		return $r;
+	}
+
+	# 获取社团技能对先攻率（pa是否先攻pd）的定值修正（新）
+	function get_clbskill_active_rate_fix(&$pa,&$pd,$r)
+	{
 		# pa持有「枭眼」时的效果判定：
 		if(!check_skill_unlock('c3_hawkeye',$pa))
 		{
@@ -104,8 +116,8 @@
 			$pd['wep_range'] = get_wep_range($pd); 
 			if($pa['wep_range'] >= $pd['wep_range'])
 			{
-				$sk_r = get_skillvars('c3_hawkeye','activer');
-				$r += $sk_r/100;
+				$sk_r = get_skillvars('c3_hawkeye','actgain');
+				$r += $sk_r;
 			}
 		}
 		# pd持有「枭眼」时的效果判定：
@@ -116,9 +128,16 @@
 			$pd['wep_range'] = get_wep_range($pd); 
 			if($pa['wep_range'] < $pd['wep_range'])
 			{
-				$sk_r = get_skillvars('c3_hawkeye','activer');
-				$r -= $sk_r/100;
+				$sk_r = get_skillvars('c3_hawkeye','actgain');
+				$r -= $sk_r;
 			}
+		}
+		# pa持有「潜行」时的效果判定：（只在主动发现敌人时应用）
+		if(!check_skill_unlock('c5_sneak',$pa))
+		{
+			$sk_lvl = get_skilllvl('c5_sneak',$pa);
+			$sk_r = get_skillvars('c5_sneak','actgain',$sk_lvl);
+			$r += $sk_r;
 		}
 		return $r;
 	}

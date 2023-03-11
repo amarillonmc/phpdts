@@ -24,15 +24,25 @@ if($command == 'info') {
 	}
 } else {
 	if(!isset($start) || !$start){
-		$result = $db->query("SELECT gid,name,nick,icon,gd,wep,wmode,getime,motto,hdp,hdmg,hkp,hkill FROM {$tablepre}winners ORDER BY gid desc LIMIT $winlimit");
+		$result = $db->query("SELECT gid,name,nick,icon,gd,wep,wmode,teamID,teamMate,teamIcon,getime,motto,hdp,hdmg,hkp,hkill FROM {$tablepre}winners ORDER BY gid desc LIMIT $winlimit");
 	} else {
-		$result = $db->query("SELECT gid,name,nick,icon,gd,wep,wmode,getime,motto,hdp,hdmg,hkp,hkill FROM {$tablepre}winners WHERE gid<='$start' ORDER BY gid desc LIMIT $winlimit");
+		$result = $db->query("SELECT gid,name,nick,icon,gd,wep,wmode,teamID,teamMate,teamIcon,getime,motto,hdp,hdmg,hkp,hkill FROM {$tablepre}winners WHERE gid<='$start' ORDER BY gid desc LIMIT $winlimit");
 	}
 	while($wdata = $db->fetch_array($result)) {
 		$wdata['date'] = date("Y-m-d",$wdata['getime']);
 		$wdata['time'] = date("H:i:s",$wdata['getime']);
-		$wdata['iconImg'] = $wdata['gd'] == 'f' ? 'f_'.$wdata['icon'].'.gif' : 'm_'.$wdata['icon'].'.gif';
-		$wdata['nickinfo'] = !empty($wdata['nick']) ? get_title_desc($wdata['nick']) : '-';
+		if(!empty($wdata['teamMate']))
+		{
+			$wdata['teamID'] = '<span class="gold">【团队 - '.$wdata['teamID'].'】</span>';
+			$wdata['iconImg'] = 't_'.$wdata['teamIcon'].'.gif';
+			$wdata['nickinfo'] = '<span class="gold">团队胜利</span>';
+			$wdata['name'] = json_decode($wdata['teamMate'],true);
+		}
+		else 
+		{
+			$wdata['iconImg'] = $wdata['gd'] == 'f' ? 'f_'.$wdata['icon'].'.gif' : 'm_'.$wdata['icon'].'.gif';
+			$wdata['nickinfo'] = !empty($wdata['nick']) ? get_title_desc($wdata['nick']) : '';
+		}
 		$winfo[$wdata['gid']] = $wdata;
 	}
 	$listnum = floor($gamenum/$winlimit);

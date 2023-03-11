@@ -807,7 +807,7 @@
 					if(!$pa['type'])
 					{
 						include_once GAME_ROOT.'./include/game/achievement.func.php';
-						check_battle_achievement($pa['name'],$pd['type'],$pd['name'],$pa['wep_name']);	
+						check_battle_achievement_rev($pa,$pd);	
 					}
 					# 保存游戏进行状态
 					include_once GAME_ROOT.'./include/system.func.php';

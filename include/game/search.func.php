@@ -533,7 +533,7 @@ function discover($schmode = 0) {
 	if($mode_dice < $schmode) 
 	{
 		//echo "进入遇敌判定<br>";
-		global $pid,$corpse_obbs,$teamID,$fog,$bid,$gamestate;
+		global $pdata,$pid,$corpse_obbs,$teamID,$fog,$bid,$gamestate;
 		global $clbstatusa,$clbstatusb,$clbstatusc,$clbstatusd,$clbstatuse;
 
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pls='$pls' AND pid!='$pid'");
@@ -553,6 +553,7 @@ function discover($schmode = 0) {
 		//移除了重复调用discover()的设定，尝试用一种正常一点的办法确保敌人/尸体发现率符合基础设定值，不然现在的尸体确实太难摸了。
 		//现在触发遇敌事件只会返回三种结果：1、发现尸体；2、发现敌人、3、敌人隐藏起来；所以实际的尸体发现率=$enemyrate*$corpse_obbs
 		$meetman_flag = 0;
+		include_once GAME_ROOT.'./include/game/revattr.func.php';
 		foreach($enemyarray as $enum)
 		{
 			$db->data_seek($result, $enum);
@@ -588,9 +589,10 @@ function discover($schmode = 0) {
 					if ((!$edata['type'])&&($artk=='XX')&&(($edata['artk']!='XX')||($edata['art']!=$name))&&($gamestate<50)) continue;
 					if (($artk!='XX')&&($edata['artk']=='XX')&&($gamestate<50)) continue;
 					//计算活人发现率
-					$hide_r = get_hide_r($weather,$pls,$edata['pose'],$edata['tactic'],$edata['club'],$edata['inf']);
-					include_once GAME_ROOT.'./include/game/clubskills.func.php';
-					$hide_r *= get_clubskill_bonus_hide($edata['club'],$edata['skills']);
+					//$hide_r = get_hide_r($weather,$pls,$edata['pose'],$edata['tactic'],$edata['club'],$edata['inf']);
+					//include_once GAME_ROOT.'./include/game/clubskills.func.php';
+					//$hide_r *= get_clubskill_bonus_hide($edata['club'],$edata['skills']);
+					$hide_r = get_hide_r_rev($pdata,$edata);
 					$enemy_dice = rand(0,99);
 					$meetman_flag = $enemy_dice<($find_obbs - $hide_r) ? 1 : -1;
 					break;
@@ -630,7 +632,6 @@ function discover($schmode = 0) {
 					//if ($active_r>96) $active_r=96;
 					//include_once GAME_ROOT.'./include/game/dice.func.php';
 					include_once GAME_ROOT.'./include/game/revbattle.func.php';
-					include_once GAME_ROOT.'./include/game/revattr.func.php';
 					//获取并保存当前玩家数据
 					$sdata = current_player_save();
 					//刷新敌人时效性状态

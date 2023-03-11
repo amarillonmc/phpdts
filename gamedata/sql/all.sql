@@ -220,6 +220,8 @@ CREATE TABLE `acbra2_players` (
   `wf` smallint unsigned not null default '0',
   `teamID` char(15) not null default '',
   `teamPass` char(15) not null default '',
+  teamMate text NOT NULL default '',
+  teamIcon smallint unsigned NOT NULL default '0',
   getitem text NOT NULL default '',
   itembag text NOT NULL default '',
   itmnum smallint unsigned NOT NULL default '0',
