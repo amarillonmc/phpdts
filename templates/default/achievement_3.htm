@@ -1,14 +1,14 @@
 <table><tr>
 <td>
-<!--{if ($cpl[3]) }--><img src="img/achievement_0.gif"><!--{else}--><img src="img/achievement_not_done.gif"><!--{/if}-->
+<!--{if ($cpl[3]) }--><img src="img/ach/D.gif"><!--{else}--><img src="img/ach/N.gif"><!--{/if}-->
 </td>
-<td valign="top" align="left">
-<b>
+<td  class="ach_cont">
+<b><span class="ach_title">
 <!--{if ($cpl[3]=='0') }-->脚本小子<!--{/if}-->
 <!--{if ($cpl[3]=='1') }-->黑客<!--{/if}-->
 <!--{if ($cpl[3]=='2') }-->幻境解离者？<!--{/if}-->
 <!--{if ($cpl[3]=='999') }-->幻境解离者？<!--{/if}-->
-</b>
+</b></span>
 <!--{if ($cpl[3]=='999') }--><span class="lime">[完成]</span><!--{else}--><!--{if ($cpl[3]==0) }--><span class="red">[未完成]</span><!--{else}--><span class="clan">[进行中]</span><!--{/if}--><!--{/if}--><br>
 <font color="yellow">击杀总数： {$prc[3]}名<br></font>
 <!--{if ($cpl[3]=='0') }--><font color="olive">奖励： 切糕5<br></font> 击杀100名NPC<br><!--{/if}-->

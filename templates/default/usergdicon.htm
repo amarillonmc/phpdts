@@ -1,6 +1,7 @@
 <table align="center">
 	<td>{lang usertitle}</td>
 	<td>
+		<!--{eval $utlist = !empty($utlist) ? $utlist : Array(0 => '参展者');}-->
 		<select name="nick">
 			<!--{loop $utlist $key $val}-->
 			<option value="{$val}"<!--{if $udata['nick'] == $val}-->selected<!--{/if}-->>$val</option>

@@ -61,7 +61,7 @@ function poison($itmn = 0) {
 }
 
 function wthchange($itm,$itmsk,$wlog=1){
-	global $now,$log,$weather, $wthinfo, $name,$nick;
+	global $now,$log,$weather,$wthinfo,$name,$nick,$clbpara;
 	$weathertd = $weather;
 	if($weather >= 14 && $weather <= 17){
 		addnews ( $now, 'wthfail', get_title_desc($nick).' '.$name, $weather, $itm );
@@ -105,12 +105,13 @@ function wthchange($itm,$itmsk,$wlog=1){
 			addnews ( $now, 'wthchange', get_title_desc($nick).' '.$name, $weather, $itm );
 			if($wlog) $log .= "你使用了<span class=\"yellow\">{$itm}</span>。<br />天气突然转变成了<span class=\"red\">$wthinfo[$weather]</span>！<br />";
 		}
+		$clbpara['achvars']['wthchange'] += 1;
 	}
 	return;
 }
 
 function hack($itmn = 0) {
-	global $log,$hack,$hack_obbs,$club,$now,$name,$alivenum,$deathnum,$hp,$state,$nick;
+	global $log,$hack,$hack_obbs,$club,$clbpara,$now,$name,$alivenum,$deathnum,$hp,$state,$nick;
 	
 	global ${'itm'.$itmn},${'itmk'.$itmn},${'itme'.$itmn},${'itms'.$itmn},${'itmsk'.$itmn};
 	$itm = & ${'itm'.$itmn};
@@ -134,6 +135,7 @@ function hack($itmn = 0) {
 	$hack_dice = rand(0,99);
 	if(($hack_dice < $hack_obbs)||(($club == 7)&&($hack_dice<95))) {
 		$hack = 1;
+		$clbpara['achvars']['hack'] += 1;
 		$log .= '入侵禁区控制系统成功了！全部禁区都被解除了！<br>';
 		include_once GAME_ROOT.'./include/system.func.php';
 		movehtm();
@@ -380,7 +382,7 @@ function divining2($u) {
 }
 
 function deathnote($itmd=0,$dnname='',$dndeath='',$dngender='m',$dnicon=1,$sfn) {
-	global $db,$tablepre,$log,$killnum,$mode,$achievement;
+	global $db,$tablepre,$log,$killnum,$mode,$achievement,$pdata;
 	global ${'itm'.$itmd},${'itms'.$itmd},${'itmk'.$itmd},${'itme'.$itmd},${'itmsk'.$itmd};
 	$dn = & ${'itm'.$itmd};
 	$dnk = & ${'itmk'.$itmd};
@@ -423,9 +425,15 @@ function deathnote($itmd=0,$dnname='',$dndeath='',$dngender='m',$dnicon=1,$sfn) 
 			{
 				$log .= "你将<span class=\"yellow b\">$dnname</span>的名字写在了■DeathNote■上。<br>";
 				$log .= "<span class=\"yellow b\">$dnname</span>被你杀死了。";
-				include_once GAME_ROOT.'./include/state.func.php';
-				kill('dn',$dnname,0,$edata['pid'],$dndeath);
-				$killnum++;
+				//include_once GAME_ROOT.'./include/state.func.php';
+				//kill('dn',$dnname,0,$edata['pid'],$dndeath);
+				//$killnum++;
+				$pdata['wep_name'] = $dndeath;
+				include_once GAME_ROOT.'./include/game/revcombat.func.php';
+				pre_kill_events($pdata,$edata,1,'dn');
+				// 如果希望被DN后能够复活，可以在这里调用一次复活判定函数
+				final_kill_events($pdata,$edata,1);
+				player_save($edata);
 			}
 			else  
 			{

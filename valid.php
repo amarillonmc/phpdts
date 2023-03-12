@@ -43,7 +43,18 @@ if($mode == 'enter') {
 				if(!empty($cpl[$i]) || !empty($prc[$i]))
 				{
 					// 到达999阶段的成就 替换为配置中预设的达成等级
-					if($cpl[$i] == 999) $cpl[$i] = $iarr['lvl'] ?: count($iarr['name']);
+					if($cpl[$i] == 999)
+					{
+						if($i == 16 || $i == 17 || $i == 18 || $i == 19) 
+						{
+							//特判：四个结局成就阶段会变更为1...就这样了！
+							$cpl[$i] = 1;
+						}
+						else
+						{
+							$cpl[$i] = $iarr['lvl'] ?: count($iarr['name']);
+						}
+					}
 					$new_ach[$i]['l'] = $cpl[$i] ?: 0;
 					$new_ach[$i]['v'] = $prc[$i] ?: 0;
 				}

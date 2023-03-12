@@ -4,12 +4,12 @@
 <!--{if ($cpl[13]=='0') }--><img src="img/ach/N.gif"><!--{/if}-->
 <!--{if (($cpl[13]!='999')&&($cpl[13]!='0')) }--><img src="img/ach/D.gif"><!--{/if}-->
 </td>
-<td valign="top" align="left">
-<b>
+<td  class="ach_cont">
+<b><span class="ach_title">
 <!--{if ($cpl[13]=='0') }-->深度冻结<!--{/if}-->
 <!--{if ($cpl[13]=='1') }-->跨过彩虹<!--{/if}-->
 <!--{if ($cpl[13]=='999') }-->跨过彩虹<!--{/if}-->
-</b>
+</b></span>
 <!--{if ($cpl[13]=='999') }--><span class="lime">[完成]</span><!--{else}--><!--{if ($cpl[13]==0) }--><span class="red">[未完成]</span><!--{else}--><span class="clan">[进行中]</span><!--{/if}--><!--{/if}--><br>
 <font color="yellow">推倒次数： {$prc[13]}次<br></font>
 <!--{if ($cpl[13]=='0') }--><font color="olive">奖励： 积分150 切糕250<br></font> 推倒蓝凝1次<br><!--{/if}-->

@@ -57,6 +57,7 @@ $enpcinfo = array
 			'itmk2' => 'Y',
 			'itme2' => 1,
 			'itms2' => 1,		
+			'itmsk2' => 'x',	
 		)
 	),
 	 

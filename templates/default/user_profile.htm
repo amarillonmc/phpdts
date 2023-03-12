@@ -24,20 +24,28 @@
 		<!--{loop $atype $tid $tarr}-->
 		<tr>
 			<td>
-			<div class="subtitle" align="left">{$tarr['name']}</div>
-			{$tarr['desc']}
-			<table border="1">
+				<div class="subtitle" align="left">{$tarr['name']}</div>
+				<div style="margin-left: 6px;" align="left">{$tarr['desc']}</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<table>
 				<!--{loop $tarr['ach'] $key $aid}-->
 					<!--{if !$key%3}--><tr><!--{/if}-->
 					<!--{eval $adata = init_achtabledata($aid);}-->
 					     <!--{if is_array($adata)}-->
-							<td width="300" align="left" valign="top">
+							<td>
+								<div class="ach_box" align="left" valign="top">
 								<!--{eval include template($adata[0]);}-->
+								</div>
 							</td>
 						<!--{else}-->
 							<td width="300" align="left" valign="top">
+								<div class="ach_box" align="left" valign="top">
 								<!--成就编号{$aid}加载错误。<br>请联系管理员。-->
 								<!--{eval include template('achievement_temp');}-->
+								</div>
 							</td>
 						<!--{/if}-->
 					<!--{if ($key == count($tarr['ach'])-1 || (!(($key+1)%3) && $key!=0))}--></tr><!--{/if}-->

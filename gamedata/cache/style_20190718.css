@@ -9,8 +9,11 @@ th {font-size: 10pt; margin: 0px;}
 p {line-height:16px;}
 li {font: bold 10pt "微软雅黑" serif;line-height:16px}
 input {cursor: crosshair;}
+.b {font-weight:bold;}
 .title {font-family: "微软雅黑"; margin: 6px;color: #cceafa; width: 100%;filter:blur(add=1,direction=90,strength=12):glow(strength=5,color=gold); font-weight:900; text-decoration:underline;font-size: 30px;}
 .subtitle {font-family: "微软雅黑"; margin: 6px;color: #cceafa; width: 100%;font-size: 24px;font-weight:400;}
+.ach-subtitle {font: bold 24px/32px "微软雅黑","黑体";margin: 6px;color: #cceafa; width: 100%;}
+.ach-subdesc {margin: 6px;color: #cceafa;}
 /*.headerlink{}*/
 .small {font-size: 9pt}
 .center-text {text-align: center;}
@@ -562,3 +565,36 @@ div.skilllearn_desc_container{
 	width:420px;z-index:100;position:fixed;
 	filter:alpha(opacity=95); opacity:0.95; background-color:#000000
 }
+
+/* 成就（移植） */
+div.ach_box
+{
+	background-color:rgba(20,22,24,0.5); *BACKGROUND: rgb(20,22,24); *filter:alpha(opacity=50); 
+	display:Inline-block;
+	width:320px; min-height:106px;text-align:left; vertical-align:top;
+	margin:5px;	border:1px solid rgba(225, 124, 226, 0.4);	border-radius:7px;
+}
+
+div.ach_box div
+{
+	position:relative;filter:alpha(opacity=100); opacity:1;
+}
+
+div.ach_box img
+{
+	border-radius:5px; margin-right:5px;
+}
+
+div.ach_box .ach_cont
+{
+	text-align:left; vertical-align:middle;
+}
+
+div.ach_box_empty
+{
+	display:Inline-block;
+	width:300px; text-align:left; vertical-align:top;
+	margin:5px;	border:0px;	
+}
+
+span.ach_title{font-weight:bold;font-size:12pt;line-height:14pt;}

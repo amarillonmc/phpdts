@@ -98,18 +98,33 @@ function trap(){
 			
 			$trapkill=false;
 			if($hp <= 0) {
-				include_once GAME_ROOT.'./include/state.func.php';
-				$killmsg = death('trap',$trname,$trtype,$itm0);
-				$log .= "你被{$trperfix}陷阱杀死了！";
-				$trapkill=true;
 				//检查成就
 				include_once GAME_ROOT.'./include/game/achievement.func.php';
 				//check_trap_death_achievement($name,$trname,$selflag,$itm0,$itme0);
-		
-				if($killmsg && !$selflag){
-					$log .= "<span class=\"yellow\">{$trname}对你说：“{$killmsg}”</span><br>";
-				}				
-				if ($tmp_club==99) $log.="<span class=\"lime\">但由于你及时按下了BOMB键，你原地满血复活了！</span><br>";
+				if(!empty($wdata))
+				{
+					global $pdata;
+					include_once GAME_ROOT.'./include/game/revcombat.func.php';
+					$wdata['wep_name'] = $itm0;
+					// 陷阱有主 走击杀判定
+					$last = pre_kill_events($wdata,$pdata,0,'trap');
+					// 检查是否复活
+					$revival_flag = revive_process($wdata,$pdata,$active);
+					// 没有复活 走完击杀流程
+					if(!$revival_flag) final_kill_events($wdata,$pdata,0,$last);
+					player_save($wdata); //current_player_save();
+				}
+				else
+				{
+					include_once GAME_ROOT.'./include/state.func.php';
+					$killmsg = death('trap',$trname,$trtype,$itm0);
+					$log .= "你被{$trperfix}陷阱杀死了！";
+					$trapkill=true;
+					if($killmsg && !$selflag){
+						$log .= "<span class=\"yellow\">{$trname}对你说：“{$killmsg}”</span><br>";
+					}				
+					if ($tmp_club==99) $log.="<span class=\"lime\">但由于你及时按下了BOMB键，你原地满血复活了！</span><br>";
+				}
 			}
 			else
 			{

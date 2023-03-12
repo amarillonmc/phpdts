@@ -109,7 +109,7 @@ $mixinfo = array
 	array('class' => 'item', 'stuff' => array('高压线圈','原型武器G','原型武器C','某种机械设备'),'result' => array('电磁发射装置','X',1,1,''),),
 	//array('class' => 'item', 'stuff' => array('风见 幽香的ID卡','坂持 金发的ID卡','御坂 美琴的ID卡'),'result' => array('游戏解除钥匙','Y',1,1,),),
 	array('class' => 'item', 'stuff' => array('社员专用的ID卡','社员专用的ID卡','社员专用的ID卡'),'result' => array('游戏解除钥匙','Y',1,1,),),
-	array('class' => 'item', 'stuff' => array('冰炎钥匙·炎','冰炎钥匙·冰'),'result' => array('游戏解除钥匙','Y',1,1,),),
+	array('class' => 'item', 'stuff' => array('冰炎钥匙·炎','冰炎钥匙·冰'),'result' => array('游戏解除钥匙','Y',1,1,'Z'),),
 	array('class' => 'item', 'stuff' => array('★荆棘式电子地雷★','★阔剑地雷★','★全图不唯一的野生巨大香蕉★'),'result' => array('★一发逆转神话★','TNc',1,1,'x'),),
 	array('class' => 'item', 'stuff' => array('水','黑色雏菊','白色方块'),'result' => array('风祭河水','Y',1,1,),),
 	array('class' => 'item', 'stuff' => array('水','黑色方块','白色雏菊'),'result' => array('仪水镜','Y',1,1,),),

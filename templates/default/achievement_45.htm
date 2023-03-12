@@ -1,14 +1,14 @@
 <table><tr>
 <td>
-<!--{if ($cpl[45]) }--><img src="img/achievement_0.gif"><!--{else}--><img src="img/achievement_not_done.gif"><!--{/if}-->
+<!--{if ($cpl[45]) }--><img src="img/ach/D.gif"><!--{else}--><img src="img/ach/N.gif"><!--{/if}-->
 </td>
-<td valign="top" align="left">
-<b>
+<td  class="ach_cont">
+<b><span class="ach_title">
 <!--{if ($cpl[45]=='0') }-->试试看灵系吧！<!--{/if}-->
 <!--{if ($cpl[45]=='1') }-->皇家烈焰<!--{/if}-->
 <!--{if ($cpl[45]=='2') }-->灵系爱好者<!--{/if}-->
 <!--{if ($cpl[45]=='999') }-->灵系爱好者<!--{/if}-->
-</b>
+</b></span>
 <!--{if ($cpl[45]=='999') }--><span class="lime">[完成]</span><!--{else}--><!--{if ($cpl[45]==0) }--><span class="red">[未完成]</span><!--{else}--><span class="clan">[进行中]</span><!--{/if}--><!--{/if}--><br>
 <font color="yellow">合成次数： {$prc[45]}次<br></font>
 <!--{if ($cpl[45]=='0') }--><font color="olive">奖励： 切糕10<br></font> 合成物品日符「Royal Flare」1次<br><!--{/if}-->

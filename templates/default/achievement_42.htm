@@ -1,14 +1,14 @@
 <table><tr>
 <td>
-<!--{if ($cpl[42]) }--><img src="img/achievement_0.gif"><!--{else}--><img src="img/achievement_not_done.gif"><!--{/if}-->
+<!--{if ($cpl[42]) }--><img src="img/ach/D.gif"><!--{else}--><img src="img/ach/N.gif"><!--{/if}-->
 </td>
-<td valign="top" align="left">
-<b>
+<td  class="ach_cont">
+<b><span class="ach_title">
 <!--{if ($cpl[42]=='0') }-->试试看投系吧！<!--{/if}-->
 <!--{if ($cpl[42]=='1') }-->平和之心<!--{/if}-->
 <!--{if ($cpl[42]=='2') }-->投系爱好者<!--{/if}-->
 <!--{if ($cpl[42]=='999') }-->投系爱好者<!--{/if}-->
-</b>
+</b></span>
 <!--{if ($cpl[42]=='999') }--><span class="lime">[完成]</span><!--{else}--><!--{if ($cpl[42]==0) }--><span class="red">[未完成]</span><!--{else}--><span class="clan">[进行中]</span><!--{/if}--><!--{/if}--><br>
 <font color="yellow">合成次数： {$prc[42]}次<br></font>
 <!--{if ($cpl[42]=='0') }--><font color="olive">奖励： 切糕10<br></font> 合成物品《小黄的超级球》1次<br><!--{/if}-->

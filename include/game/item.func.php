@@ -8,7 +8,7 @@ include_once GAME_ROOT.'./include/game/titles.func.php';
 include_once GAME_ROOT.'./include/game/clubslct.func.php';
 
 function itemuse($itmn) {
-	global $mode, $log, $nosta, $pid, $name, $state, $now,$nick,$achievement,$club;
+	global $mode, $log, $nosta, $pid, $name, $state, $now,$nick,$achievement,$club, $pdata;
 
 	$nickinfo = get_title_desc($nick);
 
@@ -237,17 +237,22 @@ function itemuse($itmn) {
 			if ($itmsk) {
 				$bid = $itmsk;
 				$result = $db->query ( "SELECT * FROM {$tablepre}players WHERE pid='$itmsk'" );
-				$wdata = $db->fetch_array ( $result );
-				/*
-				if($wdata['hp'] > 0){
-					$expup = round(($wdata['lvl'] - $lvl)/3);
-					$wdata['exp'] += $expup;
+				$edata = $db->fetch_array ( $result );
+				//include_once GAME_ROOT . './include/state.func.php';
+				//$killmsg = death ( 'poison', $wdata ['name'], $wdata ['type'], $itm );
+				//$log .= "你被<span class=\"red\">" . $wdata ['name'] . "</span>毒死了！";
+				//if($killmsg){$log .= "<span class=\"yellow\">{$wdata['name']}对你说：“{$killmsg}”</span><br>";}
+				if(!$edata['type'])
+				{
+					$w_log = "<span class=\"yellow\">{$name}误食了你下毒的补给<span class=\"red\">{$itm}</span>被毒死！</span><br>";
+					logsave ( $itmsk, $now, $w_log ,'b');
 				}
-				*/
-				include_once GAME_ROOT . './include/state.func.php';
-				$killmsg = death ( 'poison', $wdata ['name'], $wdata ['type'], $itm );
-				$log .= "你被<span class=\"red\">" . $wdata ['name'] . "</span>毒死了！";
-				if($killmsg){$log .= "<span class=\"yellow\">{$wdata['name']}对你说：“{$killmsg}”</span><br>";}
+				$edata['wep_name'] = $itm;
+				include_once GAME_ROOT.'./include/game/revcombat.func.php';
+				$last = pre_kill_events($edata,$pdata,0,'poison');
+				if($itmsk == $pdata['pid']) $last = 0;
+				final_kill_events($edata,$pdata,0,$last);
+				player_save($edata); //current_player_save();
 			} else {
 				//$bid = 0;
 				include_once GAME_ROOT . './include/state.func.php';
@@ -848,6 +853,7 @@ function itemuse($itmn) {
 		}elseif(strpos( $itmk, 'p0' ) === 0){//新福袋·VOL1
 			global $statuse; // 用这个数值记录打开福袋的次数，目前只有VOL1所以只需要判断非0状况，以后如果加入更多的福袋则需要修改。
 			global $db,$tablepre;
+			global $clbpara;
 /* 			if($statuse){
 				$log.="似乎你本轮已经打开过福袋，因此不能再打开更多的福袋！<br>";
 				$db->query("INSERT INTO {$tablepre}shopitem (kind,num,price,area,item,itmk,itme,itms,itmsk) VALUES ('17','1','20','0','$itm','$itmk','$itme','$itms','$itmsk')");
@@ -883,8 +889,10 @@ function itemuse($itmn) {
 				$itemflag = $itmmedium;
 			}elseif($dice <= 995){//神装
 				$itemflag = $itmhigh;
+				$clbpara['achvars']['gacha_sr'] += 1;
 			}else{
 				$itemflag = $antimeta;
+				$clbpara['achvars']['gacha_ssr'] += 1;
 			}
 			if($itemflag){
 				$itemflag = explode("\r\n",$itemflag);
@@ -1469,6 +1477,7 @@ function itemuse($itmn) {
 			$rp = 0;
 			$clbpara['dialogue'] = 'thiphase';
 			$clbpara['console'] = 1;  
+			$clbpara['achvars']['thiphase'] += 1;
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '在你唱出那单一的旋律的霎那，<br>整个虚拟世界起了翻天覆地的变化……<br>';
 			addnpc ( 4, 0,1);
