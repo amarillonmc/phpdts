@@ -620,66 +620,107 @@ function check_mixitem_achievement_rev($nn,$item)
 
 //新版结局成就检测机制：加入团队胜利兼容
 //function check_end_achievement_rev($w,$m)
-function check_end_achievement_rev($w,$m,$team=0,$vars='')
+function check_end_achievement_rev($w,$m,$data='')
 {
 	global $now,$validtime,$starttime,$gamecfg,$name,$db,$tablepre;
+	include_once GAME_ROOT.'./include/game/titles.func.php';
+
+	$done = 0;
+
 	//16. 最后幸存成就
-	//$result = $db->query("SELECT achievement FROM {$tablepre}users WHERE username = '$w' AND type = 0");
-	//$ach = $db->result($result, 0);
 	if ($m==2)
 	{
-		update_achievement_rev(16,$w,((int)fetch_achievement_rev(16,$w))+1,$w);
-		if (!check_achievement_rev(16,$w)) {
-		$db->query("UPDATE {$tablepre}users SET credits=credits+150 WHERE username='".$w."'" );
-		$db->query("UPDATE {$tablepre}users SET credits2=credits2 WHERE username='".$w."'" );
-		done_achievement_rev(16,999,$w);
-		include_once GAME_ROOT.'./include/game/titles.func.php';
-		get_title("生存者",$w);
+		// 初始化
+		$aid = 16;
+		$alvl = check_achievement_rev($aid,$w);
+		$achlist = get_achlist($aid);
+		// 增加一次完成次数
+		$avars = fetch_achievement_rev($aid,$w)+1;
+		update_achievement_rev($aid,$w,$avars);
+		// 检查是否满足条件进入下一阶段（如果累计的次数足够一次性完成多个阶段，会依次完成）
+		while((!$alvl && $avars) || ($alvl == 1 && $avars >= 17) || ($alvl == 2 && $avars >= 177)) 
+		{
+			$done = 1;
+			// alvl代表的是当前阶段 所以先获取当前阶段的奖励 之后提升alvl
+			if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$w);
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			// 阶段步进
+			$alvl ++;
 		}
+		// 阶段有所变化时，增加阶段次数
+		if($done) done_achievement_rev($aid,$alvl,$w);
 	}
 	//17. 核爆全灭成就
 	if ($m==5)
 	{
-		update_achievement_rev(17,$w,((int)fetch_achievement_rev(17,$w))+1,$w);
-		if (!check_achievement_rev(17,$w)) {
-		$db->query("UPDATE {$tablepre}users SET credits=credits WHERE username='".$w."'" );
-		$db->query("UPDATE {$tablepre}users SET credits2=credits2+100 WHERE username='".$w."'" );
-		done_achievement_rev(17,999,$w);
-		include_once GAME_ROOT.'./include/game/titles.func.php';
-		get_title("叶子钦定！",$w);
+		// 初始化
+		$aid = 17;
+		$alvl = check_achievement_rev($aid,$w);
+		$achlist = get_achlist($aid);
+		// 增加一次完成次数
+		$avars = fetch_achievement_rev($aid,$w)+1;
+		update_achievement_rev($aid,$w,$avars);
+		// 检查是否满足条件进入下一阶段
+		while((!$alvl && $avars) || ($alvl == 1 && $avars >= 7)) 
+		{
+			$done = 1;
+			if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$w);
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			$alvl ++;
 		}
+		if($done) done_achievement_rev($aid,$alvl,$w);
 	}
 	//18. 锁定解除成就
 	if ($m==3)
 	{
-		update_achievement_rev(18,$w,((int)fetch_achievement_rev(18,$w))+1);
-		if (!check_achievement_rev(18,$w)) {
-		$db->query("UPDATE {$tablepre}users SET credits=credits+500 WHERE username='".$w."'" );
-		$db->query("UPDATE {$tablepre}users SET credits2=credits2 WHERE username='".$w."'" );
-		done_achievement_rev(18,999,$w);
-		include_once GAME_ROOT.'./include/game/titles.func.php';
-		get_title("最后的荣光",$w);
+		// 初始化
+		$aid = 18;
+		$alvl = check_achievement_rev($aid,$w);
+		$achlist = get_achlist($aid);
+		// 增加一次完成次数
+		$avars = fetch_achievement_rev($aid,$w)+1;
+		update_achievement_rev($aid,$w,$avars);
+		// 检查是否满足条件进入下一阶段
+		while((!$alvl && $avars) || ($alvl == 1 && $avars >= 17) || ($alvl == 2 && $avars >= 77)) 
+		{
+			$done = 1;
+			if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$w);
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			$alvl ++;
 		}
+		if($done) done_achievement_rev($aid,$alvl,$w);
 	}
 	//19. 幻境解离成就
 	if ($m==7)
 	{
-		update_achievement_rev(19,$w,((int)fetch_achievement_rev(19,$w))+1);
-		if (!check_achievement_rev(19,$w)) {
-		$db->query("UPDATE {$tablepre}users SET credits=credits+1000 WHERE username='".$w."'" );
-		$db->query("UPDATE {$tablepre}users SET credits2=credits2+1000 WHERE username='".$w."'" );
-		done_achievement_rev(19,999,$w);
-		include_once GAME_ROOT.'./include/game/titles.func.php';
-		get_title("奇迹的篝火",$w);
+		// 初始化
+		$aid = 19;
+		$alvl = check_achievement_rev($aid,$w);
+		$achlist = get_achlist($aid);
+		// 增加一次完成次数
+		$avars = fetch_achievement_rev($aid,$w)+1;
+		update_achievement_rev($aid,$w,$avars);
+		// 检查是否满足条件进入下一阶段
+		while((!$alvl && $avars) || ($alvl == 1 && $avars >= 17) || ($alvl == 2 && $avars >= 77)) 
+		{
+			$done = 1;
+			if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$w);
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			$alvl ++;
 		}
+		if($done) done_achievement_rev($aid,$alvl,$w);
 	}
+	//新版成就切糕、积分结算汇总到此
+	if(!empty($c1)) $db->query("UPDATE {$tablepre}users SET credits=credits+$c1 WHERE username='".$w."'" );
+	if(!empty($c2)) $db->query("UPDATE {$tablepre}users SET credits2=credits2+$c2 WHERE username='".$w."'" );
+	return;
 }
 
 //新版击杀成就检测：pa击杀pd
 //function check_battle_achievement_rev($n,$is_npc,$killname,$wp)
 function check_battle_achievement_rev($pa,$pd)
 {
-	global $gamecfg,$db,$tablepre;
+	global $gamestate,$gamecfg,$db,$tablepre;
 
 	// 旧版成就参数兼容
 	$is_npc = $pd['type'] ? 1 : 0;
@@ -687,29 +728,263 @@ function check_battle_achievement_rev($pa,$pd)
 	$killname = $pd['name'];
 	$wp = isset($pa['wep_name']) ? $pa['wep_name'] : $pa['wep'];
 
-	//2. 击杀玩家成就
-	if (!$is_npc)
+	# 击杀玩家成就
+	if (!$is_npc && $pd['name'] != $nn)
 	{
-		update_achievement_rev(2,$nn,((int)fetch_achievement_rev(2,$nn))+1);
-		if ((int)fetch_achievement_rev(2,$nn)>=1000 && (check_achievement_rev(2,$nn)<999)) {
-		done_achievement_rev(2,999,$nn);
-		$db->query("UPDATE {$tablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$tablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
-		get_title("G.D.M",$nn);
+		$done = 0;
+		// 2.无条件击杀玩家成就
+		$aid = 2;
+		$alvl = check_achievement_rev($aid,$nn);
+		$achlist = get_achlist($aid);
+		// 增加一次完成次数
+		$avars = fetch_achievement_rev($aid,$nn)+1;
+		update_achievement_rev($aid,$nn,$avars);
+		// 检查是否满足条件进入下一阶段
+		while((!$alvl && $avars >= 10) || ($alvl == 1 && $avars >= 100) || ($alvl == 2 && $avars >= 1000)) 
+		{
+			$done = 1;
+			if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			$alvl ++;
 		}
-		elseif ((int)fetch_achievement_rev(2,$nn)>=100 && (check_achievement_rev(2,$nn)<2)) {
-		done_achievement_rev(2,2,$nn);
-		$db->query("UPDATE {$tablepre}users SET credits=credits+500 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$tablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
-		get_title("二度打",$nn);
+		if($done) done_achievement_rev($aid,$alvl,$nn);
+		$done = 0;
+
+		// 60.击杀存在击杀数的其他玩家
+		if(!empty($pd['killnum']))
+		{
+			$aid = 60;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 增加一次完成次数
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			// 检查是否满足条件进入下一阶段
+			while((!$alvl && $avars >= 1) || ($alvl == 1 && $avars >= 10) || ($alvl == 2 && $avars >= 100)) 
+			{
+				$done = 1;
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+			}
+			if($done) done_achievement_rev($aid,$alvl,$nn);
+			$done = 0;
 		}
-		elseif ((int)fetch_achievement_rev(2,$nn)>=10 && (check_achievement_rev(2,$nn)<1)) {
-		$db->query("UPDATE {$tablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$tablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		done_achievement_rev(2,1,$nn);
+
+		// 61.在死斗模式下击杀玩家
+		if($gamestate == 50)
+		{
+			$aid = 61;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 增加一次完成次数
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			// 检查是否满足条件进入下一阶段
+			while((!$alvl && $avars >= 1) || ($alvl == 1 && $avars >= 10) || ($alvl == 2 && $avars >= 100)) 
+			{
+				$done = 1;
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+			}
+			if($done) done_achievement_rev($aid,$alvl,$nn);
+			$done = 0;
 		}
+
+		// 62.使用毒补给毒死玩家
+		if($pd['state'] == 26)
+		{
+			$aid = 62;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 增加一次完成次数
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			// 检查是否满足条件进入下一阶段
+			while((!$alvl && $avars >= 1) || ($alvl == 1 && $avars >= 10) || ($alvl == 2 && $avars >= 100)) 
+			{
+				$done = 1;
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+			}
+			if($done) done_achievement_rev($aid,$alvl,$nn);
+			$done = 0;
+		}
+
+		// 63.埋设陷阱炸死玩家
+		if($pd['state'] == 27)
+		{
+			$aid = 63;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 增加一次完成次数
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			// 检查是否满足条件进入下一阶段
+			while((!$alvl && $avars >= 1) || ($alvl == 1 && $avars >= 10) || ($alvl == 2 && $avars >= 100)) 
+			{
+				$done = 1;
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+			}
+			if($done) done_achievement_rev($aid,$alvl,$nn);
+			$done = 0;
+		}
+
+		// 64.使用DN杀死玩家
+		if($pd['state'] == 28)
+		{
+			$aid = 64;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 增加一次完成次数
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			// 检查是否满足条件进入下一阶段
+			while(!$alvl && $avars >= 1) 
+			{
+				$done = 1;
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+			}
+			if($done) done_achievement_rev($aid,$alvl,$nn);
+			$done = 0;
+		}
+
+		// 65.击杀使用过移动PC的玩家
+		if(!empty($pd['clbpara']['achvars']['hack']))
+		{
+			$aid = 65;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 增加一次完成次数
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			// 检查是否满足条件进入下一阶段
+			while((!$alvl && $avars >= 1) || ($alvl == 1 && $avars >= 10) || ($alvl == 2 && $avars >= 100)) 
+			{
+				$done = 1;
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+			}
+			if($done) done_achievement_rev($aid,$alvl,$nn);
+			$done = 0;
+		}
+
+		// 66.击杀改变过天气的玩家
+		if(!empty($pd['clbpara']['achvars']['wthchange']))
+		{
+			$aid = 66;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 增加一次完成次数
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			// 检查是否满足条件进入下一阶段
+			while((!$alvl && $avars >= 1) || ($alvl == 1 && $avars >= 10) || ($alvl == 2 && $avars >= 100)) 
+			{
+				$done = 1;
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+			}
+			if($done) done_achievement_rev($aid,$alvl,$nn);
+			$done = 0;
+		}
+
+		// 67.击杀使用过破灭之诗的玩家
+		if(!empty($pd['clbpara']['achvars']['thiphase']))
+		{
+			$aid = 67;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 阶段0：只提升阶段，不改变次数
+			if(!$alvl && $avars >= 1)
+			{
+				$done = 1;
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				//特判：阶段0时清空进度
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+			}
+			// 阶段1：入场更晚时击杀1名；阶段2：入场更晚时击杀13名；
+			else
+			{
+				// 入场时间更晚时 增加次数
+				if($pa['validtime'] >= $pd['validtime'])
+				{
+					$avars = fetch_achievement_rev($aid,$nn)+1;
+					update_achievement_rev($aid,$nn,$avars);
+				}
+				while(($alvl == 1 && $avars >= 1) || ($alvl == 2 && $avars >= 13))
+				{
+					$done = 1;
+					if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+					$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+					$alvl ++;
+				}
+			}
+			if($done) done_achievement_rev($aid,$alvl,$nn);
+			$done = 0;
+		}
+
+		// 68.击杀女主后 击杀其他摸过女主尸体的玩家
+		if(!empty($pa['clbpara']['achvars']['kill_n14']) && !empty($pd['clbpara']['achvars']['corpse_n14']))
+		{
+			$aid = 68;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 增加一次完成次数
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			// 检查是否满足条件进入下一阶段
+			while(!$alvl && $avars >= 1) 
+			{
+				$done = 1;
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+			}
+			if($done) done_achievement_rev($aid,$alvl,$nn);
+			$done = 0;
+		}
+
+		// 69.打海豹
+		if(!empty($pd['clbpara']['achvars']['gacha_sr']) || !empty($pd['clbpara']['achvars']['gacha_ssr']))
+		{
+			$aid = 69;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 打海豹阶段0、1：只提升阶段，不改变次数
+			if(!$alvl || ($alvl == 1 && !empty($pd['clbpara']['achvars']['gacha_ssr'])))
+			{
+				$done = 1;
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+			}
+			// 打海豹阶段2
+			elseif(!empty($pd['clbpara']['achvars']['gacha_ssr']) && $pa['validtime'] >= $pd['validtime'])
+			{
+				$avars = fetch_achievement_rev($aid,$nn)+1;
+				update_achievement_rev($aid,$nn,$avars);
+				$done = 1;
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+			}
+			if($done) done_achievement_rev($aid,$alvl,$nn);
+			$done = 0;
+		}
+
+		//切糕、积分结算汇总
+		if(!empty($c1)) $db->query("UPDATE {$tablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
+		if(!empty($c2)) $db->query("UPDATE {$tablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
 	}
 	//31. ReturnToSender成就
 	if (!$is_npc)
@@ -955,6 +1230,43 @@ function check_battle_achievement_rev($pa,$pd)
 function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 {
 	global $gamecfg,$name,$db,$tablepre,$now,$starttime,$gamestate;
+
+	//解禁相关
+	if ($i == "游戏解除钥匙")
+	{
+		// 初始化
+		$done = 0;
+		// 101.使用参战者红暮&蓝凝掉落的钥匙达成锁定解除结局
+		if($isk == 'Z') $aid = 101;
+		// 102.使用DF掉落的钥匙达成锁定解除结局
+		elseif($isk == 'x') $aid = 102;
+		// 100.使用执行官掉落的钥匙达成锁定解除结局
+		else $aid = 100;
+
+		$alvl = check_achievement_rev($aid,$nn);
+		$achlist = get_achlist($aid);
+		// 增加一次完成次数
+		$avars = fetch_achievement_rev($aid,$nn)+1;
+		update_achievement_rev($aid,$nn,$avars);
+		// 检查是否满足条件进入下一阶段（如果累计的次数足够一次性完成多个阶段，会依次完成）
+		while(!$alvl && $avars) 
+		{
+			$done = 1;
+			// alvl代表的是当前阶段 所以先获取当前阶段的奖励 之后提升alvl
+			if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			// 阶段步进
+			$alvl ++;
+		}
+		// 阶段有所变化时，增加阶段次数
+		if($done) done_achievement_rev($aid,$alvl,$nn);
+		//新版成就切糕、积分结算汇总到此
+		if(!empty($c1)) $db->query("UPDATE {$tablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
+		if(!empty($c2)) $db->query("UPDATE {$tablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
+		return;
+	}
+
+
 	//28. 死斗成就
 	if (($gamestate==50)&&($i=="杏仁豆腐的ID卡")) 
 	{

@@ -767,7 +767,8 @@
 				# 没有复活的情况下，执行完后续击杀事件：
 				if(!$revival_flag)
 				{
-					global $now,$alivenum,$deathnum;
+					final_kill_events($pa,$pd,$active,$lastword);
+					/*global $now,$alivenum,$deathnum;
 					$pd['hp'] = 0;
 					$pd['endtime'] = $pd['deathtime'] = $now;
 					# 初始化遗言
@@ -811,7 +812,7 @@
 					}
 					# 保存游戏进行状态
 					include_once GAME_ROOT.'./include/system.func.php';
-					save_gameinfo();
+					save_gameinfo();*/
 				}
 				else 
 				{
@@ -851,6 +852,10 @@
 			$pd['state'] = 25;
 		} elseif ($death == 'F') {
 			$pd['state'] = 29;
+		} elseif ($death == 'poison') {
+			$pd['state'] = 26;
+		} elseif ($death == 'trap') {
+			$pd['state'] = 27;
 		} elseif ($death == 'dn') {
 			$pd['state'] = 28;
 		} else {
@@ -886,6 +891,10 @@
 	function revive_process(&$pa,&$pd,$active)
 	{
 		global $log,$weather,$now;
+		include_once GAME_ROOT.'./include/game/clubslct.func.php';
+
+		if(empty($pa['nm'])) $pa['nm'] = $active && !$pa['type'] ? '你' : $pa['name'];
+		if(empty($pd['nm'])) $pd['nm'] = !$active && !$pd['type'] ? '你' : $pd['name'];
 
 		$revival_flag = 0;
 
@@ -924,6 +933,62 @@
 		return $revival_flag;
 	}
 
+	# 执行死透了后的事件：
+	function final_kill_events(&$pa,&$pd,$active,$last=0)
+	{
+		global $log,$now,$alivenum,$deathnum;
+
+		if(empty($pa['nm'])) $pa['nm'] = $active && !$pa['type'] ? '你' : $pa['name'];
+		if(empty($pd['nm'])) $pd['nm'] = !$active && !$pd['type'] ? '你' : $pd['name'];
+
+		$pd['hp'] = 0;
+		$pd['endtime'] = $pd['deathtime'] = $now;
+
+		# 初始化遗言
+		if (!$pd['type'])
+		{
+			//死者是玩家，增加击杀数并保存系统状况。
+			$pa['killnum'] ++;
+			$alivenum --;
+			if(!empty($last)) $log .= "<span class='evergreen'>你用尽最后的力气喊道：“".$last."”</span><br>";
+		}
+		else 
+		{
+			//死者是NPC，加载NPC遗言
+			if(!empty($last)) $log .= npc_chat_rev ($pd,$pa, 'death' );
+		}
+		$deathnum ++;
+
+		# 初始化killmsg
+		if(!$pa['type'])
+		{
+			global $db,$tablepre;
+			$pname = $pa['name'];
+			$result = $db->query("SELECT killmsg FROM {$tablepre}users WHERE username = '$pname'");
+			$killmsg = $db->result($result,0);
+			if(!empty($killmsg)) $log .= "<span class=\"evergreen\">{$pa['nm']}对{$pd['nm']}说：“{$killmsg}”</span><br>";
+		}
+		else
+		{
+			$log .= npc_chat_rev ($pa,$pd,'kill');
+		}
+
+		# 杀人rp结算
+		get_killer_rp($pa,$pd,$active);
+		# 执行死亡事件（灵魂绑定等）
+		check_death_events($pa,$pd,$active);
+		# 检查成就 大补丁：击杀者是玩家时才会检查成就
+		if(!$pa['type'])
+		{
+			include_once GAME_ROOT.'./include/game/achievement.func.php';
+			check_battle_achievement_rev($pa,$pd);	
+		}
+		# 保存游戏进行状态
+		include_once GAME_ROOT.'./include/system.func.php';
+		save_gameinfo();
+		return;
+	}
+
 	# 特殊死亡事件（灵魂绑定等）
 	function check_death_events(&$pa,&$pd,$active)
 	{
@@ -937,6 +1002,9 @@
 			$gamevars['sanmadead'] = 1;
 			save_gameinfo();
 		}
+
+		# 保存击杀女主的记录
+		if($pd['type'] == 14) $pa['clbpara']['achvars']['kill_n14'] += 1;
 
 		# 快递被劫事件：
 		if(isset($pd['clbpara']['post'])) 

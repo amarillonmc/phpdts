@@ -1,6 +1,6 @@
 <table>
 <tr>
-    <!--{eval $alvl = $cpl[$aid]; $rlvl = $alvl == 999 ? $alist[$aid]['lvl']-1 : $alvl;}-->
+    <!--{eval $alvl = $cpl[$aid] == 999 ? $alist[$aid]['lvl'] : $cpl[$aid]; $rlvl = $cpl[$aid] == 999 ? $alist[$aid]['lvl']-1 : $cpl[$aid];}-->
     <td>
         <!--{if file_exists("img/ach/".$aid."_".$alvl.".gif") }-->
             <!-- 存在预设的对应阶段图标 -->
@@ -14,19 +14,21 @@
         <!--{else}-->
             <!-- 否则使用默认图标 -->
             <!--{if !empty($alvl) }-->
-                <img src="img/achievement_0.gif">
+                <img src="img/ach/D.gif">
             <!--{else}-->
-                <img src="img/achievement_not_done.gif">
+                <img src="img/ach/N.gif">
             <!--{/if}-->
         <!--{/if}-->
     </td>
-    <td valign="top" align="left">
+    <td class="ach_cont">
         <!-- 当前阶段成就名 -->
+        <span class="ach_title">
         <!--{if empty($alist[$aid]['name'][$alvl]) }-->
         <b>{$alist[$aid]['name'][$rlvl]}</b>
         <!--{else}-->
         <b>{$alist[$aid]['name'][$alvl]}</b>
         <!--{/if}-->
+        </span>
         <!--{if !empty($alist[$aid]['lvldesc'][$alvl]) }-->
             <!-- 存在预设的对应阶段的完成状态描述文本 -->
             {$alist[$aid]['lvlname'][$alvl]}
@@ -46,6 +48,8 @@
         <!--{if !empty($alist[$aid]['request'][$alvl]) }-->
                 <!--{eval $areq = $alist[$aid]['request'][$alvl]; $areq = str_replace("[:request:]",$prc[$aid],$areq);}-->
                 {$areq} 
+        <!--{elseif $alvl == $alist[$aid]['lvl']}-->
+                达成次数：{$prc[$aid]}次
         <!--{else}-->
                 目前进度：{$prc[$aid]}次
         <!--{/if}-->

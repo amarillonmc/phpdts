@@ -1,14 +1,14 @@
 <table><tr>
 <td>
-<!--{if ($cpl[44]) }--><img src="img/achievement_0.gif"><!--{else}--><img src="img/achievement_not_done.gif"><!--{/if}-->
+<!--{if ($cpl[44]) }--><img src="img/ach/D.gif"><!--{else}--><img src="img/ach/N.gif"><!--{/if}-->
 </td>
-<td valign="top" align="left">
-<b>
+<td  class="ach_cont">
+<b><span class="ach_title">
 <!--{if ($cpl[44]=='0') }-->来精进爆系吧！<!--{/if}-->
 <!--{if ($cpl[44]=='1') }-->★刷刷刷★<!--{/if}-->
 <!--{if ($cpl[44]=='2') }-->★啪啪啪★<!--{/if}-->
 <!--{if ($cpl[44]=='999') }-->★啪啪啪★<!--{/if}-->
-</b>
+</b></span>
 <!--{if ($cpl[44]=='999') }--><span class="lime">[完成]</span><!--{else}--><!--{if ($cpl[44]==0) }--><span class="red">[未完成]</span><!--{else}--><span class="clan">[进行中]</span><!--{/if}--><!--{/if}--><br>
 <font color="yellow">合成次数： {$prc[44]}次<br></font>
 <!--{if ($cpl[44]=='0') }--><font color="olive">奖励： 切糕10<br></font> 合成物品★BIUBIUBIU★1次<br><!--{/if}-->

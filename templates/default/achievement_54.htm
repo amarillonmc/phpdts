@@ -1,14 +1,14 @@
 <table><tr>
 <td>
-<!--{if ($cpl[54]) }--><img src="img/achievement_0.gif"><!--{else}--><img src="img/achievement_not_done.gif"><!--{/if}-->
+<!--{if ($cpl[54]) }--><img src="img/ach/D.gif"><!--{else}--><img src="img/ach/N.gif"><!--{/if}-->
 </td>
-<td valign="top" align="left">
-<b>
+<td  class="ach_cont">
+<b><span class="ach_title">
 <!--{if ($cpl[54]=='0') }-->来磨刀吧！<!--{/if}-->
 <!--{if ($cpl[54]=='1') }-->磨刀爱好者<!--{/if}-->
 <!--{if ($cpl[54]=='2') }-->无情磨刀者<!--{/if}-->
 <!--{if ($cpl[54]=='999') }-->无情磨刀者<!--{/if}-->
-</b>
+</b></span>
 <!--{if ($cpl[54]=='999') }--><span class="lime">[完成]</span><!--{else}--><!--{if ($cpl[54]==0) }--><span class="red">[未完成]</span><!--{else}--><span class="clan">[进行中]</span><!--{/if}--><!--{/if}--><br>
 <font color="yellow">强化数额： {$prc[54]}<br></font>
 <!--{if ($cpl[54]=='0') }--><font color="olive">奖励： 切糕5<br></font> 使用磨刀石来强化斩系武器777点<br><!--{/if}-->

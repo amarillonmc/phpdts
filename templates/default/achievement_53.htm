@@ -1,14 +1,14 @@
 <table><tr>
 <td>
-<!--{if ($cpl[53]) }--><img src="img/achievement_0.gif"><!--{else}--><img src="img/achievement_not_done.gif"><!--{/if}-->
+<!--{if ($cpl[53]) }--><img src="img/ach/D.gif"><!--{else}--><img src="img/ach/N.gif"><!--{/if}-->
 </td>
-<td valign="top" align="left">
-<b>
+<td  class="ach_cont">
+<b><span class="ach_title">
 <!--{if ($cpl[53]=='0') }-->来打钉子吧！<!--{/if}-->
 <!--{if ($cpl[53]=='1') }-->棍棒爱好者<!--{/if}-->
 <!--{if ($cpl[53]=='2') }-->无情打钉者<!--{/if}-->
 <!--{if ($cpl[53]=='999') }-->无情打钉者<!--{/if}-->
-</b>
+</b></span>
 <!--{if ($cpl[53]=='999') }--><span class="lime">[完成]</span><!--{else}--><!--{if ($cpl[53]==0) }--><span class="red">[未完成]</span><!--{else}--><span class="clan">[进行中]</span><!--{/if}--><!--{/if}--><br>
 <font color="yellow">强化数额： {$prc[53]}<br></font>
 <!--{if ($cpl[53]=='0') }--><font color="olive">奖励： 切糕5<br></font> 使用钉子来强化棍棒类武器777点<br><!--{/if}-->

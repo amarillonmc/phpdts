@@ -7,7 +7,7 @@ require './include/user.func.php';
 include_once GAME_ROOT.'./include/game/titles.func.php';
 
 $_REQUEST = gstrfilter($_REQUEST);
-if ($_REQUEST["playerID"]=="")
+if (empty($_REQUEST["playerID"]))
 {
 	if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
 
@@ -62,7 +62,18 @@ if(!empty($udata['achievement']) && empty($udata['achrev']))
 			if(!empty($cpl[$i]) || !empty($prc[$i]))
 			{
 				// 到达999阶段的成就 替换为配置中预设的达成等级
-				if($cpl[$i] == 999) $cpl[$i] = $iarr['lvl'] ?: count($iarr['name']);
+				if($cpl[$i] == 999) 
+				{
+					if($i == 16 || $i == 17 || $i == 18 || $i == 19) 
+					{
+						//特判：四个结局成就阶段会变更为1...就这样了！
+						$cpl[$i] = 1;
+					}
+					else
+					{
+						$cpl[$i] = $iarr['lvl'] ?: count($iarr['name']);
+					}
+				}
 				$new_ach[$i]['l'] = $cpl[$i] ?: 0;
 				$new_ach[$i]['v'] = $prc[$i] ?: 0;
 			}
@@ -91,7 +102,7 @@ foreach($alist as $aid => $arr)
 {
 	$cpl[$aid] = isset($udata['achrev'][$aid]['l']) ? $udata['achrev'][$aid]['l'] : 0;
 	//这一条是临时为了兼容旧版本数据 之后把旧成就完全整理好后，就可以把这条注释掉了
-	if($cpl[$aid] == $alist[$aid]['lvl']) $cpl[$aid] = 999;
+	if(isset($alist[$aid]['lvl']) && $cpl[$aid] == $alist[$aid]['lvl']) $cpl[$aid] = 999;
 	$prc[$aid] = isset($udata['achrev'][$aid]['v']) ? $udata['achrev'][$aid]['v'] : 0;
 }
 include template('user_profile');

@@ -80,7 +80,7 @@ function findteam(&$w_pdata){
 function findcorpse(&$w_pdata){
 	global $log,$mode,$main,$battle_title,$cmd,$iteminfo,$itemspkinfo;
 	global $w_type,$w_name,$w_gd,$w_sNo,$w_icon,$w_hp,$w_mhp,$w_wep,$w_wepk,$w_wepe,$w_lvl,$w_pose,$w_tactic,$w_inf,$w_rp;//,$itmsk0;
-	global $club,$allow_destory_corpse,$no_destory_corpse_type;
+	global $club,$clbpara,$allow_destory_corpse,$no_destory_corpse_type;
 
 	$battle_title = '发现尸体';
 	extract($w_pdata,EXTR_PREFIX_ALL,'w');
@@ -112,6 +112,8 @@ function findcorpse(&$w_pdata){
 	{	
 		$main = 'battle';
 		$log .= '你发现了<span class="red">'.$w_name.'</span>的尸体！<br>';
+
+		// 初始化尸体tooltip
 		foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
 		{
 			$value = 'w_'.$value;
@@ -151,41 +153,20 @@ function findcorpse(&$w_pdata){
 				}
 			}
 		}
-		/*foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $w_value) 
-		{
-			if(isset(${$w_value})) ${$w_value} = parse_itm_desc(${$w_value},'m');
-		}
-		foreach (Array('w_wepk','w_arbk','w_arhk','w_arak','w_arfk','w_artk','w_itmk0','w_itmk1','w_itmk2','w_itmk3','w_itmk4','w_itmk5','w_itmk6') as $w_k_value) {
-			if(${$w_k_value}){
-				foreach($iteminfo as $info_key => $info_value){
-					if(strpos(${$w_k_value},$info_key)===0){
-						${$w_k_value.'_words'} = parse_itm_desc($info_key,'k');
-						break;
-					}
-				}
-			}
-		}
-		foreach (Array('w_wepsk','w_arbsk','w_arhsk','w_arask','w_arfsk','w_artsk','w_itmsk0','w_itmsk1','w_itmsk2','w_itmsk3','w_itmsk4','w_itmsk5','w_itmsk6') as $w_sk_value) {
-			${$w_sk_value.'_words'} = '';
-			if(${$w_sk_value} && ! is_numeric(${$w_sk_value}))
-			{
-				$tmp_wsk = get_itmsk_array(${$w_sk_value});	
-				foreach($tmp_wsk as $sk)
-				{
-					${$w_sk_value.'_words'} .= parse_itm_desc($sk,'sk');
-				}
-			}
-		}*/
+
+		// 初始化仓库数据
 		include_once GAME_ROOT.'./include/game/depot.func.php';
 		$loot_depot_flag = 0;
-		if(in_array($w_type,$can_lootdepot_type))
-		{
-			$loot_depot_flag = depot_getlist($w_name,$w_type) ? 1 : 0;
-		}
+		if(in_array($w_type,$can_lootdepot_type)) $loot_depot_flag = depot_getlist($w_name,$w_type) ? 1 : 0;
+
+		// 初始化抡尸数据
 		global $pdata;
-		//include_once GAME_ROOT.'./include/game/revclubskills.func.php';
 		$cstick_flag = 0;
 		if(!check_skill_unlock('tl_cstick',$pdata) && !check_skill_cost('tl_cstick',$pdata)) $cstick_flag = in_array($w_type,get_skillvars('tl_cstick','notype')) ? 0 : 1;
+		
+		// 保存发现过女主尸体的记录
+		if($w_pdata['type'] == 14) $clbpara['achvars']['corpse_n14'] += 1;
+	
 		include template('corpse');
 		$cmd = ob_get_contents();
 		ob_clean();

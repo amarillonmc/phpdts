@@ -65,7 +65,18 @@ if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del' || $urcmd == 'checkac
 								if(!empty($cpl[$a]) || !empty($prc[$a]))
 								{
 									// 到达999阶段的成就 替换为配置中预设的达成等级
-									if($cpl[$a] == 999) $cpl[$a] = $aarr['lvl'] ?: count($aarr['name']);
+									if($cpl[$a] == 999)
+									{
+										if($a == 16 || $a == 17 || $a == 18 || $a == 19) 
+										{
+											//特判：四个结局成就阶段会变更为1...就这样了！
+											$cpl[$a] = 1;
+										}
+										else
+										{
+											$cpl[$a] = $aarr['lvl'] ?: count($aarr['name']);
+										}
+									}
 									$new_ach[$a]['l'] = $cpl[$a] ?: 0;
 									$new_ach[$a]['v'] = $prc[$a] ?: 0;
 								}
