@@ -647,7 +647,7 @@ function parse_info_desc($info,$type,$vars='',$short=0)
 				{
 					if($sk_max > 1)
 					{
-						$sk_tp .= "【{$itemspkinfo[$sk]}】".$tps_isk[$sk]['title'];
+						$sk_tp .= "【{$itemspkinfo[$sk]}】: ".$tps_isk[$sk]['title'];
 						if($sk_nums<$sk_max-1) $sk_tp .= "\r";
 					}
 					else 

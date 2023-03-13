@@ -46,7 +46,7 @@ function print_achievement_rev($ach)
 		$ach = json_decode($ach,true);
 		return $ach;
 	}
-	return $ach;
+	return Array();
 }
 
 function check_achievement_rev($which,$who)
@@ -1573,7 +1573,7 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 	}
 }
 
-function check_misc_achievement_rev($pa,$pd)
+function check_misc_achievement_rev(&$pa)
 {
 	global $gamestate,$gamecfg,$db,$tablepre;
 	include_once GAME_ROOT.'./include/game/titles.func.php';
@@ -1591,6 +1591,7 @@ function check_misc_achievement_rev($pa,$pd)
 		// 204.混沌伤害打满成就
 		if(!empty($pa['clbpara']['achvars']['full_chaosdmg']))
 		{
+			unset($pa['clbpara']['achvars']['full_chaosdmg']);
 			$aid = 204;
 			$alvl = check_achievement_rev($aid,$nn);
 			$achlist = get_achlist($aid);
@@ -1609,6 +1610,7 @@ function check_misc_achievement_rev($pa,$pd)
 		// 205.一击承受百万伤害成就
 		if(!empty($pa['clbpara']['achvars']['takedmg']) && $pa['clbpara']['achvars']['takedmg'] >= 1000000)
 		{
+			unset($pa['clbpara']['achvars']['takedmg']);
 			$aid = 205;
 			$alvl = check_achievement_rev($aid,$nn);
 			$achlist = get_achlist($aid);

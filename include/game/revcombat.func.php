@@ -384,6 +384,11 @@
 		# 战斗准备事件中触发了跳过战斗标记，直接goto跳转到这个位置。
 		battle_finish_flag:
 
+		# 检查战斗中出现的杂项成就
+		include_once GAME_ROOT.'./include/game/achievement.func.php';
+		if(!$pa['type']) check_misc_achievement_rev($pa);
+		if(!$pd['type']) check_misc_achievement_rev($pd);
+
 		# 如果战斗中出现了死者 更新action标记
 		if ($active) 
 		{ 
@@ -421,11 +426,6 @@
 			$edata=$pa; $sdata=$pd;
 			player_save($pa); player_save($pd);
 		}
-
-		# 检查战斗中出现的杂项成就
-		include_once GAME_ROOT.'./include/game/achievement.func.php';
-		if(!$pa['type']) check_misc_achievement_rev($pa,$pd);
-		if(!$pd['type']) check_misc_achievement_rev($pd,$pa);
 
 		# 刷新玩家状态
 		if(!$sdata['type']) player_load($sdata);
