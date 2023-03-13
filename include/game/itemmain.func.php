@@ -543,7 +543,7 @@ function itemmerge($itn1,$itn2){
 $syncn=$synck=$synce=$syncs=$syncsk=Array();
 function itemmix($mlist, $itemselect=-1) {
 	global $log,$mode,$gamecfg,$name,$nosta,$gd,$name,$nick;
-	global $itm1,$itm2,$itm3,$itm4,$itm5,$itm6,$itms1,$itms2,$itms3,$itms4,$itms5,$itms6,$itme1,$itme2,$itme3,$itme4,$itme5,$itme6,$club,$wd;
+	global $itm1,$itm2,$itm3,$itm4,$itm5,$itm6,$itms1,$itms2,$itms3,$itms4,$itms5,$itms6,$itme1,$itme2,$itme3,$itme4,$itme5,$itme6,$club,$clbpara,$wd;
 	global $itmk1,$itmk2,$itmk3,$itmk4,$itmk5,$itmk6,$itmsk1,$itmsk2,$itmsk3,$itmsk4,$itmsk5,$itmsk6;
 	global $syncn,$synck,$synce,$syncs,$syncsk,$sync,$reqname,$star;
 	global $cmd;
@@ -558,6 +558,10 @@ function itemmix($mlist, $itemselect=-1) {
 		$mode = 'itemmix';
 		return;
 	}
+
+	//尝试合成时 合成操作计数+1
+	if(empty($clbpara['achvars']['immix'])) $clbpara['achvars']['immix'] = 1;
+
 	$issyncro=false;
 	$isntsyn=false;
 	$isoverlay=false;

@@ -422,6 +422,11 @@
 			player_save($pa); player_save($pd);
 		}
 
+		# 检查战斗中出现的杂项成就
+		include_once GAME_ROOT.'./include/game/achievement.func.php';
+		if(!$pa['type']) check_misc_achievement_rev($pa,$pd);
+		if(!$pd['type']) check_misc_achievement_rev($pd,$pa);
+
 		# 刷新玩家状态
 		if(!$sdata['type']) player_load($sdata);
 		# 主视角不是玩家，可能是玩家召唤的NPC帮手。将身上的印记传给玩家。
@@ -1005,6 +1010,9 @@
 
 		# 保存击杀女主的记录
 		if($pd['type'] == 14) $pa['clbpara']['achvars']['kill_n14'] += 1;
+
+		# 保存击杀种火或小兵的记录
+		if(empty($pa['clbpara']['achvars']['kill_minion']) && ($pd['type'] == 90 || $pd['type'] == 91 || $pd['type'] == 92)) $pa['clbpara']['achvars']['kill_minion'] = 1;
 
 		# 快递被劫事件：
 		if(isset($pd['clbpara']['post'])) 

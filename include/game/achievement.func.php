@@ -115,6 +115,55 @@ function done_achievement_rev($which,$ch,$who)
 function check_mixitem_achievement_rev($nn,$item)
 {
 	global $now,$validtime,$starttime,$gamecfg,$name,$db,$tablepre;
+	include_once GAME_ROOT.'./include/game/titles.func.php';
+	$done = 0;
+	//1. 快速KEY弹成就
+	if ($item=="【KEY系催泪弹】")
+	{
+		$timeused=$now-$starttime; $besttime=(int)fetch_achievement_rev(1,$nn);
+		if ($timeused<$besttime || $besttime==0) update_achievement_rev(1,$nn,$timeused);
+		if (!check_achievement_rev(1,$nn) && $timeused<=300) {
+		done_achievement_rev(1,999,$nn);
+		$db->query("UPDATE {$tablepre}users SET credits=credits+30 WHERE username='".$nn."'" );
+		$db->query("UPDATE {$tablepre}users SET credits2=credits2+16 WHERE username='".$nn."'" );
+		get_title("KEY男",$nn);
+		}
+	}
+	//200.快速贤者成就
+	if ($item=="火水木金土符『贤者之石』")
+	{
+		$aid = 200;
+		$alvl = check_achievement_rev($aid,$nn);$achlist = get_achlist($aid);
+		// 检查最快时长
+		$timeused=$now-$starttime; $avars = fetch_achievement_rev($aid,$nn);
+		if(empty($avars) || $timeused < $avars) update_achievement_rev($aid,$nn,$timeused);
+		// 检查是否满足条件进入下一阶段
+		while(!$alvl && $timeused <= 900) 
+		{
+			if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			$alvl ++;
+			done_achievement_rev($aid,$alvl,$nn);
+		}
+	}
+	//201.快速✦烈埋火成就
+	if ($item=="✦烈埋火")
+	{
+		$aid = 201;
+		$alvl = check_achievement_rev($aid,$nn);$achlist = get_achlist($aid);
+		// 检查最快时长
+		$timeused=$now-$starttime; $avars = fetch_achievement_rev($aid,$nn);
+		if(empty($avars) || $timeused < $avars) update_achievement_rev($aid,$nn,$timeused);
+		// 检查是否满足条件进入下一阶段
+		while(!$alvl && $timeused <= 420) 
+		{
+			if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			$alvl ++;
+			done_achievement_rev($aid,$alvl,$nn);
+		}
+	}
+
 	//0. KEY弹成就
 	if ($item=="【KEY系催泪弹】") 
 	{
@@ -137,19 +186,6 @@ function check_mixitem_achievement_rev($nn,$item)
 		$db->query("UPDATE {$tablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$tablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
 		done_achievement_rev(0,1,$nn);
-		}
-	}
-	//1. 快速KEY弹成就
-	if ($item=="【KEY系催泪弹】")
-	{
-		$timeused=$now-$starttime; $besttime=(int)fetch_achievement_rev(1,$nn);
-		if ($timeused<$besttime || $besttime==0) update_achievement_rev(1,$nn,$timeused);
-		if (!check_achievement_rev(1,$nn) && $timeused<=300) {
-		done_achievement_rev(1,999,$nn);
-		$db->query("UPDATE {$tablepre}users SET credits=credits+30 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$tablepre}users SET credits2=credits2+16 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
-		get_title("KEY男",$nn);
 		}
 	}
 	//14. 燃烧弹成就
@@ -616,6 +652,10 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(52,1,$nn);
 		}
 	}
+	//新版成就切糕、积分结算汇总到此
+	if(!empty($c1)) $db->query("UPDATE {$tablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
+	if(!empty($c2)) $db->query("UPDATE {$tablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
+	return;
 }
 
 //新版结局成就检测机制：加入团队胜利兼容
@@ -626,6 +666,7 @@ function check_end_achievement_rev($w,$m,$data='')
 	include_once GAME_ROOT.'./include/game/titles.func.php';
 
 	$done = 0;
+	$data['clbpara'] = get_clbpara($data['clbpara']);
 
 	//16. 最后幸存成就
 	if ($m==2)
@@ -649,6 +690,7 @@ function check_end_achievement_rev($w,$m,$data='')
 		}
 		// 阶段有所变化时，增加阶段次数
 		if($done) done_achievement_rev($aid,$alvl,$w);
+		$done = 0;
 	}
 	//17. 核爆全灭成就
 	if ($m==5)
@@ -669,6 +711,7 @@ function check_end_achievement_rev($w,$m,$data='')
 			$alvl ++;
 		}
 		if($done) done_achievement_rev($aid,$alvl,$w);
+		$done = 0;
 	}
 	//18. 锁定解除成就
 	if ($m==3)
@@ -689,6 +732,68 @@ function check_end_achievement_rev($w,$m,$data='')
 			$alvl ++;
 		}
 		if($done) done_achievement_rev($aid,$alvl,$w);
+		$done = 0;
+	}
+	//202. 25分钟内解禁挑战（仅个人可完成）
+	if ($m==3 && !empty($data))
+	{
+		$aid = 202;
+		$alvl = check_achievement_rev($aid,$w);
+		$achlist = get_achlist($aid);
+		// 检查最快时长
+		$timeused=$now-$starttime; 
+		$avars = fetch_achievement_rev($aid,$w);
+		if(empty($avars) || $timeused < $avars) update_achievement_rev($aid,$w,$timeused);
+		// 检查是否满足条件进入下一阶段
+		while(!$alvl && $timeused <= 1500) 
+		{
+			$done = 1;
+			if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$w);
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			$alvl ++;
+		}
+		if($done) done_achievement_rev($aid,$alvl,$w);
+		$done = 0;
+	}
+	//206. 不使用合成/元素合成达成锁定解除/幻境解离结局
+	if (!empty($data) && empty($data['clbpara']['achvars']['immix']) && empty($data['clbpara']['achvars']['team']) && ($m==3 || $m==7))
+	{
+		$aid = 206;
+		$alvl = check_achievement_rev($aid,$w);
+		$achlist = get_achlist($aid);
+		// 增加一次完成次数
+		$avars = fetch_achievement_rev($aid,$w)+1;
+		update_achievement_rev($aid,$w,$avars);
+		// 检查是否满足条件进入下一阶段
+		while(!$alvl)
+		{
+			$done = 1;
+			if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$w);
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			$alvl ++;
+		}
+		if($done) done_achievement_rev($aid,$alvl,$w);
+		$done = 0;
+	}
+	//207. 不击杀小兵/种火达成锁定解除结局
+	if (!empty($data) && empty($data['clbpara']['achvars']['kill_minion']) && ($m==3 || $m==7))
+	{
+		$aid = 207;
+		$alvl = check_achievement_rev($aid,$w);
+		$achlist = get_achlist($aid);
+		// 增加一次完成次数
+		$avars = fetch_achievement_rev($aid,$w)+1;
+		update_achievement_rev($aid,$w,$avars);
+		// 检查是否满足条件进入下一阶段
+		while(!$alvl)
+		{
+			$done = 1;
+			if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$w);
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			$alvl ++;
+		}
+		if($done) done_achievement_rev($aid,$alvl,$w);
+		$done = 0;
 	}
 	//19. 幻境解离成就
 	if ($m==7)
@@ -709,6 +814,28 @@ function check_end_achievement_rev($w,$m,$data='')
 			$alvl ++;
 		}
 		if($done) done_achievement_rev($aid,$alvl,$w);
+		$done = 0;
+	}
+	//203. 55分钟内解离挑战（仅个人可完成）
+	if ($m==7 && !empty($data))
+	{
+		$aid = 203;
+		$alvl = check_achievement_rev($aid,$w);
+		$achlist = get_achlist($aid);
+		// 检查最快时长
+		$timeused=$now-$starttime; 
+		$avars = fetch_achievement_rev($aid,$w);
+		if(empty($avars) || $timeused < $avars) update_achievement_rev($aid,$w,$timeused);
+		// 检查是否满足条件进入下一阶段
+		while(!$alvl && $timeused <= 3300) 
+		{
+			$done = 1;
+			if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$w);
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			$alvl ++;
+		}
+		if($done) done_achievement_rev($aid,$alvl,$w);
+		$done = 0;
 	}
 	//新版成就切糕、积分结算汇总到此
 	if(!empty($c1)) $db->query("UPDATE {$tablepre}users SET credits=credits+$c1 WHERE username='".$w."'" );
@@ -721,12 +848,15 @@ function check_end_achievement_rev($w,$m,$data='')
 function check_battle_achievement_rev($pa,$pd)
 {
 	global $gamestate,$gamecfg,$db,$tablepre;
+	include_once GAME_ROOT.'./include/game/titles.func.php';
 
 	// 旧版成就参数兼容
 	$is_npc = $pd['type'] ? 1 : 0;
 	$nn = $pa['name'];
 	$killname = $pd['name'];
 	$wp = isset($pa['wep_name']) ? $pa['wep_name'] : $pa['wep'];
+	// 判断是否为活跃玩家：暂时只要IP不一样就算活跃玩家
+	$is_tplayer = $pa['ip'] == $pd['ip'] ? 0 : 1;
 
 	# 击杀玩家成就
 	if (!$is_npc && $pd['name'] != $nn)
@@ -897,8 +1027,8 @@ function check_battle_achievement_rev($pa,$pd)
 			$done = 0;
 		}
 
-		// 67.击杀使用过破灭之诗的玩家
-		if(!empty($pd['clbpara']['achvars']['thiphase']))
+		// 67.击杀使用过破灭之诗的活跃玩家
+		if(!empty($pd['clbpara']['achvars']['thiphase']) && $is_tplayer)
 		{
 			$aid = 67;
 			$alvl = check_achievement_rev($aid,$nn);
@@ -933,8 +1063,8 @@ function check_battle_achievement_rev($pa,$pd)
 			$done = 0;
 		}
 
-		// 68.击杀女主后 击杀其他摸过女主尸体的玩家
-		if(!empty($pa['clbpara']['achvars']['kill_n14']) && !empty($pd['clbpara']['achvars']['corpse_n14']))
+		// 68.击杀女主后 击杀其他摸过女主尸体的活跃玩家
+		if(!empty($pa['clbpara']['achvars']['kill_n14']) && !empty($pd['clbpara']['achvars']['corpse_n14']) && $is_tplayer)
 		{
 			$aid = 68;
 			$alvl = check_achievement_rev($aid,$nn);
@@ -955,7 +1085,7 @@ function check_battle_achievement_rev($pa,$pd)
 		}
 
 		// 69.打海豹
-		if(!empty($pd['clbpara']['achvars']['gacha_sr']) || !empty($pd['clbpara']['achvars']['gacha_ssr']))
+		if((!empty($pd['clbpara']['achvars']['gacha_sr']) || !empty($pd['clbpara']['achvars']['gacha_ssr'])) && $is_tplayer)
 		{
 			$aid = 69;
 			$alvl = check_achievement_rev($aid,$nn);
@@ -1230,6 +1360,7 @@ function check_battle_achievement_rev($pa,$pd)
 function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 {
 	global $gamecfg,$name,$db,$tablepre,$now,$starttime,$gamestate;
+	include_once GAME_ROOT.'./include/game/titles.func.php';
 
 	//解禁相关
 	if ($i == "游戏解除钥匙")
@@ -1440,6 +1571,64 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 			done_achievement_rev(55,1,$nn);
 			}
 	}
+}
+
+function check_misc_achievement_rev($pa,$pd)
+{
+	global $gamestate,$gamecfg,$db,$tablepre;
+	include_once GAME_ROOT.'./include/game/titles.func.php';
+
+	$done = 0;
+	// 旧版成就参数兼容
+	$is_player = $pa['type'] ? 0 : 1;
+	$nn = $pa['name'];
+	// 判断是否为活跃玩家：暂时只要IP不一样就算活跃玩家
+	$is_tplayer = $pa['ip'] == $pd['ip'] ? 0 : 1;
+
+	# 防呆：只会检查玩家成就完成情况
+	if ($is_player)
+	{
+		// 204.混沌伤害打满成就
+		if(!empty($pa['clbpara']['achvars']['full_chaosdmg']))
+		{
+			$aid = 204;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 增加一次完成次数
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			// 检查是否满足条件进入下一阶段
+			while(!$alvl && $avars)
+			{
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+				done_achievement_rev($aid,$alvl,$nn);
+			}
+		}
+		// 205.一击承受百万伤害成就
+		if(!empty($pa['clbpara']['achvars']['takedmg']) && $pa['clbpara']['achvars']['takedmg'] >= 1000000)
+		{
+			$aid = 205;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 检查历史最高伤害
+			$nowvars = $pa['clbpara']['achvars']['takedmg']; $avars = fetch_achievement_rev($aid,$nn);
+			if($nowvars > $avars) update_achievement_rev($aid,$nn,$nowvars);
+			// 检查是否完成成就
+			while(!$alvl)
+			{
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+				done_achievement_rev($aid,$alvl,$nn);
+			}
+		}
+	}
+	//新版成就切糕、积分结算汇总到此
+	if(!empty($c1)) $db->query("UPDATE {$tablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
+	if(!empty($c2)) $db->query("UPDATE {$tablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
+	return;
 }
 
 /**** 以下为旧版成就相关函数 ****/

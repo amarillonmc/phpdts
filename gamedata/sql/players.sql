@@ -9,6 +9,7 @@ CREATE TABLE bra_players (
   type tinyint NOT NULL default '0',
   name char(40) not null default '',
   pass char(32) NOT NULL default '',
+  ip char(15) NOT NULL DEFAULT '',
   gd char(1) NOT NULL default 'm',
   race char(32) NOT NULL default '0',
   sNo smallint unsigned NOT NULL default '0',

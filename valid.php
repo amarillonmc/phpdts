@@ -65,7 +65,8 @@ if($mode == 'enter') {
 		$cpl = Array(); $prc = Array();
 	}
 
-	$ip = real_ip();
+	//$ip = real_ip();
+	$ip = $udata['ip'];
 	$db->query("UPDATE {$tablepre}users SET gender='$gender', nick='$nick', icon='$icon', motto='$motto', killmsg='$killmsg', lastword='$lastword' WHERE username='".$udata['username']."'" );
 	if($validnum >= $validlimit) {
 		gexit($_ERROR['player_limit'],__file__, __line__);
@@ -77,7 +78,6 @@ if($mode == 'enter') {
 	if ($gender !== 'm' && $gender !== 'f'){
 		$gender = 'm';
 	}
-
 	$validnum++;
 	$alivenum++;
 	$name = $cuser;
