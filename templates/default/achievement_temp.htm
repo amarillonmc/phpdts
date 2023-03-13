@@ -32,6 +32,8 @@
         <!--{if !empty($alist[$aid]['lvldesc'][$alvl]) }-->
             <!-- 存在预设的对应阶段的完成状态描述文本 -->
             {$alist[$aid]['lvlname'][$alvl]}
+        <!--{elseif !empty($alist[$aid]['lvldesc'][$rlvl]) }-->
+            {$alist[$aid]['lvlname'][$rlvl]}
         <!--{else}-->
             <!-- 否则使用默认描述文本 -->
             <!--{if ($alvl == $alist[$aid]['lvl']) }-->
@@ -47,6 +49,9 @@
         <font color="yellow">
         <!--{if !empty($alist[$aid]['request'][$alvl]) }-->
                 <!--{eval $areq = $alist[$aid]['request'][$alvl]; $areq = str_replace("[:request:]",$prc[$aid],$areq);}-->
+                {$areq} 
+        <!--{elseif !empty($alist[$aid]['request'][$rlvl]) }-->
+                <!--{eval $areq = $alist[$aid]['request'][$rlvl]; $areq = str_replace("[:request:]",$prc[$aid],$areq);}-->
                 {$areq} 
         <!--{elseif $alvl == $alist[$aid]['lvl']}-->
                 达成次数：{$prc[$aid]}次

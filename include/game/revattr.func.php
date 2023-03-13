@@ -472,8 +472,9 @@
 		{
 			$maxdmg = $pd['mhp'] > $pa['wepe'] ? $pa['wepe'] : $pd['mhp'];
 			$damage = rand(1,$maxdmg);
-			global $log;
 			$log .= "武器随机造成了<span class=\"red\">$damage</span>点伤害！<br>";
+			// 混沌伤害打满时 保存至成就
+			if($damage == $maxdmg) $pa['clbpara']['achvars']['full_chaosdmg'] = 1;
 			return $damage;
 		}
 
@@ -1578,6 +1579,9 @@
 				if($flag) $log .= "{$pd['nm']}的<span class=\"red\">$infinfo[$which]</span>部受伤了！<br>";
 			}
 		}
+
+		# 将pa造成的伤害记录在pd的成就里
+		if(!$pd['type'] && $pa['final_damage'] >= 1000000) $pd['clbpara']['achvars']['takedmg'] = $pa['final_damage'];
 
 		return;
 	}

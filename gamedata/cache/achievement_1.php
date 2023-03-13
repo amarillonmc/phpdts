@@ -26,7 +26,7 @@ $ach_type = Array
 		'name' => '合成成就',
 		'desc' => '<font color="olive">这里是与合成各种物品相关的成就。<br>
 		如果看合成表觉得麻烦，只以这些物品为目标似乎也不错。<br></font>',
-		'ach' => Array(0,14,15,33,35,36,37,38,39,40,41,42,43,44,45,46,47,48),
+		'ach' => Array(0,14,15,49,33,50,51,52,35,36,37,38,39,40,41,42,43,44,45,46,47,48),
 	),
 	'lifetime' => Array(
 		'name' => '生涯成就',
@@ -38,7 +38,7 @@ $ach_type = Array
 		'name' => '挑战成就',
 		'desc' => '<font color="olive">这里是与特定游戏中挑战相关的成就。<br>
 		虽然颇为浮云，但毕竟山就在那里。<br></font>',
-		'ach' => Array(1,28,31,32,49,50,51,52,255),
+		'ach' => Array(1,200,201,28,202,203,204,205,206,207,31,32,255),
 	),
 );
 
@@ -80,13 +80,6 @@ $ach_list = Array
 			'合成物品【KEY系催泪弹】5次',
 			'合成物品【KEY系催泪弹】30次',
 		),
-	),
-	1 => Array(
-		'lvl' => 1,
-		'name' => Array('清水池之王','清水池之王'),
-		'title' => Array('KEY男'),
-		'c1' => Array(30),
-		'c2' => Array(16),
 	),
 	3 => Array(
 		'lvl' => 3,
@@ -227,13 +220,6 @@ $ach_list = Array
         'c1' => Array(0,300,500),
         'c2' => Array(10,0,0),
 	),
-	28 => Array(
-		'lvl' => 1,
-		'name' => Array('烈火疾风'),
-        'title' => Array('神触'),
-        'c1' => Array(250),
-        'c2' => Array(0),
-	),
 	29 => Array(
 		'lvl' => 3,
 		'name' => Array('及时补给','衣食无忧','奥义很爽'),
@@ -248,20 +234,7 @@ $ach_list = Array
         'c1' => Array(0,0,0),
         'c2' => Array(5,50,200),
 	),
-	31 => Array(
-		'lvl' => 1,
-		'name' => Array('Return to Sender'),
-        'title' => Array('R.T.S'),
-        'c1' => Array(0),
-        'c2' => Array(0),
-	),
-	32 => Array(
-		'lvl' => 2,
-		'name' => Array('0xFFFFFFFFFFFFFFFF','kernel on chessboard'),
-        'title' => Array('LOOP'),
-        'c1' => Array(0),
-        'c2' => Array(0),
-	),
+
 	33 => Array(
 		'lvl' => 1,
 		'name' => Array('诅咒之刃'),
@@ -366,34 +339,6 @@ $ach_list = Array
         'title' => Array('','混沌爱好者','混沌的深渊'),
         'c1' => Array(0,100,350),
         'c2' => Array(10,0,0),
-	),
-	49 => Array(
-		'lvl' => 3,
-		'name' => Array('超级ＫＥＹ爱好者','键·四季赞歌'),
-        'title' => Array('','键·四季赞歌'),
-        'c1' => Array(0,700),
-        'c2' => Array(100,0),
-	),
-	50 => Array(
-		'lvl' => 2,
-		'name' => Array('人，能够挑战神吗？','★一发逆转！★'),
-        'title' => Array('','★一发逆转！★'),
-        'c1' => Array(0,700),
-        'c2' => Array(100,0),
-	),
-	51 => Array(
-		'lvl' => 2,
-		'name' => Array('究极的灵魂','『ＥＸ』'),
-        'title' => Array('','『ＥＸ』'),
-        'c1' => Array(0,700),
-        'c2' => Array(100,0),
-	),
-	52 => Array(
-		'lvl' => 2,
-		'name' => Array('真正的决斗者','◎胜利之光◎'),
-        'title' => Array('','『ＥＸ』'),
-        'c1' => Array(0,700),
-        'c2' => Array(100,0),
 	),
 	53 => Array(
 		'lvl' => 3,
@@ -660,7 +605,7 @@ $ach_list = Array
 	# 击杀从福袋中开出稀有道具的玩家
 	69 => Array(
 		'lvl' => 3, 
-		'name' => Array('狗？','海豹？','欧鳇？'), 
+		'name' => Array('汪？','海豹？','欧鳇？'), 
 		'title' => Array('','海豹杀手','上帝之鞭'),
 		'c1' => Array(233,234,235),
 		'c2' => Array(0,0,0),
@@ -670,6 +615,191 @@ $ach_list = Array
 			'在入场时间更晚的情况下，击杀13位<span class="sienna">从福袋中开出SSR物品</span>的活跃玩家',
 		),
 	),
+
+	# 合成成就
+	# 合成春雨夏海 > 这个应该挪到合成成就里
+	49 => Array(
+		'lvl' => 3,
+		'name' => Array('超级ＫＥＹ爱好者','键·四季赞歌'),
+		'title' => Array('','键·四季赞歌'),
+		'c1' => Array(0,700),
+		'c2' => Array(100,0),
+		'desc' => Array( 
+			'合成物品【春雨夏海，秋叶冬雪】1次',
+			'合成物品【春雨夏海，秋叶冬雪】7次',
+		),
+	),
+	# 合成一发逆转神话 > 同上
+	50 => Array(
+		'lvl' => 2,
+		'name' => Array('人，能够挑战神吗？','★一发逆转！★'),
+		'title' => Array('','★一发逆转！★'),
+		'c1' => Array(0,700),
+		'c2' => Array(100,0),
+		'desc' => Array( 
+			'合成物品★一发逆转神话★1次',
+			'合成物品★一发逆转神话★7次',
+		),
+	),
+	# 合成EX 你们都挤在挑战里干什么？？
+	51 => Array(
+		'lvl' => 2,
+		'name' => Array('究极的灵魂','『ＥＸ』'),
+		'title' => Array('','『ＥＸ』'),
+		'c1' => Array(0,700),
+		'c2' => Array(100,0),
+		'desc' => Array( 
+			'合成物品模式『EX』1次',
+			'合成物品模式『EX』7次',
+		),
+	),
+	# 合成光之创造神 ……
+	52 => Array(
+		'lvl' => 2,
+		'name' => Array('真正的决斗者','◎胜利之光◎'),
+		'title' => Array('','『ＥＸ』'),
+		'c1' => Array(0,700),
+		'c2' => Array(100,0),
+		'desc' => Array( 
+			'合成物品◎光之创造神◎1次',
+			'合成物品◎光之创造神◎7次',
+		),
+	),
+
+	# 挑战成就
+	# key男
+	1 => Array(
+		'lvl' => 1,
+		'name' => Array('清水池之王','清水池之王'),
+		'request' => Array('最快速度：[:request:]秒'),
+		'title' => Array('KEY男'),
+		'c1' => Array(30),
+		'c2' => Array(16),
+		'desc' => Array( 
+			'在开局<span class="sienna">5分钟内</span>合成【KEY系催泪弹】',
+		),
+	),
+	# 开局15分钟内合成贤者之石
+	200 => Array(
+		'lvl' => 1,
+		'name' => Array('不动的大图书馆'),
+		'request' => Array('最快速度：[:request:]秒'),
+		'title' => Array('哲学家'),
+		'c1' => Array(0),
+		'c2' => Array(666),
+		'desc' => Array( 
+			'在开局<span class="sienna">15分钟内</span>合成火水木金土符『贤者之石』',
+		),
+	),
+	# 开局7分钟内合成✦烈埋火
+	201 => Array(
+		'lvl' => 1,
+		'name' => Array('星星之火','滴水石穿'),
+		'request' => Array('最快速度：[:request:]秒'),
+		'title' => Array('铁头'),
+		'c1' => Array(0),
+		'c2' => Array(666),
+		'desc' => Array( 
+			'在开局<span class="sienna">7分钟内</span>合成✦烈埋火',
+		),
+	),
+	# 神触
+	28 => Array(
+		'lvl' => 1,
+		'name' => Array('烈火疾风',),
+		'request' => Array('最快速度：[:request:]秒'),
+		'title' => Array('神触'),
+		'c1' => Array(250),
+		'c2' => Array(0),
+		'desc' => Array( 
+			'在开局<span class="sienna">30分钟内</span>开启死斗模式',
+		),
+	),
+	# 开局25分钟内达成锁定解除
+	202 => Array(
+		'lvl' => 1,
+		'name' => Array('锁孔','穿越无钥之门'),
+		'request' => Array('最快速度：[:request:]秒'),
+		'title' => Array('银之键'),
+		'c1' => Array(0),
+		'c2' => Array(1024),
+		'desc' => Array( 
+			'在开局<span class="sienna">25分钟内</span>达成结局：锁定解除',
+		),
+	),
+	# 开局55分钟内达成幻境解离
+	203 => Array(
+		'lvl' => 1,
+		'name' => Array('宛如梦幻','幻境旅者'),
+		'request' => Array('最快速度：[:request:]秒'),
+		'title' => Array('前向星'),
+		'c1' => Array(0),
+		'c2' => Array(4096),
+		'desc' => Array( 
+			'在开局<span class="sienna">55分钟内</span>达成结局：幻境解离',
+		),
+	),
+	# 使用混沌武器打满伤害
+	204 => Array(
+		'lvl' => 1,
+		'name' => Array('混沌的宠儿','随机数之神的庇佑'),
+		'title' => Array('四面骰'),
+		'c1' => Array(0),
+		'c2' => Array(444),
+		'desc' => Array( 
+			'使用带有<span class="sienna">混沌属性</span>的武器攻击时，造成1次满额伤害',
+		),
+	),
+	# 一击承受超过一百万伤害
+	205 => Array(
+		'lvl' => 1,
+		'name' => Array('磁场高手','磁场颠佬'),
+		'request' => Array('承受最多伤害：[:request:]点'),
+		'title' => Array('大只佬'),
+		'c1' => Array(0),
+		'c2' => Array(1919),
+		'desc' => Array( 
+			'在战斗中一次性受到超过<span class="sienna">1000000</span>点伤害',
+		),
+	),
+	# 不使用合成/元素合成达成锁定解除/幻境解离结局
+	206 => Array(
+		'lvl' => 1,
+		'name' => Array('你是怎么做到的？'),
+		'title' => Array('草木飞花'),
+		'c1' => Array(7777),
+		'c2' => Array(0),
+		'desc' => Array( 
+			'不使用<span class="sienna">合成/元素合成/队伍</span>功能<br>达成结局：锁定解除 或 幻境解离',
+		),
+	),
+	# 不击杀小兵/种火达成锁定解除结局
+	207 => Array(
+		'lvl' => 1,
+		'name' => Array('这是人能做到的吗？'),
+		'title' => Array('手下留情'),
+		'c1' => Array(0),
+		'c2' => Array(7777),
+		'desc' => Array( 
+			'不击杀<span class="sienna">各路党派与种火</span>达成结局：锁定解除',
+		),
+	),
+	# RTS：这是一个存在固定模板的成就
+	31 => Array(
+		'lvl' => 1,
+		'name' => Array('Return to Sender'),
+        'title' => Array('R.T.S'),
+        'c1' => Array(0),
+        'c2' => Array(0),
+	),
+	# LOOP > TODO：修改为一个版本成就
+	32 => Array(
+		'lvl' => 2,
+		'name' => Array('0xFFFFFFFFFFFFFFFF','kernel on chessboard'),
+        'title' => Array('LOOP'),
+        'c1' => Array(0),
+        'c2' => Array(0),
+	),
 );
-//Hi
+
 ?>

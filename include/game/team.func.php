@@ -25,7 +25,7 @@ function teamcheck() {
 }
 
 function teammake($tID,$tPass) {
-	global $log,$mode,$teamID,$teamPass,$db,$tablepre,$noitm,$sp,$team_sp,$now,$name,$gamestate,$nick;
+	global $log,$mode,$teamID,$teamPass,$db,$tablepre,$noitm,$sp,$team_sp,$now,$name,$gamestate,$nick,$clbpara;
 	if($gamestate >= 40) {
 		$log .= '连斗时不能组建队伍。<br>';
 		$mode = 'command';
@@ -58,6 +58,10 @@ function teammake($tID,$tPass) {
 	} elseif($sp <= $team_sp) {
 		$log .= '体力不足，不能创建队伍。至少需要<span class="yellow">'.$team_sp.'</span>点体力。<br>';
 	} else {
+
+		//创建队伍时，队伍计数+1
+		if(empty($clbpara['achvars']['team'])) $clbpara['achvars']['team'] = 1;
+
 		$result = $db->query("SELECT pid FROM {$tablepre}players WHERE teamID='$tID'");
 		if($db->num_rows($result)){
 			$log .= '队伍<span class="yellow">'.$tID.'</span>已经存在，请更换队伍名。<br>';
@@ -78,7 +82,7 @@ function teammake($tID,$tPass) {
 }
 
 function teamjoin($tID,$tPass) {
-	global $log,$mode,$teamID,$teamPass,$db,$tablepre,$noitm,$sp,$team_sp,$teamj_sp,$now,$name,$teamlimit,$gamestate;
+	global $log,$mode,$teamID,$teamPass,$db,$tablepre,$noitm,$sp,$team_sp,$teamj_sp,$now,$name,$teamlimit,$gamestate,$clbpara;
 	if($gamestate >= 40) {
 		$log .= '连斗时不能加入队伍。<br>';
 		$mode = 'command';
@@ -110,6 +114,10 @@ function teamjoin($tID,$tPass) {
 	} elseif($sp <= $teamj_sp) {
 		$log .= '体力不足，不能加入队伍。至少需要<span class="yellow">'.$teamj_sp.'</span>点体力。<br>';
 	} else {
+
+		//加入队伍时，队伍计数+1
+		if(empty($clbpara['achvars']['team'])) $clbpara['achvars']['team'] = 1;
+
 		$result = $db->query("SELECT teamPass FROM {$tablepre}players WHERE teamID='$tID'");
 		if(!$db->num_rows($result)){
 			$log .= '队伍<span class="yellow">'.$tID.'</span>不存在，请先创建队伍。<br>';

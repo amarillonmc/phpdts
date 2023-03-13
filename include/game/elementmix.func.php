@@ -428,13 +428,16 @@
 		global $now,$name,$log,$iteminfo,$itemspkinfo,$elements_info;
 		global $no_emix_circulation;
 		global $emix_luck_info,$emix_tips_arr,$emix_name_brackets_arr,$emix_name_prefix_arr,$emix_name_meta_arr,$emix_name_tail_arr;
-		global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
+		global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$clbpara;
 
 		if(!$emlist)
 		{
 			$log.="你不能用不存在的东西合成！<br>";
 			return;
 		}
+
+		//尝试合成时 合成操作计数+1
+		if(empty($clbpara['achvars']['immix'])) $clbpara['achvars']['immix'] = 1;
 
 		//输入了合法的元素参数，先初始化一些变量。
 		$c_times = 0; $total_enum = 0; $dom_ekey = -1; $dom_enum = -1; $multi_dom_ekey = Array(); $emix_flag = NULL; $emix_fix = NULL;
