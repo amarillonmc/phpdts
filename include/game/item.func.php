@@ -8,7 +8,7 @@ include_once GAME_ROOT.'./include/game/titles.func.php';
 include_once GAME_ROOT.'./include/game/clubslct.func.php';
 
 function itemuse($itmn) {
-	global $mode, $log, $nosta, $pid, $name, $state, $now,$nick,$achievement,$club, $pdata;
+	global $mode, $log, $nosta, $pid, $name, $state, $now,$nick,$achievement,$club,$clbpara,$pdata;
 
 	$nickinfo = get_title_desc($nick);
 
@@ -75,6 +75,11 @@ function itemuse($itmn) {
 			$itmnumlimit = $itme>=$itms ? $itms : $itme;
 		}
 		if (($noeqp && strpos ( ${$eqp.'k'}, $noeqp ) === 0) || ! ${$eqp.'s'}) {
+			
+			// 装备道具时，进行单次套装检测
+			include_once GAME_ROOT.'./include/game/itemmain.func.php';
+			reload_single_set_item($pdata,$eqp,$itm,1);
+
 			${$eqp} = $itm;
 			${$eqp.'k'} = $itmk;
 			${$eqp.'e'} = $itme;
@@ -84,6 +89,14 @@ function itemuse($itmn) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} else {
+
+			// 替换装备时，进行单次套装检测
+			// 先检测目前穿的装备
+			include_once GAME_ROOT.'./include/game/itemmain.func.php';
+			reload_single_set_item($pdata,$eqp,${$eqp});
+			// 再检测要替换的装备，类型为1，表示装备
+			reload_single_set_item($pdata,$eqp,$itm,1);
+
 			$itmt = ${$eqp};
 			$itmkt = ${$eqp.'k'};
 			$itmet = ${$eqp.'e'};
@@ -114,6 +127,8 @@ function itemuse($itmn) {
 			$sp = $sp > $msp ? $msp : $sp;
 			$oldsp = $sp - $oldsp;
 			$log .= "你使用了<span class=\"red\">$itm</span>，恢复了<span class=\"yellow\">$oldsp</span>点体力。<br>";
+			//吃了无毒果酱
+			if($itm == '桔黄色的果酱') $clbpara['achvars']['eat_jelly'] = 1;
 			if ($itms != $nosta) {
 				$itms --;
 				if ($itms <= 0) {
@@ -201,6 +216,8 @@ function itemuse($itmn) {
 			$hp = $hp > $mhp ? $mhp : $hp;
 			$oldhp = $hp - $oldhp;
 			$log .= "你使用了<span class=\"red\">$itm</span>，恢复了<span class=\"yellow\">$oldhp</span>点生命和<span class=\"yellow\">$oldsp</span>点体力。<br>";
+			//吃了无毒的围棋子饼干 真勇啊！
+			if($itm == '像围棋子一样的饼干') $clbpara['achvars']['eat_weiqi'] = 1;
 			if ($itms != $nosta) {
 				$itms --;
 				if ($itms <= 0) {
@@ -259,6 +276,12 @@ function itemuse($itmn) {
 				death ( 'poison', '', 0, $itm );
 				$log .= "你被毒死了！";
 			}
+		}
+		else
+		{
+			//吃了像围棋子一样的饼干但是活下来了……怎么做到的！
+			if($itm == '像围棋子一样的饼干') $clbpara['achvars']['eat_weiqi'] = 1;
+			if($itm == '桔黄色的果酱') $clbpara['achvars']['eat_jelly'] = 1;
 		}
 		if ($itms != $nosta) {
 			$itms --;
@@ -1161,7 +1184,7 @@ function itemuse($itmn) {
 			$cnum = $db->affected_rows ();
 			addnews ( $now, 'corpseclear', $nickinfo.' '.$name, $cnum );
 			$log .= "使用了<span class=\"yellow\">$itm</span>。<br>突然刮起了一阵怪风，吹走了地上的{$cnum}具尸体！<br>";
-			$itms --;
+			$itms --; $isk = $cnum;
 			
 		} elseif ($itm == '天候棒') {
 			global $weather, $wthinfo, $name;
@@ -1914,6 +1937,10 @@ function itemuse($itmn) {
 			global $clbpara;
 			$log.="【DEBUG】你目前的播放列表还原为了默认播放列表！<br>";
 			unset($clbpara['event_bgmbook']);
+		} elseif ($itm == '成就重置装置'){
+			//使用会重置对应属性编号的成就进度
+			include_once GAME_ROOT.'./include/game/achievement.func.php';
+			reset_achievement_rev($itmsk,$name);
 		} elseif ($itm == '测试用元素口袋'){
 			global $elements_info;
 			$log.="【DEBUG】你不知道从哪里摸出来一大堆元素！<br>";

@@ -47,20 +47,14 @@
         <br>
         <!-- 当前阶段成就完成情况 -->
         <font color="yellow">
-        <!--{if !empty($alist[$aid]['request']) && !is_array($alist[$aid]['request']) }-->
-                <!--{eval $areq = $alist[$aid]['request']; $areq = str_replace("[:request:]",$prc[$aid],$areq);}-->
-                {$areq} 
-        <!--{elseif !empty($alist[$aid]['request'][$alvl]) }-->
-                <!--{eval $areq = $alist[$aid]['request'][$alvl]; $areq = str_replace("[:request:]",$prc[$aid],$areq);}-->
-                {$areq} 
-        <!--{elseif !empty($alist[$aid]['request'][$rlvl]) }-->
-                <!--{eval $areq = $alist[$aid]['request'][$rlvl]; $areq = str_replace("[:request:]",$prc[$aid],$areq);}-->
-                {$areq} 
-        <!--{elseif $alvl == $alist[$aid]['lvl']}-->
-                达成次数：{$prc[$aid]}次
-        <!--{else}-->
-                目前进度：{$prc[$aid]}次
+        <!--{eval $nums = is_array($prc[208]) ? count($prc[208]) : 0; }-->
+        <!--{if $nums>0 }-->
+            <!--{eval $sname = "已集齐套装：\r";}-->
+            <!--{loop $prc[208] $sid}-->
+                 <!--{eval $sname .= get_set_items_info()[$sid]['name']."\r";}-->
+            <!--{/loop}-->
         <!--{/if}-->
+               <span <!--{if !empty($sname) }-->tooltip="{$sname}"<!--{/if}-->>已集齐套装种类：{$nums}种</span>
         </font>
         <br>
         <!-- 当前阶段达成奖励 -->

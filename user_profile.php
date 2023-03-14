@@ -39,12 +39,28 @@ $winning_rate=$validgames?round($wingames/$validgames*100)."%":'0%';
 include_once GAME_ROOT.'./include/game/achievement.func.php';
 $ach=$udata['achievement'];
 $n=$udata['username'];
+//本人访问账户页面时，初始化每日任务相关参数
+if($curuser)
+{
+	$dailyarr = check_daily_achievement($n);
+	if(isset($_REQUEST["action"]) && $_REQUEST["action"]=="refdaily" && !$dailyarr[0])
+	{
+		$dailyarr = reset_daily_achievement($n);
+	}
+	if($dailyarr[0])
+	{
+		list($min,$hour,$day,$month,$year)=explode(',',date("i,H,j,n,Y",$dailyarr[0]));
+		$reset_daily_flag = $year."年".$month."月".$day."日".$hour."时".$min."分";
+		$reset_daily_flag = "<span class=\"yellow\">下次可获取每日挑战时间：".$reset_daily_flag."</span>";
+	}
+	$dailyarr = $dailyarr[1];
+}
+//访问它人账户页面时，只显示获取过的每日任务
+else 
+{
+	$dailyarr = check_daily_achievement($n,1);
+}
 if(!empty($udata['achrev'])) $udata['achrev'] = json_decode($udata['achrev'],true);
-/*if (!valid_achievement($ach)) {
-	$ach=init_achievement($ach);
-	$db->query("UPDATE {$tablepre}users SET achievement='$ach' WHERE username='$n'" );	
-}*/ //已废弃
-
 // 访问账户页面时，检查是否需要转化新版成就数据结构
 if(!empty($udata['achievement']) && empty($udata['achrev']))
 {
@@ -83,21 +99,12 @@ if(!empty($udata['achievement']) && empty($udata['achrev']))
 	$db->query("UPDATE {$tablepre}users SET achrev='$new_ach' WHERE username='".$udata['username']."'" );
 	$cpl = Array(); $prc = Array();
 }
-//解析成就的完成情况//已废弃
-/*global $achievement_count;
-require config("gamecfg",$gamecfg);
-for ($i=0; $i<$achievement_count; $i++)
-{
-	$cpl[$i]=check_achievement($i,$n);
-	$prc[$i]=fetch_achievement($i,$n);
-	//$ncp[$i]['s'] = $cpl[$i];
-	//$ncp[$i]['v'] = $prc[$i];
-}*/
-//$ncp = json_encode($ncp);
-//$db->query("UPDATE {$tablepre}users SET achrev='$ncp' WHERE username='$n'" );	
 //解析成就的完成情况
 $alist = get_achlist();
 $atype = get_achtype();
+$h_atype = get_hidden_achtype();
+//判断是否存在每日任务
+$atype['daily']['ach'] = empty($dailyarr[0]) ? Array() : $dailyarr;
 foreach($alist as $aid => $arr)
 {
 	$cpl[$aid] = isset($udata['achrev'][$aid]['l']) ? $udata['achrev'][$aid]['l'] : 0;
@@ -105,5 +112,12 @@ foreach($alist as $aid => $arr)
 	if(isset($alist[$aid]['lvl']) && $cpl[$aid] == $alist[$aid]['lvl']) $cpl[$aid] = 999;
 	$prc[$aid] = isset($udata['achrev'][$aid]['v']) ? $udata['achrev'][$aid]['v'] : 0;
 }
+//判断是否存在完成的隐藏成就
+foreach($h_atype as $hid => $htype)
+{
+	if($cpl[$hid] == 999) $atype[$htype]['ach'][] = $hid;
+}
 include template('user_profile');
+
+
 

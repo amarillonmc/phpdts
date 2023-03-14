@@ -24,8 +24,20 @@
 		<!--{loop $atype $tid $tarr}-->
 		<tr>
 			<td>
-				<div class="subtitle" align="left">{$tarr['name']}</div>
-				<div style="margin-left: 6px;" align="left">{$tarr['desc']}</div>
+				<div class="subtitle" align="left">
+					{$tarr['name']}
+				</div>
+				<div style="margin-left: 6px;" align="left">
+					<!--{if ($tid == 'daily' && $curuser) }-->
+						<!--{if $reset_daily_flag}-->
+							{$reset_daily_flag}
+						<!--{elseif !isset($_REQUEST["action"])}-->
+							<button type="button" onclick="window.location.href='user_profile.php?action=refdaily';this.disabled=true">点击获得新的每日挑战</button>
+						<!--{/if}-->
+						<br>
+					<!--{/if}-->
+					{$tarr['desc']}
+				</div>
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +55,6 @@
 						<!--{else}-->
 							<td width="300" align="left" valign="top">
 								<div class="ach_box" align="left" valign="top">
-								<!--成就编号{$aid}加载错误。<br>请联系管理员。-->
 								<!--{eval include template('achievement_temp');}-->
 								</div>
 							</td>

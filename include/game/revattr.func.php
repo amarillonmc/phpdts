@@ -173,6 +173,10 @@
 			$flag = attr_extra_89_cagedbird($pd,$pa,$active);
 			if($flag < 0) return $flag;
 		}
+
+		# 检查成就503
+		if(!empty($pa['arbs']) && $pa['arb'] == '【智代专用熊装】') attr_ach53_check($pa,$pd,$active);
+		if(!empty($pd['arbs']) && $pd['arb'] == '【智代专用熊装】') attr_ach53_check($pd,$pa,$active);
 	
 		return 1;
 	}
@@ -1524,6 +1528,10 @@
 				$pa['hp'] -= $hp_d;
 			}
 		}
+
+		# 检查成就502
+		if ($pa['wep_name'] == '翼人的羽毛') $pa['clbpara']['achvars']['ach502'] = $pa['final_damage'];
+
 		return;
 	}
 

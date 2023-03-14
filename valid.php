@@ -290,6 +290,11 @@ if($mode == 'enter') {
 	{
 		if(isset($$key)) $ndata[$key] = $$key; 
 	}
+
+	# 初始化套装信息
+	include_once GAME_ROOT.'./include/game/itemmain.func.php';
+	reload_set_items($ndata);
+
 	$ndata = player_format_with_db_structure($ndata);
 	if(!empty($ndata)) $db->array_insert("{$tablepre}players", $ndata);
 	

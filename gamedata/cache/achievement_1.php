@@ -4,6 +4,12 @@ if(!defined('IN_GAME')) exit('Access Denied');
 # 成就大类列表：
 $ach_type = Array
 (
+	'daily' => Array(
+		'name' => '每日挑战',
+		'desc' => '<font color="olive">这里是用来为日常游玩调味的佐餐成就。<br>
+		虽然叫做每日挑战，但其实每六个小时就能刷新一次。</font>',
+		'ach' => Array(601,602,603,604,605,606,607,608,609,610),
+	),
 	'end' => Array(
 		'name' => '结局成就',
 		'desc' => '<font color="olive">这里是与游戏结局相关的成就。<br>
@@ -20,26 +26,47 @@ $ach_type = Array
 		'name' => '战斗成就',
 		'desc' => '<font color="olive">这里是与击破特定NPC相关的成就。<br>
 		打倒他们来证明自己吧！<br></font>',
-		'ach' => Array(3,4,13,22,23,25,20,21,24,26,56,57,255),
+		'ach' => Array(3,56,57,27,4,13,22,23,25,20,21,24,26,255),
 	),
 	'mixitem' => Array(
 		'name' => '合成成就',
 		'desc' => '<font color="olive">这里是与合成各种物品相关的成就。<br>
 		如果看合成表觉得麻烦，只以这些物品为目标似乎也不错。<br></font>',
-		'ach' => Array(0,14,15,49,33,50,51,52,35,36,37,38,39,40,41,42,43,44,45,46,47,48),
+		'ach' => Array(48,47,35,36,37,38,39,40,41,42,43,44,45,46,0,14,15,49,51,52,50),
+	),
+	'explore' => Array(
+		'name' => '探索成就',
+		'desc' => '<font color="olive">这里是与你在游戏中会遇到的惊奇发现相关的成就。<br>
+		今天又会遇到些什么呢？<br></font>',
+		'ach' => Array(33,31),
 	),
 	'lifetime' => Array(
 		'name' => '生涯成就',
 		'desc' => '<font color="olive">这里是记录了你在这个游戏中的积累相关的成就。<br>
 		呜呼——玩家们出发了……<br></font>',
-		'ach' => Array(27,29,30,53,54,55,255),
+		'ach' => Array(29,30,53,54,55,600,255),
 	),
 	'challenge' => Array(
 		'name' => '挑战成就',
 		'desc' => '<font color="olive">这里是与特定游戏中挑战相关的成就。<br>
 		虽然颇为浮云，但毕竟山就在那里。<br></font>',
-		'ach' => Array(1,200,201,28,202,203,204,205,206,207,31,32,255),
+		'ach' => Array(1,200,201,28,202,203,208,204,205,206,207,32,255),
 	),
+);
+
+# 隐藏成就列表：（隐藏成就ID → 完成后会显示在哪个大类）只在完成时显示
+$hidden_ach_type = Array
+(
+	//KEY系隐藏成就：吃下【像围棋子一样的饼干】【桔黄色的果酱】并且活下来
+	501 => 'explore',
+	//KEY系隐藏成就：使用【翼人的羽毛】打出7230点以上伤害
+	502 => 'explore',
+	//KEY系隐藏成就：穿着【智代专用熊装】连续攻击同一个玩家/NPC64次以上
+	503 => 'explore',
+	//KEY系隐藏成就：在【RF高校】使用每一种系的武器各杀死一个目标
+	504 => 'explore',
+	//KEY系隐藏成就：一击秒杀【守卫者 静流】
+	505 => 'explore',
 );
 
 # 成就登记列表：
@@ -48,8 +75,6 @@ $ach_list = Array
 	/*'example' => Array(
 		//成就完成时所处阶段（必填）
 		'lvl' => 3, 
-		//这是一个隐藏成就吗？（隐藏成就在完成前不会显示在成就界面内）
-		'hidden' => 0,
 		//各阶段成就名（必填）（PS：完成阶段名可填可不填，填了会显示，不填会显示前一个阶段的名字）
 		'name' => Array('阶段0名','阶段1名','阶段2名','阶段完成'), 
 		//各阶段状态名（选填，不填此项会应用默认状态名）
@@ -233,14 +258,6 @@ $ach_list = Array
         'title' => Array('','神农','贝爷'),
         'c1' => Array(0,0,0),
         'c2' => Array(5,50,200),
-	),
-
-	33 => Array(
-		'lvl' => 1,
-		'name' => Array('诅咒之刃'),
-        'title' => Array('剑圣'),
-        'c1' => Array(0),
-        'c2' => Array(522),
 	),
 	35 => Array(
 		'lvl' => 3,
@@ -666,6 +683,83 @@ $ach_list = Array
 		),
 	),
 
+	# 探索成就
+	# 剑圣：这是一个存在固定模板的成就
+	33 => Array(
+		'lvl' => 1,
+		'name' => Array('诅咒之刃'),
+        'title' => Array('剑圣'),
+        'c1' => Array(0),
+        'c2' => Array(522),
+	),
+	# RTS：这是一个存在固定模板的成就
+	31 => Array(
+		'lvl' => 1,
+		'name' => Array('Return to Sender'),
+		'title' => Array('R.T.S'),
+		'c1' => Array(0),
+		'c2' => Array(0),
+	),
+	# KEY系隐藏成就：吃下【像围棋子一样的饼干】【桔黄色的果酱】并且活下来
+	501 => Array(
+		'lvl' => 1,
+		'name' => Array('【待替换501】'),
+		'request' => '幸存次数：[:request:]次',
+		'title' => Array('【待替换501】'),
+		'c1' => Array(0),
+		'c2' => Array(0),
+		'desc' => Array( 
+			'这是一段待替换501的文本。',
+		),
+	),
+	# KEY系隐藏成就：使用【翼人的羽毛】打出7230点以上伤害
+	502 => Array(
+		'lvl' => 1,
+		'name' => Array('【待替换502】'),
+		'request' => '最高造成伤害：[:request:]点',
+		'title' => Array('【待替换502】'),
+		'c1' => Array(0),
+		'c2' => Array(0),
+		'desc' => Array( 
+			'这是一段待替换502的文本。',
+		),
+	),
+	# 穿着【智代专用熊装】连续攻击同一个玩家/NPC64次以上
+	503 => Array(
+		'lvl' => 1,
+		'name' => Array('【待替换503】'),
+		'request' => '最高连击次数：[:request:]次',
+		'title' => Array('【待替换503】'),
+		'c1' => Array(0),
+		'c2' => Array(0),
+		'desc' => Array( 
+			'这是一段待替换503的文本。',
+		),
+	),
+	# 在【RF高校】使用每一种系的武器各杀死一个目标
+	504 => Array(
+		'lvl' => 1,
+		'name' => Array('【待替换504】'),
+		'request' => '完成击杀的系别：[:request:]种',
+		'title' => Array('【待替换504】'),
+		'c1' => Array(0),
+		'c2' => Array(0),
+		'desc' => Array( 
+			'这是一段待替换504的文本。',
+		),
+	),
+	# 一击秒杀【守卫者 静流】
+	505 => Array(
+		'lvl' => 1,
+		'name' => Array('【待替换505】'),
+		'title' => Array('【待替换505】'),
+		'c1' => Array(0),
+		'c2' => Array(0),
+		'desc' => Array( 
+			'这是一段待替换505的文本。',
+		),
+	),
+
 	# 挑战成就
 	# key男
 	1 => Array(
@@ -739,6 +833,19 @@ $ach_list = Array
 			'在开局<span class="sienna">55分钟内</span>达成结局：幻境解离',
 		),
 	),
+	# 套装收集挑战（这是一个存在固定模板的成就）
+	208 => Array(
+		'lvl' => 3,
+		'name' => Array('新绿的故事','百变魔法使','换装迷宫'),
+		'title' => Array('','百变魔法使','换装迷宫'),
+		'c1' => Array(0),
+		'c2' => Array(233,234,235),
+		'desc' => Array( 
+			'触发过任1种<span class="sienna">套装</span>的完整效果',
+			'触发过3种不同<span class="sienna">套装</span>的完整效果',
+			'触发过5种不同<span class="sienna">套装</span>的完整效果',
+		),
+	),
 	# 使用混沌武器打满伤害
 	204 => Array(
 		'lvl' => 1,
@@ -784,14 +891,6 @@ $ach_list = Array
 			'不击杀<span class="sienna">各路党派与种火</span>达成结局：锁定解除',
 		),
 	),
-	# RTS：这是一个存在固定模板的成就
-	31 => Array(
-		'lvl' => 1,
-		'name' => Array('Return to Sender'),
-        'title' => Array('R.T.S'),
-        'c1' => Array(0),
-        'c2' => Array(0),
-	),
 	# LOOP > TODO：修改为一个版本成就
 	32 => Array(
 		'lvl' => 2,
@@ -799,6 +898,143 @@ $ach_list = Array
         'title' => Array('LOOP'),
         'c1' => Array(0),
         'c2' => Array(0),
+	),
+	
+	# 日常任务
+	# 混进来一个生涯成就：累计完成每日任务1/10/100/1001次
+	600 => Array(
+		'lvl' => 4,
+		'name' => Array('新篇','十日谈','百言诗','一千零一夜','尾声？'),
+        'title' => Array('','','虚拟体','Daemon'),
+		'request' => '累计完成次数：[:request:]次',
+        'c1' => Array(1,10,101,1001),
+        'c2' => Array(1,10,101,1001),
+		'desc' => Array( 
+			'累计完成1次<span class="sienna">每日挑战</span>',
+			'累计完成10次<span class="sienna">每日挑战</span>',
+			'累计完成100次<span class="sienna">每日挑战</span>',
+			'累计完成1001次<span class="sienna">每日挑战</span>',
+		),
+	),
+	# 日常任务1：击杀10名NPC
+	601 => Array(
+		'lvl' => 1,
+		'daily' => 1,
+		'name' => Array('蜂群挑战者'),
+        'title' => Array(''),
+        'c1' => Array(150),
+        'c2' => Array(0),
+		'desc' => Array( 
+			'击杀10名NPC',
+		),
+	),
+	# 日常任务2：击杀1名活跃玩家
+	602 => Array(
+		'lvl' => 1,
+		'daily' => 1,
+		'name' => Array('触手挑战者'),
+		'title' => Array(''),
+		'c1' => Array(0),
+		'c2' => Array(150),
+		'desc' => Array( 
+			"击杀1名<span class=\"sienna\" tooltip=\"什么是活跃玩家？\r总之小号是不行的！\">活跃玩家</span>",
+		),
+	),
+	# 日常任务3：达成一次解禁/解离结局
+	603 => Array(
+		'lvl' => 1,
+		'daily' => 1,
+		'name' => Array('尖兵挑战者'),
+		'title' => Array(''),
+		'c1' => Array(250),
+		'c2' => Array(0),
+		'desc' => Array( 
+			'达成结局：<span class="sienna">锁定解除</span>或<span class="sienna">幻境解离</span>',
+		),
+	),
+	# 日常任务4：开启一次死斗模式
+	604 => Array(
+		'lvl' => 1,
+		'daily' => 1,
+		'name' => Array('荣耀挑战者'),
+		'title' => Array(''),
+		'c1' => Array(250),
+		'c2' => Array(0),
+		'desc' => Array( 
+			'开启1次<span class="sienna">死斗模式</span>',
+		),
+	),
+	# 日常任务5：击杀10名种火
+	605 => Array(
+		'lvl' => 1,
+		'daily' => 1,
+		'name' => Array('循环挑战者'),
+		'title' => Array(''),
+		'c1' => Array(177),
+		'c2' => Array(0),
+		'desc' => Array( 
+			'击杀10名<span class="sienna">种火</span>',
+		),
+	),
+	# 日常任务6：以毒药/陷阱的方式击杀1名活跃玩家
+	606 => Array(
+		'lvl' => 1,
+		'daily' => 1,
+		'name' => Array('偏门挑战者'),
+		'title' => Array(''),
+		'c1' => Array(0),
+		'c2' => Array(188),
+		'desc' => Array( 
+			'使用<span class="sienna">毒性补给</span>或<span class="sienna">陷阱</span>杀死1名活跃玩家',
+		),
+	),
+	# 日常任务7：使用凸眼鱼一次吸收20具尸体
+	607 => Array(
+		'lvl' => 1,
+		'daily' => 1,
+		'name' => Array('暴食挑战者'),
+		'title' => Array(''),
+		'c1' => Array(0),
+		'c2' => Array(155),
+		'desc' => Array( 
+			'使用道具<span class="sienna">凸眼鱼</span>一次性吸收20具尸体',
+		),
+	),
+	# 日常任务8：使用移动PC解除一次禁区
+	608 => Array(
+		'lvl' => 1,
+		'daily' => 1,
+		'name' => Array('无月挑战者'),
+		'title' => Array(''),
+		'c1' => Array(155),
+		'c2' => Array(0),
+		'desc' => Array( 
+			'使用道具<span class="sienna">移动PC</span>解除1次禁区',
+		),
+	),
+	# 日常任务9：合成一次KEY系催泪弹
+	609 => Array(
+		'lvl' => 1,
+		'daily' => 1,
+		'name' => Array('雕像挑战者'),
+		'title' => Array(''),
+		'c1' => Array(233),
+		'c2' => Array(0),
+		'desc' => Array( 
+			'合成道具<span class="sienna">【KEY系催泪弹】</span>1次',
+		),
+	),
+	# 日常任务10：使用一次歌唱功能
+	610 => Array(
+		'lvl' => 1,
+		'daily' => 1,
+		'name' => Array('摇滚挑战者'),
+		'title' => Array(''),
+		'c1' => Array(0),
+		'c2' => Array(233),
+		'desc' => Array( 
+			'使用一次<span class="sienna">歌唱</span>功能',
+		),
 	),
 );
 

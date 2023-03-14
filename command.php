@@ -10,11 +10,12 @@ require GAME_ROOT.'./include/game.func.php';
 //判断是否进入游戏
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); } 
 
-$result = $db->query("SELECT * FROM {$tablepre}players WHERE name = '$cuser' AND type = 0");
+//$result = $db->query("SELECT * FROM {$tablepre}players WHERE name = '$cuser' AND type = 0");
+$pdata = fetch_playerdata_by_name($cuser);
 
-if(!$db->num_rows($result)) { header("Location: valid.php");exit(); }
+if(!$pdata) { header("Location: valid.php");exit(); }
 
-$pdata = $db->fetch_array($result);
+//$pdata = $db->fetch_array($result);
 
 //判断是否密码错误
 if($pdata['pass'] != $cpass) {
