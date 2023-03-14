@@ -703,60 +703,60 @@ $ach_list = Array
 	# KEY系隐藏成就：吃下【像围棋子一样的饼干】【桔黄色的果酱】并且活下来
 	501 => Array(
 		'lvl' => 1,
-		'name' => Array('【待替换501】'),
+		'name' => Array('异世般的食材'),
 		'request' => '幸存次数：[:request:]次',
-		'title' => Array('【待替换501】'),
+		'title' => Array('✦约定的铁胃✦'),
 		'c1' => Array(0),
 		'c2' => Array(0),
 		'desc' => Array( 
-			'这是一段待替换501的文本。',
+			'亲身体验了来自<span class="sienna">水濑秋子及月宫亚由</span>的无敌料理。',
 		),
 	),
 	# KEY系隐藏成就：使用【翼人的羽毛】打出7230点以上伤害
 	502 => Array(
 		'lvl' => 1,
-		'name' => Array('【待替换502】'),
+		'name' => Array('空真理之威力'),
 		'request' => '最高造成伤害：[:request:]点',
-		'title' => Array('【待替换502】'),
+		'title' => Array('✦空真理✦'),
 		'c1' => Array(0),
 		'c2' => Array(0),
 		'desc' => Array( 
-			'这是一段待替换502的文本。',
+			'亲身获得了匹敌与<span class="sienna">翼人</span>的力量。',
 		),
 	),
 	# 穿着【智代专用熊装】连续攻击同一个玩家/NPC64次以上
 	503 => Array(
 		'lvl' => 1,
-		'name' => Array('【待替换503】'),
+		'name' => Array('受难的马桶圈'),
 		'request' => '最高连击次数：[:request:]次',
-		'title' => Array('【待替换503】'),
+		'title' => Array('✦光坂最强✦'),
 		'c1' => Array(0),
 		'c2' => Array(0),
 		'desc' => Array( 
-			'这是一段待替换503的文本。',
+			'亲身重现了<span class="sienna">坂上智代</span>的伟业。',
 		),
 	),
 	# 在【RF高校】使用每一种系的武器各杀死一个目标
 	504 => Array(
 		'lvl' => 1,
-		'name' => Array('【待替换504】'),
+		'name' => Array('那就是Little Busters！'),
 		'request' => '完成击杀的系别：[:request:]种',
-		'title' => Array('【待替换504】'),
+		'title' => Array('✦ＬＢ的羁绊✦'),
 		'c1' => Array(0),
 		'c2' => Array(0),
 		'desc' => Array( 
-			'这是一段待替换504的文本。',
+			'亲身再现了<span class="sienna">Little Busters</span>的日常。',
 		),
 	),
 	# 一击秒杀【守卫者 静流】
 	505 => Array(
 		'lvl' => 1,
-		'name' => Array('【待替换505】'),
-		'title' => Array('【待替换505】'),
+		'name' => Array('可爱，温柔，强大，但……'),
+		'title' => Array('✦莫非无敌✦'),
 		'c1' => Array(0),
 		'c2' => Array(0),
 		'desc' => Array( 
-			'这是一段待替换505的文本。',
+			'亲身让<span class="sienna">守卫者的尖兵 中津静流</span>了解到何为无奈。',
 		),
 	),
 
