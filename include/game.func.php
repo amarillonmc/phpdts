@@ -714,6 +714,23 @@ function check_skilllasttimes(&$data=NULL)
 	return $pure_flag;
 }
 
+//通过名字抓取指定玩家数据，只能抓玩家
+function fetch_playerdata_by_name($n)
+{
+	global $db,$tablepre;
+	$result = $db->query("SELECT * FROM {$tablepre}players WHERE name = '$n' AND type = 0");
+	if(!$db->num_rows($result)) return NULL;
+	$pdata = $db->fetch_array($result);
+	if(!empty($pdata['clbpara'])) $pdata['clbpara'] = get_clbpara($pdata['clbpara']);
+	//套装效果刷新
+	include_once GAME_ROOT.'./include/game/itemmain.func.php';
+	reload_set_items($pdata);
+	//检查杂项成就
+	include_once GAME_ROOT.'./include/game/achievement.func.php';
+	check_misc_achievement_rev($pdata);
+	return $pdata;
+}
+
 //通过pid抓取指定玩家/NPC数据
 function fetch_playerdata_by_pid($pid)
 {
@@ -722,6 +739,8 @@ function fetch_playerdata_by_pid($pid)
 	if(!$db->num_rows($result)) return NULL;
 	$pdata = $db->fetch_array($result);
 	if(!empty($pdata['clbpara'])) $pdata['clbpara'] = get_clbpara($pdata['clbpara']);
+	include_once GAME_ROOT.'./include/game/itemmain.func.php';
+	reload_set_items($pdata);
 	return $pdata;
 }
 //用于读取当前玩家数据的数组结构（不进行过滤）

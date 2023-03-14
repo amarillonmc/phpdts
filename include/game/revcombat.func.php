@@ -385,9 +385,9 @@
 		battle_finish_flag:
 
 		# 检查战斗中出现的杂项成就
-		include_once GAME_ROOT.'./include/game/achievement.func.php';
-		if(!$pa['type']) check_misc_achievement_rev($pa);
-		if(!$pd['type']) check_misc_achievement_rev($pd);
+		//include_once GAME_ROOT.'./include/game/achievement.func.php';
+		//if(!$pa['type']) check_misc_achievement_rev($pa);
+		//if(!$pd['type']) check_misc_achievement_rev($pd);
 
 		# 如果战斗中出现了死者 更新action标记
 		if ($active) 
@@ -1009,10 +1009,19 @@
 		}
 
 		# 保存击杀女主的记录
-		if($pd['type'] == 14) $pa['clbpara']['achvars']['kill_n14'] += 1;
+		if($pd['type'] == 14)
+		{
+			$pa['clbpara']['achvars']['kill_n14'] += 1;
+			# 不一定是一击秒杀……但是先这样吧^ ^;
+			if($pd['name'] == '守卫者 静流' && $pa['final_damage'] >= $pd['mhp']) $pa['clbpara']['achvars']['ach505'] = 1;
+		}
 
 		# 保存击杀种火或小兵的记录
 		if(empty($pa['clbpara']['achvars']['kill_minion']) && ($pd['type'] == 90 || $pd['type'] == 91 || $pd['type'] == 92)) $pa['clbpara']['achvars']['kill_minion'] = 1;
+
+		# 成就504，保存在RF高校用过的武器记录
+		if($pa['pls'] == 2) $pa['clbpara']['achvars']['ach504'][$pa['wep_kind']] = 1;
+
 
 		# 快递被劫事件：
 		if(isset($pd['clbpara']['post'])) 
@@ -1282,6 +1291,10 @@
 				shuffle($weplist);
 				$chosen = $weplist[0];$c = $chosen[0];
 				//var_dump($chosen);
+				//刷新套装效果
+				include_once GAME_ROOT.'./include/game/itemmain.func.php';
+				reload_single_set_item($pa,'wep',$oldwep);
+				reload_single_set_item($pa,'wep',$chosen[1],1);
 				$pa['itm'.$c] = $pa['wep']; $pa['itmk'.$c] = $pa['wepk']; $pa['itmsk'.$c] = $pa['wepsk'];
 				$pa['itme'.$c] = $pa['wepe']; $pa['itms'.$c] = $pa['weps'];
 				$pa['wep'] = $chosen[1]; $pa['wepk'] = $chosen[2]; $pa['wepe'] = $chosen[3]; $pa['weps'] = $chosen[4]; $pa['wepsk'] = $chosen[5];

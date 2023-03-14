@@ -9,6 +9,7 @@
 	global $att,$def;
 	global $wep,$wepk,$weps,$wepes,$wepsk;
 	global $rp;
+	global $pdata;
 	
 	//登记非功能性地点信息时合并隐藏地点
 	foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
@@ -24,6 +25,9 @@
 		$log.="需要<span class=\"yellow\">{$r}</span>歌魂才能唱这首歌！<br>";
 		return;
 	}
+
+	// 记录唱歌动作
+	$pdata['clbpara']['achvars']['sing'] = 1;
 	
 	if ($sn=="Alicemagic"){
 		$log.="♪你說過在哭泣之後應該可以破涕而笑♪<br>

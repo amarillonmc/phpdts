@@ -154,6 +154,8 @@ $result = $db->query("DESCRIBE {$tablepre}users volume");
 if($db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}users DROP volume");
 $result = $db->query("DESCRIBE {$tablepre}users achrev");
 if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}users ADD achrev text NOT NULL default '' AFTER achievement");
+$result = $db->query("DESCRIBE {$tablepre}users daily");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}users ADD daily varchar(255) NOT NULL DEFAULT '' AFTER achrev");
 
 //game表结构变动
 $db->query("ALTER TABLE {$tablepre}game DROP gamevars");

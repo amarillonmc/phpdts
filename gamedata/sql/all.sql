@@ -366,6 +366,8 @@ CREATE TABLE `acbra2_users` (
   `credits` int(10) NOT NULL DEFAULT '0',
   `credits2` mediumint(9) NOT NULL DEFAULT '0',
   `achievement` text NOT NULL,
+  `achrev` text NOT NULL,
+  `daily` varchar(255) NOT NULL DEFAULT '',
   `nick` text NOT NULL,
   `nicks` text NOT NULL,
   `volume` smallint(3) unsigned NOT NULL default '20',

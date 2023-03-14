@@ -1,5 +1,5 @@
 <dialog id="terminal" style="max-width: 90%;max-height: 80%;">
-<!-- 宽度设计：战场地图478px 控制菜单120px 间距10px-->
+<!-- 宽度设计：战场地图476+2px 控制菜单118+2px 间距10px-->
 <div style="text-align: center; width: 608px;">
     <!-- 背景音乐 -->
     <div>
@@ -9,14 +9,14 @@
         <span class="grey">正在播放：～ <span id="bgmname">$bgmname</span> ～</span>
     </div>
     <!-- 战场地图 -->
-    <div style="width: 478px; float: left; margin-right: 5px;">
+    <div style="width: 476px; float: left; margin-right: 5px;border-radius: 3px; border:2px solid rgba(225, 124, 226, 0.2);	">
         <!--{eval $mapdata = init_mapdata();}-->
         $mapdata 
     </div>
     <!-- 控制菜单 -->
-    <div style="width: 120px; float: right; margin-left: 5px;">
+    <div style="width: 118px; float: right; margin-left: 5px;">
         <!-- 音乐控制指令 -->
-        <table border="1" cellspacing="0" cellpadding="0" style="position:relative;">
+        <table cellspacing="0" cellpadding="0" style="position:relative;border-radius: 3px; border:2px solid rgba(225, 124, 226, 0.2);">
             <tr>
                 <TD colspan="2" class="b1" style="width: 120px; height: 24px;">播放控制</TD>
             </tr>
@@ -43,13 +43,13 @@
         <!--{if !isset($clbpara['console'])}-->
         <!--<div style="position:relative; height:100%; width:100%;">
         <div class="blurtext">-->
-        <table border="1" cellspacing="0" cellpadding="0" style="position:relative;">
+        <table cellspacing="0" cellpadding="0" style="position:relative;">
             <tr width="120" height="328" rowspan="7" class="map">
                 <td colspan="2" width="120" height="328" class="lockmap"></td>
             </tr>
         </table>
         <!--{else}-->
-        <table border="1" cellspacing="0" cellpadding="0" style="position:relative;">
+        <table cellspacing="0" cellpadding="0" style="position:relative;border-radius: 3px; border:2px solid rgba(225, 124, 226, 0.2);">
             <tr>
                 <TD colspan="2" class=b1 style="width: 120px; height: 24px;">可用信道</TD>
             </tr>

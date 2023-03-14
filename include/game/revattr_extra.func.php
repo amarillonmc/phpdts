@@ -770,4 +770,22 @@
 		return;
 	}
 
+	function attr_ach53_check(&$pa,&$pd,$active)
+	{
+		if(!empty($pa['arbs']) && $pa['arb'] == '【智代专用熊装】')
+		{
+			// 必须连续攻击同一个对象
+			if(!empty($pa['clbpara']['achvars']['ach503']) && $pa['clbpara']['achvars']['ach503']['a'] == $pd['pid'])
+			{
+				$pa['clbpara']['achvars']['ach503']['t'] += 1;
+			}
+			else 
+			{
+				$pa['clbpara']['achvars']['ach503']['a'] = $pd['pid'];
+				$pa['clbpara']['achvars']['ach503']['t'] = 1;
+			}
+		}
+		return;
+	}
+
 ?>

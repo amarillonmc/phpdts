@@ -4,23 +4,25 @@
 
 <!-- 对白分段显示 -->
 <!--{loop $dialogues[$dialogue_id] $dkey $dinfo}-->
-<div id="d{$dkey}" <!--{if $dkey == 0}--> style="" <!--{else}-->  style="display: none;"  <!--{/if}-->>
-    <table class="map" border="1" style="text-align: center;"><tr>
-    <!-- 带头像对白 -->
-    <!--{if isset($dialogue_icon[$dialogue_id][$dkey])}--> 
-        <td>
-            <img style="width:140px;height:80px;" src="$dialogue_icon[$dialogue_id][$dkey]">
-        </td>
-        <td style="border: 1px; width:280px;height:80px;text-align: left; padding: 3% 6%;">
-            $dinfo
-        </td>
-    <!-- 无头像对白 -->
-    <!--{else}-->
-        <td class="" style="width:320px;height:80px;text-align: center; padding: 3% 6%;">
-            $dinfo
-        </td>
-    <!--{/if}--> 
-    </tr></table>
+<div id="d{$dkey}" <!--{if $dkey == 0}--> class="ach_box" style="border:0; text-align: center; min-height: min-content; width: max-content; max-width: 560px;" <!--{else}-->  style="display: none;"  <!--{/if}-->>
+    <table>
+        <tr>
+        <!-- 带头像对白 -->
+        <!--{if isset($dialogue_icon[$dialogue_id][$dkey])}--> 
+            <td>
+                <img style="width:140px;height:80px;" src="$dialogue_icon[$dialogue_id][$dkey]">
+            </td>
+            <td class="ach-cont" style="border: 1px; width:280px;height:80px;text-align: left; padding: 3% 6%;">
+                $dinfo
+            </td>
+        <!-- 无头像对白 -->
+        <!--{else}-->
+            <td class="ach-cont" style="width:320px;height:80px;text-align: center; padding: 3% 6%;">
+                $dinfo
+            </td>
+        <!--{/if}--> 
+        </tr>
+    </table>
     <br>
     <!--{if $dkey > 0}-->
         <input type="button" class="cmdbutton" style="margin-right: 5%;" value="上一页" onclick="changePages($dkey,$dkey-1);">

@@ -14,10 +14,11 @@ if(isset($mode) && $mode == 'quit') {
 	exit();
 
 }
-$result = $db->query("SELECT * FROM {$tablepre}players WHERE name = '$cuser' AND type = 0");
-if(!$db->num_rows($result)) { header("Location: valid.php");exit(); }
+//$result = $db->query("SELECT * FROM {$tablepre}players WHERE name = '$cuser' AND type = 0");
+$pdata = fetch_playerdata_by_name($cuser);
+if(!$pdata) { header("Location: valid.php");exit(); }
 
-$pdata = $db->fetch_array($result);
+//$pdata = $db->fetch_array($result);
 if($pdata['pass'] != $cpass) {
 	$tr = $db->query("SELECT `password` FROM {$tablepre}users WHERE username='$cuser'");
 	$tp = $db->fetch_array($tr);

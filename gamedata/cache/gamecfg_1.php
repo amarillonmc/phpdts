@@ -126,8 +126,10 @@ $hack_obbs = 40;
 //电子设备充电上限，包括电脑和雷达
 $elec_cap = 5;
 
-//成就总数
+//成就总数（已废弃）
 $achievement_count=140;
+//每日任务刷新间隔（单位：秒）：
+$reset_daily_cd = 21600;
 
 //场外支援系统 允许购买的道具类型
 $gshoplist = Array

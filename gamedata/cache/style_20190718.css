@@ -377,7 +377,7 @@ span[tooltip]:hover:before {
 	/*background-clip: border-box; background-color: rgba(198, 114, 199, 0.8);*/
 	background-color:rgba(0,0,0,0.8); *BACKGROUND: rgb(0,0,0); *filter:alpha(opacity=70); 
 	border-radius: 3px; border:2px solid rgba(225, 124, 226, 0.4);	
-	transform: translate(40px, -5px);
+	transform: translate(25px, 25px);
     width:max-content; max-width: 175px; position: absolute; z-index: 50;
 }
 

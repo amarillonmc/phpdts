@@ -57,7 +57,7 @@
 									</td>
 									<td width=55px background="img/state2.gif" style="position:relative;background-repeat:no-repeat;background-position:left top;">
 										<div style="border:0; margin:0; cellspacing:0; cellpadding:0; position:absolute;top:0px;right:55px;z-index:1;">
-											$newhpimg
+											<span <!--{if $inf}-->tooltip="消耗{$inf_sp}点体力，点击红色准星图标包扎伤口"<!--{/if}-->>$newhpimg</span>
 										</div>
 									</td>
 								</tr>
@@ -184,9 +184,20 @@
           		<tr>
     						<TD class=b2 height="26"><span><!--{if $wepk_words}-->$wepk_words<!--{else}-->$mltwk<!--{/if}--></span></TD>
                 <TD class=b3>
-                	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $wepe}--><span><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offwep';postCmd('gamecmd','command.php');return false;"</span><!--{/if}-->
-                	<span><!--{if $weps}-->$wep_words<!--{else}-->$nowep<!--{/if}--></span>
-					<!--{if CURSCRIPT == 'game' && $mode == 'command'}--><span class="eicon" onclick="$('mode').value='itemmain';$('command').value='changewep';postCmd('gamecmd','command.php');return false;">🔃</span><!--{/if}-->
+					<span <!--{if CURSCRIPT == 'game' && $mode == 'command' && $wep2e}-->tooltip="副武器栏：{$wep2}"<!--{/if}-->>
+                	<!--{if CURSCRIPT == 'game' && $mode == 'command' && $wepe}-->
+						<span>
+							<input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offwep';postCmd('gamecmd','command.php');return false;">
+						</span>
+					<!--{/if}-->				
+                	<span>
+						<!--{if $weps}-->
+						$wep_words
+						<!--{else}-->
+						$nowep
+						<!--{/if}-->
+					</span>
+					</span>
                 </TD>
                 <TD class=b3><span>$wepsk_words</span></TD>
                 <TD class=b3><span>$wepe</span></TD>

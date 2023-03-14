@@ -294,7 +294,13 @@ function itemget() {
 function itemdrop($item) {
 	global $db,$log,$mode,$pls,$tablepre;
 
-	if($item == 'wep'){
+	if(strpos($item,'itm')===false)
+	{
+		$log .= '只能丢弃包裹内的道具！<br>';
+		$mode = 'command';
+		return;
+	}
+	/*if($item == 'wep'){
 		global $wep,$wepk,$wepe,$weps,$wepsk;
 		$itm = & $wep;
 		$itmk = & $wepk;
@@ -310,7 +316,7 @@ function itemdrop($item) {
 		$itms = & ${'ar'.$itmn.'s'};
 		$itmsk = & ${'ar'.$itmn.'sk'};
 
-	} elseif(strpos($item,'itm') === 0) {
+	} else*/if(strpos($item,'itm') === 0) {
 		$itmn = substr($item,3,1);
 		global ${'itm'.$itmn},${'itmk'.$itmn},${'itme'.$itmn},${'itms'.$itmn},${'itmsk'.$itmn};
 		$itm = & ${'itm'.$itmn};
@@ -338,7 +344,7 @@ function itemdrop($item) {
 			drop_itembag();
 		}
 	}
-if(($itmk=='XX')||(($itmk=='XY'))){
+	if(($itmk=='XX')||(($itmk=='XY'))){
 		$log .= '该物品不能丢弃。<br>';
 		$mode = 'command';
 		return;
@@ -373,7 +379,7 @@ if(($itmk=='XX')||(($itmk=='XY'))){
 }
 
 function itemoff($item){
-	global $log,$mode,$cmd,$itm0,$itmk0,$itme0,$itms0,$itmsk0;
+	global $log,$mode,$cmd,$itm0,$itmk0,$itme0,$itms0,$itmsk0,$pdata;
 
 	if($item == 'wep'){
 		global $wep,$wepk,$wepe,$weps,$wepsk;
@@ -401,6 +407,10 @@ function itemoff($item){
 		$mode = 'command';
 		return;
 	}
+
+	//卸下装备时，进行单次套装检测
+	reload_single_set_item($pdata,$item,$itm);
+
 	$log .= "你卸下了装备<span class=\"yellow\">$itm</span>。<br>";
 
 	$itm0 = $itm;
@@ -1157,6 +1167,66 @@ function getcorpse($item){
 	return;
 }
 
+# 初始化玩家/NPC数据时，重载套装效果
+function reload_set_items(&$pa)
+{
+	# 身上登记过套装效果，先重置
+	if(!empty($pa['clbpara']['setitems']))
+	{
+		# TODO：失去对应的套装效果
+	}
+	$pa['clbpara']['setitems'] = Array();
+
+	$set_items = get_set_items();
+	$equip_list = get_equip_list();
+	# 遍历身上的装备信息 检查是否为套装的组成部分
+	foreach($equip_list as $eqp)
+	{
+		if(!empty($pa[$eqp.'s']) && isset($set_items[$eqp][$pa[$eqp]]))
+		{
+			$sid = $set_items[$eqp][$pa[$eqp]];
+			$pa['clbpara']['setitems'][$sid] += 1;
+		}
+	}
+	# 身上存在套装效果
+	if(!empty($pa['clbpara']['setitems']))
+	{
+		//获得对应的套装效果
+
+	}
+	return;
+}
+
+# 装备/替换/破坏装备时，进行单件套装效果变更
+# eqp → 装备部位；eqm → 装备名；active 1 → 装备；active 0 → 卸下/损坏
+function reload_single_set_item(&$pa,$eqp,$enm,$active=0)
+{
+	global $log;
+	$set_items = get_set_items();
+	# 检查装备是否为套装组成部分
+	if(isset($set_items[$eqp][$enm]))
+	{
+		$sid = $set_items[$eqp][$enm];
+		$set_items_info = get_set_items_info();
+		if($active)
+		{
+			$pa['clbpara']['setitems'][$sid] += 1;
+			$nownums = $pa['clbpara']['setitems'][$sid];
+			//获得对应的套装效果
+			//$log .= "激活了套装{$set_items_info[$sid]['name']}{$nownums}件套的效果。<br>";
+			//检查是否解锁对应套装成就
+		}
+		else
+		{
+			$pa['clbpara']['setitems'][$sid] -= 1;
+			$nownums = $pa['clbpara']['setitems'][$sid];
+			//失去对应的套装效果
+			//$log .= "套装{$set_items_info[$sid]['name']}组件数-1，重新激活{$nownums}件套的效果。<br>";
+		}
+	}
+	return;
+}
+
 //武器损耗&消耗计算：force_imp：强制扣除武器效果；check_sk：是否在武器毁坏时重新检查属性数组$pa['ex_keys']
 function weapon_loss(&$pa,$hurtvalue,$force_imp=0,$check_sk=0)
 {
@@ -1248,6 +1318,9 @@ function armor_hurt(&$pa,$which,$hurtvalue,$check_sk=0)
 
 			//剔除防具属性
 			if($check_sk && !empty($pa[$which.'sk'])) unset_ex_from_array($pa,get_itmsk_array($pa[$which.'sk']));
+
+			//装备损坏后 重新检查套装属性
+			reload_single_set_item($pa,$which,$pa[$which]);
 
 			if($which == 'arb')
 			{

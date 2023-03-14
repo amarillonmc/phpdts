@@ -4,23 +4,6 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
-# 获取成就大类列表
-function get_achtype()
-{
-	global $gamecfg;
-	include config("achievement",$gamecfg);
-	return $ach_type;
-}
-
-# 获取成就列表
-function get_achlist($a=NULL)
-{
-	global $gamecfg;
-	include config("achievement",$gamecfg);
-	if(isset($a) && isset($ach_list[$a])) return $ach_list[$a];
-	return $ach_list;
-}
-
 # 初始化单个成就页面
 function init_achtabledata($ach)
 {
@@ -76,7 +59,8 @@ function fetch_achievement_rev($which,$who)
 	{
 		$ach = print_achievement_rev($ach);
 		// 保存的成就进度 >= 9999999时 返回9999999 这是为了兼容旧版成就
-		if(isset($ach[$which]['v'])) $value = $ach[$which]['v'] >= 9999999 ? 9999999 : $ach[$which]['v'];
+		if(isset($ach[$which]['v']) && !is_array($ach[$which]['v'])) $value = $ach[$which]['v'] >= 9999999 ? 9999999 : $ach[$which]['v'];
+		if(is_array($ach[$which]['v'])) $value = $ach[$which]['v'];
 	}
 	//echo "成就值检索阶段： 成就{$which} 的值 = {$value}<br>";
 	return $value;
@@ -112,11 +96,79 @@ function done_achievement_rev($which,$ch,$who)
 	$db->query("UPDATE {$tablepre}users SET achrev='$ach' WHERE username='".$who."'" );
 }
 
+function reset_achievement_rev($which,$who)
+{
+	global $db,$tablepre,$log;
+	$result = $db->query("SELECT achrev FROM {$tablepre}users WHERE username = '$who'");
+	$ach = $db->result($result,0);
+	$ach = print_achievement_rev($ach);
+	if(array_key_exists($which,$ach))
+	{
+		unset($ach[$which]);
+		//echo "【DEBUG】已重置{$who} 成就编号：{$which}的进度。<br>";
+		$ach = json_encode($ach);
+		$db->query("UPDATE {$tablepre}users SET achrev='$ach' WHERE username='".$who."'" );
+	}
+}
+
+function check_daily_achievement($who,$only_id=0)
+{
+	global $db,$tablepre,$now,$reset_daily_cd;
+	$result = $db->query("SELECT daily FROM {$tablepre}users WHERE username = '$who'");
+	$daily = $db->result($result,0);
+	# 存在每日记录时检查是否可以刷新每日
+	if(!empty($daily))
+	{
+		$daily = json_decode($daily,true);
+		$now_daily = $daily['ach'];
+		if($only_id) return $daily['ach'];
+		$reset_time = $daily['st'] + $reset_daily_cd;
+		# 每日刷新尚在CD中
+		if($now < $reset_time) return Array($reset_time,$daily['ach']);
+		return Array(0,$daily['ach']);
+	}
+	return Array(0,0);
+}
+
+function reset_daily_achievement($who)
+{
+	global $db,$tablepre,$now,$reset_daily_cd;
+	$result = $db->query("SELECT daily FROM {$tablepre}users WHERE username = '$who'");
+	$daily = $db->result($result,0);
+	if(!empty($daily))
+	{
+		$daily = json_decode($daily,true);
+		// 清空旧每日数据
+		foreach($daily['ach'] as $aid) reset_achievement_rev($aid,$who);
+	}
+	else 
+	{
+		$daily = Array();
+	}
+	//echo "开始为{$who}获取新的每日任务<br>";
+	$daily['st'] = $now;
+	$ach_type = get_achtype();
+	$daily_list = $ach_type['daily']['ach'];
+	//至少有3个每日任务才能发每日
+	if(!empty($daily_list) && count($daily_list)>=3)
+	{
+		$d1 = 0; $d2 = 0; $d3 = 0;
+		$d1 = $daily_list[array_rand($daily_list)];
+		while(!$d2 || $d2 == $d1) $d2 = $daily_list[array_rand($daily_list)];
+		while(!$d3 || $d3 == $d2 || $d3 == $d1) $d3 = $daily_list[array_rand($daily_list)];
+		$daily['ach'] = Array($d1,$d2,$d3);
+	}
+	$n_daily = json_encode($daily);
+	$db->query("UPDATE {$tablepre}users SET daily='$n_daily' WHERE username='".$who."'" );
+	return Array($daily['st']+$reset_daily_cd,$daily['ach']);
+}
+
 function check_mixitem_achievement_rev($nn,$item)
 {
 	global $now,$validtime,$starttime,$gamecfg,$name,$db,$tablepre;
 	include_once GAME_ROOT.'./include/game/titles.func.php';
 	$done = 0;
+	$atotal = Array();
 	//1. 快速KEY弹成就
 	if ($item=="【KEY系催泪弹】")
 	{
@@ -127,6 +179,23 @@ function check_mixitem_achievement_rev($nn,$item)
 		$db->query("UPDATE {$tablepre}users SET credits=credits+30 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$tablepre}users SET credits2=credits2+16 WHERE username='".$nn."'" );
 		get_title("KEY男",$nn);
+		}
+		//609.日常 合成一次KEY弹
+		if(in_array(609,check_daily_achievement($nn,1)))
+		{
+			$aid = 609;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			if(!$alvl)
+			{
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+				done_achievement_rev($aid,$alvl,$nn);
+				//日常任务统计成就 600 计数+1
+				$atotal[600] += 1;
+			}
 		}
 	}
 	//200.快速贤者成就
@@ -655,6 +724,11 @@ function check_mixitem_achievement_rev($nn,$item)
 	//新版成就切糕、积分结算汇总到此
 	if(!empty($c1)) $db->query("UPDATE {$tablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
 	if(!empty($c2)) $db->query("UPDATE {$tablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
+	if(!empty($atotal))
+	{
+		foreach($atotal as $aid => $anums) 
+			check_nums_achievement($nn,$aid,$anums);
+	}
 	return;
 }
 
@@ -666,6 +740,7 @@ function check_end_achievement_rev($w,$m,$data='')
 	include_once GAME_ROOT.'./include/game/titles.func.php';
 
 	$done = 0;
+	$atotal = Array();
 	$data['clbpara'] = get_clbpara($data['clbpara']);
 
 	//16. 最后幸存成就
@@ -837,9 +912,31 @@ function check_end_achievement_rev($w,$m,$data='')
 		if($done) done_achievement_rev($aid,$alvl,$w);
 		$done = 0;
 	}
+	// 603.日常 达成一次解禁/解离结局
+	if(in_array(603,check_daily_achievement($w,1)) && !empty($data) && ($m==3 || $m==7))
+	{
+		$aid = 603;
+		$alvl = check_achievement_rev($aid,$w);
+		$achlist = get_achlist($aid);
+		$avars = fetch_achievement_rev($aid,$w)+1;
+		update_achievement_rev($aid,$w,$avars);
+		if(!$alvl)
+		{
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			$alvl ++;
+			done_achievement_rev($aid,$alvl,$w);
+			//日常任务统计成就 600 计数+1
+			$atotal[600] += 1;
+		}
+	}
 	//新版成就切糕、积分结算汇总到此
 	if(!empty($c1)) $db->query("UPDATE {$tablepre}users SET credits=credits+$c1 WHERE username='".$w."'" );
 	if(!empty($c2)) $db->query("UPDATE {$tablepre}users SET credits2=credits2+$c2 WHERE username='".$w."'" );
+	if(!empty($atotal))
+	{
+		foreach($atotal as $aid => $anums) 
+			check_nums_achievement($nn,$aid,$anums);
+	}
 	return;
 }
 
@@ -851,12 +948,16 @@ function check_battle_achievement_rev($pa,$pd)
 	include_once GAME_ROOT.'./include/game/titles.func.php';
 
 	// 旧版成就参数兼容
-	$is_npc = $pd['type'] ? 1 : 0;
+	$is_npc = $pd['type'];
 	$nn = $pa['name'];
 	$killname = $pd['name'];
 	$wp = isset($pa['wep_name']) ? $pa['wep_name'] : $pa['wep'];
 	// 判断是否为活跃玩家：暂时只要IP不一样就算活跃玩家
 	$is_tplayer = $pa['ip'] == $pd['ip'] ? 0 : 1;
+	// 获取pa当前的每日任务列表
+	$daily = check_daily_achievement($nn,1);
+	//是否需要将完成过的成就统计到另一个成就里，如果有，将成就编号和完成次数汇总到下面这个数组里，在函数尾部一同处理
+	$atotal = Array();
 
 	# 击杀玩家成就
 	if (!$is_npc && $pd['name'] != $nn)
@@ -879,6 +980,24 @@ function check_battle_achievement_rev($pa,$pd)
 		}
 		if($done) done_achievement_rev($aid,$alvl,$nn);
 		$done = 0;
+
+		// 602.日常 击杀一名活跃玩家
+		if(in_array(602,$daily) && $is_tplayer)
+		{
+			$aid = 602;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			if(!$alvl)
+			{
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+				done_achievement_rev($aid,$alvl,$nn);
+				//日常任务统计成就 600 计数+1
+				$atotal[600] += 1;
+			}
+		}
 
 		// 60.击杀存在击杀数的其他玩家
 		if(!empty($pd['killnum']))
@@ -962,6 +1081,24 @@ function check_battle_achievement_rev($pa,$pd)
 			}
 			if($done) done_achievement_rev($aid,$alvl,$nn);
 			$done = 0;
+		}
+
+		// 606.用陷阱或毒药击杀一名活跃玩家
+		if(in_array(606,$daily) && $is_tplayer && ($pd['state'] == 26 || $pd['state'] == 27))
+		{
+			$aid = 606;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			if(!$alvl)
+			{
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+				done_achievement_rev($aid,$alvl,$nn);
+				//日常任务统计成就 600 计数+1
+				$atotal[600] += 1;
+			}
 		}
 
 		// 64.使用DN杀死玩家
@@ -1111,10 +1248,6 @@ function check_battle_achievement_rev($pa,$pd)
 			if($done) done_achievement_rev($aid,$alvl,$nn);
 			$done = 0;
 		}
-
-		//切糕、积分结算汇总
-		if(!empty($c1)) $db->query("UPDATE {$tablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
-		if(!empty($c2)) $db->query("UPDATE {$tablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
 	}
 	//31. ReturnToSender成就
 	if (!$is_npc)
@@ -1168,6 +1301,23 @@ function check_battle_achievement_rev($pa,$pd)
 		$db->query("UPDATE {$tablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$tablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
 		done_achievement_rev(3,1,$nn);
+		}
+	}
+	// 601.日常 击杀10名NPC
+	if(in_array(601,$daily) && $is_npc)
+	{
+		$aid = 601;
+		$alvl = check_achievement_rev($aid,$nn);
+		$achlist = get_achlist($aid);
+		$avars = fetch_achievement_rev($aid,$nn)+1;
+		update_achievement_rev($aid,$nn,$avars);
+		if(!$alvl && $avars>=10)
+		{
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			$alvl ++;
+			done_achievement_rev($aid,$alvl,$nn);
+			//日常任务统计成就 600 计数+1
+			$atotal[600] += 1;
 		}
 	}
 	//4. 推倒红暮成就
@@ -1330,6 +1480,23 @@ function check_battle_achievement_rev($pa,$pd)
 		done_achievement_rev(56,1,$nn);
 		}
 	}
+	// 605.日常击杀10名种火
+	if(in_array(605,$daily) && $is_npc == 89)
+	{
+		$aid = 605;
+		$alvl = check_achievement_rev($aid,$nn);
+		$achlist = get_achlist($aid);
+		$avars = fetch_achievement_rev($aid,$nn)+1;
+		update_achievement_rev($aid,$nn,$avars);
+		if(!$alvl && $avars>=10)
+		{
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			$alvl ++;
+			done_achievement_rev($aid,$alvl,$nn);
+			//日常任务统计成就 600 计数+1
+			$atotal[600] += 1;
+		}
+	}
 	//57. 击杀回声成就 
 	if ($is_npc==89)
 	{
@@ -1354,6 +1521,16 @@ function check_battle_achievement_rev($pa,$pd)
 		done_achievement_rev(57,1,$nn);
 		}
 	}
+	
+	//切糕、积分结算汇总
+	if(!empty($c1)) $db->query("UPDATE {$tablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
+	if(!empty($c2)) $db->query("UPDATE {$tablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
+	//成就计数结算
+	if(!empty($atotal))
+	{
+		foreach($atotal as $aid => $anums) 
+			check_nums_achievement($nn,$aid,$anums);
+	}
 }
 
 
@@ -1361,6 +1538,7 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 {
 	global $gamecfg,$name,$db,$tablepre,$now,$starttime,$gamestate;
 	include_once GAME_ROOT.'./include/game/titles.func.php';
+	$atotal = Array();
 
 	//解禁相关
 	if ($i == "游戏解除钥匙")
@@ -1391,10 +1569,27 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 		}
 		// 阶段有所变化时，增加阶段次数
 		if($done) done_achievement_rev($aid,$alvl,$nn);
-		//新版成就切糕、积分结算汇总到此
-		if(!empty($c1)) $db->query("UPDATE {$tablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
-		if(!empty($c2)) $db->query("UPDATE {$tablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
-		return;
+	}
+
+	if($i == "凸眼鱼")
+	{
+		// 607.日常 使用一次凸眼鱼吸收20具尸体
+		if(in_array(607,check_daily_achievement($nn,1)) && $isk>=20)
+		{
+			$aid = 607;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			if(!$alvl)
+			{
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+				done_achievement_rev($aid,$alvl,$nn);
+				//日常任务统计成就 600 计数+1
+				$atotal[600] += 1;
+			}
+		}
 	}
 
 
@@ -1410,6 +1605,23 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 		$db->query("UPDATE {$tablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
 		include_once GAME_ROOT.'./include/game/titles.func.php';
 		get_title("神触",$nn);
+		}
+		//604. 日常开启一次死斗
+		if(in_array(604,check_daily_achievement($nn,1)))
+		{
+			$aid = 604;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			if(!$alvl)
+			{
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+				done_achievement_rev($aid,$alvl,$nn);
+				//日常任务统计成就 600 计数+1
+				$atotal[600] += 1;
+			}
 		}
 	}
 	//29. 美食成就
@@ -1552,33 +1764,46 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 		if ($uu>9999999) $uu=9999999;
 		update_achievement_rev(55,$nn,$uu);
 		if (((int)fetch_achievement_rev(55,$nn)>=17777) && (check_achievement_rev(55,$nn))<999) {
-			done_achievement_rev(55,999,$nn);
-			$db->query("UPDATE {$tablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$tablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
-			get_title("无情补丁",$nn);
-			}
-			elseif ((int)fetch_achievement_rev(55,$nn)>=1777 && (check_achievement_rev(55,$nn)<2)) {
-			done_achievement_rev(55,2,$nn);
-			$db->query("UPDATE {$tablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$tablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
-			get_title("补丁爱好者",$nn);
-			}
-			elseif ((int)fetch_achievement_rev(55,$nn)>=777 && (check_achievement_rev(55,$nn)<1)) {
-			$db->query("UPDATE {$tablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$tablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
-			done_achievement_rev(55,1,$nn);
-			}
+		done_achievement_rev(55,999,$nn);
+		$db->query("UPDATE {$tablepre}users SET credits=credits WHERE username='".$nn."'" );
+		$db->query("UPDATE {$tablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
+		include_once GAME_ROOT.'./include/game/titles.func.php';
+		get_title("无情补丁",$nn);
+		}
+		elseif ((int)fetch_achievement_rev(55,$nn)>=1777 && (check_achievement_rev(55,$nn)<2)) {
+		done_achievement_rev(55,2,$nn);
+		$db->query("UPDATE {$tablepre}users SET credits=credits WHERE username='".$nn."'" );
+		$db->query("UPDATE {$tablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
+		include_once GAME_ROOT.'./include/game/titles.func.php';
+		get_title("补丁爱好者",$nn);
+		}
+		elseif ((int)fetch_achievement_rev(55,$nn)>=777 && (check_achievement_rev(55,$nn)<1)) {
+		$db->query("UPDATE {$tablepre}users SET credits=credits WHERE username='".$nn."'" );
+		$db->query("UPDATE {$tablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+		done_achievement_rev(55,1,$nn);
+		}
 	}
+
+	//新版成就切糕、积分结算汇总到此
+	if(!empty($c1)) $db->query("UPDATE {$tablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
+	if(!empty($c2)) $db->query("UPDATE {$tablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
+	//成就计数结算
+	if(!empty($atotal))
+	{
+		foreach($atotal as $aid => $anums) 
+			check_nums_achievement($nn,$aid,$anums);
+	}
+	return;
 }
 
+//杂项成就，在将数据保存回数据库时统一检查
 function check_misc_achievement_rev(&$pa)
 {
 	global $gamestate,$gamecfg,$db,$tablepre;
 	include_once GAME_ROOT.'./include/game/titles.func.php';
 
 	$done = 0;
+	$atotal = Array();
 	// 旧版成就参数兼容
 	$is_player = $pa['type'] ? 0 : 1;
 	$nn = $pa['name'];
@@ -1626,7 +1851,221 @@ function check_misc_achievement_rev(&$pa)
 				done_achievement_rev($aid,$alvl,$nn);
 			}
 		}
+		// 208.套装收集成就
+		if(!empty($pa['clbpara']['setitems']))
+		{
+			$aid = 208;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			$avars = fetch_achievement_rev($aid,$nn);
+			if($alvl < 3)
+			{
+				// 成就未完成的情况下，检查是否有新集齐的套装需要加入成就记录
+				if(!is_array($avars)) $avars = Array();
+				$set_items_info = get_set_items_info();
+				foreach($pa['clbpara']['setitems'] as $sid => $snums)
+				{
+					// 检查凑齐完整效果的套装
+					if($snums == $set_items_info[$sid]['active'][1] && !in_array($sid,$avars))
+					{
+						//echo "成就 {$aid} 变动：将套装 {$sid}保存入成就进度。";
+						$avars[] = $sid;
+					}
+				}
+				update_achievement_rev($aid,$nn,$avars);
+				$anums = count($avars);
+				while((!$alvl && $anums) || ($alvl == 1 && $anums >= 3) || ($alvl == 2 && $anums >=5))
+				{
+					if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+					$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+					$alvl ++;
+					done_achievement_rev($aid,$alvl,$nn);
+				}
+			}
+		}
+		// 501.吃下【像围棋子一样的饼干】【桔黄色的果酱】并且活下来
+		if(!empty($pa['clbpara']['achvars']['eat_weiqi']) && !empty($pa['clbpara']['achvars']['eat_jelly']))
+		{
+			unset($pa['clbpara']['achvars']['eat_weiqi']);
+			unset($pa['clbpara']['achvars']['eat_jelly']);
+			$aid = 501;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 增加一次完成次数
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			// 检查是否满足条件进入下一阶段
+			while(!$alvl && $avars)
+			{
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+				done_achievement_rev($aid,$alvl,$nn);
+			}
+		}
+		// 502.使用【翼人的羽毛】打出7230点以上伤害
+		if(!empty($pa['clbpara']['achvars']['ach502']))
+		{
+			$aid = 502;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 检查伤害
+			$new_vars = $pa['clbpara']['achvars']['ach502'];
+			$old_vars = fetch_achievement_rev($aid,$nn);
+			if($new_vars > $old_vars) 
+			{
+				update_achievement_rev($aid,$nn,$new_vars);
+				// 检查是否满足条件进入下一阶段
+				while(!$alvl && $new_vars>=7230)
+				{
+					if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+					$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+					$alvl ++;
+					done_achievement_rev($aid,$alvl,$nn);
+				}
+			}
+		}
+		// 503.穿着【智代专用熊装】连续攻击同一个玩家/NPC64次以上
+		if(!empty($pa['clbpara']['achvars']['ach503']))
+		{
+			$aid = 503;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 检查攻击次数
+			$new_vars = $pa['clbpara']['achvars']['ach503']['t'];
+			$old_vars = fetch_achievement_rev($aid,$nn);
+			if($new_vars > $old_vars) 
+			{
+				update_achievement_rev($aid,$nn,$new_vars);
+				// 检查是否满足条件进入下一阶段
+				while(!$alvl && $new_vars>=64)
+				{
+					if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+					$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+					$alvl ++;
+					done_achievement_rev($aid,$alvl,$nn);
+				}
+			}
+		}
+		// 504.在【RF高校】使用每一种系的武器各杀死一个目标
+		if(!empty($pa['clbpara']['achvars']['ach504']))
+		{
+			$aid = 504;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 检查击杀过的武器种类
+			$new_vars = count($pa['clbpara']['achvars']['ach504']);
+			$old_vars = fetch_achievement_rev($aid,$nn);
+			if($new_vars > $old_vars) 
+			{
+				update_achievement_rev($aid,$nn,$new_vars);
+				// 检查是否满足条件进入下一阶段
+				while(!$alvl && $new_vars>=6)
+				{
+					if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+					$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+					$alvl ++;
+					done_achievement_rev($aid,$alvl,$nn);
+				}
+			}
+		}
+		// 505.一击秒杀【守卫者 静流】
+		if(!empty($pa['clbpara']['achvars']['ach505']))
+		{
+			unset($pa['clbpara']['achvars']['ach505']);
+			$aid = 505;
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 增加一次完成次数
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			// 检查是否满足条件进入下一阶段
+			while(!$alvl && $avars)
+			{
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				$alvl ++;
+				done_achievement_rev($aid,$alvl,$nn);
+			}
+		}
+		// 608.日常 成功使用一次移动PC 只会记录一次
+		if(in_array(608,check_daily_achievement($nn,1)))
+		{
+			if(!empty($pa['clbpara']['achvars']['hack']))
+			{
+				$aid = 608;
+				$alvl = check_achievement_rev($aid,$nn);
+				$achlist = get_achlist($aid);
+				$avars = fetch_achievement_rev($aid,$nn);
+				if(empty($avars)) update_achievement_rev($aid,$nn,1);
+				if(!$alvl)
+				{
+					$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+					$alvl ++;
+					done_achievement_rev($aid,$alvl,$nn);
+					//日常任务统计成就 600 计数+1
+					$atotal[600] += 1;
+				}
+			}
+		}
+		// 610.日常 唱过一首歌
+		if(in_array(610,check_daily_achievement($nn,1)))
+		{
+			if(!empty($pa['clbpara']['achvars']['sing']))
+			{
+				$aid = 610;
+				$alvl = check_achievement_rev($aid,$nn);
+				$achlist = get_achlist($aid);
+				$avars = fetch_achievement_rev($aid,$nn);
+				if(empty($avars)) update_achievement_rev($aid,$nn,1);
+				if(!$alvl)
+				{
+					$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+					$alvl ++;
+					done_achievement_rev($aid,$alvl,$nn);
+					//日常任务统计成就 600 计数+1
+					$atotal[600] += 1;
+				}
+			}
+		}
 	}
+	//新版成就切糕、积分结算汇总到此
+	if(!empty($c1)) $db->query("UPDATE {$tablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
+	if(!empty($c2)) $db->query("UPDATE {$tablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
+	//成就计数结算
+	if(!empty($atotal))
+	{
+		foreach($atotal as $aid => $anums) 
+			check_nums_achievement($nn,$aid,$anums);
+	}
+	return;
+}
+
+//为其他成就计数的成就
+function check_nums_achievement($nn,$aid,$anums=1)
+{
+	global $gamestate,$gamecfg,$db,$tablepre;
+	include_once GAME_ROOT.'./include/game/titles.func.php';
+
+	//每日任务计数成就
+	if($aid == 600)
+	{
+		$alvl = check_achievement_rev($aid,$nn);
+		$achlist = get_achlist($aid);
+		$avars = fetch_achievement_rev($aid,$nn)+$anums;
+		update_achievement_rev($aid,$nn,$avars);
+		// 检查是否完成成就
+		while((!$alvl && $avars) || ($alvl == 1 && $avars >= 10) || ($alvl == 2 && $avars >= 100) || ($alvl == 3 && $avars >= 1001))
+		{
+			$done = 1;
+			if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+			$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+			$alvl ++;
+		}
+		if($done) done_achievement_rev($aid,$alvl,$nn);
+		$done = 0;
+	}
+
 	//新版成就切糕、积分结算汇总到此
 	if(!empty($c1)) $db->query("UPDATE {$tablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
 	if(!empty($c2)) $db->query("UPDATE {$tablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
