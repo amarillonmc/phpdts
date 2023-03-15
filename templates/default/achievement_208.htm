@@ -2,21 +2,29 @@
 <tr>
     <!--{eval $alvl = $cpl[$aid] == 999 ? $alist[$aid]['lvl'] : $cpl[$aid]; $rlvl = $cpl[$aid] == 999 ? $alist[$aid]['lvl']-1 : $cpl[$aid];}-->
     <td>
-        <!--{if file_exists("img/ach/".$aid."_".$alvl.".gif") }-->
+        <!--{if file_exists("img/ach/".$aid."_".$alvl.".png") }-->
             <!-- 存在预设的对应阶段图标 -->
-            <img src="img/ach/{$aid}_{$alvl}.gif">
-        <!--{elseif file_exists("img/ach/".$aid."_".$rlvl.".gif") }-->
+            <img src="img/ach/{$aid}_{$alvl}.png">
+        <!--{elseif file_exists("img/ach/".$aid."_".$rlvl.".png") }-->
             <!-- 完成后的成就，不存在完成阶段图标，但是存在上一阶段图标 -->
-            <img src="img/ach/{$aid}_{$rlvl}.gif">
+            <img src="img/ach/{$aid}_{$rlvl}.png">
         <!--{elseif $alvl && file_exists("img/ach/".$aid.".gif") }-->
             <!-- 没有定义阶段，但是有通用阶段图标 -->
             <img src="img/ach/{$aid}.gif">
         <!--{else}-->
             <!-- 否则使用默认图标 -->
             <!--{if !empty($alvl) }-->
-                <img src="img/ach/D.gif">
+                <!--{if file_exists("img/ach/".$tid."_D.png") }-->
+                    <img src="img/ach/{$tid}_D.png">
+                <!--{else}-->
+                    <img src="img/ach/D.gif">
+                <!--{/if}-->
             <!--{else}-->
-                <img src="img/ach/N.gif">
+                <!--{if file_exists("img/ach/".$tid."_N.png") }-->
+                    <img src="img/ach/{$tid}_N.png">
+                <!--{else}-->
+                    <img src="img/ach/N.gif">
+                <!--{/if}-->
             <!--{/if}-->
         <!--{/if}-->
     </td>
