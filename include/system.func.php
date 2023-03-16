@@ -519,6 +519,7 @@ function gameover($time = 0, $mode = '', $winname = '') {
 					{
 						$team_mates[] = $tpdata['name'];
 						//队伍获胜时 同队玩家也可以获得对应结局成就
+						include_once GAME_ROOT.'./include/game/achievement.func.php';
 						check_end_achievement_rev($tpdata['name'],$winmode);
 					}
 				}
