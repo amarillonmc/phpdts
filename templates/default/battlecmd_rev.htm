@@ -18,7 +18,7 @@
             <!--{/if}-->
             <td width=100px>
                 <!-- 切换副武器 -->  
-                <!--{if $s_wep2s}-->
+                <!--{if $pdata['wep2s']}-->
                 <input type="button" class="cmdbutton" style="width:95" value="切换" onclick="$('command').value='changewep';postCmd('gamecmd','command.php');this.disabled=true;">
                 <!--{/if}-->
             </td>

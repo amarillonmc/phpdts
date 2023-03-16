@@ -64,6 +64,7 @@ function itemuse($itmn) {
 			$noeqp = '';
 		}
 		global ${$eqp}, ${$eqp.'k'}, ${$eqp.'e'}, ${$eqp.'s'}, ${$eqp.'sk'};
+		global $artk;
 		if((($artk=='XX')||($artk=='XY'))&&($eqp == 'art')){
 			$log .= '你的饰品不能替换！<br>';
 			$mode = 'command';

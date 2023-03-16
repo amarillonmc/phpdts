@@ -1807,8 +1807,6 @@ function check_misc_achievement_rev(&$pa)
 	// 旧版成就参数兼容
 	$is_player = $pa['type'] ? 0 : 1;
 	$nn = $pa['name'];
-	// 判断是否为活跃玩家：暂时只要IP不一样就算活跃玩家
-	$is_tplayer = $pa['ip'] == $pd['ip'] ? 0 : 1;
 
 	# 防呆：只会检查玩家成就完成情况
 	if ($is_player)

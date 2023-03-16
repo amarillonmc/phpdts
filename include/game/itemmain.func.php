@@ -14,34 +14,124 @@ if(!defined('IN_GAME')) {
 
 include_once GAME_ROOT.'./include/game/titles.func.php';
 
+# 计算发现陷阱后的“触发率”
+function calc_real_trap_obbs($pa,$trpnum)
+{
+	global $gamestate,$trap_min_obbs;
+	# 最小值
+	$real_trap_obbs = $trap_min_obbs;
+	# 地图上每有1个雷+0.25%
+	$real_trap_obbs += $trpnum/4;
+	# 奇怪的加成值:
+	# rp雷修正：
+	$real_trap_obbs = $gamestate >= 50 ? $real_trap_obbs + $pa['rp']/30 : $real_trap_obbs + $pa['rp'] / 177;
+	# 连斗修正
+	if($gamestate >= 40) $real_trap_obbs += 3;
+	# 姿态修正：
+	if($pa['pose'] == 3) $real_trap_obbs += 1;
+	if($pa['pose'] == 1) $real_trap_obbs += 3; //攻击和探索姿势略容易踩陷阱
+	# 地点修正：
+	if($pa['pls'] == 0) $real_trap_obbs += 15; //无月之影太恐怖啦
+	return $real_trap_obbs;
+}
+
+# 计算触发陷阱后的“回避率”
+function calc_trap_escape_rate(&$pa,$playerflag=0,$selflag=0)
+{
+	# 奇迹雷回避率-1
+	if($pa['itmk0'] == 'TOc') return -1;
+
+	# 最大陷阱回避率
+	$max_escrate = 90;
+	# 基础回避率：8 + 等级/3
+	$escrate = 8 + $pa['lvl']/3;
+	# 拆弹专家、宛如疾风社团加成
+	if($pa['club'] == 5) $escrate += 12;
+	if($pa['club'] == 6) $escrate += 8;
+	# 躲避策略加成
+	if($pa['tactic'] == 4) $escrate += 20;
+	# 自雷回避加成
+	if($selflag) $escrate += 50;
+	# 陷阱探测属性加成（锡安陷阱探测属性效果+10）
+	include_once GAME_ROOT.'./include/game/revattr.func.php';
+	if(empty($pa['ex_keys'])) $pa['ex_keys'] = array_merge(get_equip_ex_array($pa),get_wep_ex_array($pa));
+	if(!empty($pa['ex_keys']) && in_array('M',$pa['ex_keys']))
+	{
+		$pa['minedetect'] = 1;
+		$escrate += $pa['club'] == 7 ? 45 : 35;
+	}
+
+	# 社团技能修正（旧）
+	// include_once GAME_ROOT.'./include/game/clubskills.func.php';
+	// $escrate *= get_clubskill_bonus_escrate($pa['club'],$pa['skills']);
+
+	# 社团技能修正（新）
+	# 「谨慎」效果判定：
+	if(!empty($pa['clbpara']['skill']) && !check_skill_unlock('c5_caution',$pa))
+	{
+		$sk_lvl = get_skilllvl('c5_caution',$pa);
+		$escrate += get_skillvars('c5_caution','evgain',$sk_lvl);
+	}
+	return min($escrate,$max_escrate);
+}
+
+# 计算触发陷阱后的“迎击事件”
+function check_trap_def_event(&$pa,$damage,$playerflag=0,$selflag=0)
+{
+	# 奇迹雷不能迎击
+	if($pa['itmk0'] == 'TOc') return $damage;
+	# 检查是否有迎击属性
+	include_once GAME_ROOT.'./include/game/revattr.func.php';
+	if(empty($pa['ex_keys'])) $pa['ex_keys'] = array_merge(get_equip_ex_array($pa),get_wep_ex_array($pa));
+	# 计算迎击概率（锡安迎击率+20）
+	if(!empty($pa['ex_keys']) && in_array('m',$pa['ex_keys'])) 
+	{
+		$pa['minedetect'] = 1;
+		$def_obbs = $pa['club'] == 7 ? 60 : 40;
+		$dice = diceroll(99);
+		if($dice < $def_obbs)
+		{
+			$damage = 0;
+		}
+	}
+	return $damage;
+}
+
+# 计算回避陷阱后的“陷阱回收率”
+function calc_trap_reuse_rate($pa,$playerflag=0,$selflag=0)
+{
+	# 基础回收率
+	$fdrate = 5 + $lvl/3;
+	# 拆弹专家社团加成
+	if($pa['club'] == 5) $fdrate += 35;
+	# 自雷回收加成
+	if($selflag) $fdrate += 50;
+
+	# 社团技能修正（旧）
+	//include_once GAME_ROOT.'./include/game/clubskills.func.php';
+	//$fdrate *= get_clubskill_bonus_reuse($club,$skills);
+
+	# 社团技能修正（新）
+	# 「谨慎」效果判定：
+	if(!empty($pa['clbpara']['skill']) && !check_skill_unlock('c5_caution',$pa))
+	{
+		$sk_lvl = get_skilllvl('c5_caution',$pa);
+		$fdrate += get_skillvars('c5_caution','reugain',$sk_lvl);
+	}
+	return $fdrate;
+}
+
+
 function trap(){
+	global $pdata;
 	global $log,$cmd,$mode,$iteminfo,$itm0,$itmk0,$itme0,$itms0,$itmsk0,$nick;
 	global $name,$now,$hp,$db,$tablepre,$bid,$lvl,$pid,$type,$tactic,$club,$skills,$rp;
 	global $wepsk,$arbsk,$arhsk,$arask,$arfsk,$artsk,$achievement;
 	
 	$playerflag = $itmsk0 ? true : false;
 	$selflag = $itmsk0 == $pid ? true : false;
-	$dice=rand(0,99);
-	$escrate = $club == 5 ? 25 + $lvl/3 : 8 + $lvl/3;
-	$escrate = $club == 6 ? $escrate + 15 : $escrate;
-	$escrate = $tactic == 4 ? $escrate + 20 : $escrate;
-	$escrate = $selflag ? $escrate + 50 : $escrate; //自己设置的陷阱容易躲避
-	//echo '回避率：'.$escrate.'%';
-	$def_key = $wepsk.$arbsk.$arhsk.$arask.$arfsk.$artsk;
-	
-	if(strpos($def_key,'M') !== false){
-		$minedetect = true;
-		if($club == 7){//电脑社使用探雷器效率增加
-			$escrate += 45;
-		}else{
-			$escrate += 35;
-		}
-	}
-	include_once GAME_ROOT.'./include/game/clubskills.func.php';
-	$escrate *= get_clubskill_bonus_escrate($club,$skills);
-	$escrate = $escrate >= 90 ? 90 : $escrate;//最大回避率
-	$escrate = $itmk0 == 'TOc' ? -1 : $escrate;//必中陷阱
-	//$log .= "回避率: $escrate<br>";
+	$dice=diceroll(99);
+
 	if($playerflag && !$selflag){
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$itmsk0'");
 		$wdata = $db->fetch_array($result);
@@ -51,18 +141,30 @@ function trap(){
 	}else{
 		$trname = $trtype = $trperfix = '';
 	}
-		
-	if($dice >= $escrate){
+
+	// 计算陷阱回避率
+	$escrate = calc_trap_escape_rate($pdata,$playerflag,$selflag);
+	//echo '回避率 = '.$escrate.'%';
+
+	if($dice >= $escrate)
+	{
 		$bid = $itmsk0;
-		
-		if($itmk0 == 'TOc'){//奇迹陷阱
+		// 奇迹陷阱
+		if($itmk0 == 'TOc')
+		{
 			$damage = $hp;
 			$goodmancard = 0;
-		}elseif($itmk0 == 'TO8'){ //随机数大神的陷阱
+		}
+		// 随机数大神的陷阱
+		elseif($itmk0 == 'TO8')
+		{ 
 			$damage = $hp / 8;
 			$goodmancard = 0;
-		}else{
+		}
+		else
+		{
 			$damage = round(rand(0,$itme0/2)+($itme0/2));
+			// 防御姿态可以降低陷阱伤害
 			$damage = $tactic == 2 ? round($damage * 0.75) : $damage;
 			
 			//好人卡特别活动
@@ -74,36 +176,32 @@ function trap(){
 				}
 			}
 		}
-		if(strpos($def_key,'m') !== false && $itmk0 != 'TOc'){//迎击
-			$dice = rand(0,99);
-			$hitrate = $club == 7 ? 60 : 40;//电脑社使用探雷器效率增加
-			if($dice > $hitrate){
-				$damage = 0;
-			}			
-		}
-		if($damage){
-			$hp -= $damage; $tmp_club=$club;
-		 
-			if($playerflag){
+
+		// 检查陷阱是否被迎击
+		$damage = check_trap_def_event($pdata,$damage,$playerflag,$selflag);
+
+		if($damage)
+		{
+			$tmp_club=$club;
+			$hp -= $damage; 
+
+			if($playerflag)
+			{
 				addnews($now,'trap',get_title_desc($nick).' '.$name,$trname,$itm0);
 			}
 			$log .= "糟糕，你触发了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>！受到<span class=\"dmg\">$damage</span>点伤害！<br>";
-			$rp = $rp / 2; //尝试修复RP踩雷可能不削半问题
-			//$log .= "【DEBUG】你目前的rp为<span class=\"dmg\">$rp</span>！<br>";
-			if($goodmancard){
+			$rp = $rp / 2; 
+			if($goodmancard)
+			{
 				$gm = ceil($goodmancard*rand(80,120)/100);
 				$log .= "在你身上的<span class=\"yellow\">好人卡</span>的作用下，你受到的伤害增加了<span class=\"red\">$gm</span>点！<br>";
 				$hp -= $gm;
 			}
-			
-			$trapkill=false;
-			if($hp <= 0) {
-				//检查成就
-				include_once GAME_ROOT.'./include/game/achievement.func.php';
-				//check_trap_death_achievement($name,$trname,$selflag,$itm0,$itme0);
+			# 陷阱击杀
+			if($hp <= 0) 
+			{
 				if(!empty($wdata))
 				{
-					global $pdata;
 					include_once GAME_ROOT.'./include/game/revcombat.func.php';
 					$wdata['wep_name'] = $itm0;
 					// 陷阱有主 走击杀判定
@@ -112,82 +210,110 @@ function trap(){
 					$revival_flag = revive_process($wdata,$pdata,$active);
 					// 没有复活 走完击杀流程
 					if(!$revival_flag) final_kill_events($wdata,$pdata,0,$last);
-					player_save($wdata); //current_player_save();
+					player_save($wdata);
 				}
 				else
 				{
 					include_once GAME_ROOT.'./include/state.func.php';
 					$killmsg = death('trap',$trname,$trtype,$itm0);
 					$log .= "你被{$trperfix}陷阱杀死了！";
-					$trapkill=true;
 					if($killmsg && !$selflag){
 						$log .= "<span class=\"yellow\">{$trname}对你说：“{$killmsg}”</span><br>";
 					}				
 					if ($tmp_club==99) $log.="<span class=\"lime\">但由于你及时按下了BOMB键，你原地满血复活了！</span><br>";
 				}
+				$trapkill = true;
+				# 检查成就
+				// include_once GAME_ROOT.'./include/game/achievement.func.php';
+				// check_trap_death_achievement($name,$trname,$selflag,$itm0,$itme0);
 			}
+			# 陷阱存活
 			else
 			{
-				//检查成就
-				include_once GAME_ROOT.'./include/game/achievement.func.php';
-				//check_trap_survive_achievement($achievement,$selflag,$itm0,$itme0);
+				# 检查成就
+				// include_once GAME_ROOT.'./include/game/achievement.func.php';
+				// check_trap_survive_achievement($achievement,$selflag,$itm0,$itme0);
 			}
-			if($playerflag && !$selflag && $trapkill){
+			# logsave
+			if($playerflag && !$selflag && $trapkill)
+			{
 				$w_log = "<span class=\"red\">{$name}触发了你设置的陷阱{$itm0}并被杀死了！</span>";
 				if ($tmp_club==99) $w_log.="<span class=\"lime\">但由于{$name}及时按下了BOMB键，{$name}原地满血复活了！</span>";
 				$w_log.="<br>";
 				logsave ( $itmsk0, $now, $w_log ,'b');
-			}elseif($playerflag && !$selflag){
+			}
+			elseif($playerflag && !$selflag)
+			{
 				$w_log = "<span class=\"yellow\">{$name}触发了你设置的陷阱{$itm0}！</span><br>";
 				logsave ( $itmsk0, $now, $w_log ,'b');
 			}
-		}else{
-			if($playerflag){
+		}
+		# 陷阱迎击
+		else
+		{
+			# logsave
+			if($playerflag)
+			{
 				addnews($now,'trapdef',get_title_desc($nick).' '.$name,$trname,$itm0);
-				if(!$selflag){
+				if(!$selflag)
+				{
 					$w_log = "<span class=\"yellow\">{$name}触发了你设置的陷阱{$itm0}，但是没有受到任何伤害！</span><br>";
 					logsave ( $itmsk0, $now, $w_log ,'b');
 				}				
 			}
 			$log .= "糟糕，你触发了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>！<br>不过，身上装备着的自动迎击系统启动了！<span class=\"yellow\">在迎击功能的保护下你毫发无伤。</span><br>";
-			//检查成就
-			include_once GAME_ROOT.'./include/game/achievement.func.php';
-			//check_trap_fail_achievement($achievement,$selflag,$itm0,$itme0);
+			# 检查成就
+			// include_once GAME_ROOT.'./include/game/achievement.func.php';
+			// check_trap_fail_achievement($achievement,$selflag,$itm0,$itme0);
 		}
-		
 		$itm0 = $itmk0 = $itmsk0 = '';
 		$itme0 = $itms0 = 0;
 		return;
-	} else {
-		//检查成就
-		include_once GAME_ROOT.'./include/game/achievement.func.php';
-		//check_trap_miss_achievement($achievement,$selflag,$itm0,$itme0);
-		if($playerflag && !$selflag){
+	}
+	# 陷阱回避
+	else 
+	{
+		# 检查成就
+		// include_once GAME_ROOT.'./include/game/achievement.func.php';
+		// check_trap_miss_achievement($achievement,$selflag,$itm0,$itme0);
+		
+		# logsave
+		if($playerflag && !$selflag)
+		{
 			addnews($now,'trapmiss',get_title_desc($nick).' '.$name,$trname,$itm0);
 			$w_log = "<span class=\"yellow\">{$name}回避了你设置的陷阱{$itm0}！</span><br>";
 			logsave ( $itmsk0, $now, $w_log ,'b');
 		}
-		$dice = rand(0,99);
-		$fdrate = $club == 5 ? 40 + $lvl/3 : 5 + $lvl/3;
-		$fdrate = $selflag ? $fdrate + 50 : $fdrate;
-		include_once GAME_ROOT.'./include/game/clubskills.func.php';
-		$fdrate *= get_clubskill_bonus_reuse($club,$skills);
-		if($dice < $fdrate){
-			if($minedetect){
+
+		# 计算陷阱重复利用率
+		$fdrate = calc_trap_reuse_rate($pdata,$playerflag,$selflag);
+
+		if($dice < $fdrate)
+		{
+			if(isset($pdata['minedetect']))
+			{
+				unset($pdata['minedetect']);
 				$log .= "在探雷装备的辅助下，你发现了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>并且拆除了它。陷阱看上去还可以重复使用。<br>";
-			}else{
+			}
+			else
+			{
 				$log .= "你发现了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>，不过你并没有触发它。陷阱看上去还可以重复使用。<br>";
 			}				
 			$itmsk0 = '';$itmk0 = str_replace('TO','TN',$itmk0);
 			$mode = 'itemfind';
 			return;
-		}else{
-			if($minedetect){
+		}
+		else
+		{
+			if(isset($pdata['minedetect']))
+			{
+				unset($pdata['minedetect']);
 				$log .= "在探雷装备的辅助下，你发现了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>并且拆除了它。不过陷阱好像被你搞坏了。<br>";
-			}else{
+			}
+			else
+			{
 				$log .= "你触发了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>，不过你成功地回避了陷阱。<br>";
 			}		
-			
 			$itm0 = $itmk0 = $itmsk0 = '';
 			$itme0 = $itms0 = 0;
 			$mode = 'command';
@@ -379,7 +505,7 @@ function itemdrop($item) {
 }
 
 function itemoff($item){
-	global $log,$mode,$cmd,$itm0,$itmk0,$itme0,$itms0,$itmsk0,$pdata;
+	global $log,$mode,$cmd,$itm0,$itmk0,$itme0,$itms0,$itmsk0,$nosta,$pdata;
 
 	if($item == 'wep'){
 		global $wep,$wepk,$wepe,$weps,$wepsk;
@@ -1031,7 +1157,7 @@ function itembuy($item,$shop,$bnum=1) {
 
 
 function getcorpse($item){
-	global $db,$tablepre,$log,$mode;
+	global $db,$tablepre,$log,$mode,$now;
 	global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$money,$pls,$action,$rp,$name;
 	global $club,$allow_destory_corpse,$no_destory_corpse_type,$rpup_destory_corpse;
 	$corpseid = strpos($action,'corpse')===0 ? str_replace('corpse','',$action) : str_replace('pacorpse','',$action);
@@ -1066,7 +1192,7 @@ function getcorpse($item){
 
 	if($item == 'destory')
 	{
-		if(!$allow_destory_corpse || in_array($w_type,$no_destory_corpse_type))
+		if(!$allow_destory_corpse || in_array($edata['tyep'],$no_destory_corpse_type))
 		{
 			$log.="你还想对这具可怜的尸体干什么？麻烦给死者一点基本的尊重！<br>";
 			$action = '';

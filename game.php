@@ -101,8 +101,8 @@ if((strpos($action,'corpse')===0 || strpos($action,'pacorpse')===0) && $gamestat
 			include_once GAME_ROOT.'./include/game/battle.func.php';
 			findcorpse($edata);
 			extract($edata,EXTR_PREFIX_ALL,'w');
-			init_battle(1);
-			$main = 'battle';
+			init_battle_rev($pdata,$edata,1);
+			$main = 'battle_rev';
 		}
 	}	
 }
@@ -127,8 +127,8 @@ elseif((strpos($action,'neut')===0)){
 			include_once GAME_ROOT.'./include/game/revbattle.func.php';
 			findneut($edata,1);
 			extract($edata,EXTR_PREFIX_ALL,'w');
-			init_battle(1);
-			$main = 'battle';
+			init_battle_rev($pdata,$edata,1);
+			$main = 'battle_rev';
 		}
 	}	
 }

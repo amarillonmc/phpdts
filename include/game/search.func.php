@@ -6,7 +6,7 @@ if(!defined('IN_GAME')) {
 
 function move($moveto = 99) {
 	global $lvl,$log,$pls,$pgroup,$plsinfo,$hplsinfo,$inf,$hp,$mhp,$sp,$def,$club,$arealist,$areanum,$hack,$areainfo,$gamestate,$pose,$weather;
-	global $gamestate,$gamecfg;
+	global $gamestate,$gamecfg,$pdata;
 
 	$plsnum = sizeof($plsinfo);
 
@@ -181,26 +181,20 @@ function move($moveto = 99) {
 	//	if (CURSCRIPT !== 'botservice') $log.="<span id=\"HsUipfcGhU\"></span>";	//刷新页面标记
 	//	return;
 	//}
-	$enemyrate = 40;
+	/*$enemyrate = 40;
 	if($gamestate == 40){$enemyrate += 20;}
 	elseif($gamestate == 50){$enemyrate += 40;}
 	if($pose==3){$enemyrate -= 20;}
-	elseif($pose==4){$enemyrate += 10;}
+	elseif($pose==4){$enemyrate += 10;}*/
+	include_once GAME_ROOT.'./include/game/revattr.func.php';
+	$enemyrate =  calc_meetman_rate($pdata);
+	//echo "enemyrate = {$enemyrate}%";
 	discover($enemyrate);
-	/*
-	$enemyrate = 70;
-	if($gamestate == 40){$enemyrate += 10;}
-	elseif($gamestate == 50){$enemyrate += 15;}
-	if($pose==3){$enemyrate -= 20;}
-	elseif($pose==4){$enemyrate += 10;}
-	discover($enemyrate);
-	*/
 	return;
-
 }
 
 function search(){
-	global $lvl,$log,$pls,$pgroup,$arealist,$areanum,$hack,$plsinfo,$hplsinfo,$club,$sp,$gamestate,$pose,$weather,$hp,$mhp,$def,$inf;
+	global $pdata,$lvl,$log,$pls,$pgroup,$arealist,$areanum,$hack,$plsinfo,$hplsinfo,$club,$sp,$gamestate,$pose,$weather,$hp,$mhp,$def,$inf;
 	
 	
 	if(!isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup]))
@@ -364,23 +358,21 @@ function search(){
 			return;
 		}
 	}*/
-	$enemyrate = 40;
+	/*$enemyrate = 40;
 	if($gamestate == 40){$enemyrate += 20;}
 	elseif($gamestate == 50){$enemyrate += 30;}
 	if($pose==3){$enemyrate -= 20;}
-	elseif($pose==4){$enemyrate += 10;}
+	elseif($pose==4){$enemyrate += 10;}*/
+	include_once GAME_ROOT.'./include/game/revattr.func.php';
+	$enemyrate =  calc_meetman_rate($pdata);
+	//echo "enemyrate = {$enemyrate}%";
 	discover($enemyrate);
-//	$log .= '遇敌率'.$enemyrate.'%<br>';
-//	if(($gamestate>=40)&&($pose!=3)) {
-//		discover(75);
-//	} else {
-//		discover(30);
-//	}
 	return;
 
 }
 
 function discover($schmode = 0) {
+	global $pdata;
 	global $art,$pls,$now,$log,$mode,$command,$cmd,$event_obbs,$weather,$pls,$club,$pose,$tactic,$inf,$item_obbs,$enemy_obbs,$trap_min_obbs,$trap_max_obbs,$bid,$db,$tablepre,$gamestate,$corpseprotect,$action,$skills,$rp,$aidata;
 	global $clbpara,$gamecfg;
 	$event_dice = rand(0,99);
@@ -397,7 +389,6 @@ function discover($schmode = 0) {
 	}
 
 	# 判定移动、探索、事件后的BGM变化
-	//include_once config('audio',$gamecfg);
 	global $pls_bgm;
 	if(array_key_exists($pls,$pls_bgm))
 	{
@@ -417,47 +408,45 @@ function discover($schmode = 0) {
 		//触发了AI追击事件
 		$edata = $aidata;
 		goto battle_flag;
-		/*include_once GAME_ROOT.'./include/game/attr.func.php';
-		$active_r = get_active_r($weather,$pls,$pose,$tactic,$club,$inf,$aidata['pose']);
-		include_once GAME_ROOT.'./include/game/clubskills.func.php';
-		$active_r *= get_clubskill_bonus_active($club,$skills,$aidata['club'],$aidata['skills']);
-		if ($active_r>96) $active_r=96;
-		$bid = $aidata['pid'];
-		$active_dice = rand(0,99);
-		if($active_dice <  $active_r) {
-			$action = 'enemy'.$aidata['pid'];
-			include_once GAME_ROOT.'./include/game/battle.func.php';
-			findenemy($aidata);
-			return;
-		} else {
-			include_once GAME_ROOT.'./include/game/combat.func.php';
-			combat(0);
-			return;
-		}*/
 	}
 	
-	$trap_dice=rand(0,99);//随机数，开始判断是否踩陷阱
-	if($trap_dice < $trap_max_obbs){ //踩陷阱概率最大值
+	$trap_dice=diceroll(99);
+	// 计算陷阱“发现率”
+	if($trap_dice < $trap_max_obbs)
+	{ 
 		//echo "进入踩陷阱判定<br>";
 		$trapresult = $db->query("SELECT * FROM {$tablepre}maptrap WHERE pls = '$pls' ORDER BY itmk DESC");
-//		$traplist = Array();
-//		while($trap0 = $db->fetch_array($result)){
-//			$traplist[$trap0['tid']] = $trap0;
-//			if($trap0['itmk'] == 'TOc'){
-//				$xtrap = true;
-//				$xtrapid = $
-//			}
-//		}
-		$xtrp = $db->fetch_array($trapresult);
-		$xtrpflag = false;
-		//echo $xtrp['itm'];
-		if($xtrp['itmk'] == 'TOc'){
-			$xtrpflag = true;
-		}
 		$trpnum = $db->num_rows($trapresult);
-		if($trpnum){//看地图上有没有陷阱	
-			//echo "踩陷阱概率：{$real_trap_obbs}%";
-			if($xtrpflag){
+		//看地图上有没有陷阱	
+		if($trpnum)
+		{
+			include_once GAME_ROOT.'./include/game/itemmain.func.php';
+			$fstrp = $db->fetch_array($trapresult);
+			//奇迹雷
+			$xtrpflag = $fstrp['itmk'] == 'TOc' ? true : false;
+			//计算 或不计算陷阱“触发率”：
+			$real_trap_obbs = $xtrpflag ? 100 : calc_real_trap_obbs($pdata,$trpnum);
+			//echo "realtrapobbs = {$real_trap_obbs}<br>";
+			if($trap_dice < $real_trap_obbs)
+			{
+				if(!$xtrpflag)
+				{
+					$itemno = rand(0,$trpnum-1);
+					$db->data_seek($trapresult,$itemno);
+					$fstrp = $db->fetch_array($trapresult);
+				}
+				global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
+				$itm0=$fstrp['itm'];
+				$itmk0=$fstrp['itmk'];
+				$itme0=$fstrp['itme'];
+				$itms0=$fstrp['itms'];
+				$itmsk0=$fstrp['itmsk'];
+				$tid = $fstrp['tid'];
+				$db->query("DELETE FROM {$tablepre}maptrap WHERE tid='$tid'");
+				itemfind();
+				return;
+			}
+			/*if($xtrpflag){
 				global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
 				$itm0=$xtrp['itm'];
 				$itmk0=$xtrp['itmk'];
@@ -466,7 +455,7 @@ function discover($schmode = 0) {
 				$itmsk0=$xtrp['itmsk'];
 				$tid = $xtrp['tid'];
 				$db->query("DELETE FROM {$tablepre}maptrap WHERE tid='$tid'");
-				include_once GAME_ROOT.'./include/game/itemmain.func.php';
+				
 				itemfind();
 				return;
 			}else{
@@ -499,41 +488,15 @@ function discover($schmode = 0) {
 						return;
 					}
 				}
-			}
+			}*/
 		}
 	}
-//	$trap_dice =  rand(0,99);
-//	if($pose==1){$trap_dice-=5;}
-//	elseif($pose==3){$trap_dice-=8;}//攻击和探索姿势略容易踩陷阱
-//	if($gamestate >= 40){$trap_dice-=5;}//连斗以后略容易踩陷阱
-//	if($trap_dice < $trap_obbs){
-//		$result = $db->query("SELECT * FROM {$tablepre}{$pls}mapitem WHERE itmk = 'TO'");
-//		$trpnum = $db->num_rows($result);
-//		if($trpnum){
-//			$itemno = rand(0,$trpnum-1);
-//			$db->data_seek($result,$itemno);
-//			$mi=$db->fetch_array($result);
-//			global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
-//			$itm0=$mi['itm'];
-//			$itmk0=$mi['itmk'];
-//			$itme0=$mi['itme'];
-//			$itms0=$mi['itms'];
-//			$itmsk0=$mi['itmsk'];
-//			$iid=$mi['iid'];
-//			$db->query("DELETE FROM {$tablepre}{$pls}mapitem WHERE iid='$iid'");
-//			if($itms0){
-//				include_once GAME_ROOT.'./include/game/itemmain.func.php';
-//				itemfind();
-//				return;
-//			}
-//		}
-//	}
 	include_once GAME_ROOT.'./include/game/attr.func.php';
 	$mode_dice = rand(0,99);
 	if($mode_dice < $schmode) 
 	{
 		//echo "进入遇敌判定<br>";
-		global $pdata,$pid,$corpse_obbs,$teamID,$fog,$bid,$gamestate;
+		global $pid,$corpse_obbs,$teamID,$fog,$bid,$gamestate;
 		global $clbstatusa,$clbstatusb,$clbstatusc,$clbstatusd,$clbstatuse;
 
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pls='$pls' AND pid!='$pid'");
@@ -632,12 +595,10 @@ function discover($schmode = 0) {
 					//if ($active_r>96) $active_r=96;
 					//include_once GAME_ROOT.'./include/game/dice.func.php';
 					include_once GAME_ROOT.'./include/game/revbattle.func.php';
-					//获取并保存当前玩家数据
-					$sdata = current_player_save();
 					//刷新敌人时效性状态
 					if(!empty($edata['clbpara']['lasttimes'])) check_skilllasttimes($edata);
 					//计算先攻概率
-					$active_r = get_active_r_rev($sdata,$edata);
+					$active_r = get_active_r_rev($pdata,$edata);
 					$bid = $edata['pid'];
 					$active_dice = diceroll(99);
 					//先制
@@ -662,7 +623,7 @@ function discover($schmode = 0) {
 						#include_once GAME_ROOT.'./include/game/combat.func.php';
 						#combat(0);
 						include_once GAME_ROOT.'./include/game/revcombat.func.php';
-						rev_combat_prepare($edata,$sdata,0);
+						rev_combat_prepare($edata,$pdata,0);
 						return;
 					}
 				}

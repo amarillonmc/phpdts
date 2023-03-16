@@ -8,7 +8,7 @@
 
 	//include_once GAME_ROOT.'./include/game/dice.func.php';
 
-	# 「百战」技能判定
+	/*# 「百战」技能判定
 	function skill_c1_veteran_act($choice)
 	{
 		global $log,$pdata,$cskills,$club,$clbpara,$itemspkinfo;
@@ -34,7 +34,7 @@
 			$log .= "「百战」技能未解锁！<br>";
 		}
 		return;
-	}
+	}*/
 
 	# 「穿杨」与「咆哮」解锁
 	function skill_c4_unlock($csk)

@@ -1,0 +1,62 @@
+<!--{eval $skid = 'c5_focus'; $cskill = $cskills[$skid];}-->
+<!--{if isset($cskill['maxlvl'])}-->
+    <!--{eval $now_clvl = get_skilllvl($skid,$uidata); $max_lvl_flag = $now_clvl >= $cskill['maxlvl'] ? 1 : 0;}-->
+<!--{/if}-->
+<tr>
+    <td class="b1" width="40">
+        <span>{$cskill['name']}</span>
+    </td>
+    <td>
+        <!--{eval $unlock_skid_flag = check_skill_unlock('c5_focus',$uidata);}-->
+        <!--{eval $para = get_clbpara($uidata['clbpara']); $nchoice = $para['skillpara']['c5_focus']['choice'];}-->
+        <!--{if $unlock_skid_flag}-->
+        <div style="position:relative; height:100%; width:100%;" onmouseover="skill_unacquired_mouseover.call(this,event)" onmouseout="skill_unacquired_mouseout.call(this,event)">
+        <div class="skill_unacquired">
+        <!--{/if}-->
+            <table class="skilltable">
+                <tr>
+                    <td class="skilldesc_left b3">
+                        <span class="skilldesc">
+                            <!--{eval $cdesc = parse_skilldesc($skid,$uidata);}-->
+                            {$cdesc}
+                            <span style="text-align:left; display:inline-block;">
+                            <table>
+                            <tr><td>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<!--{if $nchoice==1}--><span ><!--{/if}-->(1) 遇敌率提高15% <!--{if $nchoice==1}--></span><!--{/if}-->
+                            </td><td>
+                            <!--{if $nchoice==1}--><span class="lime">[当前选择]</span><!--{else}--><input type="button" style="width:46px" onclick="$('mode').value='revskpts';$('command').value='upgskill_{$skid}';$('subcmd').name='upgpara';$('subcmd').value='1';postCmd('gamecmd','command.php');this.disabled=true;" value="选择"><!--{/if}-->
+                            </td></tr>
+                            <tr><td>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<!--{if $nchoice==0}--><span ><!--{/if}-->(2) 无效果 <!--{if $nchoice==0}--></span><!--{/if}-->
+                            </td><td>
+                            <!--{if $nchoice==0}--><span class="lime">[当前选择]</span><!--{else}--><input type="button" style="width:46px" onclick="$('mode').value='revskpts';$('command').value='upgskill_{$skid}';$('subcmd').name='upgpara';$('subcmd').value='0';postCmd('gamecmd','command.php');this.disabled=true;" value="选择"><!--{/if}-->
+                            </td></tr>
+                            <tr><td>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<!--{if $nchoice==2}--><span ><!--{/if}-->(3) 物品发现率提高15%  <!--{if $nchoice==2}--></span><!--{/if}-->
+                            </td><td>
+                            <!--{if $nchoice==2}--><span class="lime">[当前选择]</span><!--{else}--><input type="button" style="width:46px" onclick="$('mode').value='revskpts';$('command').value='upgskill_{$skid}';$('subcmd').name='upgpara';$('subcmd').value='2';postCmd('gamecmd','command.php');this.disabled=true;" value="选择"><!--{/if}-->
+                            </td></tr>
+                            </table>
+                            </span>
+                        </span>
+                    </td>
+                    <td class="skilldesc_right b3">
+                    </td>
+                </tr>
+            </table>
+        <!--{if $unlock_skid_flag}-->
+        </div>
+        <div class="skill_unacquired_hint">
+            <table class="skilltable">
+                <tr>
+                    <td valign="center" align="center">
+                        <!--{eval $skid_lockdesc = $cskill['lockdesc'][$unlock_skid_flag];}-->
+                        <span class="yellow">$skid_lockdesc</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        </div>
+        <!--{/if}-->
+    </td>
+</tr>

@@ -10,8 +10,7 @@ $club_skillslist = Array
 	2  => Array('s_hp','s_ad','f_heal','c2_butcher','c2_intuit','c2_raiding','c2_master','c2_annihil'), #'见敌必斩',
 	3  => Array('s_hp','s_ad','f_heal','c3_pitchpow','c3_enchant','c3_potential','c3_hawkeye','c3_offset','c3_numerous'), #'灌篮高手',
 	4  => Array('s_hp','s_ad','f_heal','c4_stable','c4_break','c4_aiming','c4_loot','c4_roar','c4_sniper','c4_headshot'), #'狙击鹰眼',
-	5 => Array('s_hp','s_ad','f_heal'),
-	//5  => Array('s_hp','s_ad','f_heal','c5_sneak','c5_caution','c5_review','c5_focus','c5_higheg','c5_double'), #'拆弹专家',
+	5  => Array('s_hp','s_ad','f_heal','c5_sneak','c5_caution','c5_review','c5_focus','c5_higheg','c5_double'), #'拆弹专家',
 	6  => Array('s_hp','s_ad','f_heal'), #'宛如疾风',
 	7  => Array('s_hp','s_ad','f_heal'), #'锡安成员',
 	8  => Array('s_hp','s_ad','f_heal'), #'黑衣组织',
@@ -147,7 +146,9 @@ $cskills = Array
 			'trans' => 40, //效&防转化率
 			'maxtrans' => 2000, //转化上限
 		),
-		'lockdesc' => '武器不适用，持<span class="yellow">殴系武器</span>时生效',
+		'lockdesc' => Array(
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">殴系武器</span>时生效',
+		),
 		'unlock' => Array(
 			'wepk+wep_kind' => "[:wepk:] == 'WP' || [:wepk:] == 'WCP' || [:wepk:] == 'WKP' || [:wep_kind:] == 'P'",
 		),
@@ -174,7 +175,9 @@ $cskills = Array
 			'stuntime' => Array(1,1,2), //晕眩时间（单位:秒）
 			'rate' => 25, //触发率
 		),
-		'lockdesc' => '武器不适用，持<span class="yellow">殴系武器</span>时可发动',
+		'lockdesc' => Array(
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">殴系武器</span>时生效',
+		),
 		'unlock' => Array(
 			'wepk+wep_kind' => "[:wepk:] == 'WP' || [:wepk:] == 'WCP' || [:wepk:] == 'WKP' || [:wep_kind:] == 'P'",
 		),
@@ -243,9 +246,8 @@ $cskills = Array
 		# 这是一个使用固定模板的技能 在这里进行编辑不会有任何效果……等等，还是有点效果的……编辑下面提供的内容是会有效果的
 		'name' => '百战',
 		'tags' => Array('passive'),
-		'vars' => Array(
-			'defkind' => Array('P','K','C','G','F','D','I','U','q','W','E'), //可选择的单系防御类型
-		),
+		'log' => "切换了「百战」的防御类型。",
+		'choice' => Array('P','K','C','G','F','D','I','U','q','W','E'), //可选择的单系防御类型
 		'svars' => Array(
 			'choice' => '', //初始默认选择的单项防御
 		),
@@ -266,7 +268,9 @@ $cskills = Array
 			'wepimpr' => 0.5, //武器损耗率
 		),
 		'pvars' => Array('lvl'),
-		'lockdesc' => '武器不适用，持<span class="yellow">斩系武器</span>时可发动',
+		'lockdesc' => Array(
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">斩系武器</span>时可发动',
+		),
 		'unlock' => Array(
 			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
 		),
@@ -411,7 +415,9 @@ $cskills = Array
 		'vars' => Array(
 			'countergain' => Array(0,20,40,60,80,100,125), 
 		),
-		'lockdesc' => '武器不适用，持<span class="yellow">投系武器</span>时生效',
+		'lockdesc' => Array(
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">投系武器</span>时生效',
+		),
 		'unlock' => Array(
 			'wepk+wep_kind' => "[:wepk:] == 'WC' || [:wepk:] == 'WCF' || [:wepk:] == 'WCP' || [:wep_kind:] == 'C'",
 		),
@@ -582,7 +588,9 @@ $cskills = Array
 			'accgain' => Array(0,2,4,6,8,10,12), //命中增益
 			'rbgain' => Array(0,2,4,6,8,10,12), //连击命中惩罚降低
 		),
-		'lockdesc' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+		'lockdesc' => Array(
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+		),
 		'unlock' => Array(
 			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
 		),
@@ -613,7 +621,9 @@ $cskills = Array
 			'inftfix' => Array(0,1,2,4), //额外耐久削减
 			'infdmgr' => Array(0,10,20,30), //每处致伤提高最终伤害
 		),
-		'lockdesc' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+		'lockdesc' => Array(
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+		),
 		'unlock' => Array(
 			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
 		),
@@ -774,7 +784,7 @@ $cskills = Array
 	(
 		'name' => '反思',
 		'tags' => Array('passive'),
-		'desc' => '使用爆系武器时，<br>即使攻击没有命中，也可以获得[:expgain:]点经验值',
+		'desc' => "使用爆系武器时，<br>即使攻击没有命中，也可以获得[:expgain:]点固定经验值",
 		'vars' => Array(
 			'expgain' => 1, 
 		),
@@ -789,7 +799,9 @@ $cskills = Array
 	(
 		'name' => '专注',
 		'tags' => Array('passive'),
-		'desc' => '你可随意于下列三个状态间切换：',
+		'desc' => "你可随意于下列三个状态间切换：",
+		'log' => "切换了「专注」的状态。",
+		'choice' => Array(0,1,2), //无效果/重视遇敌/重视探物
 		'svars' => Array(
 			'choice' => 0, 
 		),
@@ -808,9 +820,9 @@ $cskills = Array
 	(
 		'name' => '高能',
 		'tags' => Array('battle'),
-		'desc' => '本次攻击中爆炸属性伤害无视一切加成减成<br>
+		'desc' => '本次攻击中爆炸属性伤害无视一切增益减益效果，<br>
 		使用爆系武器方可发动，消耗<span class="yellow">[:ragecost:]</span>点怒气。',
-		'bdesc' => '本次攻击中爆炸属性伤害无视一切加成减成；消耗<span class="red">[:ragecost:]</span>怒气',
+		'bdesc' => '本次攻击中爆炸属性伤害无视一切增益减益效果；消耗<span class="red">[:ragecost:]</span>怒气',
 		'vars' => Array(
 			'ragecost' => 40, 
 		),
@@ -841,7 +853,7 @@ $cskills = Array
 			'skillpara|c5_double-active_t',
 		),
 		'lockdesc' => Array(
-			'skillpara|c5_double-active_t' => '已无法发动该技能',
+			'skillpara|c5_double-active_t' => '次数耗尽，已无法发动该技能',
 			'lvl' => '19级时解锁',
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">爆系武器</span>时生效',
 		),
