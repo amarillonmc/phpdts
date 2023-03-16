@@ -20,9 +20,9 @@
 		<td colspan=2 width=580px>
 			<table border="0" cellspacing="0" height=75px width=580px cellpadding="0" width="100%" valign="middle">
 				<tr>
-					<td class="b1" colspan=2 height=20px><span>Lv. $tdata['lvl']</span></td>											
-					<td class="b1" colspan=2><span>$tdata['name']</span></td>											
-					<td class="b1" colspan=2><span>{$typeinfo[$tdata['type']]}{$tdata['sNoinfo']}</span><!--{if $sdata['club']==19}--> 【<span class="lime">报应点数：<span id="anum">$tdata['rp']</span></span>】<!--{/if}--></td>											
+					<td class="b1" colspan=2 height=20px><span>$tdata['lvlinfo']</span></td>											
+					<td class="b1" colspan=2><span>$tdata['nameinfo']</span></td>											
+					<td class="b1" colspan=2><span>{$tdata['typeinfo']}{$tdata['sNoinfo']}</span><!--{if $sdata['club']==19}--> 【<span class="lime">报应点数：<span id="anum">$tdata['rp']</span></span>】<!--{/if}--></td>											
 				</tr>
 				<tr>
 					<td class="b2" width=70px height=20px><span>{lang rage}</span></td>
@@ -42,9 +42,9 @@
 				</tr>
 				<tr>
 					<td class="b2" height=20px><span>{lang tactic}</span></td>
-					<td class="b3"><span><!--{if $tdata['tactic'] >= 0}-->$tacinfo[$tdata['tactic']]<!--{else}-->？？？<!--{/if}--></span></td>
+					<td class="b3"><span>$tdata['tacinfo']</span></td>
 					<td class="b2"><span>{lang pose}</span></td>
-					<td class="b3"><span><!--{if $tdata['pose'] >= 0}-->$poseinfo[$tdata['pose']]<!--{else}-->？？？<!--{/if}--></span></td>
+					<td class="b3"><span>$tdata['poseinfo']</span></td>
 					<td height="20px" class="b2"><span>{lang inf}</span></td>
 					<td class="b3"><span>$tdata['infdata']</span></td>
 				</tr>
