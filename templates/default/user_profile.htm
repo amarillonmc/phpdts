@@ -29,7 +29,7 @@
 				</div>
 				<div style="margin-left: 6px;" align="left">
 					<!--{if ($tid == 'daily' && $curuser) }-->
-						<!--{if $reset_daily_flag}-->
+						<!--{if !empty($reset_daily_flag)}-->
 							{$reset_daily_flag}
 						<!--{elseif !isset($_REQUEST["action"])}-->
 							<button type="button" onclick="window.location.href='user_profile.php?action=refdaily';this.disabled=true">点击获得新的每日挑战</button>

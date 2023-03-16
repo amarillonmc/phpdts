@@ -622,9 +622,6 @@ function fetch_playerdata_by_name($n)
 	//套装效果刷新
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
 	reload_set_items($pdata);
-	//检查杂项成就
-	include_once GAME_ROOT.'./include/game/achievement.func.php';
-	check_misc_achievement_rev($pdata);
 	return $pdata;
 }
 
@@ -666,6 +663,9 @@ function player_save($data){
 	$ndata = Array();
 	if(isset($data['pid'])){
 		$pid = $data['pid'];
+		//检查杂项成就
+		include_once GAME_ROOT.'./include/game/achievement.func.php';
+		check_misc_achievement_rev($data);
 		$ndata = player_format_with_db_structure($data);
 		unset($data);
 		$db->array_update("{$tablepre}players",$ndata,"pid='$pid'");
