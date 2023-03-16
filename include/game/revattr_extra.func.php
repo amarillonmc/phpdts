@@ -15,7 +15,7 @@
 	# 技能判定（主动型）
 	function attr_extra_active_skills(&$pa,&$pd,$active,$sk='')
 	{
-		global $log,$cskills;
+		global $log,$cskills,$now;
 		# 检查主动技合法性
 		if(isset($pa['bskill']))
 		{
@@ -29,6 +29,11 @@
 				# 成功释放主动技，应用标记
 				$pa['bskill_'.$bsk] = 1;
 				$log .= "<span class=\"lime\">{$pa['nm']}对{$pd['nm']}发动了技能「{$bsk_name}」！</span><br>";
+				# 限次技每次使用时次数+1
+				if(get_skilltags($bsk,'limit'))
+				{
+					set_skillpara($bsk,'active_t',get_skillpara($bsk,'active_t',$pa['clbpara'])+1,$pa['clbpara']);
+				}
 				# 检查是否需要addnews
 				addnews($now,'bsk_'.$bsk,$pa['name'],$pd['name']);
 				# 检查是否需要进行logsave

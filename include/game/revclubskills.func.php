@@ -92,13 +92,13 @@
 	}*/
 
 	# 升级指定技能 $sk：技能名；$nums：升级次数
-	function upgclbskills($sk,$nums=1)
+	function upgclbskills($sk,$nums=1,$choice=NULL)
 	{
 		global $log,$club,$clbpara,$skillpoint,$gamecfg,$now;
 		global $cskills;
 
 		# 合法性检查
-		$flag = check_can_upgclbskills($sk,$nums);
+		$flag = check_can_upgclbskills($sk,$nums,$choice);
 		if(!$flag) return;
 
 		# 获取技能信息
@@ -160,15 +160,20 @@
 				$clog = str_replace("[:{$snm}:]",$svars*$nums,$clog);
 			}
 		}
+		# 检查技能是否是要切换状态
+		if(isset($choice))
+		{
+			$clbpara['skillpara'][$sk]['choice'] = $choice;
+		}
 		# 扣除技能点
 		if(!empty($cost)) $skillpoint -= $cost;
 		$log .= $clog;
 		# 存在复选框的技能，升级后重载技能页面
-		if(isset($cskill['num_input']))
-		{
+		//if(isset($cskill['num_input']))
+		//{
 			global $opendialog;
 			$opendialog = 'skillpage';
-		}
+		//}
 		return;
 	}
 
@@ -261,10 +266,10 @@
 	}
 
 	# 升级技能时的合法性检查
-	function check_can_upgclbskills($sk,$nums)
+	function check_can_upgclbskills($sk,$nums,$choice=NULL)
 	{
 		global $log,$gamecfg;
-		global $club,$clbpara,$skillpoint;
+		global $pdata,$club,$clbpara,$skillpoint;
 		global $cskills,$cskills_blist,$cskills_wlist;
 		if($nums <= 0)
 		{
@@ -277,9 +282,14 @@
 			return 0;
 		}
 		# 只有特定技能可以一次性升复数级
-		if($nums != 1 && !isset($cskills[$sk]['num_input']))
+		if($nums!=1 && !isset($cskills[$sk]['num_input']))
 		{
 			$log.="该技能每次只能提升1级。";
+			return;
+		}
+		if(isset($choice) && !isset($cskills[$sk]['choice']))
+		{
+			$log.="该技能无法变更状态。";
 			return;
 		}
 		if(array_key_exists($sk,$cskills_wlist) && !in_array($club,$cskills_wlist[$sk]))
@@ -293,7 +303,7 @@
 			return 0;
 		}
 		# 检查冷却技能是否解锁
-		if(check_skill_unlock($sk))
+		if(check_skill_unlock($sk,$pdata))
 		{
 			$cskill = $cskills[$sk];
 			if(is_array($unlock_flag))
@@ -308,10 +318,10 @@
 	}
 
 	# 技能是否解锁，返回为0时解锁，否则返回对应的未满足条件  $sk：技能名；$data：角色数据
-	function check_skill_unlock($sk,$data=NULL)
+	function check_skill_unlock($sk,$data)
 	{
 		global $cskills,$now;
-		if(empty($data)) $data = current_player_save();
+		//if(empty($data)) $data = current_player_save();
 		$data['clbpara'] = get_clbpara($data['clbpara']);
 		if(empty($data['clbpara']['skill']) || !in_array($sk,$data['clbpara']['skill']))
 		{

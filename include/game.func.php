@@ -292,119 +292,20 @@ function init_battle($ismeet = 0){
 	return;
 }
 
-function init_rev_battle($ismeet = 0)
+function init_battle_rev($pa,$pd,$ismeet=0)
 {
-	global $fog,$hpinfo,$spinfo,$rageinfo,$wepeinfo,$typeinfo,$sexinfo,$infinfo;
-	$ui_data = Array('hpstate','spstate','ragestate','wepestate','wepk_words','wep_words','infdata','iconImg','iconImgB','sNoinfo');
-	$init_data = update_db_player_structure();
-	foreach(Array('w_','s_') as $p)
-	{
-		foreach ($init_data as $i)
-   		{
-			global ${$p.$i};
-    	}
-		foreach($ui_data as $u)
-		{
-			global ${$p.$u};
-		}
-		//更新血量、体力、怒气显示
-		if(${$p.'hp'} <= 0)
-		{
-			${$p.'hpstate'} = "<span class=\"red\">$hpinfo[3]</span>";
-			${$p.'spstate'} = "<span class=\"red\">$spinfo[3]</span>";
-			${$p.'ragestate'} = "<span class=\"red\">$rageinfo[3]</span>";
-		}
-		else 
-		{
-			if(${$p.'hp'} < ${$p.'mhp'}*0.2) {
-				${$p.'hpstate'} = "<span class=\"red\">$hpinfo[2]</span>";
-			} elseif(${$p.'hp'} < ${$p.'mhp'}*0.5) {
-				${$p.'hpstate'} = "<span class=\"yellow\">$hpinfo[1]</span>";
-			} else {
-				${$p.'hpstate'} = "<span class=\"clan\">$hpinfo[0]</span>";
-			}
-			if(${$p.'sp'} < ${$p.'msp'}*0.2) {
-				${$p.'spstate'} = "$spinfo[2]";
-			} elseif(${$p.'sp'} < ${$p.'msp'}*0.5) {
-				${$p.'spstate'} = "$spinfo[1]";
-			} else {
-				${$p.'spstate'} = "$spinfo[0]";
-			}
-			if(${$p.'rage'} >= 100) {
-				${$p.'ragestate'} = "<span class=\"red\">$rageinfo[2]</span>";
-			} elseif(${$p.'rage'} >= 30) {
-				${$p.'ragestate'} = "<span class=\"yellow\">$rageinfo[1]</span>";
-			} else {
-				${$p.'ragestate'} = "$rageinfo[0]";
-			}
-		}
-		//更新武器效果情报
-		switch(${$p.'wepe'})
-		{
-			case ${$p.'wepe'}>= 400:
-				${$p.'wepestate'} = "$wepeinfo[3]";
-				break;
-			case ${$p.'wepe'}>= 200:
-				${$p.'wepestate'} = "$wepeinfo[2]";
-				break;
-			case ${$p.'wepe'}>= 60:
-				${$p.'wepestate'} = "$wepeinfo[1]";
-				break;
-			default :
-				${$p.'wepestate'} = "$wepeinfo[0]";
-		}
-		//更新武器名、武器类别情报
-		${$p.'wep_words'} = parse_info_desc(${$p.'wep'},'m');
-		${$p.'wepk_words'} = parse_info_desc(${$p.'wepk'},'k');
-		//更新编号情报
-		${$p.'sNoinfo'} = $typeinfo[${$p.'type'}]."(".$sexinfo[${$p.'gd'}].${$p.'sNo'}."号)";
-		//更新头像情报
-		$itype = ${$p.'type'} > 0 ? 'n' : ${$p.'gd'};
-		$iname = $itype.'_'.${$p.'icon'}; 
-		if(file_exists('img/'.$iname.'a.gif'))
-		{
-			${$p.'iconImgB'}= $iname.'a.gif';
-		}
-		else 
-		{
-			${$p.'iconImg'} = $iname.'.gif';
-			unset(${$p.'iconImgB'});
-		}
-		//更新受伤状态
-		if(${$p.'inf'}) 
-		{
-			${$p.'infdata'} = '';
-			foreach ($infinfo as $inf_ky => $inf_nm) 
-			{
-				if(strpos(${$p.'inf'},$inf_ky) !== false) ${$p.'infdata'} .= $inf_nm;	
-			}
-		}
-		else 
-		{
-			${$p.'infdata'} = '';
-		}
-	}
-	if($fog && !$ismeet)
-	{
-		//雾天显示？？？
-		$w_wep_words = '？？？';
-		$w_wepk_words = '？？？';
-		$w_sNoinfo = '？？？';
-		$w_iconImg = 'question.gif';
-		$w_iconImgB = '';
-		$w_name = '？？？';
-		$w_wep = '？？？';
-		$w_infdata = '？？？';
-		$w_pose = -1;
-		$w_tactic = -1;
-		$w_lvl = '？';
-		$w_hpstate = '？？？';
-		$w_spstate = '？？？';
-		$w_ragestate = '？？？';
-		$w_wepestate = '？？？';
-		$w_wepk = '';
-	}
-	return;
+	global $sdata,$tdata,$battle_title,$hpcolor;
+	include_once GAME_ROOT.'./include/init.func.php';
+	//初始化头像显示
+	init_icon_states($pa,$ismeet); init_icon_states($pd,$ismeet);
+	//初始化状态显示
+	init_hp_states($pa,$ismeet); init_hp_states($pd,$ismeet);
+	//初始化武器信息
+	init_wep_states($pa,$ismeet); init_wep_states($pd,$ismeet);
+	//初始化异常状态信息
+	init_inf_states($pa,$ismeet); init_inf_states($pd,$ismeet);
+	//传参
+	$sdata = $pa; $tdata = $pd;
 }
 
 function init_bgm($force_update=0)
@@ -412,6 +313,7 @@ function init_bgm($force_update=0)
 	global $pls,$command,$clbpara,$gamecfg,$bgmname;
 	global $default_volume,$event_bgm,$pls_bgm,$parea_bgm,$regular_bgm,$bgmbook,$bgmlist;
 	//include config('audio',$gamecfg);
+	$clbpara = get_clbpara($clbpara);
 
 	# 初始化
 	$event_flag = 0;
@@ -551,6 +453,7 @@ function init_mapdata(){
 
 function init_clubskillsdata($sk,$data)
 {
+	global $cskills;
 	$sk_dir = 'skill_'.$sk;
 	# 本地存在对应的技能模板，返回模板
 	if(file_exists(GAME_ROOT."./templates/default/".$sk_dir.".htm"))
@@ -558,10 +461,10 @@ function init_clubskillsdata($sk,$data)
 		return Array($sk_dir);
 	}
 	# 本地不存在模板，按照预设信息生成一个
-	else 
+	elseif(array_key_exists($sk,$cskills))
 	{
-		//include_once GAME_ROOT.'./include/game/revclubskills.func.php';
-		global $cskills;
+		return $sk;
+		/*global $cskills;
 		# 要检查的技能没有登记过 视为无效技能
 		if(!array_key_exists($sk,$cskills)) return 0;
 		if(!empty($data)) $data['clbpara'] = get_clbpara($data['clbpara']);
@@ -638,13 +541,7 @@ EOT;
 				<table class="skilltable">
 					<tr>
 EOT;
-			$sk_temp .= "<td valign=\"center\" align=\"center\"><span class=\"yellow\">{$unlock_flag}</span></td>";
-			/*$sk_temp .= <<<EOT
-					</tr>
-				</table>
-			</div>
-		</div>
-EOT;*/	
+			$sk_temp .= "<td valign=\"center\" align=\"center\"><span class=\"yellow\">{$unlock_flag}</span></td>";	
 			$sk_temp .= "
 					</tr>
 			</table>
@@ -655,7 +552,7 @@ EOT;*/
 		//$htm_sk_dir = GAME_ROOT.TPLDIR.'/'.$sk_dir.'.htm';
 		//writeover($htm_sk_dir,$sk_temp);
 		//return $sk_dir;
-		return $sk_temp;
+		return $sk_temp;*/
 	}
 	return 0;
 }

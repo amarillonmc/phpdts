@@ -600,10 +600,14 @@ if($hp > 0){
 			{
 				if(strpos($command,'upgskill_')!==false)
 				{
-					# 升级技能
-					$nums = isset(${$command.'_nums'}) ? (int)${$command.'_nums'} : 1;
-					upgclbskills($sk,$nums);
-				
+					if(isset($cskills[$sk]['num_input'])){
+						$nums = isset(${$command.'_nums'}) ? (int)${$command.'_nums'} : 1;
+						upgclbskills($sk,$nums);
+					}elseif(isset($upgpara) && isset($cskills[$sk]['choice']) && in_array($upgpara,$cskills[$sk]['choice'])){
+						upgclbskills($sk,1,$upgpara);
+					}else{
+						upgclbskills($sk);
+					}
 				}
 				elseif(strpos($command,'actskill_')!==false)
 				{

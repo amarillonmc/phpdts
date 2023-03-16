@@ -113,34 +113,22 @@
 	{
 		global $db,$tablepre,$log,$mode,$main,$cmd,$battle_title;
 
-		# actvie=0但没有传入pd时，读取当前玩家数据。
-		# pa无论怎样都会有的，因为玩家主动发现还要过一遍findenemy()
-		if(!isset($pd) && !$active) $pd = current_player_save();
-
 		# 格式化双方clbpara：最后保存角色数据的时候会自动转写clbpara，所以想改什么直接改就行了
 		$pa['clbpara'] = get_clbpara($pa['clbpara']); $pd['clbpara'] = get_clbpara($pd['clbpara']);
 
 		# 是否显示战斗界面
 		if($log_print)
 		{
-			// 格式化交战双方信息
-			// 主视角（战斗界面下方那一栏）前缀是$s_；敌对视角前缀是$w_；
-			// 为什么要这么搞……？都是为了兼容 NPC vs NPC 的战斗场景……
-			$init_data = update_db_player_structure();
-			foreach(Array('w_','s_') as $p)
-			{
-				foreach ($init_data as $i) global ${$p.$i};
-			}
 			if($active)
-			{	// 先制攻击，主视角是pa，给pa一个s_前缀；敌对视角是pd，给pd一个w_前缀；
-				extract($pa,EXTR_PREFIX_ALL,'s');extract($pd,EXTR_PREFIX_ALL,'w');
+			{
+				init_battle_rev($pa,$pd,1);
+				$battle_title = '战斗发生';
 			}
 			else 
-			{	//被先制攻击，主视角是pd，敌对视角是pa
-				extract($pd,EXTR_PREFIX_ALL,'s');extract($pa,EXTR_PREFIX_ALL,'w');
+			{
+				init_battle_rev($pd,$pa,1);
+				$battle_title = '遭遇突袭';
 			}
-			init_rev_battle(1);
-			$battle_title = '战斗发生';
 			$main = 'battle_rev';
 		}
 
@@ -263,7 +251,11 @@
 		# 打击流程
 		# 这里的第一个参数指的是进攻方(造成伤害的一方)；第二个参数指的是防守方(承受伤害的一方)。active已经没用了。
 		# 传参的时候只用考虑参数位置，不用管pa、pd具体是谁。
+		att_loop_flag:
 		$att_dmg = rev_attack($pa,$pd,$active);
+		# 检查是否循环打击流程：一些特殊技能可能需要此效果
+		$att_loop = check_loop_rev_attack($pa,$pd,$active);
+		if($att_loop) goto att_loop_flag;
 
 		# 存在暴毙标识：进攻方(pa)在进攻过程中未造成伤害就暴毙，可能是因为触发了武器直死。
 		if(isset($pa['gg_flag']))
@@ -417,30 +409,25 @@
 		if ($active)
 		{
 			//pa是玩家/主视角NPC的情况下 把edata（$w_*）发给$pd 把sdata($s_*) 发给$pa
-			$edata=$pd; $sdata=$pa;
+			init_battle_rev($pa,$pd,1);
 			player_save($pa); player_save($pd);
+			$edata = $pd; if(!$pa['type']) $sname = $pa['name'];
 		}
 		else
 		{
 			//pd是玩家/主视角NPC的情况下 把edata（$w_*）发给$pa 把sdata($s_*) 发给$pd
-			$edata=$pa; $sdata=$pd;
+			init_battle_rev($pd,$pa,1);
 			player_save($pa); player_save($pd);
+			$edata = $pa; if(!$pd['type']) $sname = $pd['name'];
 		}
 
-		# 刷新玩家状态
-		if(!$sdata['type']) player_load($sdata);
-		# 主视角不是玩家，可能是玩家召唤的NPC帮手。将身上的印记传给玩家。
-		elseif($sdata['type'] && $active) $action = $sdata['action'];
-
-		# 刷新界面显示 蛋疼度+233
-		$init_data = update_db_player_structure();
-		foreach(Array('w_','s_','') as $p)
-		{
-			foreach ($init_data as $i) global ${$p.$i};
-		}
-		extract($sdata,EXTR_PREFIX_ALL,'s'); extract($edata,EXTR_PREFIX_ALL,'w');
-		init_rev_battle (1);
 		$main = 'battle_rev';
+
+		if(isset($sname))
+		{
+			$pdata = fetch_playerdata_by_name($sname);
+			extract($pdata,EXTR_REFS);
+		}
 		
 		# 根据玩家身上的标记($action) 判断接下来要跳转的页面
 		if(substr($action,0,6)=='corpse')
@@ -702,16 +689,16 @@
 			attack_finish_events($pa,$pd,$active);
 			//防守方(pd)受到伤害后的事件（防具耐久下降、受伤）
 			get_hurt_events($pa,$pd,$active);
-			//经验结算
-			expup_rev($pa,$pd,$active);
-			//怒气结算
-			rgup_rev($pa,$pd,$active);
 		}
 		else 
 		{
 			$damage = 0;
 			$log .= "但是没有击中！<br>";
 		}
+		//经验结算
+		expup_rev($pa,$pd,$active);
+		//怒气结算
+		rgup_rev($pa,$pd,$active);
 		//计算武器损耗
 		if(!empty($pa['wep_imp_times'])) weapon_loss($pa,$pa['wep_imp_times']);
 		//发出声音
@@ -773,51 +760,6 @@
 				if(!$revival_flag)
 				{
 					final_kill_events($pa,$pd,$active,$lastword);
-					/*global $now,$alivenum,$deathnum;
-					$pd['hp'] = 0;
-					$pd['endtime'] = $pd['deathtime'] = $now;
-					# 初始化遗言
-					if (!$pd['type'])
-					{
-						//死者是玩家，增加击杀数并保存系统状况。
-						$pa['killnum'] ++;
-						$alivenum --;
-						if(!empty($lastword)) $log .= "<span class='evergreen'>你用尽最后的力气喊道：“".$lastword."”</span><br>";
-					}
-					else 
-					{
-						//死者是NPC，加载NPC遗言
-						$log .= npc_chat_rev ($pd,$pa, 'death' );
-					}
-					$deathnum ++;
-
-					# 初始化killmsg
-					if(!$pa['type'])
-					{
-						global $db,$tablepre;
-						$pname = $pa['name'];
-						$result = $db->query("SELECT killmsg FROM {$tablepre}users WHERE username = '$pname'");
-						$killmsg = $db->result($result,0);
-						if(!empty($killmsg)) $log .= "<span class=\"evergreen\">{$pa['nm']}对{$pd['nm']}说：“{$killmsg}”</span><br>";
-					}
-					else
-					{
-						$log .= npc_chat_rev ($pa,$pd,'kill');
-					}
-
-					# 杀人rp结算
-					get_killer_rp($pa,$pd,$active);
-					# 执行死亡事件（灵魂绑定等）
-					check_death_events($pa,$pd,$active);
-					# 检查成就 大补丁：击杀者是玩家时才会检查成就
-					if(!$pa['type'])
-					{
-						include_once GAME_ROOT.'./include/game/achievement.func.php';
-						check_battle_achievement_rev($pa,$pd);	
-					}
-					# 保存游戏进行状态
-					include_once GAME_ROOT.'./include/system.func.php';
-					save_gameinfo();*/
 				}
 				else 
 				{
@@ -1087,14 +1029,17 @@
 	# 战斗怒气结算
 	function rgup_rev(&$pa,&$pd,$active)
 	{
-		# 计算pa(攻击方)因攻击行为获得的怒气
-		# pa(攻击方)拥有重击辅助属性，每次攻击额外获得1~2点怒气
-		if(!empty($pa['ex_keys']) && in_array('c',$pa['ex_keys']))
+		# 攻击命中的情况下，计算pa(攻击方)因攻击行为获得的怒气
+		if($pa['hitrate_times'] > 0)
 		{
-			$pa_rgup = rand(1,2);
-			$pa['rage'] = min(255,$pa['rage']+$pa_rgup);
+			# pa(攻击方)拥有重击辅助属性，每次攻击额外获得1~2点怒气
+			if(!empty($pa['ex_keys']) && in_array('c',$pa['ex_keys']))
+			{
+				$pa_rgup = rand(1,2);
+				$pa['rage'] = min(255,$pa['rage']+$pa_rgup);
+			}
 		}
-		# 计算pd(防守方)因挨打获得的怒气
+		# 无论攻击是否命中，计算pd(防守方)因挨打获得的怒气
 		$rgup = round(($pa['lvl'] - $pd['lvl'])/3);
 		# 单次获得怒气上限：15
 		$rgup = min(15,max(1,$rgup));
@@ -1108,9 +1053,19 @@
 	function expup_rev(&$pa,&$pd,$active) 
 	{
 		global $log,$baseexp;
-		$expup = round ( ($pd['lvl'] - $pa['lvl']) / 3 );
-		$expup = $expup > 0 ? $expup : 1;
-		$pa['exp'] += $expup;
+		# 攻击命中的情况下，计算获得经验
+		if($pa['hitrate_times'] > 0)
+		{
+			$expup = round ( ($pd['lvl'] - $pa['lvl']) / 3 );
+			$expup = $expup > 0 ? $expup : 1;
+		}
+		# 攻击未命中，也许有其他渠道获得经验
+		else
+		{
+			#「反思」技能效果
+			if(isset($pa['skill_c5_review'])) $expup = 1;
+		}
+		if(!empty($expup)) $pa['exp'] += $expup;
 		//$log .= "$isplayer 的经验值增加 $expup 点<br>";
 
 		//升到下级所需的exp 直接在这里套公式计算 不用global了

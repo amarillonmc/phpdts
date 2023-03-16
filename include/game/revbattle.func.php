@@ -4,114 +4,41 @@
 		exit('Access Denied');
 	}
 
-	//战斗中切换武器
-	function change_wep_in_battle($s=2)
-	{
-		global $log,$nosta;
-		global $wep,$wepk,$wepe,$weps,$wepsk;
-		global $wep2,$wep2k,$wep2e,$wep2s,$wep2sk;
-		# 初始化主武器名
-		$eqp = 'wep';
-		# 初始化副武器名
-		$seqp = 'wep'.$s;
-		$seqpk = $seqp.'k';
-		$seqpe = $seqp.'e';
-		$seqps = $seqp.'s';
-		$seqpsk = $seqp.'sk';
-		# 保存副武器数据
-		$swep=${$seqp}; $swepk=${$seqpk};
-		$swepe=${$seqpe}; $sweps=${$seqps}; $swepsk=${$seqpsk};
-		# 主武器为空、副武器不为空的情况下，直接替换为副武器
-		if(($wepk == 'WN' || !$weps) && ($swepk != 'WN'))
-		{
-			${$eqp} = $swep; ${$seqp} = '拳头';
-			${$eqp.'k'} = $swepk; ${$seqpk} = 'WN';
-			${$eqp.'e'} = $swepe; ${$seqpe} = 0;
-			${$eqp.'s'} = $sweps; ${$seqps} = $nosta;
-			${$eqp.'sk'} = $swepsk; ${$seqpsk} = '';
-			$log.="你将{$wep}拿在了手上。<br>";
-		}
-		# 主武器不为空的情况下，副武器替换为主武器
-		elseif($wepk != 'WN')
-		{
-			${$seqp} = ${$eqp}; ${$eqp} = $swep; 
-			${$seqpk} = ${$eqp.'k'}; ${$eqp.'k'} = $swepk;
-			${$seqpe} = ${$eqp.'e'}; ${$eqp.'e'} = $swepe; 
-			${$seqps} = ${$eqp.'s'}; ${$eqp.'s'} = $sweps; 
-			${$seqpsk} = ${$eqp.'sk'}; ${$eqp.'sk'} = $swepsk; 
-			$log.="你将{$wep2}收了起来";
-			if($wepk != 'WN') $log .="，将{$wep}拿在了手上";
-			$log.="。<br>";
-		}
-		else 
-		{
-			$log.="你没有装备副武器！去给自己找一个吧！<br>";
-		}
-		return;
-	}
-
-	//战斗中逃跑
-	function escape_from_enemy(&$pa,&$pd)
-	{
-		global $action,$clbpara,$chase_escape_obbs,$log;
-		//include_once GAME_ROOT.'./include/game/dice.func.php';
-		# 在受追击/鏖战状态下逃跑有概率失败
-		if(strpos($action,'pchase')===0 || strpos($action,'dfight')===0)
-		{
-			$escape_dice = diceroll(99);
-			if($escape_dice < $chase_escape_obbs)
-			{
-				$log .= "你尝试逃跑，但是敌人在你身后紧追不舍！<br>";
-				$pa['fail_escape'] = 1;
-				return 0;
-			}
-		}
-		$log .= "你逃跑了。";
-		$action = '';
-		unset($clbpara['battle_turns']);
-		return 1;
-	}
-
 	//发现敌人
 	function findenemy_rev($edata) 
 	{
-		global $db,$tablepre;
-		global $fog,$pid,$log,$mode,$main,$cmd,$battle_title,$attinfo,$skillinfo,$nosta,$cskills;
+		global $db,$tablepre,$log,$mode,$main,$cmd,$battle_title,$attinfo,$skillinfo,$nosta,$cskills;
+		global $fog,$pdata;
 
-		//获取并保存当前玩家数据
-		$sdata = current_player_save();
 		//格式化双方clbpara
-		$sdata['clbpara'] = get_clbpara($sdata['clbpara']); $edata['clbpara'] = get_clbpara($edata['clbpara']);
-		//格式化对战双方数据
-		$init_data = update_db_player_structure();
-		foreach(Array('w_','s_') as $p)
-		{
-			foreach ($init_data as $i) global ${$p.$i};
-		}
-		extract($edata,EXTR_PREFIX_ALL,'w'); extract($sdata,EXTR_PREFIX_ALL,'s');
-		//初始化界面与log
-		$battle_title = init_battle_title($sdata,$edata);
-		$log .= init_battle_log($sdata,$edata);
-		if(strpos($sdata['action'],'chase')!==false || strpos($sdata['action'],'dfight')!==false) init_rev_battle(1);
-		else init_rev_battle();
+		$edata['clbpara'] = get_clbpara($edata['clbpara']);
+
+		//初始化战场标题
+		$battle_title = init_battle_title($pdata,$edata);
+		//初始化遇敌log
+		$log .= init_battle_log($pdata,$edata);
+		//检查是否为追击状态
+		$ismeet = strpos($pdata['action'],'chase')!==false || strpos($pdata['action'],'dfight')!==false ? 1 : 0;
+		//初始化战斗界面
+		init_battle_rev($pdata,$edata,$ismeet);
 
 		//检查是敌对或中立单位
 		$neut_flag = $edata['pose'] == 7 ? 1 : 0;
 
 		//初始化玩家战斗技列表
-		if(!empty($sdata['clbpara']['skill']))
+		if(!empty($pdata['clbpara']['skill']))
 		{
 
 			$battle_skills = Array();
 			$sk_nums = 0;
-			foreach($sdata['clbpara']['skill'] as $sk)
+			foreach($pdata['clbpara']['skill'] as $sk)
 			{
 				//遍历玩家技能，寻找带有战斗技标签的技能
 				if(get_skilltags($sk,'battle'))
 				{
 					$sk_desc = '';
 					//先检查技能是否满足解锁条件
-					$unlock = check_skill_unlock($sk,$sdata);
+					$unlock = check_skill_unlock($sk,$pdata);
 					if($unlock)
 					{
 						if(get_skilltags($sk,'unlock_battle_hidden')) continue;
@@ -120,11 +47,11 @@
 					//再检查技能是否满足激活条件
 					else
 					{
-						$unlock = check_skill_cost($sk,$sdata);
+						$unlock = check_skill_cost($sk,$pdata);
 						if($unlock) $sk_desc .= $unlock;
 					}
 					//技能可以使用，输出介绍文本
-					if(empty($sk_desc)) $sk_desc = parse_skilldesc($sk,$sdata,1);
+					if(empty($sk_desc)) $sk_desc = parse_skilldesc($sk,$pdata,1);
 					//存入可使用战斗技队列，顺序：是否可使用、技能名、技能介绍文本
 					$battle_skills[$sk_nums] = Array($unlock,$sk,$sk_desc);
 					$sk_nums++;
@@ -133,10 +60,10 @@
 		}
 
 		//初始化玩家攻击方式信息
-		$w1 = substr($s_wepk,1,1);
-		$w2 = substr($s_wepk,2,1);
+		$w1 = substr($pdata['wepk'],1,1);
+		$w2 = substr($pdata['wepk'],2,1);
 		if ($w2=='0'||$w2=='1') $w2='';
-		if (($w1 == 'G'||$w1=='J')&&($s_weps==$nosta)) $w1 = 'P';
+		if (($w1 == 'G'||$w1=='J')&&($pdata['weps']==$nosta)) $w1 = 'P';
 
 		include template('battlecmd_rev');
 		$cmd = ob_get_contents();
@@ -148,31 +75,21 @@
 	//发现中立NPC $kind 0=中立单位 1=友军
 	function findneut(&$edata,$kind=0)
 	{
-		global $db,$tablepre;
+		global $db,$tablepre,$pdata;
 		global $fog,$log,$mode,$main,$cmd,$battle_title,$attinfo,$skillinfo;
 		
 		$battle_title = $kind ? '发现朋友' : '发现敌人？';
 
-		//获取并保存当前玩家数据
-		$sdata = current_player_save();
-
 		//格式化双方clbpara
-		$sdata['clbpara'] = get_clbpara($sdata['clbpara']); $edata['clbpara'] = get_clbpara($edata['clbpara']);
+		$pdata['clbpara'] = get_clbpara($pdata['clbpara']); $edata['clbpara'] = get_clbpara($edata['clbpara']);
 
-		//格式化双方数据
-		$init_data = update_db_player_structure();
-		foreach(Array('w_','s_','') as $p)
-		{
-			foreach ($init_data as $i) global ${$p.$i};
-		}
-		extract($edata,EXTR_PREFIX_ALL,'w'); extract($sdata,EXTR_PREFIX_ALL,'s');
-		init_rev_battle(1);
+		init_battle_rev($pdata,$edata,1);
 
-		$log .= "你发现了<span class=\"yellow\">$w_name</span>！<br>";
+		$log .= "你发现了<span class=\"yellow\">{$edata['name']}</span>！<br>";
 		if(!$kind) $log .= "对方看起来没有敌意。<br>";
 
 		//TODO：把这一段挪到一个独立函数里
-		if($edata['clbpara']['post'] == $sdata['pid']) 
+		if($edata['clbpara']['post'] == $pdata['pid']) 
 		{	
 			$log.="对方一看见你，便猛地朝你扑了过来！<br>
 			<br><span class='sienna'>“老板！有你的快递喔！”</span><br>
@@ -253,4 +170,74 @@
 		}
 		return $battle_log;
 	}
+
+	//战斗中逃跑
+	function escape_from_enemy(&$pa,&$pd)
+	{
+		global $action,$clbpara,$chase_escape_obbs,$log;
+		//include_once GAME_ROOT.'./include/game/dice.func.php';
+		# 在受追击/鏖战状态下逃跑有概率失败
+		if(strpos($action,'pchase')===0 || strpos($action,'dfight')===0)
+		{
+			$escape_dice = diceroll(99);
+			if($escape_dice < $chase_escape_obbs)
+			{
+				$log .= "你尝试逃跑，但是敌人在你身后紧追不舍！<br>";
+				$pa['fail_escape'] = 1;
+				return 0;
+			}
+		}
+		$log .= "你逃跑了。";
+		$action = '';
+		unset($clbpara['battle_turns']);
+		return 1;
+	}
+	
+	//战斗中切换武器
+	function change_wep_in_battle($s=2)
+	{
+		global $log,$nosta;
+		global $wep,$wepk,$wepe,$weps,$wepsk;
+		global $wep2,$wep2k,$wep2e,$wep2s,$wep2sk;
+		# 初始化主武器名
+		$eqp = 'wep';
+		# 初始化副武器名
+		$seqp = 'wep'.$s;
+		$seqpk = $seqp.'k';
+		$seqpe = $seqp.'e';
+		$seqps = $seqp.'s';
+		$seqpsk = $seqp.'sk';
+		# 保存副武器数据
+		$swep=${$seqp}; $swepk=${$seqpk};
+		$swepe=${$seqpe}; $sweps=${$seqps}; $swepsk=${$seqpsk};
+		# 主武器为空、副武器不为空的情况下，直接替换为副武器
+		if(($wepk == 'WN' || !$weps) && ($swepk != 'WN'))
+		{
+			${$eqp} = $swep; ${$seqp} = '拳头';
+			${$eqp.'k'} = $swepk; ${$seqpk} = 'WN';
+			${$eqp.'e'} = $swepe; ${$seqpe} = 0;
+			${$eqp.'s'} = $sweps; ${$seqps} = $nosta;
+			${$eqp.'sk'} = $swepsk; ${$seqpsk} = '';
+			$log.="你将{$wep}拿在了手上。<br>";
+		}
+		# 主武器不为空的情况下，副武器替换为主武器
+		elseif($wepk != 'WN')
+		{
+			${$seqp} = ${$eqp}; ${$eqp} = $swep; 
+			${$seqpk} = ${$eqp.'k'}; ${$eqp.'k'} = $swepk;
+			${$seqpe} = ${$eqp.'e'}; ${$eqp.'e'} = $swepe; 
+			${$seqps} = ${$eqp.'s'}; ${$eqp.'s'} = $sweps; 
+			${$seqpsk} = ${$eqp.'sk'}; ${$eqp.'sk'} = $swepsk; 
+			$log.="你将{$wep2}收了起来";
+			if($wepk != 'WN') $log .="，将{$wep}拿在了手上";
+			$log.="。<br>";
+		}
+		else 
+		{
+			$log.="你没有装备副武器！去给自己找一个吧！<br>";
+		}
+		return;
+	}
+	
+
 ?>

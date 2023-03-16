@@ -21,7 +21,7 @@
             <!--{if is_array($skdata)}-->
                 <!--{eval include template($skdata[0]);}-->
             <!--{elseif !empty($skdata)}-->
-                $skdata
+                <!--{eval $skid = $skdata;include template('skill_temp');}-->
             <!--{/if}-->
         <!--{/loop}-->
     </table>

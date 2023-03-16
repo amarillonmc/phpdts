@@ -1242,7 +1242,6 @@
 			$pd['ex_def_flag'] = 0;
 			$log .= "{$pa['nm']}的攻击无视了{$pd['nm']}的属性伤害减半效果！<br>";
 		}
-
 		return;
 	}
 
@@ -1267,62 +1266,75 @@
 
 		foreach($pa['ex_attack_keys'] as $ex)
 		{
-			$dmginf = '';
+			$pa['ex_dmgpsh_log'] = '';$pa['ex_dmginf_log'] = ''; $pa['ex_dmgdef_log'] = '';
 			//计算单个属性的基础属性伤害： 基础伤害 + 效果↔伤害系数修正 + 熟练↔伤害系数修正
 			$ex_dmg = $ex_base_dmg[$ex] + $pa['wepe']/$ex_wep_dmg[$ex] + $pa['wep_skill']/$ex_skill_dmg[$ex];
-			//计算社团技能对单个属性基础伤害的系数补正
-			$ex_dmg *= get_clbskill_ex_base_dmg_r($pa,$pd,$active,$ex);
-			//计算社团技能对单个属性基础伤害的补正
-			$ex_dmg += get_clbskill_ex_base_dmg_fix($pa,$pd,$active,$ex);
 			//计算单个属性能造成的基础伤害上限
 			if($ex_max_dmg[$ex]>0 && $ex_dmg>$ex_max_dmg[$ex]) $ex_dmg = $ex_max_dmg[$ex];
-
-			//计算得意武器类型修正
+			//计算得意武器类型对单个属性伤害的系数修正
 			if(isset($ex_good_wep[$ex]) && $ex_good_wep[$ex] == $pa['wep_kind']) $ex_dmg *= 2;
-			//计算已经进入的异常状态对属性攻击伤害的影响
-			if(isset($ex_inf[$ex]) && strpos($pd['inf'],$ex_inf[$ex])!==false && isset($ex_inf_punish[$ex]))
-			{
-				$ex_dmg *= $ex_inf_punish[$ex];
-				$log .= "由于{$pd['nm']}已经{$exdmginf[$ex_inf[$ex]]}，{$exdmgname[$ex]}的伤害";
-				$log .= $ex_inf_punish[$ex]>1 ? "增加了！" : "减少了！";
-			}
 			//计算属性伤害浮动
 			$ex_dmg = round($ex_dmg * rand(100-$ex_dmg_fluc[$ex],100+$ex_dmg_fluc[$ex])/100);
-
-			//计算属性伤害是否被防御
-			$log.=$exdmgname[$ex];
-			if(!empty($pd['ex_def_flag']) && ($pd['ex_def_flag'] == 1 || (is_array($pd['ex_def_flag']) && in_array($ex,$pd['ex_def_flag']))))
+			//计算单个属性的属性伤害变化：
+			$ex_dmg = get_ex_base_dmg_p($pa,$pd,$active,$ex,$ex_dmg);
+			//计算是否能够施加属性异常
+			if(empty($pd['ex_def_flag']) && isset($ex_inf[$ex]) && strpos($pd['inf'],$ex_inf[$ex])===false)
 			{
-				$ex_dmg = round($ex_dmg*0.5);
-				$log .="被防御效果抵消了！仅";
-			}
-			else 
-			{
-				//计算是否施加属性异常
-				if (isset($ex_inf[$ex]) && strpos($pd['inf'],$ex_inf[$ex])===false) 
+				$dice = diceroll(99);
+				//获取属性施加异常的基础概率 + 熟练度修正
+				$e_htr = $ex_inf_r[$ex] + $pa['wep_skill']*$ex_skill_inf_r[$ex];
+				//获取属性施加异常率的基础上限
+				$e_htr = min($e_htr,$ex_max_inf_r[$ex]);
+				//获取属性施加异常概率的社团修正
+				if(isset($ex_good_club[$ex]) && $ex_good_club[$ex] == $pd['club']) $e_htr += 20;
+				//施加异常
+				if ($dice < $e_htr) 
 				{
-					$dice = diceroll(99);
-					//获取属性施加异常的基础概率 + 熟练度修正
-					$e_htr = $ex_inf_r[$ex] + $pa['wep_skill']*$ex_skill_inf_r[$ex];
-					//获取属性施加异常率的基础上限
-					$e_htr = min($e_htr,$ex_max_inf_r[$ex]);
-					//获取属性施加异常概率的社团修正
-					if(isset($ex_good_club[$ex]) && $ex_good_club[$ex] == $pd['club']) $e_htr += 20;
-					//施加异常
-					if ($dice < $e_htr) 
-					{
-						$dmginf = $ex_inf[$ex];
-						$pd['inf'] .= $dmginf;
-						addnews($now,'inf',$pa['name'],$pd['name'],$dmginf);
-					}
+					$pa['ex_dmginf_log'] = $ex_inf[$ex];
+					$pd['inf'] .= $pa['ex_dmginf_log'];
+					addnews($now,'inf',$pa['name'],$pd['name'],$pa['ex_dmginf_log']);
 				}
 			}
+			//整理后统一输出文本	
+			if(!empty($pa['ex_dmgpsh_log'])) $log .= $pa['ex_dmgpsh_log'];	//由于对方已经xx xx伤害提升/降低
+			$log .= $exdmgname[$ex]; //xx
+			if(!empty($pa['ex_dmgdef_log'])) $log .= "被防御效果抵消了！仅";
 			$log .= "造成了<span class=\"red\">{$ex_dmg}</span>点伤害！";
-			if(!empty($dmginf)) $log .= "并造成{$pd['name']}{$exdmginf[$dmginf]}了！";
+			if(!empty($pa['ex_dmginf_log'])) $log .= "并使{$pd['name']}{$exdmginf[$pa['ex_dmginf_log']]}了！";
 			$log .= "<br>";
 			$total_ex_dmg[] = $ex_dmg;
 		}
 		return $total_ex_dmg;
+	}
+
+	//计算单个属性伤害系数变化
+	function get_ex_base_dmg_p(&$pa,&$pd,$active,$ex,$ex_dmg)
+	{
+		global $ex_good_wep,$ex_inf,$ex_inf_punish,$log;
+		# 「高能」效果判定：
+		if(isset($pa['bskill_c5_higheg']) && $ex == 'd')
+		{
+			$log.="<span class='yellow'>「高能」使{$pa['nm']}造成的爆炸伤害不受影响！</span><br>";
+			return $ex_dmg;
+		}
+		//计算社团技能对单个属性伤害的系数补正
+		$ex_dmg *= get_clbskill_ex_base_dmg_r($pa,$pd,$active,$ex);
+		//计算社团技能对单个属性伤害的补正
+		$ex_dmg += get_clbskill_ex_base_dmg_fix($pa,$pd,$active,$ex);
+		//计算已经进入的异常状态对属性攻击伤害的影响
+		if(isset($ex_inf[$ex]) && strpos($pd['inf'],$ex_inf[$ex])!==false && isset($ex_inf_punish[$ex]))
+		{
+			$ex_dmg *= $ex_inf_punish[$ex];
+			$pa['ex_dmgpsh_log'] .= "由于{$pd['nm']}已经{$exdmginf[$ex_inf[$ex]]}，{$exdmgname[$ex]}的伤害";
+			$pa['ex_dmgpsh_log'] .= $ex_inf_punish[$ex]>1 ? "增加了！" : "减少了！";
+		}
+		//计算属性伤害是否被防御
+		if(!empty($pd['ex_def_flag']) && ($pd['ex_def_flag'] == 1 || (is_array($pd['ex_def_flag']) && in_array($ex,$pd['ex_def_flag']))))
+		{
+			$ex_dmg = round($ex_dmg*0.5);
+			$pa['ex_dmgdef_log'] = 1;
+		}
+		return $ex_dmg;
 	}
 
 	//计算属性总伤害加成
@@ -1633,10 +1645,44 @@
 		# 受到眩晕效果
 	}
 
+	// 获取pa在探索时的遇敌率（遇敌率越低道具发现率越高）
+	function calc_meetman_rate(&$pa)
+	{
+		global $gamestate;
+		# 基础遇敌率
+		$enemyrate = 40;
+		# 连斗阶段遇敌率+20
+		if($gamestate == 40){$enemyrate += 20;}
+		# 死斗阶段遇敌率+40
+		elseif($gamestate == 50){$enemyrate += 40;}
+		# 姿态修正
+		if($pa['pose'] == 3) {$enemyrate -= 20;}
+		elseif($pa['pose'] ==4){$enemyrate += 10;}
+		
+		# 社团技能修正（新）
+		# 「专注」效果判定
+		if(!empty($pa['clbpara']['skill']) && !check_skill_unlock('c5_focus',$pa)) 
+		{
+			# 探人模式遇敌率提升
+			if(get_skillpara('c5_focus','choice',$pa['clbpara']) == 1)
+			{
+				$sk_var = get_skillvars('c5_focus','meetgain');
+				$enemyrate += $sk_var;
+			}
+			# 探物模式遇敌率降低
+			elseif(get_skillpara('c5_focus','choice',$pa['clbpara']) == 2)
+			{
+				$sk_var = get_skillvars('c5_focus','itmgain');
+				$enemyrate -= $sk_var;
+			}
+		}
+		return $enemyrate;
+	}
+
 	// 获取pd面对pa时的躲避率
 	function get_hide_r_rev(&$pa,&$pd,$mode=0)
 	{
-		global $weather_hide_r,$pls_hide_modifier,$pose_hide_modifier,$tactic_hide_modifier;
+		global $weather,$weather_hide_r,$pls_hide_modifier,$pose_hide_modifier,$tactic_hide_modifier;
 		
 		# 获取基础躲避率
 		$hide_r = 0;
@@ -1650,7 +1696,7 @@
 		# 计算pd策略对于躲避率的修正：
 		$tac_r = $tactic_hide_modifier[$pd['tactic']] ?: 0;
 		# 基础汇总：
-		$hide_r += $wth_ar + $pose_r + $tac_r;
+		$hide_r += $wth_r + $pose_r + $tac_r;
 
 		include_once GAME_ROOT.'./include/game/clubskills.func.php';
 		# 计算社团技能对躲避率的系数修正（旧）：
@@ -1865,5 +1911,20 @@
 		if(isset($pa['clbpara']['battle_turns'])) unset($pa['clbpara']['battle_turns']);
 		if(isset($pd['clbpara']['battle_turns'])) unset($pd['clbpara']['battle_turns']);
 		return;
+	}
+
+	//检查是否循环打击流程
+	function check_loop_rev_attack(&$pa,&$pd,$active)
+	{
+		global $log;
+		$loop = 0;
+		#「双响」效果判定
+		if(isset($pa['bskill_c5_double']))
+		{
+			unset($pa['bskill_c5_double']);
+			$log .= "<span class=\"yellow\">{$pa['nm']}引爆了预埋的另一组爆炸物！</span><br>";
+			$loop = 1;
+		}
+		return $loop;
 	}
 ?>

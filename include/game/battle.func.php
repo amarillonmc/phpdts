@@ -78,13 +78,14 @@ function findteam(&$w_pdata){
 }
 
 function findcorpse(&$w_pdata){
-	global $log,$mode,$main,$battle_title,$cmd,$iteminfo,$itemspkinfo;
+	global $log,$mode,$main,$battle_title,$cmd,$iteminfo,$itemspkinfo,$pdata;
 	global $w_type,$w_name,$w_gd,$w_sNo,$w_icon,$w_hp,$w_mhp,$w_wep,$w_wepk,$w_wepe,$w_lvl,$w_pose,$w_tactic,$w_inf,$w_rp;//,$itmsk0;
 	global $club,$clbpara,$allow_destory_corpse,$no_destory_corpse_type;
 
 	$battle_title = '发现尸体';
 	extract($w_pdata,EXTR_PREFIX_ALL,'w');
-	init_battle(1);
+	//init_battle(1);
+	init_battle_rev($pdata,$w_pdata,1);
 	
 	if (CURSCRIPT == 'botservice')
 	{
@@ -110,7 +111,7 @@ function findcorpse(&$w_pdata){
 	}
 	else
 	{	
-		$main = 'battle';
+		$main = 'battle_rev';
 		$log .= '你发现了<span class="red">'.$w_name.'</span>的尸体！<br>';
 
 		// 初始化尸体tooltip
@@ -160,7 +161,6 @@ function findcorpse(&$w_pdata){
 		if(in_array($w_type,$can_lootdepot_type)) $loot_depot_flag = depot_getlist($w_name,$w_type) ? 1 : 0;
 
 		// 初始化抡尸数据
-		global $pdata;
 		$cstick_flag = 0;
 		if(!check_skill_unlock('tl_cstick',$pdata) && !check_skill_cost('tl_cstick',$pdata)) $cstick_flag = in_array($w_type,get_skillvars('tl_cstick','notype')) ? 0 : 1;
 		

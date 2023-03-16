@@ -1,0 +1,61 @@
+<!-- 注意：大部分技能可以直接通过编辑配置文件完成 -->
+<!-- 可能的、需要新建模板的情况：你的技能需要在面板内执行比较复杂的、单靠配置文件无法实现的操作 -->
+<!--{eval $cskill = $cskills[$skid];}-->
+<!--{if isset($cskill['maxlvl'])}-->
+    <!--{eval $now_clvl = get_skilllvl($skid,$uidata); $max_lvl_flag = $now_clvl >= $cskill['maxlvl'] ? 1 : 0;}-->
+<!--{/if}-->
+<tr>
+    <td class="b1" width="40">
+        <span>{$cskill['name']}</span>
+    </td>
+    <td>
+     <!-- ↓↓↓ 存在解锁条件的技能才需要有这一部分 ↓↓↓ -->
+        <!--{eval $unlock_flag = check_skill_unlock($skid,$uidata);}-->
+        <!--{if $unlock_flag}-->
+        <div style="position:relative; height:100%; width:100%;" onmouseover="skill_unacquired_mouseover.call(this,event)" onmouseout="skill_unacquired_mouseout.call(this,event)">
+        <div class="skill_unacquired">
+        <!--{/if}-->
+     <!-- ↑↑↑ 存在解锁条件的技能才需要有这一部分 ↑↑↑ -->
+            <table class="skilltable">
+                <tr>
+                    <td class="skilldesc_left b3">
+                        <span class="skilldesc">
+                            <!--{eval $cdesc = parse_skilldesc($skid,$uidata);}-->
+                            {$cdesc}
+                        </span>
+                    </td>
+                    <td class="skilldesc_right b3">
+                        <!--{if !empty($cskill['num_input']) && empty($max_lvl_flag)}-->
+                            <input type="number" name="upgskill_{$skid}_nums" style="width:40px" value="1">		
+                        <!--{/if}-->
+                        <!--{if !empty($cskill['input']) && empty($max_lvl_flag)}-->
+                            <input type="button" onclick="$('mode').value='revskpts';$('command').value='upgskill_{$skid}';postCmd('gamecmd','command.php');this.disabled=true;" value="{$cskill['input']}">
+                        <!--{/if}-->
+                    </td>
+                </tr>
+            </table>
+    <!-- ↓↓↓ 存在解锁条件的技能才需要有这一部分 ↓↓↓ -->
+        <!--{if $unlock_flag}-->
+        </div>
+        <div class="skill_unacquired_hint">
+            <table class="skilltable">
+                <tr>
+                    <td valign="center" align="center">
+                        <span class="yellow">
+                            <!-- 未满足解锁条件时显示的文本，自己填或使用下面的方式 -->
+                            <!--{eval $skid_lockdesc = $cskill['lockdesc'][$unlock_flag];}-->
+                            <!--{if is_array($unlock_flag)}-->
+                                <!--{eval $unlock_cd = $unlock_flag[1]; $unlock_flag = $unlock_flag[0]; $unlock_flag = str_replace("[:cd:]","$unlock_cd",$unlock_flag);}-->
+                            <!--{/if}-->
+                            <!--{eval $unlock_flag = is_array($cskill['lockdesc']) ? $cskill['lockdesc'][$unlock_flag] : $cskill['lockdesc']; $unlock_flag = isset($unlock_cd) ? str_replace("[:cd:]","$unlock_cd",$unlock_flag) : $unlock_flag;}-->
+                            <span class="yellow">$skid_lockdesc</span>
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        </div>
+        <!--{/if}-->
+    <!-- ↑↑↑ 存在解锁条件的技能才需要有这一部分 ↑↑↑ -->
+    </td>
+</tr>
