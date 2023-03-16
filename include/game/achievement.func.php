@@ -59,7 +59,7 @@ function fetch_achievement_rev($which,$who)
 	{
 		$ach = print_achievement_rev($ach);
 		// 保存的成就进度 >= 9999999时 返回9999999 这是为了兼容旧版成就
-		if(isset($ach[$which]['v']) && !is_array($ach[$which]['v'])) $value = $ach[$which]['v'] >= 9999999 ? 9999999 : $ach[$which]['v'];
+		if(isset($ach[$which]['v']) && !is_array($ach[$which]['v'])) $value = $ach[$which]['v'] >= 99999999 ? 99999999 : $ach[$which]['v'];
 		if(is_array($ach[$which]['v'])) $value = $ach[$which]['v'];
 	}
 	//echo "成就值检索阶段： 成就{$which} 的值 = {$value}<br>";
@@ -1833,12 +1833,13 @@ function check_misc_achievement_rev(&$pa)
 		// 205.一击承受百万伤害成就
 		if(!empty($pa['clbpara']['achvars']['takedmg']) && $pa['clbpara']['achvars']['takedmg'] >= 1000000)
 		{
-			unset($pa['clbpara']['achvars']['takedmg']);
 			$aid = 205;
 			$alvl = check_achievement_rev($aid,$nn);
 			$achlist = get_achlist($aid);
 			// 检查历史最高伤害
-			$nowvars = $pa['clbpara']['achvars']['takedmg']; $avars = fetch_achievement_rev($aid,$nn);
+			$nowvars = min($pa['clbpara']['achvars']['takedmg'],999999999); $avars = fetch_achievement_rev($aid,$nn);
+			unset($pa['clbpara']['achvars']['takedmg']);
+			//echo "nowvars = {$nowvars} | avars = {$avars}";
 			if($nowvars > $avars) update_achievement_rev($aid,$nn,$nowvars);
 			// 检查是否完成成就
 			while(!$alvl)
