@@ -6,17 +6,19 @@ if(!defined('IN_GAME')) {
 
 function init_icon_states(&$pa,$ismeet=0)
 {
-	global $sexinfo,$fog;
+	global $sexinfo,$typeinfo,$fog;
 	//雾天显示？？？
 	if($fog && !$ismeet)
 	{
-		$pa['sNoinfo'] = '？？？';
+		$pa['typeinfo'] = '？？？';
+		$pa['sNoinfo'] = '';
 		$pa['iconImg'] = 'question.gif';
 		$pa['iconImgB'] = '';
 		return;
 	}
 	//更新编号情报
 	$pa['sNoinfo'] = "(".$sexinfo[$pa['gd']].$pa['sNo']."号)";
+	$pa['typeinfo'] = $typeinfo[$pa['type']];
 	//更新头像情报
 	$itype = $pa['type'] > 0 ? 'n' : $pa['gd'];
 	$iname = $itype.'_'.$pa['icon']; 
@@ -39,7 +41,6 @@ function init_hp_states(&$pa,$ismeet=0)
 		$pa['hpstate'] = '？？？';
 		$pa['spstate'] = '？？？';
 		$pa['ragestate'] = '？？？';
-		$pa['name'] = '';
 		return;
 	}
 	if($pa['hp'] <= 0)
@@ -96,6 +97,7 @@ function init_wep_states(&$pa,$ismeet=0)
 	global $wepeinfo,$fog;
 	if($fog && !$ismeet)
 	{
+		$pa['wepestate'] = '？？？';
 		$pa['wep_words'] = '？？？';
 		$pa['wepk_words'] = '？？？';
 		return;
@@ -124,12 +126,20 @@ function init_wep_states(&$pa,$ismeet=0)
 
 function init_inf_states(&$pa,$ismeet=0)
 {
-	global $infinfo,$fog;
+	global $infinfo,$poseinfo,$tacinfo,$fog;
 	if($fog && !$ismeet)
 	{
+		$pa['nameinfo'] = '？？？';
+		$pa['lvlinfo'] = '？？？';
+		$pa['poseinfo'] = '？？？';
+		$pa['tacinfo'] = '？？？';
 		$pa['infdata'] = '？？？';
 		return;
 	}
+	$pa['nameinfo'] = $pa['name'];
+	$pa['lvlinfo'] = 'Lv. '.$pa['lvl'];
+	$pa['poseinfo'] = $poseinfo[$pa['pose']];
+	$pa['tacinfo'] = $tacinfo[$pa['tactic']];
 	//更新受伤状态
 	if($pa['inf']) 
 	{
