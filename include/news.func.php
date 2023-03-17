@@ -317,6 +317,10 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"orange\">{$a}发送了控制指令，全部禁区解除！</span><br>\n";
 		} elseif($news == 'csl_addarea') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"orange\">{$a}发送了控制指令，下一回禁区提前到来了！</span><br>\n";
+		} elseif(strpos($news,'ask_')===0) {
+			$ask = substr($news,4);
+			$aname = $cskills[$ask]['name'];
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}发动了技能<span class=\"yellow\">「{$aname}」</span>！</span><br>\n";
 		} elseif(strpos($news,'bsk_')===0) {
 			$bsk = substr($news,4);
 			$bname = $cskills[$bsk]['name'];

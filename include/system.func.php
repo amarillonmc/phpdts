@@ -687,6 +687,29 @@ function addnpc($type,$sub,$num,$time = 0,$clbstatus=NULL,$aitem=NULL,$apls=NULL
 				}
 				//$npc['pls'] = rand(1,$plsnum-1);
 			}	
+			# NPC技能初始化
+			// 社团技能初始化
+			global $club_skillslist;
+			if(isset($club_skillslist[$npc['club']]))
+			{
+				if(empty($npc['clbpara'])) $npc['clbpara']['skill'] = Array();
+				$npc_csk = $club_skillslist[$npc['club']];
+				foreach($npc_csk as $sk) getclubskill($sk,$npc['clbpara']);
+			}
+			// 自定技能初始化
+			global $cskills;
+			if(!empty($npc['clubskill']))
+			{
+				foreach($npc['clubskill'] as $sk) getclubskill($sk,$npc['clbpara']);
+			}
+			// 自定技能参数初始化
+			if(!empty($npc['clubskillpara']))
+			{
+				foreach($npc['clubskillpara'] as $sk => $skarr)
+				{
+					foreach($skarr as $skpara => $skvalue) set_skillpara($sk,$skpara,$skvalue,$npc['clbpara']);
+				}
+			}
 			//自定义addnpc出现位置，会覆盖原本预设的位置。 TODO：要不要发个特别的news？
 			if(isset($apls)) $npc['pls'] = (int)$apls;
 			//自定义addnpc身上携带的道具，会覆盖原本预设的道具。 格式：$aitem=Array($iid=>Array($itm,$itmk,$itme,$itms,$itmsk),...)
@@ -758,6 +781,33 @@ function evonpc($type,$name){
 	$npc['wp'] = $npc['wk'] = $npc['wg'] = $npc['wc'] = $npc['wd'] = $npc['wf'] = $npc['skill'];
 	unset($npc['skill']);
 	$qry = '';
+	# NPC进化后技能初始化
+	// 社团技能初始化
+	global $club_skillslist;
+	if(isset($club_skillslist[$npc['club']]))
+	{
+		if(empty($npc['clbpara'])) $npc['clbpara']['skill'] = Array();
+		$npc_csk = $club_skillslist[$npc['club']];
+		foreach($npc_csk as $sk) getclubskill($sk,$npc['clbpara']);
+	}
+	// 自定技能初始化
+	global $cskills;
+	if(!empty($npc['clubskill']))
+	{
+		foreach($npc['clubskill'] as $sk) getclubskill($sk,$npc['clbpara']);
+	}
+	// 自定技能参数初始化
+	if(!empty($npc['clubskillpara']))
+	{
+		foreach($npc['clubskillpara'] as $sk => $skarr)
+		{
+			foreach($skarr as $skpara => $skvalue) set_skillpara($sk,$skpara,$skvalue,$npc['clbpara']);
+		}
+	}
+	unset($npc['clubskill']);unset($npc['clubskillpara']);
+	# todo:整理下这堆烂摊子
+	$npc['clbpara'] = json_encode($npc['clbpara']);
+	//$npc = player_format_with_db_structure($npc);
 	foreach($npc as $key => $val){
 		$qry .= "$key = '{$val}',";
 	}

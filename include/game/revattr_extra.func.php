@@ -46,6 +46,37 @@
 				unset($pa['bskill']);
 			}
 		}
+
+		# NPC释放战斗技 暂时先重复写一遍，之后合并到一个函数里
+		if(!$active && $pa['type'] && !empty($pa['clbpara']['skill']))
+		{
+			# 打乱并遍历pa技能队列 寻找可用战斗技
+			$npc_skill = $pa['clbpara']['skill'];
+			shuffle($npc_skill);
+			foreach($npc_skill as $sk)
+			{
+				if(get_skilltags($sk,'battle') && !check_skill_unlock($sk,$pa) && !check_skill_cost($pa['bskill'],$pa))
+				{
+					$bsk = $sk;
+					$bsk_name = $cskills[$bsk]['name'];
+					# 扣除怒气
+					$bsk_cost = get_skillvars($bsk,'ragecost');
+					if($bsk_cost) $pa['rage'] -= $bsk_cost;
+					# 成功释放主动技，应用标记
+					$pa['bskill_'.$bsk] = 1;
+					$log .= "<span class=\"lime\">{$pa['nm']}对{$pd['nm']}发动了技能「{$bsk_name}」！</span><br>";
+					# 限次技每次使用时次数+1
+					if(get_skilltags($bsk,'limit'))
+					{
+						set_skillpara($bsk,'active_t',get_skillpara($bsk,'active_t',$pa['clbpara'])+1,$pa['clbpara']);
+					}
+					# 检查是否需要addnews
+					addnews($now,'bsk_'.$bsk,$pa['name'],$pd['name']);
+					# 别让NPC放两个技能！
+					break;
+				}
+			}
+		}
 		return;
 	}
 
@@ -72,7 +103,7 @@
 						if($sk_dice < $sk_obbs)
 						{
 							$pa['skill_c1_crit'] = 1;
-							$pa['skill_c1_crit_log'] = "<span class=\"yellow b\">{$pa['nm']}朝着{$pd['nm']}打出了凶猛的一击！<span class=\"cyan b\">{$pd['nm']}被打晕了过去！</span></span><br>";
+							$pa['skill_c1_crit_log'] = "<span class=\"yellow\">{$pa['nm']}朝着{$pd['nm']}打出了凶猛的一击！<span class=\"clan\">{$pd['nm']}被打晕了过去！</span></span><br>";
 						}
 					}
 					# 「枭眼」特殊判定：射程不小于对方时激活效果
@@ -194,13 +225,13 @@
 			$hitrate *= $sk_r;
 		}
 		#「瞄准」效果判定：
-		if(isset($pa['skill_c4_aiming']))
+		if(isset($pa['bskill_c4_aiming']))
 		{
 			$sk_r = 1 + (get_skillvars('c4_aiming','accgain') / 100);
 			$hitrate *= $sk_r;
 		}
 		#「穿杨」效果判定：
-		if(isset($pa['skill_c4_sniper']))
+		if(isset($pa['bskill_c4_sniper']))
 		{
 			$sk_r = 1 + (get_skillvars('c4_sniper','accgain') / 100);
 			$hitrate *= $sk_r;
@@ -211,6 +242,13 @@
 		if(isset($pd['skill_c3_hawkeye']))
 		{
 			$sk_r = 1 - (get_skillvars('c3_hawkeye','accloss') / 100);
+			$hitrate *= $sk_r;
+		}
+		#「灵力」效果判定：
+		if(isset($pd['skill_c9_spirit']))
+		{
+			$sk_lvl = get_skilllvl('c9_spirit',$pd);
+			$sk_r = 1 - (get_skillvars('c9_spirit','accloss',$sk_lvl) / 100);
 			$hitrate *= $sk_r;
 		}
 		return $hitrate;
@@ -242,11 +280,19 @@
 			$sk_r = 1 + (get_skillvars('c4_stable','rbgain',$sk_lvl) / 100);
 			$hitrate *= $sk_r;
 		}
+
 		# 减益：
 		#「枭眼」效果判定：
 		if(isset($pd['skill_c3_hawkeye']))
 		{
 			$sk_r = 1 - (get_skillvars('c3_hawkeye','rbloss') / 100);
+			$hitrate *= $sk_r;
+		}
+		#「灵力」效果判定：
+		if(isset($pd['skill_c9_spirit']))
+		{
+			$sk_lvl = get_skilllvl('c9_spirit',$pd);
+			$sk_r = 1 - (get_skillvars('c9_spirit','rbloss',$sk_lvl) / 100);
 			$hitrate *= $sk_r;
 		}
 		return $hitrate;
@@ -278,7 +324,7 @@
 			$inftimes += $sk_fix;
 		}
 		#「咆哮」效果判定：
-		if(isset($pa['skill_c4_roar']))
+		if(isset($pa['bskill_c4_roar']))
 		{
 			//获取致伤效果加成
 			$sk_fix = get_skillvars('c4_roar','inftfix');
@@ -306,7 +352,7 @@
 	{
 		$ex_dmg_r = 1;
 		# 「附魔」效果判定：
-		if(isset($pa['skill_c3_enchant']))
+		if(isset($pa['bskill_c3_enchant']))
 		{
 			$exdmgarr = get_skillvars('c3_enchant','exdmgarr');
 			if(isset($exdmgarr[$key]) && !empty(get_skillpara('c3_enchant',$exdmgarr[$key],$pa['clbpara'])))

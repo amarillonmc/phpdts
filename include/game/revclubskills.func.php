@@ -178,9 +178,15 @@
 	}
 
 	# 升级指定技能会触发的事件，返回0时代表无法升级技能
-	function upgclbskills_events($event,$sk)
+	function upgclbskills_events($event,$sk,$data=NULL)
 	{
-		global $log,$cskills,$clbpara;
+		global $log,$cskills,$clbpara,$name;
+		# 事件：激活技能
+		if($event == 'active_news')
+		{
+			addnews($now,'ask_'.$sk,$name);
+			return 1;
+		}
 		# 事件：治疗
 		if($event == 'heal')
 		{
@@ -205,6 +211,28 @@
 				return 0;
 			}
 			return 1;
+		}
+		# 事件：怒气充能
+		if($event == 'charge')
+		{
+			global $rage;
+			if($rage >= 255)
+			{
+				$log .= "你不需要使用这个技能！<br>";
+				return 0;
+			}
+			$rage = min(255,$rage + get_skillvars('c9_charge','rageadd'));
+			// 检查当前技能使用次数
+			$active_t = get_skillpara('c9_charge','active_t',$clbpara);
+			// 第3次使用时开始冷却
+			if($active_t+1 > get_skillvars('c9_charge','freet'))
+			{
+				$event = 'setstarttimes_c9_charge';
+			}
+			else 
+			{
+				return 1;
+			}
 		}
 		# 事件：获取指定技能
 		if(strpos($event,'getskill_') === 0)

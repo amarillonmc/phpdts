@@ -1037,6 +1037,18 @@
 			{
 				$pa_rgup = rand(1,2);
 				$pa['rage'] = min(255,$pa['rage']+$pa_rgup);
+				# 成功发动战斗技时，额外返还10%怒气
+				if(isset($pa['bskill']) && isset($pa['bskill_'.$pa['bskill']]))
+				{
+					$bsk = $pa['bskill'];
+					$bsk_cost = get_skillvars($bsk,'ragecost');
+					if($bsk_cost)
+					{
+						$pa['rage'] += round($bsk_cost*0.1);
+						# 必杀技能额外返还15点怒气
+						if($bsk == 'c9_lb') $pa['rage'] += get_skillvars('c9_lb','rageback');
+					}
+				}
 			}
 		}
 		# 无论攻击是否命中，计算pd(防守方)因挨打获得的怒气

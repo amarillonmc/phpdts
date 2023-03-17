@@ -51,7 +51,7 @@
 		if(empty($pa['wep_kind'])) get_wep_kind($pa);
 		$range = isset($rangeinfo[$pa['wep_kind']]) ? $rangeinfo[$pa['wep_kind']] : NULL;
 		#「穿杨」效果判定：
-		if(isset($pa['skill_c4_sniper']))
+		if(isset($pa['bskill_c4_sniper']))
 		{
 			//获取射程加成
 			$sk_rn = get_skillvars('c4_sniper','rangegain');
@@ -138,7 +138,7 @@
 			}
 		}
 		#「穿杨」效果判定：
-		if(isset($pa['skill_c4_sniper']) && in_array('r',$pa['ex_keys']))
+		if(isset($pa['bskill_c4_sniper']) && in_array('r',$pa['ex_keys']))
 		{
 			$key = array_search('r',$pa['ex_keys']);
 			unset($pa['ex_keys'][$key]);
@@ -150,8 +150,8 @@
 	function combat_prepare_events(&$pa,&$pd,$active)
 	{
 		# 社团技能初始化（主动型/战斗技）
-		if(isset($pa['bskill'])) attr_extra_active_skills($pa,$pd,$active);
-		if(isset($pd['bskill'])) attr_extra_active_skills($pd,$pa,$active); //这可能吗……？总之先写上没错……
+		attr_extra_active_skills($pa,$pd,$active);
+		attr_extra_active_skills($pd,$pa,$active); 
 		# 社团技能初始化（被动型）（最好不要在这个阶段输出log，把log和成功触发的标记保存进对应角色里，到实际结算效果时再显示。）
 		if(!empty($pa['clbpara']['skill'])) attr_extra_passive_skills($pa,$pd,$active);
 		if(!empty($pd['clbpara']['skill'])) attr_extra_passive_skills($pd,$pa,$active);
@@ -776,8 +776,16 @@
 			{
 				//获取体力消耗系数：
 				$sp_cost_r = $pa['club'] == 9 ? 0.2 : 0.25;
-				//获取社团技能对体力消耗系数的修正：
-				$sp_cost_r *= get_clubskill_bonus_spd($pa['club'],$pa['skills']);
+				//获取社团技能对体力消耗系数的修正：（旧）
+				//$sp_cost_r *= get_clubskill_bonus_spd($pa['club'],$pa['skills']);
+				//获取社团技能对体力消耗系数的修正：（新）
+				#「灵力」效果判定：
+				if(isset($pa['skill_c9_spirit']))
+				{
+					$sk_lvl = get_skilllvl('c9_spirit',$pa);
+					$sk_r = 1 - (get_skillvars('c9_spirit','spcloss',$sk_lvl) / 100);
+					$sp_cost_r *= $sk_r;
+				}
 				//获取理论消耗体力最大值：
 				$sp_cost_max = $sp_cost_r*$pa['wepe'];
 				//获取实际消耗体力：
@@ -799,42 +807,15 @@
 			$log .= "发挥了灵力武器{$f}％的威力！<br>";
 		}
 
-		# 重击判定：
-		//获取触发重击需要的最小怒气值
-		if(in_array('c',$pa['ex_keys']))
+		#「必杀」效果判定：（原喊话必杀技）
+		if(isset($pa['bskill_c9_lb']))
 		{
-			$rage_min_cost = $pa['club'] == 9 ? 20 : 10;
-		}
-		else 
-		{
-			$rage_min_cost = $pa['club'] == 9 ? 50 : 30;
-		}
-		if($pa['rage'] >= $rage_min_cost)
-		{
-			//获取触发概率
-			if (isset($pa['message']) || $pa['rage'] >= 255) 
-			{
-				$max_dice = 100;
-			}
-			else 
-			{
-				if($pa['type']) $max_dice = 40;
-				else $max_dice = $pa['club'] == 9 ? 0 : 30;
-			}
-			//掷骰
-			$cri_dice = diceroll(100);
-			if($cri_dice <= $max_dice)
-			{
-				$pa['rage'] -= $rage_min_cost;
-				//获取伤害变化倍率
-				$p = $pa['club'] == 9 ? 2 : 1.5;
-				$dmg_p[]= $p; 
-				//输出log
-				$log .= npc_chat_rev ($pa,$pd,'critical');
-				$log .= "{$pa['nm']}消耗<span class=\"yellow\">{$rage_min_cost}</span>点怒气，";
-				if ($pa['club'] == 9) $log .= "<span class=\"red\">发动必杀技！</span><br>";
-				else $log .= "<span class=\"red\">使出重击！</span><br>";
-			}
+			//获取伤害变化倍率
+			$sk_r = get_skillvars('c9_lb','phydmgr');
+			$dmg_p[]= $sk_r; 
+			//输出log
+			if($pa['type']) $log .= npc_chat_rev ($pa,$pd,'critical');
+			$log .= "<span class=\"red\">发动必杀技！</span><br>";
 		}
 
 		# 连击判定：
@@ -877,7 +858,7 @@
 			$log.="<span class='yellow'>{$pa['nm']}打得{$pd['nm']}落花流水，物理伤害增加了{$sk_p}%！</span><br>";
 		}
 		#「瞄准」判定：
-		if(isset($pa['skill_c4_aiming']))
+		if(isset($pa['bskill_c4_aiming']))
 		{
 			$sk_p = get_skillvars('c4_aiming','phydmgr');
 			$p = 1 + ($sk_p / 100);
@@ -885,7 +866,7 @@
 			$log.="<span class='yellow'>「瞄准」使{$pa['nm']}造成的物理伤害提高了{$sk_p}%！</span><br>";
 		}
 		#「咆哮」判定：
-		if(isset($pa['skill_c4_roar']))
+		if(isset($pa['bskill_c4_roar']))
 		{
 			$sk_p = get_skillvars('c4_roar','phydmgr');
 			$p = 1 + ($sk_p / 100);
@@ -893,7 +874,7 @@
 			$log.="<span class='yellow'>「咆哮」使{$pa['nm']}造成的物理伤害提高了{$sk_p}%！</span><br>";
 		}
 		#「穿杨」判定：
-		if(isset($pa['skill_c4_sniper']))
+		if(isset($pa['bskill_c4_sniper']))
 		{
 			$sk_p = get_skillvars('c4_sniper','phydmgr');
 			$p = 1 + ($sk_p / 100);
@@ -982,7 +963,7 @@
 		}
 
 		#「穿杨」效果判定：
-		if(isset($pa['skill_c4_sniper']) && !isset($pa['pierce_flag']) && !empty($pd['phy_def_flag']))
+		if(isset($pa['bskill_c4_sniper']) && !isset($pa['pierce_flag']) && !empty($pd['phy_def_flag']))
 		{
 			$dice = diceroll(99);
 			# 冴冴说这应该是odds……但是对不起，已经太迟了……^ ^;
@@ -1300,7 +1281,7 @@
 			$log .= $exdmgname[$ex]; //xx
 			if(!empty($pa['ex_dmgdef_log'])) $log .= "被防御效果抵消了！仅";
 			$log .= "造成了<span class=\"red\">{$ex_dmg}</span>点伤害！";
-			if(!empty($pa['ex_dmginf_log'])) $log .= "并使{$pd['name']}{$exdmginf[$pa['ex_dmginf_log']]}了！";
+			if(!empty($pa['ex_dmginf_log'])) $log .= "并使{$pd['nm']}{$exdmginf[$pa['ex_dmginf_log']]}了！";
 			$log .= "<br>";
 			$total_ex_dmg[] = $ex_dmg;
 		}
@@ -1310,7 +1291,7 @@
 	//计算单个属性伤害系数变化
 	function get_ex_base_dmg_p(&$pa,&$pd,$active,$ex,$ex_dmg)
 	{
-		global $ex_good_wep,$ex_inf,$ex_inf_punish,$log;
+		global $ex_good_wep,$ex_inf,$ex_inf_punish,$exdmginf,$exdmgname,$log;
 		# 「高能」效果判定：
 		if(isset($pa['bskill_c5_higheg']) && $ex == 'd')
 		{
@@ -1343,7 +1324,7 @@
 		global $log;
 		$ex_dmg_p = Array();
 		#「咆哮」判定：
-		if(isset($pa['skill_c4_roar']))
+		if(isset($pa['bskill_c4_roar']))
 		{
 			//获取倍率
 			$sk_p = get_skillvars('c4_roar','exdmgr');
@@ -1403,6 +1384,16 @@
 				$p = 1+($sk_p / 100);
 				$log.= "<span class='yellow'>「破甲」使{$pa['nm']}造成的最终伤害提高了{$sk_p}%！</span><br>";
 				$fin_dmg_p[] = $p;
+			}
+		}
+		# 「心火」效果判定：
+		if(isset($pa['bskill_c9_heartfire']))
+		{
+			$sk_p = get_skillvars('c9_heartfire','findmgr');
+			if($sk_p)
+			{
+				$log.= "<span class='lime'>{$pa['nm']}敛神聚气，谷足力量凝聚在这凌厉一击上！</span><br>";
+				$fin_dmg_p[] = $sk_p;
 			}
 		}
 
@@ -1534,6 +1525,13 @@
 			if (in_array('H',$pa['ex_keys'])) {
 				$hp_d = floor ( $hp_d / 10 );
 			}
+			# 「冰心」技能判定
+			if (isset($pa['skill_c9_iceheart']))
+			{
+				$sk_r = 1 - (get_skillvars('c9_iceheart','hpshloss') / 100);
+				$hp_d = floor($hp_d * $sk_r);
+				$log .= "<span class='yellow'>「冰心」使{$pa['nm']}受到的反噬伤害降低了！</span><br>";
+			}
 			if($hp_d > 0)
 			{
 				$log .= "惨无人道的攻击对{$pa['nm']}自身造成了<span class=\"red\">$hp_d</span>点<span class=\"red\">反噬伤害！</span><br>";
@@ -1550,7 +1548,7 @@
 	//防守方(pd)在受到伤害后触发的事件
 	function get_hurt_events(&$pa,&$pd,$active) 
 	{
-		global $log,$infatt_rev,$infinfo;
+		global $log,$infatt_rev,$infinfo,$dtinfinfo;
 
 		# 「灭气」技能效果
 		if(isset($pa['skill_c1_burnsp']))
@@ -1600,6 +1598,26 @@
 			}
 		}
 
+		# 「冰心」效果判定
+		if (isset($pd['skill_c9_iceheart']) && !empty($pd['inf']))
+		{
+			$purify = get_skillvars('c9_iceheart','purify');
+			# 获取当前异常队列
+			$now_inf = str_split($pd['inf']);
+			# 计算最多可净化异常数
+			$purify = min($purify,count($now_inf));
+			for($p=0;$p<$purify;$p++)
+			{
+				$heal_inf = $now_inf[$p];
+				$flag = heal_inf_rev($pd,$heal_inf);
+				if($flag)
+				{
+					$log .= "<span class='yellow'>{$pd['nm']}敛神聚气，从{$dtinfinfo[$heal_inf]}中恢复了！</span><br>";
+					$pd['rage'] = max(255,$pd['rage']+get_skillvars('c9_iceheart','ragegain'));
+				}
+			}
+		}
+
 		# 将pa造成的伤害记录在pd的成就里
 		if(!$pd['type'] && $pa['final_damage'] >= 1000000) $pd['clbpara']['achvars']['takedmg'] = $pa['final_damage'];
 
@@ -1633,6 +1651,19 @@
 		if(strpos($pa['inf'],$infnm) === false)
 		{
 			$pa['inf'] .= $infnm;
+			//$pa['combat_inf'] .= $infnm;		
+			return 1;	
+		}
+		return 0;
+	}
+
+	# 从异常状态中恢复
+	function heal_inf_rev(&$pa,$infnm)
+	{
+		global $log;
+		if(strpos($pa['inf'],$infnm) !== false)
+		{
+			$pa['inf'] = str_replace($infnm,"",$pa['inf']);
 			//$pa['combat_inf'] .= $infnm;		
 			return 1;	
 		}

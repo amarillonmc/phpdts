@@ -3,6 +3,8 @@
 <!--{eval $cskill = $cskills[$skid];}-->
 <!--{if isset($cskill['maxlvl'])}-->
     <!--{eval $now_clvl = get_skilllvl($skid,$uidata); $max_lvl_flag = $now_clvl >= $cskill['maxlvl'] ? 1 : 0;}-->
+<!--{else}-->
+    <!--{eval $max_lvl_flag = 0;}-->
 <!--{/if}-->
 <tr>
     <td class="b1" width="40">
@@ -43,12 +45,11 @@
                     <td valign="center" align="center">
                         <span class="yellow">
                             <!-- 未满足解锁条件时显示的文本，自己填或使用下面的方式 -->
-                            <!--{eval $skid_lockdesc = $cskill['lockdesc'][$unlock_flag];}-->
                             <!--{if is_array($unlock_flag)}-->
                                 <!--{eval $unlock_cd = $unlock_flag[1]; $unlock_flag = $unlock_flag[0]; $unlock_flag = str_replace("[:cd:]","$unlock_cd",$unlock_flag);}-->
                             <!--{/if}-->
                             <!--{eval $unlock_flag = is_array($cskill['lockdesc']) ? $cskill['lockdesc'][$unlock_flag] : $cskill['lockdesc']; $unlock_flag = isset($unlock_cd) ? str_replace("[:cd:]","$unlock_cd",$unlock_flag) : $unlock_flag;}-->
-                            <span class="yellow">$skid_lockdesc</span>
+                            $unlock_flag
                         </span>
                     </td>
                 </tr>

@@ -14,7 +14,7 @@ $club_skillslist = Array
 	6  => Array('s_hp','s_ad','f_heal'), #'宛如疾风',
 	7  => Array('s_hp','s_ad','f_heal'), #'锡安成员',
 	8  => Array('s_hp','s_ad','f_heal'), #'黑衣组织',
-	9  => Array('s_hp','s_ad','f_heal'), #'超能力者',
+	9  => Array('s_hp','s_ad','f_heal','c9_spirit','c9_lb','c9_iceheart','c9_charge','c9_heartfire'), #'超能力者',
 	10 => Array('s_hp','s_ad','f_heal'), #'高速成长',
 	11 => Array('s_hp','s_ad','f_heal'), #'富家子弟',
 	12 => Array('s_hp','s_ad','f_heal'), #'全能骑士',
@@ -352,7 +352,7 @@ $cskills = Array
 		'effect' => Array(
 			0 => Array('skillpara|c2_annihil-active' => '=::1'),
 		),
-		'events' => Array('setstarttimes_c2_annihil','getskill_buff_annihil'),
+		'events' => Array('active_news','setstarttimes_c2_annihil','getskill_buff_annihil'),
 		'link' => Array('buff_annihil'),
 		'vars' => Array(
 			'lasttimes' => 200, //持续时间 仅供介绍文本显示用
@@ -861,6 +861,140 @@ $cskills = Array
 			'skillpara|c5_double-active_t' => '[:skillpara|c5_double-active_t:] < 2',
 			'lvl' => '[:lvl:] >= 19',
 			'wepk+wep_kind' => "[:wepk:] == 'WD' || [:wepk:] == 'WDG' || [:wepk:] == 'WDF' || (!empty([:wep_kind:]) && [:wep_kind:] == 'D')",
+		),
+	),
+	'c9_kotodama' => Array
+	(
+		'name' => '言灵', //未完成
+		'tags' => Array('passive'),
+		'desc' => '使用灵力武器主动攻击敌人时，可通过喊话触发特殊效果<br>
+		升级该技能可解锁更多触发关键词，以下是目前可触发的关键词：',
+		'maxlvl' => 3,
+		'cost' => Array(3,3,4,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">技能「言灵」升级成功。</span>',
+		'status' => Array('skillpara|c9_kotodama-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c9_kotodama-lvl' => '+=::1'),
+		),
+		'svars' => Array(
+			'lvl' => 0, 
+		),
+		'vars' => Array(
+		),
+	),
+	'c9_spirit' => Array
+	(
+		'name' => '灵力',
+		'tags' => Array('passive'),
+		'desc' => '敌人攻击你时，其命中率降低<span class="yellow">[:accloss:]%</span>，连击命中率惩罚<span class="yellow">+[:rbloss:]%</span><br>
+		你使用灵系武器的体力消耗降低<span class="yellow">[:spcloss:]%</span>',
+		'maxlvl' => 3,
+		'cost' => Array(3,3,4,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">技能「灵力」升级成功。</span>',
+		'status' => Array('skillpara|c9_spirit-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c9_spirit-lvl' => '+=::1'),
+		),
+		'svars' => Array(
+			'lvl' => 0, //初次获得时等级为0
+		),
+		'vars' => Array(
+			'accloss' => Array(0,4,8,12), 
+			'rbloss' => Array(0,2,3,4),
+			'spcloss' => Array(40,50,60,70),
+		),
+	),
+	'c9_lb' => Array
+	(
+		'name' => '必杀',
+		'tags' => Array('battle'),
+		'desc' => '本次攻击造成物理伤害<span class="yellow">×[:phydmgr:]</span><br>
+		消耗<span class="yellow">[:ragecost:]</span>点怒气，若拥有<span class="yellow">重击辅助</span>属性会额外返还<span class="yellow">[:rageback:]</span>点怒气',
+		'bdesc' => '本次攻击物理伤害<span class="yellow">×[:phydmgr:]</span>，消耗<span class="red">[:ragecost:]</span>怒气',
+		'vars' => Array(
+			'ragecost' => 40,
+			'rageback' => 6,
+			'phydmgr' => 2, 
+		),
+		'lockdesc' => Array(
+			'lvl' => '3级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 3',
+		),
+	),
+	'c9_iceheart' => Array
+	(
+		'name' => '冰心',
+		'tags' => Array('passive'),
+		'desc' => '使用灵力武器攻击时，你受到的反噬伤害降低<span class="yellow">[:hpshloss:]%</span><br>
+		受到伤害时，即刻解除<span class="yellow">[:purify:]</span>个异常/受伤状态。<br>
+		每通过技能解除1个异常/受伤状态，你的怒气提升<span class="yellow">[:ragegain:]</span>点',
+		'vars' => Array(
+			'hpshloss' => 80,
+			'purify' => 1, 
+			'ragegain' => 40, 
+		),
+		'lockdesc' => Array(
+			'lvl' => '7级时解锁',
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">灵力武器</span>时生效',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 7',
+			'wepk+wep_kind' => "[:wepk:] == 'WF' || [:wepk:] == 'WCF' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wepk:] == 'WDF' || (!empty([:wep_kind:]) && [:wep_kind:] == 'F')",
+		),
+	),
+	'c9_charge' => Array
+	(
+		'name' => '充能',
+		'tags' => Array('cd'),
+		'desc' => '发动后立即增加<span class="yellow">[:rageadd:]</span>点怒气。<br>
+		前<span class="yellow">[:freet:]</span>次发动没有冷却时间，之后每次发动冷却时间<span class="clan">[:cd:]</span>秒<br>
+		本局已发动：<span class="yellow">[^skillpara|c9_charge-active_t^]</span>次',
+		'input' => '发动',
+		'log' => '<span class="lime">技能「充能」发动成功。</span><br>',
+		'events' => Array('charge','active_news'),
+		'status' => Array('skillpara|c9_charge-active_t'),
+		'effect' => Array(
+			0 => Array('skillpara|c9_charge-active_t' => '+=::1'),
+		),
+		'svars' => Array(
+			'active_t' => 0,
+		),
+		'vars' => Array(
+			'rageadd' => 100, 
+			'freet' => 2,
+			'cd' => 600, //冷却时间
+		),
+		'pvars' => Array(
+			'skillpara|c9_charge-active_t',
+		),
+		'lockdesc' => Array(
+			'lvl' => '11级时解锁',
+			'skillcooldown' => '技能冷却中！<br>剩余冷却时间：<span class="red">[:cd:]</span> 秒',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 11',
+			'skillcooldown' => 0,
+		),
+	),
+	'c9_heartfire' => Array
+	(
+		'name' => '心火',
+		'tags' => Array('battle'),
+		'desc' => '本次攻击造成的最终伤害<span class="yellow">×[:findmgr:]</span>。消耗<span class="yellow">[:ragecost:]</span>点怒气<br>',
+		'bdesc' => '本次攻击最终伤害<span class="yellow">×[:findmgr:]</span>，消耗<span class="red">[:ragecost:]</span>怒气',
+		'vars' => Array(
+			'ragecost' => 60,
+			'findmgr' => 2, 
+		),
+		'lockdesc' => Array(
+			'lvl' => '19级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 19',
 		),
 	),
 	'tl_cstick' => Array

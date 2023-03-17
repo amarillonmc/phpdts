@@ -86,7 +86,7 @@ function updateskill(&$data=NULL)
 	
 	# 变更社团时 获取社团技能
 	//include_once GAME_ROOT.'./include/game/revclubskills.func.php';
-	if(empty($data))
+	if(!isset($data))
 	{
 		$cks = $club_skillslist[$club];
 		foreach($cks as $sk) getclubskill($sk,$clbpara);
