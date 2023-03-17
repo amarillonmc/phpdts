@@ -28,7 +28,7 @@
 				if($bsk_cost) $pa['rage'] -= $bsk_cost;
 				# 成功释放主动技，应用标记
 				$pa['bskill_'.$bsk] = 1;
-				$log .= "<span class=\"lime\">{$pa['nm']}对{$pd['nm']}发动了技能「{$bsk_name}」！</span><br>";
+				$pa['bskilllog'] .= "<span class=\"lime\">{$pa['nm']}对{$pd['nm']}发动了技能「{$bsk_name}」！</span><br>";
 				# 限次技每次使用时次数+1
 				if(get_skilltags($bsk,'limit'))
 				{
@@ -55,7 +55,7 @@
 			shuffle($npc_skill);
 			foreach($npc_skill as $sk)
 			{
-				if(get_skilltags($sk,'battle') && !check_skill_unlock($sk,$pa) && !check_skill_cost($pa['bskill'],$pa))
+				if(get_skilltags($sk,'battle') && !check_skill_unlock($sk,$pa) && !check_skill_cost($sk,$pa))
 				{
 					$bsk = $sk;
 					$bsk_name = $cskills[$bsk]['name'];

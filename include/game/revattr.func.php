@@ -151,7 +151,7 @@
 	{
 		# 社团技能初始化（主动型/战斗技）
 		attr_extra_active_skills($pa,$pd,$active);
-		attr_extra_active_skills($pd,$pa,$active); 
+		//attr_extra_active_skills($pd,$pa,$active); 
 		# 社团技能初始化（被动型）（最好不要在这个阶段输出log，把log和成功触发的标记保存进对应角色里，到实际结算效果时再显示。）
 		if(!empty($pa['clbpara']['skill'])) attr_extra_passive_skills($pa,$pd,$active);
 		if(!empty($pd['clbpara']['skill'])) attr_extra_passive_skills($pd,$pa,$active);
@@ -1952,7 +1952,7 @@
 		#「双响」效果判定
 		if(isset($pa['bskill_c5_double']))
 		{
-			unset($pa['bskill_c5_double']);
+			unset($pa['bskill_c5_double']);unset($pa['bskilllog']);
 			$log .= "<span class=\"yellow\">{$pa['nm']}引爆了预埋的另一组爆炸物！</span><br>";
 			$loop = 1;
 		}
