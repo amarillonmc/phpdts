@@ -101,7 +101,7 @@ function check_trap_def_event(&$pa,$damage,$playerflag=0,$selflag=0)
 function calc_trap_reuse_rate($pa,$playerflag=0,$selflag=0)
 {
 	# 基础回收率
-	$fdrate = 5 + $lvl/3;
+	$fdrate = 5 + $pa['lvl']/3;
 	# 拆弹专家社团加成
 	if($pa['club'] == 5) $fdrate += 35;
 	# 自雷回收加成
@@ -1192,7 +1192,7 @@ function getcorpse($item){
 
 	if($item == 'destory')
 	{
-		if(!$allow_destory_corpse || in_array($edata['tyep'],$no_destory_corpse_type))
+		if(!$allow_destory_corpse || in_array($edata['type'],$no_destory_corpse_type))
 		{
 			$log.="你还想对这具可怜的尸体干什么？麻烦给死者一点基本的尊重！<br>";
 			$action = '';

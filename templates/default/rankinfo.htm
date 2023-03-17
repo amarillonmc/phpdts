@@ -2,8 +2,8 @@
 	<TR height="20">
 		<TD class="b1" width="30px"><span>排名</span></TD>
 		<TD class="b1" width="45px"><span>UID</span></TD>
+		<TD class="b1" width="95px"><span>{lang nick}</span></TD>
 		<TD class="b1" width="95px"><span>{lang name}</span></TD>
-		<TD class="b1" width="75px"><span>{lang nick}</span></TD>
 		<TD class="b1" width="35px"><span>{lang gender}</span></TD>
 		<TD class="b1" width="80px"><span>{lang icon}</span></TD>
 		<TD class="b1" style="maxwidth:120"><span>{lang motto}</span></TD>
@@ -18,8 +18,8 @@
 	<TR height="20">
 		<TD class="b2"><span><!--{if $urdata['number']==1}--><a title="触手！"><span class="red">榜首</span></a><!--{elseif $urdata['number']<=10}--><span class="yellow">$urdata['number']</span><!--{else}-->$urdata['number']<!--{/if}--></span></TD>
 		<TD class="b3"><span>$urdata['uid']</span></TD>
-		<TD class="b3"><span><u><a href="user_profile.php?playerID=$urdata['username']">$urdata['username']</a></u></span></TD>
 		<TD class="b3"><span>$urdata['nickinfo']</span></TD>
+		<TD class="b3"><span><u><a href="user_profile.php?playerID=$urdata['username']">$urdata['username']</a></u></span></TD>
 		<TD class="b3"><span><!--{if $urdata['gender']}-->$sexinfo[$urdata['gender']]<!--{else}-->$sexinfo[0]<!--{/if}--></span></TD>
 		<TD class="b3"><span><IMG src="img/$urdata['img']" width="70" height="40" border="0" align="absmiddle"></span></TD>
 		<TD class="b3"><span>$urdata['motto']</span></TD>

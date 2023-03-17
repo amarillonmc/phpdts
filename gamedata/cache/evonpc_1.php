@@ -68,6 +68,21 @@ $enpcinfo = array
 			'gd' => 'f',
 			'icon' => 62,
 			'club' => 4,
+			'clubskill' => Array(),
+			'clubskillpara' => Array
+			(
+				'c4_stable' => Array(
+					'lvl' => 3,
+					'costcount' => 7,
+				),
+				'c4_break' => Array(
+					'lvl' => 1,
+					'costcount' => 6,
+				),
+				'c4_sniper' => Array(
+					'active' => 1,
+				),
+			),
 			'inf' => '',
 			'rage' => 225,
 			'state' => 1,
@@ -123,6 +138,21 @@ $enpcinfo = array
 			'gd' => 'f',
 			'icon' => 64,
 			'club' => 4,
+			'clubskill' => Array(),
+			'clubskillpara' => Array
+			(
+				'c4_stable' => Array(
+					'lvl' => 2,
+					'costcount' => 4,
+				),
+				'c4_break' => Array(
+					'lvl' => 1,
+					'costcount' => 6,
+				),
+				'c4_roar' => Array(
+					'active' => 1,
+				),
+			),
 			'inf' => '',
 			'rage' => 225,
 			'state' => 1,
