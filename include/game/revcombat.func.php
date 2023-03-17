@@ -253,9 +253,6 @@
 		# 传参的时候只用考虑参数位置，不用管pa、pd具体是谁。
 		att_loop_flag:
 		$att_dmg = rev_attack($pa,$pd,$active);
-		# 检查是否循环打击流程：一些特殊技能可能需要此效果
-		$att_loop = check_loop_rev_attack($pa,$pd,$active);
-		if($att_loop) goto att_loop_flag;
 
 		# 存在暴毙标识：进攻方(pa)在进攻过程中未造成伤害就暴毙，可能是因为触发了武器直死。
 		if(isset($pa['gg_flag']))
@@ -273,6 +270,13 @@
 			//判断是否触发击杀或复活：1-继续战斗；0-中止战斗
 			$att_result = rev_combat_result($pa,$pd,$active);
 		} 
+
+		# 检查是否循环打击流程：一些特殊技能可能需要此效果
+		if($att_result)
+		{
+			$att_loop = check_loop_rev_attack($pa,$pd,$active);
+			if($att_loop) goto att_loop_flag;
+		}
 
 		# 反击流程判断：$att_result>0，且敌人非治疗姿态或重视躲藏才会触发反击。 TODO：为反击条件新建一个函数
 		if ($pd['hp']>0 && $att_result>0 && check_can_counter($pa,$pd,$active)) 
@@ -529,6 +533,8 @@
 		$pa['wep_name'] = $pa['wep'];
 
 		$log .= "{$pa['nm']}使用{$pa['wep']}<span class=\"yellow\">{$attinfo[$pa['wep_kind']]}</span>{$pd['nm']}！<br>";
+		# 战斗技文本
+		if(isset($pa['bskilllog'])) $log.= $pa['bskilllog'];
 
 		# 命中次数大于0时 执行伤害判断
 		if ($pa['hitrate_times'] > 0) 

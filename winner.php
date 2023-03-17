@@ -36,7 +36,7 @@ if($command == 'info') {
 			$wdata['teamID'] = '<span class="gold">【团队 - '.$wdata['teamID'].'】</span>';
 			$wdata['iconImg'] = 't_'.$wdata['teamIcon'].'.gif';
 			$wdata['nickinfo'] = '<span class="gold">团队胜利</span>';
-			$wdata['name'] = json_decode($wdata['teamMate'],true);
+			$wdata['name'] = explode("+",$wdata['teamMate']);
 		}
 		else 
 		{
