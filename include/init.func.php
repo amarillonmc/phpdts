@@ -4,9 +4,11 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
-function init_icon_states(&$pa,$ismeet=0)
+function init_icon_states(&$pa,$pd,$ismeet=0)
 {
 	global $sexinfo,$typeinfo,$fog;
+	# 「天眼」技能判定
+	if(!check_skill_unlock('c6_godeyes',$pd)) $ismeet = 1;
 	//雾天显示？？？
 	if($fog && !$ismeet)
 	{
@@ -33,9 +35,17 @@ function init_icon_states(&$pa,$ismeet=0)
 	}
 }
 
-function init_hp_states(&$pa,$ismeet=0)
+function init_hp_states(&$pa,$pd,$ismeet=0)
 {
 	global $fog,$hpinfo,$spinfo,$rageinfo;
+	# 「天眼」技能判定
+	if(!check_skill_unlock('c6_godeyes',$pd))
+	{
+		$pa['hpstate'] = $pa['hp'].' / '.$pa['mhp'];
+		$pa['spstate'] = $pa['sp'].' / '.$pa['msp'];
+		$pa['ragestate'] = $pa['rage'];
+		return;
+	}
 	if($fog && !$ismeet)
 	{
 		$pa['hpstate'] = '？？？';
@@ -92,9 +102,17 @@ function init_hp_states(&$pa,$ismeet=0)
 	}
 }
 
-function init_wep_states(&$pa,$ismeet=0)
+function init_wep_states(&$pa,$pd,$ismeet=0)
 {
 	global $wepeinfo,$fog;
+	# 「天眼」技能判定
+	if(!check_skill_unlock('c6_godeyes',$pd))
+	{
+		$pa['wepestate'] = $pa['wepe'];
+		$pa['wep_words'] = parse_info_desc($pa['wep'],'m');
+		$pa['wepk_words'] =parse_info_desc($pa['wepk'],'k');
+		return;
+	}
 	if($fog && !$ismeet)
 	{
 		$pa['wepestate'] = '？？？';
@@ -124,9 +142,11 @@ function init_wep_states(&$pa,$ismeet=0)
 	$pa['wepk_words'] = parse_info_desc($pa['wepk'],'k');
 }
 
-function init_inf_states(&$pa,$ismeet=0)
+function init_inf_states(&$pa,$pd,$ismeet=0)
 {
 	global $infinfo,$poseinfo,$tacinfo,$fog;
+	# 「天眼」技能判定
+	if(!check_skill_unlock('c6_godeyes',$pd)) $ismeet = 1;
 	if($fog && !$ismeet)
 	{
 		$pa['nameinfo'] = '？？？';

@@ -13,12 +13,12 @@
 		//格式化双方clbpara
 		$edata['clbpara'] = get_clbpara($edata['clbpara']);
 
-		//初始化战场标题
-		$battle_title = init_battle_title($pdata,$edata);
-		//初始化遇敌log
-		$log .= init_battle_log($pdata,$edata);
 		//检查是否为追击状态
 		$ismeet = strpos($pdata['action'],'chase')!==false || strpos($pdata['action'],'dfight')!==false ? 1 : 0;
+		//初始化战场标题
+		$battle_title = init_battle_title($pdata,$edata,$ismeet);
+		//初始化遇敌log
+		$log .= init_battle_log($pdata,$edata,$ismeet);
 		//初始化战斗界面
 		init_battle_rev($pdata,$edata,$ismeet);
 
@@ -121,7 +121,7 @@
 	}
 
 	// 初始化战斗界面标题
-	function init_battle_title($pa,$pd)
+	function init_battle_title($pa,$pd,$ismeet=0)
 	{
 		if(strpos($pa['action'],'chase')!==false)
 		{
@@ -140,8 +140,10 @@
 	}
 
 	// 初始化战斗界面log
-	function init_battle_log($pa,$pd)
+	function init_battle_log($pa,$pd,$ismeet=0)
 	{
+		global $fog;
+		$pd['name'] = $fog && !$ismeet && check_skill_unlock('c6_godeyes',$pa) ? '？？？' : $pd['name'];
 		if(strpos($pa['action'],'chase')!==false)
 		{
 			if(strpos($pa['action'],'pchase')!==false)
@@ -165,7 +167,7 @@
 			}
 			else
 			{
-				$battle_log ="你发现敌人了<span class=\"red\">{$pd['name']}</span>！<br>对方好像完全没有注意到你！<br>";
+				$battle_log ="你发现了敌人<span class=\"red\">{$pd['name']}</span>！<br>对方好像完全没有注意到你！<br>";
 			}
 		}
 		return $battle_log;

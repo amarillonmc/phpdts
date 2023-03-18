@@ -290,6 +290,37 @@
 			$log .= $active ? "<span class='yellow'>技能已激活！</span><br>" : "<span class='yellow'>停用了技能效果。</span><br>" ; 
 			set_skillpara($sk,'active',$active,$clbpara);
 		}
+		# 事件：天运
+		if($event == 'c6_godluck' || $event == 'c6_godsend')
+		{
+			$dice0 = rand(1,2);
+			$dice1 = rand(get_skillvars($event,'flucmin'),get_skillvars($event,'flucmax'));
+			if($event == 'c6_godluck')
+			{
+				if($dice0 == 1)
+				{
+					set_skillpara($event,'accloss',get_skillpara($event,'accloss',$clbpara)+$dice1,$clbpara);
+					set_skillpara($event,'rbloss',get_skillpara($event,'rbloss',$clbpara)+$dice1,$clbpara);
+				}
+				else 
+				{
+					set_skillpara($event,'accgain',get_skillpara($event,'accgain',$clbpara)+$dice1,$clbpara);
+					set_skillpara($event,'rbgain',get_skillpara($event,'rbgain',$clbpara)+$dice1,$clbpara);
+				}
+			}
+			else 
+			{
+				if($dice0 == 1)
+				{
+					set_skillpara($event,'actgain',get_skillpara($event,'actgain',$clbpara)+$dice1,$clbpara);
+					set_skillpara($event,'hidegain',get_skillpara($event,'hidegain',$clbpara)+$dice1,$clbpara);
+				}
+				else 
+				{
+					set_skillpara($event,'countergain',get_skillpara($event,'countergain',$clbpara)+$dice1,$clbpara);
+				}
+			}
+		}
 		return 1;
 	}
 

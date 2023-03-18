@@ -63,7 +63,7 @@
 	//获取武器对应熟练度
 	function get_wep_skill(&$pa)
 	{
-		global $skillinfo;
+		global $skillinfo,$log;
 		if(empty($pa['wep_kind'])) get_wep_kind($pa);
 		# 获取真实熟练度 保存在$pa['wep_skill']内
 		if ($pa['club'] == 18)
@@ -73,6 +73,16 @@
 		else
 		{
 			$wep_skill = $pa[$skillinfo[$pa['wep_kind']]];
+		}
+		# 「天威」技能判定
+		if(isset($pa['bskill_c6_godpow']))
+		{
+			$sk_fix = min($pa['rage']+($pa['lvl']/6),get_skillvars('c6_godpow','skmax'));
+			if(!empty($sk_fix))
+			{
+				$wep_skill += $sk_fix;
+				$pa['bskilllog2'] .='<span class="yellow">「天威」使'.$pa['nm'].'的熟练度暂时增加了'.$sk_fix.'点！</span><br>';
+			}
 		}
 		return $wep_skill;
 	}
@@ -137,11 +147,16 @@
 				//$log .= "百战使{$pa['nm']}拥有了【{$itemspkinfo[$sk_def]}】属性！<br>";
 			}
 		}
-		#「穿杨」效果判定：
+		# 「穿杨」效果判定：
 		if(isset($pa['bskill_c4_sniper']) && in_array('r',$pa['ex_keys']))
 		{
 			$key = array_search('r',$pa['ex_keys']);
 			unset($pa['ex_keys'][$key]);
+		}
+		# 「天义」效果判定：
+		if(isset($pa['skill_c6_justice']) && (empty($pa['ex_keys']) || !in_array('N',$pa['ex_keys'])))
+		{
+			$pa['ex_keys'][] = 'N';
 		}
 		return;
 	}
@@ -421,6 +436,21 @@
 		{	
 			$p = attr_extra_19_crimson($pa,$pd,$active,'defend');
 			if(isset($p)) return $p;
+		}
+
+		# 「天佑」技能判定
+		if(isset($pd['skill_buff_godbless']))
+		{
+			$no_type = get_skillvars('buff_godbless','no_type');
+			if(in_array($pa['type'],$no_type))
+			{
+				$log .= "<span class=\"yellow\">{$pa['nm']}的攻击不受「天佑」影响！</span><br>";
+			}
+			else 
+			{
+				$log .= "<span class=\"yellow\">「天佑」使{$pa['nm']}的攻击没能造成任何伤害！</span><br>";
+				return 0;
+			}
 		}
 
 		# 数据护盾：这个有意思
@@ -899,8 +929,12 @@
 		if(in_array('B',$pd['ex_keys']))
 		{
 			$dice = diceroll(99);
+			# 失效率
+			$obbs = 1 - $specialrate['B'];
+			# 「天义」效果判定：
+			if(isset($pa['skill_c6_justice'])) $obbs *= get_skillvars('c6_justice','pdefbkr');
 			//检查抹消属性是否生效
-			if($dice < $specialrate['B'])
+			if($dice > $obbs)
 			{
 				$pd['phy_def_flag'] =  2;
 			}
@@ -914,8 +948,12 @@
 		if(!isset($pd['phy_def_flag']) && in_array('A',$pd['ex_keys']))
 		{
 			$dice = diceroll(99);
+			# 失效率
+			$obbs = 10;
+			# 「天义」效果判定：
+			if(isset($pa['skill_c6_justice'])) $obbs *= get_skillvars('c6_justice','pdefbkr');
 			//检查防御属性是否生效
-			if($dice < 90)
+			if($dice > $obbs)
 			{
 				$pd['phy_def_flag'] =  1;
 			}
@@ -929,8 +967,11 @@
 		if(!isset($pd['phy_def_flag']) && in_array($def_kind[$pa['wep_kind']],$pd['ex_keys']))
 		{
 			$dice = diceroll(99);
-			//检查防御属性是否生效
-			if($dice < 90)
+			# 失效率
+			$obbs = 10;
+			# 「天义」效果判定：
+			if(isset($pa['skill_c6_justice'])) $obbs *= get_skillvars('c6_justice','pdefbkr');
+			if($dice > $obbs)
 			{
 				$pd['phy_def_flag'] = $def_kind[$pa['wep_kind']];
 			}
@@ -1548,39 +1589,7 @@
 	//防守方(pd)在受到伤害后触发的事件
 	function get_hurt_events(&$pa,&$pd,$active) 
 	{
-		global $log,$infatt_rev,$infinfo,$dtinfinfo;
-
-		# 「灭气」技能效果
-		if(isset($pa['skill_c1_burnsp']))
-		{
-			$pd['sp'] = max($pd['sp']-round($pa['final_damage']*2/3),1);
-			//$log .= "<span class='yellow'>「灭气」使{$pd['nm']}的体力降低了！</span><br>";
-		}
-
-		# 「猛击」眩晕效果
-		if(isset($pa['skill_c1_crit']))
-		{
-			$sk_lvl = get_skilllvl('c1_crit',$pa);
-			$sk_lst = get_skillvars('c1_crit','stuntime',$sk_lvl);
-			getclubskill('inf_dizzy',$pd['clbpara']);
-			$pd['clbpara']['lasttimes']['inf_dizzy'] = $sk_lst;
-			// 猛击logsave……先放这，以后再整理
-			global $now;
-			if(!$pd['type'] && $pd['nm']!='你')
-			{
-				$pd['logsave'] .= "凶猛的一击直接将你打晕了过去！<br>";
-			}
-			elseif(!$pa['type'] && $pa['nm']!='你')
-			{
-				$pa['logsave'] .= "你凶猛的一击直接将<span class=\"yellow\">{$pd['name']}}</span>打晕了过去！<br>";
-			}
-		}
-
-		# 真蓝凝防守事件：
-		if($pd['type'] == 19 && $pd['name'] == '蓝凝')
-		{
-			attr_extra_19_azure($pa,$pd,$active);
-		}
+		global $log,$infinfo;
 		
 		# pd存在防具受损况，在这里应用
 		if(!empty($pd['armor_hurt']))
@@ -1598,29 +1607,9 @@
 			}
 		}
 
-		# 「冰心」效果判定
-		if (isset($pd['skill_c9_iceheart']) && !empty($pd['inf']))
-		{
-			$purify = get_skillvars('c9_iceheart','purify');
-			# 获取当前异常队列
-			$now_inf = str_split($pd['inf']);
-			# 计算最多可净化异常数
-			$purify = min($purify,count($now_inf));
-			for($p=0;$p<$purify;$p++)
-			{
-				$heal_inf = $now_inf[$p];
-				$flag = heal_inf_rev($pd,$heal_inf);
-				if($flag)
-				{
-					$log .= "<span class='yellow'>{$pd['nm']}敛神聚气，从{$dtinfinfo[$heal_inf]}中恢复了！</span><br>";
-					$pd['rage'] = max(255,$pd['rage']+get_skillvars('c9_iceheart','ragegain'));
-				}
-			}
-		}
-
 		# 将pa造成的伤害记录在pd的成就里
 		if(!$pd['type'] && $pa['final_damage'] >= 1000000) $pd['clbpara']['achvars']['takedmg'] = $pa['final_damage'];
-
+		
 		return;
 	}
 
@@ -1670,10 +1659,76 @@
 		return 0;
 	}
 
-	//受到技能异常（眩晕、石化）
-	function get_skill_inf(&$pa,$sk,$times,$type=0)
+	//打击结束，已经应用扣血后的事件结算
+	function rev_combat_result_events(&$pa,&$pd,$active)
 	{
-		# 受到眩晕效果
+		global $log,$infinfo,$dtinfinfo;
+
+		# 真蓝凝防守事件：
+		if($pd['type'] == 19 && $pd['name'] == '蓝凝')
+		{
+			attr_extra_19_azure($pa,$pd,$active);
+		}
+
+		# 「灭气」技能效果
+		if(isset($pa['skill_c1_burnsp']))
+		{
+			$pd['sp'] = max($pd['sp']-round($pa['final_damage']*2/3),1);
+			//$log .= "<span class='yellow'>「灭气」使{$pd['nm']}的体力降低了！</span><br>";
+		}
+
+		# 「猛击」眩晕效果
+		if(isset($pa['skill_c1_crit']))
+		{
+			$sk_lvl = get_skilllvl('c1_crit',$pa);
+			$sk_lst = get_skillvars('c1_crit','stuntime',$sk_lvl);
+			getclubskill('inf_dizzy',$pd['clbpara']);
+			set_lasttimes('inf_dizzy',$sk_lst,$pd['clbpara']);
+			//$pd['clbpara']['lasttimes']['inf_dizzy'] = $sk_lst;
+			// 猛击logsave……先放这，以后再整理
+			global $now;
+			if(!$pd['type'] && $pd['nm']!='你')
+			{
+				$pd['logsave'] .= "凶猛的一击直接将你打晕了过去！<br>";
+			}
+			elseif(!$pa['type'] && $pa['nm']!='你')
+			{
+				$pa['logsave'] .= "你凶猛的一击直接将<span class=\"yellow\">{$pd['name']}}</span>打晕了过去！<br>";
+			}
+		}
+		
+		# 「冰心」效果判定
+		if (isset($pd['skill_c9_iceheart']) && !empty($pd['inf']))
+		{
+			$purify = get_skillvars('c9_iceheart','purify');
+			# 获取当前异常队列
+			$now_inf = str_split($pd['inf']);
+			# 计算最多可净化异常数
+			$purify = min($purify,count($now_inf));
+			for($p=0;$p<$purify;$p++)
+			{
+				$heal_inf = $now_inf[$p];
+				$flag = heal_inf_rev($pd,$heal_inf);
+				if($flag)
+				{
+					$log .= "<span class='yellow'>{$pd['nm']}敛神聚气，从{$dtinfinfo[$heal_inf]}中恢复了！</span><br>";
+					$pd['rage'] = max(255,$pd['rage']+get_skillvars('c9_iceheart','ragegain'));
+				}
+			}
+		}
+
+		# 「天佑」技能判定
+		if(isset($pd['skill_c6_godbless']) && empty($pd['skill_buff_godbless']) && !empty($pa['final_damage']))
+		{
+			$actmhp = get_skillvars('c6_godbless','actmhp');
+			if($pa['final_damage'] >= $pd['mhp']*($actmhp/100) && $pd['hp'] > 0)
+			{
+				getclubskill('buff_godbless',$pd['clbpara']);
+				$log .= "<span class=\"yellow\">{$pd['nm']}的技能「天佑」被触发，暂时进入了无敌状态！</span><br>";
+			}
+		}
+
+		return;
 	}
 
 	// 获取pa在探索时的遇敌率（遇敌率越低道具发现率越高）
@@ -1874,7 +1929,7 @@
 		# 获取社团技能对反击率的修正
 		$counter *= rev_get_clubskill_bonus_counter($pd['club'],$pd['skills'],$pd,$pa['club'],$pa['skills'],$pa);
 		# 获取社团技能对反击率的修正（新）
-		$counter = get_clbskill_counterate($pa,$pd,$active,$counter);
+		$counter = get_clbskill_counterate($pd,$pa,$active,$counter);
 
 		# 获取异常状态对反击率的影响
 		if(!empty($pd['inf']))

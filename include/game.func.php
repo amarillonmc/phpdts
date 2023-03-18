@@ -297,13 +297,13 @@ function init_battle_rev($pa,$pd,$ismeet=0)
 	global $sdata,$tdata,$battle_title,$hpcolor;
 	include_once GAME_ROOT.'./include/init.func.php';
 	//初始化头像显示
-	init_icon_states($pa,1); init_icon_states($pd,$ismeet);
+	init_icon_states($pa,$pd,1); init_icon_states($pd,$pa,$ismeet);
 	//初始化状态显示
-	init_hp_states($pa,1); init_hp_states($pd,$ismeet);
+	init_hp_states($pa,$pd,1); init_hp_states($pd,$pa,$ismeet);
 	//初始化武器信息
-	init_wep_states($pa,1); init_wep_states($pd,$ismeet);
+	init_wep_states($pa,$pd,1); init_wep_states($pd,$pa,$ismeet);
 	//初始化异常状态信息
-	init_inf_states($pa,1); init_inf_states($pd,$ismeet);
+	init_inf_states($pa,$pd,1); init_inf_states($pd,$pa,$ismeet);
 	//传参
 	$sdata = $pa; $tdata = $pd;
 }
