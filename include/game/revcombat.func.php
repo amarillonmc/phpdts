@@ -357,24 +357,21 @@
 		}
 
 		# 敌人是玩家，更新logsave
-		if (($active && !$pd['type']) || (!$active && !$pa['type']))
+		if($active && !$pd['type'])
 		{
-			if($active)
-			{
-				$w_log = "手持<span class=\"red\">{$pa['wep_name']}</span>的<span class=\"yellow\">{$pa['name']}</span>向你袭击！<br>";
-				if(isset($pd['logsave'])) $w_log .= $pd['logsave'];
-				if(isset($pd['lvlup_log'])) $w_log .= $pd['lvlup_log'];
-				$w_log .= "你受到其<span class=\"yellow\">$att_dmg</span>点攻击，对其做出了<span class=\"yellow\">$def_dmg</span>点反击。<br>";
-				logsave ($pd['pid'],$now,$w_log,'c');
-			}
-			else
-			{
-				$w_log = "你发现了手持<span class=\"red\">{$pd['wep_name']}</span>的<span class=\"yellow\">{$pd['name']}</span>并且先发制人！<br>你对其做出<span class=\"yellow\">$att_dmg</span>点攻击，受到其<span class=\"yellow\">$def_dmg</span>点反击。<br>";
-				if(isset($pa['logsave'])) $w_log .= $pa['logsave'];
-				if(isset($pa['lvlup_log'])) $w_log .= $pa['lvlup_log'];
-				$w_log .= "你受到其<span class=\"yellow\">$att_dmg</span>点攻击，对其做出了<span class=\"yellow\">$def_dmg</span>点反击。<br>";
-				logsave ($pa['pid'],$now,$w_log,'c');
-			}
+			$w_log = "手持<span class=\"red\">{$pa['wep_name']}</span>的<span class=\"yellow\">{$pa['name']}</span>向你袭击！<br>";
+			if(isset($pd['logsave'])) $w_log .= $pd['logsave'];
+			if(isset($pd['lvlup_log'])) $w_log .= $pd['lvlup_log'];
+			$w_log .= "你受到其<span class=\"yellow\">$att_dmg</span>点攻击，对其做出了<span class=\"yellow\">$def_dmg</span>点反击。<br>";
+			logsave ($pd['pid'],$now,$w_log,'c');
+		}
+		elseif(!$active && !$pa['type'])
+		{
+			$w_log = "你发现了手持<span class=\"red\">{$pd['wep_name']}</span>的<span class=\"yellow\">{$pd['name']}</span>并且先发制人！<br>";
+			if(isset($pa['logsave'])) $w_log .= $pa['logsave'];
+			if(isset($pa['lvlup_log'])) $w_log .= $pa['lvlup_log'];
+			$w_log .= "你对其做出<span class=\"yellow\">$att_dmg</span>点攻击，受到其<span class=\"yellow\">$def_dmg</span>点反击。<br>";
+			logsave ($pa['pid'],$now,$w_log,'c');
 		}
 
 		# 战斗准备事件中触发了跳过战斗标记，直接goto跳转到这个位置。
@@ -535,6 +532,7 @@
 		$log .= "{$pa['nm']}使用{$pa['wep']}<span class=\"yellow\">{$attinfo[$pa['wep_kind']]}</span>{$pd['nm']}！<br>";
 		# 战斗技文本
 		if(isset($pa['bskilllog'])) $log.= $pa['bskilllog'];
+		if(isset($pa['bskilllog2'])) $log.= $pa['bskilllog2'];
 
 		# 命中次数大于0时 执行伤害判断
 		if ($pa['hitrate_times'] > 0) 
@@ -544,6 +542,7 @@
 			if(isset($fix_dmg))
 			{
 				$damage = $fix_dmg;
+				$pa['final_damage'] = $damage;
 				if($damage <= 0)  $log .= "<span class=\"yellow\">造成的总伤害：<span class=\"red\">$damage</span>。</span><br>";
 			}
 			//如无，则正常计算伤害
@@ -698,7 +697,7 @@
 		}
 		else 
 		{
-			$damage = 0;
+			$pa['final_damage'] = $damage = 0;
 			$log .= "但是没有击中！<br>";
 		}
 		//经验结算
@@ -721,7 +720,8 @@
 	function rev_combat_result(&$pa,&$pd,$active)
 	{
 		global $log;
-
+		# 执行扣血后的战斗结算阶段事件
+		rev_combat_result_events($pa,$pd,$active);
 		# 死者(受伤者)pd血量低于0时 结算击杀/复活事件
 		if($pd['hp']<= 0)
 		{
@@ -1029,6 +1029,17 @@
 			$log.="<span class='yellow'>「掠夺」使{$pa['nm']}获得了{$lootgold}元！</span><br>";
 		}
 
+		# 「天威」技能判定
+		if(isset($pa['bskill_c6_godpow']) && $pa['final_damage'] <= $pd['mhp'] * get_skillvars('c6_godpow','mhpr'))
+		{
+			$rageback = get_skillvars('c6_godpow','rageback');
+			if(!empty($rageback))
+			{
+				$pa['rage'] = max(255,$pa['rage']+$rageback);
+				$log .= '<span class="yellow">「天威」使'.$pa['nm'].'的怒气回复了'.$rageback.'点！</span><br>';
+			}
+		}
+
 		return;
 	}
 
@@ -1099,7 +1110,8 @@
 	# 战斗等级提升
 	function lvlup_rev (&$pa,&$pd,$active) 
 	{
-		global $log,$baseexp;
+		global $log,$baseexp,$upexp;
+		if(empty($pa['nm'])) $pa['nm'] = $active ? '你' : $pa['name'];
 		$up_exp_temp = round ( (2 * $pa['lvl'] + 1) * $baseexp );
 		if ($pa['exp'] >= $up_exp_temp && $pa['lvl'] < 255) 
 		{
@@ -1179,8 +1191,9 @@
 			}
 		} elseif ($pa['lvl'] >= 255) {
 			$pa['lvl'] = 255;
-			$exp = $up_exp_temp;
+			$pa['exp'] = $up_exp_temp;
 		}
+		$upexp = round(($pa['lvl']*$baseexp)+(($pa['lvl']+1)*$baseexp));
 		return;
 	}
 

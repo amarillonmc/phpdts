@@ -306,9 +306,11 @@ function itemuse($itmn) {
 		else{$exp++;$wd++;}
 		
 		if ($exp >= $upexp) {
-			include_once GAME_ROOT . './include/state.func.php';
+			//include_once GAME_ROOT . './include/state.func.php';
 			//lvlup ( $exp, $upexp );
-			lvlup ($lvl, $exp, 1);
+			//lvlup ($lvl, $exp, 1);
+			include_once GAME_ROOT . './include/game/revcombat.func.php';
+			lvlup_rev($pdata,$pdata,1);
 		}
 		if ($itms != $nosta) {
 			$itms --;
@@ -766,8 +768,10 @@ function itemuse($itmn) {
 			
 			if ($exp >= $upexp) {
 				global $lvl;
-				include_once GAME_ROOT . './include/state.func.php';
-				lvlup ( $lvl, $exp, 1 );
+				//include_once GAME_ROOT . './include/state.func.php';
+				//lvlup ( $lvl, $exp, 1 );
+				include_once GAME_ROOT . './include/game/revcombat.func.php';
+				lvlup_rev($pdata,$pdata,1);
 			}
 		}
 		if ($itms != $nosta) {

@@ -32,6 +32,8 @@ function calc_real_trap_obbs($pa,$trpnum)
 	if($pa['pose'] == 1) $real_trap_obbs += 3; //攻击和探索姿势略容易踩陷阱
 	# 地点修正：
 	if($pa['pls'] == 0) $real_trap_obbs += 15; //无月之影太恐怖啦
+	# 社团修正
+	if($pa['club'] == 6) $real_trap_obbs *= 0.85; //宛如疾风陷阱触发率*0.85
 	return $real_trap_obbs;
 }
 
@@ -45,20 +47,19 @@ function calc_trap_escape_rate(&$pa,$playerflag=0,$selflag=0)
 	$max_escrate = 90;
 	# 基础回避率：8 + 等级/3
 	$escrate = 8 + $pa['lvl']/3;
-	# 拆弹专家、宛如疾风社团加成
-	if($pa['club'] == 5) $escrate += 12;
-	if($pa['club'] == 6) $escrate += 8;
+	# 宛如疾风社团加成
+	if($pa['club'] == 6) $escrate *= 1.1;
 	# 躲避策略加成
-	if($pa['tactic'] == 4) $escrate += 20;
+	if($pa['tactic'] == 4) $escrate *= 1.2;
 	# 自雷回避加成
-	if($selflag) $escrate += 50;
+	if($selflag) $escrate *= 1.5;
 	# 陷阱探测属性加成（锡安陷阱探测属性效果+10）
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
 	if(empty($pa['ex_keys'])) $pa['ex_keys'] = array_merge(get_equip_ex_array($pa),get_wep_ex_array($pa));
 	if(!empty($pa['ex_keys']) && in_array('M',$pa['ex_keys']))
 	{
 		$pa['minedetect'] = 1;
-		$escrate += $pa['club'] == 7 ? 45 : 35;
+		$escrate *= $pa['club'] == 7 ? 1.45 : 1.35;
 	}
 
 	# 社团技能修正（旧）
@@ -70,7 +71,7 @@ function calc_trap_escape_rate(&$pa,$playerflag=0,$selflag=0)
 	if(!empty($pa['clbpara']['skill']) && !check_skill_unlock('c5_caution',$pa))
 	{
 		$sk_lvl = get_skilllvl('c5_caution',$pa);
-		$escrate += get_skillvars('c5_caution','evgain',$sk_lvl);
+		$escrate *= 1+(get_skillvars('c5_caution','evgain',$sk_lvl)/100);
 	}
 	return min($escrate,$max_escrate);
 }
@@ -154,6 +155,7 @@ function trap(){
 		{
 			$damage = $hp;
 			$goodmancard = 0;
+			goto real_trap_damage;
 		}
 		// 随机数大神的陷阱
 		elseif($itmk0 == 'TO8')
@@ -177,11 +179,18 @@ function trap(){
 			}
 		}
 
-		// 检查陷阱是否被迎击
+		# 检查陷阱是否被迎击
 		$damage = check_trap_def_event($pdata,$damage,$playerflag,$selflag);
+		# 「天佑」技能判定
+		if($damage && $itmk0 != 'TOc' && !check_skill_unlock('buff_godbless',$pdata))
+		{
+			$damage = 0;
+			$log .= "<span class=\"yellow\">「天佑」使你免疫了陷阱伤害！</span><br>";
+		}
 
 		if($damage)
 		{
+			real_trap_damage:
 			$tmp_club=$club;
 			$hp -= $damage; 
 
@@ -230,6 +239,16 @@ function trap(){
 			# 陷阱存活
 			else
 			{
+				# 「天佑」技能判定
+				if(!check_skill_unlock('c6_godbless',$pdata) && check_skill_unlock('buff_godbless',$pdata))
+				{
+					$actmhp = get_skillvars('c6_godbless','actmhp');
+					if($damage >= $pdata['mhp']*($actmhp/100))
+					{
+						getclubskill('buff_godbless',$pdata['clbpara']);
+						$log .= "<span class=\"yellow\">你的技能「天佑」被触发，暂时进入了无敌状态！</span><br>";
+					}
+				}
 				# 检查成就
 				// include_once GAME_ROOT.'./include/game/achievement.func.php';
 				// check_trap_survive_achievement($achievement,$selflag,$itm0,$itme0);
@@ -261,7 +280,16 @@ function trap(){
 					logsave ( $itmsk0, $now, $w_log ,'b');
 				}				
 			}
-			$log .= "糟糕，你触发了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>！<br>不过，身上装备着的自动迎击系统启动了！<span class=\"yellow\">在迎击功能的保护下你毫发无伤。</span><br>";
+			$log .= "糟糕，你触发了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>！";
+			if(!empty($pdata['minedetect']))
+			{
+				unset($pdata['minedetect']);
+				$log .= "<br>不过，身上装备着的自动迎击系统启动了！<span class=\"yellow\">在迎击功能的保护下你毫发无伤。</span><br>";
+			}
+			else
+			{
+				$log .= "但是没有受到任何伤害！<br>";
+			}
 			# 检查成就
 			// include_once GAME_ROOT.'./include/game/achievement.func.php';
 			// check_trap_fail_achievement($achievement,$selflag,$itm0,$itme0);
@@ -290,7 +318,7 @@ function trap(){
 
 		if($dice < $fdrate)
 		{
-			if(isset($pdata['minedetect']))
+			if(!empty($pdata['minedetect']))
 			{
 				unset($pdata['minedetect']);
 				$log .= "在探雷装备的辅助下，你发现了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>并且拆除了它。陷阱看上去还可以重复使用。<br>";

@@ -11,7 +11,7 @@ $club_skillslist = Array
 	3  => Array('s_hp','s_ad','f_heal','c3_pitchpow','c3_enchant','c3_potential','c3_hawkeye','c3_offset','c3_numerous'), #'灌篮高手',
 	4  => Array('s_hp','s_ad','f_heal','c4_stable','c4_break','c4_aiming','c4_loot','c4_roar','c4_sniper','c4_headshot'), #'狙击鹰眼',
 	5  => Array('s_hp','s_ad','f_heal','c5_sneak','c5_caution','c5_review','c5_focus','c5_higheg','c5_double'), #'拆弹专家',
-	6  => Array('s_hp','s_ad','f_heal'), #'宛如疾风',
+	6  => Array('s_hp','s_ad','f_heal','c6_godluck','c6_godsend','c6_godbless','c6_godpow','c6_godeyes','c6_justice'), #'宛如疾风',
 	7  => Array('s_hp','s_ad','f_heal'), #'锡安成员',
 	8  => Array('s_hp','s_ad','f_heal'), #'黑衣组织',
 	9  => Array('s_hp','s_ad','f_heal','c9_spirit','c9_lb','c9_iceheart','c9_charge','c9_heartfire'), #'超能力者',
@@ -995,6 +995,136 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 19',
+		),
+	),
+	'c6_godluck' => Array
+	(
+		'name' => '天运',
+		'tags' => Array('passive'),
+		'desc' => '升级后随机提升以下两类属性中任一项<span class="yellow">[:flucmin:]~[:flucmax:]%</span><br>
+		<span class="grey">(1)闪避率 +[^skillpara|c6_godluck-accloss^]%；敌人连击命中率 -[^skillpara|c6_godluck-rbloss^]%<br>
+		(2)命中率 +[^skillpara|c6_godluck-accgain^]%；连击命中率 +[^skillpara|c6_godluck-rbgain^]%</span>',
+		'maxlvl' => 10,
+		'cost' => Array(1,1,2,2,2,3,3,3,4,4,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">技能「天运」升级成功。</span><br>',
+		'events' => Array('c6_godluck'),
+		'status' => Array('skillpara|c6_godluck-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c6_godluck-lvl' => '+=::1',),
+		),
+		'svars' => Array(
+			'lvl' => 0,
+			'accgain' => 0, 'rbgain' => 0, 'accloss' => 0, 'rbloss' => 0,
+		),
+		'vars' => Array(
+			'flucmin' => 1, 
+			'flucmax' => 3, 
+		),
+		'pvars' => Array('skillpara|c6_godluck-accgain','skillpara|c6_godluck-rbgain','skillpara|c6_godluck-accloss','skillpara|c6_godluck-rbloss'),
+	),
+	'c6_godsend' => Array
+	(
+		'name' => '天助',
+		'tags' => Array('passive'),
+		'desc' => '升级后随机提升以下两类属性中的任一项<span class="yellow">[:flucmin:]~[:flucmax:]%</span><br>
+		<span class="grey">(1)隐蔽率 +[^skillpara|c6_godsend-hidegain^]%；先攻率 +[^skillpara|c6_godsend-actgain^]%<br>
+		(2)反击率 +[^skillpara|c6_godsend-countergain^]% </span>',
+		'maxlvl' => 10,
+		'cost' => Array(2,2,2,2,2,4,4,4,4,4,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">技能「天助」升级成功。</span><br>',
+		'events' => Array('c6_godsend'),
+		'status' => Array('skillpara|c6_godsend-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c6_godsend-lvl' => '+=::1',),
+		),
+		'svars' => Array(
+			'lvl' => 0,
+			'actgain' => 0, 'countergain' => 0, 'hidegain' => 0,
+		),
+		'vars' => Array(
+			'flucmin' => 1, 
+			'flucmax' => 3, 
+		),
+		'pvars' => Array('skillpara|c6_godsend-actgain','skillpara|c6_godsend-countergain','skillpara|c6_godsend-hidegain'),
+	),
+	'c6_godbless' => Array
+	(
+		'name' => '天佑',
+		'tags' => Array('passive'),
+		'desc' => '如果你受到不低于<span class="yellow">[:actmhp:]%</span>最大生命值的战斗或陷阱伤害<br>
+		但存活，之后的<span class="yellow">[:lasttimes:]</span>秒内你免疫一切战斗和陷阱伤害
+		<span tooltip="无效NPC：红杀将军、红杀菁英、英雄、武神、天神、巫师、使徒、■■"><a>（对部分NPC无效）</a></span><br>',
+		'link' => Array('buff_godbless'),
+		'vars' => Array(
+			'actmhp' => 35,
+			'lasttimes' => 5,
+		),
+	),
+	'buff_godbless' => Array
+	(
+		'name' => '[状态]天佑',
+		'tags' => Array('buff'),
+		'desc' => '<span class="lime">「天佑」生效中！<br>
+		增益效果剩余时间：<span class="yellow">[^lasttimes^]</span>秒</span>',
+		'vars' => Array(
+			'no_type' => Array(1,9,20,21,22,23,24,88),//无效NPC
+		),
+		'slast' => Array(
+			'lasttimes' => 30, //真正作用的持续时间
+		),
+		'pvars' => Array('lasttimes'),
+	),
+	'c6_godpow' => Array
+	(
+		'name' => '天威',
+		'tags' => Array('battle'),
+		'desc' => '计算武器熟练度时额外增加<span class="yellow"><span tooltip="(怒气×等级/6)">([^rage^]×[^lvl^]/6)</span></span>点<br>
+		(最高[:skmax:]点)，发动消耗<span class="yellow">[:ragecost:]</span>点怒气<br>
+		若击杀敌人且伤害不超过其生命值[:mhpr:]倍，则返还<span class="yellow">[:rageback:]</span>点怒气',
+		'bdesc' => '计算熟练度时增加<span class="yellow">([^rage^]×[^lvl^]/6)</span>点(最高220点)，消耗<span class="red">[:ragecost:]</span>怒气',
+		'vars' => Array(
+			'ragecost' => 25,
+			'rageback' => 25, 
+			'skmax' => 220,
+			'mhpr' => 1.5,
+		),
+		'pvars' => Array('rage','lvl'),
+		'lockdesc' => Array(
+			'lvl' => '5级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 5',
+		),
+	),
+	'c6_godeyes' => Array
+	(
+		'name' => '天眼',
+		'tags' => Array('passive'),
+		'desc' => '在战斗界面你可以查看到对手的具体数值信息<br>
+		且无视天气影响',
+		'lockdesc' => Array(
+			'lvl' => '7级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 7',
+		),
+	),
+	'c6_justice' => Array
+	(
+		'name' => '天义',
+		'tags' => Array('passive'),
+		'desc' => '你的武器视为具有<span class="yellow">冲击属性</span><br>
+		敌人物理伤害防御类属性与物理抹消属性失效几率<span class="yellow">×[:pdefbkr:]</span>',
+		'vars' => Array(
+			'pdefbkr' => '3',
+		),
+		'lockdesc' => Array(
+			'lvl' => '15级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 15',
 		),
 	),
 	'tl_cstick' => Array

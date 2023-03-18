@@ -131,12 +131,18 @@
 	# 获取社团技能对躲避率（pd是否躲避pa）的定值修正（新）
 	function get_clbskill_hide_rate_fix(&$pa,&$pd,$r)
 	{
-		#pd持有「潜行」时的效果判定：
+		# pd持有「潜行」时的效果判定：
 		if(!check_skill_unlock('c5_sneak',$pd))
 		{
 			$sk_lvl = get_skilllvl('c5_sneak',$pd);
 			$sk_r = get_skillvars('c5_sneak','hidegain',$sk_lvl);
 			$r += $sk_r;
+		}
+		# pd持有「天助」时的效果判定：
+		if(!check_skill_unlock('c6_godsend',$pd))
+		{
+			$sk_r = get_skilllvl('c6_godsend','hidegain',$pd['clbpara']);
+			if(!empty($sk_r)) $r += $sk_r;
 		}
 		return $r;
 	}
@@ -175,6 +181,12 @@
 			$sk_r = get_skillvars('c5_sneak','actgain',$sk_lvl);
 			$r += $sk_r;
 		}
+		# pa持有「天助」时的效果判定：（只在主动发现敌人时应用）
+		if(!check_skill_unlock('c6_godsend',$pa))
+		{
+			$sk_r = get_skillpara('c6_godsend','actgain',$pa['clbpara']);
+			if(!empty($sk_r)) $r += $sk_r;
+		}
 		return $r;
 	}
 
@@ -196,6 +208,16 @@
 			//获取反击倍率加成
 			$sk_r = 1 + (get_skillvars('c3_pitchpow','countergain',$sk_lvl) / 100);
 			$counterate *= $sk_r;
+		}
+		#「天助」效果判定：
+		if(isset($pa['skill_c6_godsend']))
+		{
+			$sk_r = get_skillpara('c6_godsend','countergain',$pa['clbpara']);
+			if(!empty($sk_r))
+			{
+				$sk_r = 1 + ($sk_r / 100);
+				$counterate *= $sk_r;
+			}
 		}
 		return $counterate;
 	}
@@ -236,6 +258,16 @@
 			$sk_r = 1 + (get_skillvars('c4_sniper','accgain') / 100);
 			$hitrate *= $sk_r;
 		}
+		#「天运」效果判定：
+		if(isset($pa['skill_c6_godluck']))
+		{
+			$sk_r = get_skillpara('c6_godluck','accgain',$pa['clbpara']);
+			if(!empty($sk_r))
+			{
+				$sk_r = 1 + ($sk_r / 100);
+				$hitrate *= $sk_r;
+			}
+		}
 
 		# 减益：
 		#「枭眼」效果判定：
@@ -250,6 +282,16 @@
 			$sk_lvl = get_skilllvl('c9_spirit',$pd);
 			$sk_r = 1 - (get_skillvars('c9_spirit','accloss',$sk_lvl) / 100);
 			$hitrate *= $sk_r;
+		}
+		#「天运」效果判定：
+		if(isset($pd['skill_c6_godluck']))
+		{
+			$sk_r = get_skillpara('c6_godluck','accloss',$pd['clbpara']);
+			if(!empty($sk_r))
+			{
+				$sk_r = 1 - ($sk_r / 100);
+				$hitrate *= $sk_r;
+			}
 		}
 		return $hitrate;
 	}
@@ -280,6 +322,16 @@
 			$sk_r = 1 + (get_skillvars('c4_stable','rbgain',$sk_lvl) / 100);
 			$hitrate *= $sk_r;
 		}
+		#「天运」效果判定：
+		if(isset($pa['skill_c6_godluck']))
+		{
+			$sk_r = get_skillpara('c6_godluck','rbgain',$pa['clbpara']);
+			if(!empty($sk_r))
+			{
+				$sk_r = 1 + ($sk_r / 100);
+				$hitrate *= $sk_r;
+			}
+		}
 
 		# 减益：
 		#「枭眼」效果判定：
@@ -294,6 +346,16 @@
 			$sk_lvl = get_skilllvl('c9_spirit',$pd);
 			$sk_r = 1 - (get_skillvars('c9_spirit','rbloss',$sk_lvl) / 100);
 			$hitrate *= $sk_r;
+		}
+		#「天运」效果判定：
+		if(isset($pd['skill_c6_godluck']))
+		{
+			$sk_r = get_skillpara('c6_godluck','rbloss',$pd['clbpara']);
+			if(!empty($sk_r))
+			{
+				$sk_r = 1 - ($sk_r / 100);
+				$hitrate *= $sk_r;
+			}
 		}
 		return $hitrate;
 	}

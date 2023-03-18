@@ -556,7 +556,8 @@ function discover($schmode = 0) {
 					//include_once GAME_ROOT.'./include/game/clubskills.func.php';
 					//$hide_r *= get_clubskill_bonus_hide($edata['club'],$edata['skills']);
 					$hide_r = get_hide_r_rev($pdata,$edata);
-					$enemy_dice = rand(0,99);
+					$enemy_dice = diceroll(99);
+					//echo "hide_r = {$hide_r} | find_obbs = {$find_obbs} | dice = {$enemy_dice}";
 					$meetman_flag = $enemy_dice<($find_obbs - $hide_r) ? 1 : -1;
 					break;
 				}
