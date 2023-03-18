@@ -533,6 +533,7 @@
 		# 战斗技文本
 		if(isset($pa['bskilllog'])) $log.= $pa['bskilllog'];
 		if(isset($pa['bskilllog2'])) $log.= $pa['bskilllog2'];
+		if(!empty($pa['skilllog'])) $log.= $pa['skilllog'];
 
 		# 命中次数大于0时 执行伤害判断
 		if ($pa['hitrate_times'] > 0) 
@@ -543,7 +544,7 @@
 			{
 				$damage = $fix_dmg;
 				$pa['final_damage'] = $damage;
-				if($damage <= 0)  $log .= "<span class=\"yellow\">造成的总伤害：<span class=\"red\">$damage</span>。</span><br>";
+				if($damage == 0)  $log .= "<span class=\"yellow\">造成的总伤害：<span class=\"red\">$damage</span>。</span><br>";
 			}
 			//如无，则正常计算伤害
 			else
@@ -587,8 +588,9 @@
 				}
 				$damage = $damage > 1 ? round ( $damage ) : 1; //命中了至少会保留1点伤害 此所谓雁过拔毛
 				$log.="<span class=\"red\">$damage</span>点伤害！<br>";
-				//最终物理伤害
+				//造成的最终物理伤害
 				$pdamage = $damage;
+				$pa['phy_damage'] = $pdamage;
 
 				# 物理伤害计算结束后、加载预受伤事件……：
 				get_hurt_prepare_events($pa,$pd,$active);
@@ -652,7 +654,8 @@
 						//存在额外的属性伤害文本，输出
 						if(isset($elog)) $log .= $elog."＝<span class=\"red\">{$ex_damage}</span>点属性伤害！<br>";
 					}
-					//并入最终伤害
+					//将造成的最终属性伤害登记在$pa['ex_damage'] 并入最终伤害
+					$pa['ex_damage'] = $ex_damage;
 					$damage += $ex_damage;
 				}
 
@@ -719,7 +722,7 @@
 	# active已经没用了……大概吧
 	function rev_combat_result(&$pa,&$pd,$active)
 	{
-		global $log;
+		global $log,$now;
 		# 执行扣血后的战斗结算阶段事件
 		rev_combat_result_events($pa,$pd,$active);
 		# 死者(受伤者)pd血量低于0时 结算击杀/复活事件

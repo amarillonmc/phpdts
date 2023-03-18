@@ -308,7 +308,7 @@ function newradar($m = 0){
 			$radarscreen .= '</tr>';
 		}
 		$radarscreen .= '</tbody></table>';
-		$log .= '白色数字：该区域内的人数<br><span class="yellow b">黄色数字</span>：自己所在区域的人数<br><span class="red b">×</span>：禁区<br><br>';
+		$log .= '白色数字：该区域内的人数<br><span class="yellow">黄色数字</span>：自己所在区域的人数<br><span class="red b">×</span>：禁区<br><br>';
 		include template('radarcmd');
 		$cmd = ob_get_contents();
 		ob_clean();

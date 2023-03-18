@@ -124,8 +124,8 @@ if($mode == 'enter') {
 	//$itm[6] = '银白盒子'; $itmk[6] = 'p'; $itme[6] = 1; $itms[6] = 1; $itmsk[6] = 'ps';
 	$itm[5] = '秋刀鱼罐头'; $itmk[5] = 'HB'; $itme[5] = 70; $itms[5] = 15;
 	//$itm[5] = 'GRAND OPENING 「开门大吉」'; $itmk[5] = 'p000'; $itme[5] = 1; $itms[5] = 1;
-	$dice = rand(1,7); 
-	if($dice == 7) $dice = 9;
+	$dice = rand(4,8); 
+	if($dice == 8) $dice = 9;
 	$dice_name = $clubinfo[$dice];
 	$itm[5] = '「'.$dice_name.' 社团卡」'; $itmk[5] = 'ZB'; $itme[5] = $dice; $itms[5] = 1;
 

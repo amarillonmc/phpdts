@@ -28,7 +28,7 @@
 				if($bsk_cost) $pa['rage'] -= $bsk_cost;
 				# 成功释放主动技，应用标记
 				$pa['bskill_'.$bsk] = 1;
-				$pa['bskilllog'] .= "<span class=\"lime\">{$pa['nm']}对{$pd['nm']}发动了技能「{$bsk_name}」！</span><br>";
+				$pa['bskilllog'] = "<span class=\"lime\">{$pa['nm']}对{$pd['nm']}发动了技能「{$bsk_name}」！</span><br>";
 				# 限次技每次使用时次数+1
 				if(get_skilltags($bsk,'limit'))
 				{
@@ -64,7 +64,7 @@
 					if($bsk_cost) $pa['rage'] -= $bsk_cost;
 					# 成功释放主动技，应用标记
 					$pa['bskill_'.$bsk] = 1;
-					$log .= "<span class=\"lime\">{$pa['nm']}对{$pd['nm']}发动了技能「{$bsk_name}」！</span><br>";
+					$pa['bskilllog'] = "<span class=\"lime\">{$pa['nm']}对{$pd['nm']}发动了技能「{$bsk_name}」！</span><br>";
 					# 限次技每次使用时次数+1
 					if(get_skilltags($bsk,'limit'))
 					{
@@ -83,9 +83,10 @@
 	# 技能判定（被动型）：这里通常只判定技能是否生效，如生效，提供一个标记
 	function attr_extra_passive_skills(&$pa,&$pd,$active,$sk='')
 	{
-		global $cskills;
+		global $cskills,$log;
 		if(!empty($pa['clbpara']['skill']))
 		{
+			$pa['skilllog'] = '';
 			# 遍历pa技能队列 检查是否解锁
 			foreach($pa['clbpara']['skill'] as $sk)
 			{
@@ -100,16 +101,26 @@
 						# 「偷袭」或「闷棍」技能生效时，「猛击」必定触发；
 						$sk_obbs = isset($pa['bskill_c1_stalk'])||isset($pa['bskill_c1_bjack']) ? 100 : get_skillvars('c1_crit','rate');
 						# 成功触发时
-						if($sk_dice < $sk_obbs)
-						{
-							$pa['skill_c1_crit'] = 1;
-							$pa['skill_c1_crit_log'] = "<span class=\"yellow\">{$pa['nm']}朝着{$pd['nm']}打出了凶猛的一击！<span class=\"clan\">{$pd['nm']}被打晕了过去！</span></span><br>";
-						}
+						if($sk_dice < $sk_obbs) $pa['skill_c1_crit'] = 1;
 					}
 					# 「枭眼」特殊判定：射程不小于对方时激活效果
 					elseif($sk == 'c3_hawkeye' && $pa['wep_range'] >= $pd['wep_range'])
 					{
 						$pa['skill_c3_hawkeye'] = 1;
+					}
+					# 「护盾」特殊判定：生命值不小于指定百分比时激活一个护盾
+					elseif($sk == 'c7_shield')
+					{
+						$sk_lvl = get_skilllvl('c7_shield',$pa);
+						$hpalert = get_skillvars('c7_shield','hpalert',$sk_lvl);
+						if($pa['hp'] <= $pa['mhp']*($hpalert/100))
+						{
+							getclubskill('buff_shield',$pa['clbpara']);
+							set_skillpara('buff_shield','svar',get_skillvars('c7_shield','svar',$sk_lvl),$data['clbpara']);
+							$pa['skill_buff_shield'] = 1;
+							//$pa['skilllog'] .= "<span class='lime'>感知到危险，闪烁着淡蓝幽光的护盾自动出现在{$pa['nm']}身旁！<br></span>";
+							$log .= "<span class='lime'>感知到危险，闪烁着淡蓝幽光的护盾自动出现在{$pa['nm']}身旁！<br></span>";
+						}
 					}
 					# 其他非特判技能，默认给一个触发标记
 					else 
@@ -437,6 +448,12 @@
 			global $ex_wep_dmg;
 			$sk_var = round($pa['att']/$ex_wep_dmg[$key]);
 			$ex_dmg_fix += $sk_var;
+		}
+		# 「磁暴」效果判定：
+		if(isset($pa['bskill_c7_electric']) && $key == 'e')
+		{
+			$sk_var = get_skillvars('c7_electric','exdmgfix');
+			$ex_damage_fix += $sk_var;
 		}
 		return $ex_dmg_fix;
 	}

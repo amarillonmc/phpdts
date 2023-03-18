@@ -154,10 +154,7 @@
 			unset($pa['ex_keys'][$key]);
 		}
 		# 「天义」效果判定：
-		if(isset($pa['skill_c6_justice']) && (empty($pa['ex_keys']) || !in_array('N',$pa['ex_keys'])))
-		{
-			$pa['ex_keys'][] = 'N';
-		}
+		if(isset($pa['skill_c6_justice']) && (empty($pa['ex_keys']) || !in_array('N',$pa['ex_keys']))) $pa['ex_keys'][] = 'N';
 		return;
 	}
 
@@ -306,8 +303,8 @@
 		$hitrate += round($pa['wep_skill'] * $hitrate_r[$pa['wep_kind']]); 
 		//武器基础命中率上限
 		$hitrate = min($hitrate_max_obbs[$pa['wep_kind']],$hitrate);
-		//获取社团技能对基础命中率的修正
-		$hitrate *= rev_get_clubskill_bonus_hitrate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
+		//获取社团技能对基础命中率的修正（旧）
+		//$hitrate *= rev_get_clubskill_bonus_hitrate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
 		//获取社团技能对基础命中率的修正（新）
 		$hitrate = get_clbskill_hitrate($pa,$pd,$active,$hitrate);
 		//异常状态状态修正
@@ -328,15 +325,15 @@
 
 		//获取基础连击命中率衰减系数：注意，这个值越高衰减越慢
 		$hitratebonus = 0.8;
-		//获取社团技能对连击命中率衰减系数的修正
-		$hitratebonus *= rev_get_clubskill_bonus_hitrate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
+		//获取社团技能对连击命中率衰减系数的修正（旧）
+		//$hitratebonus *= rev_get_clubskill_bonus_hitrate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
 		//获取社团技能对连击命中率衰减系数的修正（新）
 		$hitratebonus = get_clbskill_r_hitrate($pa,$pd,$active,$hitratebonus);
 
 		//获取基础致伤率（防具耐久损伤率）系数
 		$inf_r = $infobbs[$pa['wep_kind']];
-		//获取社团技能对致伤率（防具耐久损伤率）的修正
-		$inf_r *= rev_get_clubskill_bonus_imfrate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
+		//获取社团技能对致伤率（防具耐久损伤率）的修正（旧）
+		//$inf_r *= rev_get_clubskill_bonus_imfrate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
 		//获取社团技能对致伤率（防具耐久损伤率）的修正（新）
 		$inf_r = get_clbskill_infrate($pa,$pd,$active,$inf_r);
 		//获取基础致伤效果（每次致伤会损耗多少点防具耐久）
@@ -354,8 +351,8 @@
 			//额外损伤系数
 			if(isset($pa['is_wpg'])) $wep_imp_obbs *= 4;
 			if($pa['weps']==$nosta) $wep_imp_obbs *= 2;
-			//社团技能对武器损伤系数的修正
-			$wep_imp_obbs *= rev_get_clubskill_bonus_imprate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
+			//社团技能对武器损伤系数的修正（旧）
+			//$wep_imp_obbs *= rev_get_clubskill_bonus_imprate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
 			//社团技能对武器损伤系数的修正（新）
 			# 「解牛」技能效果：
 			if(isset($pa['bskill_c2_butcher']))
@@ -415,7 +412,7 @@
 	//获取不受其他条件影响的固定伤害变化（混沌伤害）
 	function get_fix_damage(&$pa,&$pd,$active)
 	{
-		global $log;
+		global $log,$nosta;
 
 		# 黑熊吃香蕉事件：
 		if($pa['type'] && in_array('X',$pa['ex_keys']))
@@ -505,8 +502,24 @@
 		if(in_array('R',$pa['ex_keys']))
 		{
 			$maxdmg = $pd['mhp'] > $pa['wepe'] ? $pa['wepe'] : $pd['mhp'];
-			$damage = rand(1,$maxdmg);
-			$log .= "武器随机造成了<span class=\"red\">$damage</span>点伤害！<br>";
+			$mindmg = max(-1*$pa['wepe'],-1*($pd['mhp'] - $pd['hp'] + 1));
+			do{
+				$damage = rand($mindmg,$maxdmg);
+			}while(empty($damage));
+			if($damage > 0)
+			{
+				$log .= "武器随机造成了<span class=\"red\">$damage</span>点伤害！<br>";
+			}
+			else 
+			{
+				$log .= "武器随机为{$pd['nm']}回复了<span class=\"lime\">".abs($damage)."</span>点生命！<br>";
+			}
+			// 混沌混沌
+			$max_imp_times = $pa['weps'] == $nosta ? $pa['wepe'] : $pa['weps'];
+			$min_imp_times = $pa['weps'] == $nosta ? -$pa['wepe'] : -$pa['weps'];
+			do{
+				$pa['wep_imp_times'] = rand($min_imp_times,$max_imp_times);
+			}while(empty($pa['wep_imp_times']));
 			// 混沌伤害打满时 保存至成就
 			if($damage == $maxdmg) $pa['clbpara']['achvars']['full_chaosdmg'] = 1;
 			return $damage;
@@ -543,12 +556,12 @@
 			$pa['wepe_t'] = $pa['wepe'] * 2;
 		}
 
-		# 获取pa社团技能对攻击力的加成
-		if(!empty($pa['skills']))
+		# 获取pa社团技能对攻击力的加成（旧）
+		/*if(!empty($pa['skills']))
 		{
 			rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
 			$pa['att'] += $att1;
-		}
+		}*/
 		# 汇总：：
 		$base_att = $pa['att'] + $pa['wepe_t'];
 
@@ -598,23 +611,23 @@
 			}	
 		}
 
-		# 计算社团技能对pa攻击力的修正
-		$club_atk_per = 100;
+		# 计算社团技能对pa攻击力的修正（旧）
+		/*$club_atk_per = 100;
 		if(!empty($pa['club']) || !empty($pa['skills']))
 		{
 			rev_get_clubskill_bonus_p($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$attfac,$deffac);
 			$club_atk_per *= $attfac;
-		}
+		}*/
 
 		# 汇总
-		$base_att = round($base_att*($base_atk_per/100)*($inf_atk_per/100)*($club_atk_per/100));
+		$base_att = round($base_att*($base_atk_per/100)*($inf_atk_per/100));
 		$base_att = max(1,$base_att);
 
 		if($tooltip)
 		{
 			$tooltip .= "天气修正：{$wth_atk_per}%\r 地点修正：{$pls_atk_per}%\r 姿态修正：{$pose_atk_per}%\r 策略修正：{$tac_atk_per}%";
 			if($inf_atk_per <> 100) $tooltip .=" \r 异常状态修正：{$inf_atk_per}%";
-			if($club_atk_per <> 100) $tooltip .=" \r 称号技能修正：{$club_atk_per}%";
+			//if($club_atk_per <> 100) $tooltip .=" \r 称号技能修正：{$club_atk_per}%";
 			$tooltip .="\">".$base_att."</span>";
 			return $tooltip;
 		}
@@ -645,13 +658,13 @@
 			}
 		}
 		# 获取pd社团技能对防御力的加成（旧）
-		if(!empty($pd['skills']))
+		/*if(!empty($pd['skills']))
 		{
 			rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
-		}
+		}*/
 		# 获取pd社团技能对防御力的加成（新）
 		# 「格挡」技能加成
-		if(isset($pd['skill_c1_def']))
+		if(!check_skill_unlock('c1_def',$pd))
 		{
 			global $cskills;
 			$def_trans_rate = $cskills['c1_def']['vars']['trans'];
@@ -710,23 +723,23 @@
 			}
 		}
 		
-		# 计算社团技能对pd防御力的修正
-		$club_def_per = 100;
+		# 计算社团技能对pd防御力的修正（旧）
+		/*$club_def_per = 100;
 		if(!empty($pd['club']) || !empty($pd['skills']))
 		{
 			rev_get_clubskill_bonus_p($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$attfac,$deffac);
 			$club_def_per *= $deffac;
-		}
+		}*/
 
 		# 汇总
-		$total_def = round($total_def*($base_def_per/100)*($inf_def_per/100)*($club_def_per/100));
+		$total_def = round($total_def*($base_def_per/100)*($inf_def_per/100));
 		$total_def = max(0.01,$total_def);
 
 		if($tooltip)
 		{
 			$tooltip .= "天气修正：{$wth_def_per}% \r 地点修正：{$pls_def_per}% \r 姿态修正：{$pose_def_per}% \r 策略修正：{$tac_def_per}%";
 			if($inf_def_per <> 100) $tooltip .=" \r 异常状态修正：{$inf_def_per}%";
-			if($club_def_per <> 100) $tooltip .=" \r 称号技能修正：{$club_def_per}%";
+			//if($club_def_per <> 100) $tooltip .=" \r 称号技能修正：{$club_def_per}%";
 			$tooltip .="\">".$total_def."</span>";
 			return $tooltip;
 		}
@@ -746,8 +759,8 @@
 		$damage = ($pa['base_att'] / $pd['base_def']) * $pa['wep_skill'] * $skill_dmg[$pa['wep_kind']];
 		//获取伤害浮动系数：
 		$dfluc = $dmg_fluc [$pa['wep_kind']];
-		//获取社团技能对伤害浮动系数的修正：
-		$dfluc += rev_get_clubskill_bonus_fluc($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd);
+		//获取社团技能对伤害浮动系数的修正：（旧）
+		//$dfluc += rev_get_clubskill_bonus_fluc($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd);
 		//获取社团技能对伤害浮动系数的修正（新）：
 		$dfluc += get_clbskill_fluc($pa,$pd,$active);
 		//计算具体伤害浮动：
@@ -756,7 +769,9 @@
 		if(isset($pa['skill_c2_intuit']) && $dfluc < 0) $dfluc = abs($dfluc);
 		//汇总
 		$dmg_factor = (100 + $dfluc) / 100;
+		//echo "浮动前 damage = {$damage}<br>";
 		$damage = round ( $damage * $dmg_factor * rand ( 4, 10 ) / 10 );
+		//echo "浮动后 damage = {$damage}<br>";
 		//把计算得到的原始伤害保存在$pa['original_dmg']里
 		$pa['original_dmg'] = $damage;
 		return $damage;
@@ -766,14 +781,14 @@
 	function get_original_fix_dmg_rev(&$pa,&$pd,$active)
 	{
 		$damage = 0;
-		//重枪
+		# 重枪
 		if ($pa['wep_kind'] == 'J') 
 		{
 			$adddamage=$pd['mhp']/3;
 			if ($adddamage>20000) $adddamage=10000;
 			$damage += round($pa['wepe']*2/3+$adddamage);
 		}
-		//灵力武器
+		# 灵力武器
 		if ($pa['wep_kind'] == 'F') 
 		{
 			global $log;
@@ -869,7 +884,7 @@
 			$sk_p = 1 + (get_skillvars('c1_crit','attgain',$sk_lvl) / 100);
 			$dmg_p[]= $sk_p; 
 			//输出log
-			$log .= $pa['skill_c1_crit_log'];
+			$log .= "<span class=\"yellow\">{$pa['nm']}朝着{$pd['nm']}打出了凶猛的一击！<span class=\"clan\">{$pd['nm']}被打晕了过去！</span></span><br>";
 		}
 		#「潜能」判定：
 		if(isset($pa['bskill_c3_potential']))
@@ -936,7 +951,16 @@
 			//检查抹消属性是否生效
 			if($dice > $obbs)
 			{
-				$pd['phy_def_flag'] =  2;
+				#「脉冲」效果判定：
+				if(isset($pa['bskill_c7_emp']) || isset($pd['bskill_c7_emp']))
+				{
+					$log .= "<span class='yellow'>在电磁脉冲的干扰下，伤害抹消力场被无效化了！</span><br>";
+					$pa['bskill_c7_emp'] = 2;
+				}
+				else 
+				{
+					$pd['phy_def_flag'] =  2;
+				}
 			}
 			else 
 			{
@@ -1102,10 +1126,13 @@
 	//提取判断pd是否防具受损、受伤，但log在结尾统一输出
 	function get_hurt_prepare_events(&$pa,&$pd,$active)
 	{
-		global $infatt_rev;
+		global $infatt_rev,$log;
 		# pa致伤次数＞0时，计算pd防具受损或致伤情况
 		if($pa['inf_times']>0)
 		{
+			# 「护盾」存在时无视致伤效果
+			if (isset($pd['skill_buff_shield'])) return;
+
 			//获取可致伤部位
 			$inf_parts = $infatt_rev[$pa['wep_kind']];
 			$inf_att = Array();
@@ -1144,7 +1171,7 @@
 	function get_base_ex_att_array(&$pa,&$pd,$active)
 	{
 		global $ex_attack,$log,$itemspkinfo;
-		$ex_keys =Array();
+		$ex_keys = Array();
 		foreach($pa['ex_keys'] as $ex)
 		{
 			if(in_array($ex,$ex_attack))
@@ -1181,6 +1208,8 @@
 			// 使用次数+1
 			set_skillpara('c3_enchant','active_t',get_skillpara('c3_enchant','active_t',$pa['clbpara'])+1,$pa['clbpara']);
 		}
+		# 「磁暴」效果判定：
+		if(isset($pa['bskill_c7_electric']) && (empty($ex_keys) || !in_array('e',$ex_keys))) $ex_keys[] = 'e';
 		return $ex_keys;
 	}
 
@@ -1196,7 +1225,16 @@
 			//检查抹消属性是否生效
 			if($dice < $specialrate['b'])
 			{
-				$pd['ex_def_flag'] =  2;
+				#「脉冲」效果判定：
+				if(isset($pa['bskill_c7_emp']) || isset($pd['bskill_c7_emp']))
+				{
+					$log .= "<span class='yellow'>在电磁脉冲的干扰下，属性抹消力场被无效化了！</span><br>";
+					$pa['bskill_c7_emp'] = 2;
+				}
+				else 
+				{
+					$pd['ex_def_flag'] =  2;
+				}
 			}
 			else 
 			{
@@ -1292,15 +1330,36 @@
 			//计算单个属性的基础属性伤害： 基础伤害 + 效果↔伤害系数修正 + 熟练↔伤害系数修正
 			$ex_dmg = $ex_base_dmg[$ex] + $pa['wepe']/$ex_wep_dmg[$ex] + $pa['wep_skill']/$ex_skill_dmg[$ex];
 			//计算单个属性能造成的基础伤害上限
-			if($ex_max_dmg[$ex]>0 && $ex_dmg>$ex_max_dmg[$ex]) $ex_dmg = $ex_max_dmg[$ex];
+			$ex_dmg = get_ex_base_dmg_max($pa,$pd,$active,$ex,$ex_dmg);
 			//计算得意武器类型对单个属性伤害的系数修正
 			if(isset($ex_good_wep[$ex]) && $ex_good_wep[$ex] == $pa['wep_kind']) $ex_dmg *= 2;
 			//计算属性伤害浮动
 			$ex_dmg = round($ex_dmg * rand(100-$ex_dmg_fluc[$ex],100+$ex_dmg_fluc[$ex])/100);
 			//计算单个属性的属性伤害变化：
 			$ex_dmg = get_ex_base_dmg_p($pa,$pd,$active,$ex,$ex_dmg);
+			//pd身上保有「护盾」的情况下 计算会对护盾造成的损害
+			if(isset($pd['skill_buff_shield']))
+			{
+				$shield = get_skillpara('buff_shield','svar',$pd['clbpara']);
+				$ex_shield_dmg_r = $ex == 'e' ? 2 : 1;
+				$ex_shield_dmg = $ex_dmg * $ex_shield_dmg_r;
+				if($ex_shield_dmg >= $shield)
+				{
+					$ex_dmg = max(1,round(($ex_shield_dmg - $shield)/$ex_shield_dmg_r));
+					unset($pd['skill_buff_shield']);
+					lostclubskill('buff_shield',$pd['clbpara']);
+					$pa['ex_breakshield_log'] = 1;
+				}
+				else 
+				{
+					$shield -= $ex_dmg;
+					$ex_dmg = 0;
+					set_skillpara('buff_shield','svar',$shield,$pd['clbpara']);
+					$pa['ex_shield_log'] = 1;
+				}
+			}
 			//计算是否能够施加属性异常
-			if(empty($pd['ex_def_flag']) && isset($ex_inf[$ex]) && strpos($pd['inf'],$ex_inf[$ex])===false)
+			if(empty($pd['ex_def_flag']) && empty($pd['skill_buff_shield']) && isset($ex_inf[$ex]) && strpos($pd['inf'],$ex_inf[$ex])===false)
 			{
 				$dice = diceroll(99);
 				//获取属性施加异常的基础概率 + 熟练度修正
@@ -1320,13 +1379,33 @@
 			//整理后统一输出文本	
 			if(!empty($pa['ex_dmgpsh_log'])) $log .= $pa['ex_dmgpsh_log'];	//由于对方已经xx xx伤害提升/降低
 			$log .= $exdmgname[$ex]; //xx
-			if(!empty($pa['ex_dmgdef_log'])) $log .= "被防御效果抵消了！仅";
-			$log .= "造成了<span class=\"red\">{$ex_dmg}</span>点伤害！";
-			if(!empty($pa['ex_dmginf_log'])) $log .= "并使{$pd['nm']}{$exdmginf[$pa['ex_dmginf_log']]}了！";
-			$log .= "<br>";
-			$total_ex_dmg[] = $ex_dmg;
+			if($ex_dmg)
+			{
+				if(!empty($pa['ex_dmgdef_log'])) $log .= "被防御效果抵消了！仅";
+				$log .= "造成了<span class=\"red\">{$ex_dmg}</span>点伤害！";
+				if(!empty($pa['ex_dmginf_log'])) $log .= "并使{$pd['nm']}{$exdmginf[$pa['ex_dmginf_log']]}了！";
+				$log .= "<br>";
+				if(!empty($pa['ex_breakshield_log'])) $log .= "<span class='red'>{$pd['nm']}的「护盾」被打破了！</span><br>";
+				$total_ex_dmg[] = $ex_dmg;
+			}
+			else 
+			{
+				if(!empty($pa['ex_shield_log'])) $log .= "被「护盾」抵消了！";
+				$log .= "没能造成伤害！<br>";
+				if(!empty($pa['ex_shield_log'])) $log .= "<span class='grey'>{$pd['nm']}的「护盾」效力减弱了……</span><br>";
+			}
 		}
 		return $total_ex_dmg;
+	}
+
+	//计算单个属性伤害上限
+	function get_ex_base_dmg_max(&$pa,&$pd,$active,$ex,$ex_dmg)
+	{
+		global $ex_max_dmg;
+		# 「过载」效果判定：
+		if($ex == 'e' && isset($pa['skill_c7_overload'])) return $ex_dmg;
+		if($ex_max_dmg[$ex]>0 && $ex_dmg>$ex_max_dmg[$ex]) $ex_dmg = $ex_max_dmg[$ex];
+		return $ex_dmg;
 	}
 
 	//计算单个属性伤害系数变化
@@ -1517,8 +1596,17 @@
 				}
 				else 
 				{
-					$fin_dmg = 1950 + $dice;
-					$log .= "在{$pd['nm']}的装备的作用下，攻击伤害被限制了！<br>";
+					#「脉冲」效果判定：
+					if(isset($pa['bskill_c7_emp']) || isset($pd['bskill_c7_emp']))
+					{
+						$log .= "<span class='yellow'>在电磁脉冲的干扰下，伤害制御力场被无效化了！</span><br>";
+						$pa['bskill_c7_emp'] = 2;
+					}
+					else
+					{
+						$fin_dmg = 1950 + $dice;
+						$log .= "在{$pd['nm']}的装备的作用下，攻击伤害被限制了！<br>";
+					}
 				}
 			}
 			else
@@ -1536,6 +1624,14 @@
 				$fin_dmg += $rp_dmg;
 				$log .= "<span class=\"yellow\">在「剔透」的作用下，敌人受到了<span class=\"red\">$rp_dmg</span>点额外伤害。</span><br>";
 			}
+		}
+
+		# 「护盾」效果判定
+		if(isset($pd['skill_buff_shield']))
+		{
+			$sk_var = get_skillpara('buff_shield','svar',$pd['clbpara']);
+			$fin_dmg = max(0,$fin_dmg - $sk_var);
+			$log .= "<span class=\"lime\">「护盾」使{$pd['nm']}受到的伤害降低了{$sk_var}点！</span><br>";
 		}
 
 		# 「爆头」技能效果
@@ -1563,11 +1659,27 @@
 			} else {
 				$hp_d = floor($pa['hp']*4/5);
 			}
-			if (in_array('H',$pa['ex_keys'])) {
-				$hp_d = floor ( $hp_d / 10 );
+			if (in_array('H',$pa['ex_keys'])) 
+			{
+				#「脉冲」效果判定：
+				if(isset($pa['bskill_c7_emp']) || isset($pd['bskill_c7_emp']))
+				{
+					$log .= "<span class='yellow'>在电磁脉冲的干扰下，HP制御力场被无效化了！</span><br>";
+					$pa['bskill_c7_emp'] = 2;
+				}
+				else
+				{
+					$hp_d = floor ( $hp_d / 10 );
+				}
+			}
+			# 「护盾」效果判定
+			if ($hp_d && isset($pa['skill_buff_shield']))
+			{
+				$hp_d = 0;
+				$log .= "<span class='yellow'>「护盾」使{$pa['nm']}免受反噬伤害！</span><br>";
 			}
 			# 「冰心」技能判定
-			if (isset($pa['skill_c9_iceheart']))
+			if ($hp_d && isset($pa['skill_c9_iceheart']))
 			{
 				$sk_r = 1 - (get_skillvars('c9_iceheart','hpshloss') / 100);
 				$hp_d = floor($hp_d * $sk_r);
@@ -1589,7 +1701,7 @@
 	//防守方(pd)在受到伤害后触发的事件
 	function get_hurt_events(&$pa,&$pd,$active) 
 	{
-		global $log,$infinfo;
+		global $log,$infinfo,$exdmginf;
 		
 		# pd存在防具受损况，在这里应用
 		if(!empty($pd['armor_hurt']))
@@ -1603,7 +1715,54 @@
 			foreach($pd['inf_hurt'] as $which => $times)
 			{
 				$flag = get_inf_rev($pd,$which);
-				if($flag) $log .= "{$pd['nm']}的<span class=\"red\">$infinfo[$which]</span>部受伤了！<br>";
+				if($flag) $log .= "{$pd['nm']}的{$exdmginf[$which]}了！<br>";
+			}
+		}
+
+		if(isset($pa['bskill_c7_electric']))
+		{
+			if(strpos($pd['inf'],'e')!==false)
+			{
+				$flag = get_skillinf_rev($pd,'inf_dizzy',get_skillvars('c7_electric','lasttimes'));
+				if($flag)
+				{
+					$log .= "<span class='yellow'>由于已经处于麻痹状态，狂暴的电流直接将{$pd['nm']}电晕了！</span><br>";
+					if(!$pd['type'] && $pd['nm']!='你') $pd['logsave'] .= "狂暴的电流直接将你电晕！<br>";
+					elseif(!$pa['type'] && $pa['nm']!='你') $pa['logsave'] .= "狂暴的电流直接将<span class=\"yellow\">{$pd['name']}</span>电晕！<br>";
+				}
+			}
+			else 
+			{
+				$infr = get_skillvars('c7_electric','infr');
+				$dice = diceroll(99);
+				if($dice < $infr)
+				{
+					$flag = get_inf_rev($pd,'e');
+					$log .= "<span class='yellow'>「磁暴」使{$pd['nm']}{$exdmginf['e']}了！</span><br>";
+				}
+				else
+				{
+					$log .= "<span class='yellow'>{$pd['nm']}没有受到「磁暴」影响！</span><br>";
+				}
+			}
+		}
+
+		if(isset($pa['bskill_c7_emp']) && $pa['bskill_c7_emp'] > 1)
+		{
+			if(strpos($pd['inf'],'e')!==false)
+			{
+				$flag = get_skillinf_rev($pd,'inf_dizzy',get_skillvars('c7_electric','lasttimes'));
+				if($flag)
+				{
+					$log .= "<span class='yellow'>由于已经处于麻痹状态，狂暴的能量脉冲直接把{$pd['nm']}冲晕了过去！</span><br>";
+					if(!$pd['type'] && $pd['nm']!='你') $pd['logsave'] .= "狂暴的能量脉冲把你冲晕了过去！<br>";
+					elseif(!$pa['type'] && $pa['nm']!='你') $pa['logsave'] .= "狂暴的能量脉冲把<span class=\"yellow\">{$pd['name']}</span>冲晕了过去！<br>";
+				}
+			}
+			else 
+			{
+				$flag = get_inf_rev($pd,'e');
+				$log .= "<span class='yellow'>「脉冲」使{$pd['nm']}{$exdmginf['e']}了！</span><br>";
 			}
 		}
 
@@ -1646,6 +1805,15 @@
 		return 0;
 	}
 
+	# 应用技能类异常
+	function get_skillinf_rev(&$pa,$sk,$last=0)
+	{
+		global $log;
+		$flag = getclubskill($sk,$pa['clbpara']);
+		if($last && $flag) set_lasttimes($sk,$last,$pa['clbpara']);
+		return $flag;
+	}
+
 	# 从异常状态中恢复
 	function heal_inf_rev(&$pa,$infnm)
 	{
@@ -1662,7 +1830,7 @@
 	//打击结束，已经应用扣血后的事件结算
 	function rev_combat_result_events(&$pa,&$pd,$active)
 	{
-		global $log,$infinfo,$dtinfinfo;
+		global $log,$infinfo,$exdmginf;
 
 		# 真蓝凝防守事件：
 		if($pd['type'] == 19 && $pd['name'] == '蓝凝')
@@ -1682,18 +1850,11 @@
 		{
 			$sk_lvl = get_skilllvl('c1_crit',$pa);
 			$sk_lst = get_skillvars('c1_crit','stuntime',$sk_lvl);
-			getclubskill('inf_dizzy',$pd['clbpara']);
-			set_lasttimes('inf_dizzy',$sk_lst,$pd['clbpara']);
-			//$pd['clbpara']['lasttimes']['inf_dizzy'] = $sk_lst;
-			// 猛击logsave……先放这，以后再整理
-			global $now;
-			if(!$pd['type'] && $pd['nm']!='你')
+			$flag = get_skillinf_rev($pd,'inf_dizzy',$sk_lst);
+			if($flag)
 			{
-				$pd['logsave'] .= "凶猛的一击直接将你打晕了过去！<br>";
-			}
-			elseif(!$pa['type'] && $pa['nm']!='你')
-			{
-				$pa['logsave'] .= "你凶猛的一击直接将<span class=\"yellow\">{$pd['name']}}</span>打晕了过去！<br>";
+				if(!$pd['type'] && $pd['nm']!='你') $pd['logsave'] .= "凶猛的一击直接将你打晕了过去！<br>";
+				elseif(!$pa['type'] && $pa['nm']!='你') $pa['logsave'] .= "你凶猛的一击直接将<span class=\"yellow\">{$pd['name']}</span>打晕了过去！<br>";
 			}
 		}
 		
@@ -1711,7 +1872,7 @@
 				$flag = heal_inf_rev($pd,$heal_inf);
 				if($flag)
 				{
-					$log .= "<span class='yellow'>{$pd['nm']}敛神聚气，从{$dtinfinfo[$heal_inf]}中恢复了！</span><br>";
+					$log .= "<span class='yellow'>{$pd['nm']}敛神聚气，从{$exdmginf[$heal_inf]}中恢复了！</span><br>";
 					$pd['rage'] = max(255,$pd['rage']+get_skillvars('c9_iceheart','ragegain'));
 				}
 			}
@@ -1786,7 +1947,7 @@
 
 		include_once GAME_ROOT.'./include/game/clubskills.func.php';
 		# 计算社团技能对躲避率的系数修正（旧）：
-		$hide_r *= get_clubskill_bonus_hide($pd['club'],$pd['skills']);
+		//$hide_r *= get_clubskill_bonus_hide($pd['club'],$pd['skills']);
 		# 计算社团技能对躲避率的定值修正：
 		$hide_r = get_clbskill_hide_rate_fix($pa,$pd,$hide_r); 
 		
@@ -1822,7 +1983,7 @@
 		}
 
 		# 计算社团技能对于先攻率的系数修正（旧）：
-		$active_r *= get_clubskill_bonus_active($pa['club'],$pa['skills'],$pd['club'],$pd['skills']);
+		//$active_r *= get_clubskill_bonus_active($pa['club'],$pa['skills'],$pd['club'],$pd['skills']);
 		# 计算社团技能对于先攻率的定值修正（新）：
 		$active_r = get_clbskill_active_rate_fix($pa,$pd,$active_r);
 
@@ -1926,8 +2087,8 @@
 		# 鏖战状态下，将基础反击率修正为100
 		if(isset($pd['is_dfight']) || isset($pa['is_dfight'])) $counter = 100;
 
-		# 获取社团技能对反击率的修正
-		$counter *= rev_get_clubskill_bonus_counter($pd['club'],$pd['skills'],$pd,$pa['club'],$pa['skills'],$pa);
+		# 获取社团技能对反击率的修正（旧）
+		//$counter *= rev_get_clubskill_bonus_counter($pd['club'],$pd['skills'],$pd,$pa['club'],$pa['skills'],$pa);
 		# 获取社团技能对反击率的修正（新）
 		$counter = get_clbskill_counterate($pd,$pa,$active,$counter);
 

@@ -149,7 +149,14 @@
 						</span>
 					</td>
 					<td class="b2"><span>{lang hp}</span></td>
-					<td class="b3"><span><span class="<!--{if $hp <= $mhp*0.2}-->red<!--{elseif $hp <= $mhp*0.5}-->yellow<!--{else}-->clan<!--{/if}-->">$hp / $mhp</span></span></td>
+					<td class="b3">
+						<span>
+							<span class="<!--{if $hp <= $mhp*0.2}-->red<!--{elseif $hp <= $mhp*0.5}-->yellow<!--{else}-->clan<!--{/if}-->">
+								<!--{if isset($shield_info)}-->{$shield_info}<!--{/if}-->
+								$hp / $mhp
+							</span>
+						</span>
+					</td>
 					<td class="b2"><span>{lang skillpoint}</span></td>
 					<td class="b3"><!--{if $skillpoint > 0}--><span class="lime">$skillpoint</span><!--{else}--><span>$skillpoint</span><!--{/if}--></td>
 				</tr>

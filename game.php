@@ -136,10 +136,11 @@ if($hp > 0 && $coldtimeon && $showcoldtimer && $rmcdtime){$log .= "行动冷却�
 //如果身上存在时效性技能，检查技能是否超时
 if($hp > 0 && !empty($clbpara['lasttimes']))
 {
-	$flag = check_skilllasttimes();
+	$flag = check_skilllasttimes($pdata);
 	if($flag)
 	{
-		$pdata = current_player_save();
+		player_save($pdata);
+		$pdata = fetch_playerdata_by_name($cuser);
 		$pdata['clbpara'] = get_clbpara($pdata['clbpara']);
 		extract($pdata,EXTR_REFS);
 		init_playerdata();

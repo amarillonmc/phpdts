@@ -104,14 +104,14 @@
 	<!-- 第 4 行：地区功能-->
 	<!--{if in_array($pls,$shops)}-->
 		<input type="button" class="cmdbutton" id="sp_shop" name="sp_shop" value="商店" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_shop';postCmd('gamecmd','command.php');this.disabled=true;">
+		<br>
 	<!--{/if}-->
 	<!--{if in_array($pls,$depots)}-->
 	<span tooltip="向安全箱中存入或取出道具">
 		<input type="button" class="cmdbutton" id="sp_depot" name="sp_depot" value="安全箱" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_depot';postCmd('gamecmd','command.php');this.disabled=true;">
 	</span>
-	<!--{/if}-->
-	<input type="button" class="cmdbutton" id="sp_skpts" name="sp_skpts" value="升级技能" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_skpts';postCmd('gamecmd','command.php');this.disabled=true;">
 	<br>
+	<!--{/if}-->
 
 	<!-- 第 5 行：社团特殊功能-->
 	<!--{if $club == 7}-->

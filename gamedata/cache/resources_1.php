@@ -244,7 +244,6 @@ $lwinfo = Array(
 	92 => '成为……焰火……',
 );
 $infinfo = Array('b' => '<span class="red">胸</span>', 'h' => '<span class="red">头</span>', 'a' => '<span class="red">腕</span>', 'f' => '<span class="red">足</span>', 'p' => '<span class="purple">毒</span>', 'u' => '<span class="red">烧</span>', 'i' => '<span class="clan">冻</span>', 'e' => '<span class="yellow">麻</span>','w' => '<span class="grey">乱</span>');
-$dtinfinfo = Array('b' => '<span class="red">胸部受伤</span>', 'h' => '<span class="red">头部受伤</span>', 'a' => '<span class="red">腕部受伤</span>', 'f' => '<span class="red">足部受伤</span>', 'p' => '<span class="purple">中毒</span>', 'u' => '<span class="red">烧伤</span>', 'i' => '<span class="clan">冻结</span>', 'e' => '<span class="yellow">麻痹</span>','w' => '<span class="grey">混乱</span>');
 $attinfo = Array('N' => '徒手殴打', 'P' => '殴打','K' => '斩刺', 'G' => '射击', 'C' => '投掷', 'D' => '设置引信伏击', 'F' => '释放灵力攻击', 'J' => '狙击');
 $skillinfo = Array('N' => 'wp', 'P' => 'wp', 'K' => 'wk', 'G' => 'wg', 'C' => 'wc', 'D' => 'wd', 'F'=> 'wf', 'J'=> 'wg');
 //$rangeinfo = Array('N' => 'S', 'P' => 'S', 'K' => 'S', 'G' => 'M', 'C' => 'M', 'D' => 'L', 'F'=> 'M'); #各种攻击方式的射程，移动到combatcfg.php
@@ -1185,7 +1184,7 @@ $tps_isk = Array
 	'P' => Array('title' => "高概率将殴系对你的物理伤害减半。",),
 	'p' => Array('title' => "攻击对手时，将产生额外的毒属性伤害。也有可能让对手陷入中毒异常状态。",),
 	'q' => Array('title' => "高概率将毒属性对你的属性伤害减半。并避免中毒状态。",),
-	'R' => Array('title' => "这把武器的最终伤害将会为随机值。",),
+	'R' => Array('title' => "这把武器造成的伤害与消耗的耐久为随机值。",),
 	'r' => Array('title' => "根据你的熟练度，做出一定数量的连续攻击。",),
 	'S' => Array('title' => "枪支类武器开火时不会产生声音。",),
 	's' => Array('title' => "这个物品是游戏王同调合成的必备素材。",),

@@ -1386,7 +1386,7 @@ function weapon_loss(&$pa,$hurtvalue,$force_imp=0,$check_sk=0)
 {
 	global $log,$wepimprate,$nosta;
 
-	if($hurtvalue>0 && $pa['wep_kind'] != 'N')
+	if($hurtvalue && $pa['wep_kind'] != 'N')
 	{
 		$wep_loss_flag = 0;
 		//获取武器损耗类型
@@ -1397,12 +1397,20 @@ function weapon_loss(&$pa,$hurtvalue,$force_imp=0,$check_sk=0)
 			if($pa['weps'] == $nosta || $force_imp)
 			{
 				$pa['wepe'] = max(0,$pa['wepe']-$hurtvalue);
-				if(!$pa['type']) $log.= "<span class='grey'>{$pa['nm']}的{$pa['wep']}的攻击力下降了{$hurtvalue}。</span><br>";
+				if(!$pa['type'])
+				{
+					if($hurtvalue > 0) $log.= "<span class='grey'>{$pa['nm']}的{$pa['wep']}的攻击力下降了{$hurtvalue}。</span><br>";
+					else $log.= "<span class='grey'>{$pa['nm']}的{$pa['wep']}的攻击力上升了".abs($hurtvalue)."！……为什么啊？</span><br>";
+				}
 			}
 			else 
 			{
 				$pa['weps'] = max(0,$pa['weps']-$hurtvalue);
-				if(!$pa['type']) $log.= "<span class='grey'>{$pa['nm']}的{$pa['wep']}的耐久度下降了{$hurtvalue}。</span><br>";
+				if(!$pa['type'])
+				{
+					if($hurtvalue > 0) $log.= "<span class='grey'>{$pa['nm']}的{$pa['wep']}的耐久度下降了{$hurtvalue}。</span><br>";
+					else $log.= "<span class='grey'>{$pa['nm']}的{$pa['wep']}的耐久度上升了".abs($hurtvalue)."！……为什么啊？</span><br>";
+				}
 			}
 			if(empty($pa['weps']) || empty($pa['wepe']))
 			{
@@ -1418,7 +1426,11 @@ function weapon_loss(&$pa,$hurtvalue,$force_imp=0,$check_sk=0)
 				$pa['weps'] = max(0,$pa['weps']-$hurtvalue);
 				if($pa['wep_kind'] == 'C' || $pa['wep_kind'] == 'D' || $pa['wep_kind'] == 'F')
 				{
-					if(!$pa['type']) $log .= "<span class='grey'>{$pa['nm']}用掉了{$hurtvalue}个{$pa['wep']}。</span><br>";
+					if(!$pa['type'])
+					{
+						if($hurtvalue > 0) $log .= "<span class='grey'>{$pa['nm']}用掉了{$hurtvalue}个{$pa['wep']}。</span><br>";
+						else $log .= "<span class='grey'>{$pa['wep']}凭空增殖出了".abs($hurtvalue)."个……啊？？</span><br>";
+					}
 					if(empty($pa['weps']))
 					{
 						$log .= "{$pa['nm']}的<span class=\"red\">{$pa['wep']}</span>用光了！<br>";
@@ -1427,7 +1439,11 @@ function weapon_loss(&$pa,$hurtvalue,$force_imp=0,$check_sk=0)
 				} 
 				elseif($pa['wep_kind'] == 'G' || $pa['wep_kind'] == 'J') 
 				{
-					if(!$pa['type']) $log .= "<span class='grey'>{$pa['nm']}的{$pa['wep']}的弹药数减少了{$hurtvalue}。</span><br>";
+					if(!$pa['type'])
+					{
+						if($hurtvalue > 0) $log .= "<span class='grey'>{$pa['nm']}的{$pa['wep']}的弹药数减少了{$hurtvalue}。</span><br>";
+						else $log .= "<span class='grey'>{$pa['wep']}的弹药数凭空多出了".abs($hurtvalue)."……啊？？</span><br>";
+					}
 					if(empty($pa['weps']))
 					{
 						$log .= "{$pa['nm']}的<span class=\"red\">{$pa['wep']}</span>弹药用光了！<br>";

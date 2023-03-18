@@ -697,7 +697,7 @@ function event_rp_up($rpup){
 	}else{
 		include_once GAME_ROOT.'./include/game/clubskills.func.php';
 		$rpdec = 30;
-		$rpdec += get_clubskill_rp_dec($club,$skills);
+		//$rpdec += get_clubskill_rp_dec($club,$skills);
 		$rp += round($rpup*(100-$rpdec)/100);
 	}
 	return;
