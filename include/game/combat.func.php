@@ -1550,7 +1550,7 @@ function get_damage_p(&$rg, $atkcdt, $type, $nm,$cl = 0, $msg = '' ) {
 
 function checkdmg($p1, $p2, $d) {
 	if ($d < 0) {
-		$words = "{$p1}为{$p2}回复了<span class=\"lime\">".abs($d)."</span>点生命……怎么会是呢？";
+		$words = "{$p1}为{$p2}回复了<span class=\"lime\">".abs($d)."</span>点生命……这是咋回事呢？";
 	} elseif (($d >= 100) && ($d < 150)) {
 		$words = "{$p1}对{$p2}施加了一定程度的伤害。（100-150）";
 	} elseif (($d >= 150) && ($d < 200)) {
