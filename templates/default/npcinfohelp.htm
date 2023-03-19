@@ -33,7 +33,7 @@
 									数目
 								</td>
 								<td width=100px align="center" class="b3">
-									<!--{if $npcdescription[$kind][$ksub][$key]['count']>0}-->
+									<!--{if !empty($npcdescription[$kind][$ksub][$key]['count'])}-->
 										$npcdescription[$kind][$ksub][$key]['count']
 									<!--{else}-->
 										-
@@ -176,7 +176,11 @@
 									手臂装备
 								</td>
 								<td width=505px align="center" class="b3">
+									<!--{if !empty($npcinfo[$kind][$ksub][$key]['ara'])}-->
 									$npcinfo[$kind][$ksub][$key]['ara']/$npcinfo[$kind][$ksub][$key]['arae']/$npcinfo[$kind][$ksub][$key]['aras']<!--{if isset($npcinfo[$kind][$ksub][$key]['arask_words'])}-->/$npcinfo[$kind][$ksub][$key]['arask_words']<!--{/if}-->
+									<!--{else}-->
+									-/-/-
+									<!--{/if}-->
 								</td>
 							</tr>
 							<tr>
@@ -192,7 +196,11 @@
 									饰品 
 								</td>
 								<td width=505px align="center" class="b3">
-									$npcinfo[$kind][$ksub][$key]['art']/$npcinfo[$kind][$ksub][$key]['artk']<!--{if isset($npcinfo[$kind][$ksub][$key]['artsk_words'])}-->/$npcinfo[$kind][$ksub][$key]['artsk_words']<!--{/if}-->
+									<!--{if !empty($npcinfo[$kind][$ksub][$key]['art'])}-->
+										$npcinfo[$kind][$ksub][$key]['art']/$npcinfo[$kind][$ksub][$key]['artk']<!--{if isset($npcinfo[$kind][$ksub][$key]['artsk_words'])}-->/$npcinfo[$kind][$ksub][$key]['artsk_words']<!--{/if}-->
+									<!--{else}-->
+										-/-/-
+									<!--{/if}-->
 								</td>
 							</tr>
 							<!--{loop $itemlst $id $vid}-->

@@ -470,95 +470,6 @@ function init_clubskillsdata($sk,$data)
 	elseif(array_key_exists($sk,$cskills))
 	{
 		return $sk;
-		/*global $cskills;
-		# 要检查的技能没有登记过 视为无效技能
-		if(!array_key_exists($sk,$cskills)) return 0;
-		if(!empty($data)) $data['clbpara'] = get_clbpara($data['clbpara']);
-		# 获取技能信息
-		$cskill = $cskills[$sk];
-		$sk_name = $cskill['name'];
-		# 技能存在等级时
-		if(isset($cskill['maxlvl']))
-		{
-			$max_lvl_flag = 0;
-			$now_clvl = get_skilllvl($sk,$data);
-			if($now_clvl >= $cskill['maxlvl']) $max_lvl_flag = 1;
-		}
-		# 获取技能描述
-		$sk_desc = parse_skilldesc($sk,$data);
-		# 生成技能模板
-		$sk_temp = <<<EOT
-<tr>
-    <td class="b1" width="40">
-        <span>{$sk_name}</span>
-    </td>
-	<td>
-EOT;
-		# 检查技能是否存在解锁条件
-		if(!empty($cskill['unlock']))
-		{
-			# 检查技能是否解锁，返回值不为0则未解锁
-			$unlock_flag = check_skill_unlock($sk,$data);
-			if($unlock_flag)
-			{
-				if(is_array($unlock_flag))
-				{
-					$unlock_cd = $unlock_flag[1]; $unlock_flag = $unlock_flag[0];
-				}
-				$unlock_flag = is_array($cskill['lockdesc']) ? $cskill['lockdesc'][$unlock_flag] : $cskill['lockdesc'];
-				if(isset($unlock_cd)) $unlock_flag = str_replace("[:cd:]","$unlock_cd",$unlock_flag);
-				$sk_temp .= <<<EOT
-                <div style="position:relative; height:100%; width:100%;" onmouseover="skill_unacquired_mouseover.call(this,event)" onmouseout="skill_unacquired_mouseout.call(this,event)">
-                <div class="skill_unacquired">
-EOT;
-			}
-		}
-		$sk_temp .= <<<EOT
-        <table class="skilltable">
-            <tr>
-                <td class="skilldesc_left b3">
-                    <span class="skilldesc">
-                    {$sk_desc}
-                    </span>
-                </td>
-				<td class="skilldesc_right b3"> \r
-EOT;
-		# 检查技能是否存在复数输入框
-		if(!empty($cskill['num_input']) && empty($max_lvl_flag))
-		{
-			$sk_temp .= "<input type=\"number\" name=\"upgskill_{$sk}_nums\" style=\"width:40px\" value=\"1\"> \r";
-		}
-		# 检查技能是否存在操作按钮
-		if(!empty($cskill['input']) && empty($max_lvl_flag))
-		{
-			$sk_input = $cskill['input'];
-			$sk_temp .= "<input type=\"button\" onclick=\"$('mode').value='revskpts';$('command').value='upgskill_{$sk}';postCmd('gamecmd','command.php');this.disabled=true;\" value=\"{$sk_input}\"> \r";
-		}
-		$sk_temp .= <<<EOT
-				</td>
-			</tr>
-        </table>
-EOT;
-		if(!empty($cskill['unlock']) && $unlock_flag)
-		{
-			$sk_temp .= <<<EOT
-			</div>
-			<div class="skill_unacquired_hint">
-				<table class="skilltable">
-					<tr>
-EOT;
-			$sk_temp .= "<td valign=\"center\" align=\"center\"><span class=\"yellow\">{$unlock_flag}</span></td>";	
-			$sk_temp .= "
-					</tr>
-			</table>
-		</div>
-	</div>";
-		}
-		$sk_temp .= "</tr>";
-		//$htm_sk_dir = GAME_ROOT.TPLDIR.'/'.$sk_dir.'.htm';
-		//writeover($htm_sk_dir,$sk_temp);
-		//return $sk_dir;
-		return $sk_temp;*/
 	}
 	return 0;
 }
@@ -612,6 +523,45 @@ function check_skilllasttimes(&$data)
 	return $data['pure_flag'];
 }
 
+function create_dummy_playerdata($clb=0)
+{
+	$data = update_db_player_structure(1);
+	foreach($data as $key => $type)
+	{
+		if(strpos($type,'int')!==false) $v=0;
+		else $v='';
+		$data[$key] = $v;
+	}
+	$data['clbpara'] = get_clbpara($data['clbpara']);
+	if(!empty($clb))
+	{
+		include_once GAME_ROOT.'./include/game/clubslct.func.php';
+		changeclub($clb,$data);
+		switch ($clb) {
+			case 1:
+				$data['wepk'] = 'WP';
+				break;
+			case 2:
+				$data['wepk'] = 'WK';
+				break;
+			case 3:
+				$data['wepk'] = 'WC';
+				break;
+			case 4:
+				$data['wepk'] = 'WG';
+				break;
+			case 5:
+				$data['wepk'] = 'WD';
+				break;
+			case 9:
+				$data['wepk'] = 'WF';
+				break;
+			default:
+				$data['wepk'] = 'WN';
+		}
+	}
+	return $data;
+}
 //通过名字抓取指定玩家数据，只能抓玩家
 function fetch_playerdata_by_name($n)
 {
@@ -625,7 +575,6 @@ function fetch_playerdata_by_name($n)
 	reload_set_items($pdata);
 	return $pdata;
 }
-
 //通过pid抓取指定玩家/NPC数据
 function fetch_playerdata_by_pid($pid)
 {
@@ -637,26 +586,6 @@ function fetch_playerdata_by_pid($pid)
 	//套装效果刷新
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
 	reload_set_items($pdata);
-	return $pdata;
-}
-//用于读取当前玩家数据的数组结构（不进行过滤）
-function current_player_load(){
-	$data = update_db_player_structure();
-	foreach($data as $key)
-	{
-		global $$key;
-		$data[$key]= $$key;
-	}
-	return $data;
-}
-//用于将当前玩家数据保存至数据库（会进行过滤）
-function current_player_save(){
-	global $db,$tablepre;
-	$pdata = current_player_load();
-	$pdata = player_format_with_db_structure($pdata);
-	$pid = $pdata['pid'];
-	$db->array_update("{$tablepre}players",$pdata,"pid='$pid'");
-	if(!empty($pdata['clbpara'])) $pdata['clbpara'] = get_clbpara($pdata['clbpara']);
 	return $pdata;
 }
 //用于将指定player数据存回数据库
@@ -671,18 +600,6 @@ function player_save($data){
 		$ndata = player_format_with_db_structure($data);
 		unset($data);
 		$db->array_update("{$tablepre}players",$ndata,"pid='$pid'");
-	}
-	return;
-}
-//用于刷新当前玩家数据（待修改）
-function player_load($data)
-{
-	$ndata = player_format_with_db_structure($data);
-	foreach ($ndata as $key => $value)
-	{
-		global $$key;
-		$$key = $value;
-		if($key == 'clbpara' && !empty($$key)) $$key = get_clbpara($$key);
 	}
 	return;
 }

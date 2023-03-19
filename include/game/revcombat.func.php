@@ -1144,8 +1144,10 @@
 				
 				if ($skname == 'all') {
 					$lvupskill += rand ( 2, 4 );
-				} elseif ($skname == 'wd' || $skname == 'wf') {
+				}elseif ($skname == 'wf') {
 					$lvupskill += rand ( 3, 5 );
+				}elseif ($skname == 'wd') {
+					$lvupskill += rand ( 6, 8 );
 				}elseif($skname){
 					$lvupskill += rand ( 4, 6 );
 				}

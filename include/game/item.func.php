@@ -1396,7 +1396,7 @@ function itemuse($itmn) {
 				$log .= '你突然感觉到一种不可思议的力量贯通全身！<br>';
 				$wp = $wk = $wg = $wc = $wd = $wf = 8010;
 				$att = $def = 13337;
-				changeclub(15);
+				changeclub(15,$pdata);
 				addnews ( $now, 'suisidefail',$nickinfo.' '.$name );
 				$itm = $itmk = $itmsk = '';
 				$itme = $itms = 0;
@@ -1482,7 +1482,7 @@ function itemuse($itmn) {
 				include_once GAME_ROOT . './include/state.func.php';
 				death ( 'SCP', '', 0, $itm );
 			} else {
-				changeclub(17);
+				changeclub(17,$pdata);
 				addnews ( $now, 'notworthit', $nickinfo.' '.$name );
 			}
 			$itms --;
@@ -1863,7 +1863,7 @@ function itemuse($itmn) {
 				$log .= '你突然感觉到一种不可思议的力量贯通全身！<br>';
 				$wp = $wk = $wg = $wc = $wd = $wf = 8010;
 				$att = $def = 13337;
-				changeclub(15);
+				changeclub(15,$pdata);
 				addnews ( $now, 'suisidefail',$nickinfo.' '.$name );
 			}
 			elseif ($itme == 17 || $itme > 22){ //状态机社团以及不存在的社团
@@ -1892,7 +1892,7 @@ function itemuse($itmn) {
 				【其之零】一切都是数字的假象而已。<br>
 				正在你回味着这句话的时候，一切已经恢复如初。";
 				//社团变更
-				changeclub(20);
+				changeclub(20,$pdata);
 				//获取初始元素与第一条配方
 				$dice = rand(0,5);
 				global ${'element'.$dice},$clbpara;
@@ -1908,7 +1908,7 @@ function itemuse($itmn) {
 				$log .="再等等吧……<br>";
 			}
 			else{//直接将社团卡的效果写入玩家club
-				changeclub($itme);
+				changeclub($itme,$pdata);
 				$log .="你的称号被改动了！";
 			}
 			//销毁物品
@@ -1990,7 +1990,7 @@ function itemuse($itmn) {
 			$log.="<br>获得了<span class='sparkle'>{$sparkle}元素口袋{$sparkle}</span>！<br>";
 			$log.="……这到底是怎么一回事呢？<br><br>";
 			//社团变更
-			changeclub(20);
+			changeclub(20,$pdata);
 			//获取初始元素与第一条配方
 			$dice = rand(0,5);
 			global ${'element'.$dice};

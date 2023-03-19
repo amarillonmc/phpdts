@@ -258,7 +258,7 @@ A:active {
 P{ line-height:16px
 }
 
-DIV {
+DIV.help {
 	PADDING-LEFT: 1em;PADDING-right: 1em
 }
 
