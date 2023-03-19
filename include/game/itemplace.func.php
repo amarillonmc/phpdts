@@ -37,7 +37,7 @@ function get_npc_helpinfo($nlist,$tooltip=1)
 								break;
 							}
 						}
-						if($snpc['gd'] == 'm' || $snpc['gd'] == 'f')
+						if(isset($snpc['gd']))
 						{
 							$snpc['gd'] = $snpc['gd']=='m' ? '男' : '女';
 						}
@@ -84,10 +84,6 @@ function get_npc_helpinfo($nlist,$tooltip=1)
 									if(!empty($snpc[$sk_value])) $snpc[$sk_value.'_words'] = parse_info_desc($snpc[$sk_value],'sk',$snpc[$k_value]);
 									if(!empty($snpc[$k_value])) $snpc[$k_value] = parse_info_desc($snpc[$k_value],'k');
 								}
-							}
-							else 
-							{
-								$snpc[$t1.$t2] = '-';
 							}
 						}
 						$tnlist[$i][$tsub][$n] = $snpc;

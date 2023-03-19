@@ -77,7 +77,7 @@ function updateskill(&$data=NULL)
 	if ($club==2) $wk+=50;
 	if ($club==3) $wc+=50;
 	if ($club==4) $wg+=50;
-	if ($club==5) $wd+=40;
+	if ($club==5) $wd+=50;
 	if ($club==9) $wf+=40;
 	if ($club==11) $money+=680;
 	if ($club==16) { $wp+=25; $wk+=25; $wc+=25; $wg+=25; $wd+=25; $wf+=25; }

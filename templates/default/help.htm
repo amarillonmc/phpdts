@@ -109,7 +109,8 @@
 	</TBODY>
 </TABLE>
 <HR>
-<div align="left">
+{template skillhelp}
+<div align="left" style="text-align: left; PADDING-LEFT: 2em;PADDING-right: 2em">
 
 <p><span class="subtitle2">写在前面的话</span></p>
 <p>作为一款网页游戏，BR大逃杀也算是有点年头的东西了。<br>
@@ -1622,21 +1623,23 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 内定称号分为“一般”，“特殊”以及“道具”三种类型。<BR>
 一般内定称号增加熟练度，获得几率较高；特殊内定称号会赋予玩家特殊能力，获得几率较低。<BR>
 道具类型的称号需要使用特殊的道具，或完成特殊的步骤后才能获得，是改变了游戏根本机制的上级者向玩法。<BR>
-内定称号对玩家的影响如下表：</p>
-<BR>
+<p>此外，玩家角色<span class="lime">每升一级</span>，便可以获得一点技能点。 <BR>
+<p>技能点可以用于多种升级操作，其中有一些是<span class="yellow">公共的</span>（任意称号均可使用），而有一些是<span class="yellow">特殊的</span>（只有特定内定称号的才可使用，也只对对应称号有效）。 <BR>	
+内定称号拥有的效果与技能详见下表：</p>
 
-<table cellSpacing=0 cellPadding=0>
+<BR>
+<table cellSpacing=1 cellPadding=2>
 	<tr>
-		<td class="b1" height=20px>
+		<td class="b1" height=20px width="60px">
 		<span>称号名</span>
 		</td>
-		<td class="b1">
+		<td class="b1" width="40px">
 		<span>种类</span>
 		</td>
-		<td class="b1">
+		<td class="b1" width="450px">
 		<span>被动特性</span></td>
-		<td class="b1">
-		<span>主动技能</span>
+		<td class="b1" width="100px">
+		<span>技能</span>
 		</td>
 	</tr>
 	<tr>
@@ -1647,10 +1650,10 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 		<span>一般</span>
 		</td>
 		<td class="b3">
-		<span>初始殴系熟练增加；升级时额外增加殴系熟练</span>
+		<span>初始拥有50点殴系熟练度；每次升级时获得4-6点殴系熟练度</span>
 		</td>
 		<td class="b3">
-		<span>无</span>
+		<span><input type="button" class="cmdbutton" value="点击查看称号技能" onclick="showModalDialog($('skillhelp-c1'));"></span>
 		</td>
 	</tr>
 	<tr>
@@ -1661,10 +1664,10 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 		<span>一般</span>
 		</td>
 		<td class="b3">
-		<span>初始斩系熟练增加；升级时额外增加斩系熟练</span>
+		<span>初始拥有50点斩系熟练度；每次升级时获得4-6点斩系熟练度</span>
 		</td>
 		<td class="b3">
-		<span>无</span>
+		<span><input type="button" class="cmdbutton" value="点击查看称号技能" onclick="showModalDialog($('skillhelp-c2'));"></span>
 		</td>
 	</tr>
 	<tr>
@@ -1675,10 +1678,10 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 		<span>一般</span>
 		</td>
 		<td class="b3">
-		<span>初始射系熟练增加；升级时额外增加射系熟练</span>
+		<span>初始拥有50点射系熟练度；每次升级时获得4-6点射系熟练度</span>
 		</td>
 		<td class="b3">
-		<span>无</span>
+		<span><input type="button" class="cmdbutton" value="点击查看称号技能" onclick="showModalDialog($('skillhelp-c4'));"></span>
 		</td>
 	</tr>
 	<tr>
@@ -1689,10 +1692,10 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 		<span>一般</span>
 		</td>
 		<td class="b3">
-		<span>初始投系熟练增加；升级时额外增加投系熟练</span>
+		<span>初始拥有50点投系熟练度；每次升级时获得4-6点投系熟练度</span>
 		</td>
 		<td class="b3">
-		<span>无</span>
+		<span><input type="button" class="cmdbutton" value="点击查看称号技能" onclick="showModalDialog($('skillhelp-c3'));"></span>
 		</td>
 	</tr>
 	<tr>
@@ -1703,10 +1706,12 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 		<span>一般</span>
 		</td>
 		<td class="b3">
-		<span>初始爆系熟练增加；升级时额外增加爆系熟练；设置陷阱有熟练度和经验值加成；合成爆炸物有数量加成；陷阱回避概率上升</span>
+		<span>初始拥有50点爆系熟练度；每次升级时获得6-8点爆系熟练度<br>
+			埋设陷阱时有熟练度和经验值加成；合成爆炸物时耐久+50%；<br>
+			成功回避陷阱后，将陷阱回收的概率+35%</span>
 		</td>
 		<td class="b3">
-		<span>无</span>
+		<span><input type="button" class="cmdbutton" value="点击查看称号技能" onclick="showModalDialog($('skillhelp-c5'));"></span>
 		</td>
 	</tr>
 	<tr>
@@ -1717,10 +1722,12 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 		<span>一般</span>
 		</td>
 		<td class="b3">
-		<span>初始灵系熟练增加；升级时额外增加灵系熟练</span>
+		<span>初始拥有40点灵系熟练度；每次升级时获得3-5点灵系熟练度<br>
+			<span class="grey">但是你的超能力是从哪来的……？</span>
+		</span>
 		</td>
 		<td class="b3">
-		<span>能自由控制怒气使用必杀技</span>
+		<span><input type="button" class="cmdbutton" value="点击查看称号技能" onclick="showModalDialog($('skillhelp-c9'));"></span>
 		</td>
 	</tr>
 	<tr>
@@ -1731,24 +1738,11 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 		<span>特殊</span>
 		</td>
 		<td class="b3">
-		<span>移动和探索体力消耗大幅减少，而且减少程度随着等级提升会上升；陷阱回避率增加，而遭遇陷阱几率减少</span>
+		<span>移动和探索体力消耗大幅减少，而且减少程度随着等级提升会上升；<br>
+			陷阱回避率增加，而遭遇陷阱几率减少</span>
 		</td>
 		<td class="b3">
-		<span>无</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>高速成长</span>
-		</td>
-		<td class="b3">
-		<span>特殊</span>
-		</td>
-		<td class="b3">
-		<span>每次攻击获得的熟练度为2点</span>
-		</td>
-		<td class="b3">
-		<span>无</span>
+		<span><input type="button" class="cmdbutton" value="点击查看称号技能" onclick="showModalDialog($('skillhelp-c6'));"></span>
 		</td>
 	</tr>
 	<tr>
@@ -1759,10 +1753,13 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 		<span>特殊</span>
 		</td>
 		<td class="b3">
-		<span>hack成功率极高，且不会导致严重后果；合成电子设备有效果加成；陷阱探测类装备效率提高；电气属性致伤率增加；生命探测类设备可以探测全地图NPC</span>
+		<span>
+			能够用电池、探测器电池为武器增加电击属性；电击致伤率增加；<br>
+			hack成功率极高，且不会导致严重后果；<br>
+			陷阱探测效率+10%；陷阱迎击成功率+20%<br></span>
 		</td>
 		<td class="b3">
-		<span>能够用电池或探测器电池为武器或陷阱增加电击属性</span>
+		<span><input type="button" class="cmdbutton" value="点击查看称号技能" onclick="showModalDialog($('skillhelp-c7'));"></span>
 		</td>
 	</tr>
 	<tr>
@@ -1773,10 +1770,14 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 		<span>特殊</span>
 		</td>
 		<td class="b3">
-		<span>下毒伤害加成；毒属性致伤率增加；</span>
+		<span>
+			能够用毒药为武器淬毒；毒属性致伤率增加；<br>
+			可以检查补给是否有毒；为补给下毒时效果更好
+		</span>
 		</td>
 		<td class="b3">
-		<span>能够查毒；能够用毒药为武器或陷阱增加带毒属性</span>
+			<span>待实装</span>
+		<!--<span><input type="button" class="cmdbutton" value="点击查看称号技能" onclick="showModalDialog($('skillhelp-c8'));"></span>-->
 		</td>
 	</tr>
 	<tr>
@@ -1787,24 +1788,28 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 		<span>特殊</span>
 		</td>
 		<td class="b3">
-		<span>战斗计算武器本系熟练值时会以一定比率额外附加其他系的熟练值；</span>
+		<span>每次攻击获得的熟练度为2点；<br>
+			战斗计算武器本系熟练值时会额外附加25%其他系别熟练值
+		</span>
 		</td>
 		<td class="b3">
-		<span>无</span>
+		<span>待实装</span>
 		</td>
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
-		<span>全能骑士</span>
+		<span>全能兄贵</span>
 		</td>
 		<td class="b3">
 		<span>特殊</span>
 		</td>
 		<td class="b3">
-		<span>初始全系熟练少量增加；升级时额外增加全系熟练；使用补给品具有2.5倍效果</span>
+		<span>初始攻击力、防御力、生命值、全系熟练大幅提升；<br>
+			  生命值、攻击力、防御力成长率更高；升级时额外增加2-4点全系熟练<br>
+			  <span class="grey">但是代价是什么……？</span></span>
 		</td>
 		<td class="b3">
-		<span>无</span>
+		<span>待实装</span>
 		</td>
 	</tr>
 	<tr>
@@ -1815,51 +1820,13 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 		<span>特殊</span>
 		</td>
 		<td class="b3">
-		<span>初始资金增加；购买物品所需金钱数下降</span>
+		<span>初始资金增加；购买物品所需金钱数下降；<br>
+			  可以与雇佣兵非法组队
+		</span>
 		</td>
 		<td class="b3">
-		<span>无</span>
+		<span>待实装</span>
 		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>肌肉兄贵</span>
-		</td>
-		<td class="b3">
-		<span>特殊</span>
-		</td>
-		<td class="b3">
-		<span>初始攻击力、防御力增加；攻击力和防御力成长率更高</span>
-		</td>
-		<td class="b3">
-		<span>无</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>根性兄贵</span>
-		</td>
-		<td class="b3">
-		<span>特殊</span>
-		</td>
-		<td class="b3">
-		<span>初始生命值上限增加；生命最大值成长率更高</span>
-		</td>
-		<td class="b3">
-		<span>无</span>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>决死结界</span>
-		</td>
-		<td class="b3">
-		<span>特殊</span>
-		</td>
-		<td class="b3">
-		<span>当你被击杀或因陷阱而死时，会立即复活，同时本称号消失</span>
-		</td>
-		<td class="b3">
-		<span>可以使用一次特殊技能，使自身命体上限、全系熟练、<br>怒气值均按比例获得一定加成，同时本称号消失</span>
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
@@ -1869,10 +1836,14 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 		<span>特殊</span>
 		</td>
 		<td class="b3">
-		<span>若你心中毫无杂念，一心求生……</span>
+		<span>
+			获得奇妙的庇佑，让你惩恶扬善。<br>
+			这是一个偏上级者向的称号，还请自己体验。<br>
+			<span class="grey">若你心中毫无杂念，一心求生……</span>
+		</span>
 		</td>
 		<td class="b3">
-		<span>获得奇妙的庇佑，让你惩恶扬善。<br>这是一个偏上级者向的称号，还请自己体验。</span>
+		<span>待实装</span>
 	</tr>
 	<tr>
 		<td class="b2" height=20px>
@@ -1882,357 +1853,17 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 		<span>道具</span>
 		</td>
 		<td class="b3">
-		<span>可以通过打碎道具或尸体提炼元素，<br>并消耗元素来无中生有制造物品。</span>
+		<span>可以通过打碎道具或尸体提炼元素，<br>
+			并消耗元素来无中生有制造物品</span>
 		</td>
 		<td class="b3">
-		<span>需要遵循一定的规则。<br>详情见元素大师称号卡本体。</span>
+		<span>
+			待实装
+		</span>
 	</tr>
 </table>
 <br>
 
-<p>玩家角色<span class="lime">每升一级</span>，便可以获得一点技能点。 <BR>
-<p>技能点可以用于多种升级操作，其中有一些是<span class="yellow">公共的</span>（任意称号均可使用），而有一些是<span class="yellow">特殊的</span>（只有特定内定称号的才可使用，也只对对应称号有效），具体请见下表。 <BR>
-<br>
-<table cellSpacing=0 cellPadding=0>
-	<tr>
-		<td class="b1" height=20px>
-		<span>名称</span>
-		</td>
-		<td class="b1" height=20px>
-		<span>称号要求</span>
-		</td>
-		<td class="b1">
-		<span>描述</span>
-		</td>
-		<td class="b1">
-		<span>附加说明</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>生命</span>
-		</td>
-		<td class="b3">
-		<span>不限</span>
-		</td>
-		<td class="b3">
-		<span>使用技能点提升一定生命上限</span>
-		</td>
-		<td class="b3">
-		<span>单次使用，立即生效</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>攻防</span>
-		</td>
-		<td class="b3">
-		<span>不限</span>
-		</td>
-		<td class="b3">
-		<span>使用技能点提升一定基础攻击和基础防御</span>
-		</td>
-		<td class="b3">
-		<span>单次使用，立即生效</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>治疗</span>
-		</td>
-		<td class="b3">
-		<span>不限</span>
-		</td>
-		<td class="b3">
-		<span>使用技能点包扎所有伤口，解除所有异常状态</span>
-		</td>
-		<td class="b3">
-		<span>单次使用，立即生效</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>格挡</span>
-		</td>
-		<td class="b3">
-		<span>铁拳无敌</span>
-		</td>
-		<td class="b3">
-		<span>当使用殴系武器时，武器效果按一定比率算入防御力</span>
-		</td>
-		<td class="b3">
-		<span>可升级，增加的防御力数值有上限</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>暴击</span>
-		</td>
-		<td class="b3">
-		<span>铁拳无敌</span>
-		</td>
-		<td class="b3">
-		<span>当使用殴系武器时，增强武器攻击力，有几率在计算伤害时让对方防御力减少一定比率</span>
-		</td>
-		<td class="b3">
-		<span>可升级</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>精准</span>
-		</td>
-		<td class="b3">
-		<span>见敌必斩</span>
-		</td>
-		<td class="b3">
-		<span>当使用斩系武器时，提升武器的命中率，减少连击时命中率衰减</span>
-		</td>
-		<td class="b3">
-		<span>可升级</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>保养</span>
-		</td>
-		<td class="b3">
-		<span>见敌必斩</span>
-		</td>
-		<td class="b3">
-		<span>当使用斩系武器时，攻击时武器耐久损耗几率降低</span>
-		</td>
-		<td class="b3">
-		<span>可升级</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>静息</span>
-		</td>
-		<td class="b3">
-		<span>狙击鹰眼</span>
-		</td>
-		<td class="b3">
-		<span>当使用射系武器时，提升武器的命中率，减少连击时命中率衰减</span>
-		</td>
-		<td class="b3">
-		<span>可升级</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>重击</span>
-		</td>
-		<td class="b3">
-		<span>狙击鹰眼</span>
-		</td>
-		<td class="b3">
-		<span>&nbsp; 当使用射系武器时，损坏敌人防具概率增加，敌人防具耐久损耗增加，一定几率获得一定比率的攻击力加成</span>
-		</td>
-		<td class="b3">
-		<span>可升级</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>臂力</span>
-		</td>
-		<td class="b3">
-		<span>灌篮高手</span>
-		</td>
-		<td class="b3">
-		<span>当使用投系武器时，提升武器的反击率</span>
-		</td>
-		<td class="b3">
-		<span>可升级</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>潜能</span>
-		</td>
-		<td class="b3">
-		<span>灌篮高手</span>
-		</td>
-		<td class="b3">
-		<span>当使用投系武器时，增强武器攻击力，增加武器伤害的浮动范围</span>
-		</td>
-		<td class="b3">
-		<span>可升级</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>隐蔽</span>
-		</td>
-		<td class="b3">
-		<span>拆弹专家</span>
-		</td>
-		<td class="b3">
-		<span>提升自己的隐蔽率，提升自己的先手率</span>
-		</td>
-		<td class="b3">
-		<span>可升级</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>冷静</span>
-		</td>
-		<td class="b3">
-		<span>拆弹专家</span>
-		</td>
-		<td class="b3">
-		<span>回避陷阱几率增加，拆除并重复使用敌人陷阱的几率增加</span>
-		</td>
-		<td class="b3">
-		<span>可升级</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>灵力</span>
-		</td>
-		<td class="b3">
-		<span>超能力者</span>
-		</td>
-		<td class="b3">
-		<span>当使用灵系武器时，降低攻击时体力消耗，降低敌人对自己攻击的反击率</span>
-		</td>
-		<td class="b3">
-		<span>可升级</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>敏捷</span>
-		</td>
-		<td class="b3">
-		<span>宛如疾风</span>
-		</td>
-		<td class="b3">
-		<span>提升自己的隐蔽率，提升自己的先手率，提升自己的反击率</span>
-		</td>
-		<td class="b3">
-		<span>可升级</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>闪避</span>
-		</td>
-		<td class="b3">
-		<span>宛如疾风</span>
-		</td>
-		<td class="b3">
-		<span>战斗时对方命中率降低</span>
-		</td>
-		<td class="b3">
-		<span>可升级</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>攻防</span>
-		</td>
-		<td class="b3">
-		<span>肌肉兄贵</span>
-		</td>
-		<td class="b3">
-		<span>用技能点换取攻防数值时，能获得比一般称号更多的攻防</span>
-		</td>
-		<td class="b3">
-		<span>无</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>生命</span>
-		</td>
-		<td class="b3">
-		<span>根性兄贵</span>
-		</td>
-		<td class="b3">
-		<span>用技能点换取生命上限数值时，能获得比一般称号更多的生命上限</span>
-		</td>
-		<td class="b3">
-		<span>无</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>晶莹</span>
-		</td>
-		<td class="b3">
-		<span>晶莹剔透</span>
-		</td>
-		<td class="b3">
-		<span>同时减少对敌人造成的最终伤害与自己受到的最终伤害，『业』的增长率下降</span>
-		</td>
-		<td class="b3">
-		<span>可升级</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>剔透</span>
-		</td>
-		<td class="b3">
-		<span>晶莹剔透</span>
-		</td>
-		<td class="b3">
-		<span>主动攻击时有概率对敌人造成额外的伤害，额外伤害取决于你与敌人的『业』的差值</span>
-		</td>
-		<td class="b3">
-		<span>可升级</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>节制</span>
-		</td>
-		<td class="b3">
-		<span>元素大师</span>
-		</td>
-		<td class="b3">
-		<span>解锁后可以限制元素合成结果的效耐上限</span>
-		</td>
-		<td class="b3">
-		<span>5级后解锁</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>预言</span>
-		</td>
-		<td class="b3">
-		<span>元素大师</span>
-		</td>
-		<td class="b3">
-		<span>解锁能够干涉元素合成结果的效耐占比，但存在一定风险</span>
-		</td>
-		<td class="b3">
-		<span>15级后解锁</span>
-		</td>
-	</tr>
-	<tr>
-		<td class="b2" height=20px>
-		<span>学习</span>
-		</td>
-		<td class="b3">
-		<span>天赋异禀</span>
-		</td>
-		<td class="b3">
-		<span>可以学习以上技能中的任意2个，并为己所用</span>
-		</td>
-		<td class="b3">
-		<span>无</span>
-		</td>
-	</tr>
-</table>
-
-<BR>
 <BR>
 <!--
 <p><a name="地区说明"><span class="subtitle2">17.地区说明</span></a></p>
@@ -3171,7 +2802,7 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 			<span>备注</span>
 			</TD>
 		</TR>
-		<!--{eval require config('combatcfg',$gamecfg);}-->
+		<!--{eval include config('combatcfg',$gamecfg);}-->
 		<!--{loop $wthinfo $wi $wn}-->
 		<TR>
 			<TD class="b2" height=20px>
