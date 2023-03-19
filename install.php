@@ -663,14 +663,14 @@ if(!$action) {
 		$quit = TRUE;
 	}
 
-	if(@ini_get(file_uploads)) {
-		$max_size = @ini_get(upload_max_filesize);
-		$curr_upload_status = $lang['attach_enabled'].$max_size;
-		$msg .= $lang['attach_enabled_info'].$max_size."\t";
-	} else {
-		$curr_upload_status = $lang['attach_disabled'];
-		$msg .= "<font color=\"#FF0000\">$lang[attach_disabled_info]</font>\t";
-	}
+  if(function_exists('ini_get') && ini_get('file_uploads')) {
+    $max_size = ini_get('upload_max_filesize');
+    $curr_upload_status = $lang['attach_enabled'].$max_size;
+    $msg .= $lang['attach_enabled_info'].$max_size."\t";
+  } else {
+    $curr_upload_status = $lang['attach_disabled'];
+    $msg .= "<font color=\"#FF0000\">$lang[attach_disabled_info]</font>\t";
+  }
 
 	$query = $db->query("SELECT VERSION()");
 	$curr_mysql_version = $db->result($query, 0);
@@ -1308,11 +1308,7 @@ function createtable($db, $sql, $dbcharset) {
 }
 
 function setconfig($string) {
-	if(!get_magic_quotes_gpc()) {
-		$string = str_replace('\'', '\\\'', $string);
-	} else {
-		$string = str_replace('\"', '"', $string);
-	}
+	$string = str_replace('\'', '\\\'', $string);
 	return $string;
 }
 

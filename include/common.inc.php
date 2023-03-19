@@ -15,7 +15,7 @@ require GAME_ROOT.'./include/game/revclubskills.func.php';
 require GAME_ROOT.'./include/game/dice.func.php';
 error_reporting(E_ALL);
 set_error_handler('gameerrorhandler');
-$magic_quotes_gpc = get_magic_quotes_gpc();
+$magic_quotes_gpc = false;
 extract(gstrfilter($_COOKIE));
 extract(gstrfilter($_POST));
 extract(gstrfilter($_GET));
