@@ -81,11 +81,7 @@ function getstart($start = 0,$mode = ''){
 	return $start;
 }
 function setconfig($string) {
-	if(!get_magic_quotes_gpc()) {
-		$string = str_replace('\'', '\\\'', $string);
-	} else {
-		$string = str_replace('\"', '"', $string);
-	}
+	$string = str_replace('\'', '\\\'', $string);
 	return $string;
 }
 

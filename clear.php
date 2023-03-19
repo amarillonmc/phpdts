@@ -11,7 +11,7 @@ if(version_compare(PHP_VERSION, '4.3.0', '<')) {
 }
 require GAME_ROOT.'/include/global.func.php';
 
-$magic_quotes_gpc = get_magic_quotes_gpc();
+$magic_quotes_gpc = false;
 extract(gstrfilter($_COOKIE));
 extract(gstrfilter($_POST));
 unset($_GET);
