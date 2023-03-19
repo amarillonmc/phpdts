@@ -6,35 +6,182 @@
 
 	# 新社团技能 - 特殊社团技能处理：
 
-	//include_once GAME_ROOT.'./include/game/dice.func.php';
-
-	/*# 「百战」技能判定
-	function skill_c1_veteran_act($choice)
+	# 升级指定技能会触发的事件，返回0时代表无法升级技能
+	function upgclbskills_events($event,$sk,&$data=NULL)
 	{
-		global $log,$pdata,$cskills,$club,$clbpara,$itemspkinfo;
-		if(!check_skill_unlock('c1_veteran',$pdata))
+		global $log,$cskills,$clbpara,$name;
+		# 事件：激活技能
+		if($event == 'active_news')
 		{
-			$c_arr = get_skillvars('c1_veteran','defkind');
-			$cvar = &$clbpara['skillpara']['c1_veteran']['choice'];
-			if(empty($choice) || !in_array($choice,$c_arr))
-			{
-				$log .= "选定的防御属性不存在！<br>";
-				return;
-			}
-			if($choice == $cvar)
-			{
-				$log .= "不能重复选择属性。<br>";
-				return;
-			}
-			$cvar = $choice;
-			$log .= "防御属性已变更为<span class='yellow'>{$itemspkinfo[$choice]}</span>！<br>";
+			addnews($now,'ask_'.$sk,$name);
+			return 1;
 		}
-		else 
+		# 事件：治疗
+		if($event == 'heal')
 		{
-			$log .= "「百战」技能未解锁！<br>";
+			# 事件效果：回复满生命、体力，并清空所有异常状态
+			global $hp,$mhp,$sp,$msp,$inf;
+			$heal_flag = 0;
+			if(!empty($inf))
+			{
+				$inf = ''; 
+				$heal_flag = 1;
+				$log .= "你的所有异常状态全部解除了！<br>";
+			}
+			if($hp < $mhp || $sp < $msp)
+			{
+				$hp = $mhp; $sp = $msp;
+				$heal_flag = 1;
+				$log .= "你的生命与体力完全恢复了！<br>";
+			}
+			if(!$heal_flag)
+			{
+				$log .= "你不需要使用这个技能！<br>";
+				return 0;
+			}
+			return 1;
 		}
-		return;
-	}*/
+		# 事件：怒气充能
+		if($event == 'charge')
+		{
+			global $rage;
+			if($rage >= 255)
+			{
+				$log .= "你不需要使用这个技能！<br>";
+				return 0;
+			}
+			$rage = min(255,$rage + get_skillvars('c9_charge','rageadd'));
+			// 检查当前技能使用次数
+			$active_t = get_skillpara('c9_charge','active_t',$clbpara);
+			// 第3次使用时开始冷却
+			if($active_t+1 > get_skillvars('c9_charge','freet'))
+			{
+				$event = 'setstarttimes_c9_charge';
+			}
+			else 
+			{
+				return 1;
+			}
+		}
+		# 事件：广域探测
+		if($event == 'radar')
+		{
+			include_once GAME_ROOT.'./include/game/item2.func.php';
+			newradar(2);
+			return 1;
+		}
+		# 事件：获取指定技能
+		if(strpos($event,'getskill_') === 0)
+		{
+			# 事件效果：获取一个登记过的技能
+			$gskid = substr($event,9);
+			if(isset($cskills[$gskid]))
+			{
+				getclubskill($gskid,$clbpara);
+			}
+			else 
+			{
+				$log .= "技能{$gskid}不存在！这可能是一个BUG，请联系管理员。<br>";
+				return 0;
+			}
+			return 1;
+		}
+		# 事件：为指定技能1设置技能2中的静态参数3
+		if(strpos($event,'setskillvars_') === 0)
+		{
+			$sk_arr = str_replace('setskillvars_','',$event);
+			$sk_arr = explode('|',$sk_arr);
+			if(count($sk_arr) == 3)
+			{
+				$sk0 = $sk_arr[0]; $sk1 = $sk_arr[1]; $sk_vars = $sk_arr[2];
+				$sk_vars = strpos($sk_vars,'+')!==false ? explode('+',$sk_vars) : Array($sk_vars);
+				if(isset($cskills[$sk1]['maxlvl'])) $sklvl = get_skilllvl($sk1,$data);
+				foreach($sk_vars as $var)
+				{
+					$sk_var = isset($sklvl) ? get_skillvars($sk1,$var,$sklvl) : get_skillvars($sk1,$var);
+					set_skillpara($sk0,$var,$sk_var,$data['clbpara']);
+				}
+				return 1;
+			}
+			else 
+			{
+				$log .= "参数设置错误<br>";
+				return 0;
+			}
+		}
+		# 事件：为指定技能设置开始时间
+		if(strpos($event,'setstarttimes_') === 0)
+		{
+			$gskid = substr($event,14);
+			if(isset($cskills[$gskid])) 
+			{
+				set_starttimes($gskid,$clbpara);
+			}
+			else 
+			{
+				$log .= "技能{$gskid}不存在！这可能是一个BUG，请联系管理员。<br>";
+				return 0;
+			}
+			return 1;
+		}
+		# 事件：为指定技能设置持续时间
+		if(strpos($event,'setlasttimes_') === 0)
+		{
+			$gskarr = substr($event,13);
+			$gskarr = explode('+',$gskarr);
+			$gskid = $gskarr[0]; $gsklst = $gskarr[1];
+			if(isset($cskills[$gskid]) && $gsklst) 
+			{
+				set_lasttimes($gskid,$gsklst,$clbpara);
+			}
+			else 
+			{
+				$log .= "技能{$gskid}不存在或持续时间{$gsklst}无效！这可能是一个BUG，请联系管理员。<br>";
+				return 0;
+			}
+		}
+		# 事件：切换技能的激活状态
+		if(strpos($event,'active|') === 0)
+		{
+			$event = explode('|',$event); $sk = $event[1];
+			$now_active = get_skillpara($sk,'active',$clbpara);
+			$active = $now_active ? 0 : 1;
+			$log .= $active ? "<span class='yellow'>技能已激活！</span><br>" : "<span class='yellow'>停用了技能效果。</span><br>" ; 
+			set_skillpara($sk,'active',$active,$clbpara);
+		}
+		# 事件：天运
+		if($event == 'c6_godluck' || $event == 'c6_godsend')
+		{
+			$dice0 = rand(1,2);
+			$dice1 = rand(get_skillvars($event,'flucmin'),get_skillvars($event,'flucmax'));
+			if($event == 'c6_godluck')
+			{
+				if($dice0 == 1)
+				{
+					set_skillpara($event,'accloss',get_skillpara($event,'accloss',$clbpara)+$dice1,$clbpara);
+					set_skillpara($event,'rbloss',get_skillpara($event,'rbloss',$clbpara)+$dice1,$clbpara);
+				}
+				else 
+				{
+					set_skillpara($event,'accgain',get_skillpara($event,'accgain',$clbpara)+$dice1,$clbpara);
+					set_skillpara($event,'rbgain',get_skillpara($event,'rbgain',$clbpara)+$dice1,$clbpara);
+				}
+			}
+			else 
+			{
+				if($dice0 == 1)
+				{
+					set_skillpara($event,'actgain',get_skillpara($event,'actgain',$clbpara)+$dice1,$clbpara);
+					set_skillpara($event,'hidegain',get_skillpara($event,'hidegain',$clbpara)+$dice1,$clbpara);
+				}
+				else 
+				{
+					set_skillpara($event,'countergain',get_skillpara($event,'countergain',$clbpara)+$dice1,$clbpara);
+				}
+			}
+		}
+		return 1;
+	}
 
 	# 「穿杨」与「咆哮」解锁
 	function skill_c4_unlock($csk)

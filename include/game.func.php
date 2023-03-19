@@ -113,6 +113,12 @@ function init_profile(){
 
 	$clbpara = get_clbpara($clbpara);
 
+	if(!check_skill_unlock('buff_shield',$pdata))
+	{
+		global $shield_info;
+		$shield_info = "<span class=\"blueseed\" tooltip2=\"【护盾】：可抵消等同于护盾值的伤害。护盾值只在抵消属性伤害时消耗，抵消电击伤害时双倍消耗。护盾存在时不会受到反噬伤害或陷入异常状态。\">(".get_skillpara('buff_shield','svar',$clbpara).")</span>";
+	}
+
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
 	$atkinfo = get_base_att($pdata,$pdata,1,1);
 	$definfo = get_base_def($pdata,$pdata,1,1);
@@ -570,45 +576,40 @@ function get_remaincdtime($pid){
 }
 
 // 检查时效性技能是否达到时限
-function check_skilllasttimes(&$data=NULL)
+function check_skilllasttimes(&$data)
 {
 	global $cskills,$log,$now,$name;
-	if(!isset($data))
-	{
-		global $clbpara;
-		$para = &$clbpara;
-		$nm = '你';
-	}
-	else 
-	{
-		$para = &$data['clbpara'];
-		$nm = &$data['name'];
-	}
-	$pure_flag = 0;
-	if(!empty($para['lasttimes']))
+	$nm = ($data['type'] || $data['name'] != $name) ? $data['name'] : '你';
+	$data['pure_flag'] = 0;
+	if(!empty($data['clbpara']['lasttimes']))
 	{
 		//include_once GAME_ROOT.'./include/game/revclubskills.func.php';
-		foreach($para['lasttimes'] as $sk => $lts)
+		foreach($data['clbpara']['lasttimes'] as $sk => $lts)
 		{
-			$stm = isset($para['starttimes'][$sk]) ? $para['starttimes'][$sk] : 0;
+			$stm = isset($data['clbpara']['starttimes'][$sk]) ? $data['clbpara']['starttimes'][$sk] : 0;
 			# 技能已达到时效
 			if($now > $lts+$stm)
 			{
 				$sk_name = $cskills[$sk]['name'];
 				if(get_skilltags($sk,'buff'))
 				{
-					$log.="技能<span class='yellow'>「{$sk_name}」</span>的持续效果结束了！<br>";
+					$log.="<span class='yellow'>「{$sk_name}」</span>的效果结束了！<br>";
 				}
 				else 
 				{
 					$log.="{$nm}从<span class='yellow'>「{$sk_name}」</span>状态中恢复了！<br>";
 				}
-				lostclubskill($sk,$para);
-				$pure_flag = 1;
+				lostclubskill($sk,$data['clbpara']);
+				$data['pure_flag'] = 1;
 			}
 		}
 	}
-	return $pure_flag;
+	if($nm != '你')
+	{
+		player_save($data);
+		return $data;
+	}
+	return $data['pure_flag'];
 }
 
 //通过名字抓取指定玩家数据，只能抓玩家
@@ -633,6 +634,7 @@ function fetch_playerdata_by_pid($pid)
 	if(!$db->num_rows($result)) return NULL;
 	$pdata = $db->fetch_array($result);
 	if(!empty($pdata['clbpara'])) $pdata['clbpara'] = get_clbpara($pdata['clbpara']);
+	//套装效果刷新
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
 	reload_set_items($pdata);
 	return $pdata;

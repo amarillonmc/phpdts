@@ -90,7 +90,7 @@
 				</tr>
 				<tr>
 					<td class="b2" width=70px height=20px><span>{lang hp}</span></td>
-					<td class="b3" width=170px><span><span class="$hpcolor">$sdata['hp'] / $sdata['mhp']</span></span></td>
+					<td class="b3" width=170px><span><span class="$hpcolor"><!--{if isset($sdata['shield_info'])}-->{$sdata['shield_info']}<!--{/if}-->$sdata['hp'] / $sdata['mhp']</span></span></td>
 					<td class="b2" width=70px><span>{lang sp}</span></td>
 					<td class="b3" width=105px><span>$sdata['sp'] / $sdata['msp']</span></td>
 					<td class="b2" width=70px><span>{lang rage}</span></td>

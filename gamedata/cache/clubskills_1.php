@@ -12,7 +12,7 @@ $club_skillslist = Array
 	4  => Array('s_hp','s_ad','f_heal','c4_stable','c4_break','c4_aiming','c4_loot','c4_roar','c4_sniper','c4_headshot'), #'狙击鹰眼',
 	5  => Array('s_hp','s_ad','f_heal','c5_sneak','c5_caution','c5_review','c5_focus','c5_higheg','c5_double'), #'拆弹专家',
 	6  => Array('s_hp','s_ad','f_heal','c6_godluck','c6_godsend','c6_godbless','c6_godpow','c6_godeyes','c6_justice'), #'宛如疾风',
-	7  => Array('s_hp','s_ad','f_heal'), #'锡安成员',
+	7  => Array('s_hp','s_ad','f_heal','c7_radar','c7_shield','c7_electric','c7_field','c7_emp','c7_overload'), #'锡安成员',
 	8  => Array('s_hp','s_ad','f_heal'), #'黑衣组织',
 	9  => Array('s_hp','s_ad','f_heal','c9_spirit','c9_lb','c9_iceheart','c9_charge','c9_heartfire'), #'超能力者',
 	10 => Array('s_hp','s_ad','f_heal'), #'高速成长',
@@ -53,7 +53,6 @@ $cskills_tags = Array
 	'battle' => '<span tooltip="可以在战斗中主动使用" class="gold">【战斗技】</span>',
 	'passive' => '<span tooltip="满足条件时自动触发" class="gold">【被动技】</span>',
 	'active' => '<span tooltip="在主动启动后才会产生效果" class="gold">【主动技】</span>',
-	//'cd' => '<span tooltip="隐藏标签：有此标签的技能会在载入时检查是否处于冷却状态" class="gold">【冷却技】</span>',
 	'openning' => '<span tooltip="仅在先制发现敌人时可用" class="gold">【开幕技】</span>',
 	'limit' => '<span tooltip="每局游戏内可发动次数有限" class="gold">【限次技】</span>',
 	//'buff' => '<span tooltip="隐藏标签：代表这是一个临时性状态" class="gold">【状态】</span>',
@@ -341,7 +340,7 @@ $cskills = Array
 	'c2_annihil' => Array
 	(
 		'name' => '歼灭',
-		'tags' => Array('active','cd'),
+		'tags' => Array('active'),
 		'desc' => '发动后获得增益效果：<br>
 		持斩系武器时，你的攻击有<span class="yellow">[:rate:]%</span>概率造成<span class="red b">[:findmgr:]%</span>最终伤害；<br>
 		计算属性伤害时你的基础攻击力将视作武器攻击力。<br>
@@ -352,7 +351,7 @@ $cskills = Array
 		'effect' => Array(
 			0 => Array('skillpara|c2_annihil-active' => '=::1'),
 		),
-		'events' => Array('active_news','setstarttimes_c2_annihil','getskill_buff_annihil'),
+		'events' => Array('setstarttimes_c2_annihil','getskill_buff_annihil','active_news'),
 		'link' => Array('buff_annihil'),
 		'vars' => Array(
 			'lasttimes' => 200, //持续时间 仅供介绍文本显示用
@@ -839,8 +838,8 @@ $cskills = Array
 	(
 		'name' => '双响',
 		'tags' => Array('battle','limit'),
-		'desc' => '本局已发动<span class="yellow">[^skillpara|c5_double-active_t^]/[:maxactive_t:]次</span><br>使用爆系武器方可发动，连续攻击[:chase_t:]次。',
-		'bdesc' => '本次战斗你将连续攻击[:chase_t:]次；本局已发动<span class="yellow">[^skillpara|c5_double-active_t^]/[:maxactive_t:]</span>次',
+		'desc' => '本局已发动<span class="redseed"> [^skillpara|c5_double-active_t^]/[:maxactive_t:] </span>次<br>使用爆系武器方可发动，连续攻击[:chase_t:]次。',
+		'bdesc' => '本次战斗你将连续攻击[:chase_t:]次；本局已发动<span class="redseed">[^skillpara|c5_double-active_t^]/[:maxactive_t:]</span>次',
 		'svars' => Array(
 			'active_t' => 0,
 		),
@@ -949,10 +948,10 @@ $cskills = Array
 	'c9_charge' => Array
 	(
 		'name' => '充能',
-		'tags' => Array('cd'),
+		'tags' => Array('active'),
 		'desc' => '发动后立即增加<span class="yellow">[:rageadd:]</span>点怒气。<br>
 		前<span class="yellow">[:freet:]</span>次发动没有冷却时间，之后每次发动冷却时间<span class="clan">[:cd:]</span>秒<br>
-		本局已发动：<span class="yellow">[^skillpara|c9_charge-active_t^]</span>次',
+		本局已发动：<span class="redseed"> [^skillpara|c9_charge-active_t^] </span>次',
 		'input' => '发动',
 		'log' => '<span class="lime">技能「充能」发动成功。</span><br>',
 		'events' => Array('charge','active_news'),
@@ -1125,6 +1124,136 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 15',
+		),
+	),
+	'c7_radar' => Array
+	(
+		'name' => '探测',
+		'desc' => '消耗<span class="lime">1</span>技能点，进行一次广域探测',
+		'cost' => 1,
+		'input' => '探测',
+		'no_reload_page' => 1,
+		'log' => '消耗了<span class="lime">[:cost:]</span>技能点，激活了广域探测功能。<br>',
+		'events' => Array('radar'),
+	),
+	'c7_shield' => Array
+	(
+		'name' => '护盾',
+		'tags' => Array('passive'),
+		'desc' => '进入战斗时，若生命值低于<span class="yellow">[:hpalert:]%</span>，生成一个拥有<span class="yellow">[:svar:]</span>点效果的<span class="gold" tooltip2="【护盾】：可抵消等同于护盾值的伤害。护盾值只在抵消属性伤害时消耗，抵消电击伤害时双倍消耗。护盾存在时不会受到反噬伤害或陷入异常状态。">护盾</span><br>
+		护盾值耗尽后，需要等待<span class="clan">[:cd:]</span>秒才能重新激活。',
+		'maxlvl' => 5,
+		'cost' => Array(4,4,5,7,9,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">技能「护盾」升级成功。</span><br>',
+		'status' => Array('skillpara|c7_shield-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c7_shield-lvl' => '+=::1',),
+		),
+		'svars' => Array(
+			'lvl' => 0,
+			'accgain' => 0, 'rbgain' => 0, 'accloss' => 0, 'rbloss' => 0,
+		),
+		'vars' => Array(
+			'svar' => Array(110,155,185,225,265,355), 
+			'cd' => Array(150,120,120,90,60,45),
+			'hpalert' => Array(35,40,45,50,60,70),
+		),
+		'lockdesc' => Array(
+			'skillpara|buff_shield-svar' => '护盾已存在，无法重复生成！',
+			'skillcooldown' => '护盾充能中！<br>充能所需时间：<span class="red">[:cd:]</span> 秒',
+		),
+		'unlock' => Array(
+			'skillpara|buff_shield-svar' => 'empty([:skillpara|buff_shield-svar:])',
+			'skillcooldown' => 0,
+		),
+	),
+	'c7_electric' => Array
+	(
+		'name' => '磁暴',
+		'tags' => Array('battle'),
+		'desc' => '消耗<span class="yellow">[:ragecost:]</span>点怒气，本次攻击<span class="yellow">带电</span>，电击属性伤害<span class="yellow">+[:exdmgfix:]</span>点，
+		且有<span class="yellow">[:infr:]%</span>概率使敌人陷入<span class="yellow">麻痹</span>状态。<br>
+		若敌人已处于<span class="yellow">麻痹</span>状态，则<span class="yellow">眩晕</span>敌人<span class="clan">[:lasttimes:]</span>秒',
+		'bdesc' => '本次攻击<span class="yellow">带电</span>，电击属性伤害<span class="yellow">+[:exdmgfix:]</span>，有<span class="yellow">[:infr:]%</span>概率<span class="yellow">麻痹</span>敌人，或使已麻痹敌人眩晕<span class="yellow">[:lasttimes:]</span>秒；消耗<span class="red">[:ragecost:]</span>怒气',
+		'vars' => Array(
+			'ragecost' => 25,
+			'exdmgfix' => 60, 
+			'infr' => 40,
+			'lasttimes' => 2,
+		),
+		'lockdesc' => Array(
+			'lvl' => '3级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 3',
+		),
+	),
+	'c7_field' => Array
+	(
+		'name' => '力场',
+		'tags' => Array('active'),
+		'desc' => '消耗<span class="lime">[:cost:]</span>技能点，无视冷却立刻激活一个<span class="gold" tooltip2="【护盾】：可抵消等同于护盾值的伤害。护盾值只在抵消属性伤害时消耗，抵消电击伤害时双倍消耗。护盾存在时不会受到反噬伤害或陷入异常状态。">护盾</span>',
+		'cost' => 2,
+		'input' => '激活',
+		'log' => '<span class="yellow">「护盾」已激活！</span><br>',
+		'events' => Array('getskill_buff_shield','setskillvars_buff_shield|c7_shield|svar','active_news'),
+		'link' => Array('c7_shield'),
+		'lockdesc' => Array(
+			'lvl' => '5级时解锁',
+			'skillpara|buff_shield-svar' => '护盾已存在，无法重复生成！',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 5',
+			'skillpara|buff_shield-svar' => 'empty([:skillpara|buff_shield-svar:])',
+		),
+	),
+	'buff_shield' => Array
+	(
+		'name' => '[状态]护盾',
+		'tags' => Array('buff'),
+		'desc' => '<span class="lime"><span class="gold" tooltip2="【护盾】：可抵消等同于护盾值的伤害。护盾值只在抵消属性伤害时消耗，抵消电击伤害时双倍消耗。护盾存在时不会受到反噬伤害或陷入异常状态。">护盾</span>生效中！<br>
+		当前护盾值：<span class="yellow">[^skillpara|buff_shield-svar^]</span> 点</span>',
+		'svars' => Array('svar' => 0),
+		'pvars' => Array('skillpara|buff_shield-svar'),
+		'lostevents' => Array('setstarttimes_c7_shield'),
+	),
+	'c7_overload' => Array
+	(
+		'name' => '过载',
+		'tags' => Array('passive'),
+		'desc' => '你造成的电击伤害没有上限',
+		'lockdesc' => Array(
+			'lvl' => '15级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 15',
+		),
+	),
+	'c7_emp' => Array
+	(
+		'name' => '脉冲',
+		'tags' => Array('battle','limit'),
+		'desc' => '本局已发动<span class="redseed"> [^skillpara|c7_emp-active_t^]/[:maxactive_t:] </span>次<br>
+		消耗<span class="yellow">[:ragecost:]</span>点怒气，同时无效化你与敌人的<span class="yellow">抹消/制御类</span>属性，<br>
+		成功无效化时，使敌人进入<span class="yellow">麻痹</span>状态。<br>
+		若敌人已处于<span class="yellow">麻痹</span>状态，则眩晕敌人<span class="clan">[:lasttimes:]</span>秒<br>',
+		'bdesc' => '无效化双方的<span class="yellow">抹消/制御类</span>属性，并<span class="yellow">麻痹</span>敌人，或使已麻痹敌人眩晕<span class="yellow">[:lasttimes:]</span>秒；
+		消耗<span class="red">[:ragecost:]</span>怒气<br>本局已发动<span class="redseed"> [^skillpara|c7_emp-active_t^]/[:maxactive_t:] </span>次',
+		'vars' => Array(
+			'ragecost' => 60,
+			'maxactive_t' => 2, 
+			'lasttimes' => 3,
+		),
+		'svars' => Array('active_t' => 0),
+		'pvars' => Array('skillpara|c7_emp-active_t'),
+		'lockdesc' => Array(
+			'skillpara|c7_emp-active_t' => '次数耗尽，已无法发动该技能',
+			'lvl' => '21级时解锁',
+		),
+		'unlock' => Array(
+			'skillpara|c7_emp-active_t' => '[:skillpara|c7_emp-active_t:] < 2',
+			'lvl' => '[:lvl:] >= 21',
 		),
 	),
 	'tl_cstick' => Array

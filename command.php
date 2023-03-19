@@ -95,7 +95,7 @@ if($hp > 0){
 	}
 
 	//如果身上存在时效性技能，检查技能是否超时
-	if($hp > 0 && !empty($clbpara['lasttimes'])) check_skilllasttimes();
+	if($hp > 0 && !empty($clbpara['lasttimes'])) check_skilllasttimes($pdata);
 	//应用眩晕状态效果
 	if($hp > 0 && !empty($clbpara['skill']) && in_array('inf_dizzy',$clbpara['skill']))
 	{
@@ -589,10 +589,11 @@ if($hp > 0){
 						$mode = 'command';
 					}
 		} elseif ($mode == 'sp_skpts') {
-			include_once GAME_ROOT.'./include/game/clubskills.func.php';
-			upgradeclubskills($command);
-			calcskills($skarr);
-			$p12[1]=1; $p12[2]=2;
+			//include_once GAME_ROOT.'./include/game/clubskills.func.php';
+			//upgradeclubskills($command);
+			//calcskills($skarr);
+			//$p12[1]=1; $p12[2]=2;
+			$log .= "不存在该指令！<br>";
 			$mode = 'command';
 		} elseif ($mode == 'revskpts') {
 			$sk = substr($command,9);

@@ -597,7 +597,7 @@ function discover($schmode = 0) {
 					//include_once GAME_ROOT.'./include/game/dice.func.php';
 					include_once GAME_ROOT.'./include/game/revbattle.func.php';
 					//刷新敌人时效性状态
-					if(!empty($edata['clbpara']['lasttimes'])) check_skilllasttimes($edata);
+					if(!empty($edata['clbpara']['lasttimes'])) $edata = check_skilllasttimes($edata);
 					//计算先攻概率
 					$active_r = get_active_r_rev($pdata,$edata);
 					$bid = $edata['pid'];
@@ -610,7 +610,7 @@ function discover($schmode = 0) {
 						#findenemy($edata);
 						findenemy_rev($edata);
 						return;
-					} 
+					}
 					//挨打
 					else 
 					{

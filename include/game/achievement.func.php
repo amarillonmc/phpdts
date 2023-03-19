@@ -1546,9 +1546,9 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 		// 初始化
 		$done = 0;
 		// 101.使用参战者红暮&蓝凝掉落的钥匙达成锁定解除结局
-		if($isk == 'Z') $aid = 101;
+		if(strpos($isk,'Z') !== false) $aid = 101;
 		// 102.使用DF掉落的钥匙达成锁定解除结局
-		elseif($isk == 'x') $aid = 102;
+		elseif(strpos($isk,'x') !== false) $aid = 102;
 		// 100.使用执行官掉落的钥匙达成锁定解除结局
 		else $aid = 100;
 

@@ -38,6 +38,11 @@ function init_icon_states(&$pa,$pd,$ismeet=0)
 function init_hp_states(&$pa,$pd,$ismeet=0)
 {
 	global $fog,$hpinfo,$spinfo,$rageinfo;
+	# 「护盾」数值显示
+	if(!check_skill_unlock('buff_shield',$pa))
+	{
+		$pa['shield_info'] = "<span class=\"blueseed\" tooltip2=\"【护盾】：可抵消等同于护盾值的伤害。护盾值只在抵消属性伤害时消耗，抵消电击伤害时双倍消耗。护盾存在时不会受到反噬伤害或陷入异常状态。\">(".get_skillpara('buff_shield','svar',$pa['clbpara']).")</span>";
+	}
 	# 「天眼」技能判定
 	if(!check_skill_unlock('c6_godeyes',$pd))
 	{
