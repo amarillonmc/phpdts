@@ -251,6 +251,8 @@ $lang = array
 	'vnmixlist_comment' => '检查或退回已被采纳的合成',
 	'gamecheck' => '当前游戏自检',
 	'gamecheck_comment' => '修正游戏人数异常和移动下拉框消失的功能',
+	'templates_clean' => '清空模板缓存',
+	'templates_clean_comment' => '清空已生成的模板缓存文件',
 	
 	'pcmng' => '玩家数据管理',
 	'pcmng_comment' => '修改当前局玩家的各数值，不影响帐号',
