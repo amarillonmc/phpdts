@@ -7,6 +7,8 @@ class dbstuff {
 	private $stmt = NULL;
 	private $result = NULL;
 	public $query_log = array();
+	private $data_seek = false;
+	private $row = 0;
 	
 	function connect($dbhost, $dbuser, $dbpw, $dbname = '', $pconnect = 0) {
         try {
@@ -37,7 +39,13 @@ class dbstuff {
     }
     
     function fetch_array($query, $result_type = PDO::FETCH_ASSOC) {
-        return $query->fetch($result_type);
+		if ($this->data_seek == true) //判断是否data_seek过
+		{
+			$result = $query->fetchAll($result_type);
+			$this->data_seek == false;
+			return $result[$this->row]; 
+		}
+		return $query->fetch($result_type);
     }
     
     function query($sql, $type = '') {
@@ -226,10 +234,9 @@ class dbstuff {
 	
 	
 	function data_seek($query, $row) {
-		if ($row >= $query->rowCount()) {
-			return false;
-		}
-		return $query->fetchColumn(0, PDO::FETCH_ORI_ABS, $row);
+		$this->row = $row;
+		$this->data_seek = true;
+		return true;
 	}
 	
 	
