@@ -4,9 +4,9 @@ A PHP based game emulating the settings and gameplay of the original Battle Roya
 
 ## 依赖
 
-* PHP 7.4.30/5.6
-* PDO (PHP Data Objects) extension
-* composer（可选）
+- PHP 7.4.30/5.6
+- PDO (PHP Data Objects) extension
+- composer（可选）
 
 ## 安装
 
@@ -17,3 +17,11 @@ composer install    #可选
 ```
 
 之后打开 `http://domain/path_to_dts/install.php` 根据提示完成后续安装。
+
+## 守护进程
+
+```bash
+bash ./bot/bot_enable.sh
+```
+
+可以使用 nohup，screen 等程序防止进程被结束。
