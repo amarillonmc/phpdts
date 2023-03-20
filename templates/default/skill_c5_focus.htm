@@ -45,13 +45,15 @@
                 </tr>
             </table>
         <!--{if $unlock_skid_flag}-->
+            <!--{eval $unlock_desc = parse_skilllockdesc($skid,$unlock_skid_flag);}-->
         </div>
         <div class="skill_unacquired_hint">
             <table class="skilltable">
                 <tr>
                     <td valign="center" align="center">
-                        <!--{eval $skid_lockdesc = $cskill['lockdesc'][$unlock_skid_flag];}-->
-                        <span class="yellow">$skid_lockdesc</span>
+                        <span class="yellow">
+                            $unlock_desc
+                        </span>
                     </td>
                 </tr>
             </table>

@@ -15,7 +15,7 @@
                         <span class="skilldesc">
                         <span tooltip="满足条件时自动触发" class="gold">【被动技】</span>
                         选择任一单体减半防御属性，你视为具有它。<br>
-                        当前选择是：<span class="yellow b"><!--{if !empty($nchoice)}-->$itemspkinfo[$nchoice]<!--{else}-->无<!--{/if}--></span>
+                        当前选择是：<span class="yellow"><!--{if !empty($nchoice)}-->$itemspkinfo[$nchoice]<!--{else}-->无<!--{/if}--></span>
                         &nbsp;
                         变更选择为：
                         <select name="upgpara" id="upgpara" onchange="$('mode').value='revskpts';$('command').value='upgskill_c1_veteran';postCmd('gamecmd','command.php');this.disabled=true;">
@@ -40,12 +40,15 @@
                 </tr>
             </table>
         <!--{if $unlock_c1_veteran_flag}-->
+            <!--{eval $unlock_desc = parse_skilllockdesc('c1_veteran',$unlock_c1_veteran_flag);}-->
         </div>
         <div class="skill_unacquired_hint">
             <table class="skilltable">
                 <tr>
                     <td valign="center" align="center">
-                        <span class="yellow">18级时解锁</span>
+                        <span class="yellow">
+                            $unlock_desc
+                        </span>
                     </td>
                 </tr>
             </table>

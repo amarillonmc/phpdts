@@ -10,12 +10,15 @@ $vnworld_notice = "喔！年轻人呦！你发现了一个不得了的地方呢�
 总之，在这里的员工回来之前，就请你自己先随便逛逛吧。<br>";
 
 #玩家自定义合成相关：
+
 //是否开启道具名的联想输入列表：（默认：1=开启）
 $vnmix_name_assoc = 1;
 //编辑或审批提交的合成列表需要的最低权限等级：（默认：5级）
 $vnmix_editor_group = 5;
 //提交一次合成需要消耗的切糕：（默认：200。0为不消耗）
 $vnmix_c2_cost = 200;
+//自定义合成最多可以添加几个属性（最多不能超过30个，默认：7个）
+$vnmix_max_sk = 7;
 //允许普通玩家选择的道具类别
 $vn_iteminfo = Array
 (
@@ -238,16 +241,14 @@ $vrclassinfo = Array
 $vnmix_top_tips = '提示：每个配方至少需要两种合成素材，素材与道具名最长不可以超过30个字符。<br>将道具耐久设置为0时可以让耐久度变为“∞”。';
 if($vnmix_c2_cost) $vnmix_top_tips.='每次提交需要消耗'.$vnmix_c2_cost.'份切糕。';
 //显示在编辑合成与打印合成表页面上的提示信息
-$stuff_tips = Array('合成材料一','合成材料二','合成材料三','合成材料四','合成材料五',);
-$result_tips = Array('合成结果','道具用途','道具效果','道具耐久','属性1','属性2','属性3','属性4','属性5','道具分组');
-$log_tips = Array('道具属性','作者','提交状态');
 $check_tips = Array('<span class="yellow">提交中</span>','<span class="lime">已采纳</span>','<span class="red">未采纳</span>');
 $check_infos = Array
 (
 	0 =>'<span class="yellow">成功保存了配方！</span><br>',
 	1 =>'<span class="yellow">成功编辑了配方！</span><br>',
 	2 =>'<span class="red">删除了配方。</span><br>',
-	3 =>'<span class="yellow">成功变更了配方状态！</span><br>',
+	3 =>'<span class="yellow">采纳了配方！</span><br>',
+	4 =>'<span class="red">将配方状态变更为未采纳。</span><br>',
 );
 
 ?>

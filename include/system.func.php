@@ -509,15 +509,16 @@ function gameover($time = 0, $mode = '', $winname = '') {
 		//锁定解除、幻境解离结局，检查是否为队伍获胜……
 		if(($winmode == 3 || $winmode == 7) && !empty($pdata['teamID']))
 		{
-			$team = $pdata['teamID']; $team_mates = Array($pdata['name']);
+			$team = $pdata['teamID']; $team_mates = Array($pdata['name']); $team_ips = Array($pdata['ip']);
 			$tresult = $db->query("SELECT name,ip FROM {$tablepre}players WHERE teamID='$team' AND type=0");
 			if($db->num_rows($tresult) > 1)
 			{
 				while($tpdata = $db->fetch_array($tresult)) 
 				{
-					if(!in_array($tpdata['name'],$team_mates) && $tpdata['ip'] != $pdata['ip'])
+					if(!in_array($tpdata['name'],$team_mates) && !in_array($tpdata['ip'],$team_ips))
 					{
 						$team_mates[] = $tpdata['name'];
+						$team_ips[] = $tpdata['ip'];
 						//队伍获胜时 同队玩家也可以获得对应结局成就
 						include_once GAME_ROOT.'./include/game/achievement.func.php';
 						check_end_achievement_rev($tpdata['name'],$winmode);

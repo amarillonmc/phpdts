@@ -26,14 +26,14 @@
                 </tr>
             </table>
         <!--{if $unlock_c4_roar_flag}-->
+            <!--{eval $unlock_desc = parse_skilllockdesc('c4_roar',$unlock_c4_roar_flag);}-->
         </div>
         <div class="skill_unacquired_hint">
             <table class="skilltable">
                 <tr>
                     <td valign="center" align="center">
                         <span class="yellow">
-                            <!--{eval $c4_roar_lockdesc = $cskills['c4_roar']['lockdesc'][$unlock_c4_roar_flag];}-->
-                            $c4_roar_lockdesc
+                            $unlock_desc
                         </span>
                     </td>
                     <!--{if !empty($unlock_c4_roar_flag) && $unlock_c4_roar_flag == 'skillpara|c4_roar-active'}-->

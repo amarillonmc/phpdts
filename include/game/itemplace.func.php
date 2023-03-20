@@ -128,29 +128,14 @@ function get_item_place($which)
 				$result.="{$area}禁起在商店中出售({$price}元) \r";
 			}
 		}
-	include config('mixitem',$gamecfg);
+	//include config('mixitem',$gamecfg);
+	$mixinfo = get_mixinfo();
 	foreach($mixinfo as $lst)
 	{
 		if ($lst['result'][0]==$which || $lst['result'][0]==$which.' ')
 		{
 			$result.="通过合成获取 \r";
 			break;
-		}
-	}
-	if(file_exists(config('vnmixitem',$gamecfg)))
-	{
-		include config('vnmixitem',$gamecfg);
-		foreach($vn_mixinfo as $vlst)
-		{
-			if ($vlst['result'][0]==$which || $vlst['result'][0]==$which.' ')
-			{
-				$vresult ="通过合成获取 \r";
-				if(strpos($result,$vresult)===false)
-				{
-					$result .= $vresult;
-				}
-				break;
-			}
 		}
 	}
 	$file=config('synitem',$gamecfg);
@@ -206,7 +191,7 @@ function get_item_place($which)
 	{
 		if(file_exists(config('random'.$rnm,$gamecfg)))
 		{
-			include_once config('random'.$rnm,$gamecfg);
+			include config('random'.$rnm,$gamecfg);
 			foreach(Array('itmlow','itmmedium','itmhigh','antimeta') as $rlvl)
 			{
 				$item = explode("\r\n",$$rlvl);
@@ -243,7 +228,9 @@ function get_item_place($which)
 
 function get_item_npcdrop($which)
 {
-	global $npcinfo,$anpcinfo,$enpcinfo,$typeinfo;
+	include config('npc',1);
+	include config('addnpc',1);
+	include config('evonpc',1);
 
 	$result = '';
 	$nownpclist = $npcinfo;

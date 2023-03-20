@@ -13,6 +13,15 @@ function get_equip_list()
 	return $equip_list;
 }
 
+# mixitem_1.php; vnmixitem_1.php;
+function get_mixinfo()
+{
+	include config("mixitem",1);
+	include config("vnmixitem",1);
+	if(!empty($vn_mixinfo)) $mixinfo = array_merge($mixinfo,$vn_mixinfo);
+	return $mixinfo;
+}
+
 # achievement_1.php
 function get_achtype()
 {

@@ -84,7 +84,27 @@ $language = array
 	'tutorial' => '游戏教程',
 	'enterturorial' => '观看游戏教程',
 	'nexttutorial' => '下一篇教程',
+
+	# vnworld
+	'vcreator' => '作者',
+	'vstatus' => '提交状态',
+	'viclass' => '道具分组',
+	'stf0' => '合成材料一',
+	'stf1' => '合成材料二',
+	'stf2' => '合成材料三',
+	'stf3' => '合成材料四',
+	'stf4' => '合成材料五',
+	'stf5' => '合成材料六',
+	'vitm' => '合成结果',
+	'vitmk' => '道具用途',
+	'vitme' => '道具效果',
+	'vitms' => '道具耐久',
+	'vitmsk' => '物品属性',
+	'veitmsk' => '编辑物品属性',
+	'vedit' => '编辑',
+	'veback' => '回退',
 	
+	# in-game
 	'name' => '姓名',
 	'gender' => '性别',
 	'icon' => '头像',

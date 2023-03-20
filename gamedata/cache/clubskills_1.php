@@ -13,7 +13,7 @@ $club_skillslist = Array
 	5  => Array('s_hp','s_ad','f_heal','c5_sneak','c5_caution','c5_review','c5_focus','c5_higheg','c5_double'), #'拆弹专家',
 	6  => Array('s_hp','s_ad','f_heal','c6_godluck','c6_godsend','c6_godbless','c6_godpow','c6_godeyes','c6_justice'), #'宛如疾风',
 	7  => Array('s_hp','s_ad','f_heal','c7_radar','c7_shield','c7_electric','c7_field','c7_overload','c7_emp'), #'锡安成员',
-	8  => Array('s_hp','s_ad','f_heal'), #'黑衣组织',
+	8  => Array('s_hp','s_ad','f_heal','c8_assassin','c8_infect','c8_infilt','c8_misty','c8_catalyst','c8_cooker'), #'黑衣组织',
 	9  => Array('s_hp','s_ad','f_heal','c9_spirit','c9_lb','c9_iceheart','c9_charge','c9_heartfire'), #'超能力者',
 	10 => Array('s_hp','s_ad','f_heal'), #'高速成长',
 	11 => Array('s_hp','s_ad','f_heal'), #'富家子弟',
@@ -250,6 +250,9 @@ $cskills = Array
 		'svars' => Array(
 			'choice' => '', //初始默认选择的单项防御
 		),
+		'lockdesc' => Array(
+			'lvl' => '18级时解锁',
+		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 18',
 		),
@@ -299,7 +302,9 @@ $cskills = Array
 			'rangerate' => Array(0,20,40,60,80,100,100), //超射程反击率
 			'countergain' => Array(0,2,3,4,10,12,30), //基础反击率
 		),
-		'lockdesc' => '武器不适用，持<span class="yellow">斩系武器</span>时生效',
+		'lockdesc' => Array(
+			'wepk+wep_kind' => '武器不适用，持<span class="yellow">斩系武器</span>时生效',
+		),
 		'unlock' => Array(
 			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
 		),

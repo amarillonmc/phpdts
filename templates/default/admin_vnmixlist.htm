@@ -3,35 +3,36 @@
 	<input type="hidden" id="vncmd" name="vncmd" value="none">
 	<span class="grey">（回退操作可能存在延迟，如果提交了指令后界面没有变化，请等一会儿再刷新看看。）</span><br>
 	<!--{if !empty($temp_mixinfo)}-->
-	<table class="admin">
-		<tr>
-			<th width="100px"><span>提交者</span></th>
-			<th width="60px"><span>道具分组</span></th>
-			<th><span>$stuff_tips[0]</span></th>
-			<th><span>$stuff_tips[1]</span></th>
-			<th><span>$stuff_tips[2]</span></th>
-			<th><span>$stuff_tips[3]</span></th>
-			<th><span>$stuff_tips[4]</span></th>
-			<th width="25px"><span></span></th>
-			<th><span>$result_tips[0]</span></th>
-			<th width="45px">调整<span></span></th>
+	<table class="admin" cellSpacing=1 cellPadding=4>
+		<tr style="text-align: center;">
+			<th class="b1" width="100px"><span>{lang vcreator}</span></th>
+			<th class="b1"><span>{lang vstatus}</span></th>
+			<th class="b1"><span>{lang stf0}</span></th>
+			<th class="b1"><span>{lang stf1}</span></th>
+			<th class="b1"><span>{lang stf2}</span></th>
+			<th class="b1"><span>{lang stf3}</span></th>
+			<th class="b1"><span>{lang stf4}</span></th>
+			<th class="b1" width="25px"><span></span></th>
+			<th class="b1" style="padding-left: 2px; padding-right: 2px;">{lang vitm}</th>
+			<th class="b1" style="padding-left: 3px; padding-right: 3px;">{lang vitmsk}</th>
+			<th class="b1" width="45px">{lang veback}<span></span></th>
 		</tr>
 		<!--{loop $temp_mixinfo $key $arr}-->
-				<tr>
-					<td style="text-align: center;">$arr['name']</td>
-					<td style="text-align: center;">$vrclassinfo[$arr['class']][0]</td>
-					<td style="text-align: center;"><!--{if isset($arr['stuff'][0])}-->$arr['stuff'][0]<!--{else}-->-<!--{/if}--></td>
-					<td style="text-align: center;"><!--{if isset($arr['stuff'][1])}-->$arr['stuff'][1]<!--{else}-->-<!--{/if}--></span></td>
-					<td style="text-align: center;"><!--{if isset($arr['stuff'][2])}-->$arr['stuff'][2]<!--{else}-->-<!--{/if}--></span></td>
-					<td style="text-align: center;"><!--{if isset($arr['stuff'][3])}-->$arr['stuff'][3]<!--{else}-->-<!--{/if}--></span></td>
-					<td style="text-align: center;"><!--{if isset($arr['stuff'][4])}-->$arr['stuff'][4]<!--{else}-->-<!--{/if}--></td>
-					<td style="text-align: center;"> → </td>
-					<td style="text-align: center;">$arr['result'][0]/$arr['result'][1]/$arr['result'][2]/$arr['result'][3]<!--{if isset($arr['result'][4])}-->/$arr['result'][4]<!--{/if}--></td>
-					<td style="text-align: center;">
-						<!--<input type="submit" value="编辑" onclick="$('vncmd').value='edit_$key'">-->
-						<input type="submit" value="回退" onclick="$('vncmd').value='del_$key'">
-					</td>
-				</tr>
+		<tr>
+			<td class="b3">$arr['name']</td>
+			<td class="b3">$vrclassinfo[$arr['class']][0]</td>
+			<td class="b3" style="max-width:60px">$arr['stuff'][0]</td>
+			<td class="b3" style="max-width:60px">$arr['stuff'][1]</td>
+			<td class="b3" style="max-width:60px">$arr['stuff'][2]</td>
+			<td class="b3" style="max-width:60px">$arr['stuff'][3]</td>
+			<td class="b3" style="max-width:60px">$arr['stuff'][4]</td>
+			<td class="b3"> → </td>
+			<td class="b3">$arr['result'][0]</td>
+			<td class="b3" style="max-width:200px">$arr['result'][1]/$arr['result'][2]/$arr['result'][3]<!--{if !empty($arr['result'][4])}-->/$arr['result'][4]<!--{/if}--></td>
+			<td class="b3" style="text-align:center;">
+				<input type="submit" value="回退" onclick="$('vncmd').value='del_$key'">
+			</td>
+		</tr>
 		<!--{/loop}-->
 	</table>
 	<!--{else}-->
