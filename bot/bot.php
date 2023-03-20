@@ -1,6 +1,8 @@
 <?php
 require './include/common.inc.php';
+require './bot/revbotservice.php';
 while (true) {
-    sleep(1);
+    botservice();
+    sleep($botcds);
 }
 ?>

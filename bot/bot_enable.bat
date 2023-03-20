@@ -1,3 +1,7 @@
 @echo off
+set BOT_CD=0.5
 cd ..
-php bot/bot.php
+:loop
+php bot/revbotservice.php
+timeout /t %BOT_CD%
+goto loop
