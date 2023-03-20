@@ -8,27 +8,27 @@
     <span class="yellow"><div id="vmixc2">所持切糕数：$udata['credits2']</div></span>
 	<table>
         <tr>
-            <td class="b1" height=20px><span>$stuff_tips[0]</span></td>
-            <td class="b1"><span>$stuff_tips[1]</span></td>
-            <td class="b1"><span>$stuff_tips[2]</span></td>
-            <td class="b1"><span>$stuff_tips[3]</span></td>
-            <td class="b1"><span>$stuff_tips[4]</span></td>
+            <td class="b1" height=20px><span>{lang stf0}</span></td>
+            <td class="b1"><span>{lang stf1}</span></td>
+            <td class="b1"><span>{lang stf2}</span></td>
+            <td class="b1"><span>{lang stf3}</span></td>
+            <td class="b1"><span>{lang stf4}</span></td>
         </tr>
         <tr>
             <td class="b3">
-                <input type="text" name="vsname0" list="vsnamelist" value="<!--{if !empty($uvs0)}-->$uvs0<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+                <input type="text" name="vsname0" list="vsnamelist" value="<!--{if !empty($carr['stf0'])}-->$carr['stf0']<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
             </td>
             <td class="b3">
-                <input type="text" name="vsname1" list="vsnamelist" value="<!--{if !empty($uvs1)}-->$uvs1<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+                <input type="text" name="vsname1" list="vsnamelist" value="<!--{if !empty($carr['stf1'])}-->$carr['stf1']<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
             </td>
             <td class="b3">
-                <input type="text" name="vsname2" list="vsnamelist" value="<!--{if !empty($uvs2)}-->$uvs2<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+                <input type="text" name="vsname2" list="vsnamelist" value="<!--{if !empty($carr['stf2'])}-->$carr['stf2']<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
             </td>
             <td class="b3">
-                <input type="text" name="vsname3" list="vsnamelist" value="<!--{if !empty($uvs3)}-->$uvs3<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+                <input type="text" name="vsname3" list="vsnamelist" value="<!--{if !empty($carr['stf3'])}-->$carr['stf3']<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
             </td>
             <td class="b3">
-                <input type="text" name="vsname4" list="vsnamelist" value="<!--{if !empty($uvs4)}-->$uvs4<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+                <input type="text" name="vsname4" list="vsnamelist" value="<!--{if !empty($carr['stf4'])}-->$carr['stf4']<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
             </td>
         </tr>
     </table>
@@ -36,76 +36,56 @@
     <table>
         <tr>
             <td class="b1" width=20px></td>
-            <td class="b1"><span>$result_tips[0]</span></td>
-            <td class="b1"><span>$result_tips[1]</span></td>
-            <td class="b1"><span>$result_tips[2]</span></td>
-            <td class="b1"><span>$result_tips[3]</span></td>
-            <td class="b1"><span>$result_tips[4]</span></td>
-            <td class="b1"><span>$result_tips[5]</span></td>
-            <td class="b1"><span>$result_tips[6]</span></td>
-            <td class="b1"><span>$result_tips[7]</span></td>
-            <td class="b1"><span>$result_tips[8]</span></td>
-            <td class="b1"><span>$result_tips[9]</span></td>
+            <td class="b1"><span>{lang viclass}</span></td>
+            <td class="b1"><span>{lang vitm}</span></td>
+            <td class="b1"><span>{lang vitmk}</span></td>
+            <td class="b1"><span>{lang vitme}</span></td>
+            <td class="b1"><span>{lang vitms}</span></td>
+            <td class="b1"><span>{lang vitmsk}</span></td>
+            <td class="b1"><span>{lang veitmsk}</span></td>
         </tr>
         <tr>
             <td class="b3" width=20px>↪</td>
             <td class="b3">
-                <input type="text" name="vrname" list="vsnamelist" value="<!--{if !empty($uvrn)}-->$uvrn<!--{else}-->请输入道具名<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+                <select name="vrck">
+                    <!--{eval $tmpck = !empty($carr['class']) ? $carr['class'] : 'item';}-->
+					<!--{loop $vrclassinfo $ck $vcarr}-->
+					<option value="$ck" <!--{if $ck===$carr['class']}-->selected<!--{/if}-->>$vcarr[0]
+                    <!--{/loop}-->
+                </select>
+            </td>
+            <td class="b3">
+                <input type="text" name="vrname" list="vsnamelist" value="<!--{if !empty($carr['itm'])}-->$carr['itm']<!--{else}-->在此填写道具名<!--{/if}-->" maxlength="30" onkeydown="if(event.keyCode==13){event.preventDefault();}">
             </td>
             <td class="b3">
                 <select name="vrk">
+                    <!--{eval $tmpk = !empty($carr['itmk']) ? $carr['itmk'] : 'Y';}-->
 					<!--{loop $temp_vn_iteminfo $k $info}-->
-					<option value="$k" <!--{if $k===$uvrk}-->selected<!--{/if}-->>$info
+					<option value="$k" <!--{if $k===$carr['itmk']}-->selected<!--{/if}-->>$info
                     <!--{/loop}-->
                 </select>
             </td>
             <td class="b3">	
-                <input type="number" name="vre" style="width:45px" value="$uvre" min="1" max="16777214" oninput="if(value>16777214)value=16777214;if(value<1)value=1" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+                <input type="number" name="vre" style="width:45px" value="$carr['itme']" min="1" max="16777214" oninput="if(value>16777214)value=16777214;if(value<1)value=1" onkeydown="if(event.keyCode==13){event.preventDefault();}">
             </td>
             <td class="b3">
-                <input type="number" name="vrs" style="width:45px" value="$uvrs" min="0" max="65535" oninput="if(value>65535)value=65535;if(value<0)value=0" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+                <span tooltip2="输入值为0时耐久度为“∞”">
+                <input type="number" name="vrs" style="width:45px" value="$carr['itms']" min="0" max="65535" oninput="if(value>65535)value=65535;if(value<0)value=0" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+                </span>
+            </td>
+            <td class="b3" style="min-width: 200px;">
+                <div id="tmpsk"><!--{if !empty($carr['itmsk_desc'])}-->{$carr['itmsk_desc']}<!--{/if}--></div>
+                <input type="hidden" id="vrsk" name="vrsk" value="{$carr['itmsk']}">
             </td>
             <td class="b3">
-                <select name="vrsk0">
-					<!--{loop $temp_vn_itemspkinfo $sk $skinfo}-->
-					<option value="$sk" <!--{if $sk===$uvrsk0}-->selected<!--{/if}-->>$skinfo
+                <span tooltip2="删除最后一个添加的属性"><input type="button" value="-" onclick="changeVrskResult(-1);"></span> 
+                <select id="evrsk" name="evrsk">
+                    <!--{eval $tmpk = !empty($carr['itmk']) ? $carr['itmk'] : 'Y';}-->
+					<!--{loop $temp_vn_itemspkinfo $sk $info}-->
+					<option value="$sk">$info</option>
                     <!--{/loop}-->
                 </select>
-            </td>
-            <td class="b3">
-                <select name="vrsk1">
-					<!--{loop $temp_vn_itemspkinfo $sk $skinfo}-->
-					<option value="$sk" <!--{if $sk===$uvrsk1}-->selected<!--{/if}-->>$skinfo
-                    <!--{/loop}-->
-                </select>
-            </td>
-            <td class="b3">
-                <select name="vrsk2">
-					<!--{loop $temp_vn_itemspkinfo $sk $skinfo}-->
-					<option value="$sk" <!--{if $sk===$uvrsk2}-->selected<!--{/if}-->>$skinfo
-                    <!--{/loop}-->
-                </select>
-            </td>
-            <td class="b3">
-                <select name="vrsk3">
-					<!--{loop $temp_vn_itemspkinfo $sk $skinfo}-->
-					<option value="$sk" <!--{if $sk===$uvrsk3}-->selected<!--{/if}-->>$skinfo
-                    <!--{/loop}-->
-                </select>
-            </td>
-            <td class="b3">
-                <select name="vrsk4">
-					<!--{loop $temp_vn_itemspkinfo $sk $skinfo}-->
-					<option value="$sk" <!--{if $sk===$uvrsk4}-->selected<!--{/if}-->>$skinfo
-                    <!--{/loop}-->
-                </select>
-            </td>
-            <td class="b3">
-                <select name="vrck">
-					<!--{loop $vrclassinfo $ck $vcarr}-->
-					<option value="$ck" <!--{if $ck===$uvrck}-->selected<!--{/if}-->>$vcarr[0]
-                    <!--{/loop}-->
-                </select>
+                <span tooltip2="添加当前选择的属性"><input type="button" value="+" onclick="changeVrskResult();"></span>
             </td>
         </tr>
 	</table>
@@ -119,14 +99,14 @@
     <br>
     <div id="vmixlog">$vmixlog</div>
     <div id="vmixprint"></div>
-    <!--{if isset($editid)}-->
-        <!--{eval $ep='ep'.$editid;$dp='dp'.$editid;$c1='cs'.$editid.'+1';$c2='cs'.$editid.'+2';}-->
+    <!--{if isset($self_edit_flag)}-->
+        <!--{eval $ep='ep+'.$editid;$dp='dp+'.$editid;$c1='cs+'.$editid.'+1';$c2='cs+'.$editid.'+2';}-->
             <!--{if ($udata['groupid']>=$vnmix_editor_group||$udata['username']==$gamefounder)}-->
-                <input type="radio" id="c1" name="exmode" value="$c1"><a onclick="$('c1').click();" href="javascript:void(0);">审核通过</a>
-                &nbsp;<input type="radio" id="c2" name="exmode"value="$c2"><a onclick="$('c2').click();" href="javascript:void(0);">审核不通过</a>
+                <input type="radio" id="c1" name="exmode" value="$c1" style="margin-left: 10px;"><a onclick="$('c1').click();" href="javascript:void(0);">审核通过</a>
+                <input type="radio" id="c2" name="exmode"value="$c2" style="margin-left: 10px;"><a onclick="$('c2').click();" href="javascript:void(0);">审核不通过</a>
             <!--{/if}-->
-            &nbsp;<input type="radio" id="ep" name="exmode" value="$ep" checked><a onclick="$('ep').click();" href="javascript:void(0);">编辑</a>
-            &nbsp;<input type="radio" id="dp" name="exmode" value="$dp"><a onclick="$('dp').click();" href="javascript:void(0);"><span class="red">删除（该操作不可撤销！）</span></a>
+            <input type="radio" id="ep" name="exmode" value="$ep" style="margin-left: 10px;" checked><a onclick="$('ep').click();" href="javascript:void(0);">编辑</a>
+            <input type="radio" id="dp" name="exmode" value="$dp" style="margin-left: 10px;"><a onclick="$('dp').click();" href="javascript:void(0);"><span class="red">删除（该操作不可撤销！）</span></a>
         <br>
     <!--{/if}-->
     <br>
@@ -134,5 +114,35 @@
     <a href="vnworld.php"><input type="button" value="返回"></a>
     <br>
 </form> 
+<script>
+function changeVrskResult(mode=0)
+{
+    var sk = $('vrsk').value;
+    var tsk = sk ? $('tmpsk').innerHTML : '';
+    var key = $('evrsk').selectedIndex;
+    var arr = $('evrsk').options;
+    if(!mode && sk.length>=7)
+    {
+        window.alert("不能添加超过7个属性");
+        return;
+    }
+    if(key || mode<0)
+    {
+        var skarr = sk.length>0 ? sk.split('') : [];
+        var tarr = tsk.length>0 ? tsk.split('+') : [];
+        if(!mode)
+        {
+            skarr.push(arr[key].value);
+            tarr.push(arr[key].text);
+        }
+        else
+        {
+            skarr.pop(); tarr.pop();
+        }
+        $('vrsk').value = skarr.join('');
+        $('tmpsk').innerHTML = tarr.join('+');
+    }
+}
+</script>
 </center>
 {template footer}

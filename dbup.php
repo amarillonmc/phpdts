@@ -68,6 +68,8 @@ $result = $db->query("DESCRIBE {$tablepre}winners teamMate");
 if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD teamMate text NOT NULL default '' AFTER teamPass");
 $result = $db->query("DESCRIBE {$tablepre}winners teamIcon");
 if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD teamIcon smallint unsigned NOT NULL default '0' AFTER teamMate");
+$result = $db->query("DESCRIBE {$tablepre}winners clbpara");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD clbpara text NOT NULL AFTER teamMate");
 
 //以下内容均为chatGPT生成，让我们对新时代的赛博苦力致以敬意：
 $db->query("ALTER TABLE {$tablepre}winners MODIFY wep char(30) NOT NULL default ''");
@@ -160,10 +162,6 @@ if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}users ADD daily v
 //game表结构变动
 $db->query("ALTER TABLE {$tablepre}game DROP gamevars");
 $db->query("ALTER TABLE {$tablepre}game ADD gamevars text NOT NULL AFTER combonum");
-$result = $db->query("DESCRIBE {$tablepre}winners teamMate");
-if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD teamMate text NOT NULL default '' AFTER teamPass");
-$result = $db->query("DESCRIBE {$tablepre}winners teamIcon");
-if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD teamIcon smallint unsigned NOT NULL default '0' AFTER teamMate");
 
 echo "Update Fish.<br>";
 ?>

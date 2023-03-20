@@ -975,10 +975,11 @@ function itemmix($mlist, $itemselect=-1) {
 		return;
 	}
 
-	include_once config('mixitem',$gamecfg);
-	include_once config('vnmixitem',$gamecfg);
+	//include_once config('mixitem',$gamecfg);
+	//include_once config('vnmixitem',$gamecfg);
 	$mixflag = false;
-	if(!empty($vn_mixinfo)) $mixinfo = array_merge($mixinfo,$vn_mixinfo);
+	$mixinfo = get_mixinfo();
+	//if(!empty($vn_mixinfo)) $mixinfo = array_merge($mixinfo,$vn_mixinfo);
 	foreach($mixinfo as $minfo) {
 		if(!array_diff($mixitem,$minfo['stuff']) && !array_diff($minfo['stuff'],$mixitem) && count($mixitem) == count($minfo['stuff'])){ 
 			$mixflag = true;

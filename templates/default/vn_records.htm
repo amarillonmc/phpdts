@@ -6,42 +6,45 @@
 <span class="grey">（提交合成可能存在延迟，如果发现页面上没有显示，请等一会儿再刷新看看。）</span><br>
 <a href="vn_postitem.php"><input type="button" value="创建一个新的合成"></a>
 <br><br>
-<!--{if !empty($temp_carr)}-->
-<table>
+<!--{if !empty($carr)}-->
+<table cellSpacing=3 cellPadding=2>
 	<tr>
-		<td class="b1" height=20px width="100px">$log_tips[1]</td>
-		<td class="b1" width="60px">$result_tips[9]</td>
-		<td class="b1" width="100px">$stuff_tips[0]</td>
-		<td class="b1" width="100px">$stuff_tips[1]</td>
-		<td class="b1" width="100px">$stuff_tips[2]</td>
-		<td class="b1" width="100px">$stuff_tips[3]</td>
-		<td class="b1" width="100px">$stuff_tips[4]</td>
+		<td class="b1" height=20px width="100px">{lang vcreator}</td>
+		<td class="b1">{lang vstatus}</td>
+		<td class="b1" width="60px">{lang viclass}</td>
+		<td class="b1">{lang stf0}</td>
+		<td class="b1">{lang stf1}</td>
+		<td class="b1">{lang stf2}</td>
+		<td class="b1">{lang stf3}</td>
+		<td class="b1">{lang stf4}</td>
 		<td class="b1" width="25px"></td>
-		<td class="b1" style="padding-left: 5px; padding-right: 5px;">$result_tips[0]</td>
+		<td class="b1" style="padding-left: 2px; padding-right: 2px;">{lang vitm}</td>
+		<td class="b1" style="padding-left: 3px; padding-right: 3px;">{lang vitmsk}</td>
 		<td class="b1" width="45px">编辑</td>
-		<td class="b1">$log_tips[2]</td>
+		
 	</tr>
-	<!--{loop $temp_carr $cid $cinfo}-->
+	<!--{loop $carr $cid $cinfo}-->
 		<tr>
-			<td class="b3">$cinfo['name']</td>
-			<td class="b3"><!--{if isset($cinfo['stuff'][0])}-->$vrclassinfo[$cinfo['class']][0]<!--{else}-->$vrclassinfo['item'][0]<!--{/if}--></td>
-			<td class="b3"><!--{if isset($cinfo['stuff'][0])}-->$cinfo['stuff'][0]<!--{else}-->-<!--{/if}--></td>
-			<td class="b3"><!--{if isset($cinfo['stuff'][1])}-->$cinfo['stuff'][1]<!--{else}-->-<!--{/if}--></td>
-			<td class="b3"><!--{if isset($cinfo['stuff'][2])}-->$cinfo['stuff'][2]<!--{else}-->-<!--{/if}--></td>
-			<td class="b3"><!--{if isset($cinfo['stuff'][3])}-->$cinfo['stuff'][3]<!--{else}-->-<!--{/if}--></td>
-			<td class="b3"><!--{if isset($cinfo['stuff'][4])}-->$cinfo['stuff'][4]<!--{else}-->-<!--{/if}--></td>
+			<td class="b3">$cinfo['creator']</td>
+			<td class="b3">$check_tips[$cinfo['istatus']]</td>
+			<td class="b3">$vrclassinfo[$cinfo['class']][0]</td>
+			<td class="b3" style="max-width:100px">$cinfo['stf0']</td>
+			<td class="b3" style="max-width:100px">$cinfo['stf1']</td>
+			<td class="b3" style="max-width:100px">$cinfo['stf2']</td>
+			<td class="b3" style="max-width:100px">$cinfo['stf3']</td>
+			<td class="b3" style="max-width:100px">$cinfo['stf4']</td>
 			<td class="b3"> → </td>
-			<td class="b3">$cinfo['result'][0]</td>
+			<td class="b3" >$cinfo['itm_desc']</td>
+			<td class="b3" style="max-width:200px">$cinfo['result']</td>
 			<td class="b3">
-				<!--{if ($cinfo['name']==$udata['username']||$udata['groupid']>=$vnmix_editor_group||$udata['username']==$gamefounder) && $cinfo['status']!=1}-->
+				<!--{if ($cinfo['creator']==$udata['username']||$udata['groupid']>=$vnmix_editor_group||$udata['username']==$gamefounder) && $cinfo['istatus']!=1}-->
 				<form method="post" action="vn_postitem.php" name="vn_postitem" onsubmit="vn_postitem.php" style="margin: 0px">
-					<input type="hidden" name="editor" value="$cinfo['name']">
+					<input type="hidden" name="editor" value="$cuser">
 					<input type="hidden" name="editid" value="$cid">
 					<input type="submit" name="vnmode" value="编辑">
 				</form>
 				<!--{/if}-->
 			</td>
-			<td class="b3">$check_tips[$cinfo['status']]</td>
 		</tr>
 	<!--{/loop}-->
 </table>

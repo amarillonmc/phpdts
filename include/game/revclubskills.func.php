@@ -245,7 +245,7 @@
 		if(empty($data['clbpara']['skill']) || !in_array($sk,$data['clbpara']['skill']))
 		{
 			//echo "技能{$sk}未解锁<br>";
-			return "技能未解锁！<br>";
+			return "noskill";
 		}
 		if(!empty($cskills[$sk]['unlock']))
 		{
@@ -284,6 +284,48 @@
 			}
 		}
 		return 0;
+	}
+
+	# 技能是否满足消耗条件，返回0时为可激活，否则返回对应的未满足条件 $sk：技能名；$data：角色数据
+	function check_skill_cost($sk,$data)
+	{
+		global $cskills;
+		# 不满足激活条件输出的文本，先写在这里，之后挪到配置文件里
+		$cannot_active_log = Array(
+			0 => '怒气不足，需要<span class="red">[:ragecost:]</span>点怒气',
+		);
+		# 检查技能需要消耗的怒气条件是否满足
+		$ragecost = get_skillvars($sk,'ragecost');
+		if($ragecost && $data['rage'] < $ragecost)
+		{
+			$clog = str_replace('[:ragecost:]',$ragecost,$cannot_active_log[0]);
+			return $clog;
+		}
+		return 0;
+	}
+
+	function parse_skilllockdesc($sk,$lock)
+	{
+		global $cskills;
+		$cskill = $cskills[$sk];
+		# 检查冷却时间
+		if(is_array($lock))
+		{
+			$cd = $lock[0]; 
+			$lock = $lock[1];
+		}
+		# 通用未解锁项目
+		if($lock == 'noskill' || !isset($cskill['lockdesc'])) return "技能未解锁或解锁条件不明！<br>";
+		# 返回对应的未解锁描述
+		if(is_array($cskill['lockdesc']))
+		{
+			$lockdesc = isset($cskill['lockdesc'][$lock]) ? $cskill['lockdesc'][$lock] : "技能不可用，可能是因为：{$lock}<br>";
+		}
+		else 
+		{
+			$lockdesc = $cskill['lockdesc']; 
+		}
+		return $lockdesc;
 	}
 
 	function parse_skillrules($key,$prefix="\$data",$prefix2="['clbpara']")
@@ -325,24 +367,6 @@
 			return $key;
 		}
 		return $key;
-	}
-
-	# 技能是否满足消耗条件，返回0时为可激活，否则返回对应的未满足条件 $sk：技能名；$data：角色数据
-	function check_skill_cost($sk,$data)
-	{
-		global $cskills;
-		# 不满足激活条件输出的文本，先写在这里，之后挪到配置文件里
-		$cannot_active_log = Array(
-			0 => '怒气不足，需要<span class="red">[:ragecost:]</span>点怒气',
-		);
-		# 检查技能需要消耗的怒气条件是否满足
-		$ragecost = get_skillvars($sk,'ragecost');
-		if($ragecost && $data['rage'] < $ragecost)
-		{
-			$clog = str_replace('[:ragecost:]',$ragecost,$cannot_active_log[0]);
-			return $clog;
-		}
-		return 0;
 	}
 
 	# 获取指定技能标签 $sk：技能名；$stag：要寻找的特定标签；(非必须)$para：$clbpara
