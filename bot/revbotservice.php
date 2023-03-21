@@ -1,5 +1,5 @@
 <?php
-
+define('CURSCRIPT', 'revbotservice');
 include './include/common.inc.php';
 include GAME_ROOT.'./include/game.func.php';
 include GAME_ROOT.'./bot/revbot.func.php';
