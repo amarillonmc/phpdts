@@ -142,10 +142,10 @@ $bot_player_list = Array
 	(
 		0 => array
 		(
-			'name' => '小黄鸡',
+			'name' => '雷文·Ｋ',
 			'nick' => '参展者',
-			'icon' => 0,
-			'gd' => 'm',
+			'icon' => 128,
+			'gd' => 'f',
 			'club' => 2,
 			'pls' => 21,
 			'wep' => '『寻星勇者』',
@@ -160,9 +160,9 @@ $bot_player_list = Array
 		),
 		1 => array
 		(
-			'name' => '小黄鸭',
+			'name' => '雷文·Ｇ',
 			'nick' => '参展者',
-			'icon' => 0,
+			'icon' => 128,
 			'gd' => 'f',
 			'club' => 4,
 			'pls' => 21,
@@ -178,9 +178,9 @@ $bot_player_list = Array
 		),
 		2 => array
 		(
-			'name' => '大白鹅',
+			'name' => '雷文·Ｃ',
 			'nick' => '参展者',
-			'icon' => 0,
+			'icon' => 128,
 			'gd' => 'f',
 			'club' => 3,
 			'pls' => 16,
@@ -196,10 +196,10 @@ $bot_player_list = Array
 		),
 		3 => array
 		(
-			'name' => '小鲤鱼',
+			'name' => '雷文·Ｐ',
 			'nick' => '参展者',
-			'icon' => 0,
-			'gd' => 'm',
+			'icon' => 128,
+			'gd' => 'f',
 			'club' => 1,
 			'pls' => 30,
 			'wep' => '电击鞭',
