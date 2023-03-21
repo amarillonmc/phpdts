@@ -4,9 +4,19 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
-function move($moveto = 99) {
-	global $lvl,$log,$pls,$pgroup,$plsinfo,$hplsinfo,$inf,$hp,$mhp,$sp,$def,$club,$arealist,$areanum,$hack,$areainfo,$gamestate,$pose,$weather;
-	global $gamestate,$gamecfg,$pdata;
+function move($moveto = 99,&$data=NULL) {
+	//global $lvl,$log,$pls,$pgroup,$plsinfo,$hplsinfo,$inf,$hp,$mhp,$sp,$def,$club,$arealist,$areanum,$hack,$areainfo,$gamestate,$pose,$weather;
+	//global $gamestate,$gamecfg,$pdata;
+
+	global $log,$weather,$plsinfo,$hplsinfo,$arealist,$areanum,$hack,$areainfo,$gamestate,$gamecfg;
+	global $inf_move_sp,$infwords,$inf_move_hp;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
 
 	$plsnum = sizeof($plsinfo);
 
@@ -45,7 +55,7 @@ function move($moveto = 99) {
 	//足部受伤，20；足球社，12；冻伤，30；正常，15；去gamecfg里改吧
 	$movesp = 15;
 	if ($inf) {
-		global $inf_move_sp;
+		
 		foreach ($inf_move_sp as $inf_ky => $sp_down) {
 			if(strpos($inf,$inf_ky)!==false){$movesp+=$sp_down;}
 		}
@@ -88,7 +98,7 @@ function move($moveto = 99) {
 		$log .= "被<span class=\"blue\">冰雹</span>击中，生命减少了<span class=\"red\">$damage</span>点！<br>";
 		if($hp <= 0 ) {
 			include_once GAME_ROOT.'./include/state.func.php';
-			death('hsmove');
+			death('hsmove','',0,'',$data);
 			return;
 //		} else {
 //			$pls = $moveto;
@@ -161,7 +171,6 @@ function move($moveto = 99) {
 	
 	
 	if($inf){
-		global $infwords,$inf_move_hp;
 		foreach ($inf_move_hp as $inf_ky => $o_dmg) {
 			if(strpos($inf,$inf_ky)!==false){
 				$damage = round($mhp * $o_dmg) + rand(0,15);
@@ -169,7 +178,7 @@ function move($moveto = 99) {
 				$log .= "{$infwords[$inf_ky]}减少了<span class=\"red\">$damage</span>点生命！<br>";
 				if($hp <= 0 ){
 					include_once GAME_ROOT.'./include/state.func.php';
-					death($inf_ky.'move');
+					death($inf_ky.'move','',0,'',$data);
 					return;
 				}
 			}			
@@ -187,16 +196,25 @@ function move($moveto = 99) {
 	if($pose==3){$enemyrate -= 20;}
 	elseif($pose==4){$enemyrate += 10;}*/
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
-	$enemyrate =  calc_meetman_rate($pdata);
+	$enemyrate =  calc_meetman_rate($data);
 	//echo "enemyrate = {$enemyrate}%";
-	discover($enemyrate);
+	discover($enemyrate,$data);
 	return;
 }
 
-function search(){
-	global $pdata,$lvl,$log,$pls,$pgroup,$arealist,$areanum,$hack,$plsinfo,$hplsinfo,$club,$sp,$gamestate,$pose,$weather,$hp,$mhp,$def,$inf;
+function search(&$data=NULL){
+	//global $pdata,$lvl,$log,$pls,$pgroup,$arealist,$areanum,$hack,$plsinfo,$hplsinfo,$club,$sp,$gamestate,$pose,$weather,$hp,$mhp,$def,$inf;
 	
-	
+	global $log,$weather,$arealist,$areanum,$hack,$plsinfo,$hplsinfo,$gamestate;
+	global $inf_search_sp,$infwords,$inf_search_hp;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
 	if(!isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup]))
 	{
 		$hpls_flag = true;
@@ -214,7 +232,6 @@ function search(){
 	//腕部受伤，20；冻伤：30；侦探社，12；正常，15；改到gamecfg
 	$schsp =15;
 	if ($inf) {
-		global $inf_search_sp;
 		foreach ($inf_search_sp as $inf_ky => $sp_down) {
 			if(strpos($inf,$inf_ky)!==false){$schsp+=$sp_down;}
 		}
@@ -255,7 +272,7 @@ function search(){
 		$log .= "被<span class=\"blue\">冰雹</span>击中，生命减少了<span class=\"red\">$damage</span>点！<br>";
 		if($hp <= 0 ) {
 			include_once GAME_ROOT.'./include/state.func.php';
-			death('hsmove');
+			death('hsmove','',0,'',$data);
 			return;
 //		} else {
 //			$pls = $moveto;
@@ -323,7 +340,6 @@ function search(){
 	$sp -= $schsp;
 	$log .= "消耗<span class=\"yellow\">{$schsp}</span>点体力，你搜索着周围的一切。。。<br>";
 	if($inf){
-		global $infwords,$inf_search_hp;
 		foreach ($inf_search_hp as $inf_ky => $o_dmg) {
 			if(strpos($inf,$inf_ky)!==false){
 				$damage = round($mhp * $o_dmg) + rand(0,10);
@@ -331,7 +347,7 @@ function search(){
 				$log .= "{$infwords[$inf_ky]}减少了<span class=\"red\">$damage</span>点生命！<br>";
 				if($hp <= 0 ){
 					include_once GAME_ROOT.'./include/state.func.php';
-					death($inf_ky.'move');
+					death($inf_ky.'move','',0,'',$data);
 					return;
 				}
 			}			
@@ -364,18 +380,32 @@ function search(){
 	if($pose==3){$enemyrate -= 20;}
 	elseif($pose==4){$enemyrate += 10;}*/
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
-	$enemyrate =  calc_meetman_rate($pdata);
+	$enemyrate =  calc_meetman_rate($data);
 	//echo "enemyrate = {$enemyrate}%";
-	discover($enemyrate);
+	discover($enemyrate,$data);
 	return;
 
 }
 
-function discover($schmode = 0) {
-	global $pdata;
-	global $art,$pls,$now,$log,$mode,$command,$cmd,$event_obbs,$weather,$pls,$club,$pose,$tactic,$inf,$item_obbs,$enemy_obbs,$trap_min_obbs,$trap_max_obbs,$bid,$db,$tablepre,$gamestate,$corpseprotect,$action,$skills,$rp,$aidata;
-	global $clbpara,$gamecfg;
+function discover($schmode = 0,&$data=NULL) 
+{
+	//global $pdata;
+	//global $art,$pls,$now,$log,$mode,$command,$cmd,$event_obbs,$weather,$pls,$club,$pose,$tactic,$inf,$item_obbs,$enemy_obbs,$trap_min_obbs,$trap_max_obbs,$bid,$db,$tablepre,$gamestate,$corpseprotect,$action,$skills,$rp,$aidata;
+	//global $clbpara,$gamecfg;
+
+	global $now,$log,$mode,$command,$cmd;
+	global $db,$tablepre,$gamestate,$aidata,$pls_bgm;
+	global $event_obbs,$item_obbs,$enemy_obbs,$trap_min_obbs,$trap_max_obbs,$corpseprotect;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
 	$event_dice = rand(0,99);
+	if($data['pass'] == 'bot') $event_obbs = -1;
 	if(($event_dice < $event_obbs)||(($art!="Untainted Glory")&&($pls==34)&&($gamestate != 50))){
 		//echo "进入事件判定<br>";
 		include_once GAME_ROOT.'./include/game/event.func.php';
@@ -389,7 +419,6 @@ function discover($schmode = 0) {
 	}
 
 	# 判定移动、探索、事件后的BGM变化
-	global $pls_bgm;
 	if(array_key_exists($pls,$pls_bgm))
 	{
 		$clbpara['pls_bgmbook'] = $pls_bgm[$pls];
@@ -425,7 +454,7 @@ function discover($schmode = 0) {
 			//奇迹雷
 			$xtrpflag = $fstrp['itmk'] == 'TOc' ? true : false;
 			//计算 或不计算陷阱“触发率”：
-			$real_trap_obbs = $xtrpflag ? 100 : calc_real_trap_obbs($pdata,$trpnum);
+			$real_trap_obbs = $xtrpflag ? 100 : calc_real_trap_obbs($data,$trpnum);
 			//echo "realtrapobbs = {$real_trap_obbs}<br>";
 			if($trap_dice < $real_trap_obbs)
 			{
@@ -435,7 +464,7 @@ function discover($schmode = 0) {
 					$db->data_seek($trapresult,$itemno);
 					$fstrp = $db->fetch_array($trapresult);
 				}
-				global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
+				//global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
 				$itm0=$fstrp['itm'];
 				$itmk0=$fstrp['itmk'];
 				$itme0=$fstrp['itme'];
@@ -443,7 +472,7 @@ function discover($schmode = 0) {
 				$itmsk0=$fstrp['itmsk'];
 				$tid = $fstrp['tid'];
 				$db->query("DELETE FROM {$tablepre}maptrap WHERE tid='$tid'");
-				itemfind();
+				itemfind($data);
 				return;
 			}
 			/*if($xtrpflag){
@@ -496,8 +525,9 @@ function discover($schmode = 0) {
 	if($mode_dice < $schmode) 
 	{
 		//echo "进入遇敌判定<br>";
-		global $pid,$corpse_obbs,$teamID,$fog,$bid,$gamestate;
-		global $clbstatusa,$clbstatusb,$clbstatusc,$clbstatusd,$clbstatuse;
+		//global $pid,$corpse_obbs,$teamID,$fog,$bid,$gamestate;
+		//global $clbstatusa,$clbstatusb,$clbstatusc,$clbstatusd,$clbstatuse;
+		global $fog,$gamestate;
 
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pls='$pls' AND pid!='$pid'");
 		if(!$db->num_rows($result)){
@@ -548,14 +578,14 @@ function discover($schmode = 0) {
 				else 
 				{
 					//直接略过决斗者
-					global $artk;
+					//global $artk;
 					if ((!$edata['type'])&&($artk=='XX')&&(($edata['artk']!='XX')||($edata['art']!=$name))&&($gamestate<50)) continue;
 					if (($artk!='XX')&&($edata['artk']=='XX')&&($gamestate<50)) continue;
 					//计算活人发现率
 					//$hide_r = get_hide_r($weather,$pls,$edata['pose'],$edata['tactic'],$edata['club'],$edata['inf']);
 					//include_once GAME_ROOT.'./include/game/clubskills.func.php';
 					//$hide_r *= get_clubskill_bonus_hide($edata['club'],$edata['skills']);
-					$hide_r = get_hide_r_rev($pdata,$edata);
+					$hide_r = get_hide_r_rev($data,$edata);
 					$enemy_dice = diceroll(99);
 					//echo "hide_r = {$hide_r} | find_obbs = {$find_obbs} | dice = {$enemy_dice}";
 					$meetman_flag = $enemy_dice<($find_obbs - $hide_r) ? 1 : -1;
@@ -596,35 +626,41 @@ function discover($schmode = 0) {
 					//if ($active_r>96) $active_r=96;
 					//include_once GAME_ROOT.'./include/game/dice.func.php';
 					include_once GAME_ROOT.'./include/game/revbattle.func.php';
+					include_once GAME_ROOT.'./include/game/revcombat.func.php';
 					//刷新敌人时效性状态
 					if(!empty($edata['clbpara']['lasttimes'])) $edata = check_skilllasttimes($edata);
 					//计算先攻概率
-					$active_r = get_active_r_rev($pdata,$edata);
+					$active_r = get_active_r_rev($data,$edata);
 					$bid = $edata['pid'];
 					$active_dice = diceroll(99);
 					//先制
 					if($active_dice < $active_r)
 					{
 						$action = 'enemy'.$edata['pid'];
-						#include_once GAME_ROOT.'./include/game/battle.func.php';
-						#findenemy($edata);
-						findenemy_rev($edata);
+						if($data['pass'] != 'bot')
+						{
+							
+							findenemy_rev($edata);
+						}
+						else 
+						{
+							echo "进入战斗！<br>";
+							rev_combat_prepare($data,$edata,1,'',0);
+						}
 						return;
 					}
 					//挨打
 					else 
 					{
-						if (CURSCRIPT == 'botservice') 
+						if($data['pass'] != 'bot')
 						{
-							echo "passive_battle=1\n";
-							echo "passive_w_name={$edata['name']}\n";
-							echo "passive_w_type={$edata['type']}\n";
-							echo "passive_w_sNo={$edata['sNo']}\n";
+							
+							rev_combat_prepare($edata,$data,0);
 						}
-						#include_once GAME_ROOT.'./include/game/combat.func.php';
-						#combat(0);
-						include_once GAME_ROOT.'./include/game/revcombat.func.php';
-						rev_combat_prepare($edata,$pdata,0);
+						else 
+						{
+							rev_combat_prepare($edata,$data,0,'',0);
+						}
 						return;
 					}
 				}
@@ -664,7 +700,7 @@ function discover($schmode = 0) {
 			$itemno = rand(0,$itemnum-1);
 			$db->data_seek($result,$itemno);
 			$mi=$db->fetch_array($result);
-			global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
+			//global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
 			$itm0=$mi['itm'];
 			$itmk0=$mi['itmk'];
 			$itme0=$mi['itme'];
@@ -675,8 +711,15 @@ function discover($schmode = 0) {
 
 			if($itms0){
 				include_once GAME_ROOT.'./include/game/itemmain.func.php';
-				itemfind();
-				return;
+				if($data['pass'] == 'bot') 
+				{
+					itemget($data);
+				}
+				else 
+				{
+					itemfind();
+					return;
+				}
 			} else {
 				$log .= "但是什么都没有发现。可能是因为道具有天然呆属性。<br>";
 			}

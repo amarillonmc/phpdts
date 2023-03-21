@@ -412,49 +412,48 @@
 			//pa是玩家/主视角NPC的情况下 把edata（$w_*）发给$pd 把sdata($s_*) 发给$pa
 			init_battle_rev($pa,$pd,1);
 			player_save($pa); player_save($pd);
-			$edata = $pd; if(!$pa['type']) $sname = $pa['name'];
+			$edata = $pd; if(!$pa['type']) $sdata = $pa;
 		}
 		else
 		{
 			//pd是玩家/主视角NPC的情况下 把edata（$w_*）发给$pa 把sdata($s_*) 发给$pd
 			init_battle_rev($pd,$pa,1);
 			player_save($pa); player_save($pd);
-			$edata = $pa; if(!$pd['type']) $sname = $pd['name'];
+			$edata = $pa; if(!$pd['type']) $sdata = $pd;
 		}
 
 		$main = 'battle_rev';
 
-		if(isset($sname))
+		if(isset($sdata) && $sdata['pass'] != 'bot')
 		{
-			$pdata = fetch_playerdata_by_name($sname);
+			$pdata = fetch_playerdata_by_name($sdata['name']);
 			extract($pdata,EXTR_REFS);
-		}
-		
-		# 根据玩家身上的标记($action) 判断接下来要跳转的页面
-		if(substr($action,0,6)=='corpse')
-		{
-			// 清除战斗轮记录
-			unset($clbpara['battle_turns']);
-			// 发现尸体
-			include_once GAME_ROOT . './include/game/battle.func.php';
-			findcorpse($edata);
-		}
-		else 
-		{
-			// 转入追击状态
-			if(strpos($action,'chase')!==false || strpos($action,'dfight')!==false)
+			# 根据玩家身上的标记($action) 判断接下来要跳转的页面
+			if(substr($action,0,6)=='corpse')
 			{
-				$chase_flag = 1;
-			}
-			// 否则脱离战斗状态 清空标记
-			else
-			{
+				// 清除战斗轮记录
 				unset($clbpara['battle_turns']);
-				$action = '';
+				// 发现尸体
+				include_once GAME_ROOT . './include/game/battle.func.php';
+				findcorpse($edata);
 			}
-			include template('battleresult');
-			$cmd = ob_get_contents();
-			ob_clean();
+			else 
+			{
+				// 转入追击状态
+				if(strpos($action,'chase')!==false || strpos($action,'dfight')!==false)
+				{
+					$chase_flag = 1;
+				}
+				// 否则脱离战斗状态 清空标记
+				else
+				{
+					unset($clbpara['battle_turns']);
+					$action = '';
+				}
+				include template('battleresult');
+				$cmd = ob_get_contents();
+				ob_clean();
+			}
 		}
 		return;
 	}

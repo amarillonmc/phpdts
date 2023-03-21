@@ -1,5 +1,5 @@
 #!/bin/bash
-BOT_CD=0.5
+BOT_CD=2
 cd ..
 while true; do 
     php bot/revbotservice.php

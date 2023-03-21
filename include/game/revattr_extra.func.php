@@ -48,7 +48,7 @@
 		}
 
 		# NPC释放战斗技 暂时先重复写一遍，之后合并到一个函数里
-		if(!$active && $pa['type'] && !empty($pa['clbpara']['skill']))
+		if($pa['type'] && !empty($pa['clbpara']['skill']))
 		{
 			# 打乱并遍历pa技能队列 寻找可用战斗技
 			$npc_skill = $pa['clbpara']['skill'];

@@ -568,25 +568,25 @@ function fetch_playerdata_by_name($n)
 	global $db,$tablepre;
 	$result = $db->query("SELECT * FROM {$tablepre}players WHERE name = '$n' AND type = 0");
 	if(!$db->num_rows($result)) return NULL;
-	$pdata = $db->fetch_array($result);
-	if(!empty($pdata['clbpara'])) $pdata['clbpara'] = get_clbpara($pdata['clbpara']);
+	$data = $db->fetch_array($result);
+	if(!empty($data['clbpara'])) $data['clbpara'] = get_clbpara($data['clbpara']);
 	//套装效果刷新
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
 	reload_set_items($pdata);
-	return $pdata;
+	return $data;
 }
 //通过pid抓取指定玩家/NPC数据
 function fetch_playerdata_by_pid($pid)
 {
 	global $db,$tablepre;
-	$result = $db->query("SELECT pid FROM {$tablepre}players WHERE pid = '$pid'");
+	$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid = '$pid'");
 	if(!$db->num_rows($result)) return NULL;
-	$pdata = $db->fetch_array($result);
-	if(!empty($pdata['clbpara'])) $pdata['clbpara'] = get_clbpara($pdata['clbpara']);
+	$data = $db->fetch_array($result);
+	if(!empty($data['clbpara'])) $data['clbpara'] = get_clbpara($data['clbpara']);
 	//套装效果刷新
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
-	reload_set_items($pdata);
-	return $pdata;
+	reload_set_items($data);
+	return $data;
 }
 //用于将指定player数据存回数据库
 function player_save($data){
@@ -602,6 +602,15 @@ function player_save($data){
 		$db->array_update("{$tablepre}players",$ndata,"pid='$pid'");
 	}
 	return;
+}
+
+//获取安全地图范围
+function get_safe_plslist($mode=1)
+{
+	global $areanum,$arealist,$hack,$deepzones;
+	$r = $hack ? array_slice($arealist,$areanum+1) : $arealist;
+	if($mode) $r = array_diff($r, $deepzones);
+	return $r;
 }
 
 function w_save($id){

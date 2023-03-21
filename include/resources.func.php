@@ -6,10 +6,20 @@ if(!defined('IN_GAME')) {
 # TODO: NO GLOBAL
 
 # resources_1.php
-function get_equip_list()
+function get_equip_list($mode=0)
 {
 	//装备列表
 	$equip_list = Array('wep','arb','arh','ara','arf','art');
+	$equip_list2 = Array
+	(
+		'W' => 'wep',
+		'DB' => 'arb',
+		'DH' => 'arh',
+		'DA' => 'ara',
+		'DF' => 'arf',
+		'A' => 'art',
+	);
+	if($mode) return $equip_list2;
 	return $equip_list;
 }
 
