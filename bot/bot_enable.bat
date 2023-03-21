@@ -1,5 +1,5 @@
 @echo off
-set BOT_CD=0.5
+set BOT_CD=1
 cd ..
 :loop
 php bot/revbotservice.php
