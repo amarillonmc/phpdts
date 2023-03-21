@@ -82,7 +82,10 @@ function bot_acts($id)
 		{
 			$flag = search($bdata);
 		}	
-		unset($bdata['clbpara']['botact']['moveto']);
+		if(isset($bdata['clbpara']['botact']['moveto']))
+		{
+			unset($bdata['clbpara']['botact']['moveto']);
+		}
 		echo $log;
 		echo "bot {$bdata['name']} 行动完成。";
 		player_save($bdata);
