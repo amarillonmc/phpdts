@@ -123,11 +123,16 @@ function calc_trap_reuse_rate($pa,$playerflag=0,$selflag=0)
 }
 
 
-function trap(){
-	global $pdata;
-	global $log,$cmd,$mode,$iteminfo,$itm0,$itmk0,$itme0,$itms0,$itmsk0,$nick;
-	global $name,$now,$hp,$db,$tablepre,$bid,$lvl,$pid,$type,$tactic,$club,$skills,$rp;
-	global $wepsk,$arbsk,$arhsk,$arask,$arfsk,$artsk,$achievement;
+function trap(&$data=NULL){
+	global $log,$cmd,$mode,$iteminfo;
+	global $now,$db,$tablepre;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
 	
 	$playerflag = $itmsk0 ? true : false;
 	$selflag = $itmsk0 == $pid ? true : false;
@@ -144,7 +149,7 @@ function trap(){
 	}
 
 	// 计算陷阱回避率
-	$escrate = calc_trap_escape_rate($pdata,$playerflag,$selflag);
+	$escrate = calc_trap_escape_rate($data,$playerflag,$selflag);
 	//echo '回避率 = '.$escrate.'%';
 
 	if($dice >= $escrate)
@@ -170,7 +175,7 @@ function trap(){
 			$damage = $tactic == 2 ? round($damage * 0.75) : $damage;
 			
 			//好人卡特别活动
-			global $itm1,$itmk1,$itms1,$itm2,$itmk2,$itms2,$itm3,$itmk3,$itms3,$itm4,$itmk4,$itms4,$itm5,$itmk5,$itms5;
+			//global $itm1,$itmk1,$itms1,$itm2,$itmk2,$itms2,$itm3,$itmk3,$itms3,$itm4,$itmk4,$itms4,$itm5,$itmk5,$itms5;
 			$goodmancard = 0;
 			for($i=1;$i<=5;$i++){
 				if(${'itms'.$i} && ${'itm'.$i} == '好人卡' && ${'itmk'.$i} == 'Y'){
@@ -180,9 +185,9 @@ function trap(){
 		}
 
 		# 检查陷阱是否被迎击
-		$damage = check_trap_def_event($pdata,$damage,$playerflag,$selflag);
+		$damage = check_trap_def_event($data,$damage,$playerflag,$selflag);
 		# 「天佑」技能判定
-		if($damage && $itmk0 != 'TOc' && !check_skill_unlock('buff_godbless',$pdata))
+		if($damage && $itmk0 != 'TOc' && !check_skill_unlock('buff_godbless',$data))
 		{
 			$damage = 0;
 			$log .= "<span class=\"yellow\">「天佑」使你免疫了陷阱伤害！</span><br>";
@@ -214,17 +219,17 @@ function trap(){
 					include_once GAME_ROOT.'./include/game/revcombat.func.php';
 					$wdata['wep_name'] = $itm0;
 					// 陷阱有主 走击杀判定
-					$last = pre_kill_events($wdata,$pdata,0,'trap');
+					$last = pre_kill_events($wdata,$data,0,'trap');
 					// 检查是否复活
-					$revival_flag = revive_process($wdata,$pdata,$active);
+					$revival_flag = revive_process($wdata,$data,$active);
 					// 没有复活 走完击杀流程
-					if(!$revival_flag) final_kill_events($wdata,$pdata,0,$last);
+					if(!$revival_flag) final_kill_events($wdata,$data,0,$last);
 					player_save($wdata);
 				}
 				else
 				{
 					include_once GAME_ROOT.'./include/state.func.php';
-					$killmsg = death('trap',$trname,$trtype,$itm0);
+					$killmsg = death('trap',$trname,$trtype,$itm0,$data);
 					$log .= "你被{$trperfix}陷阱杀死了！";
 					if($killmsg && !$selflag){
 						$log .= "<span class=\"yellow\">{$trname}对你说：“{$killmsg}”</span><br>";
@@ -240,12 +245,12 @@ function trap(){
 			else
 			{
 				# 「天佑」技能判定
-				if(!check_skill_unlock('c6_godbless',$pdata) && check_skill_unlock('buff_godbless',$pdata))
+				if(!check_skill_unlock('c6_godbless',$data) && check_skill_unlock('buff_godbless',$data))
 				{
 					$actmhp = get_skillvars('c6_godbless','actmhp');
-					if($damage >= $pdata['mhp']*($actmhp/100))
+					if($damage >= $data['mhp']*($actmhp/100))
 					{
-						getclubskill('buff_godbless',$pdata['clbpara']);
+						getclubskill('buff_godbless',$data['clbpara']);
 						$log .= "<span class=\"yellow\">你的技能「天佑」被触发，暂时进入了无敌状态！</span><br>";
 					}
 				}
@@ -281,9 +286,9 @@ function trap(){
 				}				
 			}
 			$log .= "糟糕，你触发了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>！";
-			if(!empty($pdata['minedetect']))
+			if(!empty($data['minedetect']))
 			{
-				unset($pdata['minedetect']);
+				unset($data['minedetect']);
 				$log .= "<br>不过，身上装备着的自动迎击系统启动了！<span class=\"yellow\">在迎击功能的保护下你毫发无伤。</span><br>";
 			}
 			else
@@ -314,13 +319,13 @@ function trap(){
 		}
 
 		# 计算陷阱重复利用率
-		$fdrate = calc_trap_reuse_rate($pdata,$playerflag,$selflag);
+		$fdrate = calc_trap_reuse_rate($data,$playerflag,$selflag);
 
 		if($dice < $fdrate)
 		{
-			if(!empty($pdata['minedetect']))
+			if(!empty($data['minedetect']))
 			{
-				unset($pdata['minedetect']);
+				unset($data['minedetect']);
 				$log .= "在探雷装备的辅助下，你发现了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>并且拆除了它。陷阱看上去还可以重复使用。<br>";
 			}
 			else
@@ -333,9 +338,9 @@ function trap(){
 		}
 		else
 		{
-			if(isset($pdata['minedetect']))
+			if(isset($data['minedetect']))
 			{
-				unset($pdata['minedetect']);
+				unset($data['minedetect']);
 				$log .= "在探雷装备的辅助下，你发现了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>并且拆除了它。不过陷阱好像被你搞坏了。<br>";
 			}
 			else
@@ -350,16 +355,25 @@ function trap(){
 	}
 }
 
-function itemfind() {
-	global $mode,$log,$itm0,$itmk0,$itms0,$itmsk0;
-	global $club;
+function itemfind(&$data=NULL) {
+	//global $mode,$log,$itm0,$itmk0,$itms0,$itmsk0;
+	//global $club;
+	global $mode,$log;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
 	if(!$itm0||!$itmk0||!$itms0){
 		$log .= '获取物品信息错误！';
 		$mode = 'command';
 		return;
 	}
 	if(strpos($itmk0,'TO')===0) {
-		trap();
+		trap($data);
 	}else{
 		if(CURSCRIPT == 'botservice')
 		{
@@ -374,8 +388,15 @@ function itemfind() {
 }
 
 
-function itemget() {
-	global $log,$nosta,$mode,$itm0,$itmk0,$itme0,$itms0,$itmsk0,$cmd;
+function itemget(&$data=NULL) 
+{
+	global $log,$nosta,$mode,$cmd;
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
 	$log .= "获得了物品<span class=\"yellow\">$itm0</span>。<br>";
 	//PORT
 	if(strpos($itmsk0,'^')!==false){
@@ -387,7 +408,7 @@ function itemget() {
 		}
 	}
 	if(preg_match('/^(WC|WD|WF|Y|B|C|TN|GB|M|V)/',$itmk0) && $itms0 !== $nosta){
-		global $wep,$wepk,$wepe,$weps,$wepsk;
+		//global $wep,$wepk,$wepe,$weps,$wepsk;
 		if($wep == $itm0 && $wepk == $itmk0 && $wepe == $itme0 && $wepsk == $itmsk0){
 			$weps += $itms0;
 			$log .= "与装备着的武器<span class=\"yellow\">$wep</span>合并了。";
@@ -397,7 +418,7 @@ function itemget() {
 			return;
 		}else{
 			for($i = 1;$i <= 6;$i++){
-				global ${'itm'.$i},${'itmk'.$i},${'itme'.$i},${'itms'.$i},${'itmsk'.$i};
+				//global ${'itm'.$i},${'itmk'.$i},${'itme'.$i},${'itms'.$i},${'itmsk'.$i};
 				if((${'itms'.$i})&&($itm0 == ${'itm'.$i})&&($itmk0 == ${'itmk'.$i})&&($itme0 == ${'itme'.$i})&&($itmsk0 == ${'itmsk'.$i})){
 					${'itms'.$i} += $itms0;
 					$log .= "与包裹里的<span class=\"yellow\">$itm0</span>合并了。";
@@ -417,36 +438,37 @@ function itemget() {
 			}
 		}
 		if(isset($sameitem[0])){
-			if (CURSCRIPT != 'botservice')
+			if ($data['pass'] == 'bot')
+			{
+				include_once GAME_ROOT.'./bot/revbot.func.php';
+				if(bot_check_getitem($data)) itemadd($data);
+				else itemdrop($data);
+			}
+			else  
 			{
 				include template('itemmerge0');
 				$cmd = ob_get_contents();
 				ob_clean();
 			}
-			else  
-			{
-				echo "mode=itemmerge0\n";
-				echo "itemmergechoicenum={$scnt}\n";
-				for ($i=0; $i<$scnt; $i++)
-					echo "itemmergechoice{$i}={$sameitem[$i]}\n";
-			}
-
-//			$cmd .= '<input type="hidden" name="mode" value="itemmain"><input type="hidden" name="command" value="itemmerge"><input type="hidden" name="merge1" value="0"><br>是否将 <span class="yellow">'.$itm0.'</span> 与以下物品合并？<br><input type="radio" name="merge2" id="itmn" value="n" checked><a onclick=sl("itmn"); href="javascript:void(0);" >不合并</a><br><br>';
-//			foreach($sameitem as $n) {
-//				$cmd .= '<input type="radio" name="merge2" id="itm'.$n.'" value="'.$n.'"><a onclick=sl("itm'.$n.'"); href="javascript:void(0);">'."${'itm'.$n}/${'itme'.$n}/${'itms'.$n}".'</a><br>';
-//			}
 			return;
 		}
 		
 	}
 
-	itemadd();
+	itemadd($data);
 	return;
 }
 
 
-function itemdrop($item) {
-	global $db,$log,$mode,$pls,$tablepre;
+function itemdrop($item,&$data=NULL) {
+	global $db,$tablepre,$log,$mode;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
 
 	if(strpos($item,'itm')===false)
 	{
@@ -470,9 +492,11 @@ function itemdrop($item) {
 		$itms = & ${'ar'.$itmn.'s'};
 		$itmsk = & ${'ar'.$itmn.'sk'};
 
-	} else*/if(strpos($item,'itm') === 0) {
+	} else*/
+	
+	if(strpos($item,'itm') === 0) {
 		$itmn = substr($item,3,1);
-		global ${'itm'.$itmn},${'itmk'.$itmn},${'itme'.$itmn},${'itms'.$itmn},${'itmsk'.$itmn};
+		//global ${'itm'.$itmn},${'itmk'.$itmn},${'itme'.$itmn},${'itms'.$itmn},${'itmsk'.$itmn};
 		$itm = & ${'itm'.$itmn};
 		$itmk = & ${'itmk'.$itmn};
 		$itme = & ${'itme'.$itmn};
@@ -483,13 +507,13 @@ function itemdrop($item) {
 	if(strpos($itmsk,'^')!==false){
 		$dflag=true;
 		for($i=1;$i<=6;$i++){
-			global ${'itm'.$i},${'itmk'.$i},${'itme'.$i},${'itms'.$i},${'itmsk'.$i};
+			//global ${'itm'.$i},${'itmk'.$i},${'itme'.$i},${'itms'.$i},${'itmsk'.$i};
 			if(strpos(${'itmsk'.$i},'^')!==false && ${'itms'.$i} && ${'itme'.$i}){
 				$dflag=false;
 				break;
 			}
 		}
-		global $arbsk,$arbs,$arbe;
+		//global $arbsk,$arbs,$arbe;
 		if(strpos($arbsk,'^')!==false  && $arbs && $arbe){
 			$dflag=false;
 		}
@@ -587,15 +611,24 @@ function itemoff($item){
 	return;
 }
 
-function itemadd(){
-	global $log,$mode,$cmd,$itm0,$itmk0,$itme0,$itms0,$itmsk0;
+function itemadd(&$data=NULL)
+{
+	global $log,$mode,$cmd;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
 	if(!$itms0){
 		$log .= '你没有捡取物品。<br>';
 		$mode = 'command';
 		return;
 	}
 	for($i = 1;$i <= 6;$i++){
-		global ${'itm'.$i},${'itmk'.$i},${'itme'.$i},${'itms'.$i},${'itmsk'.$i};
+		//global ${'itm'.$i},${'itmk'.$i},${'itme'.$i},${'itms'.$i},${'itmsk'.$i};
 		if(!${'itms'.$i}){
 			$log .= "将<span class=\"yellow\">$itm0</span>放入包裹。<br>";
 			${'itm'.$i} = $itm0;
@@ -1107,9 +1140,18 @@ function itemmove($from,$to){
 }
 
 
-function itembuy($item,$shop,$bnum=1) {
-	global $log,$name,$mode,$now,$money,$areanum,$areaadd,$itm0,$itmk0,$itme0,$itms0,$itmsk0,$pls,$shops,$club;
+function itembuy($item,$shop,$bnum=1,&$data=NULL) 
+{
+	global $log,$mode,$now,$areanum,$areaadd,$shops;
 	global $db,$tablepre;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
 	$result=$db->query("SELECT * FROM {$tablepre}shopitem WHERE sid = '$item'");
 	$iteminfo = $db->fetch_array($result);
 	$price = $club == 11 ? round($iteminfo['price']*0.75) : $iteminfo['price'];
@@ -1177,7 +1219,7 @@ function itembuy($item,$shop,$bnum=1) {
 	$itms0 = $iteminfo['itms']*$bnum;
 	$itmsk0 = $iteminfo['itmsk'];
 
-	itemget();	
+	itemget($data);	
 	return;
 }
 
@@ -1185,10 +1227,20 @@ function itembuy($item,$shop,$bnum=1) {
 
 
 
-function getcorpse($item){
+function getcorpse($item,&$data=NULL)
+{
 	global $db,$tablepre,$log,$mode,$now;
-	global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$money,$pls,$action,$rp,$name;
-	global $club,$allow_destory_corpse,$no_destory_corpse_type,$rpup_destory_corpse;
+	//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$money,$pls,$action,$rp,$name;
+	//global $club,$allow_destory_corpse,$no_destory_corpse_type,$rpup_destory_corpse;
+	global $allow_destory_corpse,$no_destory_corpse_type,$rpup_destory_corpse;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
 	$corpseid = strpos($action,'corpse')===0 ? str_replace('corpse','',$action) : str_replace('pacorpse','',$action);
 	if(!$corpseid || strpos($action,'corpse')===false){
 		$log .= '<span class="yellow">你没有遇到尸体，或已经离开现场！</span><br>';
@@ -1264,7 +1316,7 @@ function getcorpse($item){
 
 	if($item == 'loot_depot')
 	{
-		global $name,$type;
+		//global $name,$type;
 		include_once GAME_ROOT.'./include/game/depot.func.php';
 		loot_depot($name,$type,$edata['name'],$edata['type']);
 		$action = '';
@@ -1315,7 +1367,7 @@ function getcorpse($item){
 	if(!$itms0||!$itmk0||$itmk0=='WN'||$itmk0=='DN') {
 		$log .= '该物品不存在！';
 	} else {
-		itemget();
+		itemget($data);
 	}
 	$action = '';
 	$mode = 'command';
@@ -1386,6 +1438,9 @@ function reload_single_set_item(&$pa,$eqp,$enm,$active=0)
 function weapon_loss(&$pa,$hurtvalue,$force_imp=0,$check_sk=0)
 {
 	global $log,$wepimprate,$nosta;
+
+	//小开不算开 以后再做弹药相关吧
+	if($pa['pass'] == 'bot' && ($pa['wep_kind'] == 'G' || $pa['wep_kind'] == 'J')) $hurtvalue = 0;
 
 	if($hurtvalue && $pa['wep_kind'] != 'N')
 	{

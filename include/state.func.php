@@ -4,9 +4,19 @@ if (! defined ( 'IN_GAME' )) {
 	exit ( 'Access Denied' );
 }
 
-function death($death, $kname = '', $ktype = 0, $annex = '') {
-	global $now, $db, $tablepre, $alivenum, $deathnum, $name, $state, $deathtime, $type, $lvl, $bid, $killmsginfo, $typeinfo, $hp, $mhp, $wp, $wk, $wg, $wc, $wd, $wf, $sp, $msp, $club, $pls , $nick;
-	global $weather;
+function death($death, $kname = '', $ktype = 0, $annex = '',&$data=NULL) 
+{
+	//global $name, $state, $deathtime, $type, $lvl, $bid, $hp, $mhp, $wp, $wk, $wg, $wc, $wd, $wf, $sp, $msp, $club, $pls , $nick;
+
+	global $now, $db, $tablepre, $alivenum, $deathnum, $killmsginfo, $typeinfo, $weather;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
 	if (! $death) {
 		return;
 	}

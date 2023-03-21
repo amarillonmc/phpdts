@@ -7,8 +7,19 @@ if (! defined ( 'IN_GAME' )) {
 include_once GAME_ROOT.'./include/game/titles.func.php';
 include_once GAME_ROOT.'./include/game/clubslct.func.php';
 
-function itemuse($itmn) {
-	global $mode, $log, $nosta, $pid, $name, $state, $now,$nick,$achievement,$club,$clbpara,$pdata;
+function itemuse($itmn,&$data=NULL) {
+	//global $mode, $log, $nosta, $pid, $name, $state, $now,$nick,$achievement,$club,$clbpara,$pdata;
+
+	global $url,$cmd,$mode,$db,$tablepre,$log,$nosta,$noarb,$gamevars,$corpseprotect,$now,$gamecfg;
+	global $exdmginf,$ex_inf,$cskills,$elements_info,$sparkle,$event_bgm;
+	global $upexp,$baseexp,$elec_cap;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
 
 	$nickinfo = get_title_desc($nick);
 
@@ -18,7 +29,7 @@ function itemuse($itmn) {
 		return;
 	}
 	
-	global ${'itm' . $itmn}, ${'itmk' . $itmn}, ${'itme' . $itmn}, ${'itms' . $itmn}, ${'itmsk' . $itmn};
+	////global ${'itm' . $itmn}, ${'itmk' . $itmn}, ${'itme' . $itmn}, ${'itms' . $itmn}, ${'itmsk' . $itmn};
 	$itm = & ${'itm' . $itmn};
 	$itmk = & ${'itmk' . $itmn};
 	$itme = & ${'itme' . $itmn};
@@ -63,8 +74,8 @@ function itemuse($itmn) {
 			$eqp = 'art';
 			$noeqp = '';
 		}
-		global ${$eqp}, ${$eqp.'k'}, ${$eqp.'e'}, ${$eqp.'s'}, ${$eqp.'sk'};
-		global $artk;
+		//global ${$eqp}, ${$eqp.'k'}, ${$eqp.'e'}, ${$eqp.'s'}, ${$eqp.'sk'};
+		//global $artk;
 		if((($artk=='XX')||($artk=='XY'))&&($eqp == 'art')){
 			$log .= '你的饰品不能替换！<br>';
 			$mode = 'command';
@@ -72,7 +83,7 @@ function itemuse($itmn) {
 		}
 		//PORT
 		if(strpos($itmsk,'^')!==false){
-			global $itmnumlimit;
+			//global $itmnumlimit;
 			$itmnumlimit = $itme>=$itms ? $itms : $itme;
 		}
 		if (($noeqp && strpos ( ${$eqp.'k'}, $noeqp ) === 0) || ! ${$eqp.'s'}) {
@@ -116,7 +127,7 @@ function itemuse($itmn) {
 			$log .= "卸下了<span class=\"red\">$itm</span>，装备了<span class=\"yellow\">${$eqp}</span>。<br>";
 		}
 	} elseif (strpos ( $itmk, 'HS' ) === 0) {
-		global $sp, $msp,$club;
+		//global $sp, $msp,$club;
 		if ($sp < $msp) {
 			$oldsp = $sp;
 			if($club == 16){
@@ -142,7 +153,7 @@ function itemuse($itmn) {
 			$log .= '你的体力不需要恢复。<br>';
 		}
 	} elseif (strpos ( $itmk, 'HH' ) === 0) {
-		global $hp, $mhp,$club;
+		//global $hp, $mhp,$club;
 		if ($hp < $mhp) {
 			$oldhp = $hp;
 			if($club == 16){
@@ -167,7 +178,7 @@ function itemuse($itmn) {
 			$log .= '你的生命不需要恢复。<br>';
 		}
 	}elseif (strpos ( $itmk, 'HM' ) === 0) {
-		global $mss,$ss;
+		//global $mss,$ss;
 		$mss+=$itme;
 		$ss+=$itme;
 		$log .= "你使用了<span class=\"red\">$itm</span>，增加了<span class=\"yellow\">$itme</span>点歌魂。<br>";
@@ -180,7 +191,7 @@ function itemuse($itmn) {
 			}
 		}
 	}elseif (strpos ( $itmk, 'HT' ) === 0) {
-		global $ss, $mss;
+		//global $ss, $mss;
 		$ssup=$itme;
 		if ($ss < $mss) {
 			$oldss = $ss;
@@ -201,7 +212,7 @@ function itemuse($itmn) {
 			$log .= '你的歌魂不需要恢复。<br>';
 		}
 	} elseif (strpos ( $itmk, 'HB' ) === 0) {
-		global $hp, $mhp, $sp, $msp,$club;
+		//global $hp, $mhp, $sp, $msp,$club;
 		if (($hp < $mhp) || ($sp < $msp)) {
 			if($club == 16){
 				$bpup = round($itme*2.5);
@@ -231,7 +242,7 @@ function itemuse($itmn) {
 			$log .= '你的生命和体力都不需要恢复。<br>';
 		}
 	} elseif (strpos ( $itmk, 'P' ) === 0) {
-		global $lvl, $db, $tablepre, $now, $hp, $inf, $bid;
+		//global $lvl, $db, $tablepre, $now, $hp, $inf, $bid;
 		if (strpos ( $itmk, '2' ) === 2) {
 			$damage = round ( $itme * 2 );
 		} elseif (strpos ( $itmk, '1' ) === 2) {
@@ -294,7 +305,7 @@ function itemuse($itmn) {
 		}
 	
 	} elseif (strpos ( $itmk, 'T' ) === 0) {
-		global $pls, $exp, $upexp, $wd, $club,$lvl,$db,$tablepre;
+		//global $pls, $exp, $upexp, $wd, $club,$lvl,$db,$tablepre;
 		$trapk = str_replace('TN','TO',$itmk);
 		//$mapfile = GAME_ROOT . "./gamedata/mapitem/{$pls}mapitem.php";
 		//$itemdata = "$itm,TO,$itme,1,$pid,\n";
@@ -321,7 +332,7 @@ function itemuse($itmn) {
 			}
 		}
 	} elseif (strpos ( $itmk, 'GB' ) === 0) {
-		global $wep, $wepk, $weps, $wepsk;
+		//global $wep, $wepk, $weps, $wepsk;
 		if ((strpos ( $wepk, 'WG' ) !== 0)&&(strpos ( $wepk, 'WJ' ) !== 0)) {
 			$log .= "<span class=\"red\">你没有装备枪械，不能使用子弹。</span><br>";
 			$mode = 'command';
@@ -408,7 +419,7 @@ function itemuse($itmn) {
 			$log .= $itm . '没有电了，请先充电。<br>';
 		}
 	} elseif (strpos ( $itmk, 'C' ) === 0) {
-		global $inf, $exdmginf,$ex_inf;
+		//global $inf, $exdmginf,$ex_inf;
 		$ck=substr($itmk,1,1);
 		if($ck == 'a'){
 			$flag=false;
@@ -514,7 +525,7 @@ function itemuse($itmn) {
 		$log .= "你阅读了<span class=\"red\">$itm</span>。<br>";
 		$dice = rand ( - 10, 10 );
 		if (strpos ( $itmk, 'VV' ) === 0) {
-			global $wp, $wk, $wg, $wc, $wd, $wf;
+			//global $wp, $wk, $wg, $wc, $wd, $wf;
 			$ws_sum = $wp + $wk + $wg + $wc + $wd + $wf;
 			if ($ws_sum < $skill_minimum * 5) {
 				$vefct = $itme;
@@ -536,7 +547,7 @@ function itemuse($itmn) {
 			$wf += $vefct; //$itme;
 			$wsname = "全系熟练度";
 		} elseif (strpos ( $itmk, 'VP' ) === 0) {
-			global $wp;
+			//global $wp;
 			if ($wp < $skill_minimum) {
 				$vefct = $itme;
 			} elseif ($wp < $skill_limit) {
@@ -552,7 +563,7 @@ function itemuse($itmn) {
 			$wp += $vefct; //$itme;
 			$wsname = "斗殴熟练度";
 		} elseif (strpos ( $itmk, 'VK' ) === 0) {
-			global $wk;
+			//global $wk;
 			if ($wk < $skill_minimum) {
 				$vefct = $itme;
 			} elseif ($wk < $skill_limit) {
@@ -568,7 +579,7 @@ function itemuse($itmn) {
 			$wk += $vefct; //$itme; 
 			$wsname = "斩刺熟练度";
 		} elseif (strpos ( $itmk, 'VG' ) === 0) {
-			global $wg;
+			//global $wg;
 			if ($wg < $skill_minimum) {
 				$vefct = $itme;
 			} elseif ($wg < $skill_limit) {
@@ -584,7 +595,7 @@ function itemuse($itmn) {
 			$wg += $vefct; //$itme; 
 			$wsname = "射击熟练度";
 		} elseif (strpos ( $itmk, 'VC' ) === 0) {
-			global $wc;
+			//global $wc;
 			if ($wc < $skill_minimum) {
 				$vefct = $itme;
 			} elseif ($wc < $skill_limit) {
@@ -600,7 +611,7 @@ function itemuse($itmn) {
 			$wc += $vefct; //$itme; 
 			$wsname = "投掷熟练度";
 		} elseif (strpos ( $itmk, 'VD' ) === 0) {
-			global $wd;
+			//global $wd;
 			if ($wd < $skill_minimum) {
 				$vefct = $itme;
 			} elseif ($wd < $skill_limit) {
@@ -616,7 +627,7 @@ function itemuse($itmn) {
 			$wd += $vefct; //$itme; 
 			$wsname = "引爆熟练度";
 		} elseif (strpos ( $itmk, 'VF' ) === 0) {
-			global $wf;
+			//global $wf;
 			if ($wf < $skill_minimum) {
 				$vefct = $itme;
 			} elseif ($wf < $skill_limit) {
@@ -632,7 +643,7 @@ function itemuse($itmn) {
 			$wf += $vefct; //$itme; 
 			$wsname = "灵击熟练度";
 		} elseif (strpos ( $itmk, 'VS' ) === 0) {
-			global $cskills,$clbpara;
+			//global $cskills,$clbpara;
 			if(!empty($itmsk) && isset($cskills[$itmsk]))
 			{
 	
@@ -675,7 +686,7 @@ function itemuse($itmn) {
 		$log .= "你服用了<span class=\"red\">$itm</span>。<br>";
 		
 		if (strpos ( $itmk, 'MA' ) === 0) {
-			global $att;
+			//global $att;
 			$att_min = 200;
 			$att_limit = 500;
 			$dice = rand ( - 5, 5 );
@@ -694,7 +705,7 @@ function itemuse($itmn) {
 			$att += $mefct;
 			$mdname = "基础攻击力";
 		} elseif (strpos ( $itmk, 'MD' ) === 0) {
-			global $def;
+			//global $def;
 			$def_min = 200;
 			$def_limit = 500;
 			$dice = rand ( - 5, 5 );
@@ -713,25 +724,25 @@ function itemuse($itmn) {
 			$def += $mefct;
 			$mdname = "基础防御力";
 		} elseif (strpos ( $itmk, 'ME' ) === 0) {
-			global $exp, $upexp, $baseexp;
+			//global $exp, $upexp, $baseexp;
 			$lvlup_objective = $itme / 10;
 			$mefct = round ( $baseexp * 2 * $lvlup_objective + rand ( 0, 5 ) );
 			$exp += $mefct;
 			$mdname = "经验值";
 		} elseif (strpos ( $itmk, 'MS' ) === 0) {
-			global $sp, $msp;
+			//global $sp, $msp;
 			$mefct = $itme;
 			$sp += $mefct;
 			$msp += $mefct;
 			$mdname = "体力上限";
 		} elseif (strpos ( $itmk, 'MH' ) === 0) {
-			global $hp, $mhp;
+			//global $hp, $mhp;
 			$mefct = $itme;
 			$hp += $mefct;
 			$mhp += $mefct;
 			$mdname = "生命上限";
 		} elseif (strpos ( $itmk, 'MV' ) === 0) {
-			global $wp, $wk, $wg, $wc, $wd, $wf;
+			//global $wp, $wk, $wg, $wc, $wd, $wf;
 			$skill_minimum = 100;
 			$skill_limit = 300;
 			$dice = rand ( - 10, 10 );
@@ -767,7 +778,7 @@ function itemuse($itmn) {
 		if (strpos ( $itmk, 'ME' ) === 0) {
 			
 			if ($exp >= $upexp) {
-				global $lvl;
+				//global $lvl;
 				//include_once GAME_ROOT . './include/state.func.php';
 				//lvlup ( $lvl, $exp, 1 );
 				include_once GAME_ROOT . './include/game/revcombat.func.php';
@@ -799,7 +810,7 @@ function itemuse($itmn) {
 			$log .= "使用了<span class=\"red\">$itm</span>。<br>";
 			include_once GAME_ROOT . './include/game/item2.func.php';
 			newradar ( $itmsk );
-			global $club;
+			//global $club;
 			if($club == 7){
 				$e_dice = rand(0,1);
 				if($e_dice == 1){
@@ -821,10 +832,10 @@ function itemuse($itmn) {
 		}
 	} elseif (strpos ( $itmk, 'B' ) === 0) {
 		$flag = false;
-		global $elec_cap;
+		//global $elec_cap;
 		$bat_kind = substr($itmk,1,1);
 		for($i = 1; $i <= 6; $i ++) {
-			global ${'itm' . $i}, ${'itmk' . $i}, ${'itme' . $i}, ${'itms' . $i};
+			//global ${'itm' . $i}, ${'itmk' . $i}, ${'itme' . $i}, ${'itms' . $i};
 			if (${'itmk' . $i} == 'E'.$bat_kind && ${'itms' . $i}) {
 				if(${'itme' . $i} >= $elec_cap){
 					$log .= "包裹{$i}里的<span class=\"yellow\">${'itm'.$i}</span>已经充满电了。<br>";
@@ -879,9 +890,9 @@ function itemuse($itmn) {
 				list($in,$ik,$ie,$is,$isk) = explode(',',$itemflag[$rand]);
 			}
 		}elseif(strpos( $itmk, 'p0' ) === 0){//新福袋·VOL1
-			global $statuse; // 用这个数值记录打开福袋的次数，目前只有VOL1所以只需要判断非0状况，以后如果加入更多的福袋则需要修改。
-			global $db,$tablepre;
-			global $clbpara;
+			//global $statuse; // 用这个数值记录打开福袋的次数，目前只有VOL1所以只需要判断非0状况，以后如果加入更多的福袋则需要修改。
+			//global $db,$tablepre;
+			//global $clbpara;
 /* 			if($statuse){
 				$log.="似乎你本轮已经打开过福袋，因此不能再打开更多的福袋！<br>";
 				$db->query("INSERT INTO {$tablepre}shopitem (kind,num,price,area,item,itmk,itme,itms,itmsk) VALUES ('17','1','20','0','$itm','$itmk','$itme','$itms','$itmsk')");
@@ -934,7 +945,7 @@ function itemuse($itmn) {
 			$rand = rand(0,count($plist)-1);
 			list($in,$ik,$ie,$is,$isk) = explode(',',$plist[$rand]);
 		}		
-		global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
+		//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
 		addnews($now,'present',$name,$itm,$in);
 		$itms--;
@@ -944,14 +955,14 @@ function itemuse($itmn) {
 			$itme = $itms = 0;
 		}
 		include_once GAME_ROOT.'./include/game/itemmain.func.php';
-		itemget();			
+		itemget($data);			
 	} elseif(strpos ( $itmk, 'ygo' ) === 0){
 		$log.="你打开了<span class=\"yellow\">$itm</span>。<br>";
 		$file1 = config('box',$gamecfg);
 		$plist1 = openfile($file1);
 		$rand1 = rand(0,count($plist1)-1);
 		list($in,$ik,$ie,$is,$isk) = explode(',',$plist1[$rand1]);
-		global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
+		//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
 		addnews($now,'present',$nickinfo.' '.$name,$itm,$in);
 		$itms1--;
@@ -961,14 +972,14 @@ function itemuse($itmn) {
 			$itme = $itms = 0;
 		}
 		include_once GAME_ROOT.'./include/game/itemmain.func.php';
-		itemget();	
+		itemget($data);	
 	} elseif(strpos ( $itmk, 'fy' ) === 0){
 		$log.="你打开了<span class=\"yellow\">$itm</span>。<br>";
 		$file1 = config('fy',$gamecfg);
 		$plist1 = openfile($file1);
 		$rand1 = rand(0,count($plist1)-1);
 		list($in,$ik,$ie,$is,$isk) = explode(',',$plist1[$rand1]);
-		global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
+		//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
 		addnews($now,'present',$nickinfo.' '.$name,$itm,$in);
 		$itms1--;
@@ -978,9 +989,9 @@ function itemuse($itmn) {
 			$itme = $itms = 0;
 		}
 		include_once GAME_ROOT.'./include/game/itemmain.func.php';
-		itemget();	
+		itemget($data);	
 	}elseif ($itmk=='U') {
-		global $db, $tablepre,$pls;
+		//global $db, $tablepre,$pls;
 		$trapresult = $db->query("SELECT * FROM {$tablepre}maptrap WHERE pls = '$pls' AND itme>='$itme'");
 		$trpnum = $db->num_rows($trapresult);
 		$itms--;
@@ -1005,7 +1016,7 @@ function itemuse($itmn) {
 			//功能需要修改，改为选择道具使用YE类型道具可充电
 			$flag = false;
 			for($i = 1; $i <= 6; $i ++) {
-				global ${'itm' . $i}, ${'itme' . $i};
+				//global ${'itm' . $i}, ${'itme' . $i};
 				if (${'itm' . $i} == '移动PC') {
 					${'itme' . $i} += $itme;
 					$itms --;
@@ -1018,7 +1029,7 @@ function itemuse($itmn) {
 				$log .= '你没有需要充电的物品。<br>';
 			}
 		}	elseif ($itm == '群青多面体') {
-			global $plsinfo,$nosta,$db,$tablepre;
+			//global $plsinfo,$nosta,$db,$tablepre;
 			$result = $db->query("SELECT pid,name,pls FROM {$tablepre}players WHERE type = 14 && hp > 0");
 			$ndata = array();
 			while($nd = $db->fetch_array($result)){
@@ -1040,12 +1051,12 @@ function itemuse($itmn) {
 			
 			return;
 		}	elseif ($itm == '残响兵器') {
-			global $cmd;
+			//global $cmd;
 			foreach(Array('wep','arb','arh','ara','arf','art') as $val) {
-				global ${$val},${$val.'k'}, ${$val.'e'}, ${$val.'s'},${$val.'sk'};
+				//global ${$val},${$val.'k'}, ${$val.'e'}, ${$val.'s'},${$val.'sk'};
 			}
 			for($i = 1; $i <= 6; $i ++) {
-				global ${'itmk' . $i},${'itm' . $i}, ${'itme' . $i}, ${'itms' . $i},${'itmsk' . $i};
+				//global ${'itmk' . $i},${'itm' . $i}, ${'itme' . $i}, ${'itms' . $i},${'itmsk' . $i};
 			}
 			
 			include template('nametag');
@@ -1054,12 +1065,12 @@ function itemuse($itmn) {
 			ob_clean();
 			return;
 		}	elseif ($itm == '超臆想时空') {
-			global $cmd;
+			//global $cmd;
 			foreach(Array('wep','arb','arh','ara','arf','art') as $val) {
-				global ${$val},${$val.'k'}, ${$val.'e'}, ${$val.'s'},${$val.'sk'};
+				//global ${$val},${$val.'k'}, ${$val.'e'}, ${$val.'s'},${$val.'sk'};
 			}
 			for($i = 1; $i <= 6; $i ++) {
-				global ${'itmk' . $i},${'itm' . $i}, ${'itme' . $i}, ${'itms' . $i},${'itmsk' . $i};
+				//global ${'itmk' . $i},${'itm' . $i}, ${'itme' . $i}, ${'itms' . $i},${'itmsk' . $i};
 			}
 			
 			include template('supernametag');
@@ -1068,9 +1079,9 @@ function itemuse($itmn) {
 			ob_clean();
 			return;
 		} elseif ($itm == '毒药') {
-			global $cmd;
+			//global $cmd;
 			for($i = 1; $i <= 6; $i ++) {
-				global ${'itmk' . $i},${'itm' . $i}, ${'itme' . $i}, ${'itms' . $i};
+				//global ${'itmk' . $i},${'itm' . $i}, ${'itme' . $i}, ${'itms' . $i};
 			}
 			include template('poison');
 			
@@ -1078,7 +1089,7 @@ function itemuse($itmn) {
 			ob_clean();
 			return;
 		} elseif (strpos ( $itm, '磨刀石' ) !== false) {
-			global $wep, $wepk, $wepe, $weps, $wepsk;
+			//global $wep, $wepk, $wepe, $weps, $wepsk;
 			if (strpos ( $wepk, 'K' ) == 1 && strpos ( $wepsk, 'Z' ) === false) {
 				if (strpos($wepsk,'j')!==false){
 					$log.='多重武器不能改造。<br>';
@@ -1109,7 +1120,7 @@ function itemuse($itmn) {
 				$log .= '你没装备锐器，不能使用磨刀石。<br>';
 			}
 		} elseif (preg_match ( "/钉$/", $itm ) || preg_match ( "/钉\[/", $itm )) {
-			global $wep, $wepk, $wepe, $weps, $wepsk;
+			//global $wep, $wepk, $wepe, $weps, $wepsk;
 			if (( strpos ( $wep, '棍棒' ) !== false) && ($wepk == 'WP')) {
 				if (strpos($wepsk,'j')!==false){
 					$log.='多重武器不能改造。<br>';
@@ -1138,7 +1149,7 @@ function itemuse($itmn) {
 				$log .= '你没装备棍棒，不能安装钉子。<br>';
 			}
 		} elseif ($itm == '针线包') {
-			global $arb, $arbk, $arbe, $arbs, $arbsk, $noarb;
+			//global $arb, $arbk, $arbe, $arbs, $arbsk, $noarb;
 			if (($arb == $noarb) || ! $arb) {
 				$log .= '你没有装备防具，不能使用针线包。<br>';
 			} elseif(strpos($arbsk,'^')!==false){
@@ -1151,7 +1162,7 @@ function itemuse($itmn) {
 				$itms --;
 			}
 		} elseif ($itm == '消音器') {
-			global $wep, $wepk, $wepe, $weps, $wepsk;
+			//global $wep, $wepk, $wepe, $weps, $wepsk;
 			if (strpos ( $wepk, 'WG' ) !== 0) {
 				$log .= '你没有装备枪械，不能使用消音器。<br>';
 			} elseif (strpos ( $wepsk, 'S' ) === false) {
@@ -1164,7 +1175,7 @@ function itemuse($itmn) {
 		} elseif ($itm == '探测器电池') {
 			$flag = false;
 			for($i = 1; $i <= 6; $i ++) {
-				global ${'itmk' . $i}, ${'itme' . $i}, ${'itm' . $i};
+				//global ${'itmk' . $i}, ${'itme' . $i}, ${'itm' . $i};
 				if (${'itmk' . $i} == 'R') {
 					//if((strpos(${'itm'.$i}, '雷达') !== false)&&(strpos(${'itm'.$i}, '电池') === false)) {
 					${'itme' . $i} += $itme;
@@ -1183,7 +1194,7 @@ function itemuse($itmn) {
 			divining ();
 			$itms --;
 		} elseif ($itm == '凸眼鱼') {
-			global $db, $tablepre, $name,$now,$corpseprotect;
+			//global $db, $tablepre, $name,$now,$corpseprotect;
 			$tm = $now - $corpseprotect;//尸体保护
 			$db->query ( "UPDATE {$tablepre}players SET weps='0',arbs='0',arhs='0',aras='0',arfs='0',arts='0',itms0='0',itms1='0',itms2='0',itms3='0',itms4='0',itms5='0',itms6='0',money='0' WHERE hp <= 0 AND endtime <= $tm" );
 			$cnum = $db->affected_rows ();
@@ -1192,7 +1203,7 @@ function itemuse($itmn) {
 			$itms --; $isk = $cnum;
 			
 		} elseif ($itm == '天候棒') {
-			global $weather, $wthinfo, $name;
+			//global $weather, $wthinfo, $name;
 			$weather = rand ( 10, 13 );
 			include_once GAME_ROOT . './include/system.func.php';
 			save_gameinfo ();
@@ -1200,7 +1211,7 @@ function itemuse($itmn) {
 			$log .= "你转动了几下天候棒。<br>天气突然转变成了<span class=\"red b\">$wthinfo[$weather]</span>！<br>";
 			$itms --;
 		}	elseif ($itm == '天然呆四面的奖赏') {
-			global $wep, $wepk, $wepe, $weps, $wepsk;
+			//global $wep, $wepk, $wepe, $weps, $wepsk;
 			if (! $weps || ! $wepe) {
 				$log .= '请先装备武器。<br>';
 				return;
@@ -1226,10 +1237,10 @@ function itemuse($itmn) {
 				$log.="那么…… 给你点补偿吧，请务必收下。”<br></span>";
 				$itm=""; $itmk=""; $itme=0; $itms=0; $itmsk="";
 				$dice2=rand(0,99);
-				global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
+				//global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
 				$itm0='四面亲手制作的■DeathNote■'; $itmk0='Y'; $itme0=1; $itms0=1; $itmsk0='z';
 				include_once GAME_ROOT . './include/game/itemmain.func.php';
-				itemget();
+				itemget($data);
 			}
 			else  if ($dice<90)
 			{
@@ -1248,7 +1259,7 @@ function itemuse($itmn) {
 				$itm=""; $itmk=""; $itme=0; $itms=0; $itmsk="";
 			}
 		}	elseif ($itm == '武器师安雅的奖赏') {
-			global $wep, $wepk, $wepe, $weps, $wepsk, $wp, $wk, $wg, $wc, $wd, $wf;
+			//global $wep, $wepk, $wepe, $weps, $wepsk, $wp, $wk, $wg, $wc, $wd, $wf;
 			if (! $weps || ! $wepe) {
 				$log .= '请先装备武器。<br>';
 				return;
@@ -1285,17 +1296,17 @@ function itemuse($itmn) {
 			$log .= '你翻开了■DeathNote■<br>';
 			return;
 		} elseif ($itm == '游戏解除钥匙') {
-			global $url;
+			//global $url;
 			$state = 6;
 			$url = 'end.php';
 			include_once GAME_ROOT . './include/system.func.php';
 			gameover ( $now, 'end3', $name );
 		}elseif ($itm == '『C.H.A.O.S』') {
-			global $ss,$rp,$killnum,$att,$def,$log;
+			//global $ss,$rp,$killnum,$att,$def,$log;
 			$flag=false;
 			$log.="一阵强光刺得你睁不开眼。<br>强光逐渐凝成了光球，你揉揉眼睛，发现包裹里的东西全都不翼而飞了。<br>";
 			for ($i=1;$i<=6;$i++){
-				global ${'itm'.$i},${'itmk'.$i},${'itme'.$i},${'itms'.$i},${'itmsk'.$i};
+				//global ${'itm'.$i},${'itmk'.$i},${'itme'.$i},${'itms'.$i},${'itmsk'.$i};
 				$itm = & ${'itm'.$i};
 				$itmk = & ${'itmk'.$i};
 				$itme = & ${'itme'.$i};
@@ -1308,7 +1319,7 @@ function itemuse($itmn) {
 				$itms = 0;
 				$itmsk = '';
 			}
-			global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
+			//global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
 			$karma=$rp*$killnum-$def+$att;
 			$f1=false;
 			//『G.A.M.E.O.V.E.R』itmk:Y itme:1 itms:1 itmsk:zxZ
@@ -1319,7 +1330,7 @@ function itemuse($itmn) {
 				$itms0=1;
 				$itmsk0='z';
 				include_once GAME_ROOT . './include/game/itemmain.func.php';
-				itemget();
+				itemget($data);
 				$f1=true;
 			}
 			if ($karma<=2000){
@@ -1329,7 +1340,7 @@ function itemuse($itmn) {
 				$itms0=1;
 				$itmsk0='x';
 				include_once GAME_ROOT . './include/game/itemmain.func.php';
-				itemget();
+				itemget($data);
 				$f1=true;
 			}
 			if ($flag==true){
@@ -1339,7 +1350,7 @@ function itemuse($itmn) {
 				$itms0=1;
 				$itmsk0='Z';
 				include_once GAME_ROOT . './include/game/itemmain.func.php';
-				itemget();
+				itemget($data);
 				$f1=true;
 			}
 			if ($f1==false){
@@ -1348,10 +1359,10 @@ function itemuse($itmn) {
 				$itme0=1;
 				$itms0=1;
 				include_once GAME_ROOT . './include/game/itemmain.func.php';
-				itemget();
+				itemget($data);
 			}
 		}elseif ($itm == '『G.A.M.E.O.V.E.R』') {
-			global $url;
+			//global $url;
 			$state = 6;
 			$url = 'end.php';
 			include_once GAME_ROOT . './include/system.func.php';
@@ -1369,14 +1380,14 @@ function itemuse($itmn) {
 				$log .= "你使用了<span class=\"yellow\">{$itm}</span>，不过什么反应也没有。<br><span class=\"evergreen\">“表演的时机还没到呢，请再忍耐一下吧。”</span>——林无月<br>";
 			}
 		} elseif ($itm == '奇怪的按钮') {
-			global $bid;
+			//global $bid;
 			$button_dice = rand ( 1, 10 );
 			if ($button_dice < 5) {
 				$log .= "你按下了<span class=\"yellow\">$itm</span>，不过好像什么都没有发生！";
 				$itm = $itmk = $itmsk = '';
 				$itme = $itms = 0;
 			} elseif ($button_dice < 8) {
-				global $url;
+				//global $url;
 				$state = 6;
 				$url = 'end.php';
 				include_once GAME_ROOT . './include/system.func.php';
@@ -1389,7 +1400,7 @@ function itemuse($itmn) {
 				death ( 'button', '', 0, $itm );
 			}
 		} elseif ($itm == '装有H173的注射器') {
-			global $wp, $wk, $wg, $wc, $wd, $wf, $club, $bid, $att, $def;
+			//global $wp, $wk, $wg, $wc, $wd, $wf, $club, $bid, $att, $def;
 			$log .= '你考虑了一会，<br>把袖子卷了起来，给自己注射了H173。<br>';
 			$deathdice = rand ( 0, 4096 );
 			if ($deathdice == 4096 || $club == 15) {
@@ -1407,7 +1418,7 @@ function itemuse($itmn) {
 				death ( 'suiside', '', 0, $itm );
 			}
 		} elseif (strpos($itm, '溶剂SCP-294')===0) {
-			global $wp, $wk, $wg, $wc, $wd, $wf, $club, $att, $def, $hp, $mhp, $sp, $msp, $rp;
+			//global $wp, $wk, $wg, $wc, $wd, $wf, $club, $att, $def, $hp, $mhp, $sp, $msp, $rp;
 			if($itm == '溶剂SCP-294_PT_Poini_Kune'){
 				$log .= '你考虑了一会，一扬手喝下了杯中中冒着紫色幽光的液体。<br><span class="yellow">你感到全身就像燃烧起来一样，不禁扪心自问这值得么？</span><br>';
 				if ($mhp > 573){
@@ -1464,7 +1475,7 @@ function itemuse($itmn) {
 				$log .= '你的生命上限和防御力减少了<span class="yellow">'.$down.'</span>点，而你的体力上限和攻击力提升了<span class="yellow">'.$up.'</span>点！<br>';
 			} elseif ($itm == '溶剂SCP-294_PT_ErulTron') {
 				$log .= '你考虑了一会，<br>一扬手喝下了杯中中冒着粉红光辉的液体。<br>你感到你整个人貌似变得更普通了点。<br>';
-				global $lvl, $exp;
+				//global $lvl, $exp;
 				$lvl = $exp = 0;
 				$att = round($att * 0.8);
 				$def = round($def * 0.8);
@@ -1501,7 +1512,7 @@ function itemuse($itmn) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == '破灭之诗') {
-			global $hack,$rp,$clbpara,$gamevars;
+			//global $hack,$rp,$clbpara,$gamevars;
 			$rp = 0;
 			$clbpara['dialogue'] = 'thiphase';
 			$clbpara['console'] = 1;  
@@ -1599,7 +1610,7 @@ function itemuse($itmn) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == '✦种火定点移位装置✦') {
-			global $db, $tablepre, $pls;
+			//global $db, $tablepre, $pls;
 			$result = $db->query("SELECT * FROM {$tablepre}players WHERE type = 92"); //SELECT 全部种火NPC
 			$fsdata = $db->fetch_array($result);//获取以上结果
 			//$fspid = $fsdata['pid'];
@@ -1657,7 +1668,7 @@ function itemuse($itmn) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;			
 		} elseif ($itm == '✦种火聚集装置✦') {
-			global $db, $tablepre, $pls;
+			//global $db, $tablepre, $pls;
 			$result = $db->query("SELECT * FROM {$tablepre}players WHERE type = 92"); //SELECT 全部种火NPC
 			$fsdata = $db->fetch_array($result);//获取以上结果
 			//聚集种火
@@ -1671,7 +1682,7 @@ function itemuse($itmn) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;		
 		} elseif ($itm == '✦呼唤种火✦') {
-			global $db, $tablepre, $pls;
+			//global $db, $tablepre, $pls;
 			$result = $db->query("SELECT * FROM {$tablepre}players WHERE type = 92"); //SELECT 全部种火NPC
 			$fsdata = $db->fetch_array($result);//获取以上结果
 			//聚集种火
@@ -1690,7 +1701,7 @@ function itemuse($itmn) {
 //			$itme = $itms = 0;
 		} elseif($itm == '莱卡召唤器') {
 //			include_once GAME_ROOT . './include/system.func.php';
-//			global $db,$tablepre;
+//			//global $db,$tablepre;
 //			$result = $db->query("SELECT pid FROM {$tablepre}players WHERE type = 13");
 //			$num = $db->num_rows($result);
 //			if($num){
@@ -1757,7 +1768,7 @@ function itemuse($itmn) {
 			$itme = $itms = 0;
 		} elseif ($itm == '【我想要领略真正的红杀之力】') {	
 		//文案
-			global $db, $tablepre, $pls;
+			//global $db, $tablepre, $pls;
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '你拿起了这个球状物体，重重地向天空抛去！<br>地图上空出现了红杀组织的龙虎徽标！<br>';
 			addnpc(19,0,1);
@@ -1769,7 +1780,7 @@ function itemuse($itmn) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itmk =='ZA'){
-			global $plsinfo,$db,$tablepre;
+			//global $plsinfo,$db,$tablepre;
 			if($itm =='→【单兵撤退按钮】←'){
 				$log .= "你按下了这个按钮。<br>但似乎什么都没有发生。<br>按钮就这样消失了。<br>在你觉得你买到了假冒伪劣产品时，你听到了来自红暮的广播。<br>";
 				//销毁物品
@@ -1838,7 +1849,7 @@ function itemuse($itmn) {
 				$log .= "<br>看起来，在脱出幻境之前，你需要玩一把寻宝游戏了……";
 			}
 		} elseif ($itm == '【E.S.C.A.P.E】'){
-			global $db, $tablepre;
+			//global $db, $tablepre;
 			//这实际上是个死法，但是会给成就，称号，并加积分与胜场。
 			include_once GAME_ROOT . './include/state.func.php';
 			//成就检查该物品本身的使用，逻辑不写在这里。
@@ -1850,7 +1861,7 @@ function itemuse($itmn) {
 		} elseif ($itmk =='ZB'){ //社团卡
 			if($club)
 			{
-				global $db,$tablepre;
+				//global $db,$tablepre;
 				$log .="你已经是有身份的人了！不能再使用称号卡。<br>";
 				$db->query("INSERT INTO {$tablepre}shopitem (kind,num,price,area,item,itmk,itme,itms,itmsk) VALUES ('18','1','20','0','$itm','$itmk','$itme','$itms','$itmsk')");
 				$log .="<span class='yellow'>$itm</span>像是有生命一般从你的手上脱离，飞回了商店！";
@@ -1858,7 +1869,7 @@ function itemuse($itmn) {
 			}
 			//处理不能成为合法社团的情况
 			elseif ($itme == 15){ //L5状态
-				global $wp, $wk, $wg, $wc, $wd, $wf, $club, $bid, $att, $def;
+				//global $wp, $wk, $wg, $wc, $wd, $wf, $club, $bid, $att, $def;
 				$log .="【DEBUG】进入L5状态<br>";
 				$log .= '你突然感觉到一种不可思议的力量贯通全身！<br>';
 				$wp = $wk = $wg = $wc = $wd = $wf = 8010;
@@ -1870,7 +1881,7 @@ function itemuse($itmn) {
 				$log .="但是什么都没有发生！";
 			}
 			elseif ($itme == 20){ // 元素大师特殊处理
-				global $elements_info,$sparkle;
+				//global $elements_info,$sparkle;
 				//规则怪谈类型文案
 				$log.="你拿起<span class='yellow'>$itm</span>左右端详着……<br>
 				然后，它突然就在你的眼前消失了！<br>
@@ -1895,7 +1906,7 @@ function itemuse($itmn) {
 				changeclub(20,$pdata);
 				//获取初始元素与第一条配方
 				$dice = rand(0,5);
-				global ${'element'.$dice},$clbpara;
+				//global ${'element'.$dice},$clbpara;
 				${'element'.$dice} += 200+$dice;
 				//初始化元素合成缓存文件
 				include_once GAME_ROOT.'./include/game/elementmix.func.php';
@@ -1915,7 +1926,7 @@ function itemuse($itmn) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == '随机数之神的庇佑'){
-			global $wp, $wk, $wg, $wc, $wd, $wf, $club, $bid, $att, $def;
+			//global $wp, $wk, $wg, $wc, $wd, $wf, $club, $bid, $att, $def;
 			$log.="你将<span class='yellow'>$itm</span>捧在手心……<br>
 			突然，从天上传来一个慵懒的声音：<br>
 			<span class=\"blueseed\">“现在还没到我的上班时间呢！”<br>
@@ -1932,14 +1943,14 @@ function itemuse($itmn) {
 		} elseif ($itm == '事件BGM替换器'){
 			// 这是一个触发事件BGM的案例，只要输入$clbpara['event_bgmbook'] = Array('事件曲集名'); 即可将当前曲集替换为特殊事件BGM
 			// 特殊事件曲集'event_bgmbook'的优先级高于地图曲集'pls_bgmbook'，前者存在时后者不会生效
-			global $clbpara,$event_bgm;
+			//global $clbpara,$event_bgm;
 			//include_once config('audio',$gamecfg);
 			$log.="【DEBUG】你目前的播放列表被替换为了{$event_bgm['test'][0]}！<br>特殊的事件曲集不会被其他曲集覆盖，除非你使用下面的道具。<br>";
 			$clbpara['event_bgmbook'] = $event_bgm['test'];
 		} elseif ($itm == '事件BGM还原器'){
 			// 这是一个取消事件BGM的案例，只要unset($clbpara['event_bgmbook']);就可以将当前曲集替换为地图曲集或默认曲集；
 			// 如果你想播放另一个事件曲集，也可以$clbpara['event_bgmbook'] = Array('另一个事件曲集名');
-			global $clbpara;
+			//global $clbpara;
 			$log.="【DEBUG】你目前的播放列表还原为了默认播放列表！<br>";
 			unset($clbpara['event_bgmbook']);
 		} elseif ($itm == '成就重置装置'){
@@ -1947,11 +1958,11 @@ function itemuse($itmn) {
 			include_once GAME_ROOT.'./include/game/achievement.func.php';
 			reset_achievement_rev($itmsk,$name);
 		} elseif ($itm == '测试用元素口袋'){
-			global $elements_info;
+			//global $elements_info;
 			$log.="【DEBUG】你不知道从哪里摸出来一大堆元素！<br>";
 			foreach($elements_info as $e_key=>$e_info)
 			{
-				global ${'element'.$e_key};
+				//global ${'element'.$e_key};
 				${'element'.$e_key} += 100000;
 				$log.="获得了100000份".$elements_info[$e_key]."！<br>";
 			}
@@ -1961,7 +1972,7 @@ function itemuse($itmn) {
 		} elseif ($itm == '测试用元素大师社团卡'){
 			//-----------------------//
 			//这是一张测试用卡 冴冴可以挑一些用得上的放在使用社团卡后执行的事件里
-			global $elements_info,$sparkle;
+			//global $elements_info,$sparkle;
 			//未选择社团情况下才可以用社团卡
 			if($club)
 			{
@@ -1993,7 +2004,7 @@ function itemuse($itmn) {
 			changeclub(20,$pdata);
 			//获取初始元素与第一条配方
 			$dice = rand(0,5);
-			global ${'element'.$dice};
+			//global ${'element'.$dice};
 			${'element'.$dice} += 200+$dice;
 			//初始化元素合成缓存文件
 			include_once GAME_ROOT.'./include/game/elementmix.func.php';
@@ -2043,10 +2054,10 @@ function itemuse($itmn) {
 		} elseif ($itm == '提示纸条U') {
 			$log .= '你读着纸条上的内容：<br>“纸条啥的……”<br>“希望这张纸条不会成为你的遗书。”<br>“总之祝你好运。”<br>';
 		} elseif ($itm == '人品探测器') {
-			global $rp;
+			//global $rp;
 			$log .= '你读着纸条上的内容：<br>“你的RP值为'.$rp.'。”<br>“总之祝你好运。”<br>';
 		} elseif ($itm == '仪水镜') {
-			global $rp;
+			//global $rp;
 			$log .= '水面上映出了你自己的脸，你仔细端详着……<br>';
 			if ($rp < 40){
 				$log .= '你的脸看起来十分白皙。<br>';
@@ -2064,7 +2075,7 @@ function itemuse($itmn) {
 				$log .= '你的脸从水镜中消失了。<br>';
 			}
 		} elseif ($itm == '风祭河水'){
-			global $rp, $wp, $wk, $wg, $wc, $wd, $wf;
+			//global $rp, $wp, $wk, $wg, $wc, $wd, $wf;
 			$slv_dice = rand ( 1, 20 );
 				if ($slv_dice < 8) {
 				$log .= "你一口干掉了<span class=\"yellow\">$itm</span>，不过好像什么都没有发生！";
@@ -2089,12 +2100,12 @@ function itemuse($itmn) {
 				death ( 'salv', '', 0, $itm );
 			}
 		} elseif ($itm == '『灵魂宝石』' || $itm == '『祝福宝石』') {
-			global $cmd;
+			//global $cmd;
 			$cmd = '<input type="hidden" name="mode" value="item"><input type="hidden" name="usemode" value="qianghua"><input type="hidden" name="itmp" value="' . $itmn . '">你想强化哪一件装备？<br><input type="radio" name="command" id="menu" value="menu" checked><a onclick=sl("menu"); href="javascript:void(0);" >返回</a><br><br><br>';
 			for($i = 1; $i <= 6; $i ++) {
-				global ${'itmsk' . $i};
+				//global ${'itmsk' . $i};
 				if ((strpos ( ${'itmsk' . $i}, 'Z' ) !== false) && (strpos ( ${'itm' . $i}, '宝石』' ) === false)) {
-					global ${'itm' . $i}, ${'itme' . $i}, ${'itms' . $i};
+					//global ${'itm' . $i}, ${'itme' . $i}, ${'itms' . $i};
 					$cmd .= '<input type="radio" name="command" id="itm' . $i . '" value="itm' . $i . '"><a onclick=sl("itm' . $i . '"); href="javascript:void(0);" >' . "${'itm'.$i}/${'itme'.$i}/${'itms'.$i}" . '</a><br>';
 				  $flag = true;
 				}
@@ -2110,7 +2121,7 @@ function itemuse($itmn) {
 			$flag = false;
 			
 			for($i = 1; $i <= 6; $i ++) {
-				global ${'itm' . $i}, ${'itmk' . $i},${'itms' . $i},${'itme' . $i},$wk;
+				//global ${'itm' . $i}, ${'itmk' . $i},${'itms' . $i},${'itme' . $i},$wk;
 				foreach(Array('香蕉','苹果','西瓜') as $fruit){
 					
 					if ( strpos ( ${'itm' . $i} , $fruit ) !== false && strpos ( ${'itm' . $i} , '皮' ) === false && strpos ( ${'itm' . $i} , '■' ) === false && (strpos ( ${'itmk' . $i} , 'H' ) === 0 || strpos ( ${'itmk' . $i} , 'P' ) === 0 )) {
@@ -2145,7 +2156,7 @@ function itemuse($itmn) {
 				}
 			}
 		} elseif(strpos($itm,'RP回复设备')!==false){
-			global $rp;
+			//global $rp;
 			$rp = 0;
 			$log .= "你使用了<span class=\"yellow\">$itm</span>。你的RP归零了。<br>";
 		} else {
@@ -2160,7 +2171,7 @@ function itemuse($itmn) {
 			$log.= $emix_slip[array_rand($emix_slip)];
 			//除商店纸条外：提供一条元素特征（TODO）、或一条固定配方、或一条随机属性组合
 			$log .= "<br><span class='yellow'>附：见面有缘，再送你一条提示吧：<br>“将带有";
-			global $itemspkinfo;
+			//global $itemspkinfo;
 			include_once GAME_ROOT.'./include/game/elementmix.func.php';
 			if(!preg_match('/(A|B|C|D)/',$itm))
 			{
