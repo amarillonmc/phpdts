@@ -585,7 +585,7 @@
 						$log .= "＝";
 					}
 				}
-				$damage = $damage > 1 ? round ( $damage ) : 1; //命中了至少会保留1点伤害 此所谓雁过拔毛
+				$damage = $damage > 1 ? round ( $damage ) : $pa['hitrate_times']; //命中了至少会造成1x连击次数的伤害
 				$log.="<span class=\"red\">$damage</span>点伤害！<br>";
 				//造成的最终物理伤害
 				$pdamage = $damage;

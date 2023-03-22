@@ -122,7 +122,7 @@ if($mode == 'enter') {
 	$itm[1] = '面包'; $itmk[1] = 'HH'; $itme[1] = 120; $itms[1] = 15;
 	$itm[2] = '矿泉水'; $itmk[2] = 'HS'; $itme[2] = 140; $itms[2] = 15;
 	//$itm[6] = '银白盒子'; $itmk[6] = 'p'; $itme[6] = 1; $itms[6] = 1; $itmsk[6] = 'ps';
-	$itm[5] = '秋刀鱼罐头'; $itmk[5] = 'HB'; $itme[5] = 70; $itms[5] = 15;
+	$itm[3] = '秋刀鱼罐头'; $itmk[3] = 'HB'; $itme[3] = 70; $itms[3] = 15;
 	//$itm[5] = 'GRAND OPENING 「开门大吉」'; $itmk[5] = 'p000'; $itme[5] = 1; $itms[5] = 1;
 	$dice = rand(4,8); 
 	if($dice == 8) $dice = 9;
@@ -140,18 +140,18 @@ if($mode == 'enter') {
 	} while(!$wepk);
 
 	$stitemlist = openfile(config('stitem',$gamecfg));
-	do { 
+	/*do { 
 		$index = rand(1,count($stitemlist)-1); 
 		list($itm[3],$itmk[3],$itme[3],$itms[3],$itmsk[3]) = explode(",",$stitemlist[$index]);
-	} while(!$itmk[3]);
+	} while(!$itmk[3]);*/
 	do { 
 		$index = rand(1,count($stitemlist)-1); 
 		list($itm[4],$itmk[4],$itme[4],$itms[4],$itmsk[4]) = explode(",",$stitemlist[$index]);
 	} while(!$itmk[4] || ($itmk[3] == $itmk[4]));
 
-	if(strpos($wepk,'WG') === 0){
+	/*if(strpos($wepk,'WG') === 0){
 		$itm[3] = '手枪子弹'; $itmk[3] = 'GB'; $itme[3] = 1; $itms[3] = 12; $itmsk[3] = '';
-	}
+	}*/
 	
 	include_once GAME_ROOT.'./include/game/clubslct.func.php';
 	getclub($name,$tc1,$tc2,$tc3);
