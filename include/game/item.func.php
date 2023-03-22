@@ -10,7 +10,7 @@ include_once GAME_ROOT.'./include/game/clubslct.func.php';
 function itemuse($itmn,&$data=NULL) {
 	//global $mode, $log, $nosta, $pid, $name, $state, $now,$nick,$achievement,$club,$clbpara,$pdata;
 
-	global $url,$cmd,$mode,$db,$tablepre,$log,$nosta,$noarb,$gamevars,$corpseprotect,$now,$gamecfg;
+	global $url,$cmd,$mode,$db,$tablepre,$log,$nosta,$noarb,$gamevars,$corpseprotect,$now,$gamecfg,$hack,$gamevars;
 	global $exdmginf,$ex_inf,$cskills,$elements_info,$sparkle,$event_bgm;
 	global $upexp,$baseexp,$elec_cap;
 
@@ -1540,26 +1540,17 @@ function itemuse($itmn,&$data=NULL) {
 			
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
+		} elseif ($itm == '✦钥匙碎片') {
+			include_once GAME_ROOT . './include/system.func.php';
+			$log .= '嗯……？只有碎片也能用吗？<br>好像将一小部分NPC部署进了游戏内……<br>';
+			//思念体 4*3
+			addnpc ( 2, 0, 4);
+			addnpc ( 2, 1, 4);
+			addnpc ( 2, 2, 4);
+			addnpc ( 2, 3, 4);
 		} elseif ($itm == '✦NPC钥匙·一阶段') {
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '已解锁一阶段NPC！<br>似乎大量NPC已经部署至游戏内……<br>';
-			//思念体 4*4
-			addnpc ( 2, 0,1);
-			addnpc ( 2, 1,1);
-			addnpc ( 2, 2,1);
-			addnpc ( 2, 3,1);
-			addnpc ( 2, 0,1);
-			addnpc ( 2, 1,1);
-			addnpc ( 2, 2,1);
-			addnpc ( 2, 3,1);
-			addnpc ( 2, 0,1);
-			addnpc ( 2, 1,1);
-			addnpc ( 2, 2,1);
-			addnpc ( 2, 3,1);
-			addnpc ( 2, 0,1);
-			addnpc ( 2, 1,1);
-			addnpc ( 2, 2,1);
-			addnpc ( 2, 3,1);
 			//职人 1*6
 			addnpc ( 11, 0,1);
 			addnpc ( 11, 1,1);

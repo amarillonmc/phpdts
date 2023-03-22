@@ -734,6 +734,28 @@ function set_clbpara($para,$key,$value)
 	return $para;
 }
 
+// 正态分布
+function generate_ndnumbers($min, $max, $count = 10) 
+{
+    $numbers = array();
+    $mu = ($min + $max) / 2; // 计算区间均值
+    $sigma = ($max - $min) / 6; // 计算区间标准差
+    for ($i = 0; $i < $count; $i++) 
+	{
+        $u1 = rand() / getrandmax();
+        $u2 = rand() / getrandmax();
+        $z = sqrt(-2 * log($u1)) * cos(2 * pi() * $u2);
+        $x = $mu + $sigma * $z;
+        if ($x < $min || $x > $max) {
+            // 如果生成的随机数不在区间内，则舍弃并重新生成
+            $i--;
+            continue;
+        }
+        $numbers[] = ceil($x);
+    }
+    return $numbers;
+}
+
 function mgzdecode($data)
 {
 	return gzinflate(substr($data,10,-8));

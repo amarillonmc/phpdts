@@ -6,6 +6,7 @@ if (! defined ( 'IN_GAME' )) {
 function get_npc_helpinfo($nlist,$tooltip=1)
 {
 	global $plsinfo,$hplsinfo,$gamecfg,$iteminfo,$clubinfo;
+	global $posetips,$tactips,$poseinfo,$tacinfo;
 	//登记非功能性地点信息时合并隐藏地点
 	foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
 
@@ -57,6 +58,8 @@ function get_npc_helpinfo($nlist,$tooltip=1)
 							}
 							
 						}
+						if(isset($snpc['pose']))$snpc['poseinfo'] = "<span tooltip=\"{$posetips[$snpc['pose']]}\">".$poseinfo[$snpc['pose']]."</span>";
+						if(isset($snpc['tactic']))$snpc['tacinfo'] = "<span tooltip=\"{$tactips[$snpc['tactic']]}\">".$tacinfo[$snpc['tactic']]."</span>";
 						if(isset($snpc['club'])) $snpc['club'] = $snpc['club']==99 ? '第一形态' : $clubinfo[$snpc['club']];
 						//格式化装备、道具名
 						foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
