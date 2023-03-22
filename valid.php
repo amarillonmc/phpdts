@@ -122,7 +122,15 @@ if($mode == 'enter') {
 	$itm[1] = '面包'; $itmk[1] = 'HH'; $itme[1] = 120; $itms[1] = 15;
 	$itm[2] = '矿泉水'; $itmk[2] = 'HS'; $itme[2] = 140; $itms[2] = 15;
 	//$itm[6] = '银白盒子'; $itmk[6] = 'p'; $itme[6] = 1; $itms[6] = 1; $itmsk[6] = 'ps';
-	$itm[3] = '秋刀鱼罐头'; $itmk[3] = 'HB'; $itme[3] = 70; $itms[3] = 15;
+	$dice3 = rand(1,3);
+	if($dice3 == 1){
+		$itm[3] = '★Eska Sparking Water★';
+	}elseif($dice3 == 2){
+		$itm[3] = '★Canada Dry★';
+	}else{
+		$itm[3] = '★Monster Energy★';
+	}
+	$itmk[3] = 'HB'; $itme[3] = 70; $itms[3] = 15;
 	//$itm[5] = 'GRAND OPENING 「开门大吉」'; $itmk[5] = 'p000'; $itme[5] = 1; $itms[5] = 1;
 	$dice = rand(4,8); 
 	if($dice == 8) $dice = 9;
