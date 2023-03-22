@@ -2162,7 +2162,8 @@ function itemuse($itmn,&$data=NULL) {
 			$log.= $emix_slip[array_rand($emix_slip)];
 			//除商店纸条外：提供一条元素特征（TODO）、或一条固定配方、或一条随机属性组合
 			$log .= "<br><span class='yellow'>附：见面有缘，再送你一条提示吧：<br>“将带有";
-			//global $itemspkinfo;
+			//Some globals seems to be still needed... ...
+			global $itemspkinfo;
 			include_once GAME_ROOT.'./include/game/elementmix.func.php';
 			if(!preg_match('/(A|B|C|D)/',$itm))
 			{
