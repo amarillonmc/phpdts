@@ -124,7 +124,7 @@
 				<tr>
 					<td class="b2"><span>{lang pose}</span></td>
 					<td class="b3">
-						<span>
+						<span tooltip="{$posetips[$pose]}">
 							<select id="pose" name="pose" onchange="$('mode').value='special';$('command').value=$('pose').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
 								<!--{loop $apose $key}-->
 									<option value="pose$key"<!--{if $pose == $key}-->selected<!--{/if}-->>$poseinfo[$key]
@@ -140,7 +140,7 @@
 				<tr>
 					<td class="b2"><span>{lang tactic}</span></td>
 					<td class="b3">
-						<span>
+						<span tooltip="{$tactips[$tactic]}">
 							<select id="tactic" name="tactic" onchange="$('mode').value='special';$('command').value=$('tactic').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
 								<!--{loop $atac $key}-->
 									<option value="tac$key"<!--{if $tactic == $key}-->selected<!--{/if}-->>$tacinfo[$key]

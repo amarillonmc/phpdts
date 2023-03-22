@@ -149,7 +149,7 @@ function init_wep_states(&$pa,$pd,$ismeet=0)
 
 function init_inf_states(&$pa,$pd,$ismeet=0)
 {
-	global $infinfo,$poseinfo,$tacinfo,$fog;
+	global $infinfo,$poseinfo,$tacinfo,$fog,$posetips,$tactips;;
 	# 「天眼」技能判定
 	if(!check_skill_unlock('c6_godeyes',$pd)) $ismeet = 1;
 	if($fog && !$ismeet)
@@ -163,8 +163,8 @@ function init_inf_states(&$pa,$pd,$ismeet=0)
 	}
 	$pa['nameinfo'] = $pa['name'];
 	$pa['lvlinfo'] = 'Lv. '.$pa['lvl'];
-	$pa['poseinfo'] = $poseinfo[$pa['pose']];
-	$pa['tacinfo'] = $tacinfo[$pa['tactic']];
+	$pa['poseinfo'] = "<span tooltip=\"{$posetips[$pa['pose']]}\">".$poseinfo[$pa['pose']]."</span>";
+	$pa['tacinfo'] = "<span tooltip=\"{$tactips[$pa['tactic']]}\">".$tacinfo[$pa['tactic']]."</span>";
 	//更新受伤状态
 	if($pa['inf']) 
 	{

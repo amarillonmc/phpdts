@@ -394,8 +394,8 @@ function discover($schmode = 0,&$data=NULL)
 	//global $clbpara,$gamecfg;
 
 	global $now,$log,$mode,$command,$cmd;
-	global $db,$tablepre,$gamestate,$aidata,$pls_bgm;
-	global $event_obbs,$item_obbs,$enemy_obbs,$trap_min_obbs,$trap_max_obbs,$corpseprotect;
+	global $db,$tablepre,$gamestate,$aidata,$pls_bgm,$weather;
+	global $event_obbs,$item_obbs,$enemy_obbs,$trap_min_obbs,$trap_max_obbs,$corpse_obbs,$corpseprotect;
 
 	if(!isset($data))
 	{
@@ -556,7 +556,7 @@ function discover($schmode = 0,&$data=NULL)
 				if($edata['hp'] <= 0)
 				{
 					//直接略过无效尸体
-					if($gamestate>=40||($edata['endtime']>($now-$corpseprotect))) continue;
+					if($gamestate>=40) continue;
 					$ret = false;
 					foreach(array('money','arhs','aras','arfs','arts','itms1','itms2','itms3','itms4','itms5','itms6') as $chkval)
 					{
@@ -569,7 +569,9 @@ function discover($schmode = 0,&$data=NULL)
 					if(!$ret) continue;
 					//计算尸体发现率
 					$corpse_dice = rand(0,99);
-					if($corpse_dice < $corpse_obbs)
+					//击杀女主后，对女主尸体发现率大幅提升
+					if($edata['type'] == 14 && isset($data['clbpara']['achvars']['kill_n14'])) $corpse_dice = 100;
+					if($corpse_dice > $corpse_obbs)
 					{
 						$meetman_flag = 1;
 						break;
@@ -581,10 +583,9 @@ function discover($schmode = 0,&$data=NULL)
 					//global $artk;
 					if ((!$edata['type'])&&($artk=='XX')&&(($edata['artk']!='XX')||($edata['art']!=$name))&&($gamestate<50)) continue;
 					if (($artk!='XX')&&($edata['artk']=='XX')&&($gamestate<50)) continue;
+					//灵子状态只能遭遇同为灵子状态的对象，非灵子状态对象无法发现灵子状态下的对象……但是尸体就没有这种考量了
+					if(($edata['pose'] == 8 || $data['pose'] == 8) && $data['pose'] != $edata['pose']) continue;
 					//计算活人发现率
-					//$hide_r = get_hide_r($weather,$pls,$edata['pose'],$edata['tactic'],$edata['club'],$edata['inf']);
-					//include_once GAME_ROOT.'./include/game/clubskills.func.php';
-					//$hide_r *= get_clubskill_bonus_hide($edata['club'],$edata['skills']);
 					$hide_r = get_hide_r_rev($data,$edata);
 					$enemy_dice = diceroll(99);
 					//echo "hide_r = {$hide_r} | find_obbs = {$find_obbs} | dice = {$enemy_dice}";
@@ -680,7 +681,8 @@ function discover($schmode = 0,&$data=NULL)
 		}
 		else 
 		{
-			$log .= '<span class="yellow">周围一个人都没有。</span><br>';
+			if($data['pose'] == 8) $log .= '<span class="yellow">周围没有同处于灵子状态的对象。</span><br>';
+			else $log .= '<span class="yellow">周围一个人都没有。</span><br>';
 		}
 		$mode = 'command';
 		return;

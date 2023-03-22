@@ -81,7 +81,7 @@
 			if(!empty($sk_fix))
 			{
 				$wep_skill += $sk_fix;
-				$pa['bskilllog2'] .='<span class="yellow">「天威」使'.$pa['nm'].'的熟练度暂时增加了'.$sk_fix.'点！</span><br>';
+				$pa['bskilllog2'] .='<span class="yellow">「天威」使'.$pa['nm'].'的熟练度暂时增加了'.ceil($sk_fix).'点！</span><br>';
 			}
 		}
 		return $wep_skill;
@@ -517,9 +517,12 @@
 			// 混沌混沌
 			$max_imp_times = $pa['weps'] == $nosta ? $pa['wepe'] : $pa['weps'];
 			$min_imp_times = $pa['weps'] == $nosta ? -$pa['wepe'] : -$pa['weps'];
-			do{
-				$pa['wep_imp_times'] = rand($min_imp_times,$max_imp_times);
-			}while(empty($pa['wep_imp_times']));
+			if(rand($min_imp_times,$max_imp_times) < 0)
+			{
+				do{
+					$pa['wep_imp_times'] = generate_ndnumbers($min_imp_times,$max_imp_times)[0];
+				}while(empty($pa['wep_imp_times']));
+			}
 			// 混沌伤害打满时 保存至成就
 			if($damage == $maxdmg) $pa['clbpara']['achvars']['full_chaosdmg'] = 1;
 			return $damage;

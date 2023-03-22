@@ -405,6 +405,12 @@ if($hp > 0){
 			if(strpos($command,'pose') === 0) {
 				$cpose = substr($command,4,1);
 				if(in_array($cpose,$apose)){
+					if($cpose == 8 && isset($clbpara['starttimes']['pose8']) && ($now < ($clbpara['starttimes']['pose8'] + 60))){
+						$log .= "现在无法切换至{$poseinfo[$cpose]}。剩余冷却时间：".round($clbpara['starttimes']['pose8'] + 60 - $now)."秒。<br>";
+						goto command_end_flag;
+					} elseif($cpose == 8) {
+						$clbpara['starttimes']['pose8'] = $now;
+					}
 					$pose = $cpose;
 					$log .= "基础姿态变为<span class=\"yellow\">$poseinfo[$pose]</span>。<br> ";
 					$mode = 'command';
@@ -624,6 +630,7 @@ if($hp > 0){
 			if ($command=="YES") press_bomb();
 			$mode = 'command';
 		} else {
+			command_end_flag:
 			$mode = 'command';
 		}
 		
