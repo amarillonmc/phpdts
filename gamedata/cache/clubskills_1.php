@@ -600,9 +600,11 @@ $cskills = Array
 		),
 		'lockdesc' => Array(
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+			'weps' => '武器弹药不足，无法发动',
 		),
 		'unlock' => Array(
 			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+			'weps' => "[:weps:] != '∞'",
 		),
 	),
 	'c4_break' => Array
@@ -633,9 +635,11 @@ $cskills = Array
 		),
 		'lockdesc' => Array(
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+			'weps' => '武器弹药不足，无法发动',
 		),
 		'unlock' => Array(
 			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+			'weps' => "[:weps:] != '∞'",
 		),
 	),
 	'c4_aiming' => Array
@@ -655,10 +659,12 @@ $cskills = Array
 		'lockdesc' => Array(
 			'lvl' => '3级时解锁',
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+			'weps' => '武器弹药不足，无法发动',
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 3',
 			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+			'weps' => "[:weps:] != '∞'",
 		),
 	),
 	'c4_loot' => Array
@@ -698,12 +704,14 @@ $cskills = Array
 			'skillpara|c4_roar-active' => '点击「解锁」获得此技能，之后将无法使用技能「穿杨」<br>',
 			'lvl' => '已解锁，15级后可用',
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+			'weps' => '武器弹药不足，无法发动',
 		),
 		'unlock' => Array(
 			'skillpara|c4_roar-disable' => 'empty([:skillpara|c4_roar-disable:])',
 			'skillpara|c4_roar-active' => '!empty([:skillpara|c4_roar-active:])',
 			'lvl' => '[:lvl:] >= 15',
 			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+			'weps' => "[:weps:] != '∞'",
 		),
 	),
 	'c4_sniper' => Array
@@ -728,12 +736,14 @@ $cskills = Array
 			'skillpara|c4_sniper-active' => "点击「解锁」获得此技能，之后将无法使用技能「咆哮」<br>",
 			'lvl' => '已解锁，15级后可用',
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+			'weps' => '武器弹药不足，无法发动',
 		),
 		'unlock' => Array(
 			'skillpara|c4_sniper-disable' => 'empty([:skillpara|c4_sniper-disable:])',
 			'skillpara|c4_sniper-active' => '!empty([:skillpara|c4_sniper-active:])',
 			'lvl' => '[:lvl:] >= 15',
 			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+			'weps' => "[:weps:] != '∞'",
 		),
 	),
 	'c4_headshot' => Array
@@ -748,11 +758,13 @@ $cskills = Array
 			'lvl' => '15级时解锁',
 			'skillpara|c4_stable-costcount+skillpara|c4_break-costcount' => '在「静息」和「破甲」上共计花费至少15技能点以解锁',
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">射系武器</span>或<span class="yellow">重型枪械</span>时生效',
+			'weps' => '武器弹药不足，无法发动',
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 15',
 			'skillpara|c4_stable-costcount+skillpara|c4_break-costcount' => '[:skillpara|c4_stable-costcount:]+[:skillpara|c4_break-costcount:] >= 15',
 			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+			'weps' => "[:weps:] != '∞'",
 		),
 	),
 	'c5_sneak' => Array
