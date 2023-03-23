@@ -305,7 +305,7 @@ function load_gameinfo() {
 	$gamevars = json_decode($gamevars,true);
 	if(isset($gamevars['sanmaact']) && isset($gamevars['sanmadead'])) unset($gamevars['sanmaact']);
 	$combonum = $gameinfo['combonum'];
-	return;
+	return Array($gamestate,$gamevars);
 }
 
 function save_gameinfo() {

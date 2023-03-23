@@ -315,13 +315,13 @@ function bot_use_items(&$pa)
 				continue;
 			}
 			# 礼盒直接开
-			if(strpos($pa['itmk'.$i],'p')!==false)
+			/*if(strpos($pa['itmk'.$i],'p')!==false)
 			{
 				do{
 					itemuse($i,$pa);
 				}while(!empty($pa['itms'.$i]));
 				continue;
-			}
+			}*/
 			# 技能书、攻防药直接吃 300效以下陷阱直接用 
 			if(strpos($pa['itmk'.$i],'M')===0 || strpos($pa['itmk'.$i],'V')===0 || (strpos($pa['itmk'.$i],'T')===0 && $pa['itme'.$i]<=300) )
 			{
