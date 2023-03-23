@@ -392,14 +392,13 @@ function init_bgm($force_update=0)
 		if(!empty($bgmlink) && !empty($bgmtype))
 		{
 $bgmplayer = <<<EOT
-			<audio id="gamebgm" autoplay controls onplay="$('gamebgm').volume=$volume_r;">
+			<audio id="gamebgm" autoplay controls=1">
 				<source id="gbgm" src="$bgmlink" type="$bgmtype">
 			</audio>
 			<div id="bgmlist">$json_bgmarr</div>
 			<div id="nowbgm">0</div>
 			<script>
 				$('gamebgm').volume = $volume_r;
-				$('bgmname').innerHTML = $bgmname;
 				gamebgm.addEventListener('ended', function () {
 					changeBGM();
 				}, false);

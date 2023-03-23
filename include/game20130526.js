@@ -408,8 +408,10 @@ function changeBGM(mode=1){
 	Cookie.setCookie("nowbgmid",bgmlist[nowbgm].id, {
 		path: "/",
 	});
+	var v = $('gamebgm').volume;
 	$('bgmname').innerHTML = bgmlist[nowbgm].name;
 	$('gamebgm').load();
+	$('gamebgm').volume = v;
 	$('gamebgm').play();
 }
 

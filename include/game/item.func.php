@@ -13,6 +13,8 @@ function itemuse($itmn,&$data=NULL) {
 	global $url,$cmd,$mode,$db,$tablepre,$log,$nosta,$noarb,$gamevars,$corpseprotect,$now,$gamecfg,$hack,$gamevars;
 	global $exdmginf,$ex_inf,$cskills,$elements_info,$sparkle,$event_bgm;
 	global $upexp,$baseexp,$elec_cap;
+	//Some globals seems to be still needed... ...
+	global $itemspkinfo;
 
 	if(!isset($data))
 	{
@@ -2162,8 +2164,6 @@ function itemuse($itmn,&$data=NULL) {
 			$log.= $emix_slip[array_rand($emix_slip)];
 			//除商店纸条外：提供一条元素特征（TODO）、或一条固定配方、或一条随机属性组合
 			$log .= "<br><span class='yellow'>附：见面有缘，再送你一条提示吧：<br>“将带有";
-			//Some globals seems to be still needed... ...
-			global $itemspkinfo;
 			include_once GAME_ROOT.'./include/game/elementmix.func.php';
 			if(!preg_match('/(A|B|C|D)/',$itm))
 			{

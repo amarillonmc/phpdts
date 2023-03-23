@@ -369,194 +369,138 @@ function lvlup(&$lvl, &$exp, $isplayer = 1) {
 	return;
 }
 
-/*function lvlup(&$lvl, &$exp, $isplayer = 1) {
-	global $log,$baseexp;
-	$up_exp_temp = round((2*$lvl+1)*$baseexp);
-	if($exp >= $up_exp_temp && $lvl<255) {
-		if($isplayer){
-			global $name,$hp,$mhp,$sp,$msp,$att,$def,$upexp,$club;
-			$sknlist=Array(1=>'wp',2=>'wk',3=>'wc',4=>'wg',5=>'wd',9=>'wf');//每级提升熟练
-			
-			$skname=$sknlist[$club];
-			if($skname){
-				global ${$skname},$skilllaninfo;
-			}
-			$lvup = 1+floor(($exp - $up_exp_temp)/$baseexp/2);
-			$lvup = $lvup > 255-$lvl ? 255-$lvl : $lvup;
-			//$log .="$lvup<br>";
-			$lvuphp = $lvupatt = $lvupdef = $lvupskill =0;
-			
-			for ($i=0;$i<$lvup;$i+=1){
-				$lvuphp += rand(8,10);$lvupatt += rand(2,4);$lvupdef += rand(3,5);
-				if($skname){
-					$lvupskill += rand(3,5);
-				}
-				$sp += ($msp * 0.1);
-			}
-			$lvl += $lvup;$up_exp_temp = round((2*$lvl+1)*$baseexp);
-
-			if($lvl>=255){$lvl=255;$exp=$up_exp_temp;}
-			$upexp=$up_exp_temp;
-			$hp += $lvuphp;$mhp += $lvuphp;
-			$att += $lvupatt;$def += $lvupdef;
-			${$skname} += $lvupskill;
-			if($sp >= $msp){$sp = $msp;}
-			if($skname){
-				$sklog = "，{$skilllaninfo[$skname]}+{$lvupskill}";
-			}
-			$log .= "<span class=\"yellow\">你升了{$lvup}级！生命+{$lvuphp}，攻击+{$lvupatt}，防御+{$lvupdef}{$sklog}！</span><br>";
-		} else {
-			global $now,$w_type,$w_pid,$w_name,$w_hp,$w_mhp,$w_sp,$w_msp,$w_att,$w_def,$w_upexp,$w_club;
-			$sknlist=Array(1=>'wp',2=>'wk',3=>'wg',4=>'wc',5=>'wd',9=>'wf');//每级提升熟练
-			$skname=$sknlist[$w_club];
-			if($skname){
-				global ${'w_'.$skname},$skilllaninfo;
-			}
-			$lvup = 1+floor(($exp - $up_exp_temp)/$baseexp/2);
-			$lvup = $lvup > 255-$lvl ? 255-$lvl : $lvup;
-			$lvuphp = $lvupatt = $lvupdef = $lvupskill = 0;
-			for ($i=0;$i<$lvup;$i+=1){
-				$lvuphp += rand(8,10);$lvupatt += rand(2,4);$lvupdef += rand(3,5);
-				if($skname){
-					$lvupskill += rand(3,5);
-				}
-				$w_sp += ($w_msp * 0.1);
-			}
-			$lvl += $lvup;$up_exp_temp = round((2*$lvl+1)*$baseexp);
-
-			if($lvl>=255){$lvl=255;$exp=$up_exp_temp;}
-			$w_upexp=$up_exp_temp;
-			$w_hp += $lvuphp;$w_mhp += $lvuphp;
-			$w_att += $lvupatt;$w_def += $lvupdef;
-			${'w_'.$skname} += $lvupskill;
-			if($w_sp >= $w_msp){$w_sp = $w_msp;}
-			if(!$w_type){
-				if($skname){
-					$sklog = "，{$skilllaninfo[$skname]}+{$lvupskill}";
-				}
-				$w_log = "<span class=\"yellow\">你升了{$lvup}级！生命+{$lvuphp}，攻击+{$lvupatt}，防御+{$lvupdef}{$sklog}！</span><br>";
-				logsave($w_pid,$now,$w_log);
-			}
-		}
-	} elseif($lvl >= 255){$lvl=255;$exp=$up_exp_temp;}
-	return;
-}*/
-
 //玩家被攻击时的生命恢复未实现
 
+function calculate_rest_upsp($rtime,&$pa)
+{
+	global $sleep_time,$db,$tablepre,$log;
+	# 治疗姿态下恢复速率变为3倍
+	if($pa['pose'] == 5) $rtime *= 3;
+	$upsp = round ($pa['msp'] * $rtime / $sleep_time / 100 );
+	# 灵子姿态下，恢复速率受种火数量加成
+	if($pa['pose'] == 8 && $pa['sp'] < $pa['msp'])
+	{
+		$result = $db->query("SELECT pid FROM {$tablepre}players WHERE type=92 AND pls={$pa['pls']} AND hp>0 ");
+		$nums = $db->num_rows($result);
+		if($nums)
+		{
+			$log .= "在你闭目养神之际……似乎有什么东西戳了戳你的脸……<br>感觉身体轻松了不少。<br>";
+			$upsp += $nums * 10 * $rtime;
+		}
+	}
+	return $upsp;
+}
+function calculate_rest_uphp($rtime,&$pa)
+{
+	global $heal_time,$db,$tablepre,$log;
+	# 治疗姿态下恢复速率变为3倍
+	if($pa['pose'] == 5) $rtime *= 3;
+	$uphp = round ($pa['mhp'] * $rtime / $heal_time / 100 );
+	/*if (strpos ($pa['inf'], 'b' ) !== false) {
+		$uphp = round ( $uphp / 2 );
+	}*/
+	# 灵子姿态下，恢复速率受种火数量加成
+	if($pa['pose'] == 8 && $pa['hp'] < $pa['mhp'])
+	{
+		$result = $db->query("SELECT pid FROM {$tablepre}players WHERE type=92 AND pls={$pa['pls']} AND hp>0 ");
+		$nums = $db->num_rows($result);
+		if($nums)
+		{
+			$log .= "在你专心治疗伤口时……似乎有什么东西靠了过来……<br>伤口好像不那么疼了。<br>";
+			$uphp += $nums * 10 * $rtime;
+		}
+	}
+	return $uphp;
+}
+//静养获得怒气
+function calculate_rest_rageup($rtime,&$pa)
+{
+	global $rage_time;
+	$max_rage = 255;
+	$rageup = round ($max_rage * $rtime / $rage_time / 100 );
+	if (strpos ( $pa['inf'], 'h' ) !== false) {//脑袋受伤不容易愤怒（
+		$rageup = round ( $rageup / 2 );
+	}
+	return $rageup;
+}
+function rest($command,&$data=NULL) {
+	//global $now, $log, $mode, $cmd, $state, $endtime, $hp, $mhp, $sp, $msp, $sleep_time, $heal_time, $restinfo, $pose, $inf,$club,$exdmginf;
+	global $now,$log,$mode,$cmd,$sleep_time,$heal_time,$restinfo,$exdmginf;
+	global $pdata;
 
-function rest($command) {
-	global $now, $log, $mode, $cmd, $state, $endtime, $hp, $mhp, $sp, $msp, $sleep_time, $heal_time, $restinfo, $pose, $inf,$club,$exdmginf;
-	
-	if ($state == 1) {
-		$resttime = $now - $endtime;
-		$endtime = $now;
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
+	$resttime = $now - $endtime;
+	$endtime = $now;
+
+	if ($state == 1 || $state == 3) {
 		$oldsp = $sp;
-		$upsp = round ( $msp * $resttime / $sleep_time / 100 );
-		if ($pose == 5) {
-			$upsp *= 2;
-		}
-		if (strpos ( $inf, 'b' ) !== false) {
-			$upsp = round ( $upsp / 2 );
-		}
-		if ($club ==16){
-			$upsp *= 2;
-		}
-		$sp += $upsp;
-		if ($sp >= $msp) {
-			$sp = $msp;
-		}
+		$upsp = calculate_rest_upsp($resttime,$data);
+		$sp += $upsp; $sp = min($sp, $msp);
 		$upsp = $sp - $oldsp;
-		$log .= "你的体力恢复了<span class=\"yellow\">$upsp</span>点。<br>";
-	} elseif ($state == 2) {
-		$resttime = $now - $endtime;
-		$endtime = $now;
+		$upsp=max(0,$upsp);
+		if(!$upsp && $sp >= $msp) $log .= "已经不需要休息了。";
+		else $log .= "你的体力恢复了<span class=\"yellow\">$upsp</span>点。";
+	} 
+
+	if ($state == 2 || $state == 3) {
 		$oldhp = $hp;
-		$uphp = round ( $mhp * $resttime / $heal_time / 100 );
-		if ($pose == 5) {
-			$uphp *= 2;
-		}
-		if (strpos ( $inf, 'b' ) !== false) {
-			$uphp = round ( $uphp / 2 );
-		}
-		if ($club ==16){
-			$uphp *= 2;
-		}
-		$hp += $uphp;
-		if ($hp >= $mhp) {
-			$hp = $mhp;
-		}
+		$uphp = calculate_rest_uphp($resttime,$data);
+		$hp += $uphp; $hp = min($hp, $mhp);
 		$uphp = $hp - $oldhp;
-		$log .= "你的生命恢复了<span class=\"yellow\">$uphp</span>点。<br>";
-	} elseif ($state == 3) {
-		$resttime = $now - $endtime;
-		$endtime = $now;
-		$oldsp = $sp;
-		$upsp = round ( $msp * $resttime / $sleep_time / 100 );
-		if ($pose == 5) {
-			$upsp *= 2;
+		$uphp=max(0,$uphp);
+		if(!$uphp && $hp >= $mhp) $log .= "没有伤口需要治疗了。";
+		else $log .= "你的生命恢复了<span class=\"yellow b\">$uphp</span>点。";
+	} 
+
+	if($state == 3)
+	{
+		if($pose != 8)
+		{
+			$rageup = min(255-$rage,calculate_rest_rageup($resttime,$data));
+			$rage += $rageup;
+			$log .= "<br>但你在病床上辗转反侧，脑中回忆起种种倒霉遭遇，忍不住越想越气！<br>怒气增加了<span class=\"yellow\">$rageup</span>点！";
 		}
-		if (strpos ( $inf, 'b' ) !== false) {
-			$upsp = round ( $upsp / 2 );
-		}
-		if ($club ==16){
-			$upsp *= 2;
-		}
-		$sp += $upsp;
-		if ($sp >= $msp) {
-			$sp = $msp;
-		}
-		$upsp = $sp - $oldsp;
-		$oldhp = $hp;
-		$uphp = round ( $mhp * $resttime / $heal_time / 100 );
-		if ($pose == 5) {
-			$uphp *= 2;
-		}
-		if (strpos ( $inf, 'b' ) !== false) {
-			$uphp = round ( $uphp / 2 );
-		}
-		if ($club ==16){
-			$uphp *= 2;
-		}
-		$hp += $uphp;
-		if ($hp >= $mhp) {
-			$hp = $mhp;
-		}
-		$uphp = $hp - $oldhp;
-		$log .= "你的体力恢复了<span class=\"yellow\">$upsp</span>点，生命恢复了<span class=\"yellow\">$uphp</span>点。<br>";
-		
-		$refintv = 90;
-		if ($pose == 5) {
-			$refintv -= 30;
-		}
-		if (strpos ( $inf, 'b' ) !== false) {
-			$refintv += 30;
-		}
-		$spinf = preg_replace("/[h|b|a|f]/", "", $inf);
-		$spinflength = strlen($spinf);
-		if($spinf){
-			$refflag = false;
-			do{
-				$dice = rand(0,$refintv);
-				if($dice + 15 < $resttime){
-					$infno = rand(0,$spinflength-1);
-					$refinfstr = substr($spinf,$infno,1);
-					$inf = str_replace($refinfstr,'',$inf);
-					$spinf = str_replace($refinfstr,'',$spinf);
-					$log .= "<span class=\"yellow\">你从{$exdmginf[$refinfstr]}状态中恢复了！</span><br>";
-					$spinflength -= 1;
-					$refflag = true;
+		if (!empty($inf))
+		{
+			$refintv = 90;
+			if ($pose == 5) {
+				$refintv -= 30;
+			}
+			if (strpos ( $inf, 'b' ) !== false) {
+				$refintv += 30;
+			}
+			$spinf = preg_replace("/[h|b|a|f]/", "", $inf);
+			$spinflength = strlen($spinf);
+			if($spinf){
+				$refflag = false;
+				do{
+					$dice = rand(0,$refintv);
+					if($dice + 15 < $resttime){
+						$infno = rand(0,$spinflength-1);
+						$refinfstr = substr($spinf,$infno,1);
+						$inf = str_replace($refinfstr,'',$inf);
+						$spinf = str_replace($refinfstr,'',$spinf);
+						$log .= "<span class=\"yellow\">你从{$exdmginf[$refinfstr]}状态中恢复了！</span><br>";
+						$spinflength -= 1;
+						$refflag = true;
+					}
+					$resttime -= $refintv;
+				} while ($resttime > 0 && $spinflength > 0);
+				if(!$refflag){
+					$log .= "也许是时间不够吧……你没有治好任何异常状态。<br>";
 				}
-				$resttime -= $refintv;
-			} while ($resttime > 0 && $spinflength > 0);
-			if(!$refflag){
-				$log .= "也许是时间不够吧……你没有治好任何异常状态。<br>";
 			}
 		}
-	} else {
-		$mode = 'command';
 	}
 	
+	$log .= '<br>';
+
 	if ($command != 'rest') {
 		$state = 0;
 		$endtime = $now;

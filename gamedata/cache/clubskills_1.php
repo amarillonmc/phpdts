@@ -185,6 +185,7 @@ $cskills = Array
 	(
 		'name' => '偷袭',
 		'tags' => Array('battle','opening'),
+		'wepk' => Array('P'),
 		'desc' => '本次攻击必定触发技能“<span class="yellow">猛击</span>”且不会被反击。<br>
 		持殴系武器方可发动，发动消耗<span class="yellow">[:ragecost:]</span>点怒气。<br>',
 		'bdesc' => '必定触发技能“<span class="yellow">猛击</span>”且不会被反击。消耗<span class="red">[:ragecost:]</span>怒气',
@@ -224,6 +225,7 @@ $cskills = Array
 	(
 		'name' => '闷棍',
 		'tags' => Array('battle'),
+		'wepk' => Array('P'),
 		'desc' => '本次攻击必定触发技能“<span class="yellow">猛击</span>”，<br>
 		并对敌人额外造成(<span class="yellow">敌方体力上限减当前体力</span>)点的最终伤害。<br>
 		持钝器方可发动，发动消耗<span class="yellow">[:ragecost:]</span>点怒气。',
@@ -261,6 +263,7 @@ $cskills = Array
 	(
 		'name' => '解牛',
 		'tags' => Array('battle'),
+		'wepk' => Array('K'),
 		'desc' => '本次攻击附加<span class="yellow">([:fixdmg:]+<span tooltip="基于你目前的等级">[^lvl^]</span>)</span>点的最终伤害，且武器损耗率减半。<br>
 		持斩系武器方可发动，消耗<span class="yellow">[:ragecost:]</span>点怒气',
 		'bdesc' => '本次攻击附加<span class="yellow">[:fixdmg:]+[^lvl^]</span>点伤害，且武器损耗率减半，消耗<span class="red">[:ragecost:]</span>怒气',
@@ -313,6 +316,7 @@ $cskills = Array
 	(
 		'name' => '强袭',
 		'tags' => Array('battle'),
+		'wepk' => Array('K'),
 		'desc' => '本次攻击无视减半类防御属性，最终伤害<span class="yellow">+[:findmgr:]%</span>',
 		'bdesc' => '本次攻击攻击最终伤害<span class="yellow">+[:findmgr:]%</span>，无视敌方减半类防御属性；消耗<span class="red">[:ragecost:]</span>怒气',
 		'vars' => Array(
@@ -430,6 +434,7 @@ $cskills = Array
 	(
 		'name' => '附魔',
 		'tags' => Array('battle','passive'),
+		'wepk' => Array('C'),
 		'desc' => '<span tooltip="主动发动时，若角色身上不存在伤害类属性，则会为其临时附加一项随机属性。"><span class="grey">[附加提示]</span>
 		主动发动时，<br>在本次施加的下列属性中随机选择一种，<br>你持投系武器造成的该属性伤害永久<span class="yellow">+[:exdmggain:]%</span>(最高[:exdmgmax:]%)。<br>
 		持投掷兵器时生效，消耗<span class="yellow">[:ragecost:]</span>点怒气。<br>
@@ -479,6 +484,7 @@ $cskills = Array
 	(
 		'name' => '潜能',
 		'tags' => Array('battle'),
+		'wepk' => Array('C'),
 		'desc' => '本次攻击必中且物理伤害<span class="yellow">+[:phydmgr:]%</span><br>
 		持投系武器方可发动，消耗<span class="yellow">[:ragecost:]</span>点怒气',
 		'bdesc' => '攻击必中且物理伤害<span class="yellow">+[:phydmgr:]%</span><br>消耗<span class="red">[:ragecost:]</span>怒气',
@@ -636,6 +642,7 @@ $cskills = Array
 	(
 		'name' => '瞄准',
 		'tags' => Array('battle'),
+		'wepk' => Array('G','J'),
 		'desc' => '本次攻击物理伤害<span class="yellow">+[:phydmgr:]</span>，命中率<span class="yellow">+[:accgain:]%</span><br>
 		使用射系武器方可发动，消耗<span class="yellow">[:ragecost:]</span>点怒气',
 		'bdesc' => '本次攻击物理伤害<span class="yellow">+[:phydmgr:]%</span>，<br>命中率<span class="yellow">+[:accgain:]%</span><br>
@@ -674,6 +681,7 @@ $cskills = Array
 	(
 		'name' => '咆哮',
 		'tags' => Array('battle','unlock_battle_hidden'),
+		'wepk' => Array('G','J'),
 		'desc' => '本次攻击物理伤害<span class="yellow">+[:phydmgr:]%</span>，属性伤害<span class="yellow">+[:exdmgr:]%</span>，<br>
 		防具损坏效果<span class="yellow">+[:inftfix:]</span>。使用射系武器方可发动，消耗<span class="yellow">[:ragecost:]</span>点怒气',
 		'bdesc' => '物理伤害<span class="yellow">+[:phydmgr:]%</span>，属性伤害<span class="yellow">+[:exdmgr:]%</span>，
@@ -702,6 +710,7 @@ $cskills = Array
 	(
 		'name' => '穿杨',
 		'tags' => Array('battle','unlock_battle_hidden'),
+		'wepk' => Array('G','J'),
 		'desc' => '物理伤害<span class="yellow">+[:phydmgr:]%</span>，命中率<span class="yellow">+[:accgain:]%</span>，射程<span class="yellow">+[:rangegain:]</span>，<span class="yellow">连击</span>无效，<br>
 		但<span class="yellow">[:prfix:]%概率贯穿</span>。使用远程武器/重型枪械方可发动，消耗<span class="yellow">[:ragecost:]</span>点怒气',
 		'bdesc' => '物理伤害<span class="yellow">+[:phydmgr:]%</span>，命中率<span class="yellow">+[:accgain:]%</span>，射程<span class="yellow">+[:rangegain:]</span>，<span class="yellow">连击</span>无效，
@@ -824,6 +833,7 @@ $cskills = Array
 	(
 		'name' => '高能',
 		'tags' => Array('battle'),
+		'wepk' => Array('D'),
 		'desc' => '本次攻击中爆炸属性伤害无视一切增益减益效果，<br>
 		使用爆系武器方可发动，消耗<span class="yellow">[:ragecost:]</span>点怒气。',
 		'bdesc' => '本次攻击中爆炸属性伤害无视一切增益减益效果；消耗<span class="red">[:ragecost:]</span>怒气',
@@ -843,6 +853,7 @@ $cskills = Array
 	(
 		'name' => '双响',
 		'tags' => Array('battle','limit'),
+		'wepk' => Array('D'),
 		'desc' => '本局已发动<span class="redseed"> [^skillpara|c5_double-active_t^]/[:maxactive_t:] </span>次<br>使用爆系武器方可发动，连续攻击[:chase_t:]次。',
 		'bdesc' => '本次战斗你将连续攻击[:chase_t:]次；本局已发动<span class="redseed">[^skillpara|c5_double-active_t^]/[:maxactive_t:]</span>次',
 		'svars' => Array(

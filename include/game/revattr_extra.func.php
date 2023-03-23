@@ -34,6 +34,11 @@
 				{
 					set_skillpara($bsk,'active_t',get_skillpara($bsk,'active_t',$pa['clbpara'])+1,$pa['clbpara']);
 				}
+				# 重新判定双系武器的攻击方式
+				if(isset($cskills[$bsk]['wepk']) && !in_array($pa['wep_kind'],$cskills[$bsk]['wepk']))
+				{
+					get_wep_kind($pa,$cskills[$bsk]['wepk'][0]);
+				}
 				# 检查是否需要addnews
 				addnews($now,'bsk_'.$bsk,$pa['name'],$pd['name']);
 				# 检查是否需要进行logsave

@@ -137,13 +137,14 @@
 		{
 			$bskill = substr($wep_kind,7);
 			$pa['bskill'] = $bskill;
+			$wep_kind = '';
 		}
 
 		# 初始化双方的真实攻击方式wep_kind，传入了攻击方式/主动技的情况下，在这里判断传入参数的合法性。
-		get_wep_kind($pa,$wep_kind); 
-		$pa['wep_range'] = get_wep_range($pa);
 		get_wep_kind($pd); 
 		$pd['wep_range'] = get_wep_range($pd);
+		get_wep_kind($pa,$wep_kind,$pd['wep_range']); 
+		$pa['wep_range'] = get_wep_range($pa);
 
 		# 传入pa为玩家、pd为NPC，且存在鏖战/追击标志时，判断战斗流程类型（标准/追击/鏖战/协战）
 		if(!$pa['type'] && $pd['type'] && (strpos($pa['action'],'dfight')!==false || strpos($pa['action'],'chase')!==false))
