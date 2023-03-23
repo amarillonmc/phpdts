@@ -73,14 +73,18 @@
 	<!--{/if}-->
 
 	<!-- 第 3 行：休养指令-->
-	<span tooltip="进入睡眠状态，随时间缓慢恢复体力">
+	<span tooltip="进入睡眠状态，随时间缓慢恢复体力
+	<!--{if $pose == 8}-->当前地图存活种火数量越多，恢复速率越快<!--{/if}-->
+	">
 		<input type="button" class="cmdbutton" id="rest1" name="rest1" value="睡眠" onclick="$('command').value='rest1';postCmd('gamecmd','command.php');this.disabled=true;">
 	</span>
-	<span tooltip="进入治疗状态，随时间缓慢恢复生命">
+	<span tooltip="进入治疗状态，随时间缓慢恢复生命
+	<!--{if $pose == 8}-->当前地图存活种火数量越多，恢复速率越快<!--{/if}-->
+	">
 		<input type="button" class="cmdbutton" id="rest2" name="rest2" value="治疗" onclick="$('command').value='rest2';postCmd('gamecmd','command.php');this.disabled=true;">
 	</span>
 	<!--{if in_array($pls,$hospitals)}-->
-	<span tooltip="进入静养状态，随时间缓慢恢复生命与体力">
+	<span tooltip="进入静养状态，随时间缓慢恢复生命与体力，同时可以积攒怒气">
 		<input type="button" class="cmdbutton" id="rest3" name="rest3" value="静养" onclick="$('command').value='rest3';postCmd('gamecmd','command.php');this.disabled=true;">
 	</span>
 	<!--{/if}-->

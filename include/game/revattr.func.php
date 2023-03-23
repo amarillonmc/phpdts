@@ -11,28 +11,60 @@
 	include_once GAME_ROOT.'./include/game/revattr_extra.func.php';
 
 	//获取真实攻击类别
-	function get_wep_kind(&$pa,$wep_kind='')
+	function get_wep_kind(&$pa,$wep_kind='',$pd_range=NULL)
 	{
-		global $nosta;
+		global $nosta,$attinfo;
 
+		# 刷新空弹药判定
 		if(isset($pa['is_wpg'])) unset($pa['is_wpg']);
 
-		if(!empty($wep_kind))
+		# 检查是否为双系武器
+		$w1 = substr($pa['wepk'],1,1);
+		$w2 = substr($pa['wepk'],2,1);
+		$w2 = !empty($w2) && isset($attinfo[$w2]) ? $w2 : '';
+
+		# 输入了预设的攻击方式，检查是否合法
+		if(!empty($wep_kind)) 
 		{
-			$pa['wep_kind'] = strpos($pa['wepk'],$wep_kind)===false ? substr ($pa['wepk'], 1, 1 ) : $wep_kind;
+			if(strpos($pa['wepk'],$wep_kind)!==false) $pa['wep_kind'] = $wep_kind;
+			else $pa['wep_kind'] = $wep_kind == $w2 ? $w2 : $w1;
 		}
-		else
+		# 没有输入预设攻击方式，自动选择
+		else 
 		{
-			$w1 = substr ($pa['wepk'], 1, 1 );
-			$w2 = substr ($pa['wepk'], 2, 1 );
-			# 这里是判断双系武器没有弹药的情况下 能否使用第二系武器
-			if((($w1 == 'G')||($w1=='J')) && ($pa['weps'] == $nosta)) 
+			if(empty($w2))
 			{
-				$pa['wep_kind']= $w2 ? $w2 : $w1;
+				$pa['wep_kind'] = $w1;
 			}
 			else 
 			{
-				$pa['wep_kind'] = $w1;
+				# 射系武器没有子弹的情况下，自动选用第二攻击模式
+				if(($w1 == 'G' || $w1 == 'J') && $pa['weps'] == $nosta)
+				{
+					$pa['wep_kind'] = $w2;
+				}
+				elseif(($w2 == 'G' || $w2 == 'J') && $pa['weps'] == $nosta) 
+				{
+					$pa['wep_kind'] = $w1;
+				}
+				# 检查策略模式：射程优先 & 熟练优先
+				else
+				{				
+					$pa['wep_kind'] = $w1; $w1_skill = get_wep_skill($pa); $w1_range = get_wep_range($pa);
+					$pa['wep_kind'] = $w2; $w2_skill = get_wep_skill($pa); $w2_range = get_wep_range($pa);
+					# 传入pd射程，且当前两种攻击方式在射程判定上没有区别，则熟练优先
+					if(isset($pd_range) && (($w1_range > $pd_range && $w2_range > $pd_range) || ($w1_range < $pd_range && $w2_range < $pd_range)))
+					{
+						$pa['wep_kind'] = $w1_skill > $w2_skill ? $w1 : $w2;
+					}
+					else 
+					{
+						# 两把武器熟练都大于250的情况下，射程优先
+						if($w1_skill > 250 && $w2_skill > 250) $pa['wep_kind'] = $w1_range > $w2_range ? $w1 : $w2;
+						# 否则熟练优先
+						else $pa['wep_kind'] = $w1_skill > $w2_skill ? $w1 : $w2;
+					}
+				}
 			}
 		}
 		# 这里是最终判断是否为枪托打人的环节

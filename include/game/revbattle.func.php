@@ -63,7 +63,7 @@
 		//初始化玩家攻击方式信息
 		$w1 = substr($pdata['wepk'],1,1);
 		$w2 = substr($pdata['wepk'],2,1);
-		if ($w2=='0'||$w2=='1') $w2='';
+		if(empty($w2) || is_numeric($w2)) $w2='';
 		if (($w1 == 'G'||$w1=='J')&&($pdata['weps']==$nosta)) $w1 = 'P';
 
 		include template('battlecmd_rev');

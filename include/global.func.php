@@ -657,6 +657,15 @@ function parse_info_desc($info,$type,$vars='',$short=0)
 				}
 				$sk_nums++;
 			}
+			# 枪械弹药类型特判
+			if($vars == 'WG' || $vars == 'WGK' || $vars == 'WDG')
+			{
+				if(empty($info)) $sk_tp.= "\r【需装填】：手枪子弹";
+				elseif(in_array('e',$info) || in_array('w',$info)) $sk_tp.= "\r【需装填】：枪械电池";
+				elseif(in_array('u',$info) || in_array('i',$info)) $sk_tp.= "\r【需装填】：能源弹药";
+				elseif(in_array('r',$info)) $sk_tp.= "\r【需装填】：机枪子弹";
+			}
+			if($vars == 'WJ') $sk_tp.= "\r【需装填】：重型弹药";
 			if(!empty($sk_info)) $ret = $sk_info;
 			if($sk_max > $short_nums && $short) $ret = $itemspkinfo[$info[0]]."+...+".$itemspkinfo[end($info)];
 			if(!empty($sk_tp)) 

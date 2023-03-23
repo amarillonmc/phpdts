@@ -51,6 +51,7 @@ require config('combatcfg',$gamecfg);
 require config('clubskills',$gamecfg);
 require config('dialogue',$gamecfg);
 require config('audio',$gamecfg);
+require config('tooltip',$gamecfg);
 
 include GAME_ROOT.'./gamedata/combatinfo.php';
 
