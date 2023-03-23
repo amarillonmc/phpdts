@@ -210,6 +210,8 @@ $lang = array
 	'teamlimit_comment' => '',
 	'npclimit' => 'npc数量',
 	'npclimit_comment' => '士兵的数量，与其他npc无关',
+	'rsgame_bots' => '开局bot数量',
+	'rsgame_bots_comment' => '游戏开始时会初始化的bot数量',
 
 	'startmode_0' => '模式0：手动设定:',
 	'startmode_1' => '模式1：每日定时:',

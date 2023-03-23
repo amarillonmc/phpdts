@@ -154,4 +154,7 @@ $gnpcsub = 0;
 //场外支援系统 不能赞助自己 1:启用 0:关闭
 $no_self_sponsored = 0;
 
+//游戏新开局时向场内投入的bot数量
+$rsgame_bots = 4;
+
 ?>
