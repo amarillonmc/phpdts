@@ -51,6 +51,7 @@ $bot_moveto_phase = Array
 $bot_can_get_itemlist = Array
 (
 	'治疗针','体力回复药','凸眼鱼','针线包','驱云弹','钉','磨刀石','沉默磨刀石','黑磨刀石','『祝福宝石』','『灵魂宝石』',
+	'暗鸦之羽',
 );
 
 $bot_stfid = Array
