@@ -13,7 +13,7 @@ $id = 0;
 $dir = GAME_ROOT.'./bot/lock/';
 $scdir = scandir($dir);
 # 为进程创建对应编号的进程锁
-$process_id = $scdir ? count($scdir)-1 : 1;
+$process_id = $scdir ? count($scdir)+1 : 1;
 touch($dir.$process_id.'.lock');
 
 while(true)
@@ -28,8 +28,8 @@ while(true)
 		$scdir = scandir($dir);
 		# 在这个阶段 进程锁数量应该是与进程id一一对应的，建议先只运行一个脚本校对进程锁数量
 		# 如果发现进程锁数量与进程id不能对应，则可能是系统原因，文件夹lock内存在其他隐藏文件，记得根据差值自己调整$scnums后面的 + -
-		$scnums = count($scdir)-2;
-		echo "当前进程锁数量:".$scnums\n;
+		$scnums = count($scdir);
+		echo "当前进程锁数量:".$scnums."\n";
 		ob_end_flush();
 		# 进程锁数量等于当前编号ID时，才会进行初始化
 		if($process_id == $scnums)
