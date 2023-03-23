@@ -112,7 +112,7 @@ if(CURSCRIPT !== 'chat'){
 			addnews($starttime,'newgame',$gamenum);
 			systemputchat($starttime,'newgame');
 			//是否部署BOT -> 数量;  
-			$gamevars['botplayer'] = 1;
+			$gamevars['botplayer'] = 2;
 			$ginfochange = true;
 		}
 	}

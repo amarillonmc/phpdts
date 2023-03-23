@@ -41,6 +41,7 @@ gamedata/bak/
 gamedata/templates/
 templates/default/lastgb.htm
 templates/default/lastnews.htm
+bot/lock/
 
 # PSD Material
 *.psd

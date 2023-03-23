@@ -1,9 +1,6 @@
 @echo off
 PATH=%PATH%;C:\wamp64\bin\php\php7.4.0
 php -v
-set BOT_CD=2
+
 cd ..
-:loop
 php bot/revbotservice.php
-timeout /t %BOT_CD%
-goto loop
