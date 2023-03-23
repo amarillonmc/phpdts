@@ -23,6 +23,7 @@ if($command == 'edit') {
 		'sleep_time'=>'int',
 		'heal_time'=>'int',
 		'teamlimit'=>'int',
+		'rsgame_bots'=>'int',
 		'credits2_values'=>'int',
 		'no_self_sponsored'=>'b',
 		'sponsor_title'=>'str',
