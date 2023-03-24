@@ -177,7 +177,7 @@
 	//战斗中逃跑
 	function escape_from_enemy(&$pa,&$pd)
 	{
-		global $action,$clbpara,$chase_escape_obbs,$log;
+		global $fog,$action,$clbpara,$chase_escape_obbs,$log;
 		//include_once GAME_ROOT.'./include/game/dice.func.php';
 		# 在受追击/鏖战状态下逃跑有概率失败
 		if(strpos($action,'pchase')===0 || strpos($action,'dfight')===0)
@@ -190,8 +190,11 @@
 				return 0;
 			}
 		}
-		$log .= "你逃跑了。";
+		$log .= "你逃跑了。<br>";
 		$action = '';
+		//逃跑后在视野里记录敌人
+		$nm = $fog ? '？？？' : $pd['name'];
+		check_add_searchmemory($pd['pid'],'enemy',$nm,$pa);
 		unset($clbpara['battle_turns']);
 		return 1;
 	}

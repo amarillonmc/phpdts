@@ -473,6 +473,80 @@ function init_clubskillsdata($sk,$data)
 	return 0;
 }
 
+function check_add_searchmemory($id,$itp,$nm,&$data=NULL)
+{
+	global $allow_semo,$smeo_max,$log;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
+	if($allow_semo)
+	{
+		$now_smeo = empty($data['clbpara']['smeo']) ? 0 : count($data['clbpara']['smeo']);
+		if($now_smeo >= $smeo_max)
+		{
+			lost_searchmemory(NULL,$data);
+		}
+		$nm_desc = $itp == 'corpse' ? $nm.'的尸体' : $nm;
+		$flag = 0;
+		if(empty($data['clbpara']['smeo']))
+		{
+			$data['clbpara']['smeo'] = Array();
+		}
+		else
+		{
+			foreach($data['clbpara']['smeo'] as $sid => $sm)
+			{
+				if($sm[0] == $id && $sm[1] == $itp)
+				{
+					$log .= "<span class='grey'>{$nm_desc}本来就在你的视野里，不过这回你对它的印象更深了。</span><br>"; 
+					lost_searchmemory($sid,$data);
+					$flag = 1;
+					break;
+				}
+			}
+		}		
+		array_push($data['clbpara']['smeo'], Array($id,$itp,$nm));
+		if(!$flag) $log .= "<span class='grey'>你设法将{$nm_desc}保持在视野范围内。</span><br>"; 
+	}
+	return;
+}
+
+function lost_searchmemory($key=NULL,&$data=NULL)
+{
+	global $allow_semo,$smeo_max,$log;
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+	if(!empty($data['clbpara']['smeo']))
+	{
+		if($key == 'all')
+		{
+			$data['clbpara']['smeo'] = Array();
+			$log .= '<span class="grey">你先前所见的一切东西都离开了视线。</span><br>';
+		}
+		elseif(isset($key))
+		{
+			unset($data['clbpara']['smeo'][$key]);
+		}
+		else
+		{
+			$n0 = reset($data['clbpara']['smeo']);
+			$n0_nm_desc = $n0[1] == 'corpse' ? $n0[2].'的尸体' : $n0[2];
+			$log .= "<span class=\"grey\">{$n0_nm_desc}从你的视野里消失了。</span><br>";
+			array_shift($data['clbpara']['smeo']);
+		}
+	}
+	return;
+}
+
 function get_remaincdtime($pid){
 	$psdata = get_pstate($pid);
 	if($psdata){
