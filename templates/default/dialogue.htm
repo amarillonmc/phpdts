@@ -25,10 +25,10 @@
     </table>
     <br>
     <!--{if $dkey > 0}-->
-        <input type="button" class="cmdbutton" style="margin-right: 5%;" value="上一页" onclick="changePages($dkey,$dkey-1);">
+        <input type="button" class="cmdbutton" id="c" style="margin-right: 5%;" value="[C]上一页" onclick="changePages($dkey,$dkey-1);">
     <!--{/if}-->
     <!--{if (($dkey < ($maxdkey-1)) || (isset($dialogue_branch[$dialogue_id])))}-->
-        <input type="button" class="cmdbutton" value="下一页" onclick="changePages($dkey,$dkey+1);">
+        <input type="button" class="cmdbutton" id="z" value="[Z]下一页" onclick="changePages($dkey,$dkey+1);">
     <!--{elseif isset($dialogue_end[$dialogue_id])}-->
         $dialogue_end[$dialogue_id]    
     <!--{/if}-->
@@ -48,9 +48,9 @@
 
 </center></p>
 <!--{if (isset($dialogue_branch[$dialogue_id]) || isset($dialogue_end[$dialogue_id]))}-->
-    <img class="dialog-background" src="img/profile.gif" onclick="">
+    <img class="dialog-background" src="img/profile.gif" id="x" onclick="">
 <!--{else}-->
-    <img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('dialogue'));$('command').value='end_dialogue';postCmd('gamecmd','command.php');this.disabled=true;">
+    <img class="dialog-background" src="img/profile.gif" id="x" onclick="closeDialog($('dialogue'));$('command').value='end_dialogue';postCmd('gamecmd','command.php');this.disabled=true;">
 <!--{/if}-->
 </dialog>
 <script>

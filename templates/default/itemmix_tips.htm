@@ -1,0 +1,26 @@
+<div style="width:720px">
+	<div class="b1" style="height:20px"><span>合成笔记</span></div>
+	<div class="b3" style="min-height:380px;display: flex;position:relative;justify-content: center;">
+		<div style="min-width: 500px;max-width:700px;max-height:400px;text-align:left;word-break:break-all;overflow:auto;">
+			<!--{eval include_once GAME_ROOT.'./include/game/itemplace.func.php';$mixhint = init_itemmix_tips();}-->
+			<form method="post" id="maincmd" name="maincmd">
+				<input type="hidden" name="itemindex" id="itemindex" value="">
+			{$mixhint}
+			</form>
+		</div>
+	</div>
+</div>
+
+<!--{if !empty($itemindex)}-->
+<!--{eval include_once GAME_ROOT.'./include/game/itemplace.func.php';$mixhint2 = init_itemmix_tips($itemindex);}-->
+<dialog id="itemmix_tips" style="min-width: fit-content; min-height: fit-content;max-width: 400px;max-height: 600px;">
+	<div id="tipsinfo">
+		<div class="b3" style="mdisplay: flex;position:relative;justify-content: center;">
+			<div style="text-align:left;word-break:break-all;overflow:auto;">
+				{$mixhint2}
+			</div>
+		</div>
+	</div>
+<img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('itemmix_tips'));this.disabled=true;">
+</dialog>
+<!--{/if}-->

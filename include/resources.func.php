@@ -31,6 +31,30 @@ function get_mixinfo()
 	if(!empty($vn_mixinfo)) $mixinfo = array_merge($mixinfo,$vn_mixinfo);
 	return $mixinfo;
 }
+function get_syncmixinfo()
+{
+	global $gamecfg;
+	$file = config("synitem",$gamecfg);
+	$slist = openfile($file);
+	$n = count($slist);
+	$prp_res = array();
+	for ($i=0;$i<$n;$i++){
+		$prp_res[] = explode(',',$slist[$i]);
+	}
+	return $prp_res;
+}
+function get_overlaymixinfo()
+{
+	global $gamecfg;
+	$file = config("overlay",$gamecfg);
+	$olist = openfile($file);
+	$n = count($olist);
+	$prp_res = array();
+	for ($i=0;$i<$n;$i++){
+		$prp_res[] = explode(',',$olist[$i]);
+	}
+	return $prp_res;
+}
 
 # achievement_1.php
 function get_achtype()

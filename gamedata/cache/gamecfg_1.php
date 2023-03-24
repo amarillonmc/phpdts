@@ -15,7 +15,7 @@ $areaesc = 1;
 $isduel = 0;
 
 //开启快捷键？0为不开启，1为开启
-$hotkeyon = 0;
+$hotkeyon = 1;
 //开启NPC台词功能？0为不开启，1为开启
 $npcchaton = 1;
 //有台词的NPC（已废弃，只要登记过台词的NPC就会显示台词，需要关闭哪个NPC的台词功能请直接注释掉ta的台词）

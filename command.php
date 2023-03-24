@@ -57,7 +57,6 @@ if(!empty($llist)){
 	$llist = '('.substr($llist,0,-1).')';
 	$db->query("UPDATE {$tablepre}log SET prcsd=1 WHERE toid = '$pid' AND lid IN $llist");
 }
-
 //var_dump($_POST);
 if($hp > 0){
 	//显示枪声信息
@@ -120,6 +119,13 @@ if($hp > 0){
 		$mode = 'command';
 	}else{
 		//进入指令判断
+		if(!empty($itemindex))
+		{
+			$opendialog = 'itemmix_tips';
+			$mode = 'command';
+			$command = 'itemmain';
+			$itemcmd = 'itemmix';
+		}
 		if(strpos($action,'chase')===false && strpos($action,'dfight')===false && $mode !== 'combat' && $mode !== 'revcombat' && $mode !== 'corpse' && strpos($action,'pacorpse')===false && $mode !== 'senditem'){
 			$action = '';
 		}
@@ -157,6 +163,9 @@ if($hp > 0){
 						include_once GAME_ROOT.'./include/game/elementmix.func.php';
 						$emax = get_emix_itme_max();
 						foreach($elements_info as $e_key=>$e_info) ${'etaginfo'.$e_key} ="<span tooltip=\"".print_elements_tags($e_key)."\">";
+					}
+					elseif($itemcmd == 'itemmix'){
+						$main = 'itemmix_tips';
 					}
 					$mode = $itemcmd;
 				}
@@ -339,9 +348,10 @@ if($hp > 0){
 							if ($mixmask&(1<<($i-1)))
 								$mixlist[] = $i;
 					}
+					include_once GAME_ROOT.'./include/game/itemmix.func.php';
 					if (isset($itemselect))
-						itemmix($mixlist,$itemselect);
-					else  itemmix($mixlist);
+						itemmix_rev($mixlist,$itemselect);
+					else  itemmix_rev($mixlist);
 				}
 			} elseif($command == 'elementmix') {
 				if($club == 20){

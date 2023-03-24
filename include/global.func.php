@@ -567,11 +567,12 @@ function player_format_with_db_structure($data){
     }
     return $ndata;
 }
-function parse_info_desc($info,$type,$vars='',$short=0)
+function parse_info_desc($info,$type,$vars='',$short=0,$tiptype=0)
 {
 	global $iteminfo,$itemspkinfo,$cskills;
 	global $tps_name,$tps_names,$tps_ik,$tps_isk;
 
+	$ttypes = $tiptype ? $tiptype : 'tooltip';
 	# 处理名字
 	if($type == 'm')
 	{
@@ -580,13 +581,13 @@ function parse_info_desc($info,$type,$vars='',$short=0)
 		{
 			$ts = $tps_names[$tps_name[$tinfo]];
 			$tinfo_f = isset($ts['class']) ? "class=\"{$ts['class']}\"" : '';
-			$tinfo_tp = isset($ts['title']) ? "tooltip=\"{$ts['title']}\"" : '';
+			$tinfo_tp = isset($ts['title']) ? "{$ttypes}=\"{$ts['title']}\"" : '';
 			return "<span {$tinfo_tp} {$tinfo_f}>{$info}</span>";
 		}
 		elseif(isset($tps_name[$tinfo]))
 		{
 			$tinfo_f = isset($tps_name[$tinfo]['class']) ? "class=\"{$tps_name[$tinfo]['class']}\"" : '';
-			$tinfo_tp = isset($tps_name[$tinfo]['title']) ? "tooltip=\"{$tps_name[$tinfo]['title']}\"" : '';
+			$tinfo_tp = isset($tps_name[$tinfo]['title']) ? "{$ttypes}=\"{$tps_name[$tinfo]['title']}\"" : '';
 			return "<span {$tinfo_tp} {$tinfo_f}>{$info}</span>";
 		}
 		return $info;
@@ -605,7 +606,7 @@ function parse_info_desc($info,$type,$vars='',$short=0)
 		# 类别不存在样式或提示时，用大类尝试一下
 		if(!isset($tps_ik[$info])) $info = $v_info;
 		$info_f = isset($tps_ik[$info]['class']) ? "class=\"{$tps_ik[$info]['class']}\"" : '';
-		$info_tp = isset($tps_ik[$info]['title']) ? "tooltip=\"{$tps_ik[$info]['title']}\"" : '';
+		$info_tp = isset($tps_ik[$info]['title']) ? "{$ttypes}=\"{$tps_ik[$info]['title']}\"" : '';
 		if(!isset($iteminfo[$info])) $info = $v_info;
 		return "<span {$info_tp} {$info_f}>{$iteminfo[$info]}</span>";
 	}
@@ -621,7 +622,7 @@ function parse_info_desc($info,$type,$vars='',$short=0)
 			if(!empty($info) && isset($cskills[$info]))
 			{
 				$sk = $cskills[$info];  $sknm = $cskills[$info]['name'];
-				return "<span tooltip=\"阅读后可习得技能「{$sknm}」\">知识</span>";
+				return "<span {$ttypes}=\"阅读后可习得技能「{$sknm}」\">知识</span>";
 			}
 			return "--";
 		}
@@ -670,7 +671,7 @@ function parse_info_desc($info,$type,$vars='',$short=0)
 			if($sk_max > $short_nums && $short) $ret = $itemspkinfo[$info[0]]."+...+".$itemspkinfo[end($info)];
 			if(!empty($sk_tp)) 
 			{
-				$ret = "<span tooltip=\"{$sk_tp}\">{$ret}</span>";
+				$ret = "<span {$ttypes}=\"{$sk_tp}\">{$ret}</span>";
 			}
 		}
 		return $ret;
@@ -764,6 +765,38 @@ function generate_ndnumbers($min, $max, $count = 10)
     }
     return $numbers;
 }
+
+function full_combination($a, $min) {
+	$r = array();
+	$n = count($a);
+	if($n >= $min){
+		for($i=$min;$i<=$n;$i++){
+			$r = array_merge($r, combination($a, $i));
+		}
+	}
+	return $r;
+} 
+
+function combination($a, $m) {  
+	$r = array();  
+	$n = count($a);  
+	if ($m <= 0 || $m > $n) {  
+	  return $r;  
+	}
+	for ($i=0; $i<$n; $i++) {  
+	  $t = array($a[$i]);  
+	  if ($m == 1) {  
+		$r[] = $t;  
+	  } else {  
+		$b = array_slice($a, $i+1);  
+		$c = combination($b, $m-1);  
+		foreach ($c as $v) {  
+		  $r[] = array_merge($t, $v);  
+		}  
+	  }  
+	}  
+	return $r;  
+  } 
 
 function mgzdecode($data)
 {

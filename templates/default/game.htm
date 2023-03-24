@@ -4,7 +4,14 @@
 	<!--{eval $bgm = init_bgm(1)}-->
 	$bgm
 </div>
-
+<!--{loop $plsinfo $places $info}-->
+	<!--{if (CURSCRIPT == 'game' && $pls==$places)}-->
+	<!--{eval $bgurl = "img/location/".$places.".jpg"}-->
+	<style>
+		body {background-image: url("$bgurl");background-position: center;}
+	</style>
+	<!--{/if}-->
+<!--{/loop}-->
 <table border="0" cellspacing="10" cellpadding="0" align="center">
 	<tr valign=top>
 		<td>
@@ -13,6 +20,8 @@
 					{template battle}
 				<!--{elseif $main=='battle_rev'}-->
 					{template battle_rev}
+				<!--{elseif $main=='itemmix_tips'}-->
+					{template itemmix_tips}
 				<!--{else}-->
 					{template profile}
 				<!--{/if}-->

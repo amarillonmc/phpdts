@@ -3,6 +3,193 @@ if (! defined ( 'IN_GAME' )) {
 	exit ( 'Access Denied' );
 }
 
+//以道具名反查mixinfo数据
+//tp & 1 以原料反查，tp & 2 以产物反查
+//返回mixinfo里的单个array
+function smartmix_find_recipe($itm, $tp=0)
+{
+	include_once GAME_ROOT.'./include/game/itemmix.func.php';
+	$mix_res = array();		
+	$itm = htmlspecialchars_decode(itemmix_name_proc($itm));
+	$mixinfo = get_mixinfo();
+	foreach ($mixinfo as $ma)
+	{
+		$ma['type'] = 'normal';
+		//隐藏合成是无法查到的
+		if(($tp & 1 && in_array($itm, $ma['stuff']) && $ma['class']!='hidden') || ($tp & 2 && $itm == $ma['result'][0])){
+			$mix_res[] = $ma;
+		}
+	}
+	return $mix_res;
+}
+
+//检查玩家包裹，返回可合成的道具列表
+function smartmix_check_available($data)
+{
+	include_once GAME_ROOT.'./include/game/itemmix.func.php';
+	extract($data);
+	//itms为零的道具不参与判断
+	$packn = array();
+	for($i=1;$i<=6;$i++){
+		if(!empty(${'itms'.$i})){
+			$packn[] = $i;
+			//$packname[] = \itemmix\itemmix_name_proc(${'itm'.$i});
+		}
+	}
+	//生成道具序号的全组合
+	$fc = full_combination($packn, 2);
+	
+	//所有的组合全部判断一遍是否可以合成，最简单粗暴和兼容
+	$mix_available = $mix_overlay_available = $mix_sync_available = array();
+	foreach($fc as $fcval){
+
+		$mix_res = itemmix_get_result($fcval,$data);
+		if($mix_res){
+			//$mix_res['type'] = 'normal';
+			$mix_available[] = $mix_res;
+		}
+	}
+	foreach($fc as $fval){
+		$mix_overlay_res = itemmix_overlay_check($fval);
+		if($mix_overlay_res){
+			foreach($mix_overlay_res as $mkey => $mval){
+				//$mval['type'] = 'overlay';
+				if(!isset($mix_overlay_available[$mkey])){
+					$mix_overlay_available[$mkey] = array($mval);
+				}else{
+					$mix_overlay_available[$mkey][] = $mval;
+				}
+			}
+		}
+		$mix_sync_res = itemmix_sync_check($fval);
+		if($mix_sync_res){
+			foreach($mix_sync_res as $mkey => $mval){
+				//$mval['type'] = 'sync';
+				if(!isset($mix_sync_available[$mkey])){
+					$mix_sync_available[$mkey] = array($mval);
+				}else{
+					$mix_sync_available[$mkey][] = $mval;
+				}
+			}
+		}
+	}
+	return array($mix_available,$mix_overlay_available,$mix_sync_available);
+}
+
+function init_itemmix_tips($itemindex='',&$data=NULL)
+{
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+	$mix_type = Array('normal' => '通常','sync' => '同调', 'overlay' => '超量');
+	$mhint = ''; $smhint = '';
+	if(!empty($itemindex))
+	{
+		$mix_res = smartmix_find_recipe($itemindex, 1 + 2);				
+		if($mix_res){
+			$smhint .= '<span class="blueseed b">'.$itemindex.'</span>涉及的合成公式：<br><ul>';
+			foreach($mix_res as $mval){
+				if(!isset($mval['type']) || $mval['type'] == 'normal'){
+					foreach($mval['stuff'] as $key => $ms){
+						if($key == 0) $smhint .= '<li>';
+						if($ms == $itemindex) $smhint .= parse_smartmix_recipelink($ms).' + ';
+						else $smhint .= parse_smartmix_recipelink($ms,'','grey').' + ';
+					}
+					$smhint = substr($smhint,0,-3);
+				}
+				$mr = $mval['result'][0];
+				$smhint .= ' → '.parse_smartmix_recipelink($mr, parse_itemmix_resultshow($mval['result']),'grey').'</li>';
+			}
+			$smhint .= "</ul>";
+		}
+		else 
+		{
+			$smhint .= '没有找到<span class="blueseed b">'.$itemindex.'</span>的相关合成公式<span class="grey">（不会显示隐藏公式）</span>';
+		}
+		return $smhint;
+	}
+	list($mix_available,$mix_overlay_available,$mix_sync_available) = smartmix_check_available($data);
+	if(empty($mix_available) && empty($mix_overlay_available) && empty($mix_sync_available)){
+		$mhint .= '';
+	}else{
+		$mhint .= '<span class="blueseed b">可合成</span>：<br>';
+		$shown_list = array();
+		foreach($mix_available as $mlist){//第一层：不同配方
+			$mstuff = $mresult = '';
+			$o_type = '';
+			foreach ($mlist as $mval){//第二层：不同结果
+				if(!empty($o_type) && $o_type != $mval['type']) {//换类型时把上一合成类别显示，并且清空显示的配方和结果列表
+					$mtstr = '';
+					if(isset($mix_type[$o_type])) $mtstr = $mix_type[$o_type];
+					$show_str = '<span>'.$mstuff.'</span>可'.$mtstr.'合成：<ul>'.$mresult.'</ul><br>';
+					if(!in_array($show_str, $shown_list)){
+						$shown_list[] = $show_str;
+						$mhint .= $show_str;
+					}
+					$mstuff = $mresult = '';
+				}
+				$o_type = $mval['type'];
+				if(!$mstuff) {//配方只显示1次					
+					sort($mval['stuff']);			
+					foreach($mval['stuff'] as $ms){
+						$mstuff .= parse_smartmix_recipelink($ms).' + ';
+					}
+					$mstuff = substr($mstuff,0,-3);
+				}
+				$mresult .= '<li>'.parse_smartmix_recipelink($mval['result'][0], parse_itemmix_resultshow($mval['result']), 'yellow').'</li>';
+			}
+			$mtstr = '';
+			if(isset($mix_type[$o_type])) $mtstr = $mix_type[$o_type];
+			$show_str = '<span class="b">'.$mstuff.'</span>可'.$mtstr.'合成：<ul>'.$mresult.'</ul>';
+			if(!in_array($show_str, $shown_list)){
+				$shown_list[] = $show_str;
+				$mhint .= $show_str;
+			}
+		}
+	}
+	for($i=0;$i<=6;$i++)
+	{
+		$itemindex = ${'itm'.$i};
+		$mix_res = smartmix_find_recipe($itemindex, 1 + 2);				
+		if($mix_res){
+			$smhint .= '<span class="blueseed b">'.$itemindex.'</span>涉及的合成公式：<br><ul>';
+			foreach($mix_res as $mval){
+				if(!isset($mval['type']) || $mval['type'] == 'normal'){
+					foreach($mval['stuff'] as $key => $ms){
+						if($key == 0) $smhint .= '<li>';
+						if($ms == ${'itm'.$i}) $smhint .= parse_smartmix_recipelink($ms).' + ';
+						else $smhint .= parse_smartmix_recipelink($ms,'','grey').' + ';
+					}
+					$smhint = substr($smhint,0,-3);
+				}
+				$mr = $mval['result'][0];
+				$smhint .= ' → '.parse_smartmix_recipelink($mr, parse_itemmix_resultshow($mval['result']),'grey').'</li>';
+			}
+			$smhint .= "</ul>";
+		}
+	}
+	if(!empty($smhint)) 
+	{
+		//$smhint = "<span class=\"b\">素材不足：</span><br>".$smhint;
+		$mhint .= $smhint;
+	}
+	$mhint .= '<br>';
+	return $mhint;
+}
+
+function parse_smartmix_recipelink($itemindex, $stext = '', $sstyle = ''){
+	return "<a ".($sstyle ? "class=\"{$sstyle}\" " : '')."onclick=\"$('itemindex').value='$itemindex';postCmd('maincmd','command.php');\">".($stext ? $stext : $itemindex).'</a>';
+}
+function parse_itemmix_resultshow($rarr){
+	$ret = $rarr[0].'/'.parse_info_desc($rarr[1],'k','',0,'tooltip2').'/'.$rarr[2].'/'.$rarr[3];
+	$itmskw = !empty($rarr[4]) ? parse_info_desc($rarr[4],'sk',$rarr[1],0,'tooltip2') : '';
+	if($itmskw) $ret .= '/'.$itmskw;
+	return $ret;
+}
+
 function get_npc_helpinfo($nlist,$tooltip=1)
 {
 	global $plsinfo,$hplsinfo,$gamecfg,$iteminfo,$clubinfo;

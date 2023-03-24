@@ -1,0 +1,14 @@
+<input type="hidden" id="mode" name="mode" value="itemmain">
+<input type="hidden" id="command" name="command" value="itemmix">
+<input type="hidden" id="mixmask" name="mixmask" value="{$mixmask}">
+<input type="hidden" id="itemselect" name="itemselect" value="999">
+<!--{eval $mt0='';}-->
+<!--{loop $mix_res $mi $mv}-->
+	<!--{if $mv['type']!=$mt0}-->
+		<!--{eval $mtype = $mix_type[$mv['type']];}-->
+		可{$mtype}合成： <br>
+		<!--{eval $mt0=$mv['type'];}-->
+	<!--{/if}-->
+	<!--{eval $mname=$mv['result'][0];}-->
+	<input type="button" class="cmdbutton" style="width:200" value="{$mname}" onclick="$('itemselect').value='$mi';postCmd('gamecmd','command.php');this.disabled=true;"><br>
+<!--{/loop}-->
