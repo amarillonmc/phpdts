@@ -51,6 +51,7 @@ $bot_moveto_phase = Array
 $bot_can_get_itemlist = Array
 (
 	'治疗针','体力回复药','凸眼鱼','针线包','驱云弹','钉','磨刀石','沉默磨刀石','黑磨刀石','『祝福宝石』','『灵魂宝石』',
+	'暗鸦之羽',
 );
 
 $bot_stfid = Array
@@ -115,7 +116,7 @@ $bot_player_list = Array
 	'killnum' => 0,
 	'rp' => 0,
 	'mhp' => 400,
-	'msp' => 400,
+	'msp' => 8888,
 	'att' => 120,
 	'def' => 120,
 	'lvl' => 0,
@@ -134,6 +135,11 @@ $bot_player_list = Array
 	'itmk2' => 'HS',
 	'itme2' => 100,
 	'itms2' => 60,
+	'itm5' => '暗鸦之羽',
+	'itmk5' => 'HS',
+	'itme5' => 100,
+	'itms5' => '∞',
+	'itmsk5' => 'v',
 	'itm6' => '银白盒子',
 	'itmk6' => 'ps',
 	'itme6' => 1,
