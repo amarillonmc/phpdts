@@ -35,7 +35,7 @@
 <div style="padding: 5px;">
     <span class="grey">先选择要移位的道具，再选择要移动到的位置。</span><br>
     将：
-    <select name="from">
+    <select name="from" onclick=sl('itemmove'); href="javascript:void(0);">
     <option value="0">■ 道  具 ■
         <!--{if $itms1}--><option value="1">$itm1/$itme1/$itms1<!--{/if}-->
         <!--{if $itms2}--><option value="2">$itm2/$itme2/$itms2<!--{/if}-->
@@ -46,7 +46,7 @@
     </select>
     <br>
     移动至/与之交换：
-    <select name="to">
+    <select name="to" onclick=sl('itemmove'); href="javascript:void(0);">
     <option value="0">■ 位  置 ■
         <!--{if $itms1}--><option value="1">包裹1：$itm1/$itme1/$itms1<!--{else}--><option value="1">包裹1<!--{/if}-->
         <!--{if $itms2}--><option value="2">包裹2：$itm2/$itme2/$itms2<!--{else}--><option value="2">包裹2<!--{/if}-->
