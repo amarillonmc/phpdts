@@ -8,18 +8,18 @@
         <tr>
              <!-- 第一攻击方式 -->
             <td width=100px align="center" style="vertical-align:top">
-                <input type="button" class="cmdbutton" style="width:95" name="w1" value="{$attinfo[$w1]}" onclick="$('command').value='$w1';postCmd('gamecmd','command.php');this.disabled=true;">
+                <input type="button" class="cmdbutton" style="width:95" id="zz" name="w1" value="[Z]{$attinfo[$w1]}" onclick="$('command').value='$w1';postCmd('gamecmd','command.php');this.disabled=true;">
             </td>
             <!-- 第二攻击方式 -->  
             <!--{if $w2}-->
             <td width=100px>
-                <input type="button" class="cmdbutton" style="width:95" name="w2" value="{$attinfo[$w2]}" onclick="$('command').value='$w2';postCmd('gamecmd','command.php');this.disabled=true;">
+                <input type="button" class="cmdbutton" style="width:95" id="aa" name="w2" value="[A]{$attinfo[$w2]}" onclick="$('command').value='$w2';postCmd('gamecmd','command.php');this.disabled=true;">
             </td>
             <!--{/if}-->
             <td width=100px>
                 <!-- 切换副武器 -->  
                 <!--{if $pdata['wep2s']}-->
-                <input type="button" class="cmdbutton" style="width:95" value="切换" onclick="$('command').value='changewep';postCmd('gamecmd','command.php');this.disabled=true;">
+                <input type="button" class="cmdbutton" style="width:95" id="cc" value="[C]切换" onclick="$('command').value='changewep';postCmd('gamecmd','command.php');this.disabled=true;">
                 <!--{/if}-->
             </td>
         </tr>
@@ -42,7 +42,7 @@
         <!-- 末行：逃跑、坚守 -->  
         <tr>
             <td width=100px align="center" style="vertical-align:top">
-                <input type="button" class="cmdbutton" name="back" style="width:95" value="逃跑" onclick="postCmd('gamecmd','command.php');this.disabled=true;"> 
+                <input type="button" class="cmdbutton" id="x" name="back" style="width:95" value="[X]逃跑" onclick="postCmd('gamecmd','command.php');this.disabled=true;"> 
             </td>
             <td>
             </td>
