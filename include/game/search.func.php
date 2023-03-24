@@ -162,6 +162,10 @@ function move($moveto = 99,&$data=NULL) {
 			$log .= "高强度的紫外线灼烧着大地……<br>";
 		}
 	} 
+
+	//移动后丢失探索视野
+	lost_searchmemory('all',$data);
+
 	if(!$moved) {
 		if(!$hpls_flag) $pgroup = 0;
 		$pls = $moveto;
@@ -353,32 +357,6 @@ function search(&$data=NULL){
 			}			
 		}
 	}
-	
-	/*if(strpos($inf, 'p') !== false){
-		$damage = round($mhp/32) + rand(0,5);
-		$hp -= $damage;
-		$log .= "<span class=\"purple\">毒发</span>减少了<span class=\"red\">$damage</span>点生命！<br>";
-		if($hp <= 0 ){
-			include_once GAME_ROOT.'./include/state.func.php';
-			death('pmove');
-			return;
-		}
-	}
-	if(strpos($inf, 'u') !== false){
-		$damage = round($mhp/32) + rand(0,15);
-		$hp -= $damage;
-		$log .= "<span class=\"yellow\">烧伤发作</span>减少了<span class=\"red\">$damage</span>点生命！<br>";
-		if($hp <= 0 ){
-			include_once GAME_ROOT.'./include/state.func.php';
-			death('umove');
-			return;
-		}
-	}*/
-	/*$enemyrate = 40;
-	if($gamestate == 40){$enemyrate += 20;}
-	elseif($gamestate == 50){$enemyrate += 30;}
-	if($pose==3){$enemyrate -= 20;}
-	elseif($pose==4){$enemyrate += 10;}*/
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
 	$enemyrate =  calc_meetman_rate($data);
 	//echo "enemyrate = {$enemyrate}%";
@@ -475,49 +453,6 @@ function discover($schmode = 0,&$data=NULL)
 				itemfind($data);
 				return;
 			}
-			/*if($xtrpflag){
-				global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
-				$itm0=$xtrp['itm'];
-				$itmk0=$xtrp['itmk'];
-				$itme0=$xtrp['itme'];
-				$itms0=$xtrp['itms'];
-				$itmsk0=$xtrp['itmsk'];
-				$tid = $xtrp['tid'];
-				$db->query("DELETE FROM {$tablepre}maptrap WHERE tid='$tid'");
-				
-				itemfind();
-				return;
-			}else{
-				$real_trap_obbs = $trap_min_obbs + $trpnum/4;
-				//Anti-Meta RP System Version 2.00 ~ Nemo
-				//冴冴我喜欢你！
-				//17rp/177rp+1%
-				if($gamestate >= 50) {$real_trap_obbs = $real_trap_obbs + $rp / 177; }
-				else{ $real_trap_obbs = $real_trap_obbs + $rp/30; }
-				if($pose==1){$real_trap_obbs+=1;}
-				elseif($pose==3){$real_trap_obbs+=3;}//攻击和探索姿势略容易踩陷阱
-				if($gamestate >= 40){$real_trap_obbs+=3;}//连斗以后略容易踩陷阱
-				if($pls == 0){$real_trap_obbs+=15;}//在后台非常容易踩陷阱
-				if($club == 6){$real_trap_obbs-=5;}//人肉搜索称号遭遇陷阱概率减少
-				if($trap_dice < $real_trap_obbs){//踩陷阱判断
-					$itemno = rand(0,$trpnum-1);
-					$db->data_seek($trapresult,$itemno);
-					$mi=$db->fetch_array($trapresult);
-					global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
-					$itm0=$mi['itm'];
-					$itmk0=$mi['itmk'];
-					$itme0=$mi['itme'];
-					$itms0=$mi['itms'];
-					$itmsk0=$mi['itmsk'];
-					$tid=$mi['tid'];
-					$db->query("DELETE FROM {$tablepre}maptrap WHERE tid='$tid'");
-					if($itms0){
-						include_once GAME_ROOT.'./include/game/itemmain.func.php';
-						itemfind();
-						return;
-					}
-				}
-			}*/
 		}
 	}
 	include_once GAME_ROOT.'./include/game/attr.func.php';
@@ -621,11 +556,6 @@ function discover($schmode = 0,&$data=NULL)
 				else 
 				{
 					battle_flag:
-					//$active_r = get_active_r($weather,$pls,$pose,$tactic,$club,$inf,$edata['pose']);
-					//include_once GAME_ROOT.'./include/game/clubskills.func.php';
-					//$active_r *= get_clubskill_bonus_active($club,$skills,$edata['club'],$edata['skills']);
-					//if ($active_r>96) $active_r=96;
-					//include_once GAME_ROOT.'./include/game/dice.func.php';
 					include_once GAME_ROOT.'./include/game/revbattle.func.php';
 					include_once GAME_ROOT.'./include/game/revcombat.func.php';
 					//刷新敌人时效性状态
@@ -691,47 +621,80 @@ function discover($schmode = 0,&$data=NULL)
 		$find_r = get_find_r($weather,$pls,$pose,$tactic,$club,$inf);
 		$find_obbs = $item_obbs + $find_r;
 		$item_dice = rand(0,99);
-		if($item_dice < $find_obbs) {
-			$result = $db->query("SELECT * FROM {$tablepre}mapitem WHERE pls = '$pls'");
-			$itemnum = $db->num_rows($result);
-			if($itemnum <= 0){
+		if($item_dice < $find_obbs) 
+		{
+			$flag = focus_item($data);
+			if(!$flag)
+			{
 				$log .= '<span class="yellow">周围找不到任何物品。</span><br>';
 				$mode = 'command';
 				return;
 			}
-			$itemno = rand(0,$itemnum-1);
-			$db->data_seek($result,$itemno);
-			$mi=$db->fetch_array($result);
-			//global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
-			$itm0=$mi['itm'];
-			$itmk0=$mi['itmk'];
-			$itme0=$mi['itme'];
-			$itms0=$mi['itms'];
-			$itmsk0=$mi['itmsk'];
-			$iid=$mi['iid'];
-			$db->query("DELETE FROM {$tablepre}mapitem WHERE iid='$iid'");
-
-			if($itms0){
-				include_once GAME_ROOT.'./include/game/itemmain.func.php';
-				if($data['pass'] == 'bot') 
-				{
-					itemget($data);
-				}
-				else 
-				{
-					itemfind();
-					return;
-				}
-			} else {
-				$log .= "但是什么都没有发现。可能是因为道具有天然呆属性。<br>";
-			}
-		} else {
+		} 
+		else 
+		{
 			$log .= "但是什么都没有发现。<br>";
 		}
 	}
 	$mode = 'command';
 	return;
 
+}
+
+function focus_item(&$data=NULL,$id=NULL)
+{
+	global $db,$tablepre,$log;
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
+	if(isset($id))
+	{
+		$result = $db->query("SELECT * FROM {$tablepre}mapitem WHERE pls = '$pls' AND iid = '$id'");
+		if(!$db->num_rows($result)) 
+		{
+			$log .= "但是你想找的东西已经不见了！<br>";
+			return 0;
+		}
+		$mi=$db->fetch_array($result);
+	}
+	else 
+	{
+		$result = $db->query("SELECT * FROM {$tablepre}mapitem WHERE pls = '$pls'");
+		$itemnum = $db->num_rows($result);
+		if($itemnum <= 0) return 0;
+		$itemno = rand(0,$itemnum-1);
+		$db->data_seek($result,$itemno);
+		$mi=$db->fetch_array($result);
+	}
+	$itm0=$mi['itm'];
+	$itmk0=$mi['itmk'];
+	$itme0=$mi['itme'];
+	$itms0=$mi['itms'];
+	$itmsk0=$mi['itmsk'];
+	$iid=$mi['iid'];
+	$db->query("DELETE FROM {$tablepre}mapitem WHERE iid='$iid'");
+	if($itms0)
+	{
+		include_once GAME_ROOT.'./include/game/itemmain.func.php';
+		if($data['pass'] == 'bot') 
+		{
+			itemget($data);
+		}
+		else 
+		{
+			itemfind();
+			return 1;
+		}
+	} 
+	else 
+	{
+		$log .= "但是什么都没有发现。可能是因为道具有天然呆属性。<br>";
+	}
+	return;
 }
 
 

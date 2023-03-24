@@ -7,8 +7,27 @@
 <select id="moveto" name="moveto" onchange="$('command').value='move';postCmd('gamecmd','command.php');this.disabled=true;">
 {template move}
 </select>
-<br />
-<br />
+	<!-- 探索记忆栏 -->
+	<!--{if !empty($clbpara['smeo'])}-->
+			<br>
+			<!--{loop $clbpara['smeo'] $smkey $sm}-->
+			<input type="button" class="cmdbutton" style="padding: 0px; margin-top: 15px;"
+				<!--{eval $sm_nm = parse_itmname_words($sm[2],1,10); }-->
+				<!--{if $sm[1] == 'itm'}-->
+					value="获取 {$sm_nm}"
+				<!--{elseif $sm[1] == 'enemy'}-->
+						value="迎战 {$sm_nm}"
+				<!--{elseif $sm[1] == 'corpse'}-->
+						value="检查 {$sm_nm} 的尸体"
+				<!--{elseif $sm[1] == 'corpse'}-->
+						value="和 {$sm_nm} 打招呼"
+				<!--{/if}-->
+				onclick="$('mode').value='command';$('command').value='memory{$smkey}';postCmd('gamecmd','command.php');this.disabled=true;">
+			<!--{/loop}-->
+	<!--{/if}-->
+	<br />
+	<!-- 背包栏 -->
+	<br />
 	<!--{if $itms1}-->
 	<input type="button" id="11" class="cmdbutton" <!--{if strpos($itmk1,'W')===0 || strpos($itmk1,'D')===0 || strpos($itmk1,'A')===0}-->value="[1]装备"<!--{else}-->value="[1]使用"<!--{/if}--> onclick="$('mode').value='command';$('command').value='itm1';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm1}</span>/{$itme1}/{$itms1}<br>
 	<!--{/if}-->

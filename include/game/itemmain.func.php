@@ -532,27 +532,29 @@ function itemdrop($item,&$data=NULL) {
 		$mode = 'command';
 		return;
 	}
-	if(strpos($itmsk,'v')!==false){
+	if(strpos($itmsk,'v')!==false)
+	{
 		$log .= "{$itm}在地上化作点点碎片，随风消逝了。<br>";
 		$log .= "你摧毁了<span class=\"red\">$itm</span>。<br>";
-	}else{
-//	$mapfile = GAME_ROOT."./gamedata/mapitem/{$pls}mapitem.php";
-//	$itemdata = "$itm,$itmk,$itme,$itms,$itmsk,\n";
-//	writeover($mapfile,$itemdata,'ab');
-	$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk ,pls) VALUES ('$itm', '$itmk', '$itme', '$itms', '$itmsk', '$pls')");
-	$log .= "你丢弃了<span class=\"red\">$itm</span>。<br>";
+	}
+	else
+	{
+		$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk ,pls) VALUES ('$itm', '$itmk', '$itme', '$itms', '$itmsk', '$pls')");
+		$drop_iid = $db->insert_id();
+		$log .= "你丢弃了<span class=\"red\">$itm</span>。<br>";
+		check_add_searchmemory($drop_iid,'itm',$itm,$data);
+	}
+	if($item == 'wep'){
+		$itm = '拳头';
+		$itmsk = '';
+		$itmk = 'WN';
+		$itme = 0;
+		$itms = $nosta;
+	} else {
+		$itm = $itmk = $itmsk = '';
+		$itme = $itms = 0;
 	}
 	$mode = 'command';
-	if($item == 'wep'){
-	$itm = '拳头';
-	$itmsk = '';
-	$itmk = 'WN';
-	$itme = 0;
-	$itms = $nosta;
-	} else {
-	$itm = $itmk = $itmsk = '';
-	$itme = $itms = 0;
-	}
 	return;
 }
 
@@ -1300,6 +1302,14 @@ function getcorpse($item,&$data=NULL)
 		}
 		include_once GAME_ROOT.'./include/game/elementmix.func.php';
 		split_corpse_to_elements($edata);
+		$action = '';
+		$mode = 'command';
+		return;
+	}
+	elseif($item == 'back')
+	{
+		//没有从尸体上捡取道具时，保留视野
+		check_add_searchmemory($edata['pid'],'corpse',$edata['name'],$data);
 		$action = '';
 		$mode = 'command';
 		return;

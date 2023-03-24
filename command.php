@@ -298,7 +298,20 @@ if($hp > 0){
 				//$log.="【DEBUG】关闭了对话框。";
 				if(isset($dialogue_log[$clbpara['dialogue']])) $log.= $dialogue_log[$clbpara['dialogue']];
 				unset($clbpara['dialogue']); unset($clbpara['noskip_dialogue']);
-			} 
+			} elseif (strpos($command,'memory')===0) {
+				$smn = substr($command,6);
+				if(!empty($clbpara['smeo'] && isset($clbpara['smeo'][$smn]))){
+					$iid = $clbpara['smeo'][$smn][0]; $itp = $clbpara['smeo'][$smn][1]; 
+					lost_searchmemory($smn,$pdata);
+					if($itp == 'itm'){
+						include_once GAME_ROOT.'./include/game/search.func.php';
+						focus_item($pdata,$iid);
+					}else{
+						$action = 'focus'.$iid; $command = 'focus';
+						goto chase_flag;
+					}
+				}
+			}
 		} elseif($mode == 'item') {
 			include_once GAME_ROOT.'./include/game/item2.func.php';
 			$item = substr($command,3);
@@ -473,6 +486,7 @@ if($hp > 0){
 			if(strpos($action,'chase')===0) $enemyid = str_replace('chase','',$action);
 			if(strpos($action,'pchase')===0) $enemyid = str_replace('pchase','',$action);
 			if(strpos($action,'dfight')===0) $enemyid = str_replace('dfight','',$action);
+			if(strpos($action,'focus')===0) $enemyid = str_replace('focus','',$action);
 			if(!$enemyid)
 			{
 				$log .= "<span class=\"yellow b\">你没有遇到敌人，或已经离开战场！</span>{$enemyid}<br>";
@@ -489,28 +503,30 @@ if($hp > 0){
 				$log .= "<span class=\"yellow b\">" . $edata ['name'] . "</span>已经离开了<span class=\"yellow b\">$plsinfo[$pls]</span>。<br>";
 				goto back_flag;
 			}
+
+			include_once GAME_ROOT.'./include/game/revbattle.func.php';
+			include_once GAME_ROOT.'./include/game/revcombat.func.php';
+			if(!empty($edata['clbpara']['lasttimes'])) $edata = check_skilllasttimes($edata);
+
 			if ($edata ['hp'] <= 0)
 			{
-				$log .= "<span class=\"red b\">" . $edata ['name'] . "</span>已经死亡，不能被攻击。<br>";
+				if(strpos($action,'focus')===false) $log .= "<span class=\"red b\">" . $edata ['name'] . "</span>已经死亡，不能被攻击。<br>";
 				include_once GAME_ROOT . './include/game/battle.func.php';
 				$action = 'corpse'.$edata['pid'];
 				findcorpse($edata);
 			}
 			elseif ($command == 'changewep') 
 			{
-				include_once GAME_ROOT.'./include/game/revbattle.func.php';
 				change_wep_in_battle();
 				findenemy_rev($edata);
 			}
 			elseif ($command == 'chase') 
 			{
-				include_once GAME_ROOT.'./include/game/revbattle.func.php';
 				findenemy_rev($edata);
 			}
 			elseif ($command == 'back') 
 			{
 				//$log .= "你逃跑了。";
-				include_once GAME_ROOT . './include/game/revbattle.func.php';
 				$flag = escape_from_enemy($pdata,$edata);
 				if($flag)
 				{
@@ -519,8 +535,19 @@ if($hp > 0){
 				}
 				else 
 				{
-					include_once GAME_ROOT . './include/game/revcombat.func.php';
 					rev_combat_prepare($pdata,$edata,0);
+				}
+			}
+			elseif ($command == 'focus') 
+			{
+				// 迎战视野中的敌人先制率-40
+				$active_r = min(4,get_active_r_rev($pdata,$edata)-40);
+				$active_dice = diceroll(99);
+				if($active_dice < $active_r){
+					$action = 'enemy'.$edata['pid'];
+					findenemy_rev($edata);
+				}else {
+					rev_combat_prepare($edata,$pdata,0);
 				}
 			}
 			else

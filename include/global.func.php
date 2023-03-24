@@ -562,7 +562,7 @@ function player_format_with_db_structure($data){
     $db_player_structure = update_db_player_structure();
     foreach ($db_player_structure as $key)
     {
-        if(isset($data[$key]) && is_array($data[$key])) $data[$key]=json_encode($data[$key]);
+        if(isset($data[$key]) && is_array($data[$key])) $data[$key]=json_encode($data[$key],JSON_UNESCAPED_UNICODE);
 		$ndata[$key]=isset($data[$key]) ? $data[$key] : '';
     }
     return $ndata;
@@ -677,6 +677,23 @@ function parse_info_desc($info,$type,$vars='',$short=0,$tiptype=0)
 		return $ret;
 	}
 	return $info;
+}
+
+//省略显示
+//显示宽度20英文字符，假设汉字的显示宽度大约是英文字母的1.8倍
+function parse_itmname_words($name_value, $elli = 0, $width=20, $end=1){
+	if(!$elli) return $name_value;
+	if($width<=6) $width = 6;
+	$ilen=mb_strlen($name_value);
+	$slen=0;
+	for($i=0;$i<$ilen;$i++){
+		$c=mb_substr($name_value,$i,1);
+		if(strlen($c) > mb_strlen($c)) $slen+=1.8;//是汉字或别的UTF-8字符，显示宽度+1.8
+		else $slen+=1;//是英文字母或其他ascii字符，显示宽度+1
+		if($slen >= $width) break;
+	}
+	if($i==$ilen) return $name_value;
+	else return middle_abbr($name_value,$i-1,$end);
 }
 
 //----------------------------------------
@@ -813,6 +830,13 @@ function gdecode($para, $assoc = false){
 	$assoc = $assoc ? true : false;
 	if (!$para) return array();
 	else return json_decode(mgzdecode(base64_decode($para)),$assoc);
+}
+
+//字符串中段省略，取头部+尾部1字符
+function middle_abbr($str,$len1,$len2=1,$elli='...') {
+	$str = (string)$str;
+	$len1 = (int)$len1; $len2 = (int)$len2;
+	return mb_substr($str,0,$len1).$elli.mb_substr($str,-$len2,$len2);
 }
 
 //mb_strlen()兼容替代函数，直接照抄的网络
