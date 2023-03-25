@@ -140,6 +140,16 @@
 						$pa['skill_c10_insight'] = 1;
 						$pa['skilllog'] .= "<span class='yellow'>{$pa['nm']}凭借丰富的经验看穿了{$pd['nm']}的破绽！</span><br>";
 					}
+					# 「海虎」特殊判定：
+					elseif($sk == 'c12_swell')
+					{
+						$sk_var = get_skillvars('c12_swell','swellr') * calc_enmity_losshpr($pa,$pd);
+						$dice = diceroll(99);
+						if($dice < $sk_var)
+						{
+							$pa['skill_c12_swell'] = $pa['hp'] <= $pa['mhp']*0.3 ? 2 : 1;
+						}
+					}
 					# 其他非特判技能，默认给一个触发标记
 					else 
 					{
@@ -178,6 +188,18 @@
 		{
 			$sk_r = get_skillvars('buff_assassin','hidegain');
 			$r += $sk_r;
+		}
+		# pa持有「瞩目」时的效果判定：
+		if(!check_skill_unlock('c12_huge',$pa))
+		{
+			$sk_r = get_skillvars('c12_huge','hideloss');
+			$r -= $sk_r;
+		}
+		# pd持有「瞩目」时的效果判定：
+		if(!check_skill_unlock('c12_huge',$pd))
+		{
+			$sk_r = get_skillvars('c12_huge','hidegain');
+			$r -= $sk_r;
 		}
 		return $r;
 	}
@@ -514,6 +536,22 @@
 			$ex_damage_fix += $sk_var;
 		}
 		return $ex_dmg_fix;
+	}
+
+	# 背水HP系数
+	function calc_enmity_losshpr(&$pa,&$pd)
+	{
+		$hpr = 1 - ($pa['hp']/$pa['mhp']);
+		$r = (1 + 2*$hpr) * $hpr;
+		return $r;
+	}
+
+	# 坚守HP系数
+	function calc_garrison_losshpr(&$pa,&$pd)
+	{
+		$hpr = 1 - ($pa['hp']/$pa['mhp']);
+		$r = -1 * pow($hpr,3) + 4 * $hpr;
+		return $r;
 	}
 
 	# 真红暮特殊判定

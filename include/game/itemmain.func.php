@@ -198,6 +198,7 @@ function trap(&$data=NULL){
 			real_trap_damage:
 			$tmp_club=$club;
 			$hp -= $damage; 
+			$trapkill = false;
 
 			if($playerflag)
 			{

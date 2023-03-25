@@ -1045,6 +1045,18 @@
 			}
 		}
 
+		# 「浴血」技能判定
+		if(isset($pa['skill_c12_bloody']))
+		{
+			if($pa['hp'] <= $pa['mhp']*0.3) $sk_lvl = 2;
+			elseif($pa['hp'] <= $pa['mhp']*0.5) $sk_lvl = 1;
+			else $sk_lvl = 0;
+			$sk_att_vars = get_skillvars('c12_bloody','attgain',$sk_lvl);
+			$sk_def_vars = get_skillvars('c12_bloody','defgain',$sk_lvl);
+			$pa['att'] += $sk_att_vars; $pa['def'] += $sk_def_vars; 
+			$log .= '<span class="yellow">「浴血」使'.$pa['nm'].'的攻击增加了'.$sk_att_vars.'点，防御增加了'.$sk_def_vars.'点！</span><br>';
+		}
+
 		return;
 	}
 
@@ -1127,7 +1139,7 @@
 		if ($pa['exp'] >= $up_exp_temp && $pa['lvl'] < 255) 
 		{
 			$sklanginfo = Array ('wp' => '殴熟', 'wk' => '斩熟', 'wg' => '射熟', 'wc' => '投熟', 'wd' => '爆熟', 'wf' => '灵熟', 'all' => '全系熟练度' );
-			$sknlist = Array (1 => 'wp', 2 => 'wk', 3 => 'wc', 4 => 'wg', 5 => 'wd', 9 => 'wf', 16 => 'all' );
+			$sknlist = Array (1 => 'wp', 2 => 'wk', 3 => 'wc', 4 => 'wg', 5 => 'wd', 9 => 'wf', 12 => 'all' );
 			$skname = isset($sknlist[$pa['club']]) ? $sknlist[$pa['club']] : 0;
 			//升级判断
 			$lvup = 1 + floor (($pa['exp'] - $up_exp_temp)/$baseexp/2);
@@ -1136,13 +1148,13 @@
 			//升级数值计算
 			for($i = 0; $i < $lvup; $i += 1) 
 			{
-				if ($pa['club'] == 13) {
+				if ($pa['club'] == 12) {
 					$lvuphp += rand ( 14, 18 );
 				} else {
 					$lvuphp += rand ( 8, 10 );
 				}
 				$lvupsp += rand( 4,6);
-				if ($pa['club'] == 14) {
+				if ($pa['club'] == 12) {
 					$lvupatt += rand ( 4, 6 );
 					$lvupdef += rand ( 5, 8 );
 				} else {
