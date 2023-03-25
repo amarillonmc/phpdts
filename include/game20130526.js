@@ -144,6 +144,10 @@ function dniconMover(){
 	dninum = $('dnicon').selectedIndex;
 	$('dniconImg').innerHTML = '<img src="img/' + dngd + '_' + dninum + '.gif" alt="' + dninum + '">';
 }
+function IconMover(idiv,islct,ipre){
+	inum = $(islct).selectedIndex;
+	$(idiv).innerHTML = '<img src="img/' + ipre + '_' + inum + '.gif" alt="' + inum + '">';
+}
 
 function showNotice(sNotice) {
 	$('notice').innerText = sNotice;

@@ -431,7 +431,7 @@ CREATE TABLE `acbra2_winners` (
   `teamID` char(15) NOT NULL DEFAULT '',
   `teamPass` char(15) NOT NULL DEFAULT '',
   `teamMate` text NOT NULL default '',
-  `teamIcon` char(15) smallint unsigned NOT NULL default '0',
+  `teamIcon` smallint unsigned NOT NULL default '0',
   wep char(30) NOT NULL default '',
   wepk char(40) not null default '',
   wepe int(10) unsigned NOT NULL DEFAULT '0',

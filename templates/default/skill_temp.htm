@@ -23,11 +23,13 @@
                         </span>
                     </td>
                     <td class="skilldesc_right b3">
-                        <!--{if !empty($cskill['num_input']) && empty($max_lvl_flag)}-->
-                            <input type="number" name="upgskill_{$skid}_nums" style="width:40px" value="1">		
-                        <!--{/if}-->
-                        <!--{if !empty($cskill['input']) && empty($max_lvl_flag)}-->
-                            <input type="button" onclick="$('mode').value='revskpts';$('command').value='upgskill_{$skid}';postCmd('gamecmd','command.php');this.disabled=true;" value="{$cskill['input']}">
+                        <!--{if empty($no_skill_input)}-->
+                            <!--{if !empty($cskill['num_input']) && empty($max_lvl_flag)}-->
+                                <input type="number" name="upgskill_{$skid}_nums" style="width:40px" value="1">		
+                            <!--{/if}-->
+                            <!--{if !empty($cskill['input']) && empty($max_lvl_flag)}-->
+                                <input type="button" onclick="$('mode').value='revskpts';$('command').value='upgskill_{$skid}';postCmd('gamecmd','command.php');this.disabled=true;" value="{$cskill['input']}">
+                            <!--{/if}-->
                         <!--{/if}-->
                     </td>
                 </tr>

@@ -267,8 +267,9 @@
 			<td><input size="20" type="text" name="mss" value="{$pc['mss']}" maxlength="20"></td>
 			<td>ＲＰ</td>
 			<td><input size="20" type="text" name="rp" value="{$pc['rp']}" maxlength="20"></td>
-			<td></td>
-			<td></td>
+			<!-- 仅供DEBUG用 不可编辑 -->
+			<td><!--{if $mygroup>=9}-->ＩＰ<!--{/if}--></td>
+			<td><!--{if $mygroup>=9}-->{$pc['ip']}<!--{/if}--></td>
 		</tr>
 		<tr>
 			<td>社团参数A</td>

@@ -9,7 +9,7 @@
 	# 升级指定技能会触发的事件，返回0时代表无法升级技能
 	function upgclbskills_events($event,$sk,&$data=NULL)
 	{
-		global $log,$cskills,$clbpara,$name;
+		global $log,$cskills,$clbpara,$name,$now;
 		# 事件：激活技能
 		if($event == 'active_news')
 		{
