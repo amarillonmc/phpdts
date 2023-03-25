@@ -69,6 +69,7 @@ while($id)
 			if ($flag == 0) {
 				unset($gamevars['botid'][array_search($botid, $gamevars['botid'])]);
 				save_gameinfo();
+				save_combatinfo();
 				if (empty($gamevars['botid'])) break;
 			}
 			echo "\nBOT：{$id} 行动完成\n";

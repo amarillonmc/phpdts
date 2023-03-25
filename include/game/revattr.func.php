@@ -98,9 +98,11 @@
 		global $skillinfo,$log;
 		if(empty($pa['wep_kind'])) get_wep_kind($pa);
 		# 获取真实熟练度 保存在$pa['wep_skill']内
-		if ($pa['club'] == 18)
+
+		# 天赋异禀在计算熟练时附加25%别系熟练
+		if ($pa['club'] == 10)
 		{
-			$wep_skill = round($pa[$skillinfo[$pa['wep_kind']]]*0.7+($pa['wp']+$pa['wk']+$pa['wc']+$pa['wg']+$pa['wd']+$pa['wf'])*0.3);
+			$wep_skill = round($pa[$skillinfo[$pa['wep_kind']]]+($pa['wp']+$pa['wk']+$pa['wc']+$pa['wg']+$pa['wd']+$pa['wf'])*0.25);
 		}
 		else
 		{
@@ -534,9 +536,9 @@
 		if(in_array('R',$pa['ex_keys']))
 		{
 			$maxdmg = $pd['mhp'] > $pa['wepe'] ? $pa['wepe'] : $pd['mhp'];
-			$mindmg = max(-1*$pa['wepe'],-1*($pd['mhp'] - $pd['hp'] + 1));
+			$mindmg = max(1,($pd['mhp'] - $pd['hp'])/2);
 			do{
-				$damage = rand($mindmg,$maxdmg);
+				$damage = rand(-1*$mindmg,$maxdmg);
 			}while(empty($damage));
 			if($damage > 0)
 			{
@@ -960,6 +962,14 @@
 			$p = 1 + ($sk_p / 100);
 			$dmg_p[]= $p; 
 			$log.="<span class='yellow'>「穿杨」使{$pa['nm']}造成的物理伤害提高了{$sk_p}%！</span><br>";
+		}
+		#「解构」判定：
+		if(isset($pa['bskill_c10_decons']))
+		{
+			$sk_p = get_skillvars('c10_decons','phydmgr');
+			$p = 1 + ($sk_p / 100);
+			$dmg_p[]= $p; 
+			$log.="<span class='yellow'>「解构」使{$pa['nm']}造成的物理伤害提高了{$sk_p}%！</span><br>";
 		}
 		return $dmg_p;
 	}

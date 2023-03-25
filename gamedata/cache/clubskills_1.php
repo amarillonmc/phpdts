@@ -15,7 +15,7 @@ $club_skillslist = Array
 	7  => Array('s_hp','s_ad','f_heal','c7_radar','c7_shield','c7_electric','c7_field','c7_overload','c7_emp'), #'锡安成员',
 	8  => Array('s_hp','s_ad','f_heal','c8_expert','c8_infilt','c8_catalyst','c8_deadheal','c8_assassin'), #'黑衣组织',
 	9  => Array('s_hp','s_ad','f_heal','c9_spirit','c9_lb','c9_iceheart','c9_charge','c9_heartfire'), #'超能力者',
-	10 => Array('s_hp','s_ad','f_heal'), #'高速成长',
+	10 => Array('s_hp','s_ad','f_heal','c10_inspire','c10_insight','c10_decons'), #'天赋异禀', //高速成长与天赋异禀合并为天赋异禀
 	11 => Array('s_hp','s_ad','f_heal'), #'富家子弟',
 	12 => Array('s_hp','s_ad','f_heal'), #'全能骑士',
 	13 => Array('s_hp','s_ad','f_heal'), #'根性兄贵',
@@ -23,7 +23,7 @@ $club_skillslist = Array
 	15 => Array('f_heal'), #'<span class="L5">L5状态</span>',
 	16 => Array('s_hp','s_ad','f_heal'), #'全能骑士',
 	17 => Array('f_heal'), #'走路萌物',
-	18 => Array('s_hp','s_ad','f_heal'), #'天赋异禀',
+	//18 => Array('s_hp','s_ad','f_heal'), #'天赋异禀',
 	19 => Array('s_hp','s_ad','f_heal'), #'晶莹剔透',
 	20 => Array('s_hp','s_ad','f_heal'), #'元素大师', #商店购买社团卡
 	21 => Array('s_hp','s_ad','f_heal'), #'灵子梦魇', #暂定名，商店购买社团卡
@@ -251,7 +251,7 @@ $cskills = Array
 		# 这是一个使用固定模板的技能 在这里进行编辑不会有任何效果……等等，还是有点效果的……编辑下面提供的内容是会有效果的
 		'name' => '百战',
 		'tags' => Array('passive'),
-		'log' => "切换了「百战」的防御类型。",
+		'clog' => "切换了「百战」的防御类型。",
 		'choice' => Array('P','K','C','G','F','D','I','U','q','W','E'), //可选择的单系防御类型
 		'svars' => Array(
 			'choice' => '', //初始默认选择的单项防御
@@ -829,7 +829,7 @@ $cskills = Array
 		'name' => '专注',
 		'tags' => Array('passive'),
 		'desc' => "你可随意于下列三个状态间切换：",
-		'log' => "切换了「专注」的状态。",
+		'clog' => "切换了「专注」的状态。",
 		'choice' => Array(0,1,2), //无效果/重视遇敌/重视探物
 		'svars' => Array(
 			'choice' => 0, 
@@ -1416,6 +1416,70 @@ $cskills = Array
 		),
 		'pvars' => Array('lasttimes'),
 		'lostevents' => Array('unactive_c8_assassin'),
+	),
+	'c10_inspire' => Array
+	(
+		'name' => '灵感',
+		'tags' => Array('active'),
+		'desc' => "选定一个称号，升级本技能时将<span class='yellow'>随机</span>获得一个选定称号的<span class='yellow'>技能</span><br>
+		（可能会重复获得）<br>",
+		'maxlvl' => 8,
+		'cost' => Array(4,5,7,9,11,14,17,20,-1),
+		'input' => '思考',
+		'log' => '……<br>',
+		'choice' => Array(1,2,3,4,5,6,7,8,9), //无效果/重视遇敌/重视探物
+		'clog' => '<span class="yellow">切换了选定称号。</span><br>',
+		'events' => Array('inspire'),
+		'status' => Array('skillpara|c10_inspire-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c10_inspire-lvl' => '+=::1',),
+		),
+		'svars' => Array(
+			'lvl' => 0,
+			'choice' => 1, 
+		),
+	),
+	'c10_insight' => Array
+	(
+		'name' => '洞察',
+		'tags' => Array('passive'),
+		'desc' => '敌人所用武器熟练度低于你的<span class="gold" tooltip2="你当前所持武器熟练度+(其他系别熟练度×0.25)">战斗熟练度</span>时，<br>
+		你对其命中率<span class="yellow">+[:accgain:]%</span>；先制率<span class="yellow">+[:actgain:]%</span><br>
+		敌人对你的命中率<span class="yellow">-[:accloss:]%</span>；连击命中率<span class="yellow">-[:rbloss:]%</span>',
+		'maxlvl' => 4,
+		'cost' => Array(2,3,4,6,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">「洞察」升级成功。</span><br>',
+		'status' => Array('skillpara|c10_insight-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c10_insight-lvl' => '+=::1',),
+		),
+		'svars' => Array('lvl' => 0),
+		'vars' => Array(
+			'accgain' => Array(5,7,10,17,30),
+			'actgain' => Array(3,5,8,12,17),
+			'accloss' => Array(3,6,11,15,17),
+			'rbloss' => Array(4,7,14,18,22),
+		),
+	),
+	'c10_decons' => Array
+	(
+		'name' => '解构',
+		'tags' => Array('battle'),
+		'desc' => '消耗<span class="yellow">[:ragecost:]</span>点怒气，本次攻击物理伤害<span class="yellow">+[:phydmgr:]%</span><br>
+		击杀敌人时，额外获得<span class="lime">敌人等级-(0.15×<span tooltip2="等同于你当前等级">[^lvl^])</span></span>点经验',
+		'bdesc' => '物理伤害<span class="yellow">+[:phydmgr:]%</span>,击杀时额外获得<span class="lime">敌人等级-(0.15×<span tooltip2="等同于你当前等级">[^lvl^]</span>)</span>点经验；消耗<span class="red">[:ragecost:]</span>怒气',
+		'vars' => Array(
+			'ragecost' => 18,
+			'phydmgr' => 20, 
+		),
+		'pvars' => Array('lvl'),
+		'lockdesc' => Array(
+			'lvl' => '3级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 3',
+		),
 	),
 	'tl_cstick' => Array
 	(

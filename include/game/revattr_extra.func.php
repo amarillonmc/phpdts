@@ -134,6 +134,12 @@
 						$pa['skilllog'] .= "<span class='yellow'>{$pa['nm']}从阴影中现出身形，打了{$pd['nm']}一个措手不及！</span><br>";
 						lostclubskill('buff_assassin',$pa['clbpara']);
 					}
+					# 「洞察」特殊判定：熟练度高于对方时触发
+					elseif($sk == 'c10_insight' && $pa['wep_skill'] > $pd['wep_skill'])
+					{
+						$pa['skill_c10_insight'] = 1;
+						$pa['skilllog'] .= "<span class='yellow'>{$pa['nm']}凭借丰富的经验看穿了{$pd['nm']}的破绽！</span><br>";
+					}
 					# 其他非特判技能，默认给一个触发标记
 					else 
 					{
@@ -222,6 +228,13 @@
 			$sk_r = get_skillvars('buff_assassin','actgain');
 			$r += $sk_r;
 		}
+		# pa持有「洞察」时的效果判定：（只在主动发现敌人时应用）
+		if(!check_skill_unlock('c10_insight',$pa) && get_wep_skill($pa) > get_wep_skill($pd))
+		{
+			$sk_lvl = get_skilllvl('c10_insight',$pa);
+			$sk_r = get_skillvars('c10_insight','actgain',$sk_lvl);
+			$r += $sk_r;
+		}
 		return $r;
 	}
 
@@ -303,6 +316,13 @@
 				$hitrate *= $sk_r;
 			}
 		}
+		#「洞察」效果判定：
+		if(isset($pa['skill_c10_insight']))
+		{
+			$sk_lvl = get_skilllvl('c10_insight',$pa);
+			$sk_r = 1 + (get_skillvars('c10_insight','accgain',$sk_lvl) / 100);
+			$hitrate *= $sk_r;
+		}
 
 		# 减益：
 		#「枭眼」效果判定：
@@ -327,6 +347,13 @@
 				$sk_r = 1 - ($sk_r / 100);
 				$hitrate *= $sk_r;
 			}
+		}
+		#「洞察」效果判定：
+		if(isset($pd['skill_c10_insight']))
+		{
+			$sk_lvl = get_skilllvl('c10_insight',$pd);
+			$sk_r = 1 - (get_skillvars('c10_insight','accloss',$sk_lvl) / 100);
+			$hitrate *= $sk_r;
 		}
 		return $hitrate;
 	}
@@ -391,6 +418,13 @@
 				$sk_r = 1 - ($sk_r / 100);
 				$hitrate *= $sk_r;
 			}
+		}
+		#「洞察」效果判定：
+		if(isset($pd['skill_c10_insight']))
+		{
+			$sk_lvl = get_skilllvl('c10_insight',$pd);
+			$sk_r = 1 - (get_skillvars('c10_insight','rbloss',$sk_lvl) / 100);
+			$hitrate *= $sk_r;
 		}
 		return $hitrate;
 	}

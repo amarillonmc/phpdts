@@ -1317,7 +1317,7 @@ $anpcinfo = array
 			1 => array
 			(
 			'name' => '蓝凝',
-			'club' => 18,
+			'club' => 10,
 			'mhp' => 9999998,
 			'msp' => 1600,
 			'att' => 199900,

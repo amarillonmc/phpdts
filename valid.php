@@ -132,7 +132,7 @@ if($mode == 'enter') {
 	}
 	$itmk[3] = 'HB'; $itme[3] = 70; $itms[3] = 15;
 	//$itm[5] = 'GRAND OPENING 「开门大吉」'; $itmk[5] = 'p000'; $itme[5] = 1; $itms[5] = 1;
-	$dice = rand(4,9); $dice_name = $clubinfo[$dice];
+	$dice = rand(4,10); $dice_name = $clubinfo[$dice];
 	$itm[5] = '「'.$dice_name.' 社团卡」'; $itmk[5] = 'ZB'; $itme[5] = $dice; $itms[5] = 1;
 
 	if ($wingames <=1){
