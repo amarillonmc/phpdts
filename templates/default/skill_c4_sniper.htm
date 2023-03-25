@@ -19,7 +19,7 @@
                         </span>
                     </td>
                     <td class="skilldesc_right b3">
-                        <!--{if !empty($unlock_c4_sniper_flag) && $unlock_c4_sniper_flag == 'skillpara|c4_sniper-active'}-->
+                        <!--{if !empty($unlock_c4_sniper_flag) && $unlock_c4_sniper_flag == 'skillpara|c4_sniper-active' && empty($no_skill_input)}-->
                         <input type="button" style="width:47px;margin-right:25px;float:right;" value="解锁">
                         <!--{/if}-->
                     </td>
@@ -36,7 +36,7 @@
                             $unlock_desc
                         </span>
                     </td>
-                    <!--{if !empty($unlock_c4_sniper_flag) && $unlock_c4_sniper_flag == 'skillpara|c4_sniper-active'}-->
+                    <!--{if !empty($unlock_c4_sniper_flag) && $unlock_c4_sniper_flag == 'skillpara|c4_sniper-active' && empty($no_skill_input)}-->
                     <td class="skilldesc_right">
                         <input type="button" style="width:47px;margin-right:25px;float:right;" value="解锁" onclick="$('mode').value='revskpts';$('command').value='actskill_c4_sniper';postCmd('gamecmd','command.php');this.disabled=true;">
                     </td>

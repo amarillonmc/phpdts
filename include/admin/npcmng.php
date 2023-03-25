@@ -133,7 +133,7 @@ if($command == 'kill' || $command == 'live' || $command == 'del') {
 		$clbpara = Array();
 		$tmp_clbpara = json_decode(htmlspecialchars_decode($str_clbpara),1);
 		foreach($tmp_clbpara as $key=>$res) $clbpara[$key] = $res;
-		$clbpara = json_encode($clbpara);
+		$clbpara = json_encode($clbpara,JSON_UNESCAPED_UNICODE);
 	}
 	$effect_flag = 0;
 	$ndata = update_db_player_structure();

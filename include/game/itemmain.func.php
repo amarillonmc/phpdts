@@ -1444,6 +1444,29 @@ function reload_single_set_item(&$pa,$eqp,$enm,$active=0)
 	return;
 }
 
+
+//在背包内寻找道具进行编辑
+function check_item_edit_event(&$pa,$event)
+{
+	$flag = 0;
+	for($i=0;$i<=6;$i++)
+	{
+		if(!empty($pa['itms'.$i]))
+		{
+			# 「渗透」效果判定
+			if($event == 'c8_infilt')
+			{
+				if(strpos($pa['itmk'.$i],'H')===0)
+				{
+					$pa['itmk'.$i] = str_replace("H",'P',$pa['itmk'.$i]);
+					$flag = 1;
+				}
+			}
+		}
+	}
+	return $flag;
+}
+
 //武器损耗&消耗计算：force_imp：强制扣除武器效果；check_sk：是否在武器毁坏时重新检查属性数组$pa['ex_keys']
 function weapon_loss(&$pa,$hurtvalue,$force_imp=0,$check_sk=0)
 {

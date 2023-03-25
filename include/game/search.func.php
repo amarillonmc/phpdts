@@ -176,10 +176,19 @@ function move($moveto = 99,&$data=NULL) {
 	
 	if($inf){
 		foreach ($inf_move_hp as $inf_ky => $o_dmg) {
-			if(strpos($inf,$inf_ky)!==false){
-				$damage = round($mhp * $o_dmg) + rand(0,15);
+			if(strpos($inf,$inf_ky)!==false)
+			{
+				$damage = round($mhp * $o_dmg) + rand(0,10);
+				# 「死疗」效果判定： TODO：之后要把异常状态扣血效果单独做一个函数
+				if($inf_ky == 'p' && !check_skill_unlock('c8_deadheal',$data))
+				{
+					$sk_p = get_skillvars('c8_deadheal','exdmgr');
+					$damage = min($mhp-$hp,ceil($damage*($sk_p/100)));
+					$damage *= -1;
+				}
 				$hp -= $damage;
-				$log .= "{$infwords[$inf_ky]}减少了<span class=\"red\">$damage</span>点生命！<br>";
+				if($damage > 0) $log .= "{$infwords[$inf_ky]}减少了<span class=\"red\">$damage</span>点生命！<br>";
+				elseif($damage < 0) $log .= "{$infwords[$inf_ky]}恢复了<span class=\"lime\">".abs($damage)."</span>点生命！<br>";
 				if($hp <= 0 ){
 					include_once GAME_ROOT.'./include/state.func.php';
 					death($inf_ky.'move','',0,'',$data);
@@ -345,10 +354,19 @@ function search(&$data=NULL){
 	$log .= "消耗<span class=\"yellow\">{$schsp}</span>点体力，你搜索着周围的一切。。。<br>";
 	if($inf){
 		foreach ($inf_search_hp as $inf_ky => $o_dmg) {
-			if(strpos($inf,$inf_ky)!==false){
+			if(strpos($inf,$inf_ky)!==false)
+			{
 				$damage = round($mhp * $o_dmg) + rand(0,10);
+				# 「死疗」效果判定： TODO：之后要把异常状态扣血效果单独做一个函数
+				if($inf_ky == 'p' && !check_skill_unlock('c8_deadheal',$data))
+				{
+					$sk_p = get_skillvars('c8_deadheal','exdmgr');
+					$damage = min($mhp-$hp,ceil($damage*($sk_p/100)));
+					$damage *= -1;
+				}
 				$hp -= $damage;
-				$log .= "{$infwords[$inf_ky]}减少了<span class=\"red\">$damage</span>点生命！<br>";
+				if($damage > 0) $log .= "{$infwords[$inf_ky]}减少了<span class=\"red\">$damage</span>点生命！<br>";
+				elseif($damage < 0) $log .= "{$infwords[$inf_ky]}恢复了<span class=\"lime\">".abs($damage)."</span>点生命！<br>";
 				if($hp <= 0 ){
 					include_once GAME_ROOT.'./include/state.func.php';
 					death($inf_ky.'move','',0,'',$data);

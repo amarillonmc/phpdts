@@ -13,7 +13,7 @@ $club_skillslist = Array
 	5  => Array('s_hp','s_ad','f_heal','c5_sneak','c5_caution','c5_review','c5_focus','c5_higheg','c5_double'), #'拆弹专家',
 	6  => Array('s_hp','s_ad','f_heal','c6_godluck','c6_godsend','c6_godbless','c6_godpow','c6_godeyes','c6_justice'), #'宛如疾风',
 	7  => Array('s_hp','s_ad','f_heal','c7_radar','c7_shield','c7_electric','c7_field','c7_overload','c7_emp'), #'锡安成员',
-	8  => Array('s_hp','s_ad','f_heal','c8_assassin','c8_infect','c8_infilt','c8_misty','c8_catalyst','c8_cooker'), #'黑衣组织',
+	8  => Array('s_hp','s_ad','f_heal','c8_expert','c8_infilt','c8_catalyst','c8_deadheal','c8_assassin'), #'黑衣组织',
 	9  => Array('s_hp','s_ad','f_heal','c9_spirit','c9_lb','c9_iceheart','c9_charge','c9_heartfire'), #'超能力者',
 	10 => Array('s_hp','s_ad','f_heal'), #'高速成长',
 	11 => Array('s_hp','s_ad','f_heal'), #'富家子弟',
@@ -57,6 +57,7 @@ $cskills_tags = Array
 	'limit' => '<span tooltip="每局游戏内可发动次数有限" class="gold">【限次技】</span>',
 	//'buff' => '<span tooltip="隐藏标签：代表这是一个临时性状态" class="gold">【状态】</span>',
 	//'unlock_battle_hidden' => '<span tooltip="隐藏标签：未解锁时不会在战斗界面显示" class="gold">【隐藏】</span>',
+	//'player' => '<span tooltip="隐藏标签：只有玩家会有此技能" class="gold">【玩家】</span>',
 );
 
 # 技能登记：
@@ -102,6 +103,7 @@ $cskills = Array
 	's_hp' => Array
 	(
 		'name' => '生命',
+		'tags' => Array('player'),
 		'desc' => '每消耗<span class="lime">[:cost:]</span>技能点，生命上限<span class="yellow">+[:hp:]</span>点',
 		'cost' => 1,
 		'input' => '升级',
@@ -116,6 +118,7 @@ $cskills = Array
 	's_ad' => Array
 	(
 		'name' => '攻防',
+		'tags' => Array('player'),
 		'desc' => '每消耗<span class="lime">[:cost:]</span>技能点，基础攻击<span class="yellow">+[:att:]</span>点，基础防御<span class="yellow">+[:def:]</span>点',
 		'cost' => 1,
 		'input' => '升级',
@@ -130,6 +133,7 @@ $cskills = Array
 	'f_heal' => Array
 	(
 		'name' => '自愈',
+		'tags' => Array('player'),
 		'desc' => '消耗<span class="lime">[:cost:]</span>技能点，解除全部受伤与异常状态，并完全恢复生命与体力',
 		'cost' => 1,
 		'input' => '治疗',
@@ -1283,6 +1287,135 @@ $cskills = Array
 			'skillpara|c7_emp-active_t' => '[:skillpara|c7_emp-active_t:] < 2',
 			'lvl' => '[:lvl:] >= 21',
 		),
+	),
+	'c8_expert' => Array
+	(
+		'name' => '特攻',
+		'tags' => Array('passive'),
+		'desc' => '你造成的最终属性伤害提高<span class="yellow">[:exdmgr:]%</span>',
+		'maxlvl' => 4,
+		'cost' => Array(6,6,6,6,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">技能「特攻」升级成功。</span><br>',
+		'status' => Array('skillpara|c8_expert-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c8_expert-lvl' => '+=::1',),
+		),
+		'svars' => Array('lvl' => 0),
+		'vars' => Array(
+			'exdmgr' => Array(10,20,30,40,50), 
+		),
+	),
+	'c8_infilt' => Array
+	(
+		'name' => '渗透',
+		'tags' => Array('passive'),
+		'desc' => '当你处于<span class="purple">中毒</span>状态时，攻击额外附加<span class="yellow">[:exext:]</span>次毒属性攻击，<br>
+		且有<span class="yellow">[:infr:]%</span>概率使敌人陷入<span class="purple">中毒</span>状态，并使敌人背包内的补给<span class="purple">带毒</span>',
+		'maxlvl' => 6,
+		'cost' => Array(2,3,4,5,6,9,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">技能「渗透」升级成功。</span><br>',
+		'status' => Array('skillpara|c8_infilt-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c8_infilt-lvl' => '+=::1',),
+		),
+		'svars' => Array('lvl' => 0),
+		'vars' => Array(
+			'exext' => Array(1,1,1,2,2,2,3),
+			'infr' => Array(0,10,20,30,40,50,60),
+		),
+		'lockdesc' => Array(
+			'inf' => '自身处于<span class="purple">中毒</span>状态时才可触发',
+		),
+		'unlock' => Array(
+			'inf' => "strpos([:inf:],'p')!==false",
+		),
+	),
+	'c8_catalyst' => Array
+	(
+		'name' => '催化',
+		'tags' => Array('battle'),
+		'desc' => '消耗<span class="yellow">[:ragecost:]</span>点怒气，<br>
+		本次攻击每造成1次毒属性伤害，最终属性伤害<span class="yellow">+[:exdmgr:]%</span>',
+		'bdesc' => '本次攻击每造成1次<span class="purple">毒</span>属性伤害，最终属性伤害<span class="yellow">+[:exdmgr:]%</span>；消耗<span class="red">[:ragecost:]</span>怒气',
+		'vars' => Array(
+			'ragecost' => 50,
+			'exdmgr' => 25, 
+		),
+		'lockdesc' => Array(
+			'lvl' => '7级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 7',
+		),
+	),
+	'c8_deadheal' => Array
+	(
+		'name' => '死疗',
+		'tags' => Array('passive'),
+		'desc' => '不再受到<span class="purple">毒性</span>伤害，并将原本伤害的<span class="yellow">[:exdmgr:]%</span>转化为治疗效果',
+		'vars' => Array(
+			'exdmgr' => 75, 
+		),
+		'lockdesc' => Array(
+			'lvl' => '12级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 12',
+		),
+	),
+	'c8_assassin' => Array
+	(
+		'name' => '暗杀',
+		'tags' => Array('active','limit'),
+		'desc' => '本局已发动<span class="redseed"> [^skillpara|c8_assassin-active_t^]/[:maxactive_t:] </span>次<br>
+		发动后获得以下增益：隐蔽率<span class="yellow">+[:hidegain:]%</span>，先制率<span class="yellow">+[:actgain:]%</span>，持续<span class="yellow">60</span>秒；<br>
+		增益持续时间内发动攻击会解除增益，但使此次攻击<span class="yellow">必中</span>，<br>
+		且敌人防御、抹消、制御类属性失效(贯穿)率<span class="yellow">+[:pdefbkr:]%</span>',
+		'input' => '发动',
+		'log' => '<span class="lime">技能「暗杀」发动成功。</span><br>',
+		'status' => Array('skillpara|c8_assassin-active','skillpara|c8_assassin-active_t'),
+		'effect' => Array(
+			0 => Array(
+				'skillpara|c8_assassin-active' => '=::1',
+				'skillpara|c8_assassin-active_t' => '+=::1',
+			),
+		),
+		'events' => Array('getskill_buff_assassin','active_news'),
+		'link' => Array('buff_assassin'),
+		'vars' => Array(
+			'maxactive_t' => 2, 
+		),
+		'svars' => Array('active' => 0, 'active_t' => 0,),
+		'pvars' => Array('skillpara|c8_assassin-active_t'),
+		'lockdesc' => Array(
+			'skillpara|c8_assassin-active_t' => '次数耗尽，已无法发动该技能',
+			'lvl' => '21级时解锁',
+			'skillpara|c8_assassin-active' => '技能发动中！',
+		),
+		'unlock' => Array(
+			'skillpara|c8_assassin-active_t' => '[:skillpara|c8_assassin-active_t:] < 2',
+			'lvl' => '[:lvl:] >= 21',
+			'skillpara|c8_assassin-active' => 'empty([:skillpara|c8_assassin-active:])',
+		),
+	),
+	'buff_assassin' => Array
+	(
+		'name' => '[状态]暗杀',
+		'tags' => Array('buff'),
+		'desc' => '<span class="lime">「暗杀」生效中！<br>
+		增益效果剩余时间：<span class="yellow">[^lasttimes^]</span> 秒</span>',
+		'vars' => Array(
+			'hidegain' => 90, 
+			'actgain' => 100, 
+			'pdefbkr' => 25,
+		),
+		'slast' => Array(
+			'lasttimes' => 60,
+		),
+		'pvars' => Array('lasttimes'),
+		'lostevents' => Array('unactive_c8_assassin'),
 	),
 	'tl_cstick' => Array
 	(

@@ -127,6 +127,13 @@
 							$log .= "<span class='lime'>感知到危险，闪烁着淡蓝幽光的护盾自动出现在{$pa['nm']}身旁！<br></span>";
 						}
 					}
+					# 「暗杀」特殊判定：输出一段破隐log，并丢失buff技能
+					elseif($sk == 'buff_assassin')
+					{
+						$pa['skill_buff_assassin'] = 1;
+						$pa['skilllog'] .= "<span class='yellow'>{$pa['nm']}从阴影中现出身形，打了{$pd['nm']}一个措手不及！</span><br>";
+						lostclubskill('buff_assassin',$pa['clbpara']);
+					}
 					# 其他非特判技能，默认给一个触发标记
 					else 
 					{
@@ -159,6 +166,12 @@
 		{
 			$sk_r = get_skilllvl('c6_godsend','hidegain',$pd['clbpara']);
 			if(!empty($sk_r)) $r += $sk_r;
+		}
+		# pd处于「暗杀」状态下的效果判定：
+		if(!check_skill_unlock('buff_assassin',$pd))
+		{
+			$sk_r = get_skillvars('buff_assassin','hidegain');
+			$r += $sk_r;
 		}
 		return $r;
 	}
@@ -203,6 +216,12 @@
 			$sk_r = get_skillpara('c6_godsend','actgain',$pa['clbpara']);
 			if(!empty($sk_r)) $r += $sk_r;
 		}
+		# pa处于「暗杀」状态下的效果判定：
+		if(!check_skill_unlock('buff_assassin',$pa))
+		{
+			$sk_r = get_skillvars('buff_assassin','actgain');
+			$r += $sk_r;
+		}
 		return $r;
 	}
 
@@ -242,8 +261,8 @@
 	function get_clbskill_hitrate(&$pa,&$pd,$active,$hitrate)
 	{
 		# 加成：
-		#「潜能」效果判定：
-		if(isset($pa['bskill_c3_potential']))
+		#「潜能」、「暗杀」必中效果判定：
+		if(isset($pa['bskill_c3_potential']) || isset($pa['skill_buff_assassin']))
 		{
 			//原来必中是这个意思……
 			return 10000;

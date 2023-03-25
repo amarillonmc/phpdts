@@ -570,7 +570,7 @@ if($hp > 0){
 			getcorpse($command);
 		} elseif($mode == 'team') {
 			include_once GAME_ROOT.'./include/game/team.func.php';
-			if ($command=="teammake") teammake($nteamID,$nteamPass);
+			if ($command=="teammake") teammake($nteamID,$nteamPass,(int)$ticon);
 			if ($command=="teamjoin") teamjoin($nteamID,$nteamPass);
 			if ($command=="teamquit") teamquit($nteamID,$nteamPass);
 		} elseif($mode == 'shop') {

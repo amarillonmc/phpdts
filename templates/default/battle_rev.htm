@@ -58,8 +58,14 @@
 				<!--{/if}-->
 					<td></td>
 					<td></td>
-					<td></td>
-					<td></td>
+				<!--{if !empty($tdata['clbpara']['skill'])}-->
+					<td class="b2" height=20px>
+						<span>战斗技能</span>
+					</td>
+					<td class="b3">
+						<span><input type="button" class="cmdbutton" value="点击查看NPC技能" onclick="showModalDialog($('enemy_skillpage'));"></span>
+					</td>
+				<!--{/if}-->
 				</tr>
 			</table>
 		</td>
@@ -116,3 +122,37 @@
 		</td>
 	</tr>
 </TABLE>
+
+<!--{if !empty($tdata['clbpara']['skill'])}-->
+<dialog id="enemy_skillpage" style="width: 568px; max-width: 90%;max-height: 80%;">
+
+	<p style="margin-left:0px; margin-top:0px; margin-right:0px; margin-bottom:0px;">
+		以下是<span class="yellow">{$typeinfo[$tdata['type']]} $tdata['name']</span>的的技能列表。
+		请注意描述文字中的<span class="yellow">“你”</span>指代的是这个NPC。
+		<br><br>
+		<table class="skilltable" style="width:559px">
+			<tr>
+				<td class="b1" width="40">
+					<span>名称</span>
+				</td>
+				<td class="b1">
+					<span>技能详情</span>
+				</td>
+			</tr>
+			<!--{eval $uidata = $tdata; $no_skill_input = 1;}-->
+			<!--{loop $uidata['clbpara']['skill'] $sknm}-->
+				<!--{if !get_skilltags($sknm,'player')}-->
+				<!--{eval $skdata = init_clubskillsdata($sknm,$uidata);}-->
+					<!--{if is_array($skdata)}-->
+						<!--{eval include template($skdata[0]);}-->
+					<!--{elseif !empty($skdata)}-->
+						<!--{eval $skid = $skdata;include template('skill_temp');}-->
+					<!--{/if}-->
+				<!--{/if}-->
+			<!--{/loop}-->
+		</table>
+		<br>提示：点击技能界面外任意位置或按ESC键即可关闭窗口<br>
+	</p>
+	<img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('enemy_skillpage'));this.disabled=true;">
+</dialog>
+<!--{/if}-->

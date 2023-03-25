@@ -7,6 +7,7 @@
 		<td class="b1"><span>当前金钱数</span></td>
 		<td class="b1"><span>APM</span></td>
 		<!--{if $gamestate < 40 }--><td class="b1"><span>队伍名</span></td><!--{/if}-->
+		<!--{if $gamestate < 40 }--><td class="b1"><span>队伍头像</span></td><!--{/if}-->
 		<td width="300" class="b1"><span>口头禅</span></td>
 		<td class="b1"><span>胜率</span></td>
 		<!--{if $gamblingon }--><td class="b1"><span>支持者数</span></td>
@@ -23,6 +24,7 @@
 		<td class="b3"><span>$alive['money']</span></td>
 		<td class="b3"><span>$alive['apm']</span></td>
 		<!--{if $gamestate < 40 }--><td class="b3"><span><!--{if $alive['teamID']}-->$alive['teamID']<!--{else}-->无<!--{/if}--></span></td><!--{/if}-->
+		<!--{if $gamestate < 40 }--><td class="b3"><span><!--{if $alive['teamID']}--><img src="img/t_{$alive['teamIcon']}.gif" alt="0" style="max-height: 80px;"><!--{else}-->无<!--{/if}--></span></td><!--{/if}-->
 		<td class="b3"><span>$alive['motto']</span></td>
 		<td class="b3"><span>$alive['winrate']</span></td>
 		<!--{if $gamblingon }--><td class="b3"><span>$alive['gbnum']</span></td>

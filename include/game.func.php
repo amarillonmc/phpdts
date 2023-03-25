@@ -316,9 +316,11 @@ function init_battle_rev($pa,$pd,$ismeet=0)
 
 function init_bgm($force_update=0)
 {
-	global $pls,$command,$clbpara,$gamecfg,$bgmname;
+	global $command,$gamecfg,$bgmname;
 	global $default_volume,$event_bgm,$pls_bgm,$parea_bgm,$regular_bgm,$bgmbook,$bgmlist;
-	//include config('audio',$gamecfg);
+	
+	global $pdata;
+	extract($pdata,EXTR_REFS);
 	$clbpara = get_clbpara($clbpara);
 
 	# 初始化
@@ -392,13 +394,13 @@ function init_bgm($force_update=0)
 		if(!empty($bgmlink) && !empty($bgmtype))
 		{
 $bgmplayer = <<<EOT
-			<audio id="gamebgm" autoplay controls=1">
+			<audio id="gamebgm" autoplay controls=1" onplay="$('gamebgm').volume=$('nowbgmvolume').innerHTML;">
 				<source id="gbgm" src="$bgmlink" type="$bgmtype">
 			</audio>
 			<div id="bgmlist">$json_bgmarr</div>
 			<div id="nowbgm">0</div>
+			<div id="nowbgmvolume">$volume_r</div>
 			<script>
-				$('gamebgm').volume = $volume_r;
 				gamebgm.addEventListener('ended', function () {
 					changeBGM();
 				}, false);

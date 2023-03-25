@@ -983,6 +983,8 @@
 			$obbs = 1 - $specialrate['B'];
 			# 「天义」效果判定：
 			if(isset($pa['skill_c6_justice'])) $obbs *= get_skillvars('c6_justice','pdefbkr');
+			# 「暗杀」效果判定：
+			if(isset($pa['skill_buff_assassin'])) $obbs += get_skillvars('buff_assassin','pdefbkr');
 			//检查抹消属性是否生效
 			if($dice > $obbs)
 			{
@@ -1011,6 +1013,8 @@
 			$obbs = 10;
 			# 「天义」效果判定：
 			if(isset($pa['skill_c6_justice'])) $obbs *= get_skillvars('c6_justice','pdefbkr');
+			# 「暗杀」效果判定：
+			if(isset($pa['skill_buff_assassin'])) $obbs += get_skillvars('buff_assassin','pdefbkr');
 			//检查防御属性是否生效
 			if($dice > $obbs)
 			{
@@ -1030,6 +1034,8 @@
 			$obbs = 10;
 			# 「天义」效果判定：
 			if(isset($pa['skill_c6_justice'])) $obbs *= get_skillvars('c6_justice','pdefbkr');
+			# 「暗杀」效果判定：
+			if(isset($pa['skill_buff_assassin'])) $obbs += get_skillvars('buff_assassin','pdefbkr');
 			if($dice > $obbs)
 			{
 				$pd['phy_def_flag'] = $def_kind[$pa['wep_kind']];
@@ -1044,7 +1050,11 @@
 		if(in_array('n',$pa['ex_keys'])) 
 		{
 			$dice = diceroll(99);
-			if($dice < $specialrate['n'])
+			# 未贯穿率
+			$obbs = 1 - $specialrate['n'];
+			# 「暗杀」效果判定：
+			if(isset($pa['skill_buff_assassin'])) $obbs += get_skillvars('buff_assassin','pdefbkr');
+			if($dice > $obbs)
 			{
 				if(!empty($pd['phy_def_flag']))
 				{
@@ -1245,6 +1255,20 @@
 		}
 		# 「磁暴」效果判定：
 		if(isset($pa['bskill_c7_electric']) && (empty($ex_keys) || !in_array('e',$ex_keys))) $ex_keys[] = 'e';
+		# 「渗透」效果判定：
+		if(isset($pa['skill_c8_infilt']))
+		{
+			$sk_lvl = get_skilllvl('c8_infilt',$pa);
+			$sk_keys = get_skillvars('c8_infilt','exext',$sk_lvl);
+			if(!empty($sk_keys))
+			{
+				do{
+					$ex_keys[] = 'p';
+					$sk_keys--;
+				}while($sk_keys);
+				$log .= "<span class='purple'>致命毒雾从{$pa['nm']}身遭蔓延开来……</span><br>";
+			}
+		}
 		return $ex_keys;
 	}
 
@@ -1257,8 +1281,12 @@
 		if(in_array('b',$pd['ex_keys']))
 		{
 			$dice = diceroll(99);
+			# 失效率
+			$obbs = 1 - $specialrate['b'];
+			# 「暗杀」效果判定：
+			if(isset($pa['skill_buff_assassin'])) $obbs += get_skillvars('buff_assassin','pdefbkr');
 			//检查抹消属性是否生效
-			if($dice < $specialrate['b'])
+			if($dice > $obbs)
 			{
 				#「脉冲」效果判定：
 				if(isset($pa['bskill_c7_emp']) || isset($pd['bskill_c7_emp']))
@@ -1281,7 +1309,11 @@
 		if(!isset($pd['ex_def_flag']) && in_array('a',$pd['ex_keys']))
 		{
 			$dice = diceroll(99);
-			if($dice < 90)
+			# 失效率
+			$obbs = 10;
+			# 「暗杀」效果判定：
+			if(isset($pa['skill_buff_assassin'])) $obbs += get_skillvars('buff_assassin','pdefbkr');
+			if($dice > $obbs)
 			{
 				$pd['ex_def_flag'] =  1;
 			}
@@ -1298,8 +1330,11 @@
 			{
 				if(in_array($ex_def_kind[$ex],$pd['ex_keys']))
 				{
-					$dice = diceroll(99);
-					if($dice < 90) $pd['ex_def_flag'][] = $ex; //单项防御生效，加入队列
+					# 失效率
+					$obbs = 10;
+					# 「暗杀」效果判定：
+					if(isset($pa['skill_buff_assassin'])) $obbs += get_skillvars('buff_assassin','pdefbkr');
+					if($dice > $obbs) $pd['ex_def_flag'][] = $ex; //单项防御生效，加入队列
 					else $invaild_ex[]= $ex; //单项防御未生效，记录一下，之后统一输出提示文本
 				}
 			}
@@ -1320,7 +1355,11 @@
 		if(in_array('y',$pa['ex_keys'])) 
 		{
 			$dice = diceroll(99);
-			if ($dice < $specialrate['y']) 
+			# 未破格率
+			$obbs = 1 - $specialrate['y'];
+			# 「暗杀」效果判定：
+			if(isset($pa['skill_buff_assassin'])) $obbs += get_skillvars('buff_assassin','pdefbkr');
+			if ($dice > $obbs) 
 			{
 				if(!empty($pd['ex_def_flag']))
 				{
@@ -1453,6 +1492,15 @@
 			$log.="<span class='yellow'>「高能」使{$pa['nm']}造成的爆炸伤害不受影响！</span><br>";
 			return $ex_dmg;
 		}
+		# 「死疗」效果判定（不会受其他技能加成）：
+		if(isset($pd['skill_c8_deadheal']) && $ex == 'p')
+		{
+			$sk_p = get_skillvars('c8_deadheal','exdmgr');
+			$ex_dmg = min($pd['mhp']-$pd['hp'],ceil($ex_dmg*($sk_p/100)));
+			$pd['hp'] += $ex_dmg;
+			$log .= "<span class='purple'>{$pd['nm']}从毒雾中汲取养分，恢复了<span class='lime'>{$ex_dmg}</span>点生命！</span><br>";
+			return 0;
+		}
 		//计算社团技能对单个属性伤害的系数补正
 		$ex_dmg *= get_clbskill_ex_base_dmg_r($pa,$pd,$active,$ex);
 		//计算社团技能对单个属性伤害的补正
@@ -1470,6 +1518,11 @@
 			$ex_dmg = round($ex_dmg*0.5);
 			$pa['ex_dmgdef_log'] = 1;
 		}
+		# 「催化」效果计数：
+		if(isset($pa['bskill_c8_catalyst']) && $ex == 'p')
+		{
+			$pa['bskill_c8_catalyst'] ++;
+		}
 		return $ex_dmg;
 	}
 
@@ -1478,7 +1531,7 @@
 	{
 		global $log;
 		$ex_dmg_p = Array();
-		#「咆哮」判定：
+		# 「咆哮」判定：
 		if(isset($pa['bskill_c4_roar']))
 		{
 			//获取倍率
@@ -1487,6 +1540,29 @@
 			$ex_dmg_p[]= $p; 
 			//输出log
 			$log.="<span class='yellow'>「咆哮」使{$pa['nm']}造成的属性伤害提高了{$sk_p}%！</span><br>";
+		}
+		# 「特攻」判定：
+		if(isset($pa['skill_c8_expert']))
+		{
+			$sk_lvl = get_skilllvl('c8_expert',$pa);
+			$sk_p = get_skillvars('c8_expert','exdmgr',$sk_lvl);
+			if(!empty($sk_p))
+			{
+				$p = 1 + ($sk_p / 100);
+				$ex_dmg_p[]= $p; 
+			}
+		}
+		# 「催化」判定：
+		if(isset($pa['bskill_c8_catalyst']))
+		{
+			$sk_nums = $pa['bskill_c8_catalyst']-1;
+			if(!empty($sk_nums))
+			{
+				$sk_p = get_skillvars('c8_catalyst','exdmgr')*$sk_nums;
+				$p = 1 + ($sk_p / 100);
+				$ex_dmg_p[]= $p; 
+				$log.="<span class='yellow'>「催化」使{$pa['nm']}造成的属性伤害提高了{$sk_p}%！</span><br>";
+			}
 		}
 		return $ex_dmg_p;
 	}
@@ -1622,7 +1698,13 @@
 		if(in_array('h',$pd['ex_keys']) && $fin_dmg>=1950)
 		{
 			$dice = diceroll(99);
-			if ($dice < 90) 
+			// 失效率
+			$obbs = 10;
+
+			# 「暗杀」效果判定
+			if(isset($pa['skill_buff_assassin'])) $obbs += get_skillvars('buff_assassin','pdefbkr');
+
+			if ($dice > $obbs) 
 			{
 				//贯穿与破格同时生效时 穿透伤害制御
 				if(isset($pa['ex_pierce_flag']) && isset($pa['pierce_flag']))
@@ -1754,6 +1836,7 @@
 			}
 		}
 
+		# 「磁暴」效果判定
 		if(isset($pa['bskill_c7_electric']))
 		{
 			if(strpos($pd['inf'],'e')!==false)
@@ -1782,6 +1865,7 @@
 			}
 		}
 
+		# 「脉冲」效果判定
 		if(isset($pa['bskill_c7_emp']) && $pa['bskill_c7_emp'] > 1)
 		{
 			if(strpos($pd['inf'],'e')!==false)
@@ -1798,6 +1882,26 @@
 			{
 				$flag = get_inf_rev($pd,'e');
 				$log .= "<span class='yellow'>「脉冲」使{$pd['nm']}{$exdmginf['e']}了！</span><br>";
+			}
+		}
+
+		# 「渗透」效果判定
+		if(isset($pa['skill_c8_infilt']))
+		{
+			$sk_lvl = get_skilllvl('c8_infilt',$pa);
+			$infr = get_skillvars('c8_infilt','infr',$sk_lvl);
+			$dice = diceroll(99);
+			if($dice < $infr)
+			{
+				$flag = get_inf_rev($pd,'p');
+				include_once GAME_ROOT.'./include/game/itemmain.func.php';
+				check_item_edit_event($pd,'c8_infilt');
+				if($flag) $log .= "<span class='yellow'>「渗透」使{$pd['nm']}{$exdmginf['p']}了！</span><br>";
+				else $log .= "<span class='yellow'>{$pd['nm']}没有受到「渗透」影响……大概吧？</span><br>";
+			}
+			else
+			{
+				$log .= "<span class='yellow'>{$pd['nm']}没有受到「渗透」影响！</span><br>";
 			}
 		}
 

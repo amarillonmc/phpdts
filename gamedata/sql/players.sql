@@ -57,6 +57,7 @@ CREATE TABLE bra_players (
   `wf` smallint unsigned not null default '0',
   `teamID` char(40) not null default '',
   `teamPass` char(40) not null default '',
+  `teamIcon` smallint unsigned NOT NULL default '0',
   getitem text NOT NULL default '',
   itembag text NOT NULL default '',
   itmnum smallint unsigned NOT NULL default '0',
