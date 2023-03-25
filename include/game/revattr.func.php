@@ -677,7 +677,7 @@
 	//获取pd的防御力与修正
 	function get_base_def(&$pa,&$pd,$active,$tooltip=0)
 	{
-		global $specialrate,$log;
+		global $specialrate,$log,$cskills;
 		if(!isset($pd['wep_kind'])) get_wep_kind($pd);
 		# pd基础防御力：
 		$base_def = $pd['def'];
@@ -703,7 +703,6 @@
 		# 「格挡」技能加成
 		if(!check_skill_unlock('c1_def',$pd))
 		{
-			global $cskills;
 			$def_trans_rate = $cskills['c1_def']['vars']['trans'];
 			$def_maxtrans = $cskills['c1_def']['vars']['maxtrans'];
 			$sk_def = min($def_maxtrans, $def_trans_rate * $pd['wepe'] / 100);
@@ -718,7 +717,7 @@
 		{
 			$tooltip = "<span tooltip=\" 基础防御值：{$base_def}+{$equip_def}";
 			if(!empty($def1)) $tooltip .="+{$def1}";
-			if(!empty($sk_def)) $tooltip .="\r「格挡」：+{$sk_def}";
+			if(!empty($sk_def)) $tooltip .="\r技能加成：+{$sk_def}";
 			$tooltip .= "\r";
 		}
 		# 计算防御力修正
@@ -767,9 +766,16 @@
 			rev_get_clubskill_bonus_p($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$attfac,$deffac);
 			$club_def_per *= $deffac;
 		}*/
-
+		# 计算社团技能对pd防御力的修正（新）	
+		#「根性」技能加成
+		if(!check_skill_unlock('c12_garrison',$pd))
+		{
+			$sk_lvl = get_skilllvl('c12_garrison',$pd);
+			$sk_var = 100+round(get_skillvars('c12_garrison','defgain',$sk_lvl) * calc_garrison_losshpr($pa,$pd));
+		}
 		# 汇总
 		$total_def = round($total_def*($base_def_per/100)*($inf_def_per/100));
+		if(isset($sk_var)) $total_def = round($total_def*($sk_var/100));
 		$total_def = max(0.01,$total_def);
 
 		if($tooltip)
@@ -777,6 +783,7 @@
 			$tooltip .= "天气修正：{$wth_def_per}% \r 地点修正：{$pls_def_per}% \r 姿态修正：{$pose_def_per}% \r 策略修正：{$tac_def_per}%";
 			if($inf_def_per <> 100) $tooltip .=" \r 异常状态修正：{$inf_def_per}%";
 			//if($club_def_per <> 100) $tooltip .=" \r 称号技能修正：{$club_def_per}%";
+			if(isset($sk_var)) $tooltip .=" \r 技能修正：".($sk_var-100)."%";
 			$tooltip .="\">".$total_def."</span>";
 			return $tooltip;
 		}
@@ -1637,6 +1644,18 @@
 				$fin_dmg_p[] = $sk_p;
 			}
 		}
+		# 「底力」效果判定：
+		if(isset($pa['skill_c12_enmity']))
+		{
+			$sk_lvl = get_skilllvl('c12_enmity',$pa);
+			$sk_p = round(get_skillvars('c12_enmity','findmgr',$sk_lvl) * calc_enmity_losshpr($pa,$pd));
+			if($sk_p > 5)
+			{
+				$p = 1+($sk_p / 100);
+				$log.= "<span class='yellow'>「底力」使{$pa['nm']}造成的最终伤害提高了{$sk_p}%！</span><br>";
+				$fin_dmg_p[] = $p;
+			}
+		}
 
 		# 书中虫防守事件：移动到最终伤害系数变化阶段了
 		if($pd['type'] == 89 && ($pd['name'] == '高中生·白神' || $pd['name'] == '白神·讨价还价'))
@@ -1750,6 +1769,20 @@
 			{
 				$fin_dmg += $rp_dmg;
 				$log .= "<span class=\"yellow\">在「剔透」的作用下，敌人受到了<span class=\"red\">$rp_dmg</span>点额外伤害。</span><br>";
+			}
+		}
+
+		# 「狂怒」效果判定：
+		if(isset($pa['bskill_c12_rage']))
+		{
+			$sk_dmg = round($pa['mhp']*0.25); 
+			$pa['hp'] -= $sk_dmg;
+			$sk_vars = get_skillvars('c12_enmity','findmgr',get_skilllvl('c12_enmity',$pa)) * calc_enmity_losshpr($pa,$pd);
+			if($sk_vars > 1) $sk_dmg = round($sk_dmg *(1 + ($sk_vars/100)));
+			if($sk_dmg > 0)
+			{
+				$fin_dmg += $sk_dmg;
+				$log .= "<span class=\"yellow\">{$pa['nm']}燃烧生命打出了狂怒一击！附加了<span class=\"red\">$sk_dmg</span>点额外伤害！</span><br>";
 			}
 		}
 
@@ -2314,11 +2347,19 @@
 	{
 		global $log;
 		$loop = 0;
-		#「双响」效果判定
+		# 「双响」效果判定
 		if(isset($pa['bskill_c5_double']))
 		{
 			unset($pa['bskill_c5_double']);unset($pa['bskilllog']);
 			$log .= "<span class=\"yellow\">{$pa['nm']}引爆了预埋的另一组爆炸物！</span><br>";
+			$loop = 1;
+		}
+		# 「海虎」效果判定
+		if(isset($pa['skill_c12_swell']))
+		{
+			$pa['skill_c12_swell'] --;
+			if(empty($pa['skill_c12_swell'])) unset($pa['skill_c12_swell']);
+			$log .= "<span class=\"lime\">{$pa['nm']}以雷霆万钧之势再度袭向{$pd['nm']}！</span><br>";
 			$loop = 1;
 		}
 		return $loop;

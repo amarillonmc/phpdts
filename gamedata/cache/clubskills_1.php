@@ -17,11 +17,11 @@ $club_skillslist = Array
 	9  => Array('s_hp','s_ad','f_heal','c9_spirit','c9_lb','c9_iceheart','c9_charge','c9_heartfire'), #'超能力者',
 	10 => Array('s_hp','s_ad','f_heal','c10_inspire','c10_insight','c10_decons'), #'天赋异禀', //高速成长与天赋异禀合并为天赋异禀
 	11 => Array('s_hp','s_ad','f_heal'), #'富家子弟',
-	12 => Array('s_hp','s_ad','f_heal'), #'全能骑士',
-	13 => Array('s_hp','s_ad','f_heal'), #'根性兄贵',
-	14 => Array('s_hp','s_ad','f_heal'), #'肌肉兄贵',
+	12 => Array('s_hp','s_ad','f_heal','c12_huge','c12_enmity','c12_garrison','c12_rage','c12_bloody','c12_swell'), #'全能兄贵', //根性兄贵、肌肉兄贵、全能骑士合并为全能兄贵
+	//13 => Array('s_hp','s_ad','f_heal'), #'根性兄贵',
+	//14 => Array('s_hp','s_ad','f_heal'), #'肌肉兄贵',
 	15 => Array('f_heal'), #'<span class="L5">L5状态</span>',
-	16 => Array('s_hp','s_ad','f_heal'), #'全能骑士',
+	//16 => Array('s_hp','s_ad','f_heal'), #'全能骑士',
 	17 => Array('f_heal'), #'走路萌物',
 	//18 => Array('s_hp','s_ad','f_heal'), #'天赋异禀',
 	19 => Array('s_hp','s_ad','f_heal'), #'晶莹剔透',
@@ -112,7 +112,7 @@ $cskills = Array
 		'status' => Array('hp','mhp'),
 		'effect' => Array(
 			0 => Array( 'hp' => '+=::3', 'mhp' => '+=::3',), 
-			13 => Array( 'hp' => '+=::6', 'mhp' => '+=::6',), 
+			12 => Array( 'hp' => '+=::6', 'mhp' => '+=::6',), 
 		),
 	),
 	's_ad' => Array
@@ -127,7 +127,7 @@ $cskills = Array
 		'status' => Array('att','def'),
 		'effect' => Array(
 			0 => Array('att' => '+=::4', 'def' => '+=::6'),
-			14 => Array('att' => '+=::9', 'def' => '+=::12'),
+			12 => Array('att' => '+=::9', 'def' => '+=::12'),
 		),
 	),
 	'f_heal' => Array
@@ -1427,7 +1427,7 @@ $cskills = Array
 		'cost' => Array(4,5,7,9,11,14,17,20,-1),
 		'input' => '思考',
 		'log' => '……<br>',
-		'choice' => Array(1,2,3,4,5,6,7,8,9), //无效果/重视遇敌/重视探物
+		'choice' => Array(1,2,3,4,5,6,7,8,9,12), //无效果/重视遇敌/重视探物
 		'clog' => '<span class="yellow">切换了选定称号。</span><br>',
 		'events' => Array('inspire'),
 		'status' => Array('skillpara|c10_inspire-lvl'),
@@ -1479,6 +1479,113 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 3',
+		),
+	),
+	'c12_huge' => Array
+	(
+		'name' => '瞩目',
+		'tags' => Array('passive'),
+		'desc' => '你对敌人的隐蔽率<span class="yellow">-[:hidegain:]%</span>；敌人对你的隐蔽率<span class="yellow">-[:hideloss:]%</span>',
+		'vars' => Array(
+			'hidegain' => 100, 
+			'hideloss' => 75,
+		),
+	),
+	'c12_enmity' => Array
+	(
+		'name' => '底力',
+		'tags' => Array('passive'),
+		'desc' => '当前生命值越低，你造成的最终伤害越高<br>
+		最终伤害增幅：<span class="yellow">[:findmgr:]%</span>×<span class="gold" tooltip2="底力系数计算公式：(1+2×已损失生命百分比)×已损失生命百分比">底力系数</span>',
+		'maxlvl' => 6,
+		'cost' => Array(1,1,2,2,2,3,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">「底力」升级成功。</span><br>',
+		'status' => Array('skillpara|c12_enmity-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c12_enmity-lvl' => '+=::1',),
+		),
+		'svars' => Array('lvl' => 0),
+		'vars' => Array(
+			'findmgr' => Array(10,15,20,25,35,45,55),
+		),
+	),
+	'c12_garrison' => Array
+	(
+		'name' => '根性',
+		'tags' => Array('passive'),
+		'desc' => '当前生命值越低，基础防御力越高<br>
+		基础防御力增幅：<span class="yellow">[:defgain:]%</span>×<span class="gold" tooltip2="根性系数计算公式：(-1×已损失生命百分比^3)+4×已损失生命百分比">根性系数</span>',
+		'maxlvl' => 8,
+		'cost' => Array(2,2,2,3,4,5,7,11,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">「底力」升级成功。</span><br>',
+		'status' => Array('skillpara|c12_garrison-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c12_garrison-lvl' => '+=::1',),
+		),
+		'svars' => Array('lvl' => 0),
+		'vars' => Array(
+			'defgain' => Array(19,24,29,34,42,52,63,75,90),
+		),
+	),
+	'c12_rage' => Array
+	(
+		'name' => '狂怒',
+		'tags' => Array('battle'),
+		'desc' => '消耗相当于<span class="red">[:hpcost:]%</span>生命上限的生命值，<br>
+		附加等于<span class="yellow">所消耗生命值</span>且受<span class="yellow">「底力」</span>加成的最终伤害<br>
+		发动需消耗<span class="yellow">[:ragecost:]</span>点怒气',
+		'bdesc' => '消耗<span class="red">[:hpcost:]%</span>生命值，附加等于消耗值且受<span class="yellow">「底力」</span>加成最终伤害；发动需消耗<span class="red">[:ragecost:]</span>怒气',
+		'vars' => Array(
+			'ragecost' => 50,
+			'hpcost' => 25, 
+		),
+		'lockdesc' => Array(
+			'lvl' => '7级时解锁',
+			'hp+mhp' => '生命值在<span class="red">25%</span>以上时可发动',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 7',
+			'hp+mhp' => '[:hp:] > [:mhp:]*0.25',
+		),
+	),
+	'c12_bloody' => Array
+	(
+		'name' => '浴血',
+		'tags' => Array('passive'),
+		'desc' => '在生命值低于<span class="yellow">75%/50%/30%</span>生命上限的情况下，<br>
+		击杀敌人增加<span class="yellow">2/3/11</span>点基础攻击与<span class="yellow">4/5/15</span>点基础防御',
+		'vars' => Array(
+			'hplimit' => Array(75,50,30),
+			'attgain' => Array(2,3,11),
+			'defgain' => Array(4,5,15),
+		),
+		'lockdesc' => Array(
+			'lvl' => '13级时解锁',
+			'hp+mhp' => '生命值低于<span class="red">75%</span>时可触发',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 13',
+			'hp+mhp' => '[:hp:] <= [:mhp:]*0.75',
+		),
+	),
+	'c12_swell' => Array
+	(
+		'name' => '海虎',
+		'tags' => Array('passive'),
+		'desc' => '在生命值低于<span class="yellow">50%/30%</span>生命上限的情况下，<br>
+		有<span class="yellow">[:swellr:]%×</span><span class="gold" tooltip2="底力系数计算公式：(1+2×已损失生命百分比)×已损失生命百分比">底力系数</span>概率连续造成<span class="yellow">2/3</span>次攻击',
+		'vars' => Array(
+			'swellr' => 19,
+		),
+		'lockdesc' => Array(
+			'lvl' => '21级时解锁',
+			'hp+mhp' => '生命值低于<span class="red">50%</span>时可触发',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 21',
+			'hp+mhp' => '[:hp:] <= [:mhp:]*0.5',
 		),
 	),
 	'tl_cstick' => Array

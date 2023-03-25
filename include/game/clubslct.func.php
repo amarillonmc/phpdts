@@ -45,8 +45,8 @@ function getclub($who, &$c1, &$c2, &$c3)
 	$c3=calc(11131,6397,$curgid,$curuid,$curpid,$starttime,$validtime);
 	//$clubid = array(6,7,8,99,10,11,13,14,16,18,19,7,99,13,14,18,6,19,13,14,18);
 	//$c3%=21; $c3=$clubid[$c3];
-	$clubid = array(6,7,8,99,10,11,13,14,16,19,7,99,13,14,18,6,19,13,14);
-	$c3%=19; $c3=$clubid[$c3];
+	$clubid = array(6,7,8,10,11,12,19,99,6,7,8,10,11,12,19,99);
+	$c3%=16; $c3=$clubid[$c3];
 	if ($c1==$c3 || $c2==$c3) $c3=99;
 
 	if ($c1>$c2) swap($c1,$c2);
@@ -82,9 +82,10 @@ function updateskill(&$data=NULL)
 	if ($club==5) $wd+=50;
 	if ($club==9) $wf+=40;
 	if ($club==11) $money+=680;
-	if ($club==16) { $wp+=25; $wk+=25; $wc+=25; $wg+=25; $wd+=25; $wf+=25; }
+	if ($club==12) {$wp+=25; $wk+=25; $wc+=25; $wg+=25; $wd+=25; $wf+=25; $mhp+=250; $hp+=250; $att+=300; $def+=300;}
+	/*if ($club==16) { $wp+=25; $wk+=25; $wc+=25; $wg+=25; $wd+=25; $wf+=25; }
 	if ($club==13) { $mhp+=250; $hp+=250; }
-	if ($club==14) { $att+=300; $def+=300; }
+	if ($club==14) { $att+=300; $def+=300; }*/
 	
 	# 变更社团时 获取社团技能
 	//include_once GAME_ROOT.'./include/game/revclubskills.func.php';

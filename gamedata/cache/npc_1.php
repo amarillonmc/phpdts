@@ -1456,7 +1456,7 @@ $npcinfo = array
 			(
 			'name' => '卡',
 			'icon' => 10,
-			'club' => 13,
+			'club' => 12,
 			'wep' => '【不屈的意志】',
 			'wepk' => 'WF',
 			'wepe' => 140,
@@ -1549,7 +1549,7 @@ $npcinfo = array
 			(
 			'name' => '超魔理沙-电子',
 			'icon' => 10,
-			'club' => 14,
+			'club' => 12,
 			'wep' => '【荆棘式电子地雷】',
 			'wepk' => 'WP',
 			'wepe' => 240,
@@ -1755,7 +1755,7 @@ $npcinfo = array
 			(
 			'name' => 'tabris',
 			'icon' => 10,
-			'club' => 13,
+			'club' => 12,
 			'wep' => '十二试炼',
 			'wepk' => 'WC',
 			'wepe' => 400,

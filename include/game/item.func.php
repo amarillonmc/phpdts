@@ -132,8 +132,8 @@ function itemuse($itmn,&$data=NULL) {
 		//global $sp, $msp,$club;
 		if ($sp < $msp) {
 			$oldsp = $sp;
-			if($club == 16){
-				$spup = round($itme*2.5);
+			if($club == 12){
+				$spup = round($itme*1.25);
 			}else{
 				$spup = $itme;
 			}
@@ -158,8 +158,8 @@ function itemuse($itmn,&$data=NULL) {
 		//global $hp, $mhp,$club;
 		if ($hp < $mhp) {
 			$oldhp = $hp;
-			if($club == 16){
-				$hpup = round($itme*2.5);
+			if($club == 12){
+				$hpup = round($itme*1.25);
 			}else{
 				$hpup = $itme;
 			}
@@ -216,8 +216,8 @@ function itemuse($itmn,&$data=NULL) {
 	} elseif (strpos ( $itmk, 'HB' ) === 0) {
 		//global $hp, $mhp, $sp, $msp,$club;
 		if (($hp < $mhp) || ($sp < $msp)) {
-			if($club == 16){
-				$bpup = round($itme*2.5);
+			if($club == 12){
+				$bpup = round($itme*1.25);
 			}else{
 				$bpup = $itme;
 			}
