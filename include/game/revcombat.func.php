@@ -143,8 +143,10 @@
 		# 初始化双方的真实攻击方式wep_kind，传入了攻击方式/主动技的情况下，在这里判断传入参数的合法性。
 		get_wep_kind($pd); 
 		$pd['wep_range'] = get_wep_range($pd);
+		$pd['wep_skill'] = get_wep_skill($pd);
 		get_wep_kind($pa,$wep_kind,$pd['wep_range']); 
 		$pa['wep_range'] = get_wep_range($pa);
+		$pa['wep_skill'] = get_wep_skill($pa);
 
 		# 传入pa为玩家、pd为NPC，且存在鏖战/追击标志时，判断战斗流程类型（标准/追击/鏖战/协战）
 		if(!$pa['type'] && $pd['type'] && (strpos($pa['action'],'dfight')!==false || strpos($pa['action'],'chase')!==false))
@@ -711,7 +713,7 @@
 		if(!empty($pa['wep_imp_times'])) weapon_loss($pa,$pa['wep_imp_times']);
 		//发出声音
 		addnoise ( $pa['wep_kind'], $pa['wepsk'], $now, $pa['pls'], $pa['pid'], $pd['pid'], $pa['wep_kind'] );
-		//增加熟练度
+		//增加熟练度 //天赋异禀攻击时额外+1熟练度
 		$pa[$skillinfo[$pa['wep_kind']]] += $pa['club'] == 10 ? 2 : 1;
 		//print_r($pa);
 		return $damage;
@@ -1096,6 +1098,12 @@
 		{
 			#「反思」技能效果
 			if(isset($pa['skill_c5_review'])) $expup = 1;
+		}
+		if(isset($pa['bskill_c10_decons']) && $pa['final_damage'] > $pd['hp'])
+		{
+			$sk_up = ceil($pd['lvl'] - ($pa['lvl']*0.15));
+			$log.='<span class="yellow">「解构」使'.$pa['nm'].'获得了额外'.$sk_up.'点经验！</span><br>';
+			$expup += $sk_up;
 		}
 		if(!empty($expup)) $pa['exp'] += $expup;
 		//$log .= "$isplayer 的经验值增加 $expup 点<br>";

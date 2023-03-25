@@ -9,7 +9,15 @@
 	# 升级指定技能会触发的事件，返回0时代表无法升级技能
 	function upgclbskills_events($event,$sk,&$data=NULL)
 	{
-		global $log,$cskills,$clbpara,$name,$now;
+		global $log,$cskills,$now,$club_skillslist;
+
+		if(!isset($data))
+		{
+			global $pdata;
+			$data = &$pdata;
+		}
+		extract($data,EXTR_REFS);
+
 		# 事件：激活技能
 		if($event == 'active_news')
 		{
@@ -20,7 +28,6 @@
 		if($event == 'heal')
 		{
 			# 事件效果：回复满生命、体力，并清空所有异常状态
-			global $hp,$mhp,$sp,$msp,$inf;
 			$heal_flag = 0;
 			if(!empty($inf))
 			{
@@ -44,19 +51,18 @@
 		# 事件：怒气充能
 		if($event == 'charge')
 		{
-			global $rage;
 			if($rage >= 255)
 			{
 				$log .= "你不需要使用这个技能！<br>";
 				return 0;
 			}
-			$rage = min(255,$rage + get_skillvars('c9_charge','rageadd'));
+			$rage = min(255,$rage + get_skillvars($sk,'rageadd'));
 			// 检查当前技能使用次数
-			$active_t = get_skillpara('c9_charge','active_t',$clbpara);
+			$active_t = get_skillpara($sk,'active_t',$clbpara);
 			// 第3次使用时开始冷却
-			if($active_t+1 > get_skillvars('c9_charge','freet'))
+			if($active_t+1 > get_skillvars($sk,'freet'))
 			{
-				$event = 'setstarttimes_c9_charge';
+				$event = 'setstarttimes_'.$sk.'_charge';
 			}
 			else 
 			{
@@ -69,6 +75,38 @@
 			include_once GAME_ROOT.'./include/game/item2.func.php';
 			newradar(2);
 			return 1;
+		}
+		# 事件：灵感
+		if($event == 'inspire')
+		{
+			# 事件效果：随机获取一个选定社团的技能……嗯……
+			$sk_c = get_skillpara($sk,'choice',$data['clbpara']);
+			$sk_list = $club_skillslist[$sk_c];
+			if(!empty($sk_list))
+			{
+				do{
+					$get_skill = $sk_list[array_rand($sk_list)];
+				}while(get_skilltags($get_skill,'player'));
+				// 检查是否为未学习技能
+				$gsk_name = $cskills[$get_skill]['name'];
+				$log .= "你灵光一现，忽然想到了技能<span class='lime'>「{$gsk_name}」</span>的用法！<br>";
+				if(!in_array($get_skill,$data['clbpara']['skill']))
+				{
+					getclubskill($get_skill,$data['clbpara']);
+					addnews($now,'inssk_'.$get_skill,$name,$sk);
+				}
+				else
+				{
+					$log .= "但是你已经学过<span class='lime'>「{$gsk_name}」</span>了……<br>";
+					addnews($now,'inssk_failed',$name,$sk);
+				}
+				return 1;
+			}
+			else 
+			{
+				$log .= "所选称号无可学习技能，这可能是一个BUG，请联系管理员。<br>";
+			}
+			return 0;
 		}
 		# 事件：获取指定技能
 		if(strpos($event,'getskill_') === 0)

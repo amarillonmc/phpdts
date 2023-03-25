@@ -329,6 +329,15 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$bsk = substr($news,6);
 			$bname = $cskills[$bsk]['name'];
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}通过翻阅{$b}学会了技能<span class=\"lime\">「{$bname}」</span>！</span><br>\n";
+		} elseif(strpos($news,'inssk_')===0) {
+			$bsk = substr($news,6);
+			$skname = $cskills[$b]['name'];
+			if($bsk == 'failed'){
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}发动了「{$skname}」！但是什么也没学会……</span><br>\n";
+			}else {
+				$bname = $cskills[$bsk]['name'];
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}通过「{$skname}」学会了技能<span class=\"lime\">「{$bname}」</span>！</span><br>\n";
+			}
 		} else {
 			$newsinfo .= "<li>$time,$news,$a,$b,$c,$d<br>\n";
 		}

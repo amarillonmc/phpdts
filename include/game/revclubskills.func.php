@@ -97,14 +97,14 @@
 	}*/
 
 	# 升级指定技能 $sk：技能名；$nums：升级次数
-	function upgclbskills($sk,$nums=1,$choice=NULL)
+	function upgclbskills($sk,$nums=1)
 	{
 		global $log,$club,$clbpara,$skillpoint,$gamecfg,$now;
 		global $cskills,$pdata;
 		include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
 
 		# 合法性检查
-		$flag = check_can_upgclbskills($sk,$nums,$choice);
+		$flag = check_can_upgclbskills($sk,$nums);
 		if(!$flag) return;
 
 		# 获取技能信息
@@ -167,11 +167,6 @@
 				$clog = str_replace("[:{$snm}:]",$svars*$nums,$clog);
 			}
 		}
-		# 检查技能是否是要切换状态
-		if(isset($choice))
-		{
-			$clbpara['skillpara'][$sk]['choice'] = $choice;
-		}
 		# 扣除技能点
 		if(!empty($cost)) $skillpoint -= $cost;
 		$log .= $clog;
@@ -184,8 +179,60 @@
 		return;
 	}
 
+	# 切换指定技能选项
+	function switchclbskills($sk,$choice,&$data=NULL)
+	{
+		global $log,$cskills,$gamecfg,$now;
+		if(!isset($data))
+		{
+			global $pdata;
+			$data = &$pdata;
+		}
+		extract($data,EXTR_REFS);
+		include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
+
+		# 合法性检查
+		if(isset($choice) && !isset($cskills[$sk]['choice']))
+		{
+			$log.="该技能无法变更状态。";
+			return;
+		}
+		$lock_flag = check_skill_unlock($sk,$data);
+		if($lock_flag)
+		{
+			$log .= parse_skilllockdesc($sk,$lock_flag);
+			return;
+		}
+
+		# 获取技能信息
+		$cskill = $cskills[$sk];
+		# 获取技能升级后文本
+		$clog = isset($cskill['clog']) ? $cskill['clog'] : '状态变更成功！<br>';
+		# 检查技能是否是要切换状态
+		if(isset($choice))
+		{
+			if(in_array($choice,$cskills[$sk]['choice']))
+			{
+				$clbpara['skillpara'][$sk]['choice'] = $choice;
+			}
+			else 
+			{
+				$log.="状态参数非法。";
+				return;
+			}
+		}
+		$log .= $clog;
+		# 存在复选框的技能，升级后重载技能页面
+		if(empty($cskill['no_reload_page']))
+		{
+			global $opendialog;
+			$opendialog = 'skillpage';
+		}
+		return;
+	}
+
 	# 升级技能时的合法性检查
-	function check_can_upgclbskills($sk,$nums,$choice=NULL)
+	function check_can_upgclbskills($sk,$nums)
 	{
 		global $log,$gamecfg;
 		global $pdata,$club,$clbpara,$skillpoint;
@@ -204,11 +251,6 @@
 		if($nums!=1 && !isset($cskills[$sk]['num_input']))
 		{
 			$log.="该技能每次只能提升1级。";
-			return;
-		}
-		if(isset($choice) && !isset($cskills[$sk]['choice']))
-		{
-			$log.="该技能无法变更状态。";
 			return;
 		}
 		if(array_key_exists($sk,$cskills_wlist) && !in_array($club,$cskills_wlist[$sk]))
