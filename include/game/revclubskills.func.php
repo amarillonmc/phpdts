@@ -452,12 +452,19 @@
 	}
 
 	# 变更保存在clbpara['skillpara']内的指定技能参数
-	function set_skillpara($sk,$skpara,$skdata,&$para)
+	function set_skillpara($sk,$skpara,$skdata,&$para,$st='')
 	{
 		# 要有这个技能才能设置参数
 		if(in_array($sk,$para['skill']))
 		{
-			$para['skillpara'][$sk][$skpara] = $skdata;
+			if($st == 'arr')
+			{
+				$para['skillpara'][$sk][$skpara][] = $skdata;
+			}
+			else 
+			{
+				$para['skillpara'][$sk][$skpara] = $skdata;
+			}
 		}
 		return;
 	}

@@ -108,6 +108,47 @@
 			}
 			return 0;
 		}
+		# 事件：雇佣佣兵
+		if($event == 'hiremerc')
+		{
+			$mcost = get_skillvars($sk,'mcost');
+			$money -= $mcost;
+			$anpcinfo = get_addnpcinfo();
+			$mercinfo = $anpcinfo[25]['sub'];
+			# 获取佣兵出货概率
+			$tot = count($mercinfo);
+			$tp = 0;
+			for ($i=0; $i<$tot; $i++) $tp+=$mercinfo[$i]['probability'];
+			$dice = rand(1,$tp);
+			for ($i=0; $i<$tot; $i++)
+			{
+				if ($dice<=$mercinfo[$i]['probability'])
+				{
+					$merc = $i;
+					break;
+				}
+				else  $dice-=$mercinfo[$i]['probability'];
+			}
+			# 登记佣兵序号
+			$mid = get_skillpara($sk,'active_t',$clbpara);
+			# 召唤佣兵，并获取佣兵pid
+			include_once GAME_ROOT . './include/system.func.php';
+			$merc_pid = addnpc(25,$merc,1,$now,Array('clbpara' => Array('mkey' => $mid, 'oid' => $pid, 'onm' => $name)),NULL,$pls)[0];
+			# 初始化佣兵参数
+			$clbpara['skillpara'][$sk]['id'][$mid] = $merc_pid;
+			# 登记佣兵薪水
+			$clbpara['skillpara'][$sk]['paid'][$mid] = $mercinfo[$merc]['mercsalary'];
+			# 登记佣兵解雇后状态
+			$clbpara['skillpara'][$sk]['leave'][$mid] = $mercinfo[$merc]['mercfireaction'];
+			# 登记佣兵协战概率
+			$clbpara['skillpara'][$sk]['coverp'][$mid] = $mercinfo[$merc]['coverp'];
+			# 登记佣兵行动次数
+			$clbpara['skillpara'][$sk]['mms'][$mid] = 0;
+			# 检查佣兵能否协战（出生时在同一地图，默认可以协战）
+			$clbpara['skillpara'][$sk]['cancover'][$mid] = 1;
+			$log .= "你掏出千元大钞振臂一呼，「{$mercinfo[$merc]['name']}」突然出现在了你的面前！<br>";
+			return 1;
+		}
 		# 事件：获取指定技能
 		if(strpos($event,'getskill_') === 0)
 		{
@@ -240,6 +281,187 @@
 		set_skillpara(get_skillvars($csk,'disableskill'),'disable',1,$pdata['clbpara']);
 		$log .= "<span class='yellow'>已解锁技能「{$cskills[$csk]['name']}」！</span><br>";
 		return;
+	}
+	# 佣兵工资判定
+	function skill_merc_paid($sk,$mkey,&$mdata)
+	{
+		global $log,$now;
+		if(!isset($data))
+		{
+			global $pdata;
+			$data = &$pdata;
+		}
+		extract($data,EXTR_REFS);
+		# 需支付工资的行动次数
+		$mst = get_skillvars($sk,'mst'); 
+		# 佣兵当前行动次数+1
+		$mms = get_skillpara($sk,'mms',$clbpara)[$mkey]+1;
+		if($mms >= $mst)
+		{
+			# 应付工资
+			$paid = get_skillpara($sk,'paid',$clbpara)[$mkey];
+			# 有钱付工资
+			if($money >= $paid)
+			{
+				$mdata['money'] += $paid; $money -= $paid; 
+				$log .= "<span class='yellow'>花费了{$paid}元，向{$mdata['name']}(佣兵{$mkey}号)支付了工资。</span><br>";
+				$clbpara['skillpara'][$sk]['mms'][$mkey] = 0;
+				//成功支付佣金，信任度+3，最多不超过90
+				if($clbpara['skillpara'][$sk]['coverp'][$mkey] < 90) $clbpara['skillpara'][$sk]['coverp'][$mkey] += 3;
+			}
+			# 没钱要挨打
+			else 
+			{
+				$mdata['money'] += $money; $money = 0; $hp = 1;
+				player_save($mdata);
+				$log .= "<span class='yellow'>眼看又到了结账的时候，但你身上的钱不足以支付{$mdata['name']}(佣兵{$mkey}号)的工资……<br>被拖欠工资而恼羞成怒的佣兵狠揍了你一顿！并拿走了你所有剩下的钱！</span><br>";
+				include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
+				$log .= "<span clas='red'>由于欠薪，";
+				skill_merc_fire($sk,$mkey,$mdata,1);
+				return;
+			}
+		}
+		player_save($mdata);
+		return;
+	}
+	# 佣兵移动判定
+	function skill_merc_move($sk,$mkey,$moveto)
+	{
+		global $log,$plsinfo,$now;
+		if(!isset($data))
+		{
+			global $pdata;
+			$data = &$pdata;
+		}
+		extract($data,EXTR_REFS);
+		if(isset($clbpara['skillpara'][$sk]['id'][$mkey]))
+		{
+			# 获取佣兵编号
+			$mpid = get_skillpara($sk,'id',$clbpara)[$mkey];
+			# 获取佣兵数据
+			$mdata = fetch_playerdata_by_pid($mpid);
+			if($mdata['hp'] <= 0)
+			{
+				$log .= "{$mdata['name']}已经西去了！放过他吧！<br>";
+				return;
+			}
+			# 移动……？这个太扯了！
+			include_once GAME_ROOT.'./include/game/search.func.php';
+			//move($moveto,$mdata);
+			if(!check_can_move($mdata['pls'],$mdata['pgroup'],$moveto)) return;
+			# 计算移动花费 = 佣兵工资×2
+			$mpaid = get_skillvars($sk,'movep') * get_skillpara($sk,'paid',$clbpara)[$mkey];
+			if($money < $mpaid)
+			{
+				$log .= "你身上的钱不足以让佣兵离开岗位！<br>";
+				return;
+			}
+			$money -= $mpaid; 
+			$mdata['pls'] = $moveto;
+			addnews($now,'mercmove',$name,$mdata['name'],$moveto);
+			$log .= "花费了{$mpaid}元，你将{$mdata['name']}叫到了{$plsinfo[$moveto]}！<br>";
+			// 移动后佣兵失去追击焦点
+			if(!empty($mdata['clbpara']['mercchase'])) $mdata['clbpara']['mercchase'] = 0;
+			# 检查下工资情况
+			skill_merc_paid($sk,$mkey,$mdata);
+			player_save($mdata);
+			// 移动后佣兵行动次数+2
+			$clbpara['skillpara'][$sk]['mms'][$mkey] += get_skillvars($sk,'movep');
+			// 移动后重新检查佣兵是否可协战
+			$clbpara['skillpara'][$sk]['cancover'][$mkey] = $mdata['pls'] == $pls ? 1 : 0;
+		}
+		return;
+	}
+	# 解雇佣兵判定
+	function skill_merc_fire($sk,$mkey,&$mdata=NULL,$mlog=0)
+	{
+		global $log,$now;
+		if(!isset($data))
+		{
+			global $pdata;
+			$data = &$pdata;
+		}
+		extract($data,EXTR_REFS);
+		if(isset($clbpara['skillpara'][$sk]['id'][$mkey]))
+		{
+			# 判断离场事件
+			$mpid = get_skillpara($sk,'id',$clbpara)[$mkey];
+			$leave_flag = get_skillpara($sk,'leave',$clbpara)[$mkey];
+			$leave_desc = $leave_flag ? '直接离开了战场！' : '决定留在原地。';
+			# 清除对应的佣兵数据
+			unset($clbpara['skillpara'][$sk]['id'][$mkey]);
+			unset($clbpara['skillpara'][$sk]['paid'][$mkey]);
+			unset($clbpara['skillpara'][$sk]['leave'][$mkey]);
+			unset($clbpara['skillpara'][$sk]['mms'][$mkey]);
+			unset($clbpara['skillpara'][$sk]['coverp'][$mkey]);
+			unset($clbpara['skillpara'][$sk]['cancover'][$mkey]);
+			if(!isset($mdata)) $mdata = fetch_playerdata_by_pid($mpid);
+			if($mlog)
+			{
+				$log .= "{$mdata['name']}与你的合作关系中止了！</span><br>";
+			}
+			else 
+			{
+				$log .= "你决定解雇{$mdata['name']}！";
+				$log .= $mdata['hp']>0 ? "对方似乎{$leave_desc}<br>" : "虽然对方已经倒在工作岗位上了……<br>";
+			}
+			# 彻底离场类佣兵：
+			if($leave_flag)
+			{
+				addnews($now,'mercleave',$name,$mdata['name']);
+				destory_corpse($mdata);
+			}
+		}
+		return;
+	}
+	# 佣兵追击判定
+	function skill_merc_chase($sk,$mkey)
+	{
+		global $log,$now;
+		if(!isset($data))
+		{
+			global $pdata;
+			$data = &$pdata;
+		}
+		extract($data,EXTR_REFS);
+		if(isset($clbpara['skillpara'][$sk]['id'][$mkey]))
+		{
+			$mid = get_skillpara($sk,'id',$clbpara)[$mkey];
+			$mdata = fetch_playerdata_by_pid($mid);
+			# 确实存在追击对象
+			if(isset($mdata['clbpara']['mercchase']))
+			{
+				# 检查是否有钱强制命令佣兵追击
+				$mccost = get_skillvars($sk,'atkp') * get_skillpara($sk,'paid',$data['clbpara'])[$mkey];
+				if($mccost <= $money)
+				{
+					# 传递追击对象
+					$action = 'enemy'; $bid = $mdata['clbpara']['mercchase'];
+					# 佣兵追击不一定能先制，要判定一下
+					include_once GAME_ROOT.'./include/game/revbattle.func.php';
+					revbattle_prepare('bskill_c11_merc'.$mkey,'noactive');
+				}
+				else
+				{
+					$log .= "你身上的钱不够！<br>";
+					return;
+				}
+			}
+		}
+		return;
+	}
+	# 检查佣兵是否可协战
+	function skill_check_merc_can_cover($sk,$mkey)
+	{
+		global $log,$plsinfo,$now;
+		if(!isset($data))
+		{
+			global $pdata;
+			$data = &$pdata;
+		}
+		extract($data,EXTR_REFS);
+		if(isset($clbpara['skillpara'][$sk]['cancover'][$mkey])) return $clbpara['skillpara'][$sk]['cancover'][$mkey];
+		return 0;
 	}
 
 	# 尸体发火！

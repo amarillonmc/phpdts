@@ -92,8 +92,8 @@ if($hp <= 0){
 }
 $command = 'enter';
 $cmd = $main = '';
-if((strpos($action,'corpse')===0 || strpos($action,'pacorpse')===0) && $gamestate<40){
-	$cid = strpos($action,'corpse')===0 ? str_replace('corpse','',$action) : str_replace('pacorpse','',$action);
+if($action == 'corpse' || $action == 'pacorpse' && $gamestate<40){
+	$cid = $bid;
 	if($cid){
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$cid' AND hp=0");
 		if($db->num_rows($result)>0){
@@ -106,10 +106,8 @@ if((strpos($action,'corpse')===0 || strpos($action,'pacorpse')===0) && $gamestat
 		}
 	}	
 }
-elseif(strpos($action,'chase')!==false || strpos($action,'dfight')!==false){
-	if(strpos($action,'chase')===0) $enemyid = str_replace('chase','',$action);
-	if(strpos($action,'pchase')===0) $enemyid = str_replace('pchase','',$action);
-	if(strpos($action,'dfight')===0) $enemyid = str_replace('dfight','',$action);
+elseif($action == 'chase' || $action == 'pchase' || $action == 'dfight'){
+	$enemyid = $bid;
 	$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$enemyid' AND hp>0 AND pls='$pls'");
 	if($db->num_rows($result)>0){
 		$edata = $db->fetch_array($result);
@@ -118,8 +116,8 @@ elseif(strpos($action,'chase')!==false || strpos($action,'dfight')!==false){
 		$main = 'battle_rev';
 	}
 }
-elseif((strpos($action,'neut')===0)){
-	$nid = str_replace('neut','',$action);
+elseif($action == 'neut'){
+	$nid = $bid;
 	if($nid){
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$nid' AND hp>0");
 		if($db->num_rows($result)>0){

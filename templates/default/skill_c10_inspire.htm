@@ -23,7 +23,7 @@
                             &nbsp;
                             <!--{if empty($no_skill_input)}-->
                                 变更选择为：
-                                <select name="upgpara" id="upgpara" onchange="$('mode').value='revskpts';$('command').value='swtskill_{$skid}';postCmd('gamecmd','command.php');this.disabled=true;">
+                                <select name="{$skid}upgpara" id="{$skid}upgpara" onchange="$('mode').value='revskpts';$('command').value='swtskill_{$skid}';postCmd('gamecmd','command.php');this.disabled=true;">
                                 <!--{if empty($nchoice)}-->
                                 <option value="" selected>无<br />
                                 <!--{/if}-->

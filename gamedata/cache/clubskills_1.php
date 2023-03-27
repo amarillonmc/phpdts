@@ -16,7 +16,7 @@ $club_skillslist = Array
 	8  => Array('s_hp','s_ad','f_heal','c8_expert','c8_infilt','c8_catalyst','c8_deadheal','c8_assassin'), #'黑衣组织',
 	9  => Array('s_hp','s_ad','f_heal','c9_spirit','c9_lb','c9_iceheart','c9_charge','c9_heartfire'), #'超能力者',
 	10 => Array('s_hp','s_ad','f_heal','c10_inspire','c10_insight','c10_decons'), #'天赋异禀', //高速成长与天赋异禀合并为天赋异禀
-	11 => Array('s_hp','s_ad','f_heal'), #'富家子弟',
+	11 => Array('s_hp','s_ad','f_heal','c11_ebuy','c11_merc','c11_stock','c11_renjie'), #'富家子弟',
 	12 => Array('s_hp','s_ad','f_heal','c12_huge','c12_enmity','c12_garrison','c12_rage','c12_bloody','c12_swell'), #'全能兄贵', //根性兄贵、肌肉兄贵、全能骑士合并为全能兄贵
 	//13 => Array('s_hp','s_ad','f_heal'), #'根性兄贵',
 	//14 => Array('s_hp','s_ad','f_heal'), #'肌肉兄贵',
@@ -1479,6 +1479,97 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 3',
+		),
+	),
+	'c11_ebuy' => Array
+	(
+		'name' => '网购',
+		'tags' => Array('passive'),
+		'desc' => '你可以在任意地图访问商店',
+	),
+	'c11_tutor' => Array
+	(
+		'name' => '家教', //不太合适
+		'tags' => Array('active'),
+		'desc' => "通过培训机构<span class='yellow'>随机</span>学习一个<span class='yellow'>技能</span><br>
+		（可能会重复获得）",
+		'input' => '学习',
+		'log' => '……<br>',
+		'events' => Array('inspire'),
+	),
+	'c11_merc' => Array
+	(
+		'name' => '佣兵', 
+		'tags' => Array('active','limit'),
+		'desc' => "本局已发动<span class=\"redseed\"> [^skillpara|c11_merc-active_t^]/[:maxactive_t:] </span>次<br>
+		消耗<span class='yellow'>[:mcost:]</span>元，在当前地点随机召唤一名佣兵；<br>
+		雇佣关系存在时，你可以指挥佣兵<span class='gold' tooltip2='遭遇敌人时，可花费一定金钱命令与你在同一地点的佣兵主动攻击敌人，佣兵主动攻击敌人后会【标记】敌人。【标记】在你或佣兵离开地图前将一直存在，存在时可通过佣兵面板继续对佣兵下达【追击】指令。'>主动出击</span>，
+		或从旁<span class='gold' tooltip2='当你攻击敌人且敌人未死亡时，与你在同一地点的佣兵有概率主动为你助战，概率取决于佣兵与你的关系。'>协战</span>；<br>
+		被雇佣后，佣兵会在你累计探索/移动次数达<span class='yellow'>[:mst:]</span>次时要求结算一次工资<br>
+		被拖欠工资的佣兵不会再为你服务(可能会暴力讨薪)<br>",
+		'input' => '雇佣',
+		'no_reload_page' => 1,
+		'log' => '……这是个啥呀！<br>',
+		'status' => Array('skillpara|c11_merc-active_t'),
+		'effect' => Array(
+			0 => Array('skillpara|c11_merc-active_t' => '+=::1',),
+		),
+		'events' => Array('hiremerc','active_news'),
+		'svars' => Array(
+			'active_t' => 0,
+		),
+		'vars' => Array(
+			'mcost' => 2000,
+			'mst' => 25,
+			'movep' => 2, //移动佣兵花费
+			'atkp' => 10, //主动出击花费
+			'maxactive_t' => 4,
+		),
+		'pvars' => Array(
+			'lvl',
+			'skillpara|c11_merc-active_t',
+		),
+		'lockdesc' => Array(
+			'skillpara|c11_merc-active_t' => '次数耗尽，已无法再召唤佣兵',
+			'money' => '招募佣兵至少需要2000元！',
+		),
+		'unlock' => Array(
+			'skillpara|c11_merc-active_t' => '[:skillpara|c11_merc-active_t:] < 4',
+			'money' => '[:money:] >= 2000',
+		),
+	),
+	'c11_stock' => Array
+	(
+		'name' => '理财', 
+		'tags' => Array('passive'),
+		'desc' => "每探索/移动<span class='yellow'>[:mst:]</span>次，你所持金钱增加<span class='yellow'>[:earn:]%</span>；<br>
+		所加金钱数最低不会低于<span class='yellow'>[:minmoney:]</span>元，最高不会超过<span class='yellow'>[:maxmoney:]</span>元<br>
+		<span class='grey'>当前已探索/移动次数：[^skillpara|c11_stock-ms^] 次</span>",
+		'svars' => Array('ms' => 0),
+		'vars' => Array(
+			'mst' => 50,
+			'earn' => 20,
+			'minmoney' => 100,
+			'maxmoney' => 2500, 
+		),
+		'pvars' => Array('lvl','skillpara|c11_stock-ms'),
+		'lockdesc' => Array(
+			'lvl' => '7级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 7',
+		),
+	),
+	'c11_renjie' => Array
+	(
+		'name' => '人杰', 
+		'tags' => Array('passive'),
+		'desc' => "战斗中，你的熟练度始终取用最高熟练值。",
+		'lockdesc' => Array(
+			'lvl' => '19级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 19',
 		),
 	),
 	'c12_huge' => Array

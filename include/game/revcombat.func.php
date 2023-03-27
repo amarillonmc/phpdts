@@ -5,105 +5,10 @@
 	}
 	//include_once GAME_ROOT.'./include/game/dice.func.php';
 	include_once GAME_ROOT.'./include/game/attr.func.php';
-	include_once GAME_ROOT.'./include/game/revattr.func.php';
 	include_once GAME_ROOT.'./include/game/combat.func.php';
 	include_once GAME_ROOT.'./include/game/titles.func.php';
-
-	// 判断追击/鏖战/协战机制下双方的先制顺序、并注册对应状态
-	// *追击先制率补正：原始先制率+(战场距离x10)%
-	function check_revcombat_status(&$pa,&$pd,$active)
-	{
-		# 初始化先攻参数
-		$active_r = 0;
-		$active_dice = diceroll(99);
-		# 计算战场距离
-		$range = get_battle_range($pa,$pd,$active);
-		# pa或pd身上存在鏖战标记、或战场距离为0
-		if(strpos($pa['action'],'dfight')===0 || strpos($pd['action'],'dfight')===0 || !$range)
-		{
-			# 添加鏖战状态
-			$pa['is_dfight'] = $pd['is_dfight'] = 1;
-			# 获取鏖战状态下pa对pd的先制率
-			$active_r = get_active_r_rev($pa,$pd,1);
-			# 如果pa身上存在逃跑失败的标记，则pa先制率降低50……这是偷懒行为，未来的你记得改掉
-			if(isset($pa['fail_escape'])) $active_r -= 50;
-			# 判断是否先制
-			$active = $active_dice < $active_r ? 1 : 0 ;
-		}
-		# pa为玩家，身上存在追击标记 或 pd为玩家，身上存在受追击标记
-		elseif(strpos($pa['action'],'chase')===0 || strpos($pd['action'],'pchase')===0)
-		{
-			# 添加追击状态
-			$pa['is_chase'] = 1; $pd['is_pchase'] = 1;
-			# 获取追击状态下pa对pd的先制率
-			$active_r = get_active_r_rev($pa,$pd,2);
-			# 如果pd身上存在逃跑失败的标记，则pa先制率提升50
-			if(isset($pd['fail_escape'])) $active_r += 50;
-			# 判断是否先制
-			$active = $active_dice < $active_r ? 1 : 0 ;
-			# pa先制失败，双方转入鏖战状态
-			if(!$active)
-			{
-				unset($pa['is_chase']);unset($pd['is_pchase']);
-				$pa['is_dfight'] = $pd['is_dfight'] = 1;
-			}
-		}
-		# 清除双方标记
-		$pa['action'] = $pd['action'] = '';
-		# 返回先制值
-		return $active;
-	}
-
-	// 判断是否转入追击/鏖战流程
-	function check_can_chase(&$pa,&$pd,$active)
-	{
-		global $chase_obbs,$dfight_obbs,$log;
-		$chase_flag = 0;
-		$dice = diceroll(99);
-		# 进攻方(pa)或防守方(pd)已存在鏖战标记、或防守方(pd)成功反击了进攻方(pa)的攻击，检查是否维持&转入鏖战状态
-		if((isset($pa['is_dfight']) || isset($pd['is_dfight']) || isset($pd['is_counter'])))
-		{
-			if($dice < $dfight_obbs)
-			{
-				# 满足鏖战条件，检查pa是玩家还是NPC，并赋予对应标记
-				if($active) $pa['action'] = 'dfight'.$pd['pid'];
-				else $pd['action'] = 'dfight'.$pa['pid'];
-				$chase_flag = 1;
-				$log.= "<span class='red'>{$pa['nm']}与{$pd['nm']}相互对峙着！</span><br>";
-			}
-			else 
-			{
-				$log.= "<span class='grey'>{$pd['nm']}从{$pa['nm']}的视野里消失了。</span><br>";
-			}
-		}
-		# 进攻方(pa)持有非爆武器，且防守方(pd)未能及时反击，检查是否触发追击
-		if(!$chase_flag && !empty($pa['wep_range']) && isset($pd['cannot_counter']))
-		{
-			if($dice < $dfight_obbs)
-			{
-				# 满足追击条件，检查pa是玩家还是NPC，并赋予对应标记
-				if($active) $pa['action'] = 'chase'.$pd['pid'];
-				else $pd['action'] = 'pchase'.$pa['pid'];
-				$chase_flag = 1;
-				$log.= "<span class='red'>但是{$pa['nm']}紧追着{$pd['nm']}不放！</span><br>";
-			}
-			else 
-			{
-				$log.= "<span class='grey'>{$pd['nm']}从{$pa['nm']}的视野里消失了。</span><br>";
-			}
-		}
-		if($chase_flag)
-		{
-			# 满足追击/鏖战条件，判定战斗轮次步进
-			change_battle_turns($pa,$pd,$active);
-		}
-		else 
-		{
-			# 不满足追击/鏖战条件，重置战斗轮次
-			rs_battle_turns($pa,$pd);
-		}
-		return;
-	}
+	include_once GAME_ROOT.'./include/game/revcombat.calc.php';
+	include_once GAME_ROOT.'./include/game/revattr.func.php';
 
 	# 战斗准备流程：
 	# pa、pd分别代表先制发现者与被先制发现者；
@@ -220,6 +125,10 @@
 				elseif(isset($pa['is_dfight']))
 				{
 					$log .= "{$pa['nm']}抓住机会抢先向<span class=\"red\">{$pd['nm']}</span>发起攻击！<br>";
+				}
+				elseif(isset($pa['is_coveratk']))
+				{
+					$log .= "<span class='yellow'>正当你们打的难解难分之际，{$pa['nm']}抓住机会，向<span class=\"red\">{$pd['nm']}</span>发起突袭！</span><br>";
 				}
 				else 
 				{
@@ -380,46 +289,76 @@
 		# 战斗准备事件中触发了跳过战斗标记，直接goto跳转到这个位置。
 		battle_finish_flag:
 
-		# 检查战斗中出现的杂项成就
-		//include_once GAME_ROOT.'./include/game/achievement.func.php';
-		//if(!$pa['type']) check_misc_achievement_rev($pa);
-		//if(!$pd['type']) check_misc_achievement_rev($pd);
-
-		# 如果战斗中出现了死者 更新action标记
+		#更新action标记
 		if ($active) 
 		{ 
+			# 战斗中出现死者 
 			if ($pd['hp']<=0 && $pa['hp']>0)
 			{
-				$pa['action']='corpse'.$pd['pid'];
+				$pa['action'] = 'corpse'; $pa['bid'] = $pd['pid'];
 			}
-			if ($pa['hp']<=0 && $pd['hp']>0 && $pd['action']=='' && $pd['type']==0)
+			# 战斗中没有出现死者，但触发了协战标记
+			elseif(isset($pa['coveratk_flag']))
 			{
-				$pd['action'] = 'pacorpse'.$pa['pid']; 
+				$pa['action'] = 'cover'; $pa['bid'] = $pd['pid'];
+				$pa['clbpara']['coveratk'] = $pa['coveratk_flag'];
+			}
+			# 自己死于战斗，敌人是玩家
+			if ($pa['hp']<=0 && $pd['hp']>0 && !$pd['type'])
+			{
+				$pd['action'] = 'pacorpse'; $pd['bid'] = $pa['pid']; 
 			}		
 		}
 		else
 		{
-			if ($pd['hp']<=0 && $pa['hp']>0 && $pa['action']=='' && $pa['type']==0)
+			# 自己死于战斗，敌人是玩家
+			if ($pd['hp']<=0 && $pa['hp']>0 && !$pa['type'])
 			{
-				$pa['action']='pacorpse'.$pd['pid'];
+				$pa['action']='pacorpse'; $pa['bid'] = $pd['pid'];
 			}
+			# 敌人死于战斗
 			if ($pa['hp']<=0 && $pd['hp']>0)
 			{
-				$pd['action'] = 'corpse'.$pa['pid']; 
+				$pd['action'] = 'corpse'; $pd['bid'] = $pa['pid']; 
+			}
+			# 敌人没有死于战斗，但自己在战斗中触发了协战标记
+			elseif(isset($pa['coveratk_flag']))
+			{
+				$pa['action'] = 'cover'; $pa['bid'] = $pd['pid'];
+				$pa['clbpara']['coveratk'] = $pa['coveratk_flag'];
 			}
 		}
-
 		# 保存双方状态
 		if ($active)
 		{
-			//pa是玩家/主视角NPC的情况下 把edata（$w_*）发给$pd 把sdata($s_*) 发给$pa
+			# active但pa不是玩家的情况下，将pa的动作临时保存，之后清空
+			if($pa['type'])
+			{
+				if(!empty($pa['action']))
+				{
+					$saction = $pa['action']; $pa['action'] = '';
+					$sid = $pa['bid']; $pa['bid'] = 0;
+				}
+				# 佣兵攻击敌人后可以锁定追击敌人
+				if(isset($pa['is_merc']) && $pd['hp'] > 0) $pa['clbpara']['mercchase'] = $pd['pid'];
+			}
 			init_battle_rev($pa,$pd,1);
 			player_save($pa); player_save($pd);
 			$edata = $pd; if(!$pa['type']) $sdata = $pa;
 		}
 		else
 		{
-			//pd是玩家/主视角NPC的情况下 把edata（$w_*）发给$pa 把sdata($s_*) 发给$pd
+			# 非active且pd不是玩家的情况下，将pd的动作临时保存，之后清空
+			if($pd['type'])
+			{
+				if(!empty($pd['action']))
+				{
+					$saction = $pd['action']; $pd['action'] = '';
+					$sid = $pd['bid']; $pd['bid'] = 0;
+				}
+				# 佣兵反击敌人后可以锁定追击敌人
+				if(isset($pd['is_merc']) && $pa['hp'] > 0) $pd['clbpara']['mercchase'] = $pa['pid'];
+			}
 			init_battle_rev($pd,$pa,1);
 			player_save($pa); player_save($pd);
 			$edata = $pa; if(!$pd['type']) $sdata = $pd;
@@ -427,36 +366,45 @@
 
 		$main = 'battle_rev';
 
-		if(isset($sdata) && $sdata['pass'] != 'bot')
+		if($log_print)
 		{
-			$pdata = fetch_playerdata_by_name($sdata['name']);
-			extract($pdata,EXTR_REFS);
-			# 根据玩家身上的标记($action) 判断接下来要跳转的页面
-			if(substr($action,0,6)=='corpse')
+			# 战斗结束后 刷新实际玩家的状态
+			if(empty($sdata))
 			{
-				// 清除战斗轮记录
-				unset($clbpara['battle_turns']);
-				// 发现尸体
-				include_once GAME_ROOT . './include/game/battle.func.php';
-				findcorpse($edata);
+				global $pdata;
+				extract($pdata,EXTR_REFS);
 			}
 			else 
 			{
-				// 转入追击状态
-				if(strpos($action,'chase')!==false || strpos($action,'dfight')!==false)
-				{
-					$chase_flag = 1;
-				}
-				// 否则脱离战斗状态 清空标记
-				else
-				{
-					unset($clbpara['battle_turns']);
-					$action = '';
-				}
-				include template('battleresult');
-				$cmd = ob_get_contents();
-				ob_clean();
+				$pdata = fetch_playerdata_by_name($sdata['name']);
+				extract($pdata,EXTR_REFS);
 			}
+			# 检查是否有需要转移到玩家身上的动作
+			if(isset($saction) && isset($sid))
+			{
+				if(isset($pa['is_merc']) || isset($pd['is_merc'])) $log .= "<span class='lime'>结束战斗后，佣兵将你带到{$pd['nm']}的尸体面前。</span><br>";
+				$action = $saction; $bid = $sid;
+			}
+			# 根据玩家身上的标记($action) 判断接下来要跳转的页面
+			if($action == 'corpse' || $action == 'pacorpse')
+			{
+				# 发现尸体
+				include_once GAME_ROOT . './include/game/battle.func.php';
+				findcorpse($edata);
+				return;
+			}
+			elseif($action == 'chase' || $action == 'pchase' || $action == 'dfight' || $action == 'cover')
+			{
+				$chase_flag = 1;
+			}
+			else
+			{
+				unset($clbpara['battle_turns']);
+				$action = ''; $bid = 0;
+			}
+			include template('battleresult');
+			$cmd = ob_get_contents();
+			ob_clean();
 		}
 		return;
 	}
@@ -725,8 +673,6 @@
 	function rev_combat_result(&$pa,&$pd,$active)
 	{
 		global $log,$now;
-		# 执行扣血后的战斗结算阶段事件
-		rev_combat_result_events($pa,$pd,$active);
 		# 死者(受伤者)pd血量低于0时 结算击杀/复活事件
 		if($pd['hp']<= 0)
 		{
@@ -779,6 +725,12 @@
 				}
 				return 0;
 			}
+		}
+		# 死者还活着！
+		else 
+		{
+			# 执行扣血后的战斗结算阶段事件
+			rev_combat_result_events($pa,$pd,$active);
 		}
 		return 1;
 	}
@@ -899,7 +851,7 @@
 		if(empty($pa['nm'])) $pa['nm'] = $active && !$pa['type'] ? '你' : $pa['name'];
 		if(empty($pd['nm'])) $pd['nm'] = !$active && !$pd['type'] ? '你' : $pd['name'];
 
-		$pd['hp'] = 0;
+		$pd['hp'] = 0; $pd['bid'] = $pa['pid'];	$pd['action'] = '';
 		$pd['endtime'] = $pd['deathtime'] = $now;
 
 		# 初始化遗言
@@ -1055,6 +1007,15 @@
 			$sk_def_vars = get_skillvars('c12_bloody','defgain',$sk_lvl);
 			$pa['att'] += $sk_att_vars; $pa['def'] += $sk_def_vars; 
 			$log .= '<span class="yellow">「浴血」使'.$pa['nm'].'的攻击增加了'.$sk_att_vars.'点，防御增加了'.$sk_def_vars.'点！</span><br>';
+		}
+
+		# 佣兵死亡时，自动解除与雇主的雇佣关系
+		if(isset($pd['clbpara']['oid']))
+		{
+			$odata = fetch_playerdata_by_pid($pd['clbpara']['oid']);
+			include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
+			$log .= "<span clas='red'>由于战死，";
+			skill_merc_fire('c11_merc',$pd['clbpara']['mkey'],$pd,1);
 		}
 
 		return;

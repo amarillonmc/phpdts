@@ -634,6 +634,8 @@ function parse_info_desc($info,$type,$vars='',$short=0,$tiptype=0)
 			# 计数
 			$sk_max = count($info); $sk_nums = 0; 
 			$sk_info = ''; $sk_tp = '';
+			# 属性中是否有奇迹属性？
+			if(in_array('x',$info)) $xflag = 1;
 			foreach($info as $sk)
 			{
 				$csk = $itemspkinfo[$sk];
@@ -648,12 +650,16 @@ function parse_info_desc($info,$type,$vars='',$short=0,$tiptype=0)
 				{
 					if($sk_max > 1)
 					{
-						$sk_tp .= "【{$itemspkinfo[$sk]}】: ".$tps_isk[$sk]['title'];
+						# 奇迹属性隐藏tips
+						if(!empty($xflag) && isset($tps_isk[$sk]['x-title'])) $sk_tp .= $tps_isk[$sk]['x-title'];
+						# 标准tips
+						else $sk_tp .= "【{$itemspkinfo[$sk]}】: ".$tps_isk[$sk]['title'];
+						# 换行
 						if($sk_nums<$sk_max-1) $sk_tp .= "\r";
 					}
 					else 
 					{
-						$sk_tp = $tps_isk[$sk]['title'];
+						$sk_tp = !empty($xflag) && isset($tps_isk[$sk]['x-title']) ? $tps_isk[$sk]['x-title'] : $tps_isk[$sk]['title'];
 					}
 				}
 				$sk_nums++;

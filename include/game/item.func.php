@@ -1933,6 +1933,11 @@ function itemuse($itmn,&$data=NULL) {
 			//销毁物品
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
+		} elseif ($itm == 'NPC战斗测试仪'){
+			include_once GAME_ROOT.'./include/game/revcombat.func.php';
+			$pa = fetch_playerdata_by_pid(1);
+			$pd = fetch_playerdata_by_pid(2);
+			rev_combat_prepare($pa,$pd,1);
 		} elseif ($itm == '事件BGM替换器'){
 			// 这是一个触发事件BGM的案例，只要输入$clbpara['event_bgmbook'] = Array('事件曲集名'); 即可将当前曲集替换为特殊事件BGM
 			// 特殊事件曲集'event_bgmbook'的优先级高于地图曲集'pls_bgmbook'，前者存在时后者不会生效

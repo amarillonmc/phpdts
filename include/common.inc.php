@@ -10,6 +10,7 @@ if(version_compare(PHP_VERSION, '4.3.0', '<')) {
 	exit('PHP version must >= 4.3.0!');
 }
 require GAME_ROOT.'./include/global.func.php';
+require GAME_ROOT.'./include/init.func.php';
 require GAME_ROOT.'./include/resources.func.php';
 require GAME_ROOT.'./include/game/revclubskills.func.php';
 require GAME_ROOT.'./include/game/dice.func.php';

@@ -1244,10 +1244,11 @@ function getcorpse($item,&$data=NULL)
 	}
 	extract($data,EXTR_REFS);
 
-	$corpseid = strpos($action,'corpse')===0 ? str_replace('corpse','',$action) : str_replace('pacorpse','',$action);
-	if(!$corpseid || strpos($action,'corpse')===false){
+	//$corpseid = strpos($action,'corpse')===0 ? str_replace('corpse','',$action) : str_replace('pacorpse','',$action);
+	$corpseid = $bid;
+	if(!$corpseid || ($action != 'corpse' && $action != 'pacorpse')){
 		$log .= '<span class="yellow">你没有遇到尸体，或已经离开现场！</span><br>';
-		$action = '';
+		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
 	}
@@ -1255,7 +1256,7 @@ function getcorpse($item,&$data=NULL)
 	$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$corpseid'");
 	if(!$db->num_rows($result)){
 		$log .= '对方不存在！<br>';
-		$action = '';
+		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
 	}
@@ -1264,12 +1265,12 @@ function getcorpse($item,&$data=NULL)
 	
 	if($edata['hp']>0) {
 		$log .= '对方尚未死亡！<br>';
-		$action = '';
+		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
 	} elseif($edata['pls'] != $pls) {
 		$log .= '对方跟你不在同一个地图！<br>';
-		$action = '';
+		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
 	}
@@ -1279,7 +1280,7 @@ function getcorpse($item,&$data=NULL)
 		if(!$allow_destory_corpse || in_array($edata['type'],$no_destory_corpse_type))
 		{
 			$log.="你还想对这具可怜的尸体干什么？麻烦给死者一点基本的尊重！<br>";
-			$action = '';
+			$action = ''; $bid = 0;
 			$mode = 'command';
 			return;
 		}
@@ -1288,7 +1289,7 @@ function getcorpse($item,&$data=NULL)
 		$rp += diceroll($rpup_destory_corpse);
 		addnews($now,'cdestroy',$name,$edata['name']);
 		destory_corpse($edata);
-		$action = '';
+		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
 	}
@@ -1297,13 +1298,13 @@ function getcorpse($item,&$data=NULL)
 		if($club != 20)
 		{
 			$log.="你还想对这具可怜的尸体干什么？麻烦给死者一点基本的尊重！<br>";
-			$action = '';
+			$action = ''; $bid = 0;
 			$mode = 'command';
 			return;
 		}
 		include_once GAME_ROOT.'./include/game/elementmix.func.php';
 		split_corpse_to_elements($edata);
-		$action = '';
+		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
 	}
@@ -1311,7 +1312,7 @@ function getcorpse($item,&$data=NULL)
 	{
 		//没有从尸体上捡取道具时，保留视野
 		check_add_searchmemory($edata['pid'],'corpse',$edata['name'],$data);
-		$action = '';
+		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
 	}
@@ -1320,7 +1321,7 @@ function getcorpse($item,&$data=NULL)
 	{
 		include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
 		skill_tl_cstick_act($edata);
-		$action = '';
+		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
 	}
@@ -1330,7 +1331,7 @@ function getcorpse($item,&$data=NULL)
 		//global $name,$type;
 		include_once GAME_ROOT.'./include/game/depot.func.php';
 		loot_depot($name,$type,$edata['name'],$edata['type']);
-		$action = '';
+		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
 	}
@@ -1365,11 +1366,11 @@ function getcorpse($item,&$data=NULL)
 		$log .= '获得了金钱 <span class="yellow">'.$edata['money'].'</span>。<br>';
 		$edata['money'] = 0;
 		player_save($edata);
-		$action = '';
+		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
 	} else {
-		$action = '';
+		$action = ''; $bid = 0;
 		return;
 	}
 
@@ -1380,7 +1381,7 @@ function getcorpse($item,&$data=NULL)
 	} else {
 		itemget($data);
 	}
-	$action = '';
+	$action = ''; $bid = 0;
 	$mode = 'command';
 	return;
 }

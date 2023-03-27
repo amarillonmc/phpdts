@@ -1,0 +1,54 @@
+<!--{eval $skid = 'c11_merc'; $cskill = $cskills[$skid];}-->
+<!--{if isset($cskill['maxlvl'])}-->
+    <!--{eval $now_clvl = get_skilllvl($skid,$uidata); $max_lvl_flag = $now_clvl >= $cskill['maxlvl'] ? 1 : 0;}-->
+<!--{else}-->
+    <!--{eval $max_lvl_flag = 0;}-->
+<!--{/if}-->
+<tr>
+    <td class="b1" width="40">
+        <span>{$cskill['name']}</span>
+    </td>
+    <td>
+        <!--{eval $unlock_flag = check_skill_unlock($skid,$uidata);}-->
+        <!--{if $unlock_flag}-->
+        <div style="position:relative; height:100%; width:100%;" onmouseover="skill_unacquired_mouseover.call(this,event)" onmouseout="skill_unacquired_mouseout.call(this,event)">
+        <div class="skill_unacquired">
+        <!--{/if}-->
+            <table class="skilltable">
+                <tr>
+                    <td class="skilldesc_left b3">
+                        <span class="skilldesc">
+                            <!--{eval $cdesc = parse_skilldesc($skid,$uidata);}-->
+                            {$cdesc}
+                        </span>
+                    </td>
+                    <td class="skilldesc_right b3">
+                        <!--{if empty($no_skill_input)}-->
+                            <!--{if !empty($cskill['num_input']) && empty($max_lvl_flag)}-->
+                                <input type="number" name="upgskill_{$skid}_nums" style="width:40px" value="1">		
+                            <!--{/if}-->
+                            <!--{if !empty($cskill['input']) && empty($max_lvl_flag)}-->
+                                <input type="button" onclick="$('mode').value='revskpts';$('command').value='upgskill_{$skid}';postCmd('gamecmd','command.php');this.disabled=true;" value="{$cskill['input']}">
+                            <!--{/if}-->
+                        <!--{/if}-->
+                    </td>
+                </tr>
+            </table>
+        <!--{if $unlock_flag}-->
+            <!--{eval $unlock_desc = parse_skilllockdesc($skid,$unlock_flag);}-->
+        </div>
+        <div class="skill_unacquired_hint">
+            <table class="skilltable">
+                <tr>
+                    <td valign="center" align="center">
+                        <span class="yellow">
+                            $unlock_desc
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        </div>
+        <!--{/if}-->
+    </td>
+</tr>

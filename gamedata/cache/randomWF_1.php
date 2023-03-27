@@ -34,6 +34,6 @@ $itmhigh = <<<EOT
 EOT;
 
 $antimeta = <<<EOT
-随机数之神的摄理,WF,88888,888,ZR,
+随机数之神的摄理,WF,88888,888,ZRx,
 EOT;
 ?>

@@ -1,0 +1,101 @@
+<dialog id="mercpage" style="width: fit-content; max-width: 700px;">
+<!--{eval $merc_ids = get_skillpara('c11_merc','id',$clbpara);}-->
+<!--{eval $merc_num = !empty($merc_ids) ? count($merc_ids) : 0;}-->
+<!--{if $merc_num>0}-->
+你已经雇佣了<span class="yellow">{$merc_num}</span>名佣兵。<br>
+以下是他们的情报：<br><br>
+    <!--{loop $merc_ids $mkey $mid}-->
+    <!--{eval $nowmerc = fetch_playerdata_by_pid($mid);}-->
+    <table width="340px" CellPadding=0 CellSpacing=0 style="margin: 5px; padding: 0px; float: left; border-radius: 3px; border:2px solid rgba(225, 124, 226, 0.5);">
+        <tr>
+            <td class="b1" colspan=4>
+                佣兵({$mkey}号)情报
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img width="140px" src="img/n_{$nowmerc['icon']}.gif" border="0" valign="middle" style="<!--{if $nowmerc['hp']==0}-->filter: grayscale(100%)<!--{/if}-->">
+            </td>
+            <td>
+                <table height="100%" width="100%" CellPadding=0 CellSpacing=0>
+                    <tr>
+                        <td class="b1" width="40px" height="20px">名称</td>
+                        <td class="b3" width="160px">
+                            <!--{eval $mercfs = init_friedship_states($pdata,'c11_merc',$mkey);}-->
+                            {$nowmerc['name']}{$mercfs}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="b1" height="20px">状况</td>
+                        <td class="b3">
+                            <!--{eval $nowmerchpstate = init_single_hp_states($nowmerc);}-->
+                            {$nowmerchpstate}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="b1" height="20px">工资</td>
+                        <td class="b3" colspan=3>
+                            <!--{eval $nowpaid = get_skillpara('c11_merc','paid',$clbpara)[$mkey];$movepaid = $nowpaid * get_skillvars('c11_merc','movep');}-->
+                            <!--{eval $nextpaid = get_skillvars('c11_merc','mst') - get_skillpara('c11_merc','mms',$clbpara)[$mkey];}-->
+                            <span style="text-align:left; display:inline-block;" tooltip2="支付工资：{$nextpaid} 次行动后">
+                                {$nowpaid} 元
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="b1" height="20px">位置</td>
+                        <td class="b3">
+                            <!--{eval $cancover = $nowmerc['pls'] == $pls ? '(可协战)' : '';}-->
+                            <span>{$plsinfo[$nowmerc['pls']]}{$cancover}</span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="b3" colspan=4>
+                <!--{eval $atkpaid = $nowpaid * get_skillvars('c11_merc','atkp');}-->
+                <span style="text-align:left; display:inline-block;">
+                    <table><tr><td>
+                    花费<span class="yellow">{$atkpaid}</span>元，可指挥佣兵主动出击
+                    <!--{if !empty($nowmerc['clbpara']['mercchase'])}-->
+                        <input type="button" style="width:45px" onclick="$('mode').value='revskpts';$('command').value='actskill_c11_merc';$('subcmd').name='c11_mercmkey';$('subcmd').value='{$mkey}';$('subcmd2').name='c11_mercchase';$('subcmd').value='{$mkey}';postCmd('gamecmd','command.php');this.disabled=true;" value="追击" <!--{if $nowmerc['hp']<=0}-->disabled<!--{/if}-->  >  
+                    <!--{/if}-->
+                    </td></tr></table>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="b3" colspan=4>
+                <span style="text-align:left; display:inline-block;">
+                    <table><tr><td>
+                    花费<span class="yellow">{$movepaid}</span>元，将佣兵移动到
+                    <select name="c11_merc{$mkey}moveto" id="c11_mercmoveto" style="width: 45px;">
+                        <!--{loop range(0,count($arealist)-1) $pl}-->
+                            <!--{if array_search($pl,$arealist) > $areanum || $hack}-->
+                                <option value="$pl" <!--{if $nowmerc['pls']==$pl}-->selected<!--{/if}-->>$plsinfo[$pl]<br />
+                            <!--{/if}-->
+                        <!--{/loop}-->
+                    </select>
+                    <input type="button" style="width:45px" onclick="$('mode').value='revskpts';$('command').value='actskill_c11_merc';$('subcmd').name='c11_mercmkey';$('subcmd').value='{$mkey}';postCmd('gamecmd','command.php');this.disabled=true;" value="移动" <!--{if $nowmerc['hp']<=0}-->disabled<!--{/if}-->  >  
+                    </td></tr></table>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="b3" colspan=4>
+                <!--{eval $nowleave = get_skillpara('c11_merc','leave',$clbpara)[$mkey];$leave_desc = $nowleave ? '离开战场' : '留在原地';}-->
+                <span style="text-align:left; display:inline-block;">
+                    <table><tr><td>
+                    立刻<input type="button" style="width:45px; height:20px;" value="解雇" onclick="$('mode').value='revskpts';$('command').value='actskill_c11_merc';$('subcmd').name='c11_mercmkey';$('subcmd').value='{$mkey}';$('subcmd2').name='c11_mercfire';$('subcmd2').value='{$mkey}';postCmd('gamecmd','command.php');this.disabled=true;">该佣兵，之后该佣兵将<span class="yellow">{$leave_desc}</span>
+                </td></tr></table>
+                </span>
+            </td>
+        </tr>
+    </table>
+    <!--{/loop}-->
+<!--{else}-->
+你目前没有雇佣佣兵。<br>
+<!--{/if}-->
+<img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('mercpage'));this.disabled=true;">
+</dialog>

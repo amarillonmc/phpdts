@@ -338,6 +338,10 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 				$bname = $cskills[$bsk]['name'];
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}通过「{$skname}」学会了技能<span class=\"lime\">「{$bname}」</span>！</span><br>\n";
 			}
+		} elseif(strpos($news,'mercmove')===0) {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}指挥佣兵 {$b}移动到了{$plsinfo[$c]}！</span><br>\n";
+		} elseif(strpos($news,'mercleave')===0) {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}的佣兵 {$b}离开了战场！</span><br>\n";
 		} else {
 			$newsinfo .= "<li>$time,$news,$a,$b,$c,$d<br>\n";
 		}
