@@ -26,8 +26,12 @@ function get_equip_list($mode=0)
 # mixitem_1.php; vnmixitem_1.php;
 function get_mixinfo()
 {
-	include config("mixitem",1);
-	include config("vnmixitem",1);
+	global $gamecfg;
+	include config("mixitem",$gamecfg);
+	if(file_exists(config("vnmixitem",$gamecfg)))
+	{
+		include config("vnmixitem",$gamecfg);
+	}
 	if(!empty($vn_mixinfo)) $mixinfo = array_merge($mixinfo,$vn_mixinfo);
 	return $mixinfo;
 }
