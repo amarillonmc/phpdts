@@ -30,7 +30,7 @@ function kill_all_AFKer($timelimit=1){
 
 	if(!$afkerlist){$cmd_info .= '没有符合条件的角色。';return;}
 	foreach($afkerlist as $kid => $kcontent){
-		$db->query("UPDATE {$tablepre}players SET hp='0',state='32' WHERE pid='$kid' AND type='0' AND hp>'0' AND state<'10'");
+		$db->query("UPDATE {$tablepre}players SET hp='0',state='32',bid='0' WHERE pid='$kid' AND type='0' AND hp>'0' AND state<'10'");
 		if($db->affected_rows()){
 			adminlog('killafker',$kid);
 			$cmd_info .= '角色 '.$kcontent['name'].' 被杀死。<br>';

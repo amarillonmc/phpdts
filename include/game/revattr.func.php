@@ -104,6 +104,11 @@
 		{
 			$wep_skill = round($pa[$skillinfo[$pa['wep_kind']]]+($pa['wp']+$pa['wk']+$pa['wc']+$pa['wg']+$pa['wd']+$pa['wf'])*0.25);
 		}
+		# 「人杰」技能判定
+		elseif(isset($pa['skill_renjie']))
+		{
+			foreach(Array('wp','wk','wc','wg','wd','wf') as $skw) $wep_skill = max($pa[$skw],$wep_skill);
+		}
 		else
 		{
 			$wep_skill = $pa[$skillinfo[$pa['wep_kind']]];
@@ -535,33 +540,36 @@
 		# 混沌伤害：
 		if(in_array('R',$pa['ex_keys']))
 		{
+			# 混沌武器伤害最大值：
 			$maxdmg = $pd['mhp'] > $pa['wepe'] ? $pa['wepe'] : $pd['mhp'];
-			$mindmg = max(1,($pd['mhp'] - $pd['hp'])/2);
-			do{
-				$damage = rand(-1*$mindmg,$maxdmg);
-			}while(empty($damage));
-			if($damage > 0)
-			{
-				$log .= "武器随机造成了<span class=\"red\">$damage</span>点伤害！<br>";
-			}
-			else 
-			{
-				$log .= "武器随机为{$pd['nm']}回复了<span class=\"lime\">".abs($damage)."</span>点生命！<br>";
-			}
-			// 混沌混沌
+			# 混沌武器耐久损耗：
 			$max_imp_times = $pa['weps'] == $nosta ? $pa['wepe'] : $pa['weps'];
 			$min_imp_times = $pa['weps'] == $nosta ? -$pa['wepe'] : -$pa['weps'];
-			if(rand($min_imp_times,$max_imp_times) < 0)
+			# 奇迹属性可以将混沌伤害升格：伤害下限提升、耐久不再损耗
+			if(in_array('x',$pa['ex_keys']))
 			{
-				do{
-					$pa['wep_imp_times'] = generate_ndnumbers($min_imp_times,$max_imp_times)[0];
-				}while(empty($pa['wep_imp_times']));
+				$damage = rand($maxdmg*0.1,$maxdmg);
 			}
-			// 混沌伤害打满时 保存至成就
+			else
+			{
+				$mindmg = max(1,($pd['mhp'] - $pd['hp'])/2);
+				do{
+					$damage = rand(-1*$mindmg,$maxdmg);
+				}while(empty($damage));
+				if(rand($min_imp_times,$max_imp_times) < 0)
+				{
+					do{
+						$pa['wep_imp_times'] = generate_ndnumbers($min_imp_times,$max_imp_times)[0];
+					}while(empty($pa['wep_imp_times']));
+				}
+			}
+			# 结算
+			if($damage > 0) $log .= "武器随机造成了<span class=\"red\">$damage</span>点伤害！<br>";
+			else $log .= "武器随机为{$pd['nm']}回复了<span class=\"lime\">".abs($damage)."</span>点生命！<br>";
+			# 混沌伤害打满时 保存至成就
 			if($damage == $maxdmg) $pa['clbpara']['achvars']['full_chaosdmg'] = 1;
 			return $damage;
 		}
-
 		return NULL;
 	}
 
@@ -2071,6 +2079,29 @@
 			}
 		}
 
+		# 「协战」判定
+		# 拥有佣兵的情况下，主动攻击敌人/成功反击敌人，且敌人仍存活时，判定是否有佣兵协战
+		if(!empty(get_skillpara('c11_merc','id',$pa['clbpara'])))
+		{
+			$sk = 'c11_merc';
+			$cancovers = get_skillpara($sk,'cancover',$pa['clbpara']);
+			shuffle($cancovers);
+			$dice = diceroll(99);
+			foreach($cancovers as $mkey => $mcan)
+			{
+				if($mcan)
+				{
+					$mcps = get_skillpara($sk,'coverp',$pa['clbpara'])[$mkey];
+					if($dice < $mcps)
+					{
+						# 触发协战，将协战者ID记录在coopatk_flag内
+						$pa['coveratk_flag'] = get_skillpara($sk,'id',$pa['clbpara'])[$mkey];
+						//echo "触发了协战！协战对象ID：{$pa['coveratk_flag']}<br>";
+						break;
+					}
+				}
+			}
+		}
 		return;
 	}
 
@@ -2143,7 +2174,8 @@
 	{
 		global $log,$active_obbs,$weather,$gamecfg,$chase_active_obbs;
 		include config('combatcfg',$gamecfg);
-
+		$pa['clbpara'] = get_clbpara($pa['clbpara']);
+		$pd['clbpara'] = get_clbpara($pd['clbpara']);
 		# 获取基础先攻率：
 		if(!$mode)
 		{
@@ -2210,6 +2242,12 @@
 		if($pd['pose'] == 7)
 		{
 			$pd['cannot_counter_log'] = "{$pd['nm']}看起来非常生气！还是离他远点吧……";
+			return 0;
+		}
+		# 被协战攻击无法反击
+		if(isset($pa['is_coveratk']))
+		{
+			$pd['cannot_counter_log'] = "{$pd['nm']}双拳难敌四手，逃跑了！";
 			return 0;
 		}
 		# 被偷袭无法反击

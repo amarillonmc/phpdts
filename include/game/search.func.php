@@ -4,6 +4,42 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
+function check_can_move($pls,$pgroup,$moveto)
+{
+	global $log,$plsinfo,$hplsinfo,$arealist,$areanum,$hack;
+
+	if($pls == $moveto)
+	{
+		$log .= "不能重复移动。<br>";
+		return 0;
+	}
+	$plsnum = sizeof($plsinfo);
+	if(!isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup]))
+	{
+		//玩家位于隐藏地点组内，不能通过常规移动方式回到标准地点，也不能移动到其他隐藏地点组
+		if(!array_key_exists($moveto,$hplsinfo[$pgroup]))
+		{
+			$log .= "地图上没有{$hplsinfo[$pgroup][$moveto]}啊？<br>";
+			return 0;
+		}
+	}
+	else
+	{
+		//玩家位于标准地点组内
+		if((!array_key_exists($moveto,$plsinfo))||($moveto == 'main')||($moveto < 0 )||($moveto >= $plsnum))
+		{
+			$log .= '请选择正确的移动地点。<br>';
+			return 0;
+		} 
+		elseif(array_search($moveto,$arealist) <= $areanum && !$hack)
+		{
+			$log .= $plsinfo[$moveto].'是禁区，还是离远点吧！<br>';
+			return 0;
+		}
+	}
+	return 1;
+}
+
 function move($moveto = 99,&$data=NULL) {
 	//global $lvl,$log,$pls,$pgroup,$plsinfo,$hplsinfo,$inf,$hp,$mhp,$sp,$def,$club,$arealist,$areanum,$hack,$areainfo,$gamestate,$pose,$weather;
 	//global $gamestate,$gamecfg,$pdata;
@@ -163,9 +199,6 @@ function move($moveto = 99,&$data=NULL) {
 		}
 	} 
 
-	//移动后丢失探索视野
-	lost_searchmemory('all',$data);
-
 	if(!$moved) {
 		if(!$hpls_flag) $pgroup = 0;
 		$pls = $moveto;
@@ -173,41 +206,11 @@ function move($moveto = 99,&$data=NULL) {
 		$log .= "消耗<span class=\"yellow\">{$movesp}</span>点体力，移动到了<span class=\"yellow\">{$moveto_info}</span>。<br>";
 	}else{$f=false;}
 	
-	
-	if($inf){
-		foreach ($inf_move_hp as $inf_ky => $o_dmg) {
-			if(strpos($inf,$inf_ky)!==false)
-			{
-				$damage = round($mhp * $o_dmg) + rand(0,10);
-				# 「死疗」效果判定： TODO：之后要把异常状态扣血效果单独做一个函数
-				if($inf_ky == 'p' && !check_skill_unlock('c8_deadheal',$data))
-				{
-					$sk_p = get_skillvars('c8_deadheal','exdmgr');
-					$damage = min($mhp-$hp,ceil($damage*($sk_p/100)));
-					$damage *= -1;
-				}
-				$hp -= $damage;
-				if($damage > 0) $log .= "{$infwords[$inf_ky]}减少了<span class=\"red\">$damage</span>点生命！<br>";
-				elseif($damage < 0) $log .= "{$infwords[$inf_ky]}恢复了<span class=\"lime\">".abs($damage)."</span>点生命！<br>";
-				if($hp <= 0 ){
-					include_once GAME_ROOT.'./include/state.func.php';
-					death($inf_ky.'move','',0,'',$data);
-					return;
-				}
-			}			
-		}
-	}
-	
 	$log .= $areainfo[$pls].'<br>';	
-	//if ($f) {
-	//	if (CURSCRIPT !== 'botservice') $log.="<span id=\"HsUipfcGhU\"></span>";	//刷新页面标记
-	//	return;
-	//}
-	/*$enemyrate = 40;
-	if($gamestate == 40){$enemyrate += 20;}
-	elseif($gamestate == 50){$enemyrate += 40;}
-	if($pose==3){$enemyrate -= 20;}
-	elseif($pose==4){$enemyrate += 10;}*/
+
+	# 移动到指定地点，结算移动探索事件
+	move_search_events($data,'move');
+
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
 	$enemyrate =  calc_meetman_rate($data);
 	//echo "enemyrate = {$enemyrate}%";
@@ -350,10 +353,41 @@ function search(&$data=NULL){
 		}
 	} 
 	
+	
 	$sp -= $schsp;
 	$log .= "消耗<span class=\"yellow\">{$schsp}</span>点体力，你搜索着周围的一切。。。<br>";
-	if($inf){
-		foreach ($inf_search_hp as $inf_ky => $o_dmg) {
+	
+	# 探索指定地点，结算探索事件
+	move_search_events($data,'search');
+	
+	include_once GAME_ROOT.'./include/game/revattr.func.php';
+	$enemyrate =  calc_meetman_rate($data);
+	//echo "enemyrate = {$enemyrate}%";
+	discover($enemyrate,$data);
+	return;
+
+}
+
+function move_search_events(&$data=NULL,$act)
+{
+	global $log,$inf_move_hp,$inf_move_sp,$infwords;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+	
+	if($act == 'move')
+	{
+		//移动后丢失探索视野
+		lost_searchmemory('all',$data);
+	}
+
+	if($inf)
+	{
+		foreach ($inf_move_hp as $inf_ky => $o_dmg) {
 			if(strpos($inf,$inf_ky)!==false)
 			{
 				$damage = round($mhp * $o_dmg) + rand(0,10);
@@ -375,12 +409,43 @@ function search(&$data=NULL){
 			}			
 		}
 	}
-	include_once GAME_ROOT.'./include/game/revattr.func.php';
-	$enemyrate =  calc_meetman_rate($data);
-	//echo "enemyrate = {$enemyrate}%";
-	discover($enemyrate,$data);
-	return;
 
+	# 「理财」效果判定：
+	if(!check_skill_unlock('c11_stock',$data))
+	{
+		$sk = 'c11_stock';
+		$sk_mst = get_skillvars($sk,'mst');
+		$ms = get_skillpara($sk,'ms',$data['clbpara']) + 1;
+		# 赚钱！
+		if($ms >= $sk_mst)
+		{
+			$sk_var = get_skillvars($sk,'earn');
+			$earn = min(max(ceil($money*$sk_var/100),get_skillvars($sk,'minmoney')),get_skillvars($sk,'maxmoney'));
+			$money += $earn;
+			$log .= "<span class='yellow'>「理财」使你赚到了{$earn}元！</span><br>";
+			$ms = 0;
+		}
+		set_skillpara($sk,'ms',$ms,$data['clbpara']);
+	}
+	# 「佣兵」效果判定：召唤过佣兵的情况下，每行动一次+1计数
+	if(!empty(get_skillpara('c11_merc','id',$clbpara)))
+	{
+		include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
+		$sk = 'c11_merc'; 
+		# 检查是否有需要付工资的佣兵
+		$mids = get_skillpara($sk,'id',$clbpara);
+		foreach($mids as $mkey => $mid)
+		{
+			$mdata = fetch_playerdata_by_pid($mid);
+			skill_merc_paid($sk,$mkey,$mdata);
+			# 每次探索/移动时都重新检查佣兵是否可协战
+			$clbpara['skillpara'][$sk]['cancover'][$mkey] = $mdata['pls'] == $pls ? 1 : 0;
+			# 移动到其他地图时，佣兵丢失追击焦点
+			if(!empty($mdata['clbpara']['mercchase']) && $act == 'move') $mdata['clbpara']['mercchase'] = 0;
+			player_save($mdata);
+		}
+	}
+	return;
 }
 
 function discover($schmode = 0,&$data=NULL) 
@@ -536,6 +601,8 @@ function discover($schmode = 0,&$data=NULL)
 					//global $artk;
 					if ((!$edata['type'])&&($artk=='XX')&&(($edata['artk']!='XX')||($edata['art']!=$name))&&($gamestate<50)) continue;
 					if (($artk!='XX')&&($edata['artk']=='XX')&&($gamestate<50)) continue;
+					//暂时直接略过自己的佣兵，之后做完组队面板交互再加回来
+					if(!empty(get_skillpara('c11_merc','id',$clbpara)) && in_array($edata['pid'],get_skillpara('c11_merc','id',$clbpara))) continue;
 					//灵子状态只能遭遇同为灵子状态的对象，非灵子状态对象无法发现灵子状态下的对象……但是尸体就没有这种考量了
 					if(($edata['pose'] == 8 || $data['pose'] == 8) && $data['pose'] != $edata['pose']) continue;
 					//计算活人发现率
@@ -556,7 +623,7 @@ function discover($schmode = 0,&$data=NULL)
 				if($teamID&&(!$fog)&&($gamestate<40)&&($teamID == $edata['teamID']))
 				{
 					$bid = $edata['pid'];
-					$action = 'team'.$edata['pid'];
+					$action = 'team';
 					include_once GAME_ROOT.'./include/game/battle.func.php';
 					findteam($edata);
 					return;
@@ -565,7 +632,7 @@ function discover($schmode = 0,&$data=NULL)
 				elseif(isset($edata['clbpara']['post']) && $edata['clbpara']['post'] == $pid)
 				{
 					$bid = $edata['pid'];
-					$action = 'neut'.$edata['pid'];
+					$action = 'neut';
 					include_once GAME_ROOT.'./include/game/revbattle.func.php';
 					findneut($edata,1);
 					return;
@@ -585,7 +652,7 @@ function discover($schmode = 0,&$data=NULL)
 					//先制
 					if($active_dice < $active_r)
 					{
-						$action = 'enemy'.$edata['pid'];
+						$action = 'enemy'; $bid = $edata['pid'];
 						if($data['pass'] != 'bot')
 						{
 							
@@ -616,8 +683,7 @@ function discover($schmode = 0,&$data=NULL)
 			}
 			else 
 			{
-				$bid = $edata['pid'];
-				$action = 'corpse'.$edata['pid'];
+				$action = 'corpse'; $bid = $edata['pid'];
 				include_once GAME_ROOT.'./include/game/battle.func.php';
 				findcorpse($edata);
 				return;

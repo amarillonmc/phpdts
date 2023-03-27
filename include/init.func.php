@@ -35,6 +35,31 @@ function init_icon_states(&$pa,$pd,$ismeet=0)
 	}
 }
 
+function init_single_hp_states($pa)
+{
+	global $hpinfo;
+	if($pa['hp'] <= 0)
+	{
+		$hpstate = "<span class=\"red\">$hpinfo[3]</span>";
+	}
+	else
+	{
+		if($pa['hp'] < $pa['mhp']*0.2) 
+		{
+			$hpstate = "<span class=\"red\">$hpinfo[2]</span>";
+		} 
+		elseif($pa['hp'] < $pa['mhp']*0.5) 
+		{
+			$hpstate = "<span class=\"yellow\">$hpinfo[1]</span>";
+		} 
+		else 
+		{
+			$hpstate = "<span class=\"clan\">$hpinfo[0]</span>";
+		}
+	}
+	return $hpstate;
+}
+
 function init_hp_states(&$pa,$pd,$ismeet=0)
 {
 	global $fog,$hpinfo,$spinfo,$rageinfo;
@@ -66,7 +91,7 @@ function init_hp_states(&$pa,$pd,$ismeet=0)
 	}
 	else
 	{
-		if($pa['hp'] < $pa['mhp']*0.2) 
+		/*if($pa['hp'] < $pa['mhp']*0.2) 
 		{
 			$pa['hpstate'] = "<span class=\"red\">$hpinfo[2]</span>";
 		} 
@@ -77,7 +102,9 @@ function init_hp_states(&$pa,$pd,$ismeet=0)
 		else 
 		{
 			$pa['hpstate'] = "<span class=\"clan\">$hpinfo[0]</span>";
-		}
+		}*/
+
+		$pa['hpstate'] = init_single_hp_states($pa);
 
 		if($pa['sp'] < $pa['msp']*0.2) 
 		{
@@ -177,6 +204,39 @@ function init_inf_states(&$pa,$pd,$ismeet=0)
 	else 
 	{
 		$pa['infdata'] = '无';
+	}
+}
+
+function init_friedship_states($pa,$sk,$mid)
+{
+	if(isset($pa['clbpara']['skillpara'][$sk]['coverp'][$mid]))
+	{
+		$fs = $pa['clbpara']['skillpara'][$sk]['coverp'][$mid];
+		if($fs > 80)
+		{
+			$desc = "<span class='gold'>(崇拜)</span>";
+		}
+		elseif($fs > 65)
+		{
+			$desc = "<span class='redseed'>(尊敬)</span>";
+		}
+		elseif($fs > 50)
+		{
+			$desc = "<span class='lime'>(友善)</span>";
+		}
+		elseif($fs > 35)
+		{
+			$desc = "<span class='clan'>(友好)</span>";
+		}
+		elseif($fs > 20)
+		{
+			$desc = "<span>(普通)</span>";
+		}
+		else
+		{
+			$desc = "<span class='grey'>(冷淡)</span>";
+		}
+		return $desc;
 	}
 }
 

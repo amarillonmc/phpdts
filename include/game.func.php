@@ -635,6 +635,7 @@ function create_dummy_playerdata($clb=0)
 				$data['wepk'] = 'WN';
 		}
 	}
+	$data['money'] = 10000;
 	return $data;
 }
 //通过名字抓取指定玩家数据，只能抓玩家
@@ -712,6 +713,7 @@ function destory_corpse(&$edata)
 {
 	if($edata)
 	{
+		$edata['action'] = ''; $edata['bid'] = 0;
 		$edata['state'] = 16; $edata['hp'] = 0; $edata['money'] = 0; $edata['pls'] = 254;
 		$edata['weps'] = 0;$edata['arbs'] = 0;$edata['arhs'] = 0;$edata['aras'] = 0;$edata['arfs'] = 0;$edata['arts'] = 0;
 		$edata['itms0'] = 0;$edata['itms1'] = 0;$edata['itms2'] = 0;$edata['itms3'] = 0;$edata['itms4'] = 0;$edata['itms5'] = 0;$edata['itms6'] = 0;

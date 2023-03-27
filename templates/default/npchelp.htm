@@ -138,4 +138,17 @@ AI会根据玩家目前的<span class="yellow">rp和APM</span>判定是不是目
 {template npcinfohelp}
 <!--{/loop}-->
 <br>
+
+<p><span class="lime">佣兵NPC 简介</span>：</p>
+佣兵是富家子弟的称号技能召唤出的NPC。不同的佣兵实力差距很大，能召唤出什么佣兵纯靠运气。<br>
+以下是所有佣兵的列表：<input class="cmdbutton" onclick="showModalDialog($('ty25a'))" value="点击这里查看" type="button">
+<br>
+<dialog id="ty25a">
+    <p>以下是所有可能被召唤出的佣兵列表：</p>
+    <br>
+    <!--{loop $ty25a $vkind $kind}-->
+        {template npcinfohelp}
+    <!--{/loop}-->
+    <img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('ty25a'))">
+</dialog>
 <br>

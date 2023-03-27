@@ -56,6 +56,21 @@ function get_overlaymixinfo()
 	return $prp_res;
 }
 
+# addnpc_1.php
+function get_addnpcinfo()
+{
+	global $gamecfg;
+	include config("addnpc",$gamecfg);
+	return $anpcinfo;
+}
+
+function get_npcinit()
+{
+	global $gamecfg;
+	include config("npc",$gamecfg);
+	return $npcinit;
+}
+
 # achievement_1.php
 function get_achtype()
 {

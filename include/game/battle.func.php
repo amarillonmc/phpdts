@@ -176,24 +176,32 @@ function findcorpse(&$w_pdata){
 
 
 function senditem(){
-	global $db,$tablepre,$log,$mode,$main,$command,$cmd,$battle_title,$pls,$plsinfo,$message,$now,$name,$w_log,$teamID,$gamestate,$action;
-	$mateid = str_replace('team','',$action);
-	if(!$mateid || strpos($action,'team')===false){
+	//global $db,$tablepre,$log,$mode,$main,$command,$cmd,$battle_title,$pls,$plsinfo,$message,$now,$name,$w_log,$teamID,$gamestate,$action;
+	global $db,$tablepre,$log,$mode,$main,$command,$cmd,$battle_title,$plsinfo,$hplsinfo,$now,$gamestate;
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
+	$mateid = $bid;
+	if(!$mateid || $action != 'team'){
 		$log .= '<span class="yellow">你没有遇到队友，或已经离开现场！</span><br>';
-		$action = '';
+		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
 	}
 	if($gamestate>=40){
 		$log .= '<span class="yellow">连斗阶段无法赠送物品！</span><br>';
-		$action = '';
+		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
 	}
 	$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$mateid'");
 	if(!$db->num_rows($result)){
 		$log .= "对方不存在！<br>";
-		$action = '';
+		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
 	}
@@ -201,25 +209,24 @@ function senditem(){
 	$edata = $db->fetch_array($result);
 	if($edata['pls'] != $pls) {
 		//登记非功能性地点信息时合并隐藏地点
-		global $hplsinfo;
 		foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
 		$log .= '<span class="yellow">'.$edata['name'].'</span>已经离开了<span class="yellow">'.$plsinfo[$pls].'</span>。<br>';
 		$mode = 'command';
-		$action = '';
+		$action = ''; $bid = 0;
 		return;
 	} elseif($edata['hp'] <= 0) {
 		$log .= '<span class="yellow">'.$edata['name'].'</span>已经死亡，不能接受物品。<br>';
 		$mode = 'command';
-		$action = '';
+		$action = ''; $bid = 0;
 		return;
 	} elseif(!$teamID || $edata['teamID']!=$teamID){
 		$log .= '<span class="yellow">'.$edata['name'].'</span>并非你的队友，不能接受物品。<br>';
 		$mode = 'command';
-		$action = '';
+		$action = ''; $bid = 0;
 		return;
 	}
 
-	if($message){
+	if(!empty($message)){
 //		foreach ( Array('<','>',';',',') as $value ) {
 //			if(strpos($message,$value)!==false){
 //				$message = str_replace ( $value, '', $message );
@@ -232,10 +239,10 @@ function senditem(){
 	
 	if($command != 'back'){
 		$itmn = substr($command, 3);
-		global ${'itm'.$itmn},${'itmk'.$itmn},${'itme'.$itmn},${'itms'.$itmn},${'itmsk'.$itmn};
+		//global ${'itm'.$itmn},${'itmk'.$itmn},${'itme'.$itmn},${'itms'.$itmn},${'itmsk'.$itmn};
 		if (!${'itms'.$itmn}) {
 			$log .= '此道具不存在！';
-			$action = '';
+			$action = ''; $bid = 0;
 			$mode = 'command';
 			return;
 		}
@@ -245,7 +252,7 @@ function senditem(){
 		$itms = & ${'itms'.$itmn};
 		$itmsk = & ${'itmsk'.$itmn};
 
-		global $w_pid,$w_name,$w_pass,$w_type,$w_endtime,$w_gd,$w_sNo,$w_icon,$w_club,$w_hp,$w_mhp,$w_sp,$w_msp,$w_att,$w_def,$w_pls,$w_lvl,$w_exp,$w_money,$w_bid,$w_inf,$w_rage,$w_pose,$w_tactic,$w_killnum,$w_state,$w_wp,$w_wk,$w_wg,$w_wc,$w_wd,$w_wf,$w_teamID,$w_teamPass,$w_wep,$w_wepk,$w_wepe,$w_weps,$w_arb,$w_arbk,$w_arbe,$w_arbs,$w_arh,$w_arhk,$w_arhe,$w_arhs,$w_ara,$w_arak,$w_arae,$w_aras,$w_arf,$w_arfk,$w_arfe,$w_arfs,$w_art,$w_artk,$w_arte,$w_arts,$w_itm0,$w_itmk0,$w_itme0,$w_itms0,$w_itm1,$w_itmk1,$w_itme1,$w_itms1,$w_itm2,$w_itmk2,$w_itme2,$w_itms2,$w_itm3,$w_itmk3,$w_itme3,$w_itms3,$w_itm4,$w_itmk4,$w_itme4,$w_itms4,$w_itm5,$w_itmk5,$w_itme5,$w_itms5,$w_itm6,$w_itmk6,$w_itme6,$w_itms6,$w_wepsk,$w_arbsk,$w_arhsk,$w_arask,$w_arfsk,$w_artsk,$w_itmsk0,$w_itmsk1,$w_itmsk2,$w_itmsk3,$w_itmsk4,$w_itmsk5,$w_itmsk6,$w_rp,$w_skillpoint,$nick;
+		//global $w_pid,$w_name,$w_pass,$w_type,$w_endtime,$w_gd,$w_sNo,$w_icon,$w_club,$w_hp,$w_mhp,$w_sp,$w_msp,$w_att,$w_def,$w_pls,$w_lvl,$w_exp,$w_money,$w_bid,$w_inf,$w_rage,$w_pose,$w_tactic,$w_killnum,$w_state,$w_wp,$w_wk,$w_wg,$w_wc,$w_wd,$w_wf,$w_teamID,$w_teamPass,$w_wep,$w_wepk,$w_wepe,$w_weps,$w_arb,$w_arbk,$w_arbe,$w_arbs,$w_arh,$w_arhk,$w_arhe,$w_arhs,$w_ara,$w_arak,$w_arae,$w_aras,$w_arf,$w_arfk,$w_arfe,$w_arfs,$w_art,$w_artk,$w_arte,$w_arts,$w_itm0,$w_itmk0,$w_itme0,$w_itms0,$w_itm1,$w_itmk1,$w_itme1,$w_itms1,$w_itm2,$w_itmk2,$w_itme2,$w_itms2,$w_itm3,$w_itmk3,$w_itme3,$w_itms3,$w_itm4,$w_itmk4,$w_itme4,$w_itms4,$w_itm5,$w_itmk5,$w_itme5,$w_itms5,$w_itm6,$w_itmk6,$w_itme6,$w_itms6,$w_wepsk,$w_arbsk,$w_arhsk,$w_arask,$w_arfsk,$w_artsk,$w_itmsk0,$w_itmsk1,$w_itmsk2,$w_itmsk3,$w_itmsk4,$w_itmsk5,$w_itmsk6,$w_rp,$w_skillpoint,$nick;
 		extract($edata,EXTR_PREFIX_ALL,'w');
 
 		//global $w_pid, $w_name, $w_pass, $w_type, $w_endtime,$w_deathtime, $w_gd, $w_sNo, $w_icon, $w_club, $w_hp, $w_mhp, $w_sp, $w_msp, $w_att, $w_def, $w_pls, $w_lvl, $w_exp, $w_money, $w_bid, $w_inf, $w_rage, $w_pose, $w_tactic, $w_killnum, $w_state, $w_wp, $w_wk, $w_wg, $w_wc, $w_wd, $w_wf, $w_teamID, $w_teamPass;
@@ -253,28 +260,31 @@ function senditem(){
 		//global $w_combat_inf, $w_rp,$w_action,$w_achievement,$w_skills,$w_skillpoint;
 
 
-		for($i = 1;$i <= 6; $i++){
-			if(!${'w_itms'.$i}) {
-				${'w_itm'.$i} = $itm;
-				${'w_itmk'.$i} = $itmk;
-				${'w_itme'.$i} = $itme;
-				${'w_itms'.$i} = $itms;
-				${'w_itmsk'.$i} = $itmsk;
-				$log .= "你将<span class=\"yellow\">${'w_itm'.$i}</span>送给了<span class=\"yellow\">$w_name</span>。<br>";
-				$w_log = "<span class=\"yellow\">$name</span>将<span class=\"yellow\">${'w_itm'.$i}</span>送给了你。";
+		for($i = 1;$i <= 6; $i++)
+		{
+			if(!$edata['itms'.$i]) 
+			{
+				$edata['itm'.$i] = $itm;
+				$edata['itmk'.$i] = $itmk;
+				$edata['itme'.$i] = $itme;
+				$edata['itms'.$i] = $itms;
+				$edata['itmsk'.$i] = $itmsk;
+				$log .= "你将<span class=\"yellow\">{$edata['itm'.$i]}</span>送给了<span class=\"yellow\">$w_name</span>。<br>";
+				$w_log = "<span class=\"yellow\">$name</span>将<span class=\"yellow\">{$edata['itm'.$i]}</span>送给了你。";
 				if(!$w_type){logsave($w_pid,$now,$w_log,'t');}
 				include_once GAME_ROOT.'./include/game/titles.func.php';
 				addnews($now,'senditem',get_title_desc($nick).' '.$name,$w_name,$itm);
-				w_save($w_pid);
+				//w_save($w_pid);
+				player_save($edata);
 				$itm = $itmk = $itmsk = '';
 				$itme = $itms = 0;
-				$action = '';
+				$action = ''; $bid = 0;
 				return;
 			}
 		}
 		$log .= "<span class=\"yellow\">$w_name</span> 的包裹已经满了，不能赠送物品。<br>";
 	}
-	$action = '';
+	$action = ''; $bid = 0;
 	$mode = 'command';
 	return;
 }

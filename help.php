@@ -14,29 +14,29 @@ $ovlfile = config('overlay',$gamecfg);
 $presentfile = config('present',$gamecfg);
 $boxfile = config('box',$gamecfg);
 $vnmixfile = config('vnmixitem',$gamecfg);
-include_once $mixfile;
-include_once $vnmixfile;
+include $mixfile;
+include $vnmixfile;
 $writefile = GAME_ROOT.TPLDIR.'/mixhelp.htm';
 
-include_once config('npc',$gamecfg);
-include_once config('addnpc',$gamecfg);
-include_once config('evonpc',$gamecfg);
+include config('npc',$gamecfg);
+include config('addnpc',$gamecfg);
+include config('evonpc',$gamecfg);
 //for ($i=0; $i<=20; $i++) $p[$i]=$i; //？？？
 for ($i=1; $i<=6; $i++) $itemlst[$i]=$i;
 
+# 将evonpc加入npc队列
 foreach($enpcinfo as $ekey => $enpcs)
 {
-	foreach($enpcs as $sname => $enpc)
-	{
-		$npcinfo[$ekey]['esub'][$sname] = $enpc;
-	}
+	# evonpc在npcinfo中一定会有大类 所以只加入子类别
+	foreach($enpcs as $sname => $enpc) $npcinfo[$ekey]['esub'][$sname] = $enpc;
 }
+# 将addnpc加入npc队列
 foreach($anpcinfo as $akey => $anpcs)
 {
-	foreach($anpcs['sub'] as $aid => $anpc)
-	{
-		$npcinfo[$akey]['asub'][$aid] = $anpc;
-	}
+	# 如果npc队列中没有该addnpc大类，则先加入大类
+	if(!isset($npcinfo[$akey])) $npcinfo[$akey] = $anpcs;
+	# 之后遍历每个子类addnpc，依次加入
+	foreach($anpcs['sub'] as $aid => $anpc) $npcinfo[$akey]['asub'][$aid] = $anpc;
 }
 $npcinfo = get_npc_helpinfo($npcinfo);
 //print_r($npcinfo[14]['esub']);
@@ -56,6 +56,7 @@ $ty10[1]=21;
 $ty11[1]=89; 
 $ty11e[1]=Array(89,'esub'); #电掣NPC第二形态情报
 $ty12[1]=24;
+$ty25a[1] = Array(25,'asub'); #佣兵NPC
 
 if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemtime($writefile) || filemtime($mapitemfile) > filemtime($writefile) || filemtime($synfile) > filemtime($writefile) || filemtime($ovlfile) > filemtime($writefile) || filemtime($presentfile) > filemtime($writefile) || filemtime($boxfile) > filemtime($writefile)){
 	$mixitem = array();

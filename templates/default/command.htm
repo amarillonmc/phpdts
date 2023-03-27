@@ -1,10 +1,11 @@
 <input type="hidden" id="mode" name="mode" value="command">
 <input type="hidden" id="command" name="command" value="menu">
 <input type="hidden" id="subcmd" name="subcmd" value="">
+<input type="hidden" id="subcmd2" name="subcmd2" value="">
 现在想要做什么？<br /><br />
 
 <input type="button" class="cmdbutton" id="zz" name="search" value="[Z]搜寻" onclick="$('command').value='search';postCmd('gamecmd','command.php');this.disabled=true;" <!--{if (array_search($pls,$arealist) <= $areanum && !$hack) && (isset($plsinfo[$pls]) && !isset($hplsinfo[$pgroup]))}-->disabled<!--{/if}-->>
-<select id="moveto" name="moveto" onchange="$('command').value='move';postCmd('gamecmd','command.php');this.disabled=true;">
+<select id="moveto" name="moveto" id="d" onchange="$('command').value='move';postCmd('gamecmd','command.php');this.disabled=true;">
 {template move}
 </select>
 	<!-- 探索记忆栏 -->
@@ -125,13 +126,13 @@
 	<!--{/if}-->
 
 	<!-- 第 4 行：地区功能-->
-	<!--{if in_array($pls,$shops)}-->
+	<!--{if in_array($pls,$shops) || !check_skill_unlock('c11_ebuy',$pdata)}-->
 		<input type="button" class="cmdbutton" id="aa" name="sp_shop" value="[A]商店" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_shop';postCmd('gamecmd','command.php');this.disabled=true;">
 		<br>
 	<!--{/if}-->
 	<!--{if in_array($pls,$depots)}-->
 	<span tooltip="向安全箱中存入或取出道具">
-		<input type="button" class="cmdbutton" id="aa" name="sp_depot" value="[A]安全箱" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_depot';postCmd('gamecmd','command.php');this.disabled=true;">
+		<input type="button" class="cmdbutton" name="sp_depot" value="安全箱" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_depot';postCmd('gamecmd','command.php');this.disabled=true;">
 	</span>
 	<br>
 	<!--{/if}-->
@@ -179,3 +180,10 @@
 		<input type="button" class="cmdbutton" id="v" name="skillstable" value="[V]技能表" onclick="showModalDialog($('skillpage'));">
 	</span>
 	{template skillpage}
+
+	<!--{if !empty(get_skillpara('c11_merc','id',$clbpara))}-->
+	<span tooltip="查看或管理佣兵">
+		<input type="button" class="cmdbutton" name="sp_mercpage" value="佣兵管理" onclick="showModalDialog($('mercpage'));">
+	</span>
+	{template skill_mercpage}
+	<!--{/if}-->

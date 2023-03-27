@@ -104,9 +104,9 @@ if($hp > 0){
 	}
 
 	//执行动作前，身上存在追击标记时，直接进入追击判定
-	if((strpos($action,'chase')!==false || strpos($action,'dfight')!==false) && $mode !== 'revcombat')
+	if(!empty($action) && in_array($action,Array('chase','pchase','dfight','cover')) && $mode !== 'revcombat')
 	{
-		$command = 'chase';
+		$command = $action;
 		goto chase_flag;
 	}
 	//执行动作前检查是否有无法跳过且未阅览过的对话框
@@ -126,8 +126,8 @@ if($hp > 0){
 			$command = 'itemmain';
 			$itemcmd = 'itemmix';
 		}
-		if(strpos($action,'chase')===false && strpos($action,'dfight')===false && $mode !== 'combat' && $mode !== 'revcombat' && $mode !== 'corpse' && strpos($action,'pacorpse')===false && $mode !== 'senditem'){
-			$action = '';
+		if($action != 'chase' && $action != 'dfight' && $mode !== 'combat' && $mode !== 'revcombat' && $mode !== 'corpse' && $action != 'pacorpse' && $mode !== 'senditem'){
+			$action = ''; $bid = 0;
 		}
 		if($command == 'menu') {
 			$mode = 'command';
@@ -307,7 +307,7 @@ if($hp > 0){
 						include_once GAME_ROOT.'./include/game/search.func.php';
 						focus_item($pdata,$iid);
 					}else{
-						$action = 'focus'.$iid; $command = 'focus';
+						$action = 'focus'; $bid = $iid; $command = 'focus';
 						goto chase_flag;
 					}
 				}
@@ -481,81 +481,9 @@ if($hp > 0){
 			combat(1,$command);
 		} elseif($mode == 'revcombat'){
 			chase_flag:
-			$enemyid = NULL;
-			if(strpos($action,'enemy')===0) $enemyid = str_replace('enemy','',$action);
-			if(strpos($action,'chase')===0) $enemyid = str_replace('chase','',$action);
-			if(strpos($action,'pchase')===0) $enemyid = str_replace('pchase','',$action);
-			if(strpos($action,'dfight')===0) $enemyid = str_replace('dfight','',$action);
-			if(strpos($action,'focus')===0) $enemyid = str_replace('focus','',$action);
-			if(!$enemyid)
-			{
-				$log .= "<span class=\"yellow b\">你没有遇到敌人，或已经离开战场！</span>{$enemyid}<br>";
-				goto back_flag;
-			}
-			$result = $db->query ( "SELECT * FROM {$tablepre}players WHERE pid='$enemyid'" );
-			if (! $db->num_rows ( $result )) {
-				$log .= "对方不存在！<br>";
-				goto back_flag;
-			}
-			$edata = $db->fetch_array($result);
-			if ($edata ['pls'] != $pls) 
-			{
-				$log .= "<span class=\"yellow b\">" . $edata ['name'] . "</span>已经离开了<span class=\"yellow b\">$plsinfo[$pls]</span>。<br>";
-				goto back_flag;
-			}
-
 			include_once GAME_ROOT.'./include/game/revbattle.func.php';
-			include_once GAME_ROOT.'./include/game/revcombat.func.php';
-			if(!empty($edata['clbpara']['lasttimes'])) $edata = check_skilllasttimes($edata);
-
-			if ($edata ['hp'] <= 0)
-			{
-				if(strpos($action,'focus')===false) $log .= "<span class=\"red b\">" . $edata ['name'] . "</span>已经死亡，不能被攻击。<br>";
-				include_once GAME_ROOT . './include/game/battle.func.php';
-				$action = 'corpse'.$edata['pid'];
-				findcorpse($edata);
-			}
-			elseif ($command == 'changewep') 
-			{
-				change_wep_in_battle();
-				findenemy_rev($edata);
-			}
-			elseif ($command == 'chase') 
-			{
-				findenemy_rev($edata);
-			}
-			elseif ($command == 'back') 
-			{
-				//$log .= "你逃跑了。";
-				$flag = escape_from_enemy($pdata,$edata);
-				if($flag)
-				{
-					back_flag:
-					$mode = 'command';
-				}
-				else 
-				{
-					rev_combat_prepare($pdata,$edata,0);
-				}
-			}
-			elseif ($command == 'focus') 
-			{
-				// 迎战视野中的敌人先制率-40
-				$active_r = min(4,get_active_r_rev($pdata,$edata)-40);
-				$active_dice = diceroll(99);
-				if($active_dice < $active_r){
-					$action = 'enemy'.$edata['pid'];
-					findenemy_rev($edata);
-				}else {
-					rev_combat_prepare($edata,$pdata,0);
-				}
-			}
-			else
-			{
-				if(!empty($message)) $pdata['message'] = $message;
-				include_once GAME_ROOT . './include/game/revcombat.func.php';
-				rev_combat_prepare($pdata,$edata,1,$command);
-			}
+			if(!isset($message)) $message = '';
+			revbattle_prepare($command,$message);
 		} elseif($mode == 'rest') {
 			include_once GAME_ROOT.'./include/state.func.php';
 			rest($command);
@@ -574,7 +502,7 @@ if($hp > 0){
 			if ($command=="teamjoin") teamjoin($nteamID,$nteamPass);
 			if ($command=="teamquit") teamquit($nteamID,$nteamPass);
 		} elseif($mode == 'shop') {
-			if(in_array($pls,$shops)){
+			if(in_array($pls,$shops) || !check_skill_unlock('c11_ebuy',$pdata)){
 				if($command == 'shop') {
 					$mode = 'sp_shop';
 				} else {
@@ -649,15 +577,22 @@ if($hp > 0){
 						upgclbskills($sk);
 					}
 				} elseif(strpos($command,'swtskill_')!==false) {
-					if(isset($upgpara) && isset($cskills[$sk]['choice']) && in_array($upgpara,$cskills[$sk]['choice'])) {
-
-						switchclbskills($sk,$upgpara);
+					if(isset(${$sk.'upgpara'}) && isset($cskills[$sk]['choice']) && in_array(${$sk.'upgpara'},$cskills[$sk]['choice'])) {
+						switchclbskills($sk,${$sk.'upgpara'});
 					}
 				} elseif(strpos($command,'actskill_')!==false) {
 					# 其他特殊技能按钮
 					include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
-					if($sk == 'c1_veteran') skill_c1_veteran_act($c1_veteran_choice);
-					elseif($sk == 'c4_roar' || $sk == 'c4_sniper') skill_c4_unlock($sk);
+					if($sk == 'c4_roar' || $sk == 'c4_sniper'){skill_c4_unlock($sk);}
+					elseif($sk == 'c11_merc'){
+						if(isset(${$sk.'mkey'}) && isset(${$sk.'fire'}) && ${$sk.'fire'} == ${$sk.'mkey'}){
+							skill_merc_fire($sk,${$sk.'mkey'});
+						} elseif(isset(${$sk.'mkey'}) && isset(${$sk.'chase'})){
+							skill_merc_chase($sk,${$sk.'mkey'});
+						} elseif(isset(${$sk.'mkey'}) && isset(${$sk.${$sk.'mkey'}.'moveto'})){
+							skill_merc_move($sk,${$sk.'mkey'},${$sk.${$sk.'mkey'}.'moveto'});
+						} 
+					} 
 				}
 			}
 			$mode = 'command';
@@ -670,11 +605,11 @@ if($hp > 0){
 			$mode = 'command';
 		}
 		
-		if(strpos($action,'pacorpse')===0 && $gamestate < 40){
+		if($action == 'pacorpse' && $gamestate < 40){
 //			if($state == 1 || $state == 2 || $state ==3){
 //				$state = 0;
 //			}
-			$cid = str_replace('pacorpse','',$action);
+			$cid = $bid;
 			if($cid){
 				$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$cid' AND hp=0");
 				if($db->num_rows($result)>0){

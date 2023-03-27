@@ -17,6 +17,8 @@ function death($death, $kname = '', $ktype = 0, $annex = '',&$data=NULL)
 	}
 	extract($data,EXTR_REFS);
 
+	$bid = 0; $action = '';
+
 	if (! $death) {
 		return;
 	}

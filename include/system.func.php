@@ -638,13 +638,15 @@ function movehtm($atime = 0) {
 }
 
 function addnpc($type,$sub,$num,$time = 0,$clbstatus=NULL,$aitem=NULL,$apls=NULL) {
-	global $now,$db,$tablepre,$log,$plsinfo,$typeinfo,$anpcinfo,$npcinit,$arealist,$areanum,$gamecfg;
+	global $now,$db,$tablepre,$log,$plsinfo,$typeinfo,$arealist,$areanum,$gamecfg;
 	global $hidding_typelist,$deepzones;
 	$time = $time == 0 ? $now : $time;
 	$plsnum = sizeof($plsinfo);
-	if(empty($anpcinfo) || empty($npcinit)){
+	/*if(empty($anpcinfo) || empty($npcinit)){
 		include_once config('addnpc',$gamecfg);
-	}
+	}*/
+	$npcinit = get_npcinit();
+	$anpcinfo = get_addnpcinfo();
 	$anpc_namelist = Array();
 	$anpc = array_merge($npcinit,$anpcinfo[$type]);
 	$anpc = array_merge($anpc,$anpc['sub'][$sub]);	
@@ -834,7 +836,7 @@ function antiAFK($timelimit = 0){
 
 	if(empty($afkerlist)){return;}
 	foreach($afkerlist as $kid => $kcontent){
-		$db->query("UPDATE {$tablepre}players SET hp='0',state='32' WHERE pid='$kid' AND type='0' AND hp>'0' AND state<'10'");
+		$db->query("UPDATE {$tablepre}players SET hp='0',state='32',bid='0' WHERE pid='$kid' AND type='0' AND hp>'0' AND state<'10'");
 		if($db->affected_rows()){
 			addnews($now,'death32',$kcontent['name'],'',$kcontent['pls']);
 			$alivenum--;

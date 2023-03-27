@@ -4,6 +4,185 @@
 		exit('Access Denied');
 	}
 
+	// 处理从界面传回的战斗相关指令，在战斗开始前的最后一道准备工序
+	function revbattle_prepare($command,$message=NULL,$data=NULL)
+	{
+		global $log,$mode,$plsinfo,$db,$tablepre,$action_list;
+		if(!isset($data))
+		{
+			global $pdata;
+			$data = &$pdata;
+		}
+		extract($data,EXTR_REFS);
+		# 检查是否存在战斗动作
+		if(empty($action) || empty($bid) || !in_array($action,$action_list))
+		{
+			$log .= "你没有遇到敌人，或已经离开战场！<br>";
+			$action = ''; $bid = 0;
+			$mode = 'command';
+			return;
+		}
+		# 检查是否遇敌
+		$enemyid = $bid;
+		$result = $db->query ( "SELECT * FROM {$tablepre}players WHERE pid='$enemyid'");
+		if (!$db->num_rows($result)) 
+		{
+			$log .= "对方不存在！<br>";
+			$action = ''; $bid = 0;
+			$mode = 'command';
+			return;
+		}
+		# 获取敌人数据
+		//$edata = $db->fetch_array($result);
+		$edata = fetch_playerdata_by_pid($enemyid);
+		# 检查敌人是否处于当前位置
+		if ($edata['pls'] != $pls) 
+		{
+			$log .= "<span class=\"yellow\">" . $edata ['name'] . "</span>已经离开了<span class=\"yellow\">$plsinfo[$pls]</span>。<br>";
+			$action = ''; $bid = 0;
+			$mode = 'command';
+			return;
+		}
+		# 检查敌人是否已死亡
+		if ($edata ['hp'] <= 0)
+		{
+			if($action != 'focus') $log .= "<span class=\"red\">" . $edata ['name'] . "</span>已经死亡，不能被攻击。<br>";
+			include_once GAME_ROOT . './include/game/battle.func.php';
+			$action = 'corpse'; $bid = $edata['pid'];
+			findcorpse($edata);
+			return;
+		}
+		# 输入切换武器指令时，切换武器
+		if ($command == 'changewep') 
+		{
+			change_wep_in_battle();
+			findenemy_rev($edata);
+			return;
+		}
+		# 准备进入标准战斗流程
+		include_once GAME_ROOT.'./include/game/revcombat.func.php';
+		# 敌人身上存在时效性状态时，检查时效性状态
+		if(!empty($edata['clbpara']['lasttimes']))
+		{
+			$edata = check_skilllasttimes($edata);
+		}
+		# 追击流程
+		if ($command == 'chase' || $command == 'pchase' || $command == 'dfight') 
+		{
+			findenemy_rev($edata);
+			return;
+		}
+		# 逃跑流程
+		if ($command == 'back') 
+		{
+			//$log .= "你逃跑了。";
+			$flag = escape_from_enemy($data,$edata);
+			if($flag) $mode = 'command';
+			else rev_combat_prepare($data,$edata,0);
+			return;
+		}
+		# 重新遭遇视野中的敌人
+		if ($command == 'focus') 
+		{
+			// 迎战视野中的敌人先制率-40
+			$active_r = min(4,get_active_r_rev($data,$edata)-40);
+			$active_dice = diceroll(99);
+			if($active_dice < $active_r){
+				$action = 'enemy'; $bid = $edata['pid'];
+				findenemy_rev($edata);
+			}else {
+				rev_combat_prepare($edata,$data,0);
+			}
+			return;
+		}
+		# 由协战对象攻击敌人
+		if ($command == 'cover')
+		{
+			$action = ''; $bid = 0;
+			if(empty($clbpara['coveratk']))
+			{
+				$log .= "协战对象不存在！<br>";
+				$mode = 'command';
+				return;
+			}
+			$coid = $clbpara['coveratk']; unset($clbpara['coveratk']);
+			# 检查协战对象数据，要求：活的、同一地图
+			$result = $db->query ( "SELECT * FROM {$tablepre}players WHERE pid='$coid' AND pls='$pls' AND hp>0 ");
+			if (!$db->num_rows($result)) 
+			{
+				$log .= "协战对象不存在！<br>";
+				$mode = 'command';
+				return;
+			}
+			# 获取协战对象数据
+			$cdata = fetch_playerdata_by_pid($coid);
+			# 协战对象是佣兵的话要加钱，不过毕竟是自愿行为，只+1行动次数就好了
+			if(!empty(get_skillpara('c11_merc','id',$clbpara)) && in_array($coid,get_skillpara('c11_merc','id',$clbpara)))
+			{
+				include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
+				$cokey = array_search($coid,get_skillpara('c11_merc','id',$clbpara));
+				skill_merc_paid('c11_merc',$cokey,$cdata);
+			}
+			# 添加协战标记
+			$cdata['is_coveratk'] = 1;
+			# 去打人吧！
+			rev_combat_prepare($cdata,$edata,1);
+			return;
+		}
+		# 指派佣兵攻击敌人
+		if (strpos($command,'bskill_c11_merc') === 0) 
+		{
+			$mkey = str_replace('bskill_c11_merc','',$command);
+			$sk = 'c11_merc';
+			# 检查是否存在对应可攻击的佣兵
+			if(!empty($clbpara['skillpara'][$sk]['cancover'][$mkey]))
+			{
+				# 获取对应佣兵数据
+				$mid = $clbpara['skillpara'][$sk]['id'][$mkey];
+				$mdata = fetch_playerdata_by_pid($mid);
+				# 检查并扣除指挥的佣兵花费、佣兵行动次数增加对应数，并结算一次工资
+				include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
+				$clbpara['skillpara'][$sk]['mms'][$mkey] += get_skillvars($sk,'atkp');
+				skill_merc_paid($sk,$mkey,$mdata);
+				# 扣钱
+				$mccost = get_skillvars($sk,'atkp') * get_skillpara($sk,'paid',$clbpara)[$mkey];
+				$money -= $mccost;
+				# 干活！
+				$log .= "<span class='yellow'>你掏出{$mccost}元振臂一呼，{$mdata['name']}接过钱后毫不犹豫地扑向了敌人！</span><br>";
+				# 登记为收钱办事
+				$mdata['is_merc'] = 1;
+				# 是否要检查先后手？
+				if(isset($message) && $message == 'noactive')
+				{
+					$active_r = get_active_r_rev($mdata,$edata);
+					$active_dice = diceroll(99);
+					if($active_dice < $active_r)
+					{
+						rev_combat_prepare($mdata,$edata,1); 
+					}
+					else 
+					{
+						$log .= "<span class='yellow'>但是敌人早已做好了准备！</span><br>";
+						rev_combat_prepare($edata,$mdata,0);
+					}
+				}
+				else 
+				{
+					rev_combat_prepare($mdata,$edata,1); 
+				}
+			}
+			# 没有佣兵，你自己上吧！
+			else
+			{
+				rev_combat_prepare($data,$edata,1);
+			}
+			return;
+		}
+		# 上述流程没有拦截，直接进入标准战斗流程……可能会有问题？
+		rev_combat_prepare($data,$edata,1,$command);
+		return;
+	}
+
 	//发现敌人
 	function findenemy_rev($edata) 
 	{
@@ -57,6 +236,29 @@
 					$battle_skills[$sk_nums] = Array($unlock,$sk,$sk_desc);
 					$sk_nums++;
 				}
+				# 如果雇佣了佣兵，且佣兵与你在同一地图，可以指挥佣兵攻击
+				if($sk == 'c11_merc' && !empty(get_skillpara('c11_merc','cancover',$pdata['clbpara'])))
+				{
+					# 遍历可协战佣兵队列，检查是否有可以出击的佣兵
+					$mcids = get_skillpara($sk,'cancover',$pdata['clbpara']);
+					foreach($mcids as $mkey => $mc)
+					{
+						if($mc)
+						{
+							# 拉取佣兵数据
+							$mid = get_skillpara($sk,'id',$pdata['clbpara'])[$mkey];
+							$mdata = fetch_playerdata_by_pid($mid);
+							# 检查是否有钱强制命令佣兵攻击
+							$mccost = get_skillvars($sk,'atkp') * get_skillpara($sk,'paid',$pdata['clbpara'])[$mkey];
+							$unlock = $mccost > $pdata['money'] ? 1 : 0;
+							$sk_desc = $unlock ? '你没有足够的钱指挥佣兵主动攻击' : "花费<span class='yellow'>{$mccost}</span>元，指挥<span class='yellow'>{$mdata['name']}</span>发动攻击，攻击后佣兵会<span class='yellow'>锁定</span>敌人，离开地图前可再度对敌人进行<span class='yellow'>追击</span>";
+							# 将佣兵攻击指令加入指令集
+							$cskills[$sk.$mkey]['name'] = "佣兵攻击";
+							$battle_skills[$sk_nums] = Array($unlock,$sk.$mkey,$sk_desc);
+							$sk_nums++;
+						}
+					}
+				}
 			}
 		}
 
@@ -77,7 +279,7 @@
 	function findneut(&$edata,$kind=0)
 	{
 		global $db,$tablepre,$pdata;
-		global $fog,$log,$mode,$main,$cmd,$battle_title,$attinfo,$skillinfo;
+		global $now,$fog,$log,$mode,$main,$cmd,$battle_title,$attinfo,$skillinfo;
 		
 		$battle_title = $kind ? '发现朋友' : '发现敌人？';
 
@@ -106,7 +308,7 @@
 			$sponsorid = $edata['clbpara']['sponsor'];
 			$result = $db->query("SELECT * FROM {$tablepre}gambling WHERE uid = '$sponsorid'");
 			$sordata = $db->fetch_array($result);
-			addnews($now,'gpost_success',$sordata['uname'],$itm0,$name);
+			addnews($now,'gpost_success',$sordata['uname'],$itm0,$pdata['name']);
 			//再见了~快递员！
 			unset($edata['clbpara']['post']);unset($edata['clbpara']['postid']);unset($edata['clbpara']['sponsor']);
 			destory_corpse($edata);
@@ -180,7 +382,7 @@
 		global $fog,$action,$clbpara,$chase_escape_obbs,$log;
 		//include_once GAME_ROOT.'./include/game/dice.func.php';
 		# 在受追击/鏖战状态下逃跑有概率失败
-		if(strpos($action,'pchase')===0 || strpos($action,'dfight')===0)
+		if($action == 'pchase' || $action == 'dfight')
 		{
 			$escape_dice = diceroll(99);
 			if($escape_dice < $chase_escape_obbs)
@@ -191,7 +393,7 @@
 			}
 		}
 		$log .= "你逃跑了。<br>";
-		$action = '';
+		$action = ''; $bid = 0;
 		//逃跑后在视野里记录敌人
 		$nm = $fog ? '？？？' : $pd['name'];
 		check_add_searchmemory($pd['pid'],'enemy',$nm,$pa);
