@@ -9,7 +9,7 @@
 	# 升级指定技能会触发的事件，返回0时代表无法升级技能
 	function upgclbskills_events($event,$sk,&$data=NULL)
 	{
-		global $log,$cskills,$now,$club_skillslist;
+		global $log,$cskills,$now,$club_skillslist,$weather,$gamevars,$wthinfo,$db,$tablepre;
 
 		if(!isset($data))
 		{
@@ -107,6 +107,83 @@
 				$log .= "所选称号无可学习技能，这可能是一个BUG，请联系管理员。<br>";
 			}
 			return 0;
+		}
+		# 事件：晶璧
+		if($event == 'crystal')
+		{
+			# 初始化护盾属性
+			$slde = round(abs($rp) * get_skillvars($sk,'sldr') / 100);
+			$sldt = 0;
+			# 先看看能不能给自己套盾
+			if(check_skill_unlock('buff_shield',$data))
+			{
+				getclubskill('buff_shield',$clbpara);
+				set_skillpara('buff_shield','svar',$slde,$clbpara);
+				$sldt++;
+			}
+			# 再遍历场上所有参战者（玩家、18、19）
+			$result = $db->query("SELECT * FROM {$tablepre}players WHERE (type = 0 OR type =18 or type = 19) AND hp > 0 AND pid != {$pid}");
+			while($sdata = $db->fetch_array($result))
+			{
+				$sdata['clbpara'] = get_clbpara($sdata['clbpara']);
+				# 没有盾的话可以套个盾，有就不给了
+				if(check_skill_unlock('buff_shield',$sdata))
+				{
+					getclubskill('buff_shield',$sdata['clbpara']);
+					set_skillpara('buff_shield','svar',$slde,$sdata['clbpara']);
+					$sldt++;
+					player_save($sdata);
+					$w_log = "<span class=\"yellow\">{$name}发动了技能「晶璧」，你被一层晶体护盾保护了起来！</span><br>";
+					logsave ($sdata['pid'],$now,$w_log,'c');
+				}
+			}
+			if($sldt)
+			{
+				# 降低rp
+				$rploss = $sldt * get_skillvars($sk,'rploss');
+				$rp -= $rploss;
+				# 扣除怒气
+				$ragecost = get_skillvars($sk,'ragecost');
+				$rage -= $ragecost;
+				$log .= "<span class='lime'>你用心感应，唤出晶体之盾为战场上{$sldt}名参战者提供了庇佑！</span><br>善行点数增加了！<br>";
+			}
+			else 
+			{
+				$log .= "你用心感应，但是战场上似乎已经没有需要你提供庇护的人了。<br>";
+				return 0;
+			}
+			return 1;
+		}
+		# 事件：苦雨
+		if($event == 'woesea')
+		{
+			if($weather == 18)
+			{
+				$log .= "战场已经处于{$wthinfo[18]}下，不能重复发动！<br>";
+				return 0;
+			}
+			else 
+			{
+				$ss -= 100;
+				$weather = 18;
+				$gamevars['wth18stime'] = $now;
+				$gamevars['wth18etime'] = $now + get_skillvars('c19_woesea','wtht');
+				$gamevars['wth18pid'] = $pid;
+				save_gameinfo();
+				addnews($now, 'wthchange', $name, $weather, '自己积攒的善德');
+				include_once GAME_ROOT.'./include/game/combat.func.php';
+				$sn = 'song';
+				addnoise($sn,'__',$now,$pls,0,0,$sn);
+				$clbpara['event_bgmbook'] = Array('wth18');
+
+				$log .= "你闭上双眼，伴着记忆中那轻快的旋律轻轻哼唱起来……<br>
+				歌声悠然飘扬，朦胧间，你似乎感到有雨滴淅沥落下，轻轻拍在你的脸上。<br>
+				当你再度睁开眼时，<br>
+				不知从何而来、如妖精般飞舞着的光球们抚过你的面颊，然后飘往虚拟战场的每个角落——<br>
+				……<br>
+				下雨了。";
+				return 1;
+			}
 		}
 		# 事件：雇佣佣兵
 		if($event == 'hiremerc')
@@ -511,7 +588,8 @@
 			# 出生啊！
 			$max_rp_dice = $pdata['itme0']+$pdata['itms0'] > 300 ? $pdata['itme0']+$pdata['itms0'] : 300;
 			$rp_dice = rand(300,$max_rp_dice);
-			$pdata['rp'] += $rp_dice;
+			include_once GAME_ROOT.'./include/game/revcombat.func.php';
+			rpup_rev($pdata,$rp_dice);
 			# 做成棍了就没有尸体了
 			destory_corpse($edata);
 			include_once GAME_ROOT.'./include/game/itemmain.func.php';

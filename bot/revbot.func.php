@@ -427,7 +427,7 @@ function bot_check_can_mixitem(&$pa)
 		if(empty($mlst['m21']) && isset($stf['c21']) && isset($stf['c22']))
 		{
 			$pa['wep'] = 'Azurewrath';
-			$pa['wepk'] = 'WK'; $pa['wepe'] = 9999; $pa['weps'] = '∞'; $pa['wepsk'] = 'rci';
+			$pa['wepk'] = 'WK'; $pa['wepe'] = 50; $pa['weps'] = 9999; $pa['wepsk'] = 'rci';
 			$mixflag = 1;
 		}
 	}

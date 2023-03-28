@@ -157,8 +157,8 @@
 						//$pa['skill_'.$sk.'_log'] = "";
 					}
 				}
-				# active标签技能通用判定
-				if(get_skilltags($sk,'active') && !empty(get_skillpara($sk,'active',$pa['clbpara'])) && !check_skill_unlock($sk,$pa))
+				# switch标签技能通用判定
+				if(get_skilltags($sk,'switch') && !empty(get_skillpara($sk,'active',$pa['clbpara'])) && !check_skill_unlock($sk,$pa))
 				{
 					$pa['askill_'.$sk] = 1;
 				}
@@ -832,7 +832,7 @@
 				}
 			}
 			//结算rp上升事件
-			if($phase == 'rp' && $rp_up > 0) $pa['rp'] = $pa['rp'] + $rp_up;
+			if($phase == 'rp' && $rp_up > 0) rpup_rev($pa,$rp_up);
 			//返回一个伤害系数
 			if($phase == 'defend' && $dmg_p > 0) return $dmg_p;
 		}

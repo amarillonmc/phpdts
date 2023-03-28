@@ -45,9 +45,9 @@ function getclub($who, &$c1, &$c2, &$c3)
 	$c3=calc(11131,6397,$curgid,$curuid,$curpid,$starttime,$validtime);
 	//$clubid = array(6,7,8,99,10,11,13,14,16,18,19,7,99,13,14,18,6,19,13,14,18);
 	//$c3%=21; $c3=$clubid[$c3];
-	$clubid = array(6,7,8,10,11,12,19,99,6,7,8,10,11,12,19,99);
-	$c3%=16; $c3=$clubid[$c3];
-	if ($c1==$c3 || $c2==$c3) $c3=99;
+	$clubid = array(6,7,8,10,11,12,19,6,7,8,10,11,12,19);
+	$c3%=14; $c3=$clubid[$c3];
+	if ($c1==$c3 || $c2==$c3) $c3=19;
 
 	if ($c1>$c2) swap($c1,$c2);
 	if ($c1>$c3) swap($c1,$c3);

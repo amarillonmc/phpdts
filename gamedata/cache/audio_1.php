@@ -11,6 +11,7 @@ $default_volume = 20;
 $event_bgm = Array
 (
 	'test' => Array('event'),
+	'wth18' => Array('wth18'),
 );
 
 # 会播放BGM的地图（优先级高——会覆盖默认曲集）
@@ -32,6 +33,7 @@ $bgmbook = Array
 	'besynthed' => Array(0,1,2,5,6,7,8,9,10),
 	'valhalla' => Array(3,4),
 	'event' => Array(11,12,13),
+	'wth18' => Array(14,15),
 );
 
 # 所有bgm编号清单：
@@ -105,6 +107,16 @@ $bgmlist = Array
 	13 => Array(
 		'name' => 'EternalSushi & ElectricMudkip - ... and One Sin',
 		'url' => 'https://res.dts.gay/BGM/XY_DecisiveBattle.mp3',
+		'type' => 'audio/mpeg',
+	),
+	14 => Array(
+		'name' => 'Tr01_Emerged',
+		'url' => './img/other/Tr01_Emerged.mp3',
+		'type' => 'audio/mpeg',
+	),
+	15 => Array(
+		'name' => '待补充',
+		'url' => '待补充',
 		'type' => 'audio/mpeg',
 	),
 );

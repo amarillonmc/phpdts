@@ -65,7 +65,9 @@
                 <td colspan="2">
                     <select id="cwth" name="cwth" style="width:72px" onchange="closeDialog($('terminal'));$('mode').value='command';$('command').value='consle_wthchange';postCmd('gamecmd','command.php');">
                         <!--{loop $wthinfo $n $wth}-->
+                        <!--{if $n != 18}-->
                         <option value="$n"<!--{if $weather == $n}--> selected<!--{/if}-->> {$wth} </option>
+                        <!--{/if}-->
                         <!--{/loop}-->
                     </select>
                 </td>

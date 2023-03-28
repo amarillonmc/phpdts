@@ -137,10 +137,13 @@ function itemuse($itmn,&$data=NULL) {
 			}else{
 				$spup = $itme;
 			}
-			$sp += $spup;
+			/*$sp += $spup;
 			$sp = $sp > $msp ? $msp : $sp;
-			$oldsp = $sp - $oldsp;
-			$log .= "你使用了<span class=\"red\">$itm</span>，恢复了<span class=\"yellow\">$oldsp</span>点体力。<br>";
+			$oldsp = $sp - $oldsp;*/
+			$addsp = $msp - $sp < $spup ? $msp - $sp : $spup;
+			if($addsp > 0) $sp += $addsp;
+			else $addsp = 0;
+			$log .= "你使用了<span class=\"red\">$itm</span>，恢复了<span class=\"yellow\">$addsp</span>点体力。<br>";
 			//吃了无毒果酱
 			if($itm == '桔黄色的果酱') $clbpara['achvars']['eat_jelly'] = 1;
 			if ($itms != $nosta) {
@@ -163,10 +166,13 @@ function itemuse($itmn,&$data=NULL) {
 			}else{
 				$hpup = $itme;
 			}
-			$hp += $hpup;
+			/*$hp += $hpup;
 			$hp = $hp > $mhp ? $mhp : $hp;
-			$oldhp = $hp - $oldhp;
-			$log .= "你使用了<span class=\"red\">$itm</span>，恢复了<span class=\"yellow\">$oldhp</span>点生命。<br>";
+			$oldhp = $hp - $oldhp;*/
+			$addhp = $mhp - $hp < $hpup ? $mhp - $hp : $hpup;
+			if($addhp > 0) $hp += $addhp;
+			else $addhp = 0;
+			$log .= "你使用了<span class=\"red\">$itm</span>，恢复了<span class=\"yellow\">$hpup</span>点生命。<br>";
 			if ($itms != $nosta) {
 				$itms --;
 				if ($itms <= 0) {
@@ -221,15 +227,21 @@ function itemuse($itmn,&$data=NULL) {
 			}else{
 				$bpup = $itme;
 			}
-			$oldsp = $sp;
-			$sp += $bpup;
-			$sp = $sp > $msp ? $msp : $sp;
-			$oldsp = $sp - $oldsp;
-			$oldhp = $hp;
-			$hp += $bpup;
-			$hp = $hp > $mhp ? $mhp : $hp;
-			$oldhp = $hp - $oldhp;
-			$log .= "你使用了<span class=\"red\">$itm</span>，恢复了<span class=\"yellow\">$oldhp</span>点生命和<span class=\"yellow\">$oldsp</span>点体力。<br>";
+			//$oldsp = $sp; 
+			//$sp += $bpup;
+			//$sp = $sp > $msp ? $msp : $sp;
+			//$oldsp = $sp - $oldsp;
+			$addsp = $msp - $sp < $bpup ? $msp - $sp : $bpup;
+			if($addsp > 0) $sp += $addsp;
+			else $addsp = 0;
+			//$oldhp = $hp;
+			//$hp += $bpup;
+			//$hp = $hp > $mhp ? $mhp : $hp;
+			//$oldhp = $hp - $oldhp;
+			$addhp = $mhp - $hp < $bpup ? $mhp - $hp : $bpup;
+			if($addhp > 0) $hp += $addhp;
+			else $addhp = 0;
+			$log .= "你使用了<span class=\"red\">$itm</span>，恢复了<span class=\"yellow\">$addhp</span>点生命和<span class=\"yellow\">$addsp</span>点体力。<br>";
 			//吃了无毒的围棋子饼干 真勇啊！
 			if($itm == '像围棋子一样的饼干') $clbpara['achvars']['eat_weiqi'] = 1;
 			if ($itms != $nosta) {
@@ -1206,11 +1218,19 @@ function itemuse($itmn,&$data=NULL) {
 			
 		} elseif ($itm == '天候棒') {
 			//global $weather, $wthinfo, $name;
-			$weather = rand ( 10, 13 );
-			include_once GAME_ROOT . './include/system.func.php';
-			save_gameinfo ();
-			addnews ( $now, 'wthchange', $name, $weather );
-			$log .= "你转动了几下天候棒。<br>天气突然转变成了<span class=\"red b\">$wthinfo[$weather]</span>！<br>";
+			if($weather <= 13)
+			{
+				$weather = rand ( 10, 13 );
+				include_once GAME_ROOT . './include/system.func.php';
+				save_gameinfo ();
+				addnews ( $now, 'wthchange', $name, $weather );
+				$log .= "你转动了几下天候棒。<br>天气突然转变成了<span class=\"red\">$wthinfo[$weather]</span>！<br>";
+			}
+			else 
+			{
+				addnews ( $now, 'wthfail', $name, $weather );
+				$log .= "你转动了几下天候棒。<br>但天气并未发生改变！<br>";
+			}
 			$itms --;
 		}	elseif ($itm == '天然呆四面的奖赏') {
 			//global $wep, $wepk, $wepe, $weps, $wepsk;

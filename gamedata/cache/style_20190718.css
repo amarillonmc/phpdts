@@ -317,6 +317,30 @@ table.dialogue {
 		text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;
 	}
 }
+.minirainbow {
+	color: rgb(227, 25, 25);
+	animation: minirainbowshimmer 2s linear infinite;
+}
+@keyframes minirainbowshimmer {
+	0% {
+		color:#e67b00;
+	}
+	20% {
+		color: #00ff00;
+	}
+	40% {
+		color:#ffff00;
+	}
+	60% {
+		color: #2dcce1;
+	}
+	80% {
+		color: #ff00ff;
+	}
+	100% {
+		color: rgb(227, 25, 25);
+	}
+}
 
 #main {
 white-space:nowrap;

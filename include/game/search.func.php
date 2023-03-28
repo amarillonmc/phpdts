@@ -370,7 +370,7 @@ function search(&$data=NULL){
 
 function move_search_events(&$data=NULL,$act)
 {
-	global $log,$inf_move_hp,$inf_move_sp,$infwords;
+	global $log,$inf_move_hp,$inf_move_sp,$infwords,$weather,$gamevars,$now;
 
 	if(!isset($data))
 	{
@@ -407,6 +407,48 @@ function move_search_events(&$data=NULL,$act)
 					return;
 				}
 			}			
+		}
+	}
+
+	# 光玉雨天气效果判定：
+	if($weather == 18)
+	{
+		# 雨停了
+		if($now > $gamevars['wth18etime'])
+		{
+			unset($gamevars['wth18stime']);
+			unset($gamevars['wth18etime']);
+			unset($gamevars['wth18pid']);
+			$weather = 1;
+			save_gameinfo();
+			addnews($now, 'wth18end');
+			if(!empty($clbpara['event_bgmbook'])) unset($clbpara['event_bgmbook']);
+		}
+		# 雨势
+		else 
+		{
+			if(empty($clbpara['event_bgmbook'])) $clbpara['event_bgmbook'] = Array('wth18');
+			$wthlastime = $now - $gamevars['wth18stime'];
+			# 雨势在前7分钟递增，后3分钟递减
+			$wthlastime = $wthlastime <= 420 ? $wthlastime : 600 - $wthlastime;
+			$wthpow = min(7,max(1,round($wthlastime / 60)));
+			$hp_up = diceroll($wthpow) * diceroll($wthpow); 
+			$sp_up = diceroll($wthpow) * diceroll($wthpow);
+			if($hp_up || $sp_up)
+			{
+				$log .= "<span class='minirainbow'>不知从哪飘来的光球落在了你的肩上……</span><br>超量恢复了";
+				if($hp_up)
+				{
+					$hp += $hp_up;
+					$log .= "<span class='minirainbow'>{$hp_up}</span>点生命！";
+				}
+				if($sp_up)
+				{
+					$hp += $sp_up;
+					$log .= "<span class='minirainbow'>{$sp_up}</span>点体力！";
+				}
+				$log .= "<br>";
+			}
 		}
 	}
 
@@ -605,6 +647,8 @@ function discover($schmode = 0,&$data=NULL)
 					if(!empty(get_skillpara('c11_merc','id',$clbpara)) && in_array($edata['pid'],get_skillpara('c11_merc','id',$clbpara))) continue;
 					//灵子状态只能遭遇同为灵子状态的对象，非灵子状态对象无法发现灵子状态下的对象……但是尸体就没有这种考量了
 					if(($edata['pose'] == 8 || $data['pose'] == 8) && $data['pose'] != $edata['pose']) continue;
+					//「量心」技能效果判定：
+					if(!check_skill_unlock('c19_dispel',$data) && !empty(get_skillpara('c19_dispel','active',$clbpara)) && $edata['hp'] <= 1) continue;
 					//计算活人发现率
 					$hide_r = get_hide_r_rev($data,$edata);
 					$enemy_dice = diceroll(99);

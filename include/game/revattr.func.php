@@ -1672,17 +1672,33 @@
 			if($p>0) $fin_dmg_p[]= $p; 
 		}
 
-		# 晶莹判定:
-		if($pa['club'] == 19 || $pd['club'] == 19)
+		# 「莹心」pa效果判定：
+		if(isset($pa['skill_c19_purity']))
 		{
-			$p = rev_get_clubskill_bonus_dmg_rate($pa['club'],$pa['skills'],$pa,$pd['club'],$pd['skills'],$pd);
-			if($p != 100)
+			$sk = 'c19_purity';
+			$sk_lvl = get_skilllvl($sk,$pa);
+			$sk_p = get_skillvars($sk,'findmgr',$sk_lvl);
+			if($sk_p)
 			{
-				$log.="<span class=\"yellow\">在「晶莹」的作用下，{$pa['nm']}造成的最终伤害变化至".$p."%！</span><br>";
-				$fin_dmg_p[] = round($p/100,2);
+				$p = 1 - ($sk_p / 100);
+				$log.="<span class=\"yellow\">在「莹心」的作用下，{$pa['nm']}造成的最终伤害降低了{$sk_p}%！</span><br>";
+				$fin_dmg_p[] = $p;
 			}
 		}
 
+		# 「莹心」pd效果判定：
+		if(isset($pd['skill_c19_purity']))
+		{
+			$sk = 'c19_purity';
+			$sk_lvl = get_skilllvl($sk,$pd);
+			$sk_p = get_skillvars($sk,'findmgdefr',$sk_lvl);
+			if($sk_p)
+			{
+				$p = 1 - ($sk_p / 100);
+				$log.="<span class=\"yellow\">在「莹心」的作用下，{$pa['nm']}造成的最终伤害降低了{$sk_p}%！</span><br>";
+				$fin_dmg_p[] = $p;
+			}
+		}
 		return $fin_dmg_p;
 	}
 
@@ -1690,6 +1706,15 @@
 	function get_final_dmg_fix(&$pa,&$pd,$active,$fin_dmg)
 	{
 		global $log;
+
+		# 「量心」效果判定 手加减：
+		if(isset($pa['askill_c19_dispel']) && $fin_dmg >= $pd['hp'])
+		{
+			$fin_dmg = $pd['hp'] - 1;
+			$pa['askill_c19_dispel'] = 2;
+			$log.="<span class=\"yellow\">{$pa['nm']}在出手时保持了最大限度的克制！</span><br>";
+			return $fin_dmg;
+		}
 
 		# 「闷棍」技能效果：
 		if(isset($pa['bskill_c1_bjack']))
@@ -1769,14 +1794,22 @@
 			}
 		}
 
-		#剔透判定：
-		if($pa['club'] == 19)
+		# 「祛障」效果判定：
+		if(isset($pa['bskill_c19_redeem']))
 		{
-			$rp_dmg = rev_get_clubskill_bonus_dmg_val($pa['club'],$pa['skills'],$pa,$pd);
-			if($rp_dmg > 0)
+			# rp低于对方时，附加白字伤害
+			if($pd['rp'] > $pa['rp'])
 			{
+				$rp_dmg = $pd['rp'] - $pa['rp'];
 				$fin_dmg += $rp_dmg;
-				$log .= "<span class=\"yellow\">在「剔透」的作用下，敌人受到了<span class=\"red\">$rp_dmg</span>点额外伤害。</span><br>";
+				$log .= "<span class=\"yellow\">在「祛障」的作用下，{$pd['nm']}受到了<span class=\"red\">$rp_dmg</span>点额外伤害。</span><br>";
+			}
+			else 
+			{
+				$min_rp = get_skillvars('c19_redeem','rpmin');
+				$move_rp = max($min_rp,$pd['rp']);
+				$pd['rp'] += $move_rp; $pa['rp'] -= $move_rp;
+				$log .= "<span class=\"yellow\">在「祛障」的作用下，{$pa['nm']}将部分罪业转移给了{$pd['nm']}！<br>";
 			}
 		}
 
@@ -1962,22 +1995,12 @@
 		return;
 	}
 
-	//战斗后结算rp事件
+	# 战斗后结算rp事件
 	function get_killer_rp(&$pa,&$pd,$active)
 	{
-		//杀人rp结算
-		$rpup = $pd['type'] ? 20 : max(80,$pd['rp']);		
-		//晶莹剔透修正
-		if($pa['club'] == 19)
-		{
-			$rpdec = 30;
-			$rpdec += get_clubskill_rp_dec($pa['club'],$pa['skills']);
-			$pa['rp'] += round($rpup*(100-$rpdec)/100);
-		}		
-		else
-		{
-			$pa['rp'] += $rpup;
-		}
+		# 杀人rp结算
+		$rpup = $pd['type'] ? 20 : max(80,$pd['rp']);
+		rpup_rev($pa,$rpup);
 		return;
 	}
 
@@ -2172,7 +2195,7 @@
 	// $mode 0-标准战斗 1-鏖战 2-追击（追击&鏖战基础先制率不受天气姿态影响）
 	function get_active_r_rev(&$pa,&$pd,$mode=0)
 	{
-		global $log,$active_obbs,$weather,$gamecfg,$chase_active_obbs;
+		global $log,$now,$active_obbs,$weather,$gamevars,$gamecfg,$chase_active_obbs;
 		include config('combatcfg',$gamecfg);
 		$pa['clbpara'] = get_clbpara($pa['clbpara']);
 		$pd['clbpara'] = get_clbpara($pd['clbpara']);
@@ -2182,6 +2205,17 @@
 			$active_r = $active_obbs;
 			# 计算天气对先攻率的修正：
 			$wth_ar = $weather_active_r[$weather] ?: 0;
+			# 光玉雨特殊效果判定：
+			if($weather == 18 && $gamevars['wth18pid'] == $pa['pid'])
+			{
+				# 计算雨势
+				$wthlastime = $now - $gamevars['wth18stime'];
+				# 雨势在前7分钟递增，后3分钟递减
+				$wthlastime = $wthlastime <= 420 ? $wthlastime : 600 - $wthlastime;
+				$wthpow = min(7,max(1,round($wthlastime / 60)));
+				# 效力加成
+				$wth_ar += diceroll($wthpow) + diceroll($wthpow);
+			}
 			# 计算pa姿态对于先攻率的修正：
 			$a_pose_ar = $pose_active_modifier[$pa['pose']] ?: 0;
 			# 计算pd姿态对于先攻率的修正：
@@ -2254,6 +2288,12 @@
 		if(isset($pa['bskill_c1_stalk']))
 		{
 			$pd['cannot_counter_log'] = "{$pd['nm']}无法反击！";
+			return 0;
+		}
+		# 被留手了应不应该反击……？暂时定不会反击，但是会反击也很合理，人心险恶嘛！
+		if(isset($pa['askill_c19_dispel']) && $pa['askill_c19_dispel'] == 2)
+		{
+			$pd['cannot_counter_log'] = "被你放了一马的{$pd['nm']}一瘸一拐地逃开了。<br>希望你的决定是正确的……";
 			return 0;
 		}
 		# 处于眩晕状态时，无法反击
