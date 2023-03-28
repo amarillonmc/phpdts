@@ -338,7 +338,7 @@ function add_once_area($atime) {
 		} elseif(($areanum + $areaadd) >= $plsnum) {
 			$areaaddlist = array_slice($arealist,$areanum+1);
 			$areanum = $plsnum;
-			$weather = rand(0,9);
+			if($weather <= 9) $weather = rand(0,9);
 			//addnews($atime,'addarea',$areaaddlist,$weather);
 			addnews($atime, 'addarea',$areaaddlist,$weather);
 			storyputchat($now,'areaadd');
@@ -362,7 +362,7 @@ function add_once_area($atime) {
 			gameover($atime,'end1');
 			return;
 		} else {
-			$weather = rand(0,9);
+			if($weather <= 9) $weather = rand(0,9);
 			if($hack > 0){$hack--;}
 			//重置控制面板可用次数
 			if(isset($gamevars['apis']) && isset($gamevars['api'])) $gamevars['api'] = $gamevars['apis'];

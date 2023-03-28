@@ -63,9 +63,9 @@ function poison($itmn = 0) {
 function wthchange($itm,$itmsk,$wlog=1){
 	global $now,$log,$weather,$wthinfo,$name,$nick,$clbpara;
 	$weathertd = $weather;
-	if($weather >= 14 && $weather <= 17){
+	if($weather >= 14 && $weather <= 18){
 		addnews ( $now, 'wthfail', get_title_desc($nick).' '.$name, $weather, $itm );
-		$log .= "你使用了{$itm}。<br /><span class=\"red\">但是恶劣的天气并未发生任何变化！</span><br />";
+		$log .= "你使用了{$itm}。<br /><span class=\"red\">但是天气并未发生任何变化！</span><br />";
 	}else{
 		if($itmsk==99){$weather = rand ( 0, 13 );}//随机全天气
 		elseif($itmsk==98){$weather = rand ( 10, 13 );}//随机恶劣天气

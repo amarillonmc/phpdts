@@ -690,16 +690,26 @@ function death_kagari($type){
 	}	
 }
 
-function event_rp_up($rpup){
-	global $rp,$club,$skills;
-	if($club != 19 || $rpup <= 0){
+function event_rp_up($rpup)
+{
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
+	include_once GAME_ROOT.'./include/game/revcombat.func.php';
+	rpup_rev($data,$rpup);
+	
+	/*if($club != 19 || $rpup <= 0){
 		$rp += $rpup;
 	}else{
-		include_once GAME_ROOT.'./include/game/clubskills.func.php';
+		
 		$rpdec = 30;
 		//$rpdec += get_clubskill_rp_dec($club,$skills);
 		$rp += round($rpup*(100-$rpdec)/100);
-	}
+	}*/
 	return;
 }
 ?>

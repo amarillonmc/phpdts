@@ -205,7 +205,12 @@ function trap(&$data=NULL){
 				addnews($now,'trap',get_title_desc($nick).' '.$name,$trname,$itm0);
 			}
 			$log .= "糟糕，你触发了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>！受到<span class=\"dmg\">$damage</span>点伤害！<br>";
-			$rp = $rp / 2; 
+
+			# 踩雷rp结算
+			$rp_up = -1 * $rp / 2; 
+			include_once GAME_ROOT.'./include/game/revcombat.func.php';
+			if($rp_up) rpup_rev($data,$rp_up);
+
 			if($goodmancard)
 			{
 				$gm = ceil($goodmancard*rand(80,120)/100);
@@ -217,7 +222,6 @@ function trap(&$data=NULL){
 			{
 				if(!empty($wdata))
 				{
-					include_once GAME_ROOT.'./include/game/revcombat.func.php';
 					$wdata['wep_name'] = $itm0;
 					// 陷阱有主 走击杀判定
 					$last = pre_kill_events($wdata,$data,0,'trap');
@@ -1284,9 +1288,13 @@ function getcorpse($item,&$data=NULL)
 			$mode = 'command';
 			return;
 		}
+
 		$log.="你销毁了{$edata['name']}的尸体。<br>但这一切值得吗……？<br>";
-		//include_once GAME_ROOT.'./include/game/dice.func.php';
-		$rp += diceroll($rpup_destory_corpse);
+		# 销毁尸体rp结算
+		$rp_up = diceroll($rpup_destory_corpse);
+		include_once GAME_ROOT.'./include/game/revcombat.func.php';
+		rpup_rev($data,$rpup);
+
 		addnews($now,'cdestroy',$name,$edata['name']);
 		destory_corpse($edata);
 		$action = ''; $bid = 0;

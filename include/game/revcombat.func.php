@@ -800,7 +800,7 @@
 	# 重要的事情要说三次：这里的第一个参数指的是杀人者(敌对方)视角，第二个参数指的是死者(受到伤害者)视角。
 	function revive_process(&$pa,&$pd,$active)
 	{
-		global $log,$weather,$now;
+		global $log,$weather,$now,$gamevars;
 		include_once GAME_ROOT.'./include/game/clubslct.func.php';
 
 		if(empty($pa['nm'])) $pa['nm'] = $active && !$pa['type'] ? '你' : $pa['name'];
@@ -809,6 +809,30 @@
 		$revival_flag = 0;
 
 		$dname = $pd['type'] ? $pd['name'] : get_title_desc($pd['nick']).' '.$pd['name'];
+
+		#光玉雨天气下，提供者有概率复活
+		if (!$revival_flag && $weather == 18 && $gamevars['wth18pid'] == $pd['pid'])
+		{
+			# 计算雨势
+			$wthlastime = $now - $gamevars['wth18stime'];
+			# 雨势在前7分钟递增，后3分钟递减
+			$wthlastime = $wthlastime <= 420 ? $wthlastime : 600 - $wthlastime;
+			$wthpow = min(7,max(1,round($wthlastime / 60)));
+			# 复活概率：基础10% + 效力x2 最高24%
+			$wth18_obbs = 10 + diceroll($wthpow) + diceroll($wthpow);
+			$wth18_dice = diceroll(99);
+			if($wth18_dice < $wth18_obbs)
+			{
+				#奥罗拉复活效果
+				$revival_flag = 18; //保存复活标记为通过光玉雨复活
+				addnews($now,'wth18_revival',$dname);
+				$pd['hp'] += min($pd['mhp'],max($wth18_obbs,1)); 
+				$pd['sp'] += min($pd['msp'],max($wth18_obbs,1));
+				$pd['state'] = 0;
+				$log.= "<span class=\"lime\">但是，飞舞着的光玉们钻进了{$pd['nm']}的身体，让{$pd['nm']}重新站了起来！</span><br>";;
+				return $revival_flag;
+			}
+		}
 
 		#极光天气下，玩家有10%概率、NPC有1%概率无条件复活
 		if (!$revival_flag && $weather == 17)
@@ -828,15 +852,27 @@
 			}
 		}
 
-		#决死结界复活：
-		if (!$revival_flag && $pd['club']==99 && !$pd['type'])	
+		# 「涅槃」复活：
+		if (!$revival_flag && isset($pd['skill_c19_nirvana']))	
 		{
-			#决死结界复活效果：
-			$revival_flag = 99; //保存复活标记为通过称号复活
+			# 「涅槃」复活效果：
+			$revival_flag = 'nirvan'; //保存复活标记为通过技能复活
 			addnews($now,'revival',$dname);	
-			$pd['hp'] = $pd['mhp']; $pd['sp'] = $pd['msp'];
-			$pd['state'] = 0; changeclub(17,$pd);
-			$log .= '<span class="yellow">但是，由于及时按下BOMB键，'.$pd['nm'].'原地满血复活了！</span><br>';
+			# 添加「涅槃」激活次数
+			set_skillpara('c19_nirvana','active_t',get_skillpara('c19_nirvana','active_t',$pd['clbpara'])+1,$pd['clbpara']);
+			$pd['state'] = 0; 
+			$pd['hp'] = 1; $pd['sp'] = 1;
+			# 将多出的rp转化为生命和防御力
+			if($pd['rp'])
+			{
+				$tot_rp = abs(round($pd['rp']/2));
+				if($tot_rp)
+				{
+					$pd['mhp'] += $tot_rp; $pd['def'] += $tot_rp;
+				}
+				$pd['rp'] = 0;
+			}
+			$log .= '<span class="lime">但是，'.$pd['nm'].'涅槃重生了！</span><br>';
 			return $revival_flag;
 		}
 
@@ -1054,6 +1090,28 @@
 		if(isset($pd['skill_c1_burnsp'])) $rgup += rand(1,2);
 		$pd['rage'] = min(255,$pd['rage']+$rgup);
 		return;
+	}
+
+	# rp结算
+	function rpup_rev(&$pa,$rpup)
+	{
+		# 「转业」效果判定
+		if(!check_skill_unlock('c19_reincarn',$pa))
+		{
+			$sk = 'c19_reincarn';
+			$sk_lvl = get_skilllvl($sk,$pa);
+			if($rpup > 0)
+			{
+				$sk_var = get_skillvars($sk,'rpgain',$sk_lvl);
+				$rpup = round($rpup*(1-($sk_var/100)));
+			}
+			else 
+			{
+				$sk_var = get_skillvars($sk,'rploss',$sk_lvl);
+				$rpup = round($rpup*(1+($sk_var/100)));
+			}
+		}
+		$pa['rp'] += $rpup;
 	}
 
 	# 战斗经验结算

@@ -24,12 +24,12 @@ $club_skillslist = Array
 	//16 => Array('s_hp','s_ad','f_heal'), #'全能骑士',
 	17 => Array('f_heal'), #'走路萌物',
 	//18 => Array('s_hp','s_ad','f_heal'), #'天赋异禀',
-	19 => Array('s_hp','s_ad','f_heal'), #'晶莹剔透',
+	19 => Array('s_hp','s_ad','f_heal','c19_nirvana','c19_reincarn','c19_purity','c19_crystal','c19_redeem','c19_dispel','c19_woesea'), #'晶莹剔透', //晶莹剔透、决死结界合并为晶莹剔透
 	20 => Array('s_hp','s_ad','f_heal'), #'元素大师', #商店购买社团卡
 	21 => Array('s_hp','s_ad','f_heal'), #'灵子梦魇', #暂定名，商店购买社团卡
 	22 => Array('s_hp','s_ad','f_heal'), #'偶像大师', #暂定名，「除错大师」头衔奖励
 	98 => Array('s_hp','s_ad','f_heal'), #'换装迷宫',
-	99 => Array('s_hp','s_ad','f_heal'), #'决死结界'
+	99 => Array('s_hp','s_ad','f_heal'), #'第一形态'
 );
 
 # 社团技能黑名单：（禁止特定社团升级/学习对应技能）
@@ -52,13 +52,19 @@ $cskills_tags = Array
 (
 	'battle' => '<span tooltip="可以在战斗中主动使用" class="gold">【战斗技】</span>',
 	'passive' => '<span tooltip="满足条件时自动触发" class="gold">【被动技】</span>',
-	'active' => '<span tooltip="在主动启动后才会产生效果" class="gold">【主动技】</span>',
-	'openning' => '<span tooltip="仅在先制发现敌人时可用" class="gold">【开幕技】</span>',
+	'switch' => '<span tooltip="可主动启用或停用效果" class="gold">【开关技】</span>',
+	'active' => '<span tooltip="可在技能界面直接使用" class="gold">【主动技】</span>',
+	'openning' => '<span tooltip="仅在初次先制发现敌人时可用" class="gold">【开幕技】</span>',
 	'limit' => '<span tooltip="每局游戏内可发动次数有限" class="gold">【限次技】</span>',
 	//'buff' => '<span tooltip="隐藏标签：代表这是一个临时性状态" class="gold">【状态】</span>',
 	//'unlock_battle_hidden' => '<span tooltip="隐藏标签：未解锁时不会在战斗界面显示" class="gold">【隐藏】</span>',
 	//'player' => '<span tooltip="隐藏标签：只有玩家会有此技能" class="gold">【玩家】</span>',
 );
+
+// tips
+$sktpshield = '<span class="gold" tooltip2="【护盾】：可抵消等同于护盾值的伤害。护盾值只在抵消属性伤害时消耗，抵消电击伤害时双倍消耗。护盾存在时不会受到反噬伤害或陷入异常状态。">护盾</span>';
+$sktprp = '<span class="yellow">报应点数</span>';
+$sktpwhitedmg = '<span class="gold" tooltip2="【纯粹伤害】：不会受防御、抹消或制御效果影响的定值伤害">纯粹伤害</span>';
 
 # 技能登记：
 $cskills = Array
@@ -254,7 +260,7 @@ $cskills = Array
 		'clog' => "切换了「百战」的防御类型。",
 		'choice' => Array('P','K','C','G','F','D','I','U','q','W','E'), //可选择的单系防御类型
 		'svars' => Array(
-			'choice' => '', //初始默认选择的单项防御
+			'choice' => 'D', //初始默认选择的单项防御
 		),
 		'lockdesc' => Array(
 			'lvl' => '18级时解锁',
@@ -528,7 +534,7 @@ $cskills = Array
 	'c3_offset' => Array
 	(
 		'name' => '对撞',
-		'tags' => Array('active'),
+		'tags' => Array('switch'),
 		'desc' => '持投系武器时，你有<span class="yellow">(<span tooltip="取决于你的投系熟练度">[^wc^]</span>×[:chancegainr:])%</span>的几率(<span class="yellow">上限[:maxchance:]%</span>)，<br>
 		在受到伤害时抵挡<span class="yellow">(武器效果值的平方根×[:wepeffectr:])</span>点伤害(<span class="yellow">上限[:maxeffect:]点</span>)。<br>
 		成功抵挡伤害时，会使武器效果降低<span class="red">[:wepsloss:]%</span><br>
@@ -546,7 +552,7 @@ $cskills = Array
 			'chancegainr' => 0.1,
 		),
 		'svars' => Array(
-			'active' => 0, 
+			'active' => 1, 
 		),
 		'pvars' => Array('wc','skill-active'),
 		'lockdesc' => Array(
@@ -832,7 +838,7 @@ $cskills = Array
 		'clog' => "切换了「专注」的状态。",
 		'choice' => Array(0,1,2), //无效果/重视遇敌/重视探物
 		'svars' => Array(
-			'choice' => 0, 
+			'choice' => 1, 
 		),
 		'vars' => Array(
 			'meetgain' => 15,
@@ -1172,8 +1178,8 @@ $cskills = Array
 	(
 		'name' => '护盾',
 		'tags' => Array('passive'),
-		'desc' => '进入战斗时，若生命值低于<span class="yellow">[:hpalert:]%</span>，生成一个拥有<span class="yellow">[:svar:]</span>点效果的<span class="gold" tooltip2="【护盾】：可抵消等同于护盾值的伤害。护盾值只在抵消属性伤害时消耗，抵消电击伤害时双倍消耗。护盾存在时不会受到反噬伤害或陷入异常状态。">护盾</span><br>
-		护盾值耗尽后，需要等待<span class="clan">[:cd:]</span>秒才能重新激活。',
+		'desc' => "进入战斗时，若生命值低于<span class='yellow'>[:hpalert:]%</span>，生成一个拥有<span class='yellow'>[:svar:]</span>点效果的$sktpshield<br>
+		护盾值耗尽后，需要等待<span class='clan'>[:cd:]</span>秒才能重新激活。",
 		'maxlvl' => 5,
 		'cost' => Array(4,4,5,7,9,-1),
 		'input' => '升级',
@@ -1225,7 +1231,7 @@ $cskills = Array
 	(
 		'name' => '力场',
 		'tags' => Array('active'),
-		'desc' => '消耗<span class="lime">[:cost:]</span>技能点，无视冷却立刻激活一个<span class="gold" tooltip2="【护盾】：可抵消等同于护盾值的伤害。护盾值只在抵消属性伤害时消耗，抵消电击伤害时双倍消耗。护盾存在时不会受到反噬伤害或陷入异常状态。">护盾</span>',
+		'desc' => "消耗<span class=\"lime\">[:cost:]</span>技能点，无视冷却立刻激活一个$sktpshield",
 		'cost' => 2,
 		'input' => '激活',
 		'log' => '<span class="yellow">「护盾」已激活！</span><br>',
@@ -1624,10 +1630,10 @@ $cskills = Array
 	(
 		'name' => '狂怒',
 		'tags' => Array('battle'),
-		'desc' => '消耗相当于<span class="red">[:hpcost:]%</span>生命上限的生命值，<br>
-		附加等于<span class="yellow">所消耗生命值</span>且受<span class="yellow">「底力」</span>加成的最终伤害<br>
-		发动需消耗<span class="yellow">[:ragecost:]</span>点怒气',
-		'bdesc' => '消耗<span class="red">[:hpcost:]%</span>生命值，附加等于消耗值且受<span class="yellow">「底力」</span>加成最终伤害；发动需消耗<span class="red">[:ragecost:]</span>怒气',
+		'desc' => "消耗相当于<span class=\"red\">[:hpcost:]%</span>生命上限的生命值，<br>
+		附加等于<span class=\"yellow\">所消耗生命值</span>且受<span class=\"yellow\">「底力」</span>加成的{$sktpwhitedmg}<br>
+		发动需消耗<span class=\"yellow\">[:ragecost:]</span>点怒气",
+		'bdesc' => "消耗<span class=\"red\">[:hpcost:]%</span>生命值，附加等于消耗值且受<span class=\"yellow\">「底力」</span>加成的{$sktpwhitedmg}；发动需消耗<span class=\"red\">[:ragecost:]</span>怒气",
 		'vars' => Array(
 			'ragecost' => 50,
 			'hpcost' => 25, 
@@ -1677,6 +1683,186 @@ $cskills = Array
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 21',
 			'hp+mhp' => '[:hp:] <= [:mhp:]*0.5',
+		),
+	),
+	'c19_nirvana' => Array
+	(
+		'name' => '涅槃', 
+		'tags' => Array('passive','limit'),
+		'desc' => "本局已生效<span class=\"redseed\"> [^skillpara|c19_nirvana-active_t^]/[:maxactive_t:] </span>次<br>
+		因陷阱/战斗死亡时，转化所有的{$sktprp}并立刻复活<br>
+		每转化<span class='yellow'>[:rpr:]</span>点{$sktprp}，复活后你的生命上限与防御力<span class='yellow'>+[:hpgain:]</span>",
+		'svars' => Array(
+			'active_t' => 0,
+		),
+		'vars' => Array(
+			'maxactive_t' => 1,
+			'rpr' => 2,
+			'hpgain' => 1,
+		),
+		'pvars' => Array(
+			'skillpara|c19_nirvana-active_t',
+		),
+		'lockdesc' => Array(
+			'skillpara|c19_nirvana-active_t' => '次数耗尽，无法生效',
+		),
+		'unlock' => Array(
+			'skillpara|c19_nirvana-active_t' => '[:skillpara|c19_nirvana-active_t:] < 1',
+		),
+	),
+	'c19_reincarn' => Array
+	(
+		'name' => '转业',
+		'tags' => Array('passive'),
+		'desc' => "你的{$sktprp}增长量<span class=\"yellow\">-[:rpgain:]%</span>；降低量<span class=\"yellow\">+[:rploss:]%</span>",
+		'maxlvl' => 6,
+		'cost' => Array(1,2,3,4,5,6,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">「转业」升级成功。</span><br>',
+		'status' => Array('skillpara|c19_reincarn-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c19_reincarn-lvl' => '+=::1',),
+		),
+		'svars' => Array('lvl' => 0),
+		'vars' => Array(
+			'rpgain' => Array(7,15,24,34,45,57,69),
+			'rploss' => Array(5,15,25,35,45,55,65),
+		),
+	),
+	'c19_purity' => Array
+	(
+		'name' => '莹心',
+		'tags' => Array('passive'),
+		'desc' => '你受到的最终伤害降低<span class="yellow">[:findmgdefr:]%</span>；向敌人造成的最终伤害降低<span class="yellow">[:findmgr:]%</span>',
+		'maxlvl' => 6,
+		'cost' => Array(5,6,6,3,2,1,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">「莹心」升级成功。</span><br>',
+		'status' => Array('skillpara|c19_purity-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c19_purity-lvl' => '+=::1',),
+		),
+		'svars' => Array('lvl' => 0),
+		'vars' => Array(
+			'findmgdefr' => Array(15,30,45,60,80,85,90),
+			'findmgr' => Array(7,25,35,60,85,90,98),
+		),
+	),
+	'c19_crystal' => Array
+	(
+		'name' => '晶璧',
+		'tags' => Array('active'),
+		'desc' => "消耗<span class='yellow'>[:ragecost:]</span>点怒气，使战场内所有参战者获得{$sktpshield}<br>
+		护盾值等于<span class='yellow'>(<span tooltip2='取决于你的报应点数'>[^rp^]</span>×[:sldr:]%)</span>的绝对值；<br>
+		每使一位参战者(包括自己)获得{$sktpshield}，你的{$sktprp}下降<span class='yellow'>[:rploss:]</span>点",
+		'input' => '发动',
+		'no_reload_page' => 1,
+		'log' => '……<br>',
+		'events' => Array('crystal','active_news'),
+		'status' => Array('skillpara|c19_crystal-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c19_crystal-lvl' => '+=::1',),
+		),
+		'svars' => Array(
+			'lvl' => 0,
+		),
+		'vars' => Array(
+			'ragecost' => 75,
+			'sldr' => 10,
+			'rploss' => 160,
+		),
+		'pvars' => Array('rp'),
+		'lockdesc' => Array(
+			'lvl' => '7级时解锁',
+			'rage' => '怒气不足，无法发动',
+			'rp' => '报应点数为0，无法发动',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 7',
+			'rage' => '[:rage:] >= 75',
+			'rp' => '!empty([:rp:])',
+		),
+	),
+	'c19_redeem' => Array
+	(
+		'name' => '祛障',
+		'tags' => Array('battle'),
+		'desc' => "消耗<span class=\"yellow\">[:ragecost:]</span>点怒气，本次攻击额外附加一段{$sktpwhitedmg}，<br>
+		伤害量等于敌人与你的<span class=\"yellow\">报应点数之差</span>；<br>
+		<span class=\"yellow\">差值为负</span>时不会造成伤害，但会将你的{$sktprp}部分转移给敌人；<br>
+		转移量最低不低于<span class=\"yellow\">[:rpmin:]</span>，最高不超过敌人目前的{$sktprp}值",
+		'bdesc' => "附加等于你与敌人<span class=\"yellow\">报应点数差值</span>的{$sktpwhitedmg}，或转移报应点数；发动需消耗<span class=\"red\">[:ragecost:]</span>怒气",
+		'vars' => Array(
+			'ragecost' => 40,
+			'rpmin' => 100,
+		),
+		'lockdesc' => Array(
+			'lvl' => '11级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 11',
+		),
+	),
+	'c19_dispel' => Array
+	(
+		'name' => '量心',
+		'tags' => Array('switch'),
+		'desc' => '技能效果开启时，你不会再直接击杀敌人。<br>
+		造成伤害时，至少会为对方保留<span class="red">1</span>点生命；<br>
+		同时，你不会再遭遇仅有<span class="red">1</span>点生命值的敌人，除非对方主动攻击你；<br>
+		点击右侧的<span class="yellow">“切换”</span>键随时激活或禁用该技能<br>
+		[^skill-active^]',
+		'input' => '切换',
+		'log' => '<span class="yellow">切换了「量心」的状态。</span>',
+		'events' => Array('active|c19_dispel'),
+		'svars' => Array(
+			'active' => 0, 
+		),
+		'pvars' => Array('skill-active'),
+		'lockdesc' => Array(
+			'lvl' => '17级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 17',
+		),
+	),
+	'c19_woesea' => Array
+	(
+		'name' => '苦雨',
+		'tags' => Array('active','limit'),
+		'desc' => '本局已发动<span class="redseed"> [^skillpara|c19_woesea-active_t^]/[:maxactive_t:] </span>次<br>
+		消耗<span class="yellow">[:sscost:]</span>点歌魂，将战场天气变更为<span class="minirainbow">光玉雨</span>；<br>
+		<span class="minirainbow">光玉雨</span>持续<span class="yellow">[:wtht:]</span>秒，且不会被禁区或天气控制改变；<br>
+		天气存在时，战场上所有参战者在行动时会<span class="yellow">超量</span>恢复<span class="yellow">生命、体力</span>；<br>
+		技能发动者在该天气下<span class="yellow">先制率</span>提升，且死亡后有概率<span class="yellow">复活</span>；<br>
+		强化效力、复活概率随天气的<span class="yellow">持续时间</span>逐渐增长，<br>
+		在第<span class="yellow">7</span>分钟时达到峰值，之后渐弱<br>',
+		'input' => '发动',
+		'no_reload_page' => 1,
+		'log' => '<br><br>',
+		'status' => Array('skillpara|c19_woesea-active_t'),
+		'effect' => Array(
+			0 => Array(
+				'skillpara|c19_woesea-active_t' => '+=::1',
+			),
+		),
+		'events' => Array('woesea','active_news'),
+		'vars' => Array(
+			'sscost' => 100,
+			'wtht' => 600,
+			'maxactive_t' => 1, 
+		),
+		'svars' => Array('active_t' => 0,),
+		'pvars' => Array('skillpara|c19_woesea-active_t'),
+		'lockdesc' => Array(
+			'skillpara|c19_woesea-active_t' => '次数耗尽，已无法发动该技能',
+			'lvl' => '21级时解锁',
+			'ss' => '需要100点歌魂才能发动！',
+		),
+		'unlock' => Array(
+			'skillpara|c19_woesea-active_t' => '[:skillpara|c19_woesea-active_t:] < 1',
+			'lvl' => '[:lvl:] >= 21',
+			'ss' => '[:ss:] >= 100',
 		),
 	),
 	'tl_cstick' => Array

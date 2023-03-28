@@ -59,16 +59,16 @@ $clubinfo = Array(
 	//16=>'全能骑士',
 	17=>'走路萌物',
 	//18=>'天赋异禀',
-	19=>'晶莹剔透',
+	19=>'晶莹剔透', //决死结界、晶莹剔透合并为晶莹剔透
 	20=>'元素大师', #商店购买社团卡
 	21=>'灵子梦魇', #暂定名，商店购买社团卡
 	22=>'偶像大师', #暂定名，「除错大师」头衔奖励
 	98=>'换装迷宫',
-	99=>'决死结界'
+	99=>'第一形态'
 );
 //新游戏开局时会生成的天气：晴天、多云、小雨、暴雨、下雪；
 $rswtharr = Array(0,2,3,4,7);
-$wthinfo = Array('晴天','大晴','多云','小雨','暴雨','台风','雷雨','下雪','起雾','浓雾','<span class="yellow">瘴气</span>','<span class="red">龙卷风</span>','<span class="clan">暴风雪</span>','<span class="blue">冰雹</span>','<span class="linen">离子暴</span>','<span class="green">辐射尘</span>','<span class="purple">臭氧洞</span>','<span class="gold">极光</span>');
+$wthinfo = Array('晴天','大晴','多云','小雨','暴雨','台风','雷雨','下雪','起雾','浓雾','<span class="yellow">瘴气</span>','<span class="red">龙卷风</span>','<span class="clan">暴风雪</span>','<span class="blue">冰雹</span>','<span class="linen">离子暴</span>','<span class="green">辐射尘</span>','<span class="purple">臭氧洞</span>','<span class="gold">极光</span>','<span class="minirainbow">光玉雨</span>');
 $sexinfo = Array(0=> '未定', 'm' => '男生', 'f' => '女生');
 $raceinfo = Array(0=> '人类', 1=> '兽人', 2=> '妖精', 3=> '龙', 4=> '鱼人', 5=> 'ＡＩ');
 $hpinfo = Array('<span class="clan">并无大碍</span>','<span class="yellow">伤痕累累</span>','<span class="red">生命危险</span>','<span class="red">已经死亡</span>');
@@ -296,7 +296,8 @@ $noiseinfo = Array(
 	'Crow Song'=>'Crow Song',
 	'Alicemagic'=>'Alicemagic',
 	'恋歌'=>'恋歌',
-	'鸡肉之歌'=>'鸡肉之歌'
+	'鸡肉之歌'=>'鸡肉之歌',
+	'song' => '熟悉的旋律',
 	);
 $exdmgname = Array('p' => '毒性攻击', 'u' => '火焰燃烧', 'i'=>'冻气缠绕', 'd'=>'爆炸','e'=>'电击','w'=>'音波攻击','f' => '<span class="yellow">炽热之焰</span>','k' => '<span class="clan">凝结之息</span>');
 $exdmginf = Array('h' => '<span class="red">头部受伤</span>', 'b' => '<span class="red">胸部受伤</span>', 'a'=> '<span class="red">腕部受伤</span>', 'f'=> '<span class="red">足部受伤</span>', 'p'=> '<span class="purple">中毒</span>', 'u'=> '<span class="red">烧伤</span>', 'i'=> '<span class="blue">冻结</span>', 'e'=> '<span class="yellow">身体麻痹</span>', 'w'=> '<span class="grey">混乱</span>');

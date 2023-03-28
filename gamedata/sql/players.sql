@@ -41,7 +41,7 @@ CREATE TABLE bra_players (
   lvl tinyint unsigned NOT NULL default '0',
   `exp` smallint unsigned NOT NULL default '0',
   money int(10) unsigned NOT NULL DEFAULT '0',
-  rp int(10) unsigned NOT NULL DEFAULT '0',
+  rp int(10) NOT NULL DEFAULT '0',
   `inf` char(10) not null default '',
   rage tinyint unsigned NOT NULL default '0',
   pose tinyint(1) unsigned NOT NULL default '0',

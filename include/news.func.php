@@ -93,9 +93,11 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		} elseif($news == 'end6') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">本局游戏被GM中止</span><br>\n";
 		} elseif($news == 'revival') {
-			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}因为及时按了BOMB键而原地满血复活了！</span><br>\n";
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}涅槃重生了！</span><br>\n";
 		} elseif($news == 'aurora_revival')  {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}在奥罗拉的作用下原地复活了！</span><br>\n";
+		} elseif($news == 'wth18_revival')  {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}在光玉们的帮助下原地复活了！</span><br>\n";
 		} elseif(strpos($news,'death') === 0) {
 			if($news == 'death11') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因滞留在<span class=\"red\">禁区【{$plsinfo[$c]}】</span>死亡";
@@ -198,7 +200,9 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		} elseif($news == 'wthchange') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}使用了{$c}，天气变成了{$wthinfo[$b]}！</span><br>\n";
 		} elseif($news == 'wthfail') {
-			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}使用了{$c}，但是恶劣的天气并未发生改变！</span><br>\n";
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}使用了{$c}，但是天气并未发生改变！</span><br>\n";
+		} elseif($news == 'wth18end') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"grey\">光玉雨停下了……</span><br>\n";
 		} elseif($news == 'syswthchg') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">奇迹和魔法都是存在的！当前天气变成了{$wthinfo[$a]}！</span><br>\n";
 		} elseif($news == 'sysaddarea') {

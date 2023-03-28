@@ -42,6 +42,13 @@ function itemmix_rev($mlist, $itemselect=-1, &$data=NULL)
 		}
 	} else {//只有1个合成选项则直接合成
 		itemmix_proc($mlist, $mix_res[0], $itmstr, $data);
+		// 晶莹剔透合成成功时 -30rp
+		if($club == 19)
+		{
+			$rpup = -30;
+			include_once GAME_ROOT.'./include/game/revcombat.func.php';
+			rpup_rev($data,$rpup);
+		}
 	}
 	return;
 }
