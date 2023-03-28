@@ -1393,9 +1393,8 @@ function reload_set_items(&$pa)
 	if(!empty($pa['clbpara']['setitems']))
 	{
 		# TODO：失去对应的套装效果
+		$pa['clbpara']['setitems'] = Array();
 	}
-	$pa['clbpara']['setitems'] = Array();
-
 	$set_items = get_set_items();
 	$equip_list = get_equip_list();
 	# 遍历身上的装备信息 检查是否为套装的组成部分

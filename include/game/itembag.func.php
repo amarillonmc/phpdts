@@ -40,25 +40,6 @@ function decode_item($i){
 	}
 	return $i_list;
 }
-//兼容5.3以下php的json_encode()
-function json_encode_comp($par){
-	if(version_compare(PHP_VERSION,'5.4.0')>=0){ //可以使用json_encode()的JSON_UNESCAPED_UNICODE常量
-		return json_encode($par,JSON_UNESCAPED_UNICODE);
-	}else{ //不可以使用JSON_UNESCAPED_UNICODE，用url_encode()处理
-		return urldecode(json_encode(url_encode($par)));
-	}
-}
-function url_encode($str) {  
-	if(is_array($str)) {  
-		foreach($str as $key=>$value) {  
-			$str[urlencode($key)] = url_encode($value);  
-		}  
-	} else {  
-		$str = urlencode($str);  
-	}  
-      
-	return $str;  
-} 
 /* ————————————————计算部分———————————————— */
 //计算背包内的道具数量（按照类别来区分）
 function count_item(){

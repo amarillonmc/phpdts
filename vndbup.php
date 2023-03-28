@@ -20,33 +20,33 @@ if(!$db->num_rows($query))
 	$sql = str_replace("\r", "\n", str_replace('bra_', ' '.$tablepre, $sql));
 	$db->queries($sql);
 	echo "Mysql Update Fish.<br>";
+	$vcdir = config('queue_vnmixitem',1);
+	if(file_exists($vcdir))
+	{
+		include $vcdir;
+		foreach($carr as $key => $arr)
+		{
+			$vr = Array();
+			$vr['class'] = $arr['class'] ?: 'item';
+			$vr['istatus'] = $arr['status'];
+			$vr['creator'] = $arr['name'];
+			for($i=0;$i<5;$i++)
+			{
+				$vr['stf'.$i] = $arr['stuff'][$i] ?: '';
+			}
+			$vr['itm'] = $arr['result'][0] ?: '';
+			$vr['itmk'] = $arr['result'][1] ?: '';
+			$vr['itme'] = $arr['result'][2] ?: '';
+			$vr['itms'] = $arr['result'][3] ?: '';
+			$vr['itmsk'] = $arr['result'][4] ? implode('',$arr['result'][4]) : '';
+			$db->array_insert("{$tablepre}vnmixitem",$vr);
+		}
+		echo "Old data clear.<br>";
+	}
 }
 else 
 {
 	echo "No Update.<br>";
-}
-$vcdir = config('queue_vnmixitem',1);
-if(file_exists($vcdir))
-{
-	include $vcdir;
-	foreach($carr as $key => $arr)
-	{
-		$vr = Array();
-		$vr['class'] = $arr['class'] ?: 'item';
-		$vr['istatus'] = $arr['status'];
-		$vr['creator'] = $arr['name'];
-		for($i=0;$i<5;$i++)
-		{
-			$vr['stf'.$i] = $arr['stuff'][$i] ?: '';
-		}
-		$vr['itm'] = $arr['result'][0] ?: '';
-		$vr['itmk'] = $arr['result'][1] ?: '';
-		$vr['itme'] = $arr['result'][2] ?: '';
-		$vr['itms'] = $arr['result'][3] ?: '';
-		$vr['itmsk'] = $arr['result'][4] ? implode('',$arr['result'][4]) : '';
-		$db->array_insert("{$tablepre}vnmixitem",$vr);
-	}
-	echo "Old data clear.<br>";
 }
 
 ?>

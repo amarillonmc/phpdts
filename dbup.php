@@ -162,6 +162,30 @@ if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}users ADD daily v
 //game表结构变动
 $db->query("ALTER TABLE {$tablepre}game DROP gamevars");
 $db->query("ALTER TABLE {$tablepre}game ADD gamevars text NOT NULL AFTER combonum");
+$result = $db->query("DESCRIBE {$tablepre}game lastupdate");
+if($db->num_rows($result))
+{
+	$db->query("ALTER TABLE {$tablepre}game DROP lastupdate");
+	echo "从game表中删去了字段lastupdate<br>";
+}
+$result = $db->query("DESCRIBE {$tablepre}game hdamage");
+if(!$db->num_rows($result))
+{
+	$db->query("ALTER TABLE {$tablepre}game ADD hdamage int(10) unsigned NOT NULL DEFAULT '0' AFTER hack");
+	echo "向game表中添加了字段hdamage<br>";
+}
+$result = $db->query("DESCRIBE {$tablepre}game hplayer");
+if(!$db->num_rows($result))
+{
+	$db->query("ALTER TABLE {$tablepre}game ADD hplayer char(15) NOT NULL DEFAULT '' AFTER hdamage");
+	echo "向game表中添加了字段hplayer<br>";
+}
+$result = $db->query("DESCRIBE {$tablepre}game noisevars");
+if(!$db->num_rows($result))
+{
+	$db->query("ALTER TABLE {$tablepre}game ADD noisevars varchar(1000) NOT NULL DEFAULT '' AFTER gamevars");
+	echo "向game表中添加了字段noisevars<br>";
+}
 
 echo "Update Fish.<br>";
 ?>
