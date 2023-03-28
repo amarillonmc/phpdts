@@ -34,6 +34,8 @@ $bgmbook = Array
 	'valhalla' => Array(3,4),
 	'event' => Array(11,12,13),
 	'wth18' => Array(14,15),
+	'tutorial' => Array(16),
+	'realcrimzure' => Array(17),
 );
 
 # 所有bgm编号清单：
@@ -110,13 +112,23 @@ $bgmlist = Array
 		'type' => 'audio/mpeg',
 	),
 	14 => Array(
-		'name' => 'Tr01_Emerged',
-		'url' => './img/other/Tr01_Emerged.mp3',
+		'name' => 'ruha(Pastel Tone Music) - Ｆｌｕｆｆｙ×Ｄｒｅａｍｙ',
+		'url' => 'https://res.dts.gay/BGM/fuwafuwa/Tr09_Fluffy_Dreamy.mp3',
 		'type' => 'audio/mpeg',
 	),
 	15 => Array(
-		'name' => '待补充',
-		'url' => '待补充',
+		'name' => 'ruha(Pastel Tone Music) - Ｐｕｒｅ Ｗｉｓｈ',
+		'url' => 'https://res.dts.gay/BGM/fuwafuwa/Tr10_PureWish.mp3',
+		'type' => 'audio/mpeg',
+	),
+	16 => Array(
+		'name' => 'Skaven252 - Minimum Viable People',
+		'url' => 'https://res.dts.gay/BGM/Skaven252-MMC-2022-06-MinimumViablePeople.mp3',
+		'type' => 'audio/mpeg',
+	),
+	17 => Array(
+		'name' => '真红暮·真蓝凝 ~ Azure Swear',
+		'url' => 'https://res.dts.gay/BGM/AzureSwear.mp3',
 		'type' => 'audio/mpeg',
 	),
 );
