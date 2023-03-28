@@ -282,9 +282,16 @@ function logsave($pid,$time,$log = '',$type = 's'){
 function load_gameinfo() {
 	global $now,$db,$tablepre;
 	global $gamenum,$gamestate,$lastupdate,$starttime,$winmode,$winner,$arealist,$areanum,$areatime,$areawarn,$validnum,$alivenum,$deathnum,$afktime,$optime,$weather,$hack,$combonum,$gamevars;
+	global $hdamage,$hplayer,$noisetime,$noisepls,$noiseid,$noiseid2,$noisemode;
 	$result = $db->query("SELECT * FROM {$tablepre}game");
 	$gameinfo = $db->fetch_array($result);
-	$gamenum = $gameinfo['gamenum'];
+	extract($gameinfo);
+	$arealist = explode(',',$gameinfo['arealist']);
+	$gamevars = json_decode($gamevars,true);
+	$noisevars = json_decode($noisevars,true);
+	extract($noisevars);
+	if(isset($gamevars['sanmaact']) && isset($gamevars['sanmadead'])) unset($gamevars['sanmaact']);
+	/*$gamenum = $gameinfo['gamenum'];
 	$gamestate = $gameinfo['gamestate'];
 	//$lastupdate = $gameinfo['lastupdate'];
 	$starttime = $gameinfo['starttime'];
@@ -303,8 +310,13 @@ function load_gameinfo() {
 	$hack = $gameinfo['hack'];
 	$gamevars = $gameinfo['gamevars'];
 	$gamevars = json_decode($gamevars,true);
+	$noisevars = $gameinfo['noisevars'];
+	$noisevars = json_decode($noisevars,true);
+	extract($noisevars);
+	$hplayer = $gameinfo['hplayer'];
+	$hdamage = $gameinfo['hdamage'];
 	if(isset($gamevars['sanmaact']) && isset($gamevars['sanmadead'])) unset($gamevars['sanmaact']);
-	$combonum = $gameinfo['combonum'];
+	$combonum = $gameinfo['combonum'];*/
 	return Array($gamestate,$gamevars);
 }
 
@@ -334,7 +346,7 @@ function save_gameinfo() {
 	$gameinfo['optime'] = $optime;
 	$gameinfo['weather'] = $weather;
 	//$gamevars0 = ($gamevars['sanmaact'] ? 1 : 0) + ($gamevars['sanmadead'] ? 2 : 0);
-	$gameinfo['gamevars'] = json_encode($gamevars);
+	$gameinfo['gamevars'] = json_encode($gamevars,JSON_UNESCAPED_UNICODE);
 	$gameinfo['hack'] = $hack;
 	$gameinfo['combonum'] = $combonum;
 	$db->array_update("{$tablepre}game",$gameinfo,1);
@@ -357,13 +369,26 @@ function save_gameinfo() {
 
 
 function save_combatinfo(){
-	global $hdamage,$hplayer,$noisetime,$noisepls,$noiseid,$noiseid2,$noisemode;
+	global $db,$tablepre,$gamenum,$hdamage,$hplayer,$noisevars,$noisetime,$noisepls,$noiseid,$noiseid2,$noisemode;
 	if(!$hdamage){$hdamage = 0;}
 	if(!$noisetime){$noisetime = 0;}
 	if(!$noisepls){$noisepls = 0;}
 	if(!$noiseid){$noiseid = 0;}
 	if(!$noiseid2){$noiseid2 = 0;}
-	$combatinfo = "<?php\n\nif(!defined('IN_GAME')){exit('Access Denied');}\n\n\$hdamage = {$hdamage};\n\$hplayer = '{$hplayer}';\n\$noisetime = {$noisetime};\n\$noisepls = {$noisepls};\n\$noiseid = {$noiseid};\n\$noiseid2 = {$noiseid2};\n\$noisemode = '{$noisemode}';\n\n?>";
+	if(!$noisemode){$noisemode = '';}
+	$noisevars = Array();
+	$noisevars['noisetime'] = $noisetime;
+	$noisevars['noisepls'] = $noisepls;
+	$noisevars['noiseid'] = $noiseid;
+	$noisevars['noiseid2'] = $noiseid2;
+	$noisevars['noisemode'] = $noisemode;
+	$noisevars = json_encode($noisevars,JSON_UNESCAPED_UNICODE);
+	$nginfo = array();
+	foreach(array('hdamage','hplayer','noisevars') as $nval){
+		$nginfo[$nval] = $$nval;
+	}
+	$db->array_update("{$tablepre}game",$nginfo,1);
+	/*$combatinfo = "<?php\n\nif(!defined('IN_GAME')){exit('Access Denied');}\n\n\$hdamage = {$hdamage};\n\$hplayer = '{$hplayer}';\n\$noisetime = {$noisetime};\n\$noisepls = {$noisepls};\n\$noiseid = {$noiseid};\n\$noiseid2 = {$noiseid2};\n\$noisemode = '{$noisemode}';\n\n?>";
 	//$combatinfo = "{$hdamage},{$hplayer},{$noisetime},{$noisepls},{$noiseid},{$noiseid2},{$noisemode},\n";
 	$dir = GAME_ROOT.'./gamedata/';
 	if($fp = fopen("{$dir}combatinfo.php", 'w')) {
@@ -375,7 +400,7 @@ function save_combatinfo(){
 		fclose($fp);
 	} else {
 		gexit('Can not write to cache files, please check directory ./gamedata/ .', __file__, __line__);
-	}
+	}*/
 	return;
 }
 
@@ -844,6 +869,26 @@ function middle_abbr($str,$len1,$len2=1,$elli='...') {
 	$len1 = (int)$len1; $len2 = (int)$len2;
 	return mb_substr($str,0,$len1).$elli.mb_substr($str,-$len2,$len2);
 }
+
+//兼容5.3以下php的json_encode()
+function json_encode_comp($par){
+	if(version_compare(PHP_VERSION,'5.4.0')>=0){ //可以使用json_encode()的JSON_UNESCAPED_UNICODE常量
+		return json_encode($par,JSON_UNESCAPED_UNICODE);
+	}else{ //不可以使用JSON_UNESCAPED_UNICODE，用url_encode()处理
+		return urldecode(json_encode(url_encode($par)));
+	}
+}
+function url_encode($str) {  
+	if(is_array($str)) {  
+		foreach($str as $key=>$value) {  
+			$str[urlencode($key)] = url_encode($value);  
+		}  
+	} else {  
+		$str = urlencode($str);  
+	}  
+      
+	return $str;  
+} 
 
 //mb_strlen()兼容替代函数，直接照抄的网络
 if ( !function_exists('mb_strlen') ) {

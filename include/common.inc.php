@@ -54,7 +54,7 @@ require config('dialogue',$gamecfg);
 require config('audio',$gamecfg);
 require config('tooltip',$gamecfg);
 
-include GAME_ROOT.'./gamedata/combatinfo.php';
+//include GAME_ROOT.'./gamedata/combatinfo.php';
 
 ob_start();
 
