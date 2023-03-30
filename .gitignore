@@ -74,3 +74,5 @@ web.config
 
 *.psd
 *.xlsx
+
+vendor
