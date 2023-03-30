@@ -4,16 +4,6 @@
 
 	/********元素大师配置文件********/
 
-	//wei shenme hui zheyang ne....
-	global $no_type_to_e_list,$no_itm_to_e_list,$no_itmk_to_e_list,$no_itmsk_to_e_list,$no_emix_circulation;
-	global $split_itm_fix,$split_spitm_fix,$split_spcorpse_fix;
-	global $split_corpse_lvl_r,$split_default_itmk_r,$split_itmk_r,$split_default_itmsk_fix,$split_itmsk_fix;
-	global $temp_etags;
-	global $max_emix_itme_start,$max_emix_itme_up;
-	global $emix_list,$random_emix_list,$dommix_list,$submix_list,$random_submix_list,$itmk_to_itmsk_tags;
-	global $emix_luck_info,$emix_tips_arr,$emix_name_brackets_arr,$emix_name_prefix_arr,$emix_name_meta_arr,$emix_name_tail_arr;
-	global $emix_slip;
-
 	//过滤选项：
 	//不可以被拆解的NPC类型
 	$no_type_to_e_list = Array();
@@ -184,31 +174,71 @@
 	(
 		//dom => 主要特征（类别）  sub => 次要特征（属性）  
 		//max_d(s)_tags => 仅在研究模式开启的情况下生效，用于限定元素随机生成的标签上限
-		0 => Array('dom' => Array('WD','DF'), 'sub' => Array('d','D','R','z'), 'max_d_tags'=>2, 'max_s_tags'=>4,), //亮晶晶
+		0 => Array('dom' => Array('WD','DF'), 'sub' => Array('d','D','H','z'), 'max_d_tags'=>2, 'max_s_tags'=>4,), //亮晶晶
 		1 => Array('dom' => Array('WG','DA'), 'sub' => Array('u','G','U','c'), 'max_d_tags'=>2, 'max_s_tags'=>4,), //暖洋洋
 		2 => Array('dom' => Array('WC','DH'), 'sub' => Array('i','C','I','M'), 'max_d_tags'=>2, 'max_s_tags'=>4,), //冷冰冰
 		3 => Array('dom' => Array('WK','HS'), 'sub' => Array('p','K','q','H'), 'max_d_tags'=>2, 'max_s_tags'=>4,), //郁萌萌
 		4 => Array('dom' => Array('WP','HH'), 'sub' => Array('e','P','E','x'), 'max_d_tags'=>2, 'max_s_tags'=>4,), //昼闪闪
 		5 => Array('dom' => Array('WF','DB'), 'sub' => Array('w','F','W','S'), 'max_d_tags'=>2, 'max_s_tags'=>4,), //夜静静
 	);
+	$flip_d_tag = Array 
+	(
+	  'WD' => 0,
+	  'DF' => 0,
+	  'WG' => 1,
+	  'DA' => 1,
+	  'WC' => 2,
+	  'DH' => 2,
+	  'WK' => 3,
+	  'HS' => 3,
+	  'WP' => 4,
+	  'HH' => 4,
+	  'WF' => 5,
+	  'DB' => 5,
+	);
+	$flip_s_tag = Array 
+	(
+	  'd' => 0,
+	  'D' => 0,
+	  'R' => 0,
+	  'z' => 0,
+	  'u' => 1,
+	  'G' => 1,
+	  'U' => 1,
+	  'c' => 1,
+	  'i' => 2,
+	  'C' => 2,
+	  'I' => 2,
+	  'M' => 2,
+	  'p' => 3,
+	  'K' => 3,
+	  'q' => 3,
+	  'H' => 3,
+	  'e' => 4,
+	  'P' => 4,
+	  'E' => 4,
+	  'x' => 4,
+	  'w' => 5,
+	  'F' => 5,
+	  'W' => 5,
+	  'S' => 5,
+	);
 	//合成出的道具效果上限值（0级时）：
 	$max_emix_itme_start = 45;
 	//每等级能够提升的道具效果上限（具体计算方法在get_emix_itme_max()内）
 	$max_emix_itme_up = 29;
-	//固定合成配方：投入固定数量元素 输出指定结果
-	$emix_list = Array
+	# 固定结果配方：按照指定顺序投入arr[1]份arr[0]元素
+	$emix_fixlist = Array
 	(
-		//子弹杯里伏特加加冰 兑小可可乐
-		Array('stuff'=>Array(1=>58,5=>18),'result'=>Array('大卫·马丁内斯','HB',58,18,'p'),),
-		//移动PC：亮晶晶20、昼闪闪20
-		Array('stuff'=>Array(0=>20,4=>20),'result'=>Array('移动PC','EE',5,1,'z'),),
-		//UG：投入全种类元素各1份
-		Array('stuff'=>Array(0=>1,1=>1,2=>1,3=>1,4=>1,5=>1,),'result'=>Array('Untainted Glory','A',1,1,'Z'),),
-		//仪水镜：投入全种类元素各7份
-		Array('stuff'=>Array(0=>7,1=>7,2=>7,3=>7,4=>7,5=>7,),'result'=>Array('仪水镜','Y',1,1,),),
+		# 移动PC：亮晶晶20、昼闪闪20
+		Array('stuff'=>Array(0=>Array(0,20),1=>Array(4,20)),'result'=>Array('移动PC','EE',5,1,'z'),),
+		# UG：投入全种类元素各1份
+		Array('stuff'=>Array(0=>Array(0,1),1=>Array(1,1),2=>Array(2,1),3=>Array(3,1),4=>Array(4,1),5=>Array(5,1)),'result'=>Array('Untainted Glory','A',1,1,'Z'),),
+		# 仪水镜：投入全种类元素各7份
+		Array('stuff'=>Array(0=>Array(0,7),1=>Array(1,7),2=>Array(2,7),3=>Array(3,7),4=>Array(4,7),5=>Array(5,7)),'result'=>Array('仪水镜','Y',1,1,''),),
 	);
-	//随机的固定合成配方（？）：需要的素材随机 输出的结果固定 //随机指的是在每局生成临时配置文件时决定 不是完全随机
-	$random_emix_list = Array
+	# 素材随机的固定结果配方
+	$rand_emix_fixlist = Array
 	(
 		//'stuff'=> 键名=>随机元素在数组中的自然排序的位置 键值=> 'r_x-y' 的格式等同于 rand(x,y)
 		//'class'=>'hidden' 不会被提示纸条揭露的配方
@@ -230,33 +260,35 @@
 	//obbs：满足条件时有obbs%的概率组合，不设置即为100%组合；random：开启研究模式的情况下，随机为此配方生成random个合成条件。
 	$dommix_list = array
 	( 	
+		Array('stuff'=>Array('WG','WG','WG','WC','WD'),'result'=>'WJ','obbs'=>15,), //3射+1投+1爆=重枪（15%概率）
 		Array('stuff'=>Array('WG','WK'),'result'=>'WGK','obbs'=>77,), //射+斩=枪刃 
 		Array('stuff'=>Array('WC','WF'),'result'=>'WCF','obbs'=>77,), //投+符=符札
 		Array('stuff'=>Array('WC','WP'),'result'=>'WCP','obbs'=>77,), //投+殴=重物
+		Array('stuff'=>Array('WF','WK'),'result'=>'WFK','obbs'=>77,), //符+斩=魔刃……？
 		Array('stuff'=>Array('WK','WF'),'result'=>'WKF','obbs'=>77,), //斩+符=灵刃
 		Array('stuff'=>Array('WK','WP'),'result'=>'WKP','obbs'=>77,), //斩+殴=重剑
-		Array('stuff'=>Array('WF','WK','DA'),'result'=>'WFK','obbs'=>77,), //符+斩=魔刃……？等等……？只能再加个DA凑数了
 		Array('stuff'=>Array('WD','WG'),'result'=>'WDG','obbs'=>77,), //爆+射=巨炮
 		Array('stuff'=>Array('WD','WF'),'result'=>'WDF','obbs'=>77,), //爆+符=落魂
+		Array('stuff'=>Array('WD','DF','WD'),'result'=>'VD'), 
+		Array('stuff'=>Array('WG','DA','WG'),'result'=>'VG'), 
+		Array('stuff'=>Array('WC','DH','WC'),'result'=>'VC'), 
+		Array('stuff'=>Array('WK','HS','WK'),'result'=>'VK'), 
+		Array('stuff'=>Array('WP','HH','WP'),'result'=>'VP'), 
+		Array('stuff'=>Array('WF','DB','WF'),'result'=>'VF'), 
 		Array('stuff'=>Array('HH','HS'),'result'=>'HB','obbs'=>77,), //回命+回体=命体回复
 		Array('stuff'=>Array('HH','WF'),'result'=>'HM','obbs'=>77,), //回命+灵=歌魂增加
 		Array('stuff'=>Array('HS','WD'),'result'=>'HT','obbs'=>77,), //回体+爆=歌魂恢复
 		Array('stuff'=>Array('HH','WG'),'result'=>'MH','obbs'=>15,), //回命+射=生命强化
 		Array('stuff'=>Array('HS','WC'),'result'=>'MS','obbs'=>60,), //回体+投=体力强化
-		Array('stuff'=>Array('WG','WG'),'result'=>'WJ','obbs'=>30,), //射+射=重枪（30%概率）
 		//我认为这里应该有一个配方 可以合出有毒补给或者地雷（
 	);
-	//次要特征组合配方：将次要特征转化为道具属性时，检查是否满足组合条件。两个配方存在重复元素时，排在前面的会优先生成。
+	# 次要特征组合配方：将次要特征转化为道具属性时，检查是否满足组合条件。两个配方存在重复元素时，排在前面的会优先生成。
 	$submix_list = array
 	( 	
-		Array('stuff'=>Array('x','z'),'result'=>'Z','obbs'=>13), //奇迹+天然=菁英
-		//Array('stuff'=>Array('u','i'),'result'=>'d','obbs'=>Array('default'=>30,'WD'=>98,'WDG'=>75,'WDF'=>75),), //火+冻=爆炸
-		//Array('stuff'=>Array('i','e'),'result'=>'d','obbs'=>Array('default'=>30,'WD'=>98,'WDG'=>75,'WDF'=>75),), //冻+电=爆炸
-		//Array('stuff'=>Array('w','i'),'result'=>'d','obbs'=>Array('default'=>30,'WD'=>98,'WDG'=>75,'WDF'=>75),), //音+冻=爆炸
-		//冴冴来发挥奇思妙想吧
+		Array('stuff'=>Array('u','x','z'),'result'=>'f','obbs'=>33), 
+		Array('stuff'=>Array('i','x','z'),'result'=>'k','obbs'=>33), 
 	);
-	//随机的次要特征组合配方 注意：指定属性（sk_*）一定要放到最前面
-	//可能会生成重复配方，但是也无所谓~
+	# 随机的次要特征组合配方 注意：指定属性（sk_*）一定要放到最前面
 	$random_submix_list = Array
 	(
 		//连击：随机1个价值在20以上，1个价值在30以上的次要特征
@@ -264,12 +296,16 @@
 		//冲击：随机1个价值在20以上特征+1个随机“攻击”标签特征
 		Array('stuff'=>Array(0=>'tags_W',1=>'v_20'),'result'=>'N','obbs'=>50),
 		//贯穿：重击辅助+随机2个价值在30以上的次要特征
-		Array('stuff'=>Array(0=>'sk_c',1=>'v_30',2=>'v_30'),'result'=>'n','obbs'=>66),
+		Array('stuff'=>Array(0=>'c',1=>'v_30',2=>'v_30'),'result'=>'n','obbs'=>66),
+		//破格：陷阱探测+随机2个价值在30以上的次要特征
+		Array('stuff'=>Array(0=>'M',1=>'v_30',2=>'v_30'),'result'=>'n','obbs'=>66),
 		//属性防御：随机1个价值在30以上+2个随机“防御”标签特征
 		Array('stuff'=>Array(0=>'v_30',1=>'tags_D',2=>'tags_D'),'result'=>'a','obbs'=>50),
 		//全系防御：随机2个价值在30以上的次要特征+1个随机“防御”标签特征
 		Array('stuff'=>Array(0=>'v_30',1=>'v_30',2=>'tags_D'),'result'=>'A','obbs'=>50),
 	);
+	# 可重复生成的次要特征
+	$repeat_subtags = Array('u','i','e','w','p');
 
 	//合成结果-名字：
 	$emix_luck_info = Array(-2 => '自己要倒大霉了QAQ……',1 => '这次合成的结果应该没什么特别之处。', 2=>'这次合成的结果还算不错。', 3=>'这次合成的结果似乎相当不错！' ,4=>'有什么大好事要发生了！');

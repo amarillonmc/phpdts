@@ -1340,6 +1340,15 @@ $elements_info = Array
 	4 => $sparkle.'<span class="mtgwhite">昼闪闪</span>'.$sparkle,
 	5 => $sparkle.'<span class="mtgblack">夜静静</span>'.$sparkle,
 );
+$r_elements_info = Array
+(
+	0 =>'<span class="mtgcolorless">亮晶晶</span>',
+	1 =>'<span class="mtgred">暖洋洋</span>',
+	2 =>'<span class="mtgblue">冷冰冰</span>',
+	3 =>'<span class="mtggreen">郁萌萌</span>',
+	4 =>'<span class="mtgwhite">昼闪闪</span>',
+	5 =>'<span class="mtgblack">夜静静</span>',
+);
 //NPC在躲避禁区、追杀玩家时不会进入的危险区（默认：无月之影、SCP、雏菊、英灵殿）
 $deepzones = Array(0,32,33,34);
 //安全箱位置

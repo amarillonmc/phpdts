@@ -1918,12 +1918,14 @@ function itemuse($itmn,&$data=NULL) {
 				//社团变更
 				changeclub(20,$pdata);
 				//获取初始元素与第一条配方
-				$dice = rand(0,5);
-				//global ${'element'.$dice},$clbpara;
-				${'element'.$dice} += 200+$dice;
+				$dice = rand(0,5); $dice2 = rand(0,1); $dice3 = rand(0,3);
+				${'element'.$dice} += 500+$dice;
+				$clbpara['elements'] = Array();
+				$clbpara['elements']['tags'] = Array($dice => Array('dom' => Array(0 => 1),'sub' => Array(0 => 1)));
+				$clbpara['elements']['info']['d']['d1'] = 1;
 				//初始化元素合成缓存文件
 				include_once GAME_ROOT.'./include/game/elementmix.func.php';
-				create_emix_cache_file();
+				emix_spawn_info();
 			}
 			elseif ($itme == 21){ //灵子梦魇特殊处理
 				$log .="再等等吧……<br>";
@@ -1986,7 +1988,7 @@ function itemuse($itmn,&$data=NULL) {
 			}
 			//初始化元素合成缓存文件
 			include_once GAME_ROOT.'./include/game/elementmix.func.php';
-			create_emix_cache_file();
+			emix_spawn_info();
 		} elseif ($itm == '测试用元素大师社团卡'){
 			//-----------------------//
 			//这是一张测试用卡 冴冴可以挑一些用得上的放在使用社团卡后执行的事件里
@@ -2026,7 +2028,7 @@ function itemuse($itmn,&$data=NULL) {
 			${'element'.$dice} += 200+$dice;
 			//初始化元素合成缓存文件
 			include_once GAME_ROOT.'./include/game/elementmix.func.php';
-			create_emix_cache_file();
+			emix_spawn_info();
 			//销毁道具
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
@@ -2185,28 +2187,25 @@ function itemuse($itmn,&$data=NULL) {
 		if($club == 20 && strpos($itmk,'Y')===0 && strpos($itm,'提示纸条')!==false)
 		{
 			$log.="<br>就在你读完内容打算把纸条收起来时，你愕然发现纸条背面竟然还有字！<br><br>";
-			include_once config('elementmix',$gamecfg);
+			include config('elementmix',$gamecfg);
 			$log.= $emix_slip[array_rand($emix_slip)];
 			//除商店纸条外：提供一条元素特征（TODO）、或一条固定配方、或一条随机属性组合
 			$log .= "<br><span class='yellow'>附：见面有缘，再送你一条提示吧：<br>“将带有";
-			include_once GAME_ROOT.'./include/game/elementmix.func.php';
 			if(!preg_match('/(A|B|C|D)/',$itm))
 			{
 				//野生纸条：给随机属性组合提示
-				$s_list = merge_random_emix_list(1); $s_id = array_rand($s_list);
-				$s_result = $itemspkinfo[$random_submix_list[$s_id]['result']];
+				$submix_list = array_merge_recursive($submix_list,$gamevars['rand_emixsubres']);
 			}
-			else
-			{
-				//商店纸条：给固定属性组合提示
-				$s_list = $submix_list; $s_id = array_rand($s_list);
-				$s_result = $itemspkinfo[$s_list[$s_id]['result']];
-			}
-			foreach($s_list[$s_id]['stuff'] as $skey) $log .= "【$itemspkinfo[$skey]】";
+			$s_id = array_rand($submix_list);
+			$s_result = $itemspkinfo[$submix_list[$s_id]['result']];
+			foreach($submix_list[$s_id]['stuff'] as $skey) $log .= "【$itemspkinfo[$skey]】";
 			$log .= "特征的元素组合起来，就有机会组合出【{$s_result}】属性。”</span><br>";
 			//阅后即焚
 			$log .="<br>……说这么多鬼记得住啊！<br>你思考了一下，决定把{$itm}吃进肚子里，以便慢慢消化其中的知识。<br>";
 			$itms--;
+			# 将提示给到的次要特征组合加入笔记内
+			if(empty($clbpara['elements']['info']['sd']['sd'.$s_id]))
+				$clbpara['elements']['info']['sd']['sd'.$s_id] = 1;
 		}
 		
 		if (($itms <= 0) && ($itm)) {

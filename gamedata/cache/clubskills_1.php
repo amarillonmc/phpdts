@@ -119,6 +119,7 @@ $cskills = Array
 		'effect' => Array(
 			0 => Array( 'hp' => '+=::3', 'mhp' => '+=::3',), 
 			12 => Array( 'hp' => '+=::6', 'mhp' => '+=::6',), 
+			20 => Array( 'hp' => '+=::4', 'mhp' => '+=::4',), 
 		),
 	),
 	's_ad' => Array
