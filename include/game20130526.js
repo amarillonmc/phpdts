@@ -446,6 +446,40 @@ function getEmitmeR(type=0) {
 	}
 }
 
+function AddElementsToList(ekey,enums)
+{
+	var list = $('emixlist').value;
+	var nums = $('emixnums').value ;
+	var desc = $('emixinfo').innerHTML;
+	var keyarr = list.length>0 ? list.split('+') : [];
+	var numsarr = nums.length>0 ? nums.split('+') : [];
+	var descarr = desc.length>0 ? desc.split('、') : [];
+	if(enums <= 0)
+	{
+		window.alert("至少要投入1份元素！");
+		return;
+	}
+	if(($('maxe' + ekey + 'num').value - enums) < 0)
+	{
+		window.alert("输入了超过了库存的数量。");
+		return;
+	}
+	if(keyarr.length >= 6)
+	{
+		window.alert("最多可分六次投入");
+		return;
+	}
+	$('maxe' + ekey + 'num').value -= enums;
+	$('e' + ekey + 'num').value = $('maxe' + ekey + 'num').value;
+	keyarr.push(ekey);
+	numsarr.push(enums);
+	descarr.push(enums + ' 份 ' + $('edesc' + ekey).innerHTML);
+	$('emixlist').value = keyarr.join('+');
+	$('emixnums').value = numsarr.join('+');
+	$('emixinfo').innerHTML = descarr.join('、');
+	$('emixinfotop').style.display = 'block';
+}
+
 function changeVolume(cv){ 
 	var v = $('gamebgm').volume;
 	v = v+cv;

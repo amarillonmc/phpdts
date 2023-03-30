@@ -734,14 +734,14 @@ function check_mixitem_achievement_rev($nn,$item)
 
 //新版结局成就检测机制：加入团队胜利兼容
 //function check_end_achievement_rev($w,$m)
-function check_end_achievement_rev($w,$m,$data='')
+function check_end_achievement_rev($w,$m,$data=NULL)
 {
 	global $now,$validtime,$starttime,$gamecfg,$name,$db,$tablepre;
 	include_once GAME_ROOT.'./include/game/titles.func.php';
 
 	$done = 0;
 	$atotal = Array();
-	$data['clbpara'] = get_clbpara($data['clbpara']);
+	if(!empty($data['clbpara']) && !is_array($data['clbpara'])) $data['clbpara'] = get_clbpara($data['clbpara']);
 
 	//16. 最后幸存成就
 	if ($m==2)

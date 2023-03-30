@@ -1,26 +1,102 @@
-<div style="width:720px">
-	<div class="b1" style="height:20px"><span>合成笔记</span></div>
-	<div class="b3" style="min-height:380px;display: flex;position:relative;justify-content: center;">
-		<div style="min-width: 500px;max-width:700px;max-height:400px;text-align:left;word-break:break-all;overflow:auto;">
-			<!--{eval include_once GAME_ROOT.'./include/game/itemplace.func.php';$mixhint = init_itemmix_tips();}-->
-			<form method="post" id="maincmd" name="maincmd">
-				<input type="hidden" name="itemindex" id="itemindex" value="">
-			{$mixhint}
-			</form>
-		</div>
-	</div>
-</div>
-
-<!--{if !empty($itemindex)}-->
-<!--{eval include_once GAME_ROOT.'./include/game/itemplace.func.php';$mixhint2 = init_itemmix_tips($itemindex);}-->
-<dialog id="itemmix_tips" style="min-width: fit-content; min-height: fit-content;max-width: 400px;max-height: 600px;">
-	<div id="tipsinfo">
-		<div class="b3" style="mdisplay: flex;position:relative;justify-content: center;">
-			<div style="text-align:left;word-break:break-all;overflow:auto;">
-				{$mixhint2}
+<!--{if $itemcmd == 'itemmix'}-->
+	<div style="width:720px">
+		<div class="b1" style="height:20px"><span>合成笔记</span></div>
+		<div class="b3" style="min-height:380px;display: flex;position:relative;justify-content: center;">
+			<div style="min-width: 500px;max-width:700px;max-height:400px;text-align:left;word-break:break-all;overflow:auto;">
+				<!--{eval include_once GAME_ROOT.'./include/game/itemplace.func.php';$mixhint = init_itemmix_tips();}-->
+				<form method="post" id="maincmd" name="maincmd">
+					<input type="hidden" name="itemindex" id="itemindex" value="">
+				{$mixhint}
+				</form>
 			</div>
 		</div>
 	</div>
-<img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('itemmix_tips'));this.disabled=true;">
-</dialog>
+
+	<!--{if !empty($itemindex)}-->
+	<!--{eval include_once GAME_ROOT.'./include/game/itemplace.func.php';$mixhint2 = init_itemmix_tips($itemindex);}-->
+	<dialog id="itemmix_tips" style="min-width: fit-content; min-height: fit-content;max-width: 400px;max-height: 600px;">
+		<div id="tipsinfo">
+			<div class="b3" style="mdisplay: flex;position:relative;justify-content: center;">
+				<div style="text-align:left;word-break:break-all;overflow:auto;">
+					{$mixhint2}
+				</div>
+			</div>
+		</div>
+	<img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('itemmix_tips'));this.disabled=true;">
+	</dialog>
+	<!--{/if}-->
+<!--{elseif $itemcmd == 'elementmix'}-->
+	<style>
+		table.infotable {
+			float: left;
+			margin-top: 10px;
+			position:relative;
+			text-align: center;
+			border-radius: 3px; 
+			border:2px solid rgba(225, 124, 226, 0.25);
+		}
+		table.infotable td,
+		table.infotable th {
+			width: 55px;
+			text-align: center;
+			border:1px solid rgba(225, 124, 226, 0.4);
+		}
+	</style>
+	<div style="width:740px">
+		<div class="b1" style="height:20px"><span>元素笔记</span></div>
+		<div class="b3" style="min-height:380px;display: flex;position:relative;justify-content: center;">
+			<div style="min-width: 500px;max-width:720px;max-height:400px;text-align:left;word-break:break-all;overflow:auto;">
+				<!--{eval include_once GAME_ROOT.'./include/game/elementmix.func.php';$smhint = emix_init_elements_info($pdata);}-->
+				<!--{loop Array('element0','element1','element2','element3','element4','element5') $ekey $enum}-->
+					<table cellspacing="0" cellpadding="0" class="infotable">
+						<tr>
+							<TD colspan="2" class="b1" style="width: 110px; height: 24px;">{$elements_info[$ekey]}</TD>
+						</tr>
+						<tr class="map" height="28">
+							<td colspan="2">
+								<span class="">{$pdata[$enum]}</span> 份
+							</td>
+						</tr>
+						<tr class="map" height="24">
+							<td colspan="2">
+								<!--{eval $domdesc_0 = emix_init_elements_tags($ekey,'dom',0,$pdata)}-->
+								{$domdesc_0}
+							</td>
+						</tr>
+						<tr class="map" height="24">
+							<td colspan="2">
+								<!--{eval $domdesc_1 = emix_init_elements_tags($ekey,'dom',1,$pdata)}-->
+								{$domdesc_1}
+							</td>
+						</tr>
+						<tr class="map" height="24">
+							<td>
+								<!--{eval $subdesc_0 = emix_init_elements_tags($ekey,'sub',0,$pdata)}-->
+								{$subdesc_0}
+							</td>
+							<td>
+								<!--{eval $subdesc_1 = emix_init_elements_tags($ekey,'sub',1,$pdata)}-->
+								{$subdesc_1}
+							</td>
+						</tr>
+						<tr class="map" height="24">
+							<td>
+								<!--{eval $subdesc_2 = emix_init_elements_tags($ekey,'sub',2,$pdata)}-->
+								{$subdesc_2}
+							</td>
+							<td>
+								<!--{eval $subdesc_3 = emix_init_elements_tags($ekey,'sub',3,$pdata)}-->
+								{$subdesc_3}
+							</td>
+						</tr>
+					</table>
+				<!--{/loop}-->
+				<br>
+				<hr style="clear:both; border: 1px solid rgba(225, 124, 226, 0.25);">
+				<div style="display: block;word-break:break-all;overflow:auto;">
+					{$smhint}
+				</div>
+			</div>
+		</div>
+	</div>
 <!--{/if}-->
