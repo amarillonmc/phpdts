@@ -19,6 +19,18 @@ return [
         ],
         'events-console' => '$events',
         'bootstrap-console' => '$bootstrap',
+
+        'params-web' => [
+            '$params',
+            'web/params.php',
+        ],
+        'di-web' => [
+            '$di',
+            'web/di/*.php',
+        ],
+        'events-web' => '$events',
+        'routes' => 'web/routes.php',
+        'bootstrap-web' => '$bootstrap',
     ],
     'config-plugin-environments' => [
         'dev' => [

@@ -17,14 +17,33 @@
         ]
     },
     "require": {
+        "httpsoft/http-message": "^1.0",
         "paragonie/random_compat": "v2.0.21",
+        "psr/cache": "^3.0",
+        "psr/http-message": "^1.0",
+        "psr/log": "^3.0",
+        "psr/simple-cache": "^3.0",
         "vlucas/phpdotenv": "^5.5",
         "yiisoft/aliases": "^3.0",
         "yiisoft/config": "^1.1",
-        "yiisoft/log": "^2.0"
+        "yiisoft/csrf": "^2.0",
+        "yiisoft/data-response": "^2.0",
+        "yiisoft/definitions": "^3.2",
+        "yiisoft/log": "^2.0",
+        "yiisoft/middleware-dispatcher": "^5.0",
+        "yiisoft/router": "^3.0",
+        "yiisoft/router-fastroute": "^3.0",
+        "yiisoft/session": "^2.0",
+        "yiisoft/yii-http": "^1.0",
+        "yiisoft/yii-runner-http": "^2.0"
     },
     "require-dev": {
         "rector/rector": "^0.15.23",
+        "yiisoft/request-model": "dev-master",
+        "yiisoft/yii-debug": "dev-master#20b397a336d7f31a227ac4f5f75d8c8d81ae0b89",
+        "yiisoft/yii-debug-api": "dev-master",
+        "yiisoft/yii-gii": "dev-master",
+        "yiisoft/yii-middleware": "dev-master",
         "yiisoft/yii-runner-console": "^2.0"
     },
     "extra": {
