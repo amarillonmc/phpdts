@@ -92,6 +92,8 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">{$a}引爆了核弹，毁坏了虚拟战场</span><br>\n";
 		} elseif($news == 'end6') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">本局游戏被GM中止</span><br>\n";
+		} elseif($news == 'end7') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"minirainbow\">{$a}达成了自己的存在意义，开启了虚拟幻境的下一个篇章。</span><br>\n";
 		} elseif($news == 'revival') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}涅槃重生了！</span><br>\n";
 		} elseif($news == 'aurora_revival')  {
