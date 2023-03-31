@@ -276,6 +276,8 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}使用了黑色碎片，让1名未知存在加入了战场！打倒她去获得ID卡来解除游戏吧！</span><br>\n";
 		} elseif($news == 'dfsecphase') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}闯了大祸，打破了Dark Force的封印！</span><br>\n";
+		} elseif($news == 'key0'){
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}释放了少量被封印的NPC存在！</span><br>\n";
 		} elseif($news == 'key1'){
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}释放了第一批被封印的NPC存在！</span><br>\n";
 		} elseif($news == 'key2'){
@@ -317,6 +319,10 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"grey\">{$a}将{$b}生前存放在安全箱里的东西转移到了自己的名下。哇……真是世风日下，道德沦丧啊！</span><br>\n";
 		} elseif($news == 'cdestroy') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">{$a}把{$b}的尸体销毁了</span><br>\n";
+		} elseif($news == 'cesplit') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">{$a}把{$b}的尸体提炼成了元素</span><br>\n";
+		} elseif($news == 'ctozombie') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"mtgblack\">{$a}把{$b}的尸体转化成了灵俑...</span><br>\n";
 		} elseif($news == 'csl_wthchange') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"orange\">{$a}发送了控制指令，战场的天气变成了{$wthinfo[$b]}！</span><br>\n";
 		} elseif($news == 'csl_hack') {
@@ -348,6 +354,10 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}指挥佣兵 {$b}移动到了{$plsinfo[$c]}！</span><br>\n";
 		} elseif(strpos($news,'mercleave')===0) {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}的佣兵 {$b}离开了战场！</span><br>\n";
+		} elseif($news == 'sparklemove') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"mtgred\">{$a}点燃火花将{$b}传送到了{$c}！</span><br>\n";
+		} elseif($news == 'sparklerevival') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"mtggreen\">{$a}在危急时刻点燃火花传送到了{$c}！</span><br>\n";
 		} else {
 			$newsinfo .= "<li>$time,$news,$a,$b,$c,$d<br>\n";
 		}

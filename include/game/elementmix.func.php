@@ -147,9 +147,11 @@
 
 	/********拆解元素部分********/
 	# 把尸体打散成元素
-	function split_corpse_to_elements(&$edata)
+	function split_corpse_to_elements(&$edata,$emode)
 	{
-		global $log,$mode,$typeinfo,$elements_info,$gamecfg,$gamevars;
+		global $now,$log,$mode,$typeinfo,$elements_info,$gamecfg,$gamevars;
+		global $db,$tablepre;
+
 		include config('elementmix',$gamecfg);
 		if(!isset($data))
 		{
@@ -157,25 +159,39 @@
 			$data = &$pdata;
 		}
 		extract($data,EXTR_REFS);
-		if($club != 20)
+
+		$edata['clbpara'] = get_clbpara($edata['clbpara']);
+
+		if($club != 20 || ($emode == 'c20_zombie' && check_skill_unlock('c20_zombie',$data)))
 		{
 			$log.="你还想对这具可怜的尸体干什么？<br>";
 			$mode = 'command';
 			return;
 		}
 		# 过滤不能分解的尸体
-		if(in_array($edata['type'],$no_type_to_e_list))
+		if(($emode == 'element_split' && in_array($edata['type'],$no_type_to_e_list)) || ($emode == 'c20_zombie' && in_array($edata['type'],get_skillvars($emode,'notype'))) )
 		{
-			$log.="无法从{$edata['name']}身上提炼元素……为什么呢？<br>";
+			$desc = ($emode == 'element_split') ? '提炼为元素' : '转化成灵俑';
+			$log.="无法将{$edata['name']}{$desc}……为什么呢？<br>";
 			$mode = 'command';
 			return;
 		}
+		# 不能灵俑套娃……
+		if($emode == 'c20_zombie' && !check_skill_unlock('inf_zombie',$edata))
+		{
+			$log.="竟然想让一个已经死了两次的人再起来替你打工……你的良心不会痛吗！<br>";
+			$mode = 'command';
+			return;
+		}
+
 		# 开始提炼尸体
 		$ev_arr = Array();
-		$log.="<span class='grey'>{$edata['name']}化作点点荧光四散开来……</span><br>";
+
+		if($emode == 'element_split') $log.="<span class='grey'>{$edata['name']}化作点点荧光四散开来……</span><br>";
+		else $log.="<span class='grey'>{$edata['name']}身上升腾起缕缕不详黑气……</span><br>";
 
 		# 处理绑定有秘钥的尸体
-		if(!empty($split_spcorpse_fix[$edata['type']])) esplit_vip_things($ev_arr,$edata,$data);
+		if($emode == 'element_split' && !empty($split_spcorpse_fix[$edata['type']])) esplit_vip_things($ev_arr,$edata,$data);
 
 		# 根据尸体等级计算能获得的全种类元素数量
 		$ev_lvl = ceil($edata['lvl']*$split_corpse_lvl_r);
@@ -197,15 +213,57 @@
 				$add_ev += $edata['element'.$e_key];
 				$edata['element'.$e_key] = 0;
 			}
-			${'element'.$e_key} += $add_ev;
-			$total_addev += $add_ev;
-			$log.="获得了{$add_ev}份{$e_info}！<br>";
+			if($emode == 'element_split')
+			{
+				# 计算技能加成
+				$add_ev = get_clbskill_emgain_r($add_ev,$data);
+				${'element'.$e_key} += $add_ev;
+				$total_addev += $add_ev;
+				$log.="获得了{$add_ev}份{$e_info}！<br>";
+			}
+			else 
+			{
+				$add_ev = ceil($add_ev * sqrt($edata['lvl']));
+				if(${'element'.$e_key} < $add_ev)
+				{
+					$log.="但是你的元素库存告罄了！转化被迫中止了……<br>";
+					$mode = 'command';
+					return;
+				}
+				${'element'.$e_key} -= $add_ev;
+				$log.="<span class='grey'>消耗了{$add_ev}份{$e_info}...</span><br>";
+			}
 		}
 
-		# 分解的结果有参数合法的特殊道具
-		if(!empty($ev_arr['spitm']) && count($ev_arr['spitm'])>3)
+		# 转化灵俑成功，复制一个相同属性的人丢进战场，然后把旧尸体销毁
+		if($emode == 'c20_zombie')
 		{
-			global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
+			$gdata = $edata; unset($gdata['pid']);
+			$gdata['name'] .= '的灵俑';
+			$gdata['hp'] = $gdata['mhp']; $gdata['action'] = '';
+			$gdata['state'] = $gdata['endtime'] = $gdata['deathtime'] = $gdata['bid'] = 0;
+			# 登记为盟友，并记录创造者id
+			$gdata['clbpara']['mate'][] = $pid; $gdata['clbpara']['zombieoid'] = $pid;
+			# 获得灵俑状态技能
+			getclubskill('inf_zombie',$gdata['clbpara']);
+			# 插入
+			$gdata = player_format_with_db_structure($gdata);
+			if(!empty($gdata))
+			{
+				$db->array_insert("{$tablepre}players", $gdata);
+				$gid = $db->insert_id();
+				$clbpara['mate'][] = $gid; $clbpara['zombieid'][] = $gid;
+				# addnews
+				addnews($now,'ctozombie',$name,$edata['name']);
+			}
+			unset($gdata);
+		}
+		
+		if($mode == 'element_split') addnews($now,'cesplit',$name,$edata['name']);
+
+		# 分解的结果有参数合法的特殊道具
+		if($emode == 'element_split' && !empty($ev_arr['spitm']) && count($ev_arr['spitm'])>3)
+		{
 			$log.="但出现在你面前的不是元素，而是<span class='yellow'>{$ev_arr['result'][0]}</span>！<br>……这又是什么鬼东西！<br>";
 			$itm0 = $ev_arr['result'][0]; $itmk0 = $ev_arr['result'][1]; $itmsk0 = $ev_arr['result'][4];
 			$itme0 = $ev_arr['result'][2]; $itms0 = $ev_arr['result'][3];
@@ -290,6 +348,8 @@
 					}
 					else 
 					{
+						# 计算技能加成
+						$ev = get_clbskill_emgain_r($ev,$data);
 						$ev = ceil($ev);
 						${'element'.$e_key} += $ev;
 						$total_addev += $ev;

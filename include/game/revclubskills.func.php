@@ -353,20 +353,18 @@
 		# 检查冷却时间
 		if(is_array($lock))
 		{
-			$cd = $lock[0]; 
-			$lock = $lock[1];
+			$cd = $lock[1]; 
+			$lock = $lock[0];
 		}
 		# 通用未解锁项目
 		if($lock == 'noskill' || !isset($cskill['lockdesc'])) return "技能未解锁或解锁条件不明！<br>";
 		# 返回对应的未解锁描述
-		if(is_array($cskill['lockdesc']))
+		$lockdesc = $cskill['lockdesc']; 
+		if(is_array($lockdesc))
 		{
-			$lockdesc = isset($cskill['lockdesc'][$lock]) ? $cskill['lockdesc'][$lock] : "技能不可用，可能是因为：{$lock}<br>";
+			$lockdesc = isset($lockdesc[$lock]) ? $lockdesc[$lock] : "技能不可用，可能是因为：{$lock}<br>";
 		}
-		else 
-		{
-			$lockdesc = $cskill['lockdesc']; 
-		}
+		if(isset($cd)) $lockdesc = str_replace("[:cd:]",$cd,$lockdesc);
 		return $lockdesc;
 	}
 

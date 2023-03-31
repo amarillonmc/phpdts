@@ -25,7 +25,7 @@ $club_skillslist = Array
 	17 => Array('f_heal'), #'走路萌物',
 	//18 => Array('s_hp','s_ad','f_heal'), #'天赋异禀',
 	19 => Array('s_hp','s_ad','f_heal','c19_nirvana','c19_reincarn','c19_purity','c19_crystal','c19_redeem','c19_dispel','c19_woesea'), #'晶莹剔透', //晶莹剔透、决死结界合并为晶莹剔透
-	20 => Array('s_hp','s_ad','f_heal'), #'元素大师', #商店购买社团卡
+	20 => Array('s_hp','s_ad','f_heal','c20_fertile','c20_windfall','c20_lighting','c20_zombie','c20_sparkle','c20_lotus'), #'元素大师', #商店购买社团卡
 	21 => Array('s_hp','s_ad','f_heal'), #'灵子梦魇', #暂定名，商店购买社团卡
 	22 => Array('s_hp','s_ad','f_heal'), #'偶像大师', #暂定名，「除错大师」头衔奖励
 	98 => Array('s_hp','s_ad','f_heal'), #'换装迷宫',
@@ -65,7 +65,8 @@ $cskills_tags = Array
 $sktpshield = '<span class="gold" tooltip2="【护盾】：可抵消等同于护盾值的伤害。护盾值只在抵消属性伤害时消耗，抵消电击伤害时双倍消耗。护盾存在时不会受到反噬伤害或陷入异常状态。">护盾</span>';
 $sktprp = '<span class="yellow">报应点数</span>';
 $sktpwhitedmg = '<span class="gold" tooltip2="【纯粹伤害】：不会受防御、抹消或制御效果影响的定值伤害">纯粹伤害</span>';
-
+$sktpzombie = '<span class="gold" tooltip2="【灵俑】：此状态下的角色造成的最终伤害降低50%，受到的伤害降低25%；不会受到反噬伤害，但不能再造成除毒性、冻气外的属性伤害；">灵俑</span>';
+$sktpemsdmg = "<span class=\"gold\" tooltip2=\"【亮晶晶】：造成纯粹伤害（不受防御、抹消或制御效果影响的定值伤害）\r【暖洋洋】：造成火焰伤害\r【冷冰冰】：造成冻气伤害\r【冷冰冰】：造成冻气伤害\r【郁萌萌】：造成毒性伤害\r【昼闪闪】：造成电气伤害\r【夜静静】：造成音波伤害\">属性/纯粹</span>";
 # 技能登记：
 $cskills = Array
 (
@@ -160,7 +161,7 @@ $cskills = Array
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">殴系武器</span>时生效',
 		),
 		'unlock' => Array(
-			'wepk+wep_kind' => "[:wepk:] == 'WP' || [:wepk:] == 'WCP' || [:wepk:] == 'WKP' || [:wep_kind:] == 'P'",
+			'wepk+wep_kind' => "strpos([:wepk:],'P')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'P')",
 		),
 	),
 	'c1_crit' => Array
@@ -189,7 +190,7 @@ $cskills = Array
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">殴系武器</span>时生效',
 		),
 		'unlock' => Array(
-			'wepk+wep_kind' => "[:wepk:] == 'WP' || [:wepk:] == 'WCP' || [:wepk:] == 'WKP' || [:wep_kind:] == 'P'",
+			'wepk+wep_kind' => "strpos([:wepk:],'P')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'P')",
 		),
 	),
 	'c1_stalk' => Array
@@ -209,7 +210,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 3',
-			'wepk+wep_kind' => "[:wepk:] == 'WP' || [:wepk:] == 'WCP' || [:wepk:] == 'WKP' || [:wep_kind:] == 'P'",
+			'wepk+wep_kind' => "strpos([:wepk:],'P')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'P')",
 		),
 	),
 	'c1_burnsp' => Array
@@ -229,7 +230,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 6',
-			'wepk+wep_kind' => "[:wepk:] == 'WP' || [:wepk:] == 'WCP' || [:wepk:] == 'WKP' || [:wep_kind:] == 'P'",
+			'wepk+wep_kind' => "strpos([:wepk:],'P')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'P')",
 		),
 	),
 	'c1_bjack' => Array
@@ -250,7 +251,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 11',
-			'wepk+wep_kind' => "[:wepk:] == 'WP' || [:wepk:] == 'WCP' || [:wepk:] == 'WKP' || [:wep_kind:] == 'P'",
+			'wepk+wep_kind' => "strpos([:wepk:],'P')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'P')",
 		),
 	),
 	'c1_veteran' => Array
@@ -288,7 +289,7 @@ $cskills = Array
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">斩系武器</span>时可发动',
 		),
 		'unlock' => Array(
-			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
+			'wepk+wep_kind' => "strpos([:wepk:],'K')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'K')",
 		),
 	),
 	'c2_intuit' => Array
@@ -320,7 +321,7 @@ $cskills = Array
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">斩系武器</span>时生效',
 		),
 		'unlock' => Array(
-			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
+			'wepk+wep_kind' => "strpos([:wepk:],'K')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'K')",
 		),
 	),
 	'c2_raiding' => Array
@@ -340,7 +341,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 15',
-			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
+			'wepk+wep_kind' => "strpos([:wepk:],'K')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'K')",
 		),
 	),
 	'c2_master' => Array
@@ -354,7 +355,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 15',
-			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
+			'wepk+wep_kind' => "strpos([:wepk:],'K')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'K')",
 		),
 	),
 	'c2_annihil' => Array
@@ -388,7 +389,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 21',
-			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
+			'wepk+wep_kind' => "strpos([:wepk:],'K')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'K')",
 			'skillpara|c2_annihil-active' => 'empty([:skillpara|c2_annihil-active:])',
 			'skillcooldown' => 0,
 		),
@@ -412,7 +413,7 @@ $cskills = Array
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">斩系武器</span>时生效',
 		),
 		'unlock' => Array(
-			'wepk+wep_kind' => "[:wepk:] == 'WK' || [:wepk:] == 'WGK' || [:wepk:] == 'WKP' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wep_kind:] == 'K'",
+			'wepk+wep_kind' => "strpos([:wepk:],'K')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'K')",
 		),
 	),
 	'c3_pitchpow' => Array
@@ -438,7 +439,7 @@ $cskills = Array
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">投系武器</span>时生效',
 		),
 		'unlock' => Array(
-			'wepk+wep_kind' => "[:wepk:] == 'WC' || [:wepk:] == 'WCF' || [:wepk:] == 'WCP' || [:wep_kind:] == 'C'",
+			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'C')",
 		),
 	),
 	'c3_enchant' => Array
@@ -488,7 +489,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 5',
-			'wepk+wep_kind' => "[:wepk:] == 'WC' || [:wepk:] == 'WCF' || [:wepk:] == 'WCP' || [:wep_kind:] == 'C'",
+			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'C')",
 		),
 	),
 	'c3_potential' => Array
@@ -509,7 +510,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 7',
-			'wepk+wep_kind' => "[:wepk:] == 'WC' || [:wepk:] == 'WCF' || [:wepk:] == 'WCP' || [:wep_kind:] == 'C'",
+			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'C')",
 		),
 	),
 	'c3_hawkeye' => Array
@@ -529,7 +530,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 9',
-			'wepk+wep_kind' => "[:wepk:] == 'WC' || [:wepk:] == 'WCF' || [:wepk:] == 'WCP' || [:wep_kind:] == 'C'",
+			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'C')",
 		),
 	),
 	'c3_offset' => Array
@@ -562,7 +563,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 13',
-			'wepk+wep_kind' => "[:wepk:] == 'WC' || [:wepk:] == 'WCF' || [:wepk:] == 'WCP' || [:wep_kind:] == 'C'",
+			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'C')",
 		),
 	),
 	'c3_numerous' => Array
@@ -582,7 +583,7 @@ $cskills = Array
 		//……
 		'unlock' => Array(
 			'skillpara|c3_enchant-ur+skillpara|c3_enchant-ir+skillpara|c3_enchant-pr+skillpara|c3_enchant-er+skillpara|c3_enchant-wr+skillpara|c3_enchant-dr' => '[:skillpara|c3_enchant-ur:] >= 120 || [:skillpara|c3_enchant-ir:] >= 120 || [:skillpara|c3_enchant-er:] >= 120 || [:skillpara|c3_enchant-wr:] >= 120 || [:skillpara|c3_enchant-pr:] >= 120 || [:skillpara|c3_enchant-dr:] >= 120',
-			'wepk+wep_kind' => "[:wepk:] == 'WC' || [:wepk:] == 'WCF' || [:wepk:] == 'WCP' || [:wep_kind:] == 'C'",
+			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'C')",
 		),
 	),
 	'c4_stable' => Array
@@ -614,7 +615,7 @@ $cskills = Array
 			'weps' => '武器弹药不足，无法发动',
 		),
 		'unlock' => Array(
-			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+			'wepk+wep_kind' => "strpos([:wepk:],'G')!==false || strpos([:wepk:],'J')!==false || (!empty([:wep_kind:]) && ([:wep_kind:] == 'G' || [:wep_kind:] == 'J' ))",
 			'weps' => "[:weps:] != '∞'",
 		),
 	),
@@ -649,7 +650,7 @@ $cskills = Array
 			'weps' => '武器弹药不足，无法发动',
 		),
 		'unlock' => Array(
-			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+			'wepk+wep_kind' => "strpos([:wepk:],'G')!==false || strpos([:wepk:],'J')!==false || (!empty([:wep_kind:]) && ([:wep_kind:] == 'G' || [:wep_kind:] == 'J' ))",
 			'weps' => "[:weps:] != '∞'",
 		),
 	),
@@ -674,7 +675,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 3',
-			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+			'wepk+wep_kind' => "strpos([:wepk:],'G')!==false || strpos([:wepk:],'J')!==false || (!empty([:wep_kind:]) && ([:wep_kind:] == 'G' || [:wep_kind:] == 'J' ))",
 			'weps' => "[:weps:] != '∞'",
 		),
 	),
@@ -721,7 +722,7 @@ $cskills = Array
 			'skillpara|c4_roar-disable' => 'empty([:skillpara|c4_roar-disable:])',
 			'skillpara|c4_roar-active' => '!empty([:skillpara|c4_roar-active:])',
 			'lvl' => '[:lvl:] >= 15',
-			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+			'wepk+wep_kind' => "strpos([:wepk:],'G')!==false || strpos([:wepk:],'J')!==false || (!empty([:wep_kind:]) && ([:wep_kind:] == 'G' || [:wep_kind:] == 'J' ))",
 			'weps' => "[:weps:] != '∞'",
 		),
 	),
@@ -753,7 +754,7 @@ $cskills = Array
 			'skillpara|c4_sniper-disable' => 'empty([:skillpara|c4_sniper-disable:])',
 			'skillpara|c4_sniper-active' => '!empty([:skillpara|c4_sniper-active:])',
 			'lvl' => '[:lvl:] >= 15',
-			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+			'wepk+wep_kind' => "strpos([:wepk:],'G')!==false || strpos([:wepk:],'J')!==false || (!empty([:wep_kind:]) && ([:wep_kind:] == 'G' || [:wep_kind:] == 'J' ))",
 			'weps' => "[:weps:] != '∞'",
 		),
 	),
@@ -774,7 +775,7 @@ $cskills = Array
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 15',
 			'skillpara|c4_stable-costcount+skillpara|c4_break-costcount' => '[:skillpara|c4_stable-costcount:]+[:skillpara|c4_break-costcount:] >= 15',
-			'wepk+wep_kind' => "[:wepk:] == 'WG' || [:wepk:] == 'WJ' || [:wepk:] == 'WGK' || [:wepk:] == 'WDG' || [:wep_kind:] == 'G' || [:wep_kind:] == 'J'",
+			'wepk+wep_kind' => "strpos([:wepk:],'G')!==false || strpos([:wepk:],'J')!==false || (!empty([:wep_kind:]) && ([:wep_kind:] == 'G' || [:wep_kind:] == 'J' ))",
 			'weps' => "[:weps:] != '∞'",
 		),
 	),
@@ -828,7 +829,7 @@ $cskills = Array
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">爆系武器</span>时生效',
 		),
 		'unlock' => Array(
-			'wepk+wep_kind' => "[:wepk:] == 'WD' || [:wepk:] == 'WDG' || [:wepk:] == 'WDF' || (!empty([:wep_kind:]) && [:wep_kind:] == 'D')",
+			'wepk+wep_kind' => "strpos([:wepk:],'D')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'D')",
 		),
 	),
 	'c5_focus' => Array
@@ -869,7 +870,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 6',
-			'wepk+wep_kind' => "[:wepk:] == 'WD' || [:wepk:] == 'WDG' || [:wepk:] == 'WDF' || (!empty([:wep_kind:]) && [:wep_kind:] == 'D')",
+			'wepk+wep_kind' => "strpos([:wepk:],'D')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'D')",
 		),
 	),
 	'c5_double' => Array
@@ -898,7 +899,7 @@ $cskills = Array
 		'unlock' => Array(
 			'skillpara|c5_double-active_t' => '[:skillpara|c5_double-active_t:] < 2',
 			'lvl' => '[:lvl:] >= 19',
-			'wepk+wep_kind' => "[:wepk:] == 'WD' || [:wepk:] == 'WDG' || [:wepk:] == 'WDF' || (!empty([:wep_kind:]) && [:wep_kind:] == 'D')",
+			'wepk+wep_kind' => "strpos([:wepk:],'D')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'D')",
 		),
 	),
 	'c9_kotodama' => Array
@@ -981,7 +982,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 7',
-			'wepk+wep_kind' => "[:wepk:] == 'WF' || [:wepk:] == 'WCF' || [:wepk:] == 'WKF' || [:wepk:] == 'WFK' || [:wepk:] == 'WDF' || (!empty([:wep_kind:]) && [:wep_kind:] == 'F')",
+			'wepk+wep_kind' => "strpos([:wepk:],'F')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'F')",
 		),
 	),
 	'c9_charge' => Array
@@ -1526,7 +1527,7 @@ $cskills = Array
 			'active_t' => 0,
 		),
 		'vars' => Array(
-			'mcost' => 2000,
+			'mcost' => 1500,
 			'mst' => 25,
 			'movep' => 2, //移动佣兵花费
 			'atkp' => 10, //主动出击花费
@@ -1538,11 +1539,11 @@ $cskills = Array
 		),
 		'lockdesc' => Array(
 			'skillpara|c11_merc-active_t' => '次数耗尽，已无法再召唤佣兵',
-			'money' => '招募佣兵至少需要2000元！',
+			'money' => '招募佣兵至少需要1500元！',
 		),
 		'unlock' => Array(
 			'skillpara|c11_merc-active_t' => '[:skillpara|c11_merc-active_t:] < 4',
-			'money' => '[:money:] >= 2000',
+			'money' => '[:money:] >= 1500',
 		),
 	),
 	'c11_stock' => Array
@@ -1864,6 +1865,176 @@ $cskills = Array
 			'skillpara|c19_woesea-active_t' => '[:skillpara|c19_woesea-active_t:] < 1',
 			'lvl' => '[:lvl:] >= 21',
 			'ss' => '[:ss:] >= 100',
+		),
+	),
+	'c20_fertile' => Array
+	(
+		'name' => '沃土',
+		'tags' => Array('passive'),
+		'desc' => '获得元素时，获得量<span class="yellow">+0%~[:emsgain:]%</span>；<br>
+		每探索/移动<span class="yellow">[:mst:]</span>次，口袋中存量最低的元素数量<span class="yellow">+[:minemsgain:]%</span><br>
+		<span class="grey">当前已探索/移动次数：[^skillpara|c20_fertile-ms^] 次</span>',
+		'maxlvl' => 6,
+		'cost' => Array(2,3,3,4,4,5,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">「沃土」升级成功。</span><br>',
+		'status' => Array('skillpara|c20_fertile-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c20_fertile-lvl' => '+=::1',),
+		),
+		'svars' => Array('lvl' => 0,'ms' => 0),
+		'vars' => Array(
+			'emsgain' => Array(1,2,2,3,3,4,5),
+			'mst' => Array(35,35,30,30,25,25,20),
+			'minemsgain' => Array(1,1,2,2,3,3,4),
+		),
+		'pvars' => Array('skillpara|c20_fertile-ms'),
+	),
+	'c20_windfall' => Array
+	(
+		'name' => '横财',
+		'tags' => Array('active','cd'),
+		'desc' => '清空你口袋中的所有元素，<br>
+		然后以尽可能平均的方式重新获得它们。冷却时间<span class="clan">[:cd:]</span>秒',
+		'input' => '发动',
+		'log' => '……<br>',
+		'events' => Array('windfall','setstarttimes_c20_windfall','active_news'),
+		'vars' => Array(
+			'cd' => 900, //冷却时间
+		),
+		'lockdesc' => Array(
+			'skillcooldown' => '技能冷却中！<br>剩余冷却时间：<span class="red">[:cd:]</span> 秒',
+		),
+		'unlock' => Array(
+			'skillcooldown' => 0,
+		),
+	),
+	'c20_lighting' => Array
+	(
+		'name' => '闪电',
+		'tags' => Array('battle'),
+		'desc' => "消耗<span class='yellow'>[:ragecost:]</span>点怒气与<span class='yellow'>[:emcost:]</span>份随机元素，<br>
+		根据所消耗元素种类附加{$sktpemsdmg}伤害；<br>
+		累计发动次数达<span class='yellow'>(1+...+n)</span>次时，<br>
+		消耗<span class='yellow'>(30×n)</span>份元素，同时触发<span class='yellow'>(n)</span>次效果；<br>
+		<span class='grey'>当前累计发动次数：[^skillpara|c20_lighting-active_t^] 次</span>",
+		'bdesc' => "消耗<span class='yellow'>[:emcost:]</span>份随机元素，根据所消耗元素种类附加{$sktpemsdmg}；消耗<span class='red'>[:ragecost:]</span>怒气</span>",
+		'vars' => Array(
+			'ragecost' => 15, 
+			'emcost' => 30,
+			'emextype' => Array( // 各类元素能造成的伤害类型
+				0 => 'white',
+				1 => 'u',
+				2 => 'i',
+				3 => 'p',
+				4 => 'e',
+				5 => 'w',
+			),
+		),
+		'svars' => Array(
+			'active_t' => 0,//技能发动次数
+		),
+		'pvars' => Array('skillpara|c20_lighting-active_t'),
+		'lockdesc' => Array(
+			'lvl' => '5级时解锁',
+			'element0+element1+element2+element3+element4+element5' => '至少需要30份元素才能发动',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 5',
+			'element0+element1+element2+element3+element4+element5' => "[:element0:]>=30 || [:element1:]>=30 || [:element2:]>=30 || [:element3:]>=30 || [:element4:]>=30 || [:element5:]>=30",
+		),
+	),
+	'c20_zombie' => Array
+	(
+		'name' => '灵俑',
+		'tags' => Array('passive'),
+		'desc' => "发现尸体时，消耗等同于<span class=\"yellow\">尸体等级的平方根×提炼尸体可获得的元素数量</span>，将尸体复活为{$sktpzombie}；<br>
+		复活后的{$sktpzombie}有<span class=\"yellow\">50%</span>概率为你<span class='gold' tooltip2='当你攻击敌人且敌人未死亡时，与你在同一地点的灵俑有概率主动为你助战。'>协战</span>，并在你受到攻击时，<br>
+		为你抵挡最多不超过<span class=\"yellow\">[:maxdefhp:]%</span>灵俑当前生命的伤害",
+		'vars' => Array(
+			'maxdefhp' => 50, 
+			'notype' => Array(1,9,19,88,92), //不能复活为灵俑的NPC
+		),
+		'lockdesc' => Array(
+			'lvl' => '11级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 11',
+		),
+	),
+	'c20_sparkle' => Array
+	(
+		'name' => '火花',
+		'tags' => Array('switch','limit'),
+		'desc' => '技能开启后，<br>
+		造成伤害时有<span class="yellow">[:tpr:]%</span>概率将敌人传送至随机地点，<br>
+		被传送者会受到轻微伤害、或遭遇意外；<br>
+		火花持有者受到<span class="red">致命伤害</span>时，会紧急传送回避伤害，但<span class="red">永久失去</span>火花；<br>
+		点击右侧的<span class="yellow">“切换”</span>键随时激活或禁用该技能<br>
+		[^skill-active^]',
+		'input' => '切换',
+		'log' => '<span class="yellow">切换了「火花」的状态。</span>',
+		'events' => Array('active|c20_sparkle'),
+		'svars' => Array(
+			'active' => 0, 
+			'active_t' => 0,
+		),
+		'vars' => Array(
+			'tpr' => 15,
+			'maxactive_t' => 1,
+		),
+		'pvars' => Array('skill-active','skillpara|c20_sparkle-active_t'),
+		'lockdesc' => Array(
+			'skillpara|c20_sparkle-active_t' => '已失去火花。',
+			'lvl' => '13级时解锁',
+		),
+		'unlock' => Array(
+			'skillpara|c20_sparkle-active_t' => '[:skillpara|c20_sparkle-active_t:] < 1',
+			'lvl' => '[:lvl:] >= 13',
+		),
+	),
+	'c20_lotus' => Array
+	(
+		'name' => '黑莲',
+		'tags' => Array('active','limit'),
+		'desc' => '本局已献祭<span class="redseed"> [^skillpara|c20_lotus-active_t^]/[:maxactive_t:] </span>次<br>
+		献祭黑莲花，口袋中所有元素存量<span class="yellow">x3</span><br>',
+		'input' => '献祭',
+		'no_reload_page' => 1,
+		'log' => '<span class="mtgblack">你将一坨不知道从哪弄来的黑糊糊的东西扔进了元素口袋里……<br>
+		片刻后，口袋里传来了令人毛骨悚然的咀嚼声……</span><br>
+		……<br>',
+		'status' => Array('skillpara|c20_lotus-active_t'),
+		'effect' => Array(
+			0 => Array(
+				'skillpara|c20_lotus-active_t' => '+=::1',
+			),
+		),
+		'events' => Array('lotus','active_news'),
+		'vars' => Array(
+			'emsgain' => 3,
+			'maxactive_t' => 3, 
+		),
+		'svars' => Array('active_t' => 0,),
+		'pvars' => Array('skillpara|c20_lotus-active_t'),
+		'lockdesc' => Array(
+			'skillpara|c20_lotus-active_t' => '黑莲花已经用光了。',
+			'lvl' => '17级时解锁',
+		),
+		'unlock' => Array(
+			'skillpara|c20_lotus-active_t' => '[:skillpara|c20_lotus-active_t:] < 3',
+			'lvl' => '[:lvl:] >= 17',
+		),
+	),
+	'inf_zombie' => Array
+	(
+		'name' => '灵俑',
+		'tags' => Array('inf'),
+		'desc' => '你不会受到反噬伤害，但不能造成除了毒性、冻气以外的属性伤害<br>
+		你造成的最终伤害降低<span class="yellow">[:findmgloss:]%</span>，从敌人处受到的伤害降低<span class="yellow">[:findmgr:]%</span>',
+		'vars' => Array(
+			'findmgloss' => 50, 
+			'findmgr' => 25,
 		),
 	),
 	'tl_cstick' => Array

@@ -370,7 +370,7 @@ function search(&$data=NULL){
 
 function move_search_events(&$data=NULL,$act)
 {
-	global $log,$inf_move_hp,$inf_move_sp,$infwords,$weather,$gamevars,$now;
+	global $log,$inf_move_hp,$inf_move_sp,$infwords,$weather,$gamevars,$now,$elements_info;
 
 	if(!isset($data))
 	{
@@ -487,6 +487,41 @@ function move_search_events(&$data=NULL,$act)
 			player_save($mdata);
 		}
 	}
+
+	# 「沃土」效果判定：
+	if(!check_skill_unlock('c20_fertile',$data))
+	{
+		$sk = 'c20_fertile';
+		$sk_lvl = get_skilllvl($sk,$data);
+		$sk_mst = get_skillvars($sk,'mst',$sk_lvl);
+		$ms = get_skillpara($sk,'ms',$data['clbpara']) + 1;
+		# 赚钱！
+		if($ms >= $sk_mst)
+		{
+			$temp_enums = 0; $temp_ekey = 0;
+			foreach($elements_info as $key => $info)
+			{
+				if(!empty($data['element'.$key]))
+				{
+					if(empty($temp_enums) || $data['element'.$key] < $temp_enums)
+					{
+						$temp_enums = $data['element'.$key];
+						$temp_ekey = $key;
+					}
+				}
+			}
+			if($temp_enums)
+			{
+				$sk_var = get_skillvars($sk,'minemsgain',$sk_lvl);
+				$add_ev = $temp_enums * (1 + ($sk_var/100));
+				$data['element'.$temp_ekey] = $add_ev;
+				$ms = 0;
+				$log .= "<span class='yellow'>你的口袋里冒出了新的元素！</span><br>";
+			}
+		}
+		set_skillpara($sk,'ms',$ms,$data['clbpara']);
+	}
+
 	return;
 }
 
@@ -584,9 +619,6 @@ function discover($schmode = 0,&$data=NULL)
 	$mode_dice = rand(0,99);
 	if($mode_dice < $schmode) 
 	{
-		//echo "进入遇敌判定<br>";
-		//global $pid,$corpse_obbs,$teamID,$fog,$bid,$gamestate;
-		//global $clbstatusa,$clbstatusb,$clbstatusc,$clbstatusd,$clbstatuse;
 		global $fog,$gamestate;
 
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pls='$pls' AND pid!='$pid'");
@@ -600,8 +632,6 @@ function discover($schmode = 0,&$data=NULL)
 		$enemynum = $db->num_rows($result);
 		$enemyarray = range(0, $enemynum - 1);
 		shuffle($enemyarray);
-		$find_r = get_find_r($weather,$pls,$pose,$tactic,$club,$inf);
-		$find_obbs = $enemy_obbs + $find_r;
 		
 		//移除了重复调用discover()的设定，尝试用一种正常一点的办法确保敌人/尸体发现率符合基础设定值，不然现在的尸体确实太难摸了。
 		//现在触发遇敌事件只会返回三种结果：1、发现尸体；2、发现敌人、3、敌人隐藏起来；所以实际的尸体发现率=$enemyrate*$corpse_obbs
@@ -611,6 +641,7 @@ function discover($schmode = 0,&$data=NULL)
 		{
 			$db->data_seek($result, $enum);
 			$edata = $db->fetch_array($result);
+			$edata['clbpara'] = get_clbpara($edata['clbpara']);
 			if(!$edata['type'] || $gamestate < 50)
 			{
 				if($edata['hp'] <= 0)
@@ -639,21 +670,21 @@ function discover($schmode = 0,&$data=NULL)
 				}
 				else 
 				{
-					//直接略过决斗者
-					//global $artk;
+					# 略过决斗者
 					if ((!$edata['type'])&&($artk=='XX')&&(($edata['artk']!='XX')||($edata['art']!=$name))&&($gamestate<50)) continue;
 					if (($artk!='XX')&&($edata['artk']=='XX')&&($gamestate<50)) continue;
-					//暂时直接略过自己的佣兵，之后做完组队面板交互再加回来
-					if(!empty(get_skillpara('c11_merc','id',$clbpara)) && in_array($edata['pid'],get_skillpara('c11_merc','id',$clbpara))) continue;
-					//灵子状态只能遭遇同为灵子状态的对象，非灵子状态对象无法发现灵子状态下的对象……但是尸体就没有这种考量了
+					# 暂时直接略过盟友单位
+					if(!empty($edata['clbpara']['mate']) && in_array($pid,$edata['clbpara']['mate'])) continue;
+					# 灵子状态只能遭遇同为灵子状态的对象，非灵子状态对象无法发现灵子状态下的对象……但是尸体就没有这种考量了
 					if(($edata['pose'] == 8 || $data['pose'] == 8) && $data['pose'] != $edata['pose']) continue;
-					//「量心」技能效果判定：
+					# 「量心」技能效果判定：
 					if(!check_skill_unlock('c19_dispel',$data) && !empty(get_skillpara('c19_dispel','active',$clbpara)) && $edata['hp'] <= 1) continue;
-					//计算活人发现率
+					
+					# 计算活人发现率
 					$hide_r = get_hide_r_rev($data,$edata);
 					$enemy_dice = diceroll(99);
-					//echo "hide_r = {$hide_r} | find_obbs = {$find_obbs} | dice = {$enemy_dice}";
-					$meetman_flag = $enemy_dice<($find_obbs - $hide_r) ? 1 : -1;
+					# 把find_r杀了，现在技能都是用躲避率去判断的了，躲避率为负就等于发现率增幅了
+					$meetman_flag = $enemy_dice < ($enemy_obbs - $hide_r) ? 1 : -1;
 					break;
 				}
 			}

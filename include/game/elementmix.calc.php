@@ -4,6 +4,21 @@
 		exit('Access Denied');
 	}
 
+	function get_clbskill_emgain_r($ev,&$data)
+	{
+		if(!check_skill_unlock('c20_fertile',$data))
+		{
+			$sk = 'c20_fertile';
+			$sk_lvl = get_skilllvl($sk,$data);
+			$sk_var = rand(0,get_skillvars($sk,'emsgain',$sk_lvl));
+			if(!empty($sk_var))
+			{
+				$ev = ceil($ev * (1 + ($sk_var/100)));
+			}
+		}
+		return $ev;
+	}
+
 	# 过滤不能拆解的道具（数组） 不能分解返回1 能分解返回0
 	function split_to_elements_filter($i)
 	{
