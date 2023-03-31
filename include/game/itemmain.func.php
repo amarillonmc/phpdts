@@ -1293,7 +1293,7 @@ function getcorpse($item,&$data=NULL)
 		# 销毁尸体rp结算
 		$rp_up = diceroll($rpup_destory_corpse);
 		include_once GAME_ROOT.'./include/game/revcombat.func.php';
-		rpup_rev($data,$rpup);
+		rpup_rev($data,$rp_up);
 
 		addnews($now,'cdestroy',$name,$edata['name']);
 		destory_corpse($edata);
@@ -1301,7 +1301,7 @@ function getcorpse($item,&$data=NULL)
 		$mode = 'command';
 		return;
 	}
-	elseif($item == 'element_split')
+	elseif($item == 'element_split' || $item == 'c20_zombie')
 	{
 		if($club != 20)
 		{
@@ -1311,7 +1311,7 @@ function getcorpse($item,&$data=NULL)
 			return;
 		}
 		include_once GAME_ROOT.'./include/game/elementmix.func.php';
-		split_corpse_to_elements($edata);
+		split_corpse_to_elements($edata,$item);
 		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
@@ -1455,19 +1455,20 @@ function reload_single_set_item(&$pa,$eqp,$enm,$active=0)
 
 
 //在背包内寻找道具进行编辑
-function check_item_edit_event(&$pa,$event)
+function check_item_edit_event($pa,&$pd,$event)
 {
 	$flag = 0;
 	for($i=0;$i<=6;$i++)
 	{
-		if(!empty($pa['itms'.$i]))
+		if(!empty($pd['itms'.$i]))
 		{
 			# 「渗透」效果判定
 			if($event == 'c8_infilt')
 			{
-				if(strpos($pa['itmk'.$i],'H')===0)
+				if(strpos($pd['itmk'.$i],'H')===0)
 				{
-					$pa['itmk'.$i] = str_replace("H",'P',$pa['itmk'.$i]);
+					$pd['itmk'.$i] = str_replace("H",'P',$pd['itmk'.$i]);
+					$pd['itmsk'.$i] = $pa['pid'];
 					$flag = 1;
 				}
 			}

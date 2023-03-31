@@ -14,7 +14,7 @@ function itemuse($itmn,&$data=NULL) {
 	global $exdmginf,$ex_inf,$cskills,$elements_info,$sparkle,$event_bgm;
 	global $upexp,$baseexp,$elec_cap;
 	//Some globals seems to be still needed... ...
-	global $itemspkinfo;
+	global $itemspkinfo,$plsinfo;
 
 	if(!isset($data))
 	{
@@ -1570,6 +1570,9 @@ function itemuse($itmn,&$data=NULL) {
 			addnpc ( 2, 1, 4);
 			addnpc ( 2, 2, 4);
 			addnpc ( 2, 3, 4);
+			addnews ($now , 'key0', $name);						
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
 		} elseif ($itm == '✦NPC钥匙·一阶段') {
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '已解锁一阶段NPC！<br>似乎大量NPC已经部署至游戏内……<br>';

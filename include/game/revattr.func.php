@@ -1240,7 +1240,8 @@
 	//获取pa能造成的属性伤害队列
 	function get_base_ex_att_array(&$pa,&$pd,$active)
 	{
-		global $ex_attack,$log,$itemspkinfo;
+		global $ex_attack,$log,$itemspkinfo,$elements_info,$r_elements_info;
+
 		$ex_keys = Array();
 		foreach($pa['ex_keys'] as $ex)
 		{
@@ -1250,6 +1251,7 @@
 				$ex_keys[]= $ex; 
 			}
 		}
+
 		# 「附魔」效果判定：
 		if(isset($pa['bskill_c3_enchant']))
 		{
@@ -1278,8 +1280,10 @@
 			// 使用次数+1
 			set_skillpara('c3_enchant','active_t',get_skillpara('c3_enchant','active_t',$pa['clbpara'])+1,$pa['clbpara']);
 		}
+
 		# 「磁暴」效果判定：
 		if(isset($pa['bskill_c7_electric']) && (empty($ex_keys) || !in_array('e',$ex_keys))) $ex_keys[] = 'e';
+
 		# 「渗透」效果判定：
 		if(isset($pa['skill_c8_infilt']))
 		{
@@ -1292,6 +1296,55 @@
 					$sk_keys--;
 				}while($sk_keys);
 				$log .= "<span class='purple'>致命毒雾从{$pa['nm']}身遭蔓延开来……</span><br>";
+			}
+		}
+
+		# 「闪电」效果判定：
+		if(isset($pa['bskill_c20_lighting']))
+		{
+			$sk = 'c20_lighting';
+			# 元素 ↔ 效果队列
+			$sk_etype = get_skillvars($sk,'emextype');
+			# 获取已使用次数，并+1计数：
+			$sk_t = get_skillpara($sk,'active_t',$pa['clbpara']);
+			set_skillpara($sk,'active_t',$sk_t+1,$pa['clbpara']);
+			# 根据已使用次数计算可释放次数
+			$sk_t = floor((sqrt(8 * $sk_t + 1) - 1) / 2);
+			# 根据可释放次数依次执行对应效果
+			$sk_eid = range(0,5);
+			for($s=1;$s<=$sk_t;$s++)
+			{
+				shuffle($sk_eid);
+				$t = 0; $no_cost = 0;
+				# 在当前库存的6种元素中，满足消耗量的元素
+				do{
+					$sk_cost = $s * get_skillvars($sk,'emcost');
+					$eid = $sk_eid[$t];
+					if($sk_cost < $pa['element'.$eid])
+					{
+						$pa['element'.$eid] -= $sk_cost;
+						# 如果造成的伤害是属性伤害，直接加入队列；否则保存进 $pa['bskill_c20_lighting_white_dmg'] 内
+						if($eid == 0)
+						{
+							if(!isset($pa['bskill_c20_lighting_white_dmg'])) $pa['bskill_c20_lighting_white_dmg'] = 0;
+							$pa['bskill_c20_lighting_white_dmg'] += $sk_cost;
+						}
+						else
+						{
+							if(empty($light_log) || !in_array($r_elements_info[$eid],$light_log)) $light_log[] = $r_elements_info[$eid];
+							$ex_keys[] = $sk_etype[$eid];
+						}
+						break;
+					}
+					$t++;
+					if($t == 5) $no_cost = 1;
+				}while($t <= 5);
+				# 库存内没有可消耗的元素了，提前终止
+				if($no_cost) break;
+			}
+			if(!empty($light_log))
+			{
+				$log .= implode('、',$light_log)."<span class='yellow'>附着在了{$pa['nm']}的武器上！</span><br>";
 			}
 		}
 		return $ex_keys;
@@ -1480,6 +1533,7 @@
 			$log .= $exdmgname[$ex]; //xx
 			if($ex_dmg)
 			{
+				$ex_dmg = ceil($ex_dmg);
 				if(!empty($pa['ex_dmgdef_log'])) $log .= "被防御效果抵消了！仅";
 				$log .= "造成了<span class=\"red\">{$ex_dmg}</span>点伤害！";
 				if(!empty($pa['ex_dmginf_log'])) $log .= "并使{$pd['nm']}{$exdmginf[$pa['ex_dmginf_log']]}了！";
@@ -1705,7 +1759,7 @@
 	//计算最终伤害的定值变化
 	function get_final_dmg_fix(&$pa,&$pd,$active,$fin_dmg)
 	{
-		global $log;
+		global $log,$plsinfo,$now;
 
 		# 「量心」效果判定 手加减：
 		if(isset($pa['askill_c19_dispel']) && $fin_dmg >= $pd['hp'])
@@ -1827,12 +1881,63 @@
 			}
 		}
 
+		# 「闪电」无色伤害效果判定：
+		if(isset($pa['bskill_c20_lighting_white_dmg']))
+		{
+			global $elements_info;
+			$fin_dmg += $pa['bskill_c20_lighting_white_dmg'];
+			$log .= "<span class='mtgcolorless'>{$elements_info[0]}使{$pa['nm']}的攻击附加了{$pa['bskill_c20_lighting_white_dmg']}点额外伤害！</span><br>";
+			unset($pa['bskill_c20_lighting_white_dmg']);
+		}				
+
 		# 「护盾」效果判定
 		if(isset($pd['skill_buff_shield']))
 		{
 			$sk_var = get_skillpara('buff_shield','svar',$pd['clbpara']);
 			$fin_dmg = max(0,$fin_dmg - $sk_var);
 			$log .= "<span class=\"lime\">「护盾」使{$pd['nm']}受到的伤害降低了{$sk_var}点！</span><br>";
+		}
+
+		# 「灵俑」抵挡伤害判定
+		if(!empty($pd['clbpara']['zombieid']))
+		{
+			$mate_list = $pd['clbpara']['zombieid']; 
+			shuffle($mate_list);
+			foreach($mate_list as $mid)
+			{
+				$mdata = fetch_playerdata_by_pid($mid);
+				# 跳过不在同一地图且状态不健康的灵俑
+				if($mdata['pls'] != $pd['pls'] || $mdata['hp'] < 10) continue;
+				# 抵挡伤害
+				$max_cover_dmg = min($fin_dmg,round($mdata['hp']/2));
+				if($max_cover_dmg)
+				{
+					$mdata['hp'] -= $max_cover_dmg;
+					player_save($mdata);
+					$fin_dmg -= $max_cover_dmg;
+					$log .= "<span class=\"yellow\">但是{$mdata['name']}为{$pd['nm']}抵挡了{$max_cover_dmg}点伤害！</span><br>";
+					break;
+				}
+			}
+		}
+
+		# 「火花」技能判定：救命
+		if($fin_dmg >= $pd['hp'] && isset($pd['askill_c20_sparkle']))
+		{
+			$sk = 'c20_sparkle';
+			unset($pa['askill_c20_sparkle']);
+			$plslist = get_safe_plslist(); 
+			$sp_pls = $plslist[array_rand($plslist)];
+			# 注销技能状态
+			set_skillpara($sk,'active',0,$pd['clbpara']);
+			set_skillpara($sk,'active_t',1,$pd['clbpara']);
+			# 切换地图
+			$pd['pls'] = $sp_pls; 
+			$pd['tp_by_sparkle'] = $sp_pls;
+			$log .= "<span class=\"yellow\">千钧一发之际，{$pd['nm']}点燃火花传送到了别处！</span><br>";
+			if(!$pa['type']) $pa['log_save'] .= "{$pd['name']}在千钧一发之际点燃了火花，传送到不知道哪去了！";
+			addnews($now,'sparklerevival',$pd['name'],$pa['name'],$plsinfo[$sp_pls]);
+			return 0;
 		}
 
 		# 「爆头」技能效果
@@ -1979,7 +2084,7 @@
 			{
 				$flag = get_inf_rev($pd,'p');
 				include_once GAME_ROOT.'./include/game/itemmain.func.php';
-				check_item_edit_event($pd,'c8_infilt');
+				check_item_edit_event($pa,$pd,'c8_infilt');
 				if($flag) $log .= "<span class='yellow'>「渗透」使{$pd['nm']}{$exdmginf['p']}了！</span><br>";
 				else $log .= "<span class='yellow'>{$pd['nm']}没有受到「渗透」影响……大概吧？</span><br>";
 			}
@@ -2043,7 +2148,7 @@
 	//打击结束，已经应用扣血后的事件结算
 	function rev_combat_result_events(&$pa,&$pd,$active)
 	{
-		global $log,$infinfo,$exdmginf;
+		global $now,$log,$infinfo,$exdmginf,$plsinfo;
 
 		# 真蓝凝防守事件：
 		if($pd['type'] == 19 && $pd['name'] == '蓝凝')
@@ -2102,6 +2207,36 @@
 			}
 		}
 
+		# 「火花」技能判定：触发后不会再触发协战流程
+		if(isset($pa['askill_c20_sparkle']))
+		{
+			$sk = 'c20_sparkle';
+			$dice = diceroll(99);
+			$obbs = get_skillvars($sk,'tpr');
+			if($dice < $obbs)
+			{
+				$pa['askill_c20_sparkle'] = 2;
+				$plslist = get_safe_plslist(); 
+				$sp_pls = $plslist[array_rand($plslist)];
+				# 切换地图
+				$pd['pls'] = $sp_pls;
+				$pd['tp_by_sparkle'] = $sp_pls;
+				# NPC敌人扣血，玩家在被送到新地图后强制探索一次
+				if($pd['type'])
+				{
+					$pd['hp'] -= min($pd['hp']-1,rand(1,$sp_pls * 10));
+				}
+				else 
+				{
+					$pd['action'] = 'tpmove';
+					$pd['logsave'] .= "<span class=\"grey\">{$pa['name']}点燃火花，将你传送到了{$plsinfo[$sp_pls]}！</span><br>";
+				}
+				$log .= "<span class=\"yellow\">你点燃火花，将{$pd['nm']}送到了{$plsinfo[$sp_pls]}！祝他好运吧……</span><br>";
+				addnews($now,'sparklemove',$pa['name'],$pd['name'],$plsinfo[$sp_pls]);
+				return;
+			}
+		}
+
 		# 「协战」判定
 		# 拥有佣兵的情况下，主动攻击敌人/成功反击敌人，且敌人仍存活时，判定是否有佣兵协战
 		if(!empty(get_skillpara('c11_merc','id',$pa['clbpara'])))
@@ -2125,22 +2260,44 @@
 				}
 			}
 		}
+		# 「灵俑」协战判定
+		if(empty($pa['coveratk_flag']) && !empty($pa['clbpara']['zombieid']))
+		{
+			# 「灵俑」基础协战率：50
+			$cover_obbs = 50; $cover_dice = diceroll(99);
+			if($cover_dice < $cover_obbs)
+			{
+				$mate_list = $pa['clbpara']['mate']; shuffle($mate_list); 
+				foreach($mate_list as $mid)
+				{
+					$mdata = fetch_playerdata_by_pid($mid);
+					# 跳过不在同一地图的灵俑
+					if($mdata['pls'] != $pd['pls'] || $mdata['hp'] < 1) continue;
+					# 触发协战
+					$pa['coveratk_flag'] = $mid;
+					break;
+				}
+			}
+		}
 		return;
 	}
 
 	// 获取pa在探索时的遇敌率（遇敌率越低道具发现率越高）
 	function calc_meetman_rate(&$pa)
 	{
-		global $gamestate;
+		global $gamestate,$pose_find_modifier,$pls_find_modifier,$weather_find_r;
 		# 基础遇敌率
 		$enemyrate = 40;
 		# 连斗阶段遇敌率+20
 		if($gamestate == 40){$enemyrate += 20;}
 		# 死斗阶段遇敌率+40
 		elseif($gamestate == 50){$enemyrate += 40;}
-		# 姿态修正
-		if($pa['pose'] == 3) {$enemyrate -= 20;}
-		elseif($pa['pose'] ==4){$enemyrate += 10;}
+		# 姿态对遇敌率的修正
+		if(!empty($pose_find_modifier[$pa['pose']])) $enemyrate += $pose_find_modifier[$pa['pose']];
+		# 天气对遇敌率的修正
+		if(!empty($weather_find_r['weather'])) $enemyrate += $weather_find_r['weather'];
+		# 地图场景对遇敌率的修正
+		if(!empty($pls_find_modifier[$pa['pls']])) $enemyrate += $pls_find_modifier[$pa['pls']];
 		
 		# 社团技能修正（新）
 		# 「专注」效果判定
@@ -2172,8 +2329,7 @@
 		# 计算天气对躲避率的修正
 		$wth_r = $weather_hide_r[$weather] ?: 0 ;
 		# 计算地点对躲避率的修正
-		//$pls_r = $pls_hide_modifier[$pd['pls']] ?: 0 ;
-		$pls_r = 0;//暂时不应用地点躲避率 等遇敌率也重做之后再说
+		$pls_r = $pls_hide_modifier[$pd['pls']] ?: 0 ;
 		# 计算pd姿态对于躲避率的修正：
 		$pose_r = $pose_hide_modifier[$pd['pose']] ?: 0;
 		# 计算pd策略对于躲避率的修正：
@@ -2266,18 +2422,6 @@
 	// 判断pd是否满足反击pa的基础条件（最高优先级）
 	function check_can_counter(&$pa,&$pd,$active)
 	{
-		# 治疗姿态、躲避策略不能反击
-		if($pd['pose'] == 5 || $pd['tactic'] == 4)
-		{
-			$pd['cannot_counter_log'] = "{$pd['nm']}处于无法反击的状态！转身逃开了！";
-			return 0;
-		}
-		# 哨戒姿态不会反击，但是会生气……
-		if($pd['pose'] == 7)
-		{
-			$pd['cannot_counter_log'] = "{$pd['nm']}看起来非常生气！还是离他远点吧……";
-			return 0;
-		}
 		# 被协战攻击无法反击
 		if(isset($pa['is_coveratk']))
 		{
@@ -2296,10 +2440,28 @@
 			$pd['cannot_counter_log'] = "被你放了一马的{$pd['nm']}一瘸一拐地逃开了。<br>希望你的决定是正确的……";
 			return 0;
 		}
+		# 被火花传送走了不能反击
+		if(isset($pd['tp_by_sparkle']))
+		{
+			$pd['cannot_counter_log'] = "{$pd['nm']}传送走了！<br>";
+			return 0;
+		}
 		# 处于眩晕状态时，无法反击
 		if(isset($pd['skill_inf_dizzy']))
 		{
 			$pd['cannot_counter_log'] = "{$pd['nm']}正处于眩晕状态，无法反击！";
+			return 0;
+		}
+		# 治疗姿态、躲避策略不能反击
+		if($pd['pose'] == 5 || $pd['tactic'] == 4)
+		{
+			$pd['cannot_counter_log'] = "{$pd['nm']}处于无法反击的状态！转身逃开了！";
+			return 0;
+		}
+		# 哨戒姿态不会反击，但是会生气……
+		if($pd['pose'] == 7)
+		{
+			$pd['cannot_counter_log'] = "{$pd['nm']}看起来非常生气！还是离他远点吧……";
 			return 0;
 		}
 		return 1;

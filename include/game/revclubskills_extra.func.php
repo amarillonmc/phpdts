@@ -10,6 +10,7 @@
 	function upgclbskills_events($event,$sk,&$data=NULL)
 	{
 		global $log,$cskills,$now,$club_skillslist,$weather,$gamevars,$wthinfo,$db,$tablepre;
+		global $elements_info;
 
 		if(!isset($data))
 		{
@@ -62,7 +63,7 @@
 			// 第3次使用时开始冷却
 			if($active_t+1 > get_skillvars($sk,'freet'))
 			{
-				$event = 'setstarttimes_'.$sk.'_charge';
+				$event = 'setstarttimes_'.$sk;
 			}
 			else 
 			{
@@ -210,7 +211,7 @@
 			$mid = get_skillpara($sk,'active_t',$clbpara);
 			# 召唤佣兵，并获取佣兵pid
 			include_once GAME_ROOT . './include/system.func.php';
-			$merc_pid = addnpc(25,$merc,1,$now,Array('clbpara' => Array('mkey' => $mid, 'oid' => $pid, 'onm' => $name)),NULL,$pls)[0];
+			$merc_pid = addnpc(25,$merc,1,$now,Array('clbpara' => Array('mkey' => $mid, 'oid' => $pid, 'onm' => $name ,'mate' => Array($pid))),NULL,$pls)[0];
 			# 初始化佣兵参数
 			$clbpara['skillpara'][$sk]['id'][$mid] = $merc_pid;
 			# 登记佣兵薪水
@@ -224,6 +225,50 @@
 			# 检查佣兵能否协战（出生时在同一地图，默认可以协战）
 			$clbpara['skillpara'][$sk]['cancover'][$mid] = 1;
 			$log .= "你掏出千元大钞振臂一呼，「{$mercinfo[$merc]['name']}」突然出现在了你的面前！<br>";
+			return 1;
+		}
+		# 事件：横财
+		if($event == 'windfall')
+		{
+			$tot = $element0 + $element1 + $element2 + $element3 + $element4 + $element5;
+			if($tot < 5)
+			{
+				$log .= "你口袋中的元素太少了！再去捡点吧！<br>";
+				return 0;
+			}
+			$numbers = array_fill(0, 6, 14);
+			# 生成5个随机数，使它们的和等于15
+			$t = 16;
+			for ($i = 0; $i < 6; $i++) 
+			{
+				$at = rand(1,$t); $t -= $at;
+				$numbers[$i] += $at;
+			}
+			$log .= "你把口袋中的元素搅混在一起……然后满怀期待得等着它们自己把自己整理好……<br>";
+			foreach($elements_info as $key => $info)
+			{
+				${'element'.$key} = 0;
+				$add_ev = ceil($tot * ($numbers[$key]/100));
+				include_once GAME_ROOT.'./include/game/elementmix.calc.php';
+				$add_ev = get_clbskill_emgain_r($add_ev,$data);
+				${'element'.$key} += $add_ev;
+				$log .= "获得了{$add_ev}份{$info}！<br>";
+			}
+			return 1;
+		}
+		# 事件：黑莲花
+		if($event == 'lotus')
+		{
+			foreach($elements_info as $key => $info)
+			{
+				# 不足3000的，补足到3000
+				if(${'element'.$key} < 3000)
+				{
+					${'element'.$key} = 3000;
+					continue;
+				}
+				${'element'.$key} *= 3;
+			}
 			return 1;
 		}
 		# 事件：获取指定技能

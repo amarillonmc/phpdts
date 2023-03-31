@@ -49,9 +49,11 @@
 		get_wep_kind($pd); 
 		$pd['wep_range'] = get_wep_range($pd);
 		$pd['wep_skill'] = get_wep_skill($pd);
+		$pd['wep_name'] = $pd['wep'];
 		get_wep_kind($pa,$wep_kind,$pd['wep_range']); 
 		$pa['wep_range'] = get_wep_range($pa);
 		$pa['wep_skill'] = get_wep_skill($pa);
+		$pa['wep_name'] = $pa['wep'];
 
 		# 传入pa为玩家、pd为NPC，且存在鏖战/追击标志时，判断战斗流程类型（标准/追击/鏖战/协战）
 		if(!$pa['type'] && $pd['type'] && (strpos($pa['action'],'dfight')!==false || strpos($pa['action'],'chase')!==false))
@@ -393,7 +395,7 @@
 				findcorpse($edata);
 				return;
 			}
-			elseif($action == 'chase' || $action == 'pchase' || $action == 'dfight' || $action == 'cover')
+			elseif($action == 'chase' || $action == 'pchase' || $action == 'dfight' || $action == 'cover' || $action == 'tpmove')
 			{
 				$chase_flag = 1;
 			}
@@ -1052,6 +1054,18 @@
 			include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
 			$log .= "<span clas='red'>由于战死，";
 			skill_merc_fire('c11_merc',$pd['clbpara']['mkey'],$pd,1);
+		}
+		# 灵俑死亡时，从创造者的灵俑队列中删除
+		if(isset($pd['clbpara']['zombieoid']))
+		{
+			$odata = fetch_playerdata_by_pid($pd['clbpara']['zombieoid']);
+			$mkey = array_search($pd['pid'],$odata['clbpara']['mate']);
+			unset($odata['clbpara']['mate'][$mkey]);
+			$zkey = array_search($pd['pid'],$odata['clbpara']['zombieid']);
+			unset($odata['clbpara']['zombieid'][$zkey]);
+			player_save($odata);
+			$w_log = "<span class=\"grey\">你的灵俑{$pd['name']}归于尘土了……</span><br>";
+			logsave($odata['pid'],$now,$w_log,'c');
 		}
 
 		return;

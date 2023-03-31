@@ -126,8 +126,16 @@ if($hp > 0){
 			$command = 'itemmain';
 			$itemcmd = 'itemmix';
 		}
-		if($action != 'chase' && $action != 'dfight' && $mode !== 'combat' && $mode !== 'revcombat' && $mode !== 'corpse' && $action != 'pacorpse' && $mode !== 'senditem'){
-			$action = ''; $bid = 0;
+		if(!empty($action))
+		{
+			if($action == 'tpmove')
+			{
+				$mode = 'command';
+				$command = 'search';
+			}
+			if($action != 'chase' && $action != 'dfight' && $mode !== 'combat' && $mode !== 'revcombat' && $mode !== 'corpse' && $action != 'pacorpse' && $mode !== 'senditem'){
+				$action = ''; $bid = 0;
+			}
 		}
 		if($command == 'menu') {
 			$mode = 'command';
