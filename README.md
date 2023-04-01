@@ -30,12 +30,9 @@ bash ./bot/bot_enable.sh
 ## 开发注意
 
 1. 使用`composer install`安装依赖
-2. `./yii serve`命令在windows下会报错，[原因点我](https://github.com/yiisoft/yii-console/issues/175)，临时解决方案
-
-    找到`vendor\yiisoft\yii-console\src\Command\Serve.php`文件，修改第138行中的`'PHP_CLI_SERVER_WORKERS=' . $workers .`部分，变成以下代码
-
-    ```php
-    passthru('"' . PHP_BINARY . '"' . " -S $address -t \"$documentRoot\" $router");
-    ```
+2. 可以使用`./yii serve`来启动开发版服务器
 3. 修改`config/configuration.php`之后一定要运行`composer du`来重新生成`.merge-plan.php`
 4. 目前只加入了`src`和`config`文件夹，demo文件见`C:\git\phpdts\src\Controller\HomeController.php`
+5. 可以使用[Yii Dev Panel](https://yiisoft.github.io/yii-dev-panel)来调试
+6. 数据库配置请修改 `config\common\params.php`，默认使用`Yiisoft\Db\Mysql\ConnectionPDO`
+7. 目前只用了`yii serve`使用php原生自带的Routing file功能做路由，nginx和`.htaccess`在做了在做了

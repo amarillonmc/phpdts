@@ -1,12 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 use Yiisoft\Definitions\DynamicReference;
 use Yiisoft\Definitions\Reference;
-use Yiisoft\Definitions\ReferencesArray;
 use Yiisoft\Middleware\Dispatcher\MiddlewareDispatcher;
 use Yiisoft\Yii\Http\Handler\NotFoundHandler;
-
-
 
 use Yiisoft\Session\SessionMiddleware;
 use Yiisoft\Csrf\CsrfMiddleware;
