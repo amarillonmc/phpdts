@@ -395,20 +395,6 @@
 		</TR>
 		<TR>
 			<TD class="b2" height=20px>
-				<span>通常</span>
-			</TD>
-			<TD class="b3">
-				<span>不注重任何一方面的姿态</span>
-			</TD>
-			<TD class="b3"></TD>
-			<TD class="b3"></TD>
-			<TD class="b3"></TD>
-			<TD class="b3"></TD>
-			<TD class="b3"></TD>
-		</TR>
-
-		<TR>
-			<TD class="b2" height=20px>
 				<span>作战姿态</span>
 			</TD>
 			<TD class="b3">
@@ -515,6 +501,19 @@
 			<TD class="b3">
 				<span class="clan">↑↑↑↑</span>
 			</TD>
+		</TR>
+		<TR>
+			<TD class="b2" height=20px>
+				<span>灵子姿态</span>
+			</TD>
+			<TD class="b3">
+				<span>只会遭遇处在同姿态下的玩家和NPC，在种火NPC身边治疗·静养将获得加成。</span>
+			</TD>
+			<TD class="b3"></TD>
+			<TD class="b3"></TD>
+			<TD class="b3"></TD>
+			<TD class="b3"></TD>
+			<TD class="b3"></TD>
 		</TR>
 	</TBODY>
 </TABLE>
@@ -2101,7 +2100,7 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 <p>可以将某些物品合成为另一种物品，只要名称正确即可合成。合成道具成功则可增加爆熟。</p>
 <p>合成成功时，如果所用的材料是武器或者防具，则会将整个材料耗尽；其他情况下，材料的耐久会减1。</p>
 <p><span class="evergreen">鼠标停留在参与合成的道具上可以显示此道具获取方式。</span></p>
-<p><span class="evergreen">表记为<span class="sienna">头衔奖励相关道具</span>的条目，其合成素材将来源于合成奖励。</span></p>
+<p><span class="evergreen">表记为<span class="sienna">头衔奖励相关道具</span>的条目，其合成素材将来源于头衔奖励。</span></p>
 <br>
 {template mixhelp}
 <br>
@@ -2921,7 +2920,7 @@ NPC也会发出重击和必杀技，请随时小心。</p>
 ACFUN大逃杀是开源的网页游戏，你可以在<a href="https://github.com/amarillonmc/phpdts"><u>这里</u></a>或<a href="https://code.mycard.moe/nemoma/phpdts"><u>这里</u></a>下载到最新的源代码。<br>
 如果你希望安装单机版：<br>
 0. 请先在本地电脑上准备好apache+mysql+php环境，将游戏代码包解压至本地服务器中。随后可执行install.php，跟随向导进行来安装游戏，也可以按照以下方式，进行手动安装。 <br>
-请注意：本游戏的 Native 依赖为PHP5.4，MySQL 5.5，在高版本PHP和MySQL下安装很可能会出现问题！<br>
+请注意：本游戏的依赖为PHP5.4~7.4，MySQL 5.5，尚未在PHP8.0+版本进行充分测试！<br>
 1. 进入mysql<br>
 <pre>
 mysql -u用户名 -p密码

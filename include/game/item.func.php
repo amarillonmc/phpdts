@@ -904,14 +904,12 @@ function itemuse($itmn,&$data=NULL) {
 				list($in,$ik,$ie,$is,$isk) = explode(',',$itemflag[$rand]);
 			}
 		}elseif(strpos( $itmk, 'p0' ) === 0){//新福袋·VOL1
-			//global $statuse; // 用这个数值记录打开福袋的次数，目前只有VOL1所以只需要判断非0状况，以后如果加入更多的福袋则需要修改。
-			//global $db,$tablepre;
-			//global $clbpara;
-/* 			if($statuse){
+			// 用$clbpara['opened_pack']记录打开福袋的名称，只要有这个名称，就搞事！
+ 			if($clbpara['opened_pack']){
 				$log.="似乎你本轮已经打开过福袋，因此不能再打开更多的福袋！<br>";
 				$db->query("INSERT INTO {$tablepre}shopitem (kind,num,price,area,item,itmk,itme,itms,itmsk) VALUES ('17','1','20','0','$itm','$itmk','$itme','$itms','$itmsk')");
 				$log.="<span class=\"yellow\">$itm</span>从你的手中飞出，向商店的方向飞去。<br>";
-			} */
+			} 
 			if(strpos( $itmk, 'p0P' ) === 0){
 				include_once config('randomWP',$gamecfg);
 			}elseif(strpos( $itmk, 'p0K' ) === 0){
@@ -951,7 +949,14 @@ function itemuse($itmn,&$data=NULL) {
 				$itemflag = explode("\r\n",$itemflag);
 				$rand = rand(0,count($itemflag)-1);
 				list($in,$ik,$ie,$is,$isk) = explode(',',$itemflag[$rand]);
-				$statuse++; //记录打开福袋+1
+				if($clbpara['opened_pack']){
+					$in = '乌黑的脸'; # 给一个惩罚用物品
+					$ik = 'X';
+					$ie = 1;
+					$is = 1;
+					$isk = '';
+				}
+				$clbpara['opened_pack'] = $itm; //记录打开福袋
 			}
 		}else{//一般礼品盒
 			$file = config('present',$gamecfg);
