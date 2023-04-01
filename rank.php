@@ -6,7 +6,7 @@ require './include/common.inc.php';
 require './include/game.func.php';
 include_once GAME_ROOT.'./include/game/titles.func.php';
 
-$result = $db->query("SELECT COUNT(*) FROM {$tablepre}users");
+$result = $db->query("SELECT COUNT(*) FROM {$gtablepre}users");
 $count = $db->result($result,0);
 if($ranklimit < 1){$ranklimit = 1;}
 //$ostart = -1;
@@ -41,12 +41,12 @@ if($ranklimit < 1){$ranklimit = 1;}
 //}
 
 if(!isset($checkmode) || $checkmode == 'credits'){
-	$result = $db->query("SELECT * FROM {$tablepre}users WHERE validgames>0 ORDER BY credits DESC, credits2 DESC, wingames DESC, uid ASC LIMIT $ranklimit");
+	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE validgames>0 ORDER BY credits DESC, credits2 DESC, wingames DESC, uid ASC LIMIT $ranklimit");
 }elseif($checkmode == 'credits2'){
-	$result = $db->query("SELECT * FROM {$tablepre}users WHERE validgames>0 ORDER BY credits2 DESC, credits DESC, wingames DESC, uid ASC LIMIT $ranklimit");
+	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE validgames>0 ORDER BY credits2 DESC, credits DESC, wingames DESC, uid ASC LIMIT $ranklimit");
 }elseif($checkmode == 'winrate'){
 	$mingames = $winratemingames >= 1 ? $winratemingames : 1;
-	$result = $db->query("SELECT * FROM {$tablepre}users WHERE validgames>='$mingames' ORDER BY (wingames/validgames) DESC, credits DESC, credits2 DESC, uid ASC LIMIT $ranklimit");
+	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE validgames>='$mingames' ORDER BY (wingames/validgames) DESC, credits DESC, credits2 DESC, uid ASC LIMIT $ranklimit");
 }
 $rankdata = Array();
 $n = 1;
@@ -63,7 +63,7 @@ while($data = $db->fetch_array($result)){
 }
 
 if(isset($schname) && !empty($schname)){
-	$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$schname'");
+	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$schname'");
 	if(!$db->num_rows($result)){
 	}
 }
@@ -84,10 +84,10 @@ if(isset($checkmode)){
 function schname($schname){
 	global $db,$tablepre;
 	$schrst = Array();
-	$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$schname'");
+	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$schname'");
 	if($db->num_rows($result)){
 		$schobj = $db->fetch_array($result);
-		$result2=$db->query("SELECT COUNT FROM {$tablepre}users WHERE ");
+		$result2=$db->query("SELECT COUNT FROM {$gtablepre}users WHERE ");
 	}
 }
 ?>

@@ -8,7 +8,15 @@
 	<tr>
 		<td><span class="yellow">{lang now}：</span></td>
 		<td style="text-align:left;"><span class="evergreen">{lang gamedate}</span></td>
-		<td rowspan="4" style="width:400px;vertical-align:top;text-align:left;padding:0 0 0 25px;"><span class="evergreen">$adminmsg</span></td>
+		<td rowspan="4" style="width:400px;vertical-align:top;text-align:left;padding:0 0 0 25px;">
+			<span class="evergreen">
+				$adminmsg
+			</span>
+			<br>
+			<span class="evergreen">
+				{template roomlist}
+			</span>
+		</td>
 	</tr>
 	<tr>
 		<td><span class="yellow">{lang systemmsg}：</span></td>
@@ -17,6 +25,9 @@
 	<tr>
 		<td><span class="yellow">{lang gameinfo}：</span></td>
 		<td style="text-align:left;"><span class="evergreen"><span class="evergreen2">{lang numinfo}{$gstate[$gamestate]}</span></span></td>
+		<td rowspan="4" style="float: right;">
+			
+		</td>
 	</tr>
 	<tr>
 		<td colspan="2" style="vertical-align:top;">
@@ -38,9 +49,13 @@
 				<!--{/if}-->
 				</div>
 				<div>
-				上局结果：<span id="lastwin">$gwin[$winmode]</span>
-				<!--{if $winner}-->
-				，优胜者：<span id="lastwinner">$winner</span>
+				<!--{if $rid}-->
+					<span class="yellow">当前房间：{$rid} 号</span> 
+				<!--{else}-->
+					上局结果：<span id="lastwin">$gwin[$winmode]</span>
+					<!--{if $winner}-->
+					，优胜者：<span id="lastwinner">$winner</span>
+					<!--{/if}-->
 				<!--{/if}-->
 				</div>
 				

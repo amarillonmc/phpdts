@@ -5,13 +5,13 @@ define('CURSCRIPT', 'dbup');
 require './include/common.inc.php';
 
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
-$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$cuser'");
+$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$cuser'");
 if(!$db->num_rows($result)) { gexit($_ERROR['login_check'],__file__,__line__); }
 $udata = $db->fetch_array($result);
 if($udata['password'] != $cpass) { gexit($_ERROR['wrong_pw'], __file__, __line__); }
 elseif(($udata['groupid'] <= 1)&&($cuser!==$gamefounder)) { gexit($_ERROR['no_admin'], __file__, __line__); }
 
-$query = $db->query("SHOW TABLES LIKE '{$tablepre}vnmixitem'", 'SILENT');
+$query = $db->query("SHOW TABLES LIKE '{$gtablepre}vnmixitem'", 'SILENT');
 //print_r($query);
 if(!$db->num_rows($query))
 {
@@ -39,7 +39,7 @@ if(!$db->num_rows($query))
 			$vr['itme'] = $arr['result'][2] ?: '';
 			$vr['itms'] = $arr['result'][3] ?: '';
 			$vr['itmsk'] = $arr['result'][4] ? implode('',$arr['result'][4]) : '';
-			$db->array_insert("{$tablepre}vnmixitem",$vr);
+			$db->array_insert("{$gtablepre}vnmixitem",$vr);
 		}
 		echo "Old data clear.<br>";
 	}

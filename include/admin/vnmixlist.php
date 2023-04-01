@@ -77,7 +77,7 @@ if(strpos($vncmd ,'del')===0)
 		$earr['itmsk'] = $flag['result'][4];
 		$earr['istatus'] = 0;
 		// 保存至数据库
-		$db->array_insert("{$tablepre}vnmixitem", $earr);
+		$db->array_insert("{$gtablepre}vnmixitem", $earr);
 	}
 	adminlog('回退了配方',$vresult);
 	$cmd_info = "已回退配方{$earr['itm']}！";

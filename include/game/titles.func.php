@@ -8,9 +8,9 @@ if(!defined('IN_GAME')) {
 //反正应该不会重复获得头衔……偷懒
 //还是会重复的 反正没什么工作量
 function get_title($t,$n){
-	global $gamecfg,$name,$db,$tablepre;
+	global $gamecfg,$name,$db,$gtablepre;
 	require config("gamecfg",$gamecfg);
-	$result = $db->query("SELECT nicks FROM {$tablepre}users WHERE username = '$n'");
+	$result = $db->query("SELECT nicks FROM {$gtablepre}users WHERE username = '$n'");
 	$k = $db->result($result, 0);
 	if (strpos($k,$t)===false){
 		$cf = GAME_ROOT.'./gamedata/clearlog.php';
@@ -18,7 +18,7 @@ function get_title($t,$n){
 		writeover($cf,$d,'ab+');
 		$k=$k.'/'.$t;
 	}
-	$db->query("UPDATE {$tablepre}users SET nicks='$k' WHERE username='".$n."'" );
+	$db->query("UPDATE {$gtablepre}users SET nicks='$k' WHERE username='".$n."'" );
 }
 
 //格式化头衔tooltip

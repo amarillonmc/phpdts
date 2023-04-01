@@ -20,7 +20,7 @@ if(!$pdata) { header("Location: valid.php");exit(); }
 
 //$pdata = $db->fetch_array($result);
 if($pdata['pass'] != $cpass) {
-	$tr = $db->query("SELECT `password` FROM {$tablepre}users WHERE username='$cuser'");
+	$tr = $db->query("SELECT `password` FROM {$gtablepre}users WHERE username='$cuser'");
 	$tp = $db->fetch_array($tr);
 	$password = $tp['password'];
 	if($password == $cpass) {

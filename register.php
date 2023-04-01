@@ -32,7 +32,7 @@ if(!isset($cmd)){
 	}elseif(preg_match($iplimit,$onlineip)){
 		$gamedata['innerHTML']['info'] = $_ERROR['ip_banned'];
 	}else{
-		$result = $db->query("SELECT * FROM {$tablepre}users WHERE username = '$username'");
+		$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username = '$username'");
 		if($db->num_rows($result) > 0) {
 			$gamedata['innerHTML']['info'] = $_ERROR['name_exists'];
 		}else{//现在开始注册
@@ -41,8 +41,8 @@ if(!isset($cmd)){
 			$password = md5($npass);
 			$nick='参展者';
 			$nicks='参展者';
-			$result = $db->query("INSERT INTO {$tablepre}users (username,password,groupid,ip,credits,gender,icon,motto,killmsg,lastword) VALUES ('$username', '$password', '$groupid', '$onlineip', '$credits', '$gender', '$icon', '$motto', '$killmsg', '$lastword')");
-			$db->query("UPDATE {$tablepre}users SET nick='$nick', nicks='$nicks' WHERE username='".$username."'" );
+			$result = $db->query("INSERT INTO {$gtablepre}users (username,password,groupid,ip,credits,gender,icon,motto,killmsg,lastword) VALUES ('$username', '$password', '$groupid', '$onlineip', '$credits', '$gender', '$icon', '$motto', '$killmsg', '$lastword')");
+			$db->query("UPDATE {$gtablepre}users SET nick='$nick', nicks='$nicks' WHERE username='".$username."'" );
 			if($result){
 				$gamedata['innerHTML']['info'] = $_INFO['reg_success'];
 				$ustate = 'check';

@@ -13,7 +13,7 @@ if(($sendmode == 'send')&&$chatmsg) {
 	$result = $db->query("SELECT pid FROM {$tablepre}players WHERE name='$cuser' AND type='0'");
 	if(!$db->num_rows($result)) exit('Not in game.');
 	if(strpos($chatmsg,'/') === 0) {
-		$result = $db->query("SELECT groupid FROM {$tablepre}users WHERE username='$cuser'");
+		$result = $db->query("SELECT groupid FROM {$gtablepre}users WHERE username='$cuser'");
 		$groupid = $db->result($result);
 		if($groupid > 1) {
 			if(strpos($chatmsg,'/post') === 0) {

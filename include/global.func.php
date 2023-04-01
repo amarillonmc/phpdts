@@ -106,8 +106,8 @@ function content($file = '') {
 }
 
 function gsetcookie($var, $value, $life = 0, $prefix = 1) {
-	global $tablepre, $cookiedomain, $cookiepath, $now, $_SERVER;
-	setcookie(($prefix ? $tablepre : '').$var, $value,
+	global $gtablepre, $cookiedomain, $cookiepath, $now, $_SERVER;
+	setcookie(($prefix ? $gtablepre : '').$var, $value,
 		$life ? $now + $life : 0, $cookiepath,
 		$cookiedomain, $_SERVER['SERVER_PORT'] == 443 ? 1 : 0);
 }
@@ -199,61 +199,25 @@ function compatible_json_encode($data){	//自动选择使用内置函数或者�
 	return $jdata;	
 }
 
-//function addnews($t = '', $n = '', $a = '',$b = '', $c = '', $d = '') {
-//	global $now,$db,$tablepre;
-//	$t = $t ? $t : $now;
-//	$newsfile = GAME_ROOT.'./gamedata/newsinfo.php';
-//	$newsdata = readover($newsfile); //file_get_contents($newsfile);
-//	if(is_array($a)) {
-//		$news = "$t,$n,".implode('-',$a).",$b,$c,$d,\n";
-//	} elseif(isset($n)) {
-//		$news = "$t,$n,$a,$b,$c,$d,\n";
-//	}
-//	$newsdata = substr_replace($newsdata,$news,53,0);
-//	writeover($newsfile,$newsdata,'wb');
-//	
-//	if(strpos($n,'death11') === 0  || strpos($n,'death32') === 0) {
-//		$result = $db->query("SELECT lastword FROM {$tablepre}users WHERE username = '$a'");
-//		$lastword = $db->result($result, 0);
-//		//$result = $db->query("SELECT pls FROM {$tablepre}players WHERE name = '$a' AND type = '$b'");
-//		//$pls = $db->result($result, 0);
-//		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$t','$a','$c','$lastword')");
-//	}	elseif(strpos($n,'death15') === 0 || strpos($n,'death16') === 0) {
-//		$result = $db->query("SELECT lastword FROM {$tablepre}users WHERE username = '$a'");
-//		$lastword = $db->result($result, 0);
-//		$result = $db->query("SELECT pls FROM {$tablepre}players WHERE name = '$a' AND type = '$b'");
-//		$pls = $db->result($result, 0);
-//		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$t','$a','$pls','$lastword')");
-//	}
-//}
-
 //----------------------------------------
 //              重要游戏函数
 //----------------------------------------
 
 function addnews($t = 0, $n = '',$a='',$b='',$c = '', $d = '', $e = '') {
-	global $now,$db,$tablepre;
+	global $now,$db,$tablepre,$gtablepre;
 	$t = $t ? $t : $now;
 	$newsfile = GAME_ROOT.'./gamedata/newsinfo.php';
 	touch($newsfile);
 	if(is_array($a)){
 		$a=implode('_',$a);
 	}
-//	$newsfile = GAME_ROOT.'./gamedata/newsinfo.php';
-//	$newsdata = readover($newsfile); //file_get_contents($newsfile);
-//	if(is_array($a)) {
-//		$news = "$t,$n,".implode('-',$a).",$b,$c,$d,\n";
-//	} elseif(isset($n)) {
-//		$news = "$t,$n,$a,$b,$c,$d,\n";
-//	}
-//	$newsdata = substr_replace($newsdata,$news,53,0);
-//	writeover($newsfile,$newsdata,'wb');
+
 	if(strpos($n,'death11') === 0  || strpos($n,'death32') === 0) {
-		$result = $db->query("SELECT lastword FROM {$tablepre}users WHERE username = '$a'");
+		$result = $db->query("SELECT lastword FROM {$gtablepre}users WHERE username = '$a'");
 		$e = $lastword = $db->result($result, 0);
 		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$t','$a','$c','$lastword')");
 	}	elseif(strpos($n,'death15') === 0 || strpos($n,'death16') === 0) {
-		$result = $db->query("SELECT lastword FROM {$tablepre}users WHERE username = '$a'");
+		$result = $db->query("SELECT lastword FROM {$gtablepre}users WHERE username = '$a'");
 		$e = $lastword = $db->result($result, 0);
 		$result = $db->query("SELECT pls FROM {$tablepre}players WHERE name = '$a' AND type = '0'");
 		$place = $db->result($result, 0);
@@ -263,11 +227,7 @@ function addnews($t = 0, $n = '',$a='',$b='',$c = '', $d = '', $e = '') {
 }
 
 function logsave($pid,$time,$log = '',$type = 's'){
-//	$logfile = GAME_ROOT."./gamedata/log/$pid.log";
-//	$date = date("H:i:s",$time);
-//	$logdata = "{$date}，{$log}<br>\n";
-//	writeover($logfile,$logdata,'ab+');
-	
+
 	global $db,$tablepre;
 	$ldata['toid']=$pid;
 	$ldata['type']=$type;
@@ -280,10 +240,10 @@ function logsave($pid,$time,$log = '',$type = 's'){
 }
 
 function load_gameinfo() {
-	global $now,$db,$tablepre;
-	global $gamenum,$gamestate,$lastupdate,$starttime,$winmode,$winner,$arealist,$areanum,$areatime,$areawarn,$validnum,$alivenum,$deathnum,$afktime,$optime,$weather,$hack,$combonum,$gamevars;
+	global $now,$db,$gtablepre,$tablepre;
+	global $groomid,$gamenum,$gamestate,$lastupdate,$starttime,$winmode,$winner,$arealist,$areanum,$areatime,$areawarn,$validnum,$alivenum,$deathnum,$afktime,$optime,$weather,$hack,$combonum,$gamevars;
 	global $hdamage,$hplayer,$noisetime,$noisepls,$noiseid,$noiseid2,$noisemode;
-	$result = $db->query("SELECT * FROM {$tablepre}game");
+	$result = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid = {$groomid}");
 	$gameinfo = $db->fetch_array($result);
 	if(!empty($gameinfo)) extract($gameinfo);
 	$arealist = explode(',',$gameinfo['arealist']);
@@ -291,38 +251,13 @@ function load_gameinfo() {
 	$noisevars = json_decode($noisevars,true);
 	if(!empty($noisevars)) extract($noisevars);
 	if(isset($gamevars['sanmaact']) && isset($gamevars['sanmadead'])) unset($gamevars['sanmaact']);
-	/*$gamenum = $gameinfo['gamenum'];
-	$gamestate = $gameinfo['gamestate'];
-	//$lastupdate = $gameinfo['lastupdate'];
-	$starttime = $gameinfo['starttime'];
-	$winmode = $gameinfo['winmode'];
-	$winner = $gameinfo['winner'];
-	$arealist = explode(',',$gameinfo['arealist']);
-	$areanum = $gameinfo['areanum'];
-	$areatime = $gameinfo['areatime'];
-	$areawarn = $gameinfo['areawarn'];
-	$validnum = $gameinfo['validnum'];
-	$alivenum = $gameinfo['alivenum'];
-	$deathnum = $gameinfo['deathnum'];
-	$afktime = $gameinfo['afktime'];
-	$optime = $gameinfo['optime'];
-	$weather = $gameinfo['weather'];
-	$hack = $gameinfo['hack'];
-	$gamevars = $gameinfo['gamevars'];
-	$gamevars = json_decode($gamevars,true);
-	$noisevars = $gameinfo['noisevars'];
-	$noisevars = json_decode($noisevars,true);
-	extract($noisevars);
-	$hplayer = $gameinfo['hplayer'];
-	$hdamage = $gameinfo['hdamage'];
-	if(isset($gamevars['sanmaact']) && isset($gamevars['sanmadead'])) unset($gamevars['sanmaact']);
-	$combonum = $gameinfo['combonum'];*/
 	return Array($gamestate,$gamevars);
 }
 
-function save_gameinfo() {
-	global $now,$db,$tablepre;
-	global $gamenum,$gamestate,$lastupdate,$starttime,$winmode,$winner,$arealist,$areanum,$areatime,$areawarn,$validnum,$alivenum,$deathnum,$afktime,$optime,$weather,$hack,$combonum,$gamevars;
+function save_gameinfo() 
+{
+	global $now,$db,$gtablepre,$tablepre;
+	global $groomid,$gamenum,$gamestate,$lastupdate,$starttime,$winmode,$winner,$arealist,$areanum,$areatime,$areawarn,$validnum,$alivenum,$deathnum,$afktime,$optime,$weather,$hack,$combonum,$gamevars;
 	if(!isset($gamenum)||!isset($gamestate)){return;}
 	if($alivenum < 0){$alivenum = 0;}
 	if($deathnum < 0){$deathnum = 0;}
@@ -349,27 +284,15 @@ function save_gameinfo() {
 	$gameinfo['gamevars'] = json_encode($gamevars,JSON_UNESCAPED_UNICODE);
 	$gameinfo['hack'] = $hack;
 	$gameinfo['combonum'] = $combonum;
-	$db->array_update("{$tablepre}game",$gameinfo,1);
-	/*
-	$gameinfo = "<?php\n\nif(!defined('IN_GAME')){exit('Access Denied');}\n\n\$gamenum = {$gamenum};\n\$gamestate = {$gamestate};\n\$starttime = {$starttime};\n\$winmode = {$winmode};\n\$winner = '{$winner}';\n\$arealist = array(".implode(',',$arealist).");\n\$areanum = {$areanum};\n\$areatime = {$areatime};\n\$weather = {$weather};\n\$hack = {$hack};\n\$validnum = {$validnum};\n\$alivenum = {$alivenum};\n\$deathnum = {$deathnum};\n\$afktime = {$afktime};\n\$optime = {$optime};\n\n?>";
-	$dir = GAME_ROOT.'./gamedata/';
-	if($fp = fopen("{$dir}gameinfo.php", 'w')) {
-		if(flock($fp,LOCK_EX)) {
-			fwrite($fp, $gameinfo);
-		} else {
-			exit("Couldn't save the game's info !");
-		}
-		fclose($fp);
-	} else {
-		gexit('Can not write to cache files, please check directory ./gamedata/ .', __file__, __line__);
-	}*/
+
+	$db->array_update("{$gtablepre}game",$gameinfo,"groomid = {$groomid}");
 	return;
 }
 
 
 
 function save_combatinfo(){
-	global $db,$tablepre,$gamenum,$hdamage,$hplayer,$noisevars,$noisetime,$noisepls,$noiseid,$noiseid2,$noisemode;
+	global $db,$gtablepre,$groomid,$gamenum,$hdamage,$hplayer,$noisevars,$noisetime,$noisepls,$noiseid,$noiseid2,$noisemode;
 	if(!$hdamage){$hdamage = 0;}
 	if(!$noisetime){$noisetime = 0;}
 	if(!$noisepls){$noisepls = 0;}
@@ -387,20 +310,8 @@ function save_combatinfo(){
 	foreach(array('hdamage','hplayer','noisevars') as $nval){
 		$nginfo[$nval] = $$nval;
 	}
-	$db->array_update("{$tablepre}game",$nginfo,1);
-	/*$combatinfo = "<?php\n\nif(!defined('IN_GAME')){exit('Access Denied');}\n\n\$hdamage = {$hdamage};\n\$hplayer = '{$hplayer}';\n\$noisetime = {$noisetime};\n\$noisepls = {$noisepls};\n\$noiseid = {$noiseid};\n\$noiseid2 = {$noiseid2};\n\$noisemode = '{$noisemode}';\n\n?>";
-	//$combatinfo = "{$hdamage},{$hplayer},{$noisetime},{$noisepls},{$noiseid},{$noiseid2},{$noisemode},\n";
-	$dir = GAME_ROOT.'./gamedata/';
-	if($fp = fopen("{$dir}combatinfo.php", 'w')) {
-		if(flock($fp,LOCK_EX)) {
-			fwrite($fp, $combatinfo);
-		} else {
-			exit("Couldn't save combat info !");
-		}
-		fclose($fp);
-	} else {
-		gexit('Can not write to cache files, please check directory ./gamedata/ .', __file__, __line__);
-	}*/
+
+	$db->array_update("{$gtablepre}game",$nginfo,"groomid = {$groomid}");
 	return;
 }
 
@@ -549,7 +460,7 @@ function putmicrotime($t_s,$t_e,$file,$info)
 //格式化储存player表 可能也是四面的遗产
 function update_db_player_structure($type=0)
 {
-	global $db,$tablepre,$checkstr;
+	global $db,$gtablepre,$tablepre,$checkstr;
 	$db_player_structure = $db_player_structure_types = $tpldata = Array();
 	
 	$dps_need_update = 0;//判定是否需要更新玩家字段
@@ -561,9 +472,9 @@ function update_db_player_structure($type=0)
 	
 	if($dps_need_update){//如果要更新，直接新建一个表，不需要依赖已有的players表
 		$sql = file_get_contents($sql_file);
-		$sql = str_replace("\r", "\n", str_replace(' bra_', ' '.$tablepre.'tmp_', $sql));
+		$sql = str_replace("\r", "\n", str_replace(' bra_', ' '.$gtablepre.'tmp_', $sql));
 		$db->queries($sql);
-		$result = $db->query("DESCRIBE {$tablepre}tmp_players");
+		$result = $db->query("DESCRIBE {$gtablepre}tmp_players");
 		while ($sttdata = $db->fetch_array($result))
 		{
 			global ${$sttdata['Field']}; 

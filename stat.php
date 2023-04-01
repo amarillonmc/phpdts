@@ -6,7 +6,7 @@ require './include/common.inc.php';
 
 $k=(int)$_GET['lim'];
 
-$result = $db->query("SELECT ip FROM {$tablepre}users WHERE lastgame>='$k'");
+$result = $db->query("SELECT ip FROM {$gtablepre}users WHERE lastgame>='$k'");
 
 $cnt=0;
 

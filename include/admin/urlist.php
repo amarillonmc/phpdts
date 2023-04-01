@@ -12,12 +12,12 @@ if($urcmd){
 			$urorder = 'uid';
 		}
 		$urorder2 = $urorder2 == 'ASC' ? 'ASC' : 'DESC';
-		$result = $db->query("SELECT * FROM {$tablepre}users ORDER BY $urorder $urorder2, uid DESC LIMIT $start,$showlimit");	
+		$result = $db->query("SELECT * FROM {$gtablepre}users ORDER BY $urorder $urorder2, uid DESC LIMIT $start,$showlimit");	
 	}elseif($pagecmd == 'find'){
 		if($checkmode == 'ip') {
-			$result = $db->query("SELECT * FROM {$tablepre}users WHERE ip LIKE '%{$checkinfo}%' ORDER BY uid DESC LIMIT $start,$showlimit");
+			$result = $db->query("SELECT * FROM {$gtablepre}users WHERE ip LIKE '%{$checkinfo}%' ORDER BY uid DESC LIMIT $start,$showlimit");
 		} else {
-			$result = $db->query("SELECT * FROM {$tablepre}users WHERE username LIKE '%{$checkinfo}%' ORDER BY uid DESC LIMIT $start,$showlimit");
+			$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username LIKE '%{$checkinfo}%' ORDER BY uid DESC LIMIT $start,$showlimit");
 		}
 	}
 	if(!$db->num_rows($result)) {
@@ -83,7 +83,7 @@ if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del' || $urcmd == 'checkac
 							}
 						}
 						$new_ach = json_encode($new_ach);
-						$db->query("UPDATE {$tablepre}users SET achrev='$new_ach' WHERE username='".$n."'" );
+						$db->query("UPDATE {$gtablepre}users SET achrev='$new_ach' WHERE username='".$n."'" );
 					}
 					//$new_ach = '';
 				}
@@ -99,13 +99,13 @@ if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del' || $urcmd == 'checkac
 		$cmd_info = '';
 		if($urcmd == 'ban'){
 			$operword = '封停';
-			$qryword = "UPDATE {$tablepre}users SET groupid='0' ";
+			$qryword = "UPDATE {$gtablepre}users SET groupid='0' ";
 		}elseif($urcmd == 'unban'){
 			$operword = '解封';
-			$qryword = "UPDATE {$tablepre}users SET groupid='1' ";
+			$qryword = "UPDATE {$gtablepre}users SET groupid='1' ";
 		}elseif($urcmd == 'del'){
 			$operword = '删除';
-			$qryword = "DELETE FROM {$tablepre}users ";
+			$qryword = "DELETE FROM {$gtablepre}users ";
 		}elseif($urcmd == 'checkach'){
 			$cmd_info .= " 帐户 $opernames 调整了成就储存结构";
 		}
@@ -128,12 +128,12 @@ if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del' || $urcmd == 'checkac
 	}
 	$urcmd = 'list';
 }  elseif($urcmd == 'del2') {
-	$result = $db->query("SELECT username,uid FROM {$tablepre}users WHERE lastgame = 0 AND groupid<='$mygroup' LIMIT 1000");
+	$result = $db->query("SELECT username,uid FROM {$gtablepre}users WHERE lastgame = 0 AND groupid<='$mygroup' LIMIT 1000");
 	while($ddata = $db->fetch_array($result)){
 		$n = $ddata['username'];$u = $ddata['uid'];
 		adminlog('delur',$n);
 		echo " 帐户 $n 被删除。<br>";
-		$db->query("DELETE FROM {$tablepre}users WHERE uid='$u'");
+		$db->query("DELETE FROM {$gtablepre}users WHERE uid='$u'");
 	}
 }elseif(strpos($urcmd ,'edit')===0) {
 	$uid = explode('_',$urcmd);
@@ -161,10 +161,10 @@ if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del' || $urcmd == 'checkac
 		}
 		if(!empty(${'pass_'.$no})){
 			$urpass = md5(${'pass_'.$no});
-			$db->query("UPDATE {$tablepre}users SET motto='$urmotto',killmsg='$urkillmsg',lastword='$urlastword',icon='$uricon',gender='$urgender',password='$urpass',credits='$urcredits',credits2='$urcredits2' ,nicks='$urnicks' ,achievement='$urach' WHERE uid='$uid'");
+			$db->query("UPDATE {$gtablepre}users SET motto='$urmotto',killmsg='$urkillmsg',lastword='$urlastword',icon='$uricon',gender='$urgender',password='$urpass',credits='$urcredits',credits2='$urcredits2' ,nicks='$urnicks' ,achievement='$urach' WHERE uid='$uid'");
 			$cmd_info = "帐户 ".$urdata[$no]['username']." 的密码及其他信息已修改！";
 		}else{
-			$db->query("UPDATE {$tablepre}users SET motto='$urmotto',killmsg='$urkillmsg',lastword='$urlastword',icon='$uricon',gender='$urgender',credits='$urcredits',credits2='$urcredits2' ,nicks='$urnicks' ,achievement='$urach' WHERE uid='$uid'");
+			$db->query("UPDATE {$gtablepre}users SET motto='$urmotto',killmsg='$urkillmsg',lastword='$urlastword',icon='$uricon',gender='$urgender',credits='$urcredits',credits2='$urcredits2' ,nicks='$urnicks' ,achievement='$urach' WHERE uid='$uid'");
 			$cmd_info = "帐户 ".$urdata[$no]['username']." 的信息已修改！";
 		}		
 	}

@@ -98,7 +98,7 @@ if(preg_match($iplimit,$onlineip)){
 
 //	foreach($iplimit as $value){
 //		$ippart=explode('.',$value);
-//		if(count($ippart)>1 && count($ippart)<4){//±£Ö¤IP¶ÎÓÐ2-4¸ö
+//		if(count($ippart)>1 && count($ippart)<4){//ï¿½ï¿½Ö¤IPï¿½ï¿½ï¿½ï¿½2-4ï¿½ï¿½
 //			$value=str_replace('*','',implode('.',$ippart));
 //			if(strpos($onlineip,$value)===0){
 //				gexit($_ERROR['banned_ip'],__file__,__line__);
@@ -116,11 +116,11 @@ $groupid = 1;
 $credits = 0;
 $gender = 0;
 
-$result = $db->query("SELECT * FROM {$tablepre}users WHERE username = '$username'");
+$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username = '$username'");
 if(!$db->num_rows($result)) {
 	gexit($_ERROR['user_not_exists'],__file__,__line__);
 	//$groupid = 1;
-	//$db->query("INSERT INTO {$tablepre}users (username,`password`,groupid,ip,credits,gender) VALUES ('$username', '$password', '$groupid', '$onlineip', '$credits', '$gender')");
+	//$db->query("INSERT INTO {$gtablepre}users (username,`password`,groupid,ip,credits,gender) VALUES ('$username', '$password', '$groupid', '$onlineip', '$credits', '$gender')");
 } else {
 	$userdata = $db->fetch_array($result);
 	if($userdata['groupid'] <= 0){
@@ -129,7 +129,17 @@ if(!$db->num_rows($result)) {
 		gexit($_ERROR['wrong_pw'],__file__,__line__);
 	}
 }
-$db->query("UPDATE {$tablepre}users SET ip='$onlineip' WHERE username = '$username'");
+# é‡æ–°ç™»å½•åŽé€€å‡ºå½“å‰æˆ¿é—´
+if(!empty($userdata['roomid']))
+{
+	$result = $db->query("SELECT groomnums FROM {$gtablepre}game WHERE groomid = {$userdata['roomid']}");
+	if($db->num_rows($result)) 
+	{ 
+		$join_nums = $db->fetch_array($result)[0] - 1;
+		$db->query("UPDATE {$gtablepre}game SET groomnums = {$join_nums} WHERE groomid = {$userdata['roomid']}");
+	}
+}
+$db->query("UPDATE {$gtablepre}users SET ip='$onlineip',roomid=0 WHERE username = '$username'");
 gsetcookie('user',$username);
 gsetcookie('pass',$password);
 //}

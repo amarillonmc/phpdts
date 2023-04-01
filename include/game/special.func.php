@@ -8,9 +8,9 @@ if(!defined('IN_GAME')) {
 include_once GAME_ROOT.'./include/game/titles.func.php';
 
 function getword(){
-	global $db,$tablepre,$name,$motto,$lastword,$killmsg;
+	global $db,$gtablepre,$tablepre,$name,$motto,$lastword,$killmsg;
 	
-	$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$name'");
+	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$name'");
 	$userinfo = $db->fetch_array($result);
 	$motto = $userinfo['motto'];
 	$lastword = $userinfo['lastword'];
@@ -19,9 +19,9 @@ function getword(){
 }
 
 function chgword($nmotto,$nlastword,$nkillmsg) {
-	global $db,$tablepre,$name,$log;
+	global $db,$gtablepre,$tablepre,$name,$log;
 	
-	$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$name'");
+	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$name'");
 	$userinfo = $db->fetch_array($result);
 
 //	foreach ( Array('<','>',';',',','\\\'','\\"') as $value ) {
@@ -47,14 +47,14 @@ function chgword($nmotto,$nlastword,$nkillmsg) {
 		$log .= $nkillmsg == '' ? '杀人留言已清空。' : '杀人留言变更为<span class="yellow">'.$nkillmsg.'</span>。<br>';
 	}
 
-	$db->query("UPDATE {$tablepre}users SET motto='$nmotto', lastword='$nlastword', killmsg='$nkillmsg' WHERE username='$name'");
+	$db->query("UPDATE {$gtablepre}users SET motto='$nmotto', lastword='$nlastword', killmsg='$nkillmsg' WHERE username='$name'");
 	
 	$mode = 'command';
 	return;
 }
 
 function chgpassword($oldpswd,$newpswd,$newpswd2){
-	global $db,$tablepre,$name,$log;
+	global $db,$gtablepre,$tablepre,$name,$log;
 	
 	if (!$oldpswd || !$newpswd || !$newpswd2){
 		$log .= '放弃了修改密码。<br />';
@@ -68,11 +68,11 @@ function chgpassword($oldpswd,$newpswd,$newpswd2){
 	
 	$oldpswd = md5($oldpswd);$newpswd = md5($newpswd);
 	
-	$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$name'");
+	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$name'");
 	$userinfo = $db->fetch_array($result);
 	
 	if($oldpswd == $userinfo['password']){
-		$db->query("UPDATE {$tablepre}users SET `password` ='$newpswd' WHERE username='$name'");
+		$db->query("UPDATE {$gtablepre}users SET `password` ='$newpswd' WHERE username='$name'");
 		$log .= '<span class="yellow">密码已修改！</span><br />';
 		
 		//include_once GAME_ROOT.'./include/global.func.php';
@@ -87,7 +87,7 @@ function chgpassword($oldpswd,$newpswd,$newpswd2){
 	}
 }
 function oneonone($sb,$sf){
-	global $db,$gold,$mode,$now,$tablepre,$log,$name,$art,$arte,$artk,$arts,$artsk;
+	global $db,$gold,$mode,$now,$gtablepre,$tablepre,$log,$name,$art,$arte,$artk,$arts,$artsk;
 	$mode = 'command';
 	if($sb == $sf){
 		$log .= "不能自我约战。<br>";
@@ -118,10 +118,10 @@ function oneonone($sb,$sf){
 		$log .= "需要携带1500G才能约战。<br>";
 		return;
 	}
-	$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$sb'");
+	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$sb'");
 	$edata = $db->fetch_array($result);
 	$a1=$edata['ip'];
-	$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$sf'");
+	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$sf'");
 	$edata = $db->fetch_array($result);
 	$a2=$edata['ip'];
 	if($a1 == $a2){

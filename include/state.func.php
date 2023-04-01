@@ -8,7 +8,7 @@ function death($death, $kname = '', $ktype = 0, $annex = '',&$data=NULL)
 {
 	//global $name, $state, $deathtime, $type, $lvl, $bid, $hp, $mhp, $wp, $wk, $wg, $wc, $wd, $wf, $sp, $msp, $club, $pls , $nick;
 
-	global $now, $db, $tablepre, $alivenum, $deathnum, $killmsginfo, $typeinfo, $weather;
+	global $now, $db, $tablepre, $gtablepre, $alivenum, $deathnum, $killmsginfo, $typeinfo, $weather;
 
 	if(!isset($data))
 	{
@@ -83,7 +83,7 @@ function death($death, $kname = '', $ktype = 0, $annex = '',&$data=NULL)
 	
 	$killmsg = '';
 	if ($ktype == 0 && $kname) {
-		$result = $db->query ( "SELECT killmsg FROM {$tablepre}users WHERE username = '$kname'" );
+		$result = $db->query ( "SELECT killmsg FROM {$gtablepre}users WHERE username = '$kname'" );
 		$killmsg = $db->result ( $result, 0 );
 	} elseif ($ktype != 0 && $kname) {
 		$killmsg = $killmsginfo [$ktype];
@@ -94,7 +94,7 @@ function death($death, $kname = '', $ktype = 0, $annex = '',&$data=NULL)
 	}
 	
 	if (! $type) {
-		$result = $db->query ( "SELECT lastword FROM {$tablepre}users WHERE username = '$name'" );
+		$result = $db->query ( "SELECT lastword FROM {$gtablepre}users WHERE username = '$name'" );
 		$lastword = $db->result ( $result, 0 );
 		$lwname = $typeinfo [$type] . ' ' . $name;
 		/*$result = $db->query("SELECT pls FROM {$tablepre}players WHERE name = '$name' AND type = '$type'");
@@ -173,7 +173,8 @@ function death($death, $kname = '', $ktype = 0, $annex = '',&$data=NULL)
 
 
 function kill($death, $dname, $dtype = 0, $dpid = 0, $annex = '', &$revival_flag=0) {
-	global $now, $db, $tablepre, $alivenum, $deathnum, $name, $w_state, $type, $pid, $typeinfo, $pls, $lwinfo, $w_achievement;
+	global $now, $db, $tablepre, $gtablepre;
+	global $alivenum, $deathnum, $name, $w_state, $type, $pid, $typeinfo, $pls, $lwinfo, $w_achievement;
 	global $weather;
 	
 	if (! $death || ! $dname) {
@@ -203,7 +204,7 @@ function kill($death, $dname, $dtype = 0, $dpid = 0, $annex = '', &$revival_flag
 	}
 	
 	$killmsg = '';
-	$result = $db->query ( "SELECT killmsg FROM {$tablepre}users WHERE username = '$name'" );
+	$result = $db->query ( "SELECT killmsg FROM {$gtablepre}users WHERE username = '$name'" );
 	$killmsg = $db->result ( $result, 0 );
 	
 	if (! $dtype) {
@@ -224,7 +225,7 @@ function kill($death, $dname, $dtype = 0, $dpid = 0, $annex = '', &$revival_flag
 		$db->query ( "INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$now','$lwname','$pls','$lastword')" );
 	} else {
 		$lwname = $typeinfo [$dtype] . ' ' . $dname;
-		$result = $db->query ( "SELECT lastword FROM {$tablepre}users WHERE username = '$dname'" );
+		$result = $db->query ( "SELECT lastword FROM {$gtablepre}users WHERE username = '$dname'" );
 		$lastword = $db->result ( $result, 0 );
 		
 		$db->query ( "INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$now','$lwname','$pls','$lastword')" );

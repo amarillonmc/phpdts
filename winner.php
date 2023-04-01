@@ -7,7 +7,7 @@ include_once GAME_ROOT.'./include/game/titles.func.php';
 
 if(!isset($command)){$command = 'ref';}
 if($command == 'info') {
-	$result = $db->query("SELECT * FROM {$tablepre}winners WHERE gid='$gnum' LIMIT 1");
+	$result = $db->query("SELECT * FROM {$gtablepre}winners WHERE gid='$gnum' LIMIT 1");
 	$pdata = $db->fetch_array($result);
 	$pdata['gdate'] = floor($pdata['gtime']/3600).':'.floor($pdata['gtime']%3600/60).':'.($pdata['gtime']%60);
 	$pdata['gsdate'] = date("m/d/Y H:i:s",$pdata['gstime']);
@@ -24,9 +24,9 @@ if($command == 'info') {
 	}
 } else {
 	if(!isset($start) || !$start){
-		$result = $db->query("SELECT gid,name,nick,icon,gd,wep,wmode,teamID,teamMate,teamIcon,getime,motto,hdp,hdmg,hkp,hkill FROM {$tablepre}winners ORDER BY gid desc LIMIT $winlimit");
+		$result = $db->query("SELECT gid,name,nick,icon,gd,wep,wmode,teamID,teamMate,teamIcon,getime,motto,hdp,hdmg,hkp,hkill FROM {$gtablepre}winners ORDER BY gid desc LIMIT $winlimit");
 	} else {
-		$result = $db->query("SELECT gid,name,nick,icon,gd,wep,wmode,teamID,teamMate,teamIcon,getime,motto,hdp,hdmg,hkp,hkill FROM {$tablepre}winners WHERE gid<='$start' ORDER BY gid desc LIMIT $winlimit");
+		$result = $db->query("SELECT gid,name,nick,icon,gd,wep,wmode,teamID,teamMate,teamIcon,getime,motto,hdp,hdmg,hkp,hkill FROM {$gtablepre}winners WHERE gid<='$start' ORDER BY gid desc LIMIT $winlimit");
 	}
 	while($wdata = $db->fetch_array($result)) {
 		$wdata['date'] = date("Y-m-d",$wdata['getime']);

@@ -8,9 +8,9 @@ require './include/game/special.func.php';
 //unset($_GET);
 
 if(!isset($alivemode) || $alivemode == 'last'){
-	$result = $db->query("SELECT * FROM {$tablepre}users RIGHT JOIN {$tablepre}players ON {$tablepre}players.name={$tablepre}users.username WHERE {$tablepre}players.type=0 AND {$tablepre}players.hp>0 ORDER BY {$tablepre}players.money DESC, {$tablepre}players.killnum DESC LIMIT $alivelimit");
+	$result = $db->query("SELECT * FROM {$gtablepre}users RIGHT JOIN {$tablepre}players ON {$tablepre}players.name={$gtablepre}users.username WHERE {$tablepre}players.type=0 AND {$tablepre}players.hp>0 ORDER BY {$tablepre}players.money DESC, {$tablepre}players.killnum DESC LIMIT $alivelimit");
 }elseif($alivemode == 'all'){
-	$result = $db->query("SELECT * FROM {$tablepre}users RIGHT JOIN {$tablepre}players ON {$tablepre}players.name={$tablepre}users.username WHERE {$tablepre}players.type=0 AND {$tablepre}players.hp>0 ORDER BY {$tablepre}players.money DESC, {$tablepre}players.killnum DESC");
+	$result = $db->query("SELECT * FROM {$gtablepre}users RIGHT JOIN {$tablepre}players ON {$tablepre}players.name={$gtablepre}users.username WHERE {$tablepre}players.type=0 AND {$tablepre}players.hp>0 ORDER BY {$tablepre}players.money DESC, {$tablepre}players.killnum DESC");
 }else{
 	echo 'error';
 	exit();
@@ -24,7 +24,7 @@ while($apdata = $db->fetch_array($result)) {
 	} else{
 		$apdata['apm'] = 0;
 	}
-	//	$result3 = $db->query("SELECT motto FROM {$tablepre}users WHERE username = '".$apdata['name']."'");
+	//	$result3 = $db->query("SELECT motto FROM {$gtablepre}users WHERE username = '".$apdata['name']."'");
 //	$apdata['motto'] = $db->result($result3, 0);
 
 	$alivedata[$apdata['pid']] = $apdata;
@@ -70,7 +70,7 @@ if($gamblingon){
 		elseif($gbpool >= 8000 && $wager>50) { $gbinfo .= '本局总奖池已经超过8000切糕上限，此时每人最多只能下注50切糕！'; }
 		else
 		{
-			$uresult = $db->query("SELECT * FROM {$tablepre}users WHERE username='$cuser'");
+			$uresult = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$cuser'");
 			if(!$db->num_rows($uresult)) 
 			{ 
 				$gbinfo .= $_ERROR['login_check']; 
@@ -93,7 +93,7 @@ if($gamblingon){
 							$gbinfo .= '选择对象有误，请检查输入。<br>'; 
 							goto gb_result;
 						}
-						$bresult = $db->query("SELECT * FROM {$tablepre}players LEFT JOIN {$tablepre}users ON {$tablepre}players.name={$tablepre}users.username WHERE {$tablepre}players.pid='$bet'");
+						$bresult = $db->query("SELECT * FROM {$tablepre}players LEFT JOIN {$gtablepre}users ON {$tablepre}players.name={$gtablepre}users.username WHERE {$tablepre}players.pid='$bet'");
 						if(!$db->num_rows($bresult)) 
 						{ 
 							$gbinfo .= '选择的对象不存在。<br>'; 
@@ -160,7 +160,7 @@ if($gamblingon){
 							//扣除切糕
 							$cost_credits2 = round($iteminfo['price']*$bnum/$credits2_values);
 							$credits2 -= $cost_credits2;
-							$db->query("UPDATE {$tablepre}users SET credits2='$credits2' WHERE uid='$uid'");
+							$db->query("UPDATE {$gtablepre}users SET credits2='$credits2' WHERE uid='$uid'");
 							//发news
 							$gbinfo .= "花费{$cost_credits2}切糕购买了{$bnum}份{$iteminfo['item']}。<br>";
 							addnews($now,'gpost',$sponsor_title.' '.$udata['username'],$iteminfo['item'],$bdata['nick'].' '.$bdata['name'],$bdata['pls'],$bnum);
@@ -209,7 +209,7 @@ if($gamblingon){
 												//$alivedata[$bet]['odds'] = podds($alivedata[$bet]);
 											}
 											
-											$db->query("UPDATE {$tablepre}users SET credits2='$credits2' WHERE uid='$uid'");
+											$db->query("UPDATE {$gtablepre}users SET credits2='$credits2' WHERE uid='$uid'");
 										}else{$gbinfo .= '数据库错误，请联系管理员。';}									
 									}
 								}else{//未下注
@@ -229,7 +229,7 @@ if($gamblingon){
 											//$alivedata[$bet]['odds'] = podds($alivedata[$bet]);
 										}
 										
-										$db->query("UPDATE {$tablepre}users SET credits2='$credits2' WHERE uid='$uid'");
+										$db->query("UPDATE {$gtablepre}users SET credits2='$credits2' WHERE uid='$uid'");
 									}else{$gbinfo .= '数据库错误，请联系管理员。';}
 								}
 							}

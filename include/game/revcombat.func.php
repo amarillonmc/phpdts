@@ -741,7 +741,7 @@
 	# 再重复一遍：这里的第一个参数指的是杀人者(敌对方)视角，第二个参数指的是死者(受到伤害者)视角。
 	function pre_kill_events(&$pa,&$pd,$active,$death) 
 	{
-		global $log, $now, $db, $tablepre, $typeinfo, $lwinfo;
+		global $log, $now, $db, $gtablepre, $tablepre, $typeinfo, $lwinfo;
 		
 		// 登记死法
 		// 传入了数字编号死法
@@ -784,7 +784,7 @@
 		//初始化玩家遗言
 		else 
 		{
-			$result = $db->query ( "SELECT lastword FROM {$tablepre}users WHERE username ='$dname'");
+			$result = $db->query ( "SELECT lastword FROM {$gtablepre}users WHERE username ='$dname'");
 			$lastword = $db->result ( $result, 0 );
 		}
 		//向聊天框发送遗言
@@ -884,7 +884,7 @@
 	# 执行死透了后的事件：
 	function final_kill_events(&$pa,&$pd,$active,$last=0)
 	{
-		global $log,$now,$alivenum,$deathnum;
+		global $log,$now,$alivenum,$deathnum,$db,$gtablepre,$tablepre;
 
 		if(empty($pa['nm'])) $pa['nm'] = $active && !$pa['type'] ? '你' : $pa['name'];
 		if(empty($pd['nm'])) $pd['nm'] = !$active && !$pd['type'] ? '你' : $pd['name'];
@@ -912,7 +912,7 @@
 		{
 			global $db,$tablepre;
 			$pname = $pa['name'];
-			$result = $db->query("SELECT killmsg FROM {$tablepre}users WHERE username = '$pname'");
+			$result = $db->query("SELECT killmsg FROM {$gtablepre}users WHERE username = '$pname'");
 			$killmsg = $db->result($result,0);
 			if(!empty($killmsg)) $log .= "<span class=\"evergreen\">{$pa['nm']}对{$pd['nm']}说：“{$killmsg}”</span><br>";
 		}

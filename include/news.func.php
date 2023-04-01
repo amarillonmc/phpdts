@@ -176,7 +176,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			else $dname = $typeinfo[0].' '.$a;
 //			if($b == 0) {
 //				//$dname = $a;
-//				$lwresult = $db->query("SELECT lastword FROM {$tablepre}users WHERE username = '$a'");
+//				$lwresult = $db->query("SELECT lastword FROM {$gtablepre}users WHERE username = '$a'");
 //				$lastword = $db->result($lwresult, 0);
 //			} else {
 //				//$dname = $typeinfo[$b].' '.$a;

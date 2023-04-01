@@ -163,4 +163,7 @@ $no_self_sponsored = 0;
 //游戏新开局时向场内投入的bot数量
 $rsgame_bots = 4;
 
+//房间数量上限
+$max_rooms = 3;
+
 ?>

@@ -11,7 +11,7 @@ if (empty($_REQUEST["playerID"]))
 {
 	if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
 
-	$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$cuser'");
+	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$cuser'");
 	if(!$db->num_rows($result)) { gexit($_ERROR['login_check'],__file__,__line__); }
 	$udata = $db->fetch_array($result);
 	if($udata['password'] != $cpass) { gexit($_ERROR['wrong_pw'], __file__, __line__); }
@@ -23,7 +23,7 @@ if (empty($_REQUEST["playerID"]))
 else
 {
 	$uname=$_REQUEST["playerID"];
-	$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$uname'");
+	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$uname'");
 	if(!$db->num_rows($result)) { gexit($_ERROR['user_not_exists'],__file__,__line__); }
 	$udata = $db->fetch_array($result);
 	extract($udata);
@@ -96,7 +96,7 @@ if(!empty($udata['achievement']) && empty($udata['achrev']))
 		}
 	}
 	$new_ach = json_encode($new_ach);
-	$db->query("UPDATE {$tablepre}users SET achrev='$new_ach' WHERE username='".$udata['username']."'" );
+	$db->query("UPDATE {$gtablepre}users SET achrev='$new_ach' WHERE username='".$udata['username']."'" );
 	$cpl = Array(); $prc = Array();
 }
 //解析成就的完成情况

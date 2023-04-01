@@ -62,6 +62,8 @@ DROP TABLE IF EXISTS `acbra2_game`;
 CREATE TABLE `acbra2_game` (
   `gamenum` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `gamestate` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `groomid` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `groomnums` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `starttime` int(10) unsigned NOT NULL DEFAULT '0',
   `winmode` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `winner` char(15) NOT NULL DEFAULT '',
@@ -85,7 +87,7 @@ CREATE TABLE `acbra2_game` (
   `bdown` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `ldown` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `kdown` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`gamenum`)
+  PRIMARY KEY (`groomid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -363,6 +365,7 @@ CREATE TABLE `acbra2_users` (
   `username` char(15) NOT NULL DEFAULT '',
   `password` char(32) NOT NULL DEFAULT '',
   `groupid` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `roomid` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `lastgame` smallint(5) unsigned NOT NULL DEFAULT '0',
   `ip` char(15) NOT NULL DEFAULT '',
   `credits` int(10) NOT NULL DEFAULT '0',

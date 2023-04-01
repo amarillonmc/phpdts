@@ -21,10 +21,10 @@ function swap(&$a,&$b)
 
 function getclub($who, &$c1, &$c2, &$c3)
 {
-	global $db,$tablepre,$starttime,$validtime;
-	$result = $db->query("SELECT gid FROM {$tablepre}winners ORDER BY gid desc LIMIT 1");
+	global $db,$gtablepre,$tablepre,$starttime,$validtime;
+	$result = $db->query("SELECT gid FROM {$gtablepre}winners ORDER BY gid desc LIMIT 1");
 	$t=$db->fetch_array($result); $curgid=$t['gid']+1;
-	$result = $db->query("SELECT uid FROM {$tablepre}users WHERE username='$who'");
+	$result = $db->query("SELECT uid FROM {$gtablepre}users WHERE username='$who'");
 	$t=$db->fetch_array($result); $curuid=$t['uid']+2;
 	$result = $db->query("SELECT pid FROM {$tablepre}players WHERE name='$who' AND type=0");
 	$t=$db->fetch_array($result); $curpid=$t['pid']+3;

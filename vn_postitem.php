@@ -9,7 +9,7 @@ include_once GAME_ROOT.'./include/vnworld/vnmix.func.php';
 /*** 登陆检测 ***/
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
 
-$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$cuser'");
+$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$cuser'");
 if(!$db->num_rows($result)) { gexit($_ERROR['login_check'],__file__,__line__); }
 $udata = $db->fetch_array($result);
 if($udata['password'] != $cpass) { gexit($_ERROR['wrong_pw'], __file__, __line__); }
@@ -95,7 +95,7 @@ if(isset($exmode))
 			goto error_flag;
 		}
 		// 通过检查，更新对应配方
-		$db->array_update("{$tablepre}vnmixitem",$earr,"iid = '$edit_id'");
+		$db->array_update("{$gtablepre}vnmixitem",$earr,"iid = '$edit_id'");
 		// 保存对应log
 		if($gmflag) vn_adminlog('编辑了配方',$edit_result);
 		$vlog .= '<span class="yellow">成功编辑了配方！</span><br>';
@@ -105,7 +105,7 @@ if(isset($exmode))
 	# 提交删除
 	elseif($exmode == 'dp')
 	{
-		$db->query("DELETE FROM {$tablepre}vnmixitem WHERE iid = '$edit_id'");
+		$db->query("DELETE FROM {$gtablepre}vnmixitem WHERE iid = '$edit_id'");
 		if($gmflag) vn_adminlog('删除了配方',$edit_result);
 		$vlog = '删除了配方。<br>';
 		$vdata['url'] = 'vnworld.php?vtips=2';
@@ -125,13 +125,13 @@ if(isset($exmode))
 				goto error_flag;
 			}
 			writeover_vn_mixilst($earr);
-			$db->query("DELETE FROM {$tablepre}vnmixitem WHERE iid = '$edit_id'");
+			$db->query("DELETE FROM {$gtablepre}vnmixitem WHERE iid = '$edit_id'");
 			$vdata['url'] = 'vnworld.php?vtips=3&vcs='.$edit_st.'';
 		}
 		# 审核不通过
 		else 
 		{
-			$db->query("UPDATE {$tablepre}vnmixitem SET istatus = '$edit_st' WHERE iid = '$edit_id'");
+			$db->query("UPDATE {$gtablepre}vnmixitem SET istatus = '$edit_st' WHERE iid = '$edit_id'");
 			$vdata['url'] = 'vnworld.php?vtips=4&vcs='.$edit_st.'';
 		}
 		if($gmflag) vn_adminlog('改变了以下配方状态',$edit_result,$edit_st);
@@ -162,10 +162,10 @@ elseif($vnmode=='postmode')
 	// 参数合法，补全剩余参数
 	$earr['creator'] = $udata['username']; $earr['istatus'] = 0; 
 	// 保存至数据库
-	$db->array_insert("{$tablepre}vnmixitem", $earr);
+	$db->array_insert("{$gtablepre}vnmixitem", $earr);
 	// 结算切糕
 	$c2 -= $vnmix_c2_cost;
-	$db->query("UPDATE {$tablepre}users SET credits2='$c2' WHERE uid='$cid'");
+	$db->query("UPDATE {$gtablepre}users SET credits2='$c2' WHERE uid='$cid'");
 	$vlog .= '<span class="yellow">成功保存了配方！当前切糕数：'.$c2.'</span><br>';
 	$vdata['url'] = 'vnworld.php?vtips=0';
 	goto error_flag;
