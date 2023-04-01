@@ -39,11 +39,11 @@ function parse_queue_vnmix_info($carr)
 # 从数据库中读取全部或指定待审核配方文件
 function get_queue_vnmix_list($id=NULL)
 {
-	global $db,$tablepre;
+	global $db,$tablepre,$gtablepre;
 	if(isset($id))
 	{
 		$id = (int)$id;
-		$result = $db->query("SELECT * FROM {$tablepre}vnmixitem WHERE iid={$id}");
+		$result = $db->query("SELECT * FROM {$gtablepre}vnmixitem WHERE iid={$id}");
 		if($db->num_rows($result))
 		{
 			return $db->fetch_array($result);
@@ -51,7 +51,7 @@ function get_queue_vnmix_list($id=NULL)
 	}
 	else 
 	{
-		$result = $db->query("SELECT * FROM {$tablepre}vnmixitem ");
+		$result = $db->query("SELECT * FROM {$gtablepre}vnmixitem ");
 		if($db->num_rows($result))
 		{ 
 			while($t = $db->fetch_array($result,MYSQLI_ASSOC))

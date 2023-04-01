@@ -9,7 +9,7 @@ if(!$cuser||!$cpass) { $gbinfo .= $_ERROR['no_login']; }
 elseif($gamestate < 20) { $gbinfo .= $_ERROR['no_start']; }
 elseif($gamestate < 30) { $gbinfo .= '游戏还未停止激活，不可进行下注！'; }
 else{
-	$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$cuser'");
+	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$cuser'");
 	if(!$db->num_rows($result)) { $gbinfo .= $_ERROR['login_check']; }
 	$udata = $db->fetch_array($result);
 	if($udata['password'] != $cpass) { $gbinfo .= $_ERROR['wrong_pw']; }

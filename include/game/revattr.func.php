@@ -1221,15 +1221,18 @@
  				foreach($inf_att as $ipt => $times)
 				{
 					$which = 'ar'.$ipt;
-					if(!isset(${'temp_'.$which.'s'})) ${'temp_'.$which.'s'} = $pd[$which.'s'];
-					if(${'temp_'.$which.'s'} > 0)
-					{
-						${'temp_'.$which.'s'} -= $times;
-						$pd['armor_hurt'][$which] += $times;
-					}
-					else
+					# 没有装备或装备耐久为0的情况下，受伤
+					if(empty($pd[$which.'s']) || $pd[$which.'k'] == 'DN' || (!empty($pd[$which.'sdmg']) && $pd[$which.'s'] < $pd[$which.'sdmg']))
 					{
 						$pd['inf_hurt'][$ipt] = 1;
+
+					}
+					# 否则扣除装备耐久
+					else
+					{
+						if(!isset($pd[$which.'sdmg'])) $pd[$which.'sdmg'] = 0;
+						$pd[$which.'sdmg'] += $times;
+						$pd['armor_hurt'][$which] += $times;
 					}
 				}
 			}

@@ -10,7 +10,7 @@ if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
 if($gamestate < 20) { gexit($_ERROR['no_start'],__file__,__line__); }
 //if($gamestate >= 30) { gexit($_ERROR['valid_stop'],__file__,__line__); }
 
-$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$cuser'");
+$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$cuser'");
 if(!$db->num_rows($result)) { gexit($_ERROR['login_check'],__file__,__line__); }
 $udata = $db->fetch_array($result);
 $wingames = $udata['wingames'];
@@ -23,7 +23,7 @@ if($gamestate >= 30 && $udata['groupid'] < 6 && $cuser != $gamefounder) {
 
 if($mode == 'enter') {
 	if($iplimit) {
-		$result = $db->query("SELECT * FROM {$tablepre}users AS u, {$tablepre}players AS p WHERE u.ip='{$udata['ip']}' AND ( u.username=p.name AND p.type=0)");
+		$result = $db->query("SELECT * FROM {$gtablepre}users AS u, {$tablepre}players AS p WHERE u.ip='{$udata['ip']}' AND ( u.username=p.name AND p.type=0)");
 		if($db->num_rows($result) > $iplimit) { gexit($_ERROR['ip_limit'],__file__,__line__); }
 	}	
 
@@ -61,13 +61,13 @@ if($mode == 'enter') {
 			}
 		}
 		$new_ach = json_encode($new_ach);
-		$db->query("UPDATE {$tablepre}users SET achrev='$new_ach' WHERE username='".$udata['username']."'" );
+		$db->query("UPDATE {$gtablepre}users SET achrev='$new_ach' WHERE username='".$udata['username']."'" );
 		$cpl = Array(); $prc = Array();
 	}
 
 	//$ip = real_ip();
 	$ip = $udata['ip'];
-	$db->query("UPDATE {$tablepre}users SET gender='$gender', nick='$nick', icon='$icon', motto='$motto', killmsg='$killmsg', lastword='$lastword' WHERE username='".$udata['username']."'" );
+	$db->query("UPDATE {$gtablepre}users SET gender='$gender', nick='$nick', icon='$icon', motto='$motto', killmsg='$killmsg', lastword='$lastword' WHERE username='".$udata['username']."'" );
 	if($validnum >= $validlimit) {
 		gexit($_ERROR['player_limit'],__file__, __line__);
 	}
@@ -116,7 +116,7 @@ if($mode == 'enter') {
 	$achievement = $udata['achievement'];
 	if (!valid_achievement($achievement)) {
 		$achievement=init_achievement($achievement);
-		$db->query("UPDATE {$tablepre}users SET achievement='$achievement' WHERE username='".$name."'" );		//如果第一次游戏，初始化成就
+		$db->query("UPDATE {$gtablepre}users SET achievement='$achievement' WHERE username='".$name."'" );		//如果第一次游戏，初始化成就
 	}*/
 	for ($i=0; $i<=6; $i++){$itm[$i] = $itmk[$i] = $itmsk[$i] = ''; $itme[$i] = $itms[$i] = 0;}
 	$itm[1] = '面包'; $itmk[1] = 'HH'; $itme[1] = 120; $itms[1] = 15;
@@ -256,7 +256,7 @@ if($mode == 'enter') {
 	if (($nicks=='')||($nick=='')){
 		$nick='参展者';
 		$nicks='参展者';
-		$db->query("UPDATE {$tablepre}users SET nick='$nick', nicks='$nicks' WHERE username='".$udata['username']."'" );
+		$db->query("UPDATE {$gtablepre}users SET nick='$nick', nicks='$nicks' WHERE username='".$udata['username']."'" );
 	}else{
 		if (strpos($nicks,$nick)===false){
 			$nick='弱子';
@@ -306,7 +306,7 @@ if($mode == 'enter') {
 	if(!empty($ndata)) $db->array_insert("{$tablepre}players", $ndata);
 	
 	//$db->query("INSERT INTO {$tablepre}players (name,pass,type,endtime,validtime,gd,sNo,icon,club,hp,mhp,sp,msp,att,def,pls,lvl,`exp`,money,bid,inf,rage,pose,tactic,killnum,state,wp,wk,wg,wc,wd,wf,teamID,teamPass,wep,wepk,wepe,weps,arb,arbk,arbe,arbs,arh,arhk,arhe,arhs,ara,arak,arae,aras,arf,arfk,arfe,arfs,art,artk,arte,arts,itm0,itmk0,itme0,itms0,itm1,itmk1,itme1,itms1,itm2,itmk2,itme2,itms2,itm3,itmk3,itme3,itms3,itm4,itmk4,itme4,itms4,itm5,itmk5,itme5,itms5,itm6,itmk6,itme6,itms6,wepsk,arbsk,arhsk,arask,arfsk,artsk,itmsk0,itmsk1,itmsk2,itmsk3,itmsk4,itmsk5,itmsk6,nick,nicks) VALUES ('$name','$pass','$type','$endtime','$validtime','$gd','$sNo','$icon','$club','$hp','$mhp','$sp','$msp','$att','$def','$pls','$lvl','$exp','$money','$bid','$inf','$rage','$pose','$tactic','$state','$killnum','$wp','$wk','$wg','$wc','$wd','$wf','$teamID','$teamPass','$wep','$wepk','$wepe','$weps','$arb','$arbk','$arbe','$arbs','$arh','$arhk','$arhe','$arhs','$ara','$arak','$arae','$aras','$arf','$arfk','$arfe','$arfs','$art','$artk','$arte','$arts','$itm[0]','$itmk[0]','$itme[0]','$itms[0]','$itm[1]','$itmk[1]','$itme[1]','$itms[1]','$itm[2]','$itmk[2]','$itme[2]','$itms[2]','$itm[3]','$itmk[3]','$itme[3]','$itms[3]','$itm[4]','$itmk[4]','$itme[4]','$itms[4]','$itm[5]','$itmk[5]','$itme[5]','$itms[5]','$itm[6]','$itmk[6]','$itme[6]','$itms[6]','$wepsk','$arbsk','$arhsk','$arask','$arfsk','$artsk','$itmsk[0]','$itmsk[1]','$itmsk[2]','$itmsk[3]','$itmsk[4]','$itmsk[5]','$itmsk[6]','$nick','$nicks')");
-	$db->query("UPDATE {$tablepre}users SET lastgame='$gamenum' WHERE username='$name'");
+	$db->query("UPDATE {$gtablepre}users SET lastgame='$gamenum' WHERE username='$name'");
 	global $nick;
 	if($udata['groupid'] >= 6 || $cuser == $gamefounder){
 		addnews($now,'newgm',$nickinfo.' '.$name,"{$sexinfo[$gd]}{$sNo}号",$ip,$nick);

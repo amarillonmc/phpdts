@@ -5,7 +5,7 @@ define('CURSCRIPT', 'dbup');
 require './include/common.inc.php';
 
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
-$result = $db->query("SELECT * FROM {$tablepre}users WHERE username='$cuser'");
+$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$cuser'");
 if(!$db->num_rows($result)) { gexit($_ERROR['login_check'],__file__,__line__); }
 $udata = $db->fetch_array($result);
 if($udata['password'] != $cpass) { gexit($_ERROR['wrong_pw'], __file__, __line__); }
@@ -48,143 +48,161 @@ require config('resources',$gamecfg);
 require config('gamecfg',$gamecfg);*/
 
 //include GAME_ROOT.'./gamedata/gameinfo.php';
-/*$q = "ALTER TABLE {$tablepre}winners ADD killnum2 smallint unsigned NOT NULL default 0 AFTER killnum";
+/*$q = "ALTER TABLE {$gtablepre}winners ADD killnum2 smallint unsigned NOT NULL default 0 AFTER killnum";
 echo $q.'<br>';
 echo $db->query($q);
-$q = "ALTER TABLE {$tablepre}users ADD credits2 mediumint NOT NULL default 0 AFTER credits";
+$q = "ALTER TABLE {$gtablepre}users ADD credits2 mediumint NOT NULL default 0 AFTER credits";
 echo $q.'<br>';
 echo $db->query($q);*/
 
 //winner表新增字段
-$result = $db->query("DESCRIBE {$tablepre}winners nick");
-if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD nick text not null AFTER type");
-$result = $db->query("DESCRIBE {$tablepre}winners ss");
-if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD ss mediumint unsigned NOT NULL default '0' AFTER msp");
-$result = $db->query("DESCRIBE {$tablepre}winners mss");
-if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD mss smallint unsigned NOT NULL default '0' AFTER ss");
-$result = $db->query("DESCRIBE {$tablepre}winners skillpoint");
-if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD skillpoint smallint unsigned NOT NULL default '0' AFTER nick");
-$result = $db->query("DESCRIBE {$tablepre}winners teamMate");
-if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD teamMate text NOT NULL default '' AFTER teamPass");
-$result = $db->query("DESCRIBE {$tablepre}winners teamIcon");
-if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD teamIcon smallint unsigned NOT NULL default '0' AFTER teamMate");
-$result = $db->query("DESCRIBE {$tablepre}winners clbpara");
-if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}winners ADD clbpara text NOT NULL AFTER teamMate");
+$result = $db->query("DESCRIBE {$gtablepre}winners nick");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$gtablepre}winners ADD nick text not null AFTER type");
+$result = $db->query("DESCRIBE {$gtablepre}winners ss");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$gtablepre}winners ADD ss mediumint unsigned NOT NULL default '0' AFTER msp");
+$result = $db->query("DESCRIBE {$gtablepre}winners mss");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$gtablepre}winners ADD mss smallint unsigned NOT NULL default '0' AFTER ss");
+$result = $db->query("DESCRIBE {$gtablepre}winners skillpoint");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$gtablepre}winners ADD skillpoint smallint unsigned NOT NULL default '0' AFTER nick");
+$result = $db->query("DESCRIBE {$gtablepre}winners teamMate");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$gtablepre}winners ADD teamMate text NOT NULL default '' AFTER teamPass");
+$result = $db->query("DESCRIBE {$gtablepre}winners teamIcon");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$gtablepre}winners ADD teamIcon smallint unsigned NOT NULL default '0' AFTER teamMate");
+$result = $db->query("DESCRIBE {$gtablepre}winners clbpara");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$gtablepre}winners ADD clbpara text NOT NULL AFTER teamMate");
 
 //以下内容均为chatGPT生成，让我们对新时代的赛博苦力致以敬意：
-$db->query("ALTER TABLE {$tablepre}winners MODIFY wep char(30) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY wepk char(40) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY wepe int(10) unsigned NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY weps char(10) NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY wepsk char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY wep char(30) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY wepk char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY wepe int(10) unsigned NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY weps char(10) NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY wepsk char(40) NOT NULL default ''");
 
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arb char(30) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arbk char(40) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arbe int(10) unsigned NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arbs char(10) NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arbsk char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arb char(30) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arbk char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arbe int(10) unsigned NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arbs char(10) NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arbsk char(40) NOT NULL default ''");
 
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arh char(30) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arhk char(40) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arhe int(10) unsigned NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arhs char(10) NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arhsk char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arh char(30) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arhk char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arhe int(10) unsigned NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arhs char(10) NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arhsk char(40) NOT NULL default ''");
 
-$db->query("ALTER TABLE {$tablepre}winners MODIFY ara char(30) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arak char(40) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arae int(10) unsigned NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY aras char(10) NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arask char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY ara char(30) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arak char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arae int(10) unsigned NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY aras char(10) NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arask char(40) NOT NULL default ''");
 
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arf char(30) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arfk char(40) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arfe int(10) unsigned NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arfs char(10) NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arfsk char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arf char(30) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arfk char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arfe int(10) unsigned NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arfs char(10) NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arfsk char(40) NOT NULL default ''");
 
-$db->query("ALTER TABLE {$tablepre}winners MODIFY art char(30) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY artk char(40) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arte int(10) unsigned NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY arts char(10) NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY artsk char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY art char(30) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY artk char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arte int(10) unsigned NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY arts char(10) NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY artsk char(40) NOT NULL default ''");
 
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itm0 char(30) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itmk0 char(40) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itme0 int(10) unsigned NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itms0 char(10) NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itmsk0 char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itm0 char(30) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itmk0 char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itme0 int(10) unsigned NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itms0 char(10) NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itmsk0 char(40) NOT NULL default ''");
 
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itm1 char(30) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itmk1 char(40) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itme1 int(10) unsigned NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itms1 char(10) NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itmsk1 char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itm1 char(30) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itmk1 char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itme1 int(10) unsigned NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itms1 char(10) NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itmsk1 char(40) NOT NULL default ''");
 
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itm2 char(30) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itmk2 char(40) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itme2 int(10) unsigned NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itms2 char(10) NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itmsk2 char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itm2 char(30) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itmk2 char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itme2 int(10) unsigned NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itms2 char(10) NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itmsk2 char(40) NOT NULL default ''");
 
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itm3 char(30) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itmk3 char(40) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itme3 int(10) unsigned NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itms3 char(10) NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itmsk3 char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itm3 char(30) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itmk3 char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itme3 int(10) unsigned NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itms3 char(10) NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itmsk3 char(40) NOT NULL default ''");
 
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itm4 char(30) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itmk4 char(40) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itme4 int(10) unsigned NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itms4 char(10) NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itmsk4 char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itm4 char(30) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itmk4 char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itme4 int(10) unsigned NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itms4 char(10) NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itmsk4 char(40) NOT NULL default ''");
 
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itm5 char(30) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itmk5 char(40) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itme5 int(10) unsigned NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itms5 char(10) NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itmsk5 char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itm5 char(30) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itmk5 char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itme5 int(10) unsigned NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itms5 char(10) NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itmsk5 char(40) NOT NULL default ''");
 
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itm6 char(30) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itmk6 char(40) NOT NULL default ''");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itme6 int(10) unsigned NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itms6 char(10) NOT NULL DEFAULT '0'");
-$db->query("ALTER TABLE {$tablepre}winners MODIFY itmsk6 char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itm6 char(30) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itmk6 char(40) NOT NULL default ''");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itme6 int(10) unsigned NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itms6 char(10) NOT NULL DEFAULT '0'");
+$db->query("ALTER TABLE {$gtablepre}winners MODIFY itmsk6 char(40) NOT NULL default ''");
 
 
 //user表结构变动
-$result = $db->query("DESCRIBE {$tablepre}users volume");
-if($db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}users DROP volume");
-$result = $db->query("DESCRIBE {$tablepre}users achrev");
-if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}users ADD achrev text NOT NULL default '' AFTER achievement");
-$result = $db->query("DESCRIBE {$tablepre}users daily");
-if(!$db->num_rows($result)) $db->query("ALTER TABLE {$tablepre}users ADD daily varchar(255) NOT NULL DEFAULT '' AFTER achrev");
+$result = $db->query("DESCRIBE {$gtablepre}users volume");
+if($db->num_rows($result)) $db->query("ALTER TABLE {$gtablepre}users DROP volume");
+$result = $db->query("DESCRIBE {$gtablepre}users achrev");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$gtablepre}users ADD achrev text NOT NULL default '' AFTER achievement");
+$result = $db->query("DESCRIBE {$gtablepre}users daily");
+if(!$db->num_rows($result)) $db->query("ALTER TABLE {$gtablepre}users ADD daily varchar(255) NOT NULL DEFAULT '' AFTER achrev");
+$result = $db->query("DESCRIBE {$gtablepre}users roomid");
+if(!$db->num_rows($result))
+{
+	$db->query("ALTER TABLE {$gtablepre}users ADD roomid tinyint(3) unsigned NOT NULL DEFAULT '0' AFTER groupid");
+	echo "向users表中添加了字段roomid<br>";
+}
 
 //game表结构变动
-$db->query("ALTER TABLE {$tablepre}game DROP gamevars");
-$db->query("ALTER TABLE {$tablepre}game ADD gamevars text NOT NULL AFTER combonum");
-$result = $db->query("DESCRIBE {$tablepre}game lastupdate");
+$db->query("ALTER TABLE {$gtablepre}game DROP gamevars");
+$db->query("ALTER TABLE {$gtablepre}game ADD gamevars text NOT NULL AFTER combonum");
+$result = $db->query("DESCRIBE {$gtablepre}game lastupdate");
 if($db->num_rows($result))
 {
-	$db->query("ALTER TABLE {$tablepre}game DROP lastupdate");
+	$db->query("ALTER TABLE {$gtablepre}game DROP lastupdate");
 	echo "从game表中删去了字段lastupdate<br>";
 }
-$result = $db->query("DESCRIBE {$tablepre}game hdamage");
+$result = $db->query("DESCRIBE {$gtablepre}game hdamage");
 if(!$db->num_rows($result))
 {
-	$db->query("ALTER TABLE {$tablepre}game ADD hdamage int(10) unsigned NOT NULL DEFAULT '0' AFTER hack");
+	$db->query("ALTER TABLE {$gtablepre}game ADD hdamage int(10) unsigned NOT NULL DEFAULT '0' AFTER hack");
 	echo "向game表中添加了字段hdamage<br>";
 }
-$result = $db->query("DESCRIBE {$tablepre}game hplayer");
+$result = $db->query("DESCRIBE {$gtablepre}game hplayer");
 if(!$db->num_rows($result))
 {
-	$db->query("ALTER TABLE {$tablepre}game ADD hplayer char(15) NOT NULL DEFAULT '' AFTER hdamage");
+	$db->query("ALTER TABLE {$gtablepre}game ADD hplayer char(15) NOT NULL DEFAULT '' AFTER hdamage");
 	echo "向game表中添加了字段hplayer<br>";
 }
-$result = $db->query("DESCRIBE {$tablepre}game noisevars");
+$result = $db->query("DESCRIBE {$gtablepre}game noisevars");
 if(!$db->num_rows($result))
 {
-	$db->query("ALTER TABLE {$tablepre}game ADD noisevars varchar(1000) NOT NULL DEFAULT '' AFTER gamevars");
+	$db->query("ALTER TABLE {$gtablepre}game ADD noisevars varchar(1000) NOT NULL DEFAULT '' AFTER gamevars");
 	echo "向game表中添加了字段noisevars<br>";
+}
+$result = $db->query("DESCRIBE {$gtablepre}game groomid");
+if(!$db->num_rows($result))
+{
+	$db->query("ALTER TABLE {$gtablepre}game ADD groomid tinyint(3) unsigned NOT NULL DEFAULT '0' '' AFTER gamestate");
+	echo "向game表中添加了字段groomid<br>";
+}
+$result = $db->query("DESCRIBE {$gtablepre}game groomnums");
+if(!$db->num_rows($result))
+{
+	$db->query("ALTER TABLE {$gtablepre}game ADD groomnums tinyint(3) unsigned NOT NULL DEFAULT '0' AFTER groomid");
+	echo "向game表中添加了字段groomnums<br>";
 }
 
 echo "Update Fish.<br>";

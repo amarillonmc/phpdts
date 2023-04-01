@@ -54,10 +54,10 @@ if(!$username||!$password){
 	$credits = 0;
 	$gender = 0;
 
-	$result = $db->query("SELECT * FROM {$tablepre}users WHERE username = '$username'");
+	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username = '$username'");
 	if(!$db->num_rows($result)) {
 		$groupid = 1;
-		$db->query("INSERT INTO {$tablepre}users (username,`password`,groupid,ip,credits,gender) VALUES ('$username', '$password', '$groupid', '$onlineip', '$credits', '$gender')");
+		$db->query("INSERT INTO {$gtablepre}users (username,`password`,groupid,ip,credits,gender) VALUES ('$username', '$password', '$groupid', '$onlineip', '$credits', '$gender')");
 	} else {
 		$userdata = $db->fetch_array($result);
 		if($userdata['groupid'] <= 0){

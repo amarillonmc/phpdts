@@ -138,13 +138,25 @@ function trap(&$data=NULL){
 	$selflag = $itmsk0 == $pid ? true : false;
 	$dice=diceroll(99);
 
-	if($playerflag && !$selflag){
+	if($playerflag && !$selflag)
+	{
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$itmsk0'");
 		$wdata = $db->fetch_array($result);
-		$trname = $wdata['name'];$trtype = $wdata['type'];$trperfix = '<span class="yellow">'.$trname.'</span>设置的';
-	}elseif($selflag){
+		if(!empty($wdata))
+		{
+			$trname = $wdata['name'];$trtype = $wdata['type'];$trperfix = '<span class="yellow">'.$trname.'</span>设置的';
+		}
+		else 
+		{
+			$trname = $trtype = $trperfix = '';
+		}
+	}
+	elseif($selflag)
+	{
 		$trname = $name;$trtype = 0;$trperfix = '你自己设置的';
-	}else{
+	}
+	else
+	{
 		$trname = $trtype = $trperfix = '';
 	}
 

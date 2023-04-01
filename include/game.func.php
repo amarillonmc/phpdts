@@ -641,7 +641,7 @@ function create_dummy_playerdata($clb=0)
 //通过名字抓取指定玩家数据，只能抓玩家
 function fetch_playerdata_by_name($n)
 {
-	global $db,$tablepre;
+	global $db,$gtablepre,$tablepre;
 	$result = $db->query("SELECT * FROM {$tablepre}players WHERE name = '$n' AND type = 0");
 	if(!$db->num_rows($result)) return NULL;
 	$data = $db->fetch_array($result);
@@ -654,7 +654,7 @@ function fetch_playerdata_by_name($n)
 //通过pid抓取指定玩家/NPC数据
 function fetch_playerdata_by_pid($pid)
 {
-	global $db,$tablepre;
+	global $db,$gtablepre,$tablepre;
 	$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid = '$pid'");
 	if(!$db->num_rows($result)) return NULL;
 	$data = $db->fetch_array($result);
@@ -666,7 +666,7 @@ function fetch_playerdata_by_pid($pid)
 }
 //用于将指定player数据存回数据库
 function player_save($data){
-	global $db,$tablepre;
+	global $db,$gtablepre,$tablepre;
 	$ndata = Array();
 	if(isset($data['pid'])){
 		$pid = $data['pid'];

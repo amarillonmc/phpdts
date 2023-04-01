@@ -41,10 +41,10 @@ echo 'a';
 //include GAME_ROOT.'./gamedata/gameinfo.php';
 echo $q.'<br>';
 //echo $db->query($q);
-$q = "UPDATE {$tablepre}users SET achievement='' WHERE uid>0";
+$q = "UPDATE {$gtablepre}users SET achievement='' WHERE uid>0";
 echo $db->query($q);
-$q = "ALTER TABLE {$tablepre}users ADD titles text NOT NULL default '' AFTER achievement";
+$q = "ALTER TABLE {$gtablepre}users ADD titles text NOT NULL default '' AFTER achievement";
 //echo $db->query($q);
-$q = "ALTER TABLE {$tablepre}users ADD title text NOT NULL default '' AFTER title";
+$q = "ALTER TABLE {$gtablepre}users ADD title text NOT NULL default '' AFTER title";
 //echo $db->query($q);
 ?>

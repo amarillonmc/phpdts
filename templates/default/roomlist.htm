@@ -1,0 +1,57 @@
+<span class="evergreen">当前房间列表：</span><br>
+<div style="height:5px;">&nbsp;</div>
+<form method="post" name="roomact" onsubmit="return false;" >
+<input type="hidden" name="roomact" id="roomact" value="">
+<div class="scroll-pane-roomlist" style="width:520px;max-height:300px;"> 
+
+	<table CellSpacing=0 CellPadding=0 class="infotable">
+		<tr>
+			<td class="b1" width="60px">编号</td>
+			<!--<td class="b1" width="80px">游戏模式</td>-->
+			<td class="b1" width="60px">状态</td>
+			<!--<td class="b1" width="120px">创建者/房主</td>-->
+			<td class="b1" width="60px">人数</td>
+			<!--<td class="b1" width="120px">运行时间</td>-->
+			<td class="b1" width="80px">操作</td>
+		</tr>
+		<!--{loop range(1,3) $rkey}-->
+		<tr>
+			<td class="b3" width="60px" height="30px">
+				$rkey
+			</td>
+			<!--<td class="b3" width="80px">游戏模式</td>-->
+			<td class="b3" width="60px">
+				<!--{if !empty($roomlist[$rkey]['gamestate'])}-->
+					$gstate[$roomlist[$rkey]['gamestate']]
+				<!--{else}-->
+					<span class="grey">未开启</span>
+				<!--{/if}-->
+			</td>
+			<!--<td class="b3" width="120px">
+					房主
+			</td>-->
+			<td class="b3" width="60px">
+				<!--{if !empty($roomlist[$rkey]['groomnums'])}-->
+					<span class="yellow">$roomlist[$rkey]['groomnums']</span>
+				<!--{else}-->
+					<span class="grey">-</span>
+				<!--{/if}-->
+			</td>
+			<!--<td class="b3" width="120px">运行时间</td>-->
+			<td class="b3" width="80px">
+				<!--{if !empty($rid)}-->
+					<!--{if $rid == $rkey}-->
+						<input type="button" value="退出房间" onclick="$('roomact').value='exit';postCmd('roomact','index.php');setTimeout(function(){window.location.href='index.php';},300);disabled=true;" >
+					<!--{else}-->
+						<span class="grey">-</span>
+					<!--{/if}-->
+				<!--{else}-->
+					<input type="button" value="加入房间" onclick="$('roomact').value='join{$rkey}';postCmd('roomact','index.php');setTimeout(function(){window.location.href='index.php';},300);disabled=true;" >
+				<!--{/if}-->
+			</td>
+		</tr>
+		<!--{/loop}-->
+	</table>
+</div>
+</form>
+<div style="height:5px;">&nbsp;</div>

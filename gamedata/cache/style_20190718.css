@@ -75,6 +75,20 @@ table.dialogue {
 	border-color: rgba(196, 196, 196, 0.8);
 }
 
+table.infotable {
+	float: left;
+	margin-top: 10px;
+	position:relative;
+	text-align: center;
+	border-radius: 3px; 
+	border:2px solid rgba(225, 124, 226, 0.25);
+}
+table.infotable td,
+table.infotable th {
+	text-align: center;
+	border:1px solid rgba(225, 124, 226, 0.4);
+}
+
 .typewriter {
 	color: #fff;
 	overflow: hidden; /* Ensures the content is not revealed until the animation */
