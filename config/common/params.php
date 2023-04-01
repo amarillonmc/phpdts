@@ -2,6 +2,18 @@
 
 declare(strict_types=1);
 
+use Yiisoft\Db\Mysql\Dsn;
+
+$db = [
+    'driver' => 'mysql',
+    'host' => 'localhost',
+    'databaseName' => 'acdts3',
+    'port' => '3306',
+    'options' => ['charset' => 'utf8mb4'],
+    'username' => 'root',
+    'password' => 'mylittlepony',
+];
+
 return [
     'app' => [
         'charset' => 'UTF-8',
@@ -20,4 +32,13 @@ return [
             '@vendor' => '@root/vendor',
         ],
     ],
+    'db' => array_merge($db, [
+        'dsn' => (new Dsn(
+            $db['driver'],
+            $db['host'],
+            $db['databaseName'],
+            $db['port'],
+            $db['options']
+        ))->asString(),
+    ]),
 ];

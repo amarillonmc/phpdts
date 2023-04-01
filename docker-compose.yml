@@ -17,11 +17,21 @@ services:
       - nginx_conf:/etc/nginx/conf.d
   db:
     image: mariadb:10
+    ports:
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: "mylittlepony"
       MYSQL_DATABASE: "acdts3"
     volumes:
       - db:/var/lib/mysql
+  phpmyadmin:
+    image: phpmyadmin:5.2.1
+    ports:
+      - 8081:80
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=mylittlepony
 volumes:
   db:
   dts:
