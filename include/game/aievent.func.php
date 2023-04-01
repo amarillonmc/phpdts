@@ -42,7 +42,9 @@ function aievent($rate){
 		//echo "静流已放出。";
 		$checkSanma = $db->query("SELECT * FROM {$tablepre}players WHERE type = 15 AND name = '【SANMA_TK】'");
 		$sdata = $db->fetch_array($checkSanma);
+		# 不准直接从数据库拉玩家数据了
 		$spid = $sdata['pid'];
+		$sdata = fetch_playerdata_by_pid($spid);
 //		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','SANMA_TK','$splsinfo','……静流已抵达{$splsinfo}并待机。')");
 		if($sdata['hp'] <= 0){//若静流已死则中止循环，更新标签
 			$gamevars['sanmadead'] = 1;
@@ -61,17 +63,21 @@ function aievent($rate){
 			}
 			$rplist[$rptopdata['pid']] = $rptopdata;
 			
-			if(!$sdata['achievement']){//AI一些信息的储存位置
+			/*if(!$sdata['achievement']){//AI一些信息的储存位置
 				$sdata['achievement'] = Array('chatid' => 0, 'curenum' => 0);
 			}else{
 				$sdata['achievement'] = json_decode($sdata['achievement'],true);
 			}
-			$svars = & $sdata['achievement'];
+			$svars = & $sdata['achievement'];*/
+
+			# AI信息现在储存在clbpara内
+			if(empty($sdata['clbpara']['chatid'])) $sdata['clbpara']['chatid'] = 0;
+			if(empty($sdata['clbpara']['curenum'])) $sdata['clbpara']['curenum'] = 0;
+			$svars = & $sdata['clbpara'];
 			$chatid = & $svars['chatid'];
 			$curenum = & $svars['curenum'];
+
 			//AI聊天卖萌部分
-			
-			
 			//AI读取聊天记录
 			if(!$chatid){$chatid = 0;}
 			$chatdata = Array();
@@ -226,13 +232,13 @@ function aievent($rate){
 					$sdata['pose'] = 2;$sdata['tactic'] = 3;//静流姿态变为强袭+反击
 					//$sdata['l']
 					$updflag = true;
-					$db->array_update("{$tablepre}players", $sdata, " pid = '$spid'");//先更为敬，虽然其实可以巧妙构筑流程减少这一次更新
+					//$db->array_update("{$tablepre}players", $sdata, " pid = '$spid'");//先更为敬，虽然其实可以巧妙构筑流程减少这一次更新
 					$splsinfo = $plsinfo[$sdata['pls']];
 					$cht = $sanmachat['move']; shuffle($cht); $cht = $cht[0]; $cht = str_replace('[pls]',$splsinfo,$cht);
 					$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【SANMA_TK】','','{$cht}')");
 				}
 				if($cmbtflg){
-					if(is_array($sdata['achievement'])){$sdata['achievement'] = json_encode($sdata['achievement']);}
+					//if(is_array($sdata['achievement'])){$sdata['achievement'] = json_encode($sdata['achievement']);}
 					$aidata = $sdata;
 					//echo '静流开始对你实施追击。';
 					$sanmams = $name;
@@ -259,9 +265,11 @@ function aievent($rate){
 					$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【SANMA_TK】','','{$cht}')");
 				}
 			}
-			if($updflag){//前面所有需要更新的部分一并更新
-				if(is_array($sdata['achievement'])){$sdata['achievement'] = json_encode($sdata['achievement']);}
-				$db->array_update("{$tablepre}players", $sdata, " pid = '$spid'");
+			if($updflag)
+			{
+				//if(is_array($sdata['achievement'])){$sdata['achievement'] = json_encode($sdata['achievement']);}
+				//$db->array_update("{$tablepre}players", $sdata, " pid = '$spid'");
+				player_save($sdata);
 			}	
 		}
 	}

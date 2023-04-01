@@ -58,9 +58,10 @@ function fetch_achievement_rev($which,$who)
 	if(!empty($ach)) 
 	{
 		$ach = print_achievement_rev($ach);
+		if(empty($ach[$which]['v'])) $ach[$which]['v'] = 0;
 		// 保存的成就进度 >= 9999999时 返回9999999 这是为了兼容旧版成就
-		if(isset($ach[$which]['v']) && !is_array($ach[$which]['v'])) $value = $ach[$which]['v'] >= 99999999 ? 99999999 : $ach[$which]['v'];
-		if(is_array($ach[$which]['v'])) $value = $ach[$which]['v'];
+		$value = $ach[$which]['v'];
+		if(!is_array($value)) $value = min(99999999,$value);
 	}
 	//echo "成就值检索阶段： 成就{$which} 的值 = {$value}<br>";
 	return $value;

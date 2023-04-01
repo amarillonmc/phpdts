@@ -5,7 +5,7 @@
 	}
 	//include_once GAME_ROOT.'./include/game/dice.func.php';
 	include_once GAME_ROOT.'./include/game/attr.func.php';
-	include_once GAME_ROOT.'./include/game/combat.func.php';
+	//include_once GAME_ROOT.'./include/game/combat.func.php';
 	include_once GAME_ROOT.'./include/game/titles.func.php';
 	include_once GAME_ROOT.'./include/game/revcombat.calc.php';
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
@@ -1434,6 +1434,84 @@
 		{
 			return;
 		}
+	}
+
+	function checkdmg($p1, $p2, $d) {
+		if ($d < 0) {
+			$words = "{$p1}为{$p2}回复了<span class=\"lime\">".abs($d)."</span>点生命……这是咋回事呢？";
+		} elseif (($d >= 100) && ($d < 150)) {
+			$words = "{$p1}对{$p2}施加了一定程度的伤害。（100-150）";
+		} elseif (($d >= 150) && ($d < 200)) {
+			$words = "{$p1}拿了什么神兵？{$p2}所受的损伤已经不可忽略了。（150-200）";
+		} elseif (($d >= 200) && ($d < 250)) {
+			$words = "{$p1}简直不是人！{$p2}只能狼狈招架。（200-250）";
+		} elseif (($d >= 250) && ($d < 300)) {
+			$words = "{$p1}发出会心一击！{$p2}瞬间损失了大量生命！（250-300）";
+		} elseif (($d >= 300) && ($d < 400)) {
+			$words = "{$p1}使出浑身解数奋力一击！{$p2}想必凶多吉少！（300-400）";
+		} elseif (($d >= 400) && ($d < 500)) {
+			$words = "{$p1}使出武器中内藏的力量！可怜的{$p2}已经承受不住凶残的攻击了！（400-500）";
+		} elseif (($d >= 500) && ($d < 600)) {
+			$words = "{$p1}眼色一变使出绝招！{$p2}无法抵挡，只能任人宰割！（500-600）";
+		} elseif (($d >= 600) && ($d < 750)) {
+			$words = "{$p1}手中的武器闪耀出七彩光芒！{$p2}的身躯几乎融化在光芒中！（600-750）";
+		} elseif (($d >= 750) && ($d < 1000)) {
+			$words = "{$p1}受到天神的加护，打出惊天动地的一击！{$p2}此刻已不成人形！（750-1000）";
+		} elseif (($d >= 1000) && ($d < 5000)) {
+			$words = "{$p1}燃烧自己的生命得到了不可思议的力量！{$p2}，你还活着吗？（1000-5000）";
+		} elseif (($d >= 5000) && ($d < 10000)) {
+			$words = "{$p1}超越自己的极限爆发出了震天动地的力量！受此神力摧残的{$p2}化作了一颗流星！（5000-10000）";
+		} elseif (($d >= 10000) && ($d < 50000)) {
+			$words = "{$p1}运转百万匹周天，吐气扬声，一道霸气的光束直逼{$p2}，后者的身躯瞬间被力量的洪流所吞没！（10000-50000）";
+		} elseif (($d >= 50000) && ($d < 200000)) {
+			$words = "{$p1}已然超越了人类的极限！【{$d}】点的伤害——疾风怒涛般的攻击令大地崩塌，而{$p2}几乎化为齑粉！";
+		}	elseif (($d >= 200000) && ($d < 500000)) {
+			$words = "鬼哭神嚎！风暴既逝，{$p1}仍然屹立在战场上，而受到了【{$d}】点伤害的{$p2}想必已化为宇宙的尘埃了！";
+		} elseif ( $d >= 500000) {
+			$words = "残虐的攻击已经无法用言语形容！将{$p2}击飞出【{$d}】点伤害的英雄——{$p1}！让我们记住他的名字吧！";
+		} else {
+			$words = '';
+		}
+		if ($words) {
+			addnews ( 0, 'damage', $words );
+		}
+		return;
+	}
+
+	function addnoise($wp_kind, $wsk, $ntime, $npls, $nid1, $nid2, $nmode) {
+	
+		//在隐藏地图内不会传出声音信息
+		global $plsinfo;
+		if(!array_key_exists($npls,$plsinfo)) return;
+		
+		if ((($wp_kind == 'G') && (strpos ( $wsk, 'S' ) === false)) || ($wp_kind == 'F')) {
+			global $noisetime, $noisepls, $noiseid, $noiseid2, $noisemode;
+			$noisetime = $ntime;
+			$noisepls = $npls;
+			$noiseid = $nid1;
+			$noiseid2 = $nid2;
+			$noisemode = $nmode;
+			save_combatinfo ();
+		} elseif (strpos ( $wsk, 'd' ) !== false){
+			global $noisetime, $noisepls, $noiseid, $noiseid2, $noisemode;
+			$noisetime = $ntime;
+			$noisepls = $npls;
+			$noiseid = $nid1;
+			$noiseid2 = $nid2;
+			$noisemode = 'D';
+			save_combatinfo ();
+		}
+		if (strlen($wp_kind)>=3){
+			global $noisetime, $noisepls, $noiseid, $noiseid2, $noisemode,$wep;
+			$noisetime = $ntime;
+			$noisepls = $npls;
+			$noiseid = $nid1;
+			$noiseid2 = $nid2;
+			$noisemode = $wp_kind;
+			save_combatinfo ();
+		}
+		
+		return;
 	}
 
 ?>

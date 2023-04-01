@@ -530,7 +530,7 @@ if($hp > 0){
 		} elseif($mode == 'deathnote') {
 			if($dnname){
 				include_once GAME_ROOT.'./include/game/item2.func.php';
-				deathnote($item,$dnname,$dndeath,$dngender,$dnicon,$name);
+				deathnote($name,$item,$dnname,$dndeath,$dngender,$dnicon);
 			} else {
 				$log .= '嗯，暂时还不想杀人。<br>你合上了■DeathNote■。<br>';
 				$mode = 'command';
