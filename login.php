@@ -129,7 +129,16 @@ if(!$db->num_rows($result)) {
 		gexit($_ERROR['wrong_pw'],__file__,__line__);
 	}
 }
-# 重新登录后将房间号设为0
+# 重新登录后退出当前房间
+if(!empty($userdata['roomid']))
+{
+	$result = $db->query("SELECT groomnums FROM {$gtablepre}game WHERE groomid = {$userdata['roomid']}");
+	if($db->num_rows($result)) 
+	{ 
+		$join_nums = $db->fetch_array($result)[0] - 1;
+		$db->query("UPDATE {$gtablepre}game SET groomnums = {$join_nums} WHERE groomid = {$userdata['roomid']}");
+	}
+}
 $db->query("UPDATE {$gtablepre}users SET ip='$onlineip',roomid=0 WHERE username = '$username'");
 gsetcookie('user',$username);
 gsetcookie('pass',$password);

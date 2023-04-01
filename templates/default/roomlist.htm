@@ -1,4 +1,4 @@
-<span class="evergreen">当前房间列表：</span><br>
+<span class="evergreen">当前房间列表：<br>（房间状态更新可能存在延迟，如果发现房间状态不对请刷新几次）</span><br>
 <div style="height:5px;">&nbsp;</div>
 <form method="post" name="roomact" onsubmit="return false;" >
 <input type="hidden" name="roomact" id="roomact" value="">
@@ -14,7 +14,7 @@
 			<!--<td class="b1" width="120px">运行时间</td>-->
 			<td class="b1" width="80px">操作</td>
 		</tr>
-		<!--{loop range(1,3) $rkey}-->
+		<!--{loop range(1,$max_rooms) $rkey}-->
 		<tr>
 			<td class="b3" width="60px" height="30px">
 				$rkey
