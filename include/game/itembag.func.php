@@ -320,7 +320,7 @@ function replace_itembag(&$keep){
 			}else{
 				$i = $r_flag;
 				global ${'itm'.$i},${'itmk'.$i},${'itme'.$i},${'itms'.$i},${'itmsk'.$i};
-				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk ,pls) VALUES ('${'itm'.$i}', '${'itmk'.$i}', '${'itme'.$i}', '${'itms'.$i}', '${'itmsk'.$i}', '$pls')");
+				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk ,pls) VALUES ({${'itm'.$i}}, {${'itmk'.$i}}, {${'itme'.$i}}, {${'itms'.$i}}, {${'itmsk'.$i}}, '$pls')");
 				${'itm'.$i} = $itm0;
 				${'itmk'.$i} = $itmk0;
 				${'itme'.$i} = $itme0;

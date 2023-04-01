@@ -285,11 +285,11 @@ function load_gameinfo() {
 	global $hdamage,$hplayer,$noisetime,$noisepls,$noiseid,$noiseid2,$noisemode;
 	$result = $db->query("SELECT * FROM {$tablepre}game");
 	$gameinfo = $db->fetch_array($result);
-	extract($gameinfo);
+	if(!empty($gameinfo)) extract($gameinfo);
 	$arealist = explode(',',$gameinfo['arealist']);
 	$gamevars = json_decode($gamevars,true);
 	$noisevars = json_decode($noisevars,true);
-	extract($noisevars);
+	if(!empty($noisevars)) extract($noisevars);
 	if(isset($gamevars['sanmaact']) && isset($gamevars['sanmadead'])) unset($gamevars['sanmaact']);
 	/*$gamenum = $gameinfo['gamenum'];
 	$gamestate = $gameinfo['gamestate'];

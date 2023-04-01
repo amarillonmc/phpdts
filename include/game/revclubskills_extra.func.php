@@ -172,7 +172,7 @@
 				$gamevars['wth18pid'] = $pid;
 				save_gameinfo();
 				addnews($now, 'wthchange', $name, $weather, '自己积攒的善德');
-				include_once GAME_ROOT.'./include/game/combat.func.php';
+				include_once GAME_ROOT.'./include/game/revcombat.func.php';
 				$sn = 'song';
 				addnoise($sn,'__',$now,$pls,0,0,$sn);
 				$clbpara['event_bgmbook'] = Array('wth18');

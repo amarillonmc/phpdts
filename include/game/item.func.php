@@ -126,7 +126,7 @@ function itemuse($itmn,&$data=NULL) {
 			$itme = $itmet;
 			$itms = $itmst;
 			$itmsk = $itmskt;
-			$log .= "卸下了<span class=\"red\">$itm</span>，装备了<span class=\"yellow\">${$eqp}</span>。<br>";
+			$log .= "卸下了<span class=\"red\">$itm</span>，装备了<span class=\"yellow\">{${$eqp}}</span>。<br>";
 		}
 	} elseif (strpos ( $itmk, 'HS' ) === 0) {
 		//global $sp, $msp,$club;
@@ -852,13 +852,13 @@ function itemuse($itmn,&$data=NULL) {
 			//global ${'itm' . $i}, ${'itmk' . $i}, ${'itme' . $i}, ${'itms' . $i};
 			if (${'itmk' . $i} == 'E'.$bat_kind && ${'itms' . $i}) {
 				if(${'itme' . $i} >= $elec_cap){
-					$log .= "包裹{$i}里的<span class=\"yellow\">${'itm'.$i}</span>已经充满电了。<br>";
+					$log .= "包裹{$i}里的<span class=\"yellow\">{${'itm'.$i}}</span>已经充满电了。<br>";
 				}else{
 					${'itme' . $i} += $itme;
 					if(${'itme' . $i} > $elec_cap){${'itme' . $i} = $elec_cap;}
 					$itms --;
 					$flag = true;
-					$log .= "为包裹{$i}里的<span class=\"yellow\">${'itm'.$i}</span>充了电。";
+					$log .= "为包裹{$i}里的<span class=\"yellow\">{${'itm'.$i}}</span>充了电。";
 					break;
 				}				
 			}
@@ -1040,7 +1040,7 @@ function itemuse($itmn,&$data=NULL) {
 					${'itme' . $i} += $itme;
 					$itms --;
 					$flag = true;
-					$log .= "为<span class=\"yellow\">${'itm'.$i}</span>充了电。";
+					$log .= "为<span class=\"yellow\">{${'itm'.$i}}</span>充了电。";
 					break;
 				}
 			}
@@ -1200,7 +1200,7 @@ function itemuse($itmn,&$data=NULL) {
 					${'itme' . $i} += $itme;
 					$itms --;
 					$flag = true;
-					$log .= "为<span class=\"yellow\">${'itm'.$i}</span>充了电。";
+					$log .= "为<span class=\"yellow\">{${'itm'.$i}}</span>充了电。";
 					break;
 				}
 			}
@@ -2134,7 +2134,7 @@ function itemuse($itmn,&$data=NULL) {
 				//global ${'itmsk' . $i};
 				if ((strpos ( ${'itmsk' . $i}, 'Z' ) !== false) && (strpos ( ${'itm' . $i}, '宝石』' ) === false)) {
 					//global ${'itm' . $i}, ${'itme' . $i}, ${'itms' . $i};
-					$cmd .= '<input type="radio" name="command" id="itm' . $i . '" value="itm' . $i . '"><a onclick=sl("itm' . $i . '"); href="javascript:void(0);" >' . "${'itm'.$i}/${'itme'.$i}/${'itms'.$i}" . '</a><br>';
+					$cmd .= '<input type="radio" name="command" id="itm' . $i . '" value="itm' . $i . '"><a onclick=sl("itm' . $i . '"); href="javascript:void(0);" >' . "{${'itm'.$i}}/{${'itme'.$i}}/{${'itms'.$i}}" . '</a><br>';
 				  $flag = true;
 				}
 			}
@@ -2154,14 +2154,14 @@ function itemuse($itmn,&$data=NULL) {
 					
 					if ( strpos ( ${'itm' . $i} , $fruit ) !== false && strpos ( ${'itm' . $i} , '皮' ) === false && strpos ( ${'itm' . $i} , '■' ) === false && (strpos ( ${'itmk' . $i} , 'H' ) === 0 || strpos ( ${'itmk' . $i} , 'P' ) === 0 )) {
 						if($wk >= 120){
-							$log .= "练过刀就是好啊。你娴熟地削着果皮。<br><span class=\"yellow\">${'itm'.$i}</span>变成了<span class=\"yellow\">★残骸★</span>！<br>咦为什么会出来这种东西？算了还是不要吐槽了。<br>";
+							$log .= "练过刀就是好啊。你娴熟地削着果皮。<br><span class=\"yellow\">{${'itm'.$i}}</span>变成了<span class=\"yellow\">★残骸★</span>！<br>咦为什么会出来这种东西？算了还是不要吐槽了。<br>";
 							${'itm' . $i} = '★残骸★';
 							${'itme' . $i} *= rand(2,4);
 							${'itms' . $i} *= rand(3,5);
 							$flag = true;
 							$wk++;
 						}else{
-							$log .= "想削皮吃<span class=\"yellow\">${'itm'.$i}</span>，没想到削完发现只剩下一堆果皮……<br>手太笨拙了啊。<br>";
+							$log .= "想削皮吃<span class=\"yellow\">{${'itm'.$i}}</span>，没想到削完发现只剩下一堆果皮……<br>手太笨拙了啊。<br>";
 							${'itm' . $i} = str_replace($fruit, $fruit.'皮',${'itm' . $i} );
 							${'itmk' . $i} = 'TN';
 							${'itms' . $i} *= rand(2,4);

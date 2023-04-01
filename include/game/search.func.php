@@ -368,7 +368,7 @@ function search(&$data=NULL){
 
 }
 
-function move_search_events(&$data=NULL,$act)
+function move_search_events(&$data,$act)
 {
 	global $log,$inf_move_hp,$inf_move_sp,$infwords,$weather,$gamevars,$now,$elements_info;
 

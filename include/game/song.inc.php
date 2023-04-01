@@ -16,7 +16,7 @@
 
 	//$log.=$sn.'_'.$now.'_'.$pls.'_'.$name."<br>";
 	$r=$arte;
-	include_once GAME_ROOT.'./include/game/combat.func.php';
+	include_once GAME_ROOT.'./include/game/revcombat.func.php';
 	
 		if ($ss>=$r){
 		$ss-=$r;

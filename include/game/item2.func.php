@@ -47,8 +47,8 @@ function poison($itmn = 0) {
 	elseif($art == '毒物说明书'){$itmk = substr_replace($itmk,'1',2,1);};
 	if($art == '妖精的羽翼') {$itmk = substr_replace($itmk,'H',0,1);$log .= "一种神秘的力量净化了毒药，你的毒药变成了解毒剂！";}
 	$itmsk = $pid;
-	if($art == '妖精的羽翼') {$log .= "使用了 <span class=\"red\">$poison</span> ，<span class=\"yellow\">${'itm'.$itmn}</span> 被净化了！<br>";}
-	else {$log .= "使用了 <span class=\"red\">$poison</span> ，<span class=\"yellow\">${'itm'.$itmn}</span> 被下毒了！<br>";}
+	if($art == '妖精的羽翼') {$log .= "使用了 <span class=\"red\">$poison</span> ，<span class=\"yellow\">{${'itm'.$itmn}}</span> 被净化了！<br>";}
+	else {$log .= "使用了 <span class=\"red\">$poison</span> ，<span class=\"yellow\">{${'itm'.$itmn}}</span> 被下毒了！<br>";}
 	$poisons--;
 	if($poisons <= 0){
 		$log .= "<span class=\"red\">$poison</span> 用光了。<br>";
@@ -253,7 +253,7 @@ function newradar($m = 0){
 					foreach ($npctplist as $j){
 						//${'npc'.$j.'num'}[$i] = "<span class=\"yellow b\">${'num'.$j}</span>";
 						if(${'num'.$j}){
-						${'npc'.$j.'num'}[$i] ="<span class=\"yellow b\">${'num'.$j}</span>";
+						${'npc'.$j.'num'}[$i] ="<span class=\"yellow b\">{${'num'.$j}}</span>";
 						} else {
 						${'npc'.$j.'num'}[$i] ='<span class="yellow b">-</span>';
 						}
@@ -381,7 +381,7 @@ function divining2($u) {
 	return "$uphp,$upatt,$updef";
 }
 
-function deathnote($itmd=0,$dnname='',$dndeath='',$dngender='m',$dnicon=1,$sfn) {
+function deathnote($sfn,$itmd=0,$dnname='',$dndeath='',$dngender='m',$dnicon=1) {
 	global $db,$tablepre,$log,$killnum,$mode,$achievement,$pdata;
 	global ${'itm'.$itmd},${'itms'.$itmd},${'itmk'.$itmd},${'itme'.$itmd},${'itmsk'.$itmd};
 	$dn = & ${'itm'.$itmd};
