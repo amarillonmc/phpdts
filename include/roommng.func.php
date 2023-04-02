@@ -49,11 +49,19 @@ function roommng_verify_db_game_structure()
 function roommng_create_new_room(&$udata)
 {
 	global $db,$gtablepre,$now;
-	global $startmin,$max_rooms;
+	global $startmin,$max_rooms,$ip_max_rooms;
 
 	if(!empty($udata['roomid']))
 	{
 		echo "你已经在房间里了。要创建新房间必须退出当前房间。<br>";
+		return;
+	}
+
+	# 根据IP判断是否可新建房间
+	$ipresult = $db->query("SELECT roomid FROM {$gtablepre}users WHERE roomid>0 AND ip='{$udata['ip']}'");
+	if($db->num_rows($ipresult) >= $ip_max_rooms)
+	{
+		echo "相同IP最多只能创建{$ip_max_rooms}个房间。请先解散其他房间。<br>";
 		return;
 	}
 
