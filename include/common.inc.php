@@ -10,10 +10,6 @@ if(version_compare(PHP_VERSION, '4.3.0', '<')) {
 	exit('PHP version must >= 4.3.0!');
 }
 require GAME_ROOT.'./include/global.func.php';
-require GAME_ROOT.'./include/init.func.php';
-require GAME_ROOT.'./include/resources.func.php';
-require GAME_ROOT.'./include/game/revclubskills.func.php';
-require GAME_ROOT.'./include/game/dice.func.php';
 error_reporting(E_ALL);
 set_error_handler('gameerrorhandler');
 $magic_quotes_gpc = false;
@@ -46,6 +42,11 @@ $db->connect($dbhost, $dbuser, $dbpw, $dbname, $pconnect);
 unset($dbhost, $dbuser, $dbpw, $dbname, $pconnect);
 
 require GAME_ROOT.'./gamedata/system.php';
+require GAME_ROOT.'./include/init.func.php';
+require GAME_ROOT.'./include/resources.func.php';
+require GAME_ROOT.'./include/roommng.func.php';
+require GAME_ROOT.'./include/game/revclubskills.func.php';
+require GAME_ROOT.'./include/game/dice.func.php';
 require config('resources',$gamecfg);
 require config('gamecfg',$gamecfg);
 require config('combatcfg',$gamecfg);
@@ -55,25 +56,19 @@ require config('audio',$gamecfg);
 require config('tooltip',$gamecfg);
 
 $gtablepre = $tablepre;
+# 检查game表是否需要补缺
+roommng_verify_db_game_structure();
 
 ob_start();
 
-$cuser = & ${$tablepre.'user'};
-$cpass = & ${$tablepre.'pass'};
+$cuser = & ${$gtablepre.'user'};
+$cpass = & ${$gtablepre.'pass'};
 
 $roomlist = Array();
 $result = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid>0");
 while($roominfo = $db->fetch_array($result))
 {
-	# 房间内没有人时自动关闭房间
-	if(!$roominfo['groomnums'])
-	{
-		$db->query("DELETE FROM {$gtablepre}game WHERE groomid = {$roominfo['groomid']}");
-	}
-	else
-	{
-		$roomlist[$roominfo['groomid']] = $roominfo;
-	}
+	$roomlist[$roominfo['groomid']] = $roominfo;
 }
 
 if($cuser)
@@ -81,7 +76,6 @@ if($cuser)
 	$tr = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$cuser'");
 	$tp = $db->fetch_array($tr);
 }
-
 $rid = isset($tp['roomid']) ? $tp['roomid'] : 0;
 $groomid = $rid;
 
@@ -91,7 +85,7 @@ if(!empty($rid))
 	if(!$db->num_rows($result))
 	{
 		$gr = $db->query("SELECT gamenum FROM {$gtablepre}game WHERE groomid=0");
-		$gnums = $db->fetch_array($gr)[0] + $rid;
+		$gnums = $db->result($result, 0) + $rid;
 		$starttime = $now + $startmin*5;
 		$db->query("INSERT INTO {$gtablepre}game (gamenum,groomid,groomnums,gamestate,starttime) VALUES ('$gnums','$rid','1','0','$starttime')");
 	}

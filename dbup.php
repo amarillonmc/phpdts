@@ -192,18 +192,6 @@ if(!$db->num_rows($result))
 	$db->query("ALTER TABLE {$gtablepre}game ADD noisevars varchar(1000) NOT NULL DEFAULT '' AFTER gamevars");
 	echo "向game表中添加了字段noisevars<br>";
 }
-$result = $db->query("DESCRIBE {$gtablepre}game groomid");
-if(!$db->num_rows($result))
-{
-	$db->query("ALTER TABLE {$gtablepre}game ADD groomid tinyint(3) unsigned NOT NULL DEFAULT '0' '' AFTER gamestate");
-	echo "向game表中添加了字段groomid<br>";
-}
-$result = $db->query("DESCRIBE {$gtablepre}game groomnums");
-if(!$db->num_rows($result))
-{
-	$db->query("ALTER TABLE {$gtablepre}game ADD groomnums tinyint(3) unsigned NOT NULL DEFAULT '0' AFTER groomid");
-	echo "向game表中添加了字段groomnums<br>";
-}
 
 echo "Update Fish.<br>";
 ?>

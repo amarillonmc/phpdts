@@ -55,10 +55,18 @@ if(!empty($roomact))
 		if(empty($udata['roomid'])) gexit('你没有在任何房间里！', __file__, __line__);
 		$result = $db->query("SELECT groomnums FROM {$gtablepre}game WHERE groomid = {$udata['roomid']}");
 		if($db->num_rows($result)) 
-		{ 
+		{
 			$join_nums = $db->result($result, 0);
 			$join_nums--;
-			$db->query("UPDATE {$gtablepre}game SET groomnums = {$join_nums} WHERE groomid = {$udata['roomid']}");
+			# 退出房间时，检查是关闭房间还是减少房间内人数
+			if($join_nums > 0)
+			{
+				$db->query("UPDATE {$gtablepre}game SET groomnums = {$join_nums} WHERE groomid = {$udata['roomid']}");
+			}
+			else 
+			{
+				roommng_close_room($udata['roomid']);
+			}
 		}
 		$db->query("UPDATE {$gtablepre}users SET roomid = 0 WHERE username='$cuser'");
 		unset($roomact);

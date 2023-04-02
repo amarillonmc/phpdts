@@ -1,9 +1,8 @@
-<span class="evergreen">当前房间列表：<br>（房间状态更新可能存在延迟，如果发现房间状态不对请刷新几次）</span><br>
+<dialog id="roomlist" style="max-width: 90%;max-height: 80%; text-align: left;">
+<span class="evergreen">当前房间列表：<br><span class="grey">房间状态更新可能存在延迟<br>如果发现房间状态不对请刷新几次</span></span><br>
 <div style="height:5px;">&nbsp;</div>
 <form method="post" name="roomact" onsubmit="return false;" >
 <input type="hidden" name="roomact" id="roomact" value="">
-<div class="scroll-pane-roomlist" style="width:520px;max-height:300px;"> 
-
 	<table CellSpacing=0 CellPadding=0 class="infotable">
 		<tr>
 			<td class="b1" width="60px">编号</td>
@@ -52,6 +51,6 @@
 		</tr>
 		<!--{/loop}-->
 	</table>
-</div>
 </form>
-<div style="height:5px;">&nbsp;</div>
+<img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('roomlist'))">
+</dialog>
