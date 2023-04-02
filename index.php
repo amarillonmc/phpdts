@@ -39,7 +39,8 @@ if(!empty($roomact))
 			$result = $db->query("SELECT groomnums FROM {$gtablepre}game WHERE groomid = {$join_id}");
 			if($db->num_rows($result)) 
 			{ 
-				$join_nums = $db->fetch_array($result)[0] + 1;
+				$join_nums = $db->result($result, 0);
+				$join_nums++;
 				$db->query("UPDATE {$gtablepre}game SET groomnums = {$join_nums} WHERE groomid = {$join_id}");
 			}
 		}
@@ -47,19 +48,20 @@ if(!empty($roomact))
 		{
 			gexit('要加入的房间不存在！', __file__, __line__);
 		}
+		unset($roomact);
 	}
-	if($roomact == 'exit')
+	elseif($roomact == 'exit')
 	{
 		if(empty($udata['roomid'])) gexit('你没有在任何房间里！', __file__, __line__);
-
 		$result = $db->query("SELECT groomnums FROM {$gtablepre}game WHERE groomid = {$udata['roomid']}");
 		if($db->num_rows($result)) 
 		{ 
-			$join_nums = $db->fetch_array($result)[0] - 1;
+			$join_nums = $db->result($result, 0);
+			$join_nums--;
 			$db->query("UPDATE {$gtablepre}game SET groomnums = {$join_nums} WHERE groomid = {$udata['roomid']}");
 		}
-
 		$db->query("UPDATE {$gtablepre}users SET roomid = 0 WHERE username='$cuser'");
+		unset($roomact);
 	}
 }
 else 
