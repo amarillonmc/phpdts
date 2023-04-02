@@ -65,7 +65,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，增加禁区：";
 			$alist = explode('_',$a);
 			foreach($alist as $ar) {
-				$newsinfo .= "$plsinfo[$ar] ";
+				$newsinfo .= "{$plsinfo[$ar]} ";
 			}
 			$newsinfo .= "<span class=\"yellow\">【天气：{$wthinfo[$b]}】</span><br>\n";
 		} elseif($news == 'hack') {

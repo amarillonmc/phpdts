@@ -17,13 +17,13 @@ function rs_game($mode = 0) {
 		$db->queries($sql);
 		
 		//重设游戏进行状况的时间
-		if($fp = fopen("{$dir}newsinfo.php", 'wb')) {
+		/*if($fp = fopen("{$dir}newsinfo.php", 'wb')) {
 			global $checkstr;
 			fwrite($fp, $checkstr);
 			fclose($fp);
 		} else {
 			gexit('Can not write to cache files, please check directory ./gamedata/ and ./gamedata/cache/ .', __file__, __line__);
-		}
+		}*/
 		
 		//清空战斗信息
 		global $hdamage,$hplayer,$noisetime,$noisepls,$noiseid,$noiseid2,$noisemode,$starttime,$gamevars;
@@ -272,6 +272,7 @@ function rs_game($mode = 0) {
 		$qry = '';
 		foreach($shoplist as $lst){
 			if(!empty($lst) && strpos($lst,',')!==false){
+				if(empty($lst[8])) $lst[8] = '';
 				list($kind,$num,$price,$area,$item,$itmk,$itme,$itms,$itmsk)=explode(',',$lst);
 				if($kind != 0){
 					$qry .= "('$kind','$num','$price','$area','$item','$itmk','$itme','$itms','$itmsk'),";
