@@ -130,7 +130,7 @@ if(!$db->num_rows($result)) {
 	}
 }
 # 重新登录后退出当前房间
-if(!empty($userdata['roomid']))
+if($login_exit_room && !empty($userdata['roomid']))
 {
 	$result = $db->query("SELECT groomnums FROM {$gtablepre}game WHERE groomid = {$userdata['roomid']}");
 	if($db->num_rows($result)) 
@@ -138,8 +138,9 @@ if(!empty($userdata['roomid']))
 		$join_nums = $db->fetch_array($result)[0] - 1;
 		$db->query("UPDATE {$gtablepre}game SET groomnums = {$join_nums} WHERE groomid = {$userdata['roomid']}");
 	}
+	$db->query("UPDATE {$gtablepre}users SET roomid=0 WHERE username = '$username'");
 }
-$db->query("UPDATE {$gtablepre}users SET ip='$onlineip',roomid=0 WHERE username = '$username'");
+$db->query("UPDATE {$gtablepre}users SET ip='$onlineip' WHERE username = '$username'");
 gsetcookie('user',$username);
 gsetcookie('pass',$password);
 //}
