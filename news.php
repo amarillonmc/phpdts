@@ -9,6 +9,7 @@ require './include/game.func.php';
 require_once GAME_ROOT.'./include/news.func.php';
 include_once GAME_ROOT.'./include/system.func.php';
 
+/*
 $newsfile = GAME_ROOT.'./gamedata/newsinfo.php';
 $newshtm = GAME_ROOT.TPLDIR.'/newsinfo.htm';
 $lnewshtm = GAME_ROOT.TPLDIR.'/lastnews.htm';
@@ -16,12 +17,14 @@ $lnewshtm = GAME_ROOT.TPLDIR.'/lastnews.htm';
 if(filemtime($newsfile) > filemtime($lnewshtm)) {
 	$lnewsinfo = nparse_news(0,$newslimit);
 	writeover($lnewshtm,$lnewsinfo);
-}
+}*/
+
+$last_newsinfo = nparse_news(0,50);
+
 if(!isset($newsmode)){$newsmode = '';}
 
 if($newsmode == 'last') {
-	
-	include template('lastnews');
+	echo $last_newsinfo;
 	$newsdata['innerHTML']['newsinfo'] = ob_get_contents();
 	if(isset($error)){$newsdata['innerHTML']['error'] = $error;}
 	ob_clean();
@@ -32,11 +35,12 @@ if($newsmode == 'last') {
 	ob_end_flush();
 } elseif($newsmode == 'all') {
 	
-	if(filemtime($newsfile) > filemtime($newshtm)) {
+	/*if(filemtime($newsfile) > filemtime($newshtm)) {
 		$newsinfo = nparse_news(0,65535);
 		writeover($newshtm,$newsinfo);
-	}
-	include template('newsinfo');
+	}*/
+	$newsinfo = nparse_news(0,65535);
+	echo $newsinfo;
 	$newsdata['innerHTML']['newsinfo'] = ob_get_contents();
 	if(isset($error)){$newsdata['innerHTML']['error'] = $error;}
 	ob_clean();

@@ -206,12 +206,11 @@ function compatible_json_encode($data){	//自动选择使用内置函数或者�
 function addnews($t = 0, $n = '',$a='',$b='',$c = '', $d = '', $e = '') {
 	global $now,$db,$tablepre,$gtablepre;
 	$t = $t ? $t : $now;
-	$newsfile = GAME_ROOT.'./gamedata/newsinfo.php';
-	touch($newsfile);
+	/*$newsfile = GAME_ROOT.'./gamedata/newsinfo.php';
+	touch($newsfile);*/
 	if(is_array($a)){
 		$a=implode('_',$a);
 	}
-
 	if(strpos($n,'death11') === 0  || strpos($n,'death32') === 0) {
 		$result = $db->query("SELECT lastword FROM {$gtablepre}users WHERE username = '$a'");
 		$e = $lastword = $db->result($result, 0);
