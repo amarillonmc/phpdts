@@ -22,24 +22,30 @@ if($gamestate >= 20){
 	adminlog('infomng');
 	
 	$cmd_info = "状态更新：激活人数 {$validnum},生存人数 {$alivenum},死亡人数 {$deathnum}<br>";
-	$cmd_info .= "已重置移动地点缓存数据";
+	$cmd_info .= "已重置移动地点缓存数据<br>";
 }else{
-	$cmd_info = "当前游戏未开始！";
+	$cmd_info = "当前游戏未开始！<br>";
 }
 
-//$db->query("ALTER TABLE {$gtablepre}winners ADD itmsk6 char(5) not null default '' AFTER itmsk5");
-//$db->query("ALTER TABLE {$gtablepre}winners ADD itms6 char(5) not null default '0' AFTER itmsk5");
-//$db->query("ALTER TABLE {$gtablepre}winners ADD itme6 mediumint unsigned NOT NULL default '0' AFTER itmsk5");
-//$db->query("ALTER TABLE {$gtablepre}winners ADD itmk6 char(5) not null default '' AFTER itmsk5");
-//$db->query("ALTER TABLE {$gtablepre}winners ADD itm6 CHAR( 30 ) NOT NULL default '' AFTER itmsk5");
-//$db->query("ALTER TABLE {$gtablepre}winners CHANGE itme0 itme0 mediumint unsigned NOT NULL default '0'");
-//$db->query("ALTER TABLE {$gtablepre}winners CHANGE itme1 itme1 mediumint unsigned NOT NULL default '0'");
-//$db->query("ALTER TABLE {$gtablepre}winners CHANGE itme2 itme2 mediumint unsigned NOT NULL default '0'");
-//$db->query("ALTER TABLE {$gtablepre}winners CHANGE itme3 itme3 mediumint unsigned NOT NULL default '0'");
-//$db->query("ALTER TABLE {$gtablepre}winners CHANGE itme4 itme4 mediumint unsigned NOT NULL default '0'");
-//$db->query("ALTER TABLE {$gtablepre}winners CHANGE itme5 itme5 mediumint unsigned NOT NULL default '0'");
-//$db->query("ALTER TABLE {$gtablepre}users ADD validgames smallint unsigned NOT NULL default '0' AFTER credits");
-//$db->query("ALTER TABLE {$gtablepre}users ADD wingames smallint unsigned NOT NULL default '0' AFTER validgames");
+# 暂时把房间人数自检放在这里
+if(!empty($roomlist))
+{
+	foreach($roomlist as $rkey => $rinfo)
+	{
+		$result = $db->query("SELECT uid FROM {$gtablepre}users WHERE roomid = {$rkey}");
+		if($db->num_rows($result)) 
+		{
+			$join_nums = $db->num_rows($result);
+			$db->query("UPDATE {$gtablepre}game SET groomnums = {$join_nums} WHERE groomid = {$rkey}");
+			$cmd_info .= "房间 {$rkey} 状态更新：房间内人数 {$join_nums}<br>";
+		}
+		else 
+		{
+			$db->query("DELETE FROM {$gtablepre}game WHERE groomid = {$rkey}");
+			$cmd_info .= "房间 {$rkey} 无人参与：已关闭<br>";
+		}
+	}
+}
 
 include template('admin_menu');
 
