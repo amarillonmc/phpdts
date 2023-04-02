@@ -76,7 +76,6 @@ table.dialogue {
 }
 
 table.infotable {
-	float: left;
 	margin-top: 10px;
 	position:relative;
 	text-align: center;
@@ -85,7 +84,6 @@ table.infotable {
 }
 table.infotable td,
 table.infotable th {
-	text-align: center;
 	border:1px solid rgba(225, 124, 226, 0.4);
 }
 

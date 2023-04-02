@@ -255,6 +255,8 @@ $lang = array
 	'gamecheck_comment' => '修正游戏人数异常和移动下拉框消失的功能',
 	'templates_clean' => '清空模板缓存',
 	'templates_clean_comment' => '清空已生成的模板缓存文件',
+	'roommng' => '临时性房间管理',
+	'roommng_comment' => '强制关闭指定编号的房间<br>不能关闭0号大房间（临时功能）',
 	
 	'pcmng' => '玩家数据管理',
 	'pcmng_comment' => '修改当前局玩家的各数值，不影响帐号',

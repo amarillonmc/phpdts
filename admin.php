@@ -19,6 +19,7 @@ $admin_cmd_list = Array(
 	'pcmng' => 5,
 	'npcmng' => 5,
 	'gameinfomng' => 5,
+	'roommng' => 5,
 	'antiAFKmng' => 4,
 	'templates_clean' => 4,
 );

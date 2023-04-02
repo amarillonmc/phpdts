@@ -272,8 +272,9 @@ function rs_game($mode = 0) {
 		$qry = '';
 		foreach($shoplist as $lst){
 			if(!empty($lst) && strpos($lst,',')!==false){
+				$lst = explode(',',$lst);
 				if(empty($lst[8])) $lst[8] = '';
-				list($kind,$num,$price,$area,$item,$itmk,$itme,$itms,$itmsk)=explode(',',$lst);
+				list($kind,$num,$price,$area,$item,$itmk,$itme,$itms,$itmsk)=$lst;
 				if($kind != 0){
 					$qry .= "('$kind','$num','$price','$area','$item','$itmk','$itme','$itms','$itmsk'),";
 				}
