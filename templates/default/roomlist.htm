@@ -1,56 +1,63 @@
 <dialog id="roomlist" style="max-width: 90%;max-height: 80%; text-align: left;">
-<span class="evergreen">当前房间列表：<br><span class="grey">房间状态更新可能存在延迟<br>如果发现房间状态不对请刷新几次</span></span><br>
-<div style="height:5px;">&nbsp;</div>
 <form method="post" name="roomact" onsubmit="return false;" >
 <input type="hidden" name="roomact" id="roomact" value="">
-	<table CellSpacing=0 CellPadding=0 class="infotable">
-		<tr>
-			<td class="b1" width="60px">编号</td>
-			<!--<td class="b1" width="80px">游戏模式</td>-->
-			<td class="b1" width="60px">状态</td>
-			<!--<td class="b1" width="120px">创建者/房主</td>-->
-			<td class="b1" width="60px">人数</td>
-			<!--<td class="b1" width="120px">运行时间</td>-->
-			<td class="b1" width="80px">操作</td>
-		</tr>
-		<!--{loop range(1,$max_rooms) $rkey}-->
-		<tr>
-			<td class="b3" width="60px" height="30px">
-				$rkey
-			</td>
-			<!--<td class="b3" width="80px">游戏模式</td>-->
-			<td class="b3" width="60px">
-				<!--{if !empty($roomlist[$rkey]['gamestate'])}-->
-					$gstate[$roomlist[$rkey]['gamestate']]
-				<!--{else}-->
-					<span class="grey">未开启</span>
-				<!--{/if}-->
-			</td>
-			<!--<td class="b3" width="120px">
-					房主
-			</td>-->
-			<td class="b3" width="60px">
-				<!--{if !empty($roomlist[$rkey]['groomnums'])}-->
-					<span class="yellow">$roomlist[$rkey]['groomnums']</span>
-				<!--{else}-->
-					<span class="grey">-</span>
-				<!--{/if}-->
-			</td>
-			<!--<td class="b3" width="120px">运行时间</td>-->
-			<td class="b3" width="80px">
-				<!--{if !empty($rid)}-->
-					<!--{if $rid == $rkey}-->
-						<input type="button" value="退出房间" onclick="$('roomact').value='exit';postCmd('roomact','index.php');setTimeout(function(){window.location.href='index.php';},300);disabled=true;" >
+
+<!--{eval $now_rooms = !empty($roomlist) ? count($roomlist) : 0;}-->
+	<span class="evergreen">当前房间列表（{$now_rooms}/{$max_rooms}） 
+<!--{if $now_rooms < $max_rooms && !$groomid}-->
+	<input type="button" value="点击创建一个新的房间" onclick="$('roomact').value='create';postCmd('roomact','index.php');setTimeout(function(){window.location.href='index.php';},300);disabled=true;" >
+<!--{/if}-->
+	<br>
+	<div style="height:5px;">&nbsp;</div>
+		<table CellSpacing=0 CellPadding=0 class="infotable">
+			<tr>
+				<td class="b1" width="60px">编号</td>
+				<!--<td class="b1" width="80px">游戏模式</td>-->
+				<td class="b1" width="60px">状态</td>
+				<td class="b1" width="120px">创建者/房主</td>
+				<td class="b1" width="60px">人数</td>
+				<!--<td class="b1" width="120px">运行时间</td>-->
+				<td class="b1" width="80px">操作</td>
+			</tr>
+		<!--{if !empty($now_rooms)}-->
+			<!--{loop $roomlist $rkey $rinfo}-->
+			<tr>
+				<td class="b3" width="60px" height="30px">
+					$rkey
+				</td>
+				<!--<td class="b3" width="80px">游戏模式</td>-->
+				<td class="b3" width="60px">
+					$gstate[$rinfo['gamestate']]
+				</td>
+				<td class="b3" width="120px">
+					$rinfo['groomownid']
+				</td>
+				<td class="b3" width="60px">
+					$rinfo['groomnums']
+				</td>
+				<!--<td class="b3" width="120px">运行时间</td>-->
+				<td class="b3" width="80px">
+					<!--{if !empty($rid)}-->
+						<!--{if $rid == $rkey}-->
+							<span tooltip2="退出房间后，如房间内没有其他玩家，则房间会解散；房主退出房间会将房主权限转移给房间内其他玩家；">
+								<input type="button" value="退出" onclick="$('roomact').value='exit';postCmd('roomact','index.php');setTimeout(function(){window.location.href='index.php';},300);disabled=true;" >
+							</span>
+							<!--{if !empty($rinfo['groomownid']) && $rinfo['groomownid'] == $cuser}-->
+								<span tooltip2="不能解散正在进行游戏且尚有其他玩家存活的房间">
+									<input type="button" value="解散" onclick="$('roomact').value='close';postCmd('roomact','index.php');setTimeout(function(){window.location.href='index.php';},300);disabled=true;" >
+								</span>
+							<!--{/if}-->
+						<!--{else}-->
+							<span class="grey">-</span>
+						<!--{/if}-->
 					<!--{else}-->
-						<span class="grey">-</span>
+						<input type="button" value="加入" onclick="$('roomact').value='join{$rkey}';postCmd('roomact','index.php');setTimeout(function(){window.location.href='index.php';},300);disabled=true;" >
 					<!--{/if}-->
-				<!--{else}-->
-					<input type="button" value="加入房间" onclick="$('roomact').value='join{$rkey}';postCmd('roomact','index.php');setTimeout(function(){window.location.href='index.php';},300);disabled=true;" >
-				<!--{/if}-->
-			</td>
-		</tr>
-		<!--{/loop}-->
-	</table>
+				</td>
+			</tr>
+			<!--{/loop}-->
+		<!--{/if}-->
+		</table>
 </form>
 <img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('roomlist'))">
 </dialog>

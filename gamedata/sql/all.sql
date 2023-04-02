@@ -64,6 +64,7 @@ CREATE TABLE `acbra2_game` (
   `gamestate` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `groomid` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `groomnums` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `groomownid` char(15) NOT NULL default '',
   `starttime` int(10) unsigned NOT NULL DEFAULT '0',
   `winmode` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `winner` char(15) NOT NULL DEFAULT '',
