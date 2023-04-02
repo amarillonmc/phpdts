@@ -164,7 +164,10 @@ $no_self_sponsored = 0;
 $rsgame_bots = 4;
 
 //房间数量上限
-$max_rooms = 3;
+$max_rooms = 15;
+
+//相同ip最多可创建房间数量：
+$ip_max_rooms = 2;
 
 //重登陆时是否自动退出房间（1：自动退出 0：不自动退出）
 $login_exit_room = 0;

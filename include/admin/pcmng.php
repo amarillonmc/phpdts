@@ -74,7 +74,7 @@ if($command == 'kill' || $command == 'live' || $command == 'del') {
 	if($operlist || $operlist2 || $dfaillist || $gfaillist){
 		if($command == 'kill'){
 			$operword = '被杀死';
-			$qryword = "UPDATE {$tablepre}players SET hp='0',state='15',bid='0', ";
+			$qryword = "UPDATE {$tablepre}players SET hp='0',state='15',bid='0' ";
 		}elseif($command == 'live'){
 			$operword = '被复活';
 			$qryword = "UPDATE {$tablepre}players SET hp=mhp,state='0' ";
