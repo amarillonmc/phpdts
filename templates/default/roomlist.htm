@@ -1,11 +1,12 @@
 <dialog id="roomlist" style="max-width: 90%;max-height: 80%; text-align: left;">
+<span class="yellow b"><div id="roomerror" style="padding-bottom: 5px;"></div></span>
 <form method="post" name="roomact" onsubmit="return false;" >
 <input type="hidden" name="roomact" id="roomact" value="">
 
 <!--{eval $now_rooms = !empty($roomlist) ? count($roomlist) : 0;}-->
 	<span class="evergreen">当前房间列表（{$now_rooms}/{$max_rooms}） 
-<!--{if $now_rooms < $max_rooms && !$groomid}-->
-	<input type="button" value="点击创建一个新的房间" onclick="$('roomact').value='create';postCmd('roomact','index.php');setTimeout(function(){window.location.href='index.php';},300);disabled=true;" >
+<!--{if $now_rooms < $max_rooms && !$groomid && (!empty($cuser) && !empty($cpass))}-->
+	<input type="button" value="点击创建一个新的房间" onclick="$('roomact').value='create';postCmd('roomact','index.php');" >
 <!--{/if}-->
 	<br>
 	<div style="height:5px;">&nbsp;</div>
@@ -37,22 +38,26 @@
 				</td>
 				<!--<td class="b3" width="120px">运行时间</td>-->
 				<td class="b3" width="80px">
+				<!--{if !empty($cuser) && !empty($cpass)}-->
 					<!--{if !empty($rid)}-->
 						<!--{if $rid == $rkey}-->
 							<span tooltip2="退出房间后，如房间内没有其他玩家，则房间会解散；房主退出房间会将房主权限转移给房间内其他玩家；">
-								<input type="button" value="退出" onclick="$('roomact').value='exit';postCmd('roomact','index.php');setTimeout(function(){window.location.href='index.php';},300);disabled=true;" >
+								<input type="button" value="退出" onclick="$('roomact').value='exit';postCmd('roomact','index.php');" >
 							</span>
 							<!--{if !empty($rinfo['groomownid']) && $rinfo['groomownid'] == $cuser}-->
 								<span tooltip2="不能解散正在进行游戏且尚有其他玩家存活的房间">
-									<input type="button" value="解散" onclick="$('roomact').value='close';postCmd('roomact','index.php');setTimeout(function(){window.location.href='index.php';},300);disabled=true;" >
+									<input type="button" value="解散" onclick="$('roomact').value='close';postCmd('roomact','index.php');" >
 								</span>
 							<!--{/if}-->
 						<!--{else}-->
 							<span class="grey">-</span>
 						<!--{/if}-->
 					<!--{else}-->
-						<input type="button" value="加入" onclick="$('roomact').value='join{$rkey}';postCmd('roomact','index.php');setTimeout(function(){window.location.href='index.php';},300);disabled=true;" >
+						<input type="button" value="加入" onclick="$('roomact').value='join{$rkey}';postCmd('roomact','index.php');" >
 					<!--{/if}-->
+				<!--{else}-->
+					<span class="grey">-</span>
+				<!--{/if}-->
 				</td>
 			</tr>
 			<!--{/loop}-->

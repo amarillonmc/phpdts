@@ -49,11 +49,11 @@ function roommng_verify_db_game_structure()
 function roommng_create_new_room(&$udata)
 {
 	global $db,$gtablepre,$now;
-	global $startmin,$max_rooms,$ip_max_rooms;
+	global $startmin,$max_rooms,$ip_max_rooms,$rerror;
 
 	if(!empty($udata['roomid']))
 	{
-		echo "你已经在房间里了。要创建新房间必须退出当前房间。<br>";
+		$rerror = 'alreay_in_room';
 		return;
 	}
 
@@ -61,7 +61,7 @@ function roommng_create_new_room(&$udata)
 	$ipresult = $db->query("SELECT roomid FROM {$gtablepre}users WHERE roomid>0 AND ip='{$udata['ip']}'");
 	if($db->num_rows($ipresult) >= $ip_max_rooms)
 	{
-		echo "相同IP最多只能创建{$ip_max_rooms}个房间。请先解散其他房间。<br>";
+		$rerror = 'room_ip_limit';
 		return;
 	}
 
@@ -70,7 +70,7 @@ function roommng_create_new_room(&$udata)
 	$now_room_nums = $db->num_rows($result);
 	if($now_room_nums >= $max_rooms)
 	{
-		echo "房间数量已达上限，无法新建房间。<br>";
+		$rerror = 'room_num_limit';
 		return;
 	}
 
@@ -88,11 +88,11 @@ function roommng_create_new_room(&$udata)
 # 加入一个房间
 function roommng_join_room($rkey,&$udata)
 {
-	global $db,$gtablepre;
+	global $db,$gtablepre,$rerror;
 
 	if(!empty($udata['roomid']))
 	{
-		echo "你已经在房间里了。要加入房间必须退出当前房间。<br>";
+		$rerror = 'alreay_in_room';
 		return;
 	}
 
@@ -117,11 +117,11 @@ function roommng_join_room($rkey,&$udata)
 # 离开当前房间
 function roommng_exit_room(&$udata)
 {
-	global $db,$gtablepre;
+	global $db,$gtablepre,$rerror;
 
 	if(empty($udata['roomid']))
 	{
-		echo "你不在任何房间里。<br>";
+		$rerror = 'not_in_room';
 		return;
 	}
 
@@ -169,11 +169,11 @@ function roommng_exit_room(&$udata)
 # 房主解散自己所在的房间
 function roommng_close_own_room(&$udata)
 {
-	global $db,$gtablepre;
+	global $db,$gtablepre,$rerror;
 
 	if(empty($udata['roomid']))
 	{
-		echo "你不在任何房间里。<br>";
+		$rerror = 'not_in_room';
 		return;
 	}
 
@@ -184,13 +184,13 @@ function roommng_close_own_room(&$udata)
 		# 不能解散没有房主的房间
 		if(empty($gdata['groomownid']) || (!empty($gdata['groomownid']) && $gdata['groomownid'] != $udata['username']))
 		{
-			echo "你没有权限解散房间{$udata['roomid']}<br>";
+			$rerror = 'room_close_limit';
 			return;
 		}
 		# 不能解散正在游戏中的房间
 		if($gdata['gamestate'] > 10 && $gdata['alivenum'])
 		{
-			echo "不能解散游戏正在进行且尚有幸存者的房间！<br>";
+			$rerror = 'room_close_limit2';
 			return;
 		}
 		# 解散房间
@@ -202,13 +202,13 @@ function roommng_close_own_room(&$udata)
 }
 
 # 强制解散指定房间
-function roommng_close_room($rkey)
+function roommng_close_room($rkey,$adminlog = 0)
 {
-	global $db,$gtablepre;
+	global $db,$gtablepre,$rerror,$cmd_info;
 
 	if(!$rkey)
 	{
-		echo "不能关闭大房间！<br>";
+		$cmd_info .=  "不能关闭大房间！<br>";
 		return;
 	}
 
@@ -220,11 +220,12 @@ function roommng_close_room($rkey)
 		if($gdata['groomnums']) $db->query("UPDATE {$gtablepre}users SET roomid=0 WHERE roomid={$rkey}");
 		# 关闭房间
 		$db->query("DELETE FROM {$gtablepre}game WHERE groomid={$rkey}");
-		echo "已关闭房间 {$rkey} 号<br>";
+		$cmd_info .= "已关闭房间 {$rkey} 号<br>";
+		if($adminlog) adminlog('closeroom',$rkey);
 	}
 	else 
 	{
-		echo "房间 {$rkey} 未开启，或房间不存在！<br>";
+		$cmd_info .= "房间 {$rkey} 未开启，或房间不存在！<br>";
 	}
 	return;
 }

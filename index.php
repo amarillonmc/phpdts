@@ -20,14 +20,16 @@ if($gamestate > 10) {
 $adminmsg = file_get_contents('./gamedata/adminmsg.htm') ;
 $systemmsg = file_get_contents('./gamedata/systemmsg.htm') ;
 
+
 if(!empty($roomact))
 {
-	if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
+	$rindex = Array();
+	if(!$cuser||!$cpass) {$rerror = 'no_login'; goto roommng_flag; }
 	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$cuser'");
-	if(!$db->num_rows($result)) { gexit($_ERROR['login_check'],__file__,__line__); }
+	if(!$db->num_rows($result)) {$rerror = 'login_check'; goto roommng_flag;}
 	$udata = $db->fetch_array($result);
-	if($udata['password'] != $cpass) { gexit($_ERROR['wrong_pw'], __file__, __line__); }
-	if($udata['groupid'] <= 0) { gexit($_ERROR['user_ban'], __file__, __line__); }
+	if($udata['password'] != $cpass) {$rerror = 'wrong_pw'; goto roommng_flag;}
+	if($udata['groupid'] <= 0) {$rerror = 'user_ban'; goto roommng_flag;}
 
 	if($roomact == 'create')
 	{
@@ -47,6 +49,13 @@ if(!empty($roomact))
 		roommng_close_own_room($udata);
 	}
 	unset($roomact);
+	roommng_flag:
+	if(!empty($rerror) && isset($_ERROR[$rerror])) $rindex['innerHTML']['roomerror'] = $_ERROR[$rerror];
+	else $rindex['url'] = 'index.php';
+	ob_clean();
+	echo compatible_json_encode($rindex);
+	ob_end_flush();	
+	exit();
 }
 else 
 {
