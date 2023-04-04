@@ -172,4 +172,7 @@ $ip_max_rooms = 2;
 //重登陆时是否自动退出房间（1：自动退出 0：不自动退出）
 $login_exit_room = 0;
 
+//版本更新时是否需要检查增补数据库字段
+$need_update_db_structrue = 0;
+
 ?>

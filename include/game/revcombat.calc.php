@@ -59,6 +59,7 @@ namespace revcombat
 	# 这里传入的第一个参数分别是实际上的pd和pa，所以下面的判定主体都是pa
 	function calc_clbskill_counter_rate(&$pa,&$pd,$active,$counterate)
 	{
+		global $inf_counter_p;
 		#「直感」效果判定：
 		if(isset($pa['skill_c2_intuit']))
 		{

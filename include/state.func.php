@@ -91,7 +91,10 @@
 			$killmsg = '';
 		}
 		
-		if (! $type) {
+		if (!$type) 
+		{
+			$alivenum--;
+			$deathnum++;
 			$result = $db->query ( "SELECT lastword FROM {$gtablepre}users WHERE username = '$name'" );
 			$lastword = $db->result ( $result, 0 );
 			$lwname = $typeinfo [$type] . ' ' . $name;
@@ -105,6 +108,9 @@
 		$knname = isset($knick) ? $knick.' '.$kname : $kname;
 		addnews ( $now, 'death' . $state, $name, $type, $knname, $annex, $lastword );
 		//$alivenum = $db->result($db->query("SELECT COUNT(*) FROM {$tablepre}players WHERE hp>0 AND type=0"), 0);
+		
+		# 执行死亡事件（灵魂绑定等）
+		check_death_events(create_dummy_playerdata(),$data,1);
 
 		save_gameinfo ();
 		return $killmsg;
