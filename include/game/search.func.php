@@ -5,6 +5,7 @@ if(!defined('IN_GAME')) {
 }
 
 include_once GAME_ROOT.'./include/state.func.php';
+include_once GAME_ROOT.'./include/game/battle.func.php';
 include_once GAME_ROOT.'./include/game/itemmain.func.php';
 include_once GAME_ROOT.'./include/game/revbattle.func.php';
 include_once GAME_ROOT.'./include/game/revbattle.calc.php';
@@ -753,7 +754,6 @@ function discover($schmode = 0,&$data=NULL)
 			else 
 			{
 				$action = 'corpse'; $bid = $edata['pid'];
-				include_once GAME_ROOT.'./include/game/battle.func.php';
 				findcorpse($edata);
 				return;
 			}
