@@ -56,8 +56,8 @@ require config('audio',$gamecfg);
 require config('tooltip',$gamecfg);
 
 $gtablepre = $tablepre;
-# 检查game表是否需要补缺
-roommng_verify_db_game_structure();
+
+if($need_update_db_structrue) roommng_verify_db_game_structure();
 
 ob_start();
 

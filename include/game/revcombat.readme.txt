@@ -217,7 +217,6 @@ namespace revcombat:
 	- rev_combat();
 	- rev_attack();
 	- rev_combat_result();
-	- npc_changewep_rev(); npc_chat_rev();
 - revcombat_extra.func.php:
 	- get_attr_wepbase() 初始化双方的攻击相关参数（攻击方式、主动技能参数、被动技能参数、武器射程、攻击熟练度、武器名）
 	- combat_prepare_events();
