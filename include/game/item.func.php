@@ -291,7 +291,7 @@ function itemuse($itmn,&$data=NULL) {
 					logsave ( $itmsk, $now, $w_log ,'b');
 				}
 				$edata['wep_name'] = $itm;
-				include_once GAME_ROOT.'./include/game/revcombat.func.php';
+				include_once GAME_ROOT.'./include/state.func.php';
 				$last = pre_kill_events($edata,$pdata,0,'poison');
 				if($itmsk == $pdata['pid']) $last = 0;
 				final_kill_events($edata,$pdata,0,$last);
@@ -331,10 +331,7 @@ function itemuse($itmn,&$data=NULL) {
 		else{$exp++;$wd++;}
 		
 		if ($exp >= $upexp) {
-			//include_once GAME_ROOT . './include/state.func.php';
-			//lvlup ( $exp, $upexp );
-			//lvlup ($lvl, $exp, 1);
-			include_once GAME_ROOT . './include/game/revcombat.func.php';
+			include_once GAME_ROOT . './include/state.func.php';
 			lvlup_rev($pdata,$pdata,1);
 		}
 		if ($itms != $nosta) {
@@ -792,10 +789,7 @@ function itemuse($itmn,&$data=NULL) {
 		if (strpos ( $itmk, 'ME' ) === 0) {
 			
 			if ($exp >= $upexp) {
-				//global $lvl;
-				//include_once GAME_ROOT . './include/state.func.php';
-				//lvlup ( $lvl, $exp, 1 );
-				include_once GAME_ROOT . './include/game/revcombat.func.php';
+				include_once GAME_ROOT . './include/state.func.php';
 				lvlup_rev($pdata,$pdata,1);
 			}
 		}
@@ -1967,7 +1961,7 @@ function itemuse($itmn,&$data=NULL) {
 			include_once GAME_ROOT.'./include/game/revcombat.func.php';
 			$pa = fetch_playerdata_by_pid(1);
 			$pd = fetch_playerdata_by_pid(2);
-			rev_combat_prepare($pa,$pd,1);
+			\revcombat\rev_combat_prepare($pa,$pd,1);
 		} elseif ($itm == '事件BGM替换器'){
 			// 这是一个触发事件BGM的案例，只要输入$clbpara['event_bgmbook'] = Array('事件曲集名'); 即可将当前曲集替换为特殊事件BGM
 			// 特殊事件曲集'event_bgmbook'的优先级高于地图曲集'pls_bgmbook'，前者存在时后者不会生效

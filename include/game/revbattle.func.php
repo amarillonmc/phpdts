@@ -1,10 +1,18 @@
 <?php
 
+namespace revbattle
+{
+
 	if(!defined('IN_GAME')) {
 		exit('Access Denied');
 	}
 
-	// 处理从界面传回的战斗相关指令，在战斗开始前的最后一道准备工序
+	include_once GAME_ROOT.'./include/game/revbattle.calc.php';
+	include_once GAME_ROOT.'./include/game/revcombat.func.php';
+
+	# 处理从界面传回的战斗相关指令，包含以下两种情况：
+	# 1.主动遇敌先制发现敌人；
+	# 2.与敌人战斗结束、显示战斗报告后，点击确认按钮时身上存在额外action，跳转回此函数判断接下来该显示哪一页面；
 	function revbattle_prepare($command,$message=NULL,$data=NULL)
 	{
 		global $log,$mode,$plsinfo,$db,$tablepre,$action_list;
@@ -55,17 +63,13 @@
 		# 输入切换武器指令时，切换武器
 		if ($command == 'changewep') 
 		{
-			change_wep_in_battle();
+			include_once GAME_ROOT . './include/game/itemmain.func.php';
+			change_subwep();
 			findenemy_rev($edata);
 			return;
 		}
 		# 准备进入标准战斗流程
 		include_once GAME_ROOT.'./include/game/revcombat.func.php';
-		# 敌人身上存在时效性状态时，检查时效性状态
-		if(!empty($edata['clbpara']['lasttimes']))
-		{
-			$edata = check_skilllasttimes($edata);
-		}
 		# 追击流程
 		if ($command == 'chase' || $command == 'pchase' || $command == 'dfight') 
 		{
@@ -78,20 +82,20 @@
 			//$log .= "你逃跑了。";
 			$flag = escape_from_enemy($data,$edata);
 			if($flag) $mode = 'command';
-			else rev_combat_prepare($data,$edata,0);
+			else \revcombat\rev_combat_prepare($data,$edata,0);
 			return;
 		}
 		# 重新遭遇视野中的敌人
 		if ($command == 'focus') 
 		{
 			// 迎战视野中的敌人先制率-40
-			$active_r = min(4,get_active_r_rev($data,$edata)-40);
+			$active_r = min(4,calc_active_rate($data,$edata)-40);
 			$active_dice = diceroll(99);
 			if($active_dice < $active_r){
 				$action = 'enemy'; $bid = $edata['pid'];
 				findenemy_rev($edata);
 			}else {
-				rev_combat_prepare($edata,$data,0);
+				\revcombat\rev_combat_prepare($edata,$data,0);
 			}
 			return;
 		}
@@ -126,7 +130,7 @@
 			# 添加协战标记
 			$cdata['is_coveratk'] = 1;
 			# 去打人吧！
-			rev_combat_prepare($cdata,$edata,1);
+			\revcombat\rev_combat_prepare($cdata,$edata,1);
 			return;
 		}
 		# 指派佣兵攻击敌人
@@ -154,36 +158,38 @@
 				# 是否要检查先后手？
 				if(isset($message) && $message == 'noactive')
 				{
-					$active_r = get_active_r_rev($mdata,$edata);
+					$message = '';
+					$active_r = calc_active_rate($mdata,$edata);
 					$active_dice = diceroll(99);
 					if($active_dice < $active_r)
 					{
-						rev_combat_prepare($mdata,$edata,1); 
+						\revcombat\rev_combat_prepare($mdata,$edata,1); 
 					}
 					else 
 					{
 						$log .= "<span class='yellow'>但是敌人早已做好了准备！</span><br>";
-						rev_combat_prepare($edata,$mdata,0);
+						\revcombat\rev_combat_prepare($edata,$mdata,0);
 					}
 				}
 				else 
 				{
-					rev_combat_prepare($mdata,$edata,1); 
+					\revcombat\rev_combat_prepare($mdata,$edata,1); 
 				}
 			}
 			# 没有佣兵，你自己上吧！
 			else
 			{
-				rev_combat_prepare($data,$edata,1);
+				\revcombat\rev_combat_prepare($data,$edata,1);
 			}
 			return;
 		}
+		if(!empty($message)) $data['message'] = $message;
 		# 上述流程没有拦截，直接进入标准战斗流程……可能会有问题？
-		rev_combat_prepare($data,$edata,1,$command);
+		\revcombat\rev_combat_prepare($data,$edata,1,$command);
 		return;
 	}
 
-	//发现敌人
+	# 主动发现敌人时，初始化战斗界面（包含初始化左侧页面与初始化右侧战斗按钮）
 	function findenemy_rev($edata) 
 	{
 		global $db,$tablepre,$log,$mode,$main,$cmd,$battle_title,$attinfo,$skillinfo,$nosta,$cskills;
@@ -275,7 +281,32 @@
 		return;
 	}
 
-	//发现中立NPC $kind 0=中立单位 1=友军
+	# 战斗中逃跑
+	function escape_from_enemy(&$pa,&$pd)
+	{
+		global $fog,$action,$clbpara,$chase_escape_obbs,$log;
+		//include_once GAME_ROOT.'./include/game/dice.func.php';
+		# 在受追击/鏖战状态下逃跑有概率失败
+		if($action == 'pchase' || $action == 'dfight')
+		{
+			$escape_dice = diceroll(99);
+			if($escape_dice < $chase_escape_obbs)
+			{
+				$log .= "你尝试逃跑，但是敌人在你身后紧追不舍！<br>";
+				$pa['fail_escape'] = 1;
+				return 0;
+			}
+		}
+		$log .= "你逃跑了。<br>";
+		$action = ''; $bid = 0;
+		//逃跑后在视野里记录敌人
+		$nm = $fog ? '？？？' : $pd['name'];
+		check_add_searchmemory($pd['pid'],'enemy',$nm,$pa);
+		unset($clbpara['battle_turns']);
+		return 1;
+	}
+
+	# 主动发现中立单位时，初始化战斗界面（包含初始化左侧页面与初始化右侧信息栏）
 	function findneut(&$edata,$kind=0)
 	{
 		global $db,$tablepre,$pdata;
@@ -323,7 +354,7 @@
 		return;
 	}
 
-	// 初始化战斗界面标题
+	# 初始化战斗界面标题
 	function init_battle_title($pa,$pd,$ismeet=0)
 	{
 		if(strpos($pa['action'],'chase')!==false)
@@ -342,7 +373,7 @@
 		return $title;
 	}
 
-	// 初始化战斗界面log
+	# 初始化战斗界面log
 	function init_battle_log($pa,$pd,$ismeet=0)
 	{
 		global $fog;
@@ -375,77 +406,5 @@
 		}
 		return $battle_log;
 	}
-
-	//战斗中逃跑
-	function escape_from_enemy(&$pa,&$pd)
-	{
-		global $fog,$action,$clbpara,$chase_escape_obbs,$log;
-		//include_once GAME_ROOT.'./include/game/dice.func.php';
-		# 在受追击/鏖战状态下逃跑有概率失败
-		if($action == 'pchase' || $action == 'dfight')
-		{
-			$escape_dice = diceroll(99);
-			if($escape_dice < $chase_escape_obbs)
-			{
-				$log .= "你尝试逃跑，但是敌人在你身后紧追不舍！<br>";
-				$pa['fail_escape'] = 1;
-				return 0;
-			}
-		}
-		$log .= "你逃跑了。<br>";
-		$action = ''; $bid = 0;
-		//逃跑后在视野里记录敌人
-		$nm = $fog ? '？？？' : $pd['name'];
-		check_add_searchmemory($pd['pid'],'enemy',$nm,$pa);
-		unset($clbpara['battle_turns']);
-		return 1;
-	}
-	
-	//战斗中切换武器
-	function change_wep_in_battle($s=2)
-	{
-		global $log,$nosta;
-		global $wep,$wepk,$wepe,$weps,$wepsk;
-		global $wep2,$wep2k,$wep2e,$wep2s,$wep2sk;
-		# 初始化主武器名
-		$eqp = 'wep';
-		# 初始化副武器名
-		$seqp = 'wep'.$s;
-		$seqpk = $seqp.'k';
-		$seqpe = $seqp.'e';
-		$seqps = $seqp.'s';
-		$seqpsk = $seqp.'sk';
-		# 保存副武器数据
-		$swep=${$seqp}; $swepk=${$seqpk};
-		$swepe=${$seqpe}; $sweps=${$seqps}; $swepsk=${$seqpsk};
-		# 主武器为空、副武器不为空的情况下，直接替换为副武器
-		if(($wepk == 'WN' || !$weps) && ($swepk != 'WN'))
-		{
-			${$eqp} = $swep; ${$seqp} = '拳头';
-			${$eqp.'k'} = $swepk; ${$seqpk} = 'WN';
-			${$eqp.'e'} = $swepe; ${$seqpe} = 0;
-			${$eqp.'s'} = $sweps; ${$seqps} = $nosta;
-			${$eqp.'sk'} = $swepsk; ${$seqpsk} = '';
-			$log.="你将{$wep}拿在了手上。<br>";
-		}
-		# 主武器不为空的情况下，副武器替换为主武器
-		elseif($wepk != 'WN')
-		{
-			${$seqp} = ${$eqp}; ${$eqp} = $swep; 
-			${$seqpk} = ${$eqp.'k'}; ${$eqp.'k'} = $swepk;
-			${$seqpe} = ${$eqp.'e'}; ${$eqp.'e'} = $swepe; 
-			${$seqps} = ${$eqp.'s'}; ${$eqp.'s'} = $sweps; 
-			${$seqpsk} = ${$eqp.'sk'}; ${$eqp.'sk'} = $swepsk; 
-			$log.="你将{$wep2}收了起来";
-			if($wepk != 'WN') $log .="，将{$wep}拿在了手上";
-			$log.="。<br>";
-		}
-		else 
-		{
-			$log.="你没有装备副武器！去给自己找一个吧！<br>";
-		}
-		return;
-	}
-	
-
+}
 ?>

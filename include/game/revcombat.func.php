@@ -1,20 +1,23 @@
 <?php
-
+namespace revcombat
+{
 	if(!defined('IN_GAME')) {
 		exit('Access Denied');
 	}
-	//include_once GAME_ROOT.'./include/game/dice.func.php';
-	include_once GAME_ROOT.'./include/game/attr.func.php';
-	//include_once GAME_ROOT.'./include/game/combat.func.php';
+
 	include_once GAME_ROOT.'./include/game/titles.func.php';
+	include_once GAME_ROOT.'./include/state.func.php';
+	include_once GAME_ROOT.'./include/game/revcombat_extra.func.php';
 	include_once GAME_ROOT.'./include/game/revcombat.calc.php';
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
+	include_once GAME_ROOT.'./include/game/revattr.calc.php';
+	include_once GAME_ROOT.'./include/game/revattr_extra.func.php';
 
 	# 战斗准备流程：
 	# pa、pd分别代表先制发现者与被先制发现者；
 	# active用于判断当前的主视角(玩家、战斗界面下方那一栏)对应pa还是pd；
 	# actvie=1代表主视角是pa，否则主视角是pd；
-	function rev_combat_prepare($pa,$pd,$active,$wep_kind='',$log_print=1) 
+	function rev_combat_prepare(&$pa,&$pd,$active,$wep_kind='',$log_print=1) 
 	{
 		global $db,$tablepre,$log,$mode,$main,$cmd,$battle_title;
 
@@ -37,7 +40,7 @@
 			$main = 'battle_rev';
 		}
 
-		# 如果传入了主动技参数，在这里登记
+		# 如果传入了主动技参数，在这里登记，并注销掉攻击类别
 		if(strpos($wep_kind,'bskill_') === 0)
 		{
 			$bskill = substr($wep_kind,7);
@@ -45,45 +48,18 @@
 			$wep_kind = '';
 		}
 
-		# 初始化双方的真实攻击方式wep_kind，传入了攻击方式/主动技的情况下，在这里判断传入参数的合法性。
-		get_wep_kind($pd); 
-		$pd['wep_range'] = get_wep_range($pd);
-		$pd['wep_skill'] = get_wep_skill($pd);
-		$pd['wep_name'] = $pd['wep'];
-		get_wep_kind($pa,$wep_kind,$pd['wep_range']); 
-		$pa['wep_range'] = get_wep_range($pa);
-		$pa['wep_skill'] = get_wep_skill($pa);
-		$pa['wep_name'] = $pa['wep'];
+		# 登记称谓：之后的流程里已经用不到active了（大概）
+		$pa['nm'] = (!$pa['type'] && $active) ? '你' : $pa['name']; 
+		$pd['nm'] = (!$pd['type'] && !$active && $pa['nm']!=='你') ? '你' : $pd['name']; 
 
-		# 传入pa为玩家、pd为NPC，且存在鏖战/追击标志时，判断战斗流程类型（标准/追击/鏖战/协战）
-		if(!$pa['type'] && $pd['type'] && (strpos($pa['action'],'dfight')!==false || strpos($pa['action'],'chase')!==false))
-		{
-			# 玩家正在追击NPC，或两人进入鏖战状态，判定先攻
-			if(strpos($pa['action'],'chase')===0 || strpos($pa['action'],'dfight')!==false)
-			{
-				# 传入参数，第一位为pa(玩家)，第二位为pd(NPC)，传出active
-				$active = check_revcombat_status($pa,$pd,$active);
-				if($active)
-					rev_combat($pa,$pd,$active,$log_print);
-				else
-					rev_combat($pd,$pa,$active,$log_print);
-			}
-			# NPC正在追击玩家，判定NPC是否为先攻
-			else
-			{
-				# 传入参数，第一位为pd(NPC)，第二位为pa(玩家)，传出1-active
-				$active = check_revcombat_status($pd,$pa,$active);
-				if($active)
-					rev_combat($pd,$pa,1-$active,$log_print);
-				else
-					rev_combat($pa,$pd,1-$active,$log_print);
-			}
-		}
+		# 初始化双方的攻击相关参数：
+		# 依以下次序判定：
+		# 1.防守方防守方式、武器射程、攻击熟练度、武器名； 
+		# 2.进攻方攻击方式、进攻方主动技能参数、武器射程、攻击熟练度、武器名；
+		get_attr_wepbase($pa,$pd,$active,$wep_kind);
+
 		# 进入标准战斗流程
-		else 
-		{	
-			rev_combat($pa,$pd,$active,$log_print);
-		}
+		rev_combat($pa,$pd,$active,$log_print);
 	}
 
 	# 战斗流程：
@@ -98,76 +74,20 @@
 		# 登记非功能性地点信息时合并隐藏地点
 		foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
 
-		# 登记称谓：之后的流程里已经用不到active了（大概）
-		$pa['nm'] = (!$pa['type'] && $active) ? '你' : $pa['name']; 
-		$pd['nm'] = (!$pd['type'] && !$active && $pa['nm']!=='你') ? '你' : $pd['name']; 
-
-		# 在初始化战斗阶段触发的事件。即：无论是否反击都只会触发1次的事件。如果返回值小于0，则中断战斗。
+		# 正式进入rev_combat战斗状态后，在判定伤害、反击流程前的事件执行阶段；
+		# 即无论是否反击都只会触发1次的事件，返回值小于0时会直接中断战斗；
 		$cp_flag = combat_prepare_events($pa,$pd,$active);
 		if($cp_flag < 0) goto battle_finish_flag;
 
-		# 遇敌log
-		if($active)
-		{
-			if(!$pa['type'] && isset($pa['message']))
-			{
-				$log.="<span class=\"lime\">{$pa['nm']}大喊着：{$pa['message']}！向<span class=\"red\">{$pd['nm']}</span>发起了攻击！</span><br>";
-				if (!$pd['type']) 
-				{
-					$w_log = "<span class=\"lime\">{$pa['name']}对你大喊：{$pa['message']}</span><br>";
-					logsave ($pd['pid'],$now,$w_log,'c');
-				}
-			}
-			else 
-			{
-				if(isset($pa['is_chase']))
-				{
-					$log .= "{$pa['nm']}再度向<span class=\"red\">{$pd['nm']}</span>发起攻击！<br>";
-				}
-				elseif(isset($pa['is_dfight']))
-				{
-					$log .= "{$pa['nm']}抓住机会抢先向<span class=\"red\">{$pd['nm']}</span>发起攻击！<br>";
-				}
-				elseif(isset($pa['is_coveratk']))
-				{
-					$log .= "<span class='yellow'>正当你们打的难解难分之际，{$pa['nm']}抓住机会，向<span class=\"red\">{$pd['nm']}</span>发起突袭！</span><br>";
-				}
-				else 
-				{
-					$log .= "{$pa['nm']}向<span class=\"red\">{$pd['nm']}</span>发起攻击！<br>";
-				}
-			}
-		}
-		else
-		{
-			if(isset($pa['is_chase']))
-			{
-				$log .= "<span class=\"red\">{$pa['nm']}</span>再度向{$pd['nm']}袭来！<br>";
-			}
-			elseif(isset($pa['is_dfight']))
-			{
-				$log .= "但是<span class=\"red\">{$pa['nm']}</span>抢先对{$pd['nm']}发起攻击！<br>";
-			}
-			else
-			{
-				$log .= "<span class=\"red\">{$pa['nm']}</span>突然向{$pd['nm']}袭来！<br>";
-			}
-		}
+		# 正式进入rev_combat战斗状态后，在判定伤害、反击流程前的遇敌log
+		combat_prepare_logs($pa,$pd,$active);
 	
-		# 战斗发起者是NPC时
-		if($pa['type'])
-		{
-			$log .= npc_chat_rev ($pa,$pd,'attack');
-			//换装判定
-			npc_changewep_rev($pa,$pd,$active);
-		}
-
 		# 打击流程
 		# 这里的第一个参数指的是进攻方(造成伤害的一方)；第二个参数指的是防守方(承受伤害的一方)。active已经没用了。
 		# 传参的时候只用考虑参数位置，不用管pa、pd具体是谁。
 		att_loop_flag:
 		$att_dmg = rev_attack($pa,$pd,$active);
-
+		$att_result = 1;
 		# 存在暴毙标识：进攻方(pa)在进攻过程中未造成伤害就暴毙，可能是因为触发了武器直死。
 		if(isset($pa['gg_flag']))
 		{
@@ -177,7 +97,7 @@
 			$att_result = rev_combat_result($pd,$pa,$active);
 		}		
 		# 没有暴毙，结算打击伤害
-		elseif(isset($att_dmg))
+		elseif(!empty($att_dmg))
 		{
 			//扣血
 			$pd['hp'] = max(0,$pd['hp']-$att_dmg);
@@ -186,53 +106,43 @@
 		} 
 
 		# 检查是否循环打击流程：一些特殊技能可能需要此效果
-		if($att_result)
+		if(!empty($att_result))
 		{
-			$att_loop = check_loop_rev_attack($pa,$pd,$active);
+			$att_loop = attack_check_can_loop($pa,$pd,$active);
 			if($att_loop) goto att_loop_flag;
 		}
 
-		# 反击流程判断：$att_result>0，且敌人非治疗姿态或重视躲藏才会触发反击。 TODO：为反击条件新建一个函数
-		if ($pd['hp']>0 && $att_result>0 && check_can_counter($pa,$pd,$active)) 
+		# pa打击流程结束后，如pd仍存活，且战斗未终止，检查是否进入反击流程
+		if ($pd['hp']>0 && !empty($att_result)) 
 		{
-			# 反击者是NPC时，进行换装判断
-			if($pd['type']) npc_changewep_rev($pd,$pa,$active);
-			if (check_in_counter_range($pa,$pd,$active)) 
+			$counter_flag = attack_check_can_counter($pa,$pd,$active);
+			if($counter_flag)
 			{
-				# 计算反击率
-				$counter = get_counter_rev($pa,$pd,$active);
-				# 掷骰
-				$counter_dice = diceroll(99);
-				if ($counter_dice < $counter) 
+				$log .= "<span class=\"red\">{$pd['nm']}的反击！</span><br>";
+				# NPC反击前事件
+				if($pd['type'])
 				{
-					$log .= "<span class=\"red\">{$pd['nm']}的反击！</span><br>";
-					if($pd['type']) $log .= npc_chat_rev ($pd,$pa, 'defend' );
-					# 反击打击实行
-					# 因为这时候进攻方(造成伤害)的一方是pd，所以向第一个位置传入pd，向第二个位置(防守方)传入pa。
-					$pd['is_counter'] = 1; //给pd一个反击标记，代表这是反击造成的伤害
-					$def_dmg = rev_attack($pd,$pa,1);
-				} 
-				else 
-				{
-					$pd['cannot_counter'] = 1;
-					$log .= npc_chat_rev ($pd,$pa, 'escape' );
-					$log .= "<span class=\"red\">{$pd['nm']}没能抓住机会反击，逃跑了！</span><br>";
+					npc_changewep_rev($pd,$pa,$active);
+					$log .= npc_chat_rev ($pd,$pa, 'defend' );
 				}
-			} 
-			# 不满足射程
-			else 
-			{
-				$pd['cannot_counter'] = 1;
-				$log .= npc_chat_rev($pd,$pa, 'cannot' );
-				$log .= "<span class=\"red\">{$pd['nm']}攻击范围不足，不能反击，逃跑了！</span><br>";
+				# 登记反击标记，表示这次打击属于反击攻击
+				$pd['is_counter'] = 1; 
+				# 执行反击打击
+				# 因为这时候进攻方(造成伤害)的一方是pd，所以向第一个位置传入pd，向第二个位置(防守方)传入pa
+				$def_dmg = rev_attack($pd,$pa,1);
 			}
-		}
-		# 不满足基础反击条件
-		elseif($pd['hp']>0  && $att_result>0) 
-		{
-			$pd['cannot_counter'] = 1;
-			if(isset($pd['cannot_counter_log'])) $log .= "<span class=\"red\">".$pd['cannot_counter_log']."</span><br>";
-			else $log .= "<span class=\"red\">{$pd['nm']}转身逃开了！</span><br>";
+			else
+			{
+				# 不能反击的原因会在attack_check_can_counter()流程中，被登记在$pd['cannot_counter']内
+				if($pd['type'])
+				{
+					if(!empty($pd['cannot_counter'])) $log .= npc_chat_rev ($pd,$pa,$pd['cannot_counter']);
+					else $pd['cannot_counter'] = 1;
+				}
+				# 输出一段描述不能反击的原因的log
+				$pd['cannot_counter_log'] = !empty($pd['cannot_counter_log']) ? $pd['cannot_counter_log'] : "<span class=\"red\">{$pd['nm']}转身逃开了！</span><br>";
+				$log .= "<span class=\"red\">".$pd['cannot_counter_log']."</span><br>";
+			}
 		}
 
 		# 存在暴毙标识：反击方(pd)在反击过程中未造成伤害就暴毙，可能是因为触发了武器直死。
@@ -243,7 +153,7 @@
 			$def_result = rev_combat_result($pa,$pd,$active);
 		}
 		# 没有暴毙，结算反击伤害
-		elseif(isset($def_dmg))
+		elseif(!empty($def_dmg))
 		{
 			//扣血
 			$pa['hp'] = max(0,$pa['hp']-$def_dmg);
@@ -421,18 +331,20 @@
 		
 		# 获取属性
 		$pa['ex_equip_keys'] = $pa['ex_wep_keys'] = Array();
-		$pa['ex_equip_keys'] = get_equip_ex_array($pa); //获取pa防具上的所有属性
-		$pa['ex_wep_keys'] = get_wep_ex_array($pa); //获取pa武器、饰品上的所有属性
+		$pa['ex_equip_keys'] = \revattr\get_equip_ex_array($pa); //获取pa防具上的所有属性
+		$pa['ex_wep_keys'] = \revattr\get_wep_ex_array($pa); //获取pa武器、饰品上的所有属性
 
 		$pd['ex_equip_keys'] = $pd['ex_wep_keys'] = Array();
-		$pd['ex_equip_keys'] = get_equip_ex_array($pd);//获取pd防具上的所有属性
-		$pd['ex_wep_keys'] = get_wep_ex_array($pd);//获取pd武器、饰品上的所有属性
+		$pd['ex_equip_keys'] = \revattr\get_equip_ex_array($pd);//获取pd防具上的所有属性
+		$pd['ex_wep_keys'] = \revattr\get_wep_ex_array($pd);//获取pd武器、饰品上的所有属性
 
 		# 技能抽取判定
 		if(in_array('+',array_merge($pa['ex_wep_keys'],$pa['ex_equip_keys'])) || in_array('+',array_merge($pd['ex_wep_keys'],$pd['ex_equip_keys'])))
 		{
 			$log .= "<span class=\"yellow\">技能抽取使双方的武器熟练度在战斗中大幅下降！</span><br>";
 			$pa['skdr_flag'] = $pd['skdr_flag'] = 1;
+			# 应用技抽效果
+			if(!empty($pa['skdr_flag']) || !empty($pd['skdr_flag'])) $pa['wep_skill']=sqrt($pa['wep_skill']);
 		}
 		# 灵魂抽取判定
 		if(in_array('*',array_merge($pa['ex_wep_keys'],$pa['ex_equip_keys'])) || in_array('*',array_merge($pd['ex_wep_keys'],$pd['ex_equip_keys'])))
@@ -454,7 +366,8 @@
 		$pd['ex_keys'] = array_merge($pd['ex_wep_keys'],$pd['ex_equip_keys']); unset($pd['ex_wep_keys']); unset($pd['ex_equip_keys']);
 		
 		# 检查是否存在额外属性（可能来源于技能）
-		get_extra_ex_array($pa);  get_extra_ex_array($pd); 
+		\revattr\get_extra_ex_array($pa);  
+		\revattr\get_extra_ex_array($pd); 
 		
 		# 在计算命中流程开始前判定的事件，分两种：（以后看情况要不要分成两个函数）
 		# 第一种：进攻方(pa)在进攻前因为某种缘故受到伤害、甚至暴毙（直死、DOT结算等） 。判断是否继续进攻流程；
@@ -462,36 +375,26 @@
 		# 第二种：pa对pd的装备、武器产生影响的特殊攻击（临摹装置、一些特殊的直接伤害等）。
 		# 如果这个阶段让pa或pd的武器发生了改变，记得使用get_wep_kind()刷新真实攻击方式。对武器和装备的破坏请使用weapon_loss()与armor_hurt()函数，以使装备在被破坏后从ex_keys中剔除对应的属性。
 		# 返回值小于0时中止流程，否则继续。
-		$flag = hitrate_prepare_events($pa,$pd,$active);
+		$flag = \revattr\hitrate_prepare_events($pa,$pd,$active);
 		if($flag < 0) return $flag;
 
-		# 获取pa真实熟练度 保存在$pa['wep_skill']内
-		$pa['wep_skill'] = get_wep_skill($pa);
-
-		# 应用技抽效果
-		if(isset($pa['skdr_flag']) || isset($pd['skdr_flag']))
-		{
-			$pa['wep_skill']=sqrt($pa['wep_skill']);
-		}
-
 		# 计算武器基础命中率 保存在$pa['hitrate']内
-		$pa['hitrate'] = get_hitrate_rev($pa,$pd,$active);
+		$pa['hitrate'] = \revattr\get_hitrate_rev($pa,$pd,$active);
 		# 计算命中次数 保存在$pa['hitrate_times']内
-		get_hit_time_rev($pa,$pd,$active);
-		# 在执行伤害计算前登记武器名 防止武器被消耗掉后不能正常登记击杀信息
-		$pa['wep_name'] = $pa['wep'];
+		\revattr\get_hit_time_rev($pa,$pd,$active);
 
 		$log .= "{$pa['nm']}使用{$pa['wep']}<span class=\"yellow\">{$attinfo[$pa['wep_kind']]}</span>{$pd['nm']}！<br>";
+
 		# 战斗技文本
-		if(isset($pa['bskilllog'])) $log.= $pa['bskilllog'];
-		if(isset($pa['bskilllog2'])) $log.= $pa['bskilllog2'];
+		if(!empty($pa['bskilllog'])) $log.= $pa['bskilllog'];
+		if(!empty($pa['bskilllog2'])) $log.= $pa['bskilllog2'];
 		if(!empty($pa['skilllog'])) $log.= $pa['skilllog'];
 
 		# 命中次数大于0时 执行伤害判断
 		if ($pa['hitrate_times'] > 0) 
 		{
 			//检查是否存在造成不受其他因素影响的固定伤害（例：混沌伤害、直死）
-			$fix_dmg = get_fix_damage($pa,$pd,$active);
+			$fix_dmg = \revattr\get_fix_damage($pa,$pd,$active);
 			if(isset($fix_dmg))
 			{
 				$damage = $fix_dmg;
@@ -503,19 +406,19 @@
 			{
 				# 物理伤害计算部分：
 				//获取攻击方(pa)的基础攻击力与修正
-				$pa['base_att'] = get_base_att($pa,$pd,$active);
+				$pa['base_att'] = \revattr\get_base_att($pa,$pd,$active);
 				//获取防守方(pd)的基础防御与修正
-				$pd['base_def']  = get_base_def($pa,$pd,$active);
+				$pd['base_def']  = \revattr\get_base_def($pa,$pd,$active);
 				//获取攻击方(pa)的原始伤害
-				$damage = get_original_dmg_rev ($pa,$pd,$active);
+				$damage = \revattr\get_original_dmg_rev ($pa,$pd,$active);
 				//获取攻击方(pa)在原始伤害基础上附加的固定伤害（重枪、灵武固伤）
-				$damage +=  get_original_fix_dmg_rev($pa,$pd,$active);
+				$damage +=  \revattr\get_original_fix_dmg_rev($pa,$pd,$active);
 				//获取攻击方(pa)对伤害倍率施加的变化（连击、必杀、灵力武器发挥了x%的威力） 返回的是一个数组 每个值是一个单独的系数
-				$damage_p = get_damage_p_rev ($pa,$pd,$active);
+				$damage_p = \revattr\get_damage_p_rev ($pa,$pd,$active);
 				//获取攻击方(pa)在造成伤害前触发的事件（检查pd身上是否有防御属性，pa是否触发了贯穿、冲击）
-				deal_damage_prepare_events($pa,$pd,$active);
+				\revattr\deal_damage_prepare_events($pa,$pd,$active);
 				//获取防守方(pd)对伤害倍率施加的变化（防御属性、持有重枪受伤增加、热恋、同志）	系数保存在同一个数组里，分开2个函数只是为了调整log顺序
-				$damage_p = array_merge($damage_p,get_damage_def_p_rev($pa,$pd,$active));
+				$damage_p = array_merge($damage_p,\revattr\get_damage_def_p_rev($pa,$pd,$active));
 				//计算物理伤害：
 				$log.="造成了";
 				//存在伤害系数队列
@@ -545,23 +448,23 @@
 				$pa['phy_damage'] = $pdamage;
 
 				# 物理伤害计算结束后、加载预受伤事件……：
-				get_hurt_prepare_events($pa,$pd,$active);
+				\revattr\get_hurt_prepare_events($pa,$pd,$active);
 				
 				# 属性伤害计算部分：
 				//获取攻击方(pa)能造成的属性伤害类型
-				$pa['ex_attack_keys'] = get_base_ex_att_array($pa,$pd,$active);
+				$pa['ex_attack_keys'] = \revattr\get_base_ex_att_array($pa,$pd,$active);
 				//攻击方(pa)存在属性伤害：
 				if(!empty($pa['ex_attack_keys']))
 				{	
 					//获取攻击方(pa)在造成属性伤害前触发的事件（检查pd身上是否有防御属性，pa是否触发了属穿）
-					deal_ex_damage_prepare_events($pa,$pd,$active);
+					\revattr\deal_ex_damage_prepare_events($pa,$pd,$active);
 					//获取攻击方(pa)能造成的属性伤害
-					$ex_damage = get_original_ex_dmg($pa,$pd,$active);
+					$ex_damage = \revattr\get_original_ex_dmg($pa,$pd,$active);
 					//攻击方(pa)能造成了多次属性伤害的情况下，进行后续判断
 					if(is_array($ex_damage) || $ex_damage > 1)
 					{
 						//获取攻击方(pa)能造成的属性伤害加成
-						$ex_damage_p = get_ex_dmg_p($pa,$pd,$active);
+						$ex_damage_p = \revattr\get_ex_dmg_p($pa,$pd,$active);
 						//存在大于1种属性伤害，输出一段 A+B+C=D 样式的文本，并将所有属性伤害保存在 $total_ex_damage 内
 						if(is_array($ex_damage))
 						{
@@ -613,7 +516,7 @@
 
 				#最终伤害计算部分：
 				//获取最终伤害的系数变化（晶莹、书中虫减伤）
-				$fin_damage_p = get_final_dmg_p($pa,$pd,$active);
+				$fin_damage_p = \revattr\get_final_dmg_p($pa,$pd,$active);
 				//最终伤害存在系数队列的情况下，输出一段 AxBxC=D 格式的文本，但是如果最终伤害发生了定值变化，则不会使用这一段文本。
 				if(!empty($fin_damage_p))
 				{
@@ -625,7 +528,7 @@
 					}
 				}
 				//获取最终伤害的定值变化（伤害制御、剔透）
-				$fin_damage_fix = get_final_dmg_fix($pa,$pd,$active,$damage);
+				$fin_damage_fix = \revattr\get_final_dmg_fix($pa,$pd,$active,$damage);
 				if($fin_damage_fix != $damage) 
 				{
 					$o_damage = $damage;
@@ -646,9 +549,9 @@
 			//将伤害发送至进行状况
 			checkdmg ($pa['name'],$pd['name'],$damage);
 			//攻击方(pa)造成伤害后的事件（计算反噬伤害）
-			attack_finish_events($pa,$pd,$active);
+			\revattr\attack_finish_events($pa,$pd,$active);
 			//防守方(pd)受到伤害后的事件（防具耐久下降、受伤）
-			get_hurt_events($pa,$pd,$active);
+			\revattr\get_hurt_events($pa,$pd,$active);
 		}
 		else 
 		{
@@ -732,711 +635,13 @@
 		else 
 		{
 			# 执行扣血后的战斗结算阶段事件
-			rev_combat_result_events($pa,$pd,$active);
+			attack_result_events($pa,$pd,$active);
 		}
 		return 1;
 	}
 
-	# 执行不需要考虑复活问题的击杀事件：
-	# 再重复一遍：这里的第一个参数指的是杀人者(敌对方)视角，第二个参数指的是死者(受到伤害者)视角。
-	function pre_kill_events(&$pa,&$pd,$active,$death) 
+	function checkdmg($p1, $p2, $d) 
 	{
-		global $log, $now, $db, $gtablepre, $tablepre, $typeinfo, $lwinfo;
-		
-		// 登记死法
-		// 传入了数字编号死法
-		if (is_numeric($death)) {
-			$pd['state'] = $death;
-		// 否则按照指定武器类型判断
-		} elseif ($death == 'N') {
-			$pd['state'] = 20;
-		} elseif ($death == 'P') {
-			$pd['state'] = 21;
-		} elseif ($death == 'K') {
-			$pd['state'] = 22;
-		} elseif ($death == 'G') {
-			$pd['state'] = 23;
-		} elseif ($death == 'J') {
-			$pd['state'] = 23;
-		} elseif ($death == 'C') {
-			$pd['state'] = 24;
-		} elseif ($death == 'D') {
-			$pd['state'] = 25;
-		} elseif ($death == 'F') {
-			$pd['state'] = 29;
-		} elseif ($death == 'poison') {
-			$pd['state'] = 26;
-		} elseif ($death == 'trap') {
-			$pd['state'] = 27;
-		} elseif ($death == 'dn') {
-			$pd['state'] = 28;
-		} else {
-			$pd['state'] = 10;
-		}
-		//初始化死者信息
-		$dtype = $pd['type']; $dname = $pd['name']; $dpls = $pd['pls'];
-		$lwname = $typeinfo [$dtype] . ' ' . $dname;
-		//初始化NPC遗言
-		if($dtype)
-		{
-			$lastword = is_array($lwinfo[$dtype]) ? $lwinfo[$dtype][$dname] : $lwinfo[$dtype];
-		}
-		//初始化玩家遗言
-		else 
-		{
-			$result = $db->query ( "SELECT lastword FROM {$gtablepre}users WHERE username ='$dname'");
-			$lastword = $db->result ( $result, 0 );
-		}
-		//向聊天框发送遗言
-		$db->query ( "INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$now','$lwname','$dpls','$lastword')" );
-
-		//发送news
-		$kname = $pa['type'] ? $pa['name'] : get_title_desc($pa['nick']).' '.$pa['name'];
-		//$dname = $pd['type'] ? $pd['name'] : get_title_desc($pd['nick']).' '.$pd['name'];
-		addnews ($now,'death'.$pd['state'],$dname,$dtype,$kname,$pa['wep_name'],$lastword );
-
-		return $lastword;
-	}
-
-	# 执行复活事件：
-	# 重要的事情要说三次：这里的第一个参数指的是杀人者(敌对方)视角，第二个参数指的是死者(受到伤害者)视角。
-	function revive_process(&$pa,&$pd,$active)
-	{
-		global $log,$weather,$now,$gamevars;
-		include_once GAME_ROOT.'./include/game/clubslct.func.php';
-
-		if(empty($pa['nm'])) $pa['nm'] = $active && !$pa['type'] ? '你' : $pa['name'];
-		if(empty($pd['nm'])) $pd['nm'] = !$active && !$pd['type'] ? '你' : $pd['name'];
-
-		$revival_flag = 0;
-
-		$dname = $pd['type'] ? $pd['name'] : get_title_desc($pd['nick']).' '.$pd['name'];
-
-		#光玉雨天气下，提供者有概率复活
-		if (!$revival_flag && $weather == 18 && $gamevars['wth18pid'] == $pd['pid'])
-		{
-			# 计算雨势
-			$wthlastime = $now - $gamevars['wth18stime'];
-			# 雨势在前7分钟递增，后3分钟递减
-			$wthlastime = $wthlastime <= 420 ? $wthlastime : 600 - $wthlastime;
-			$wthpow = min(7,max(1,round($wthlastime / 60)));
-			# 复活概率：基础10% + 效力x2 最高24%
-			$wth18_obbs = 10 + diceroll($wthpow) + diceroll($wthpow);
-			$wth18_dice = diceroll(99);
-			if($wth18_dice < $wth18_obbs)
-			{
-				#奥罗拉复活效果
-				$revival_flag = 18; //保存复活标记为通过光玉雨复活
-				addnews($now,'wth18_revival',$dname);
-				$pd['hp'] += min($pd['mhp'],max($wth18_obbs,1)); 
-				$pd['sp'] += min($pd['msp'],max($wth18_obbs,1));
-				$pd['state'] = 0;
-				$log.= "<span class=\"lime\">但是，飞舞着的光玉们钻进了{$pd['nm']}的身体，让{$pd['nm']}重新站了起来！</span><br>";;
-				return $revival_flag;
-			}
-		}
-
-		#极光天气下，玩家有10%概率、NPC有1%概率无条件复活
-		if (!$revival_flag && $weather == 17)
-		{
-			$aurora_rate = $pd['type'] ? 1 : 10; //玩家10%概率复活
-			$aurora_dice = diceroll(99);
-			if($aurora_dice<=$aurora_rate)
-			{
-				#奥罗拉复活效果
-				$revival_flag = 17; //保存复活标记为通过奥罗拉复活
-				addnews($now,'aurora_revival',$dname);
-				$pd['hp'] += min($pd['mhp'],max($aurora_dice,1)); 
-				$pd['sp'] += min($pd['msp'],max($aurora_dice,1));
-				$pd['state'] = 0;
-				$log.= "<span class=\"lime\">但是，空气中弥漫着的奥罗拉让{$pd['nm']}重新站了起来！</span><br>";;
-				return $revival_flag;
-			}
-		}
-
-		# 「涅槃」复活：
-		if (!$revival_flag && isset($pd['skill_c19_nirvana']))	
-		{
-			# 「涅槃」复活效果：
-			$revival_flag = 'nirvan'; //保存复活标记为通过技能复活
-			addnews($now,'revival',$dname);	
-			# 添加「涅槃」激活次数
-			set_skillpara('c19_nirvana','active_t',get_skillpara('c19_nirvana','active_t',$pd['clbpara'])+1,$pd['clbpara']);
-			$pd['state'] = 0; 
-			$pd['hp'] = 1; $pd['sp'] = 1;
-			# 将多出的rp转化为生命和防御力
-			if($pd['rp'])
-			{
-				$tot_rp = abs(round($pd['rp']/2));
-				if($tot_rp)
-				{
-					$pd['mhp'] += $tot_rp; $pd['def'] += $tot_rp;
-				}
-				$pd['rp'] = 0;
-			}
-			$log .= '<span class="lime">但是，'.$pd['nm'].'涅槃重生了！</span><br>';
-			return $revival_flag;
-		}
-
-		return $revival_flag;
-	}
-
-	# 执行死透了后的事件：
-	function final_kill_events(&$pa,&$pd,$active,$last=0)
-	{
-		global $log,$now,$alivenum,$deathnum,$db,$gtablepre,$tablepre;
-
-		if(empty($pa['nm'])) $pa['nm'] = $active && !$pa['type'] ? '你' : $pa['name'];
-		if(empty($pd['nm'])) $pd['nm'] = !$active && !$pd['type'] ? '你' : $pd['name'];
-
-		$pd['hp'] = 0; $pd['bid'] = $pa['pid'];	$pd['action'] = '';
-		$pd['endtime'] = $pd['deathtime'] = $now;
-
-		# 初始化遗言
-		if (!$pd['type'])
-		{
-			//死者是玩家，增加击杀数并保存系统状况。
-			$pa['killnum'] ++;
-			$alivenum --;
-			if(!empty($last)) $log .= "<span class='evergreen'>你用尽最后的力气喊道：“".$last."”</span><br>";
-		}
-		else 
-		{
-			//死者是NPC，加载NPC遗言
-			if(!empty($last)) $log .= npc_chat_rev ($pd,$pa, 'death' );
-		}
-		$deathnum ++;
-
-		# 初始化killmsg
-		if(!$pa['type'])
-		{
-			global $db,$tablepre;
-			$pname = $pa['name'];
-			$result = $db->query("SELECT killmsg FROM {$gtablepre}users WHERE username = '$pname'");
-			$killmsg = $db->result($result,0);
-			if(!empty($killmsg)) $log .= "<span class=\"evergreen\">{$pa['nm']}对{$pd['nm']}说：“{$killmsg}”</span><br>";
-		}
-		else
-		{
-			$log .= npc_chat_rev ($pa,$pd,'kill');
-		}
-
-		# 杀人rp结算
-		get_killer_rp($pa,$pd,$active);
-		# 执行死亡事件（灵魂绑定等）
-		check_death_events($pa,$pd,$active);
-		# 检查成就 大补丁：击杀者是玩家时才会检查成就
-		if(!$pa['type'])
-		{
-			include_once GAME_ROOT.'./include/game/achievement.func.php';
-			check_battle_achievement_rev($pa,$pd);	
-		}
-		# 保存游戏进行状态
-		include_once GAME_ROOT.'./include/system.func.php';
-		save_gameinfo();
-		return;
-	}
-
-	# 特殊死亡事件（灵魂绑定等）
-	function check_death_events(&$pa,&$pd,$active)
-	{
-		global $db,$tablepre,$log,$now,$nosta;
-
-		# 静流下线事件：
-		if($pd['type'] == 15)
-		{
-			//静流AI
-			global $gamevars;
-			$gamevars['sanmadead'] = 1;
-			save_gameinfo();
-		}
-
-		# 保存击杀女主的记录
-		if($pd['type'] == 14)
-		{
-			$pa['clbpara']['achvars']['kill_n14'] += 1;
-			# 不一定是一击秒杀……但是先这样吧^ ^;
-			if($pd['name'] == '守卫者 静流' && $pa['final_damage'] >= $pd['mhp']) $pa['clbpara']['achvars']['ach505'] = 1;
-		}
-
-		# 保存击杀种火或小兵的记录
-		if(empty($pa['clbpara']['achvars']['kill_minion']) && ($pd['type'] == 90 || $pd['type'] == 91 || $pd['type'] == 92)) $pa['clbpara']['achvars']['kill_minion'] = 1;
-
-		# 成就504，保存在RF高校用过的武器记录
-		if($pa['pls'] == 2) $pa['clbpara']['achvars']['ach504'][$pa['wep_kind']] = 1;
-
-
-		# 快递被劫事件：
-		if(isset($pd['clbpara']['post'])) 
-		{	
-			$log.="<span class='sienna'>某样东西从{$pd['name']}身上掉了出来……</span><br>";
-			//获取快递信息
-			$iid = $pd['clbpara']['postid'];
-			//获取金主信息
-			$sponsorid = $pd['clbpara']['sponsor'];
-			$result = $db->query("SELECT * FROM {$tablepre}gambling WHERE uid = '$sponsorid'");
-			$sordata = $db->fetch_array($result);
-			//发一条news 表示快递被劫走了
-			addnews($now,'gpost_failed',$sordata['uname'],$pd['itm'.$iid]);
-			//消除快递相关参数
-			unset($pd['clbpara']['post']);unset($pd['clbpara']['postid']);unset($pd['clbpara']['sponsor']);
-			//解除快递锁
-			$db->query("UPDATE {$tablepre}gambling SET bnid=0 WHERE uid='$sponsorid'");
-		}
-
-		# 灵魂绑定事件：
-		foreach(Array('wep','arb','arh','ara','arf','art') as $equip)
-		{
-			// ……我为什么不把这个装备名数组放进resources里……用了一万遍了
-			if(!empty($pd[$equip.'s']) && strpos($pd[$equip.'sk'],'v')!==false)
-			{
-				$log .= "伴随着{$pd['nm']}的死亡，<span class=\"yellow\">{$pd[$equip]}</span>也化作灰烬消散了。<br>";
-				$pd[$equip] = $pd[$equip.'k'] = $pd[$equip.'sk'] = '';
-				$pd[$equip.'e'] = $pd[$equip.'s'] = 0;
-				if($equip == 'wep')
-				{
-					$pd[$equip] = '拳头'; $pd[$equip.'k'] = 'WN'; $pd[$equip.'sk'] = '';
-					$pd[$equip.'e'] = 0; $pd[$equip.'s'] = $nosta;
-				}
-				elseif($equip == 'arb')
-				{
-					$pd[$equip] = '内衣'; $pd[$equip.'k'] = 'DN'; $pd[$equip.'sk'] = '';
-					$pd[$equip.'e'] = 0; $pd[$equip.'s'] = $nosta;
-				}
-			}
-		}
-		for($i=0;$i<=6;$i++)
-		{
-			if(!empty($pd['itms'.$i]) && strpos($pd['itmsk'.$i],'v')!==false)
-			{
-				$log .= "伴随着{$pd['nm']}的死亡，<span class=\"yellow\">{$pd['itm'.$i]}</span>也化作灰烬消散了。<br>";
-				$pd['itm'.$i] = $pd['itmk'.$i] = $pd['itmsk'.$i] = '';
-				$pd['itme'.$i] = $pd['itms'.$i] = 0;
-			}
-		}
-
-		#「掠夺」判定：
-		if(isset($pa['skill_c4_loot']))
-		{
-			//获取抢钱率
-			$sk_p = get_skillvars('c4_loot','goldr');
-			$lootgold = $pa['lvl'] * $sk_p;
-			$log.="<span class='yellow'>「掠夺」使{$pa['nm']}获得了{$lootgold}元！</span><br>";
-		}
-
-		# 「天威」技能判定
-		if(isset($pa['bskill_c6_godpow']) && $pa['final_damage'] <= $pd['mhp'] * get_skillvars('c6_godpow','mhpr'))
-		{
-			$rageback = get_skillvars('c6_godpow','rageback');
-			if(!empty($rageback))
-			{
-				$pa['rage'] = max(255,$pa['rage']+$rageback);
-				$log .= '<span class="yellow">「天威」使'.$pa['nm'].'的怒气回复了'.$rageback.'点！</span><br>';
-			}
-		}
-
-		# 「浴血」技能判定
-		if(isset($pa['skill_c12_bloody']))
-		{
-			if($pa['hp'] <= $pa['mhp']*0.3) $sk_lvl = 2;
-			elseif($pa['hp'] <= $pa['mhp']*0.5) $sk_lvl = 1;
-			else $sk_lvl = 0;
-			$sk_att_vars = get_skillvars('c12_bloody','attgain',$sk_lvl);
-			$sk_def_vars = get_skillvars('c12_bloody','defgain',$sk_lvl);
-			$pa['att'] += $sk_att_vars; $pa['def'] += $sk_def_vars; 
-			$log .= '<span class="yellow">「浴血」使'.$pa['nm'].'的攻击增加了'.$sk_att_vars.'点，防御增加了'.$sk_def_vars.'点！</span><br>';
-		}
-
-		# 佣兵死亡时，自动解除与雇主的雇佣关系
-		if(isset($pd['clbpara']['oid']))
-		{
-			$odata = fetch_playerdata_by_pid($pd['clbpara']['oid']);
-			include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
-			$log .= "<span clas='red'>由于战死，";
-			skill_merc_fire('c11_merc',$pd['clbpara']['mkey'],$pd,1);
-		}
-		# 灵俑死亡时，从创造者的灵俑队列中删除
-		if(isset($pd['clbpara']['zombieoid']))
-		{
-			$odata = fetch_playerdata_by_pid($pd['clbpara']['zombieoid']);
-			$mkey = array_search($pd['pid'],$odata['clbpara']['mate']);
-			unset($odata['clbpara']['mate'][$mkey]);
-			$zkey = array_search($pd['pid'],$odata['clbpara']['zombieid']);
-			unset($odata['clbpara']['zombieid'][$zkey]);
-			player_save($odata);
-			$w_log = "<span class=\"grey\">你的灵俑{$pd['name']}归于尘土了……</span><br>";
-			logsave($odata['pid'],$now,$w_log,'c');
-		}
-
-		return;
-	}
-
-	# 战斗怒气结算
-	function rgup_rev(&$pa,&$pd,$active)
-	{
-		# 攻击命中的情况下，计算pa(攻击方)因攻击行为获得的怒气
-		if($pa['hitrate_times'] > 0)
-		{
-			# pa(攻击方)拥有重击辅助属性，每次攻击额外获得1~2点怒气
-			if(!empty($pa['ex_keys']) && in_array('c',$pa['ex_keys']))
-			{
-				$pa_rgup = rand(1,2);
-				$pa['rage'] = min(255,$pa['rage']+$pa_rgup);
-				# 成功发动战斗技时，额外返还10%怒气
-				if(isset($pa['bskill']) && isset($pa['bskill_'.$pa['bskill']]))
-				{
-					$bsk = $pa['bskill'];
-					$bsk_cost = get_skillvars($bsk,'ragecost');
-					if($bsk_cost)
-					{
-						$pa['rage'] += round($bsk_cost*0.1);
-						# 必杀技能额外返还15点怒气
-						if($bsk == 'c9_lb') $pa['rage'] += get_skillvars('c9_lb','rageback');
-					}
-				}
-			}
-		}
-		# 无论攻击是否命中，计算pd(防守方)因挨打获得的怒气
-		$rgup = round(($pa['lvl'] - $pd['lvl'])/3);
-		# 单次获得怒气上限：15
-		$rgup = min(15,max(1,$rgup));
-		# 「灭气」技能效果
-		if(isset($pd['skill_c1_burnsp'])) $rgup += rand(1,2);
-		$pd['rage'] = min(255,$pd['rage']+$rgup);
-		return;
-	}
-
-	# rp结算
-	function rpup_rev(&$pa,$rpup)
-	{
-		# 「转业」效果判定
-		if(!check_skill_unlock('c19_reincarn',$pa))
-		{
-			$sk = 'c19_reincarn';
-			$sk_lvl = get_skilllvl($sk,$pa);
-			if($rpup > 0)
-			{
-				$sk_var = get_skillvars($sk,'rpgain',$sk_lvl);
-				$rpup = round($rpup*(1-($sk_var/100)));
-			}
-			else 
-			{
-				$sk_var = get_skillvars($sk,'rploss',$sk_lvl);
-				$rpup = round($rpup*(1+($sk_var/100)));
-			}
-		}
-		$pa['rp'] += $rpup;
-	}
-
-	# 战斗经验结算
-	function expup_rev(&$pa,&$pd,$active) 
-	{
-		global $log,$baseexp;
-		# 攻击命中的情况下，计算获得经验
-		if($pa['hitrate_times'] > 0)
-		{
-			$expup = round ( ($pd['lvl'] - $pa['lvl']) / 3 );
-			$expup = $expup > 0 ? $expup : 1;
-		}
-		# 攻击未命中，也许有其他渠道获得经验
-		else
-		{
-			#「反思」技能效果
-			if(isset($pa['skill_c5_review'])) $expup = 1;
-		}
-		if(isset($pa['bskill_c10_decons']) && $pa['final_damage'] > $pd['hp'])
-		{
-			$sk_up = ceil($pd['lvl'] - ($pa['lvl']*0.15));
-			$log.='<span class="yellow">「解构」使'.$pa['nm'].'获得了额外'.$sk_up.'点经验！</span><br>';
-			$expup += $sk_up;
-		}
-		if(!empty($expup)) $pa['exp'] += $expup;
-		//$log .= "$isplayer 的经验值增加 $expup 点<br>";
-
-		//升到下级所需的exp 直接在这里套公式计算 不用global了
-		$pa['upexp'] = round(($pa['lvl']*$baseexp)+(($pa['lvl']+1)*$baseexp));
-
-		if ($pa['exp'] >= $pa['upexp']) 
-		{
-			lvlup_rev ($pa,$pd,$active);
-		}
-		return;
-	}
-
-	# 战斗等级提升
-	function lvlup_rev (&$pa,&$pd,$active) 
-	{
-		global $log,$baseexp,$upexp;
-		if(empty($pa['nm'])) $pa['nm'] = $active ? '你' : $pa['name'];
-		$up_exp_temp = round ( (2 * $pa['lvl'] + 1) * $baseexp );
-		if ($pa['exp'] >= $up_exp_temp && $pa['lvl'] < 255) 
-		{
-			$sklanginfo = Array ('wp' => '殴熟', 'wk' => '斩熟', 'wg' => '射熟', 'wc' => '投熟', 'wd' => '爆熟', 'wf' => '灵熟', 'all' => '全系熟练度' );
-			$sknlist = Array (1 => 'wp', 2 => 'wk', 3 => 'wc', 4 => 'wg', 5 => 'wd', 9 => 'wf', 12 => 'all' );
-			$skname = isset($sknlist[$pa['club']]) ? $sknlist[$pa['club']] : 0;
-			//升级判断
-			$lvup = 1 + floor (($pa['exp'] - $up_exp_temp)/$baseexp/2);
-			$lvup = $lvup > 255 - $pa['lvl'] ? 255 - $pa['lvl'] : $lvup;
-			$lvuphp = $lvupatt = $lvupdef = $lvupskill = $lvupsp = $lvupspref = 0;
-			//升级数值计算
-			for($i = 0; $i < $lvup; $i += 1) 
-			{
-				if ($pa['club'] == 12) {
-					$lvuphp += rand ( 14, 18 );
-				} else {
-					$lvuphp += rand ( 8, 10 );
-				}
-				$lvupsp += rand( 4,6);
-				if ($pa['club'] == 12) {
-					$lvupatt += rand ( 4, 6 );
-					$lvupdef += rand ( 5, 8 );
-				} else {
-					$lvupatt += rand ( 2, 4 );
-					$lvupdef += rand ( 3, 5 );
-				}
-				
-				if ($skname == 'all') {
-					$lvupskill += rand ( 2, 4 );
-				}elseif ($skname == 'wf') {
-					$lvupskill += rand ( 3, 5 );
-				}elseif ($skname == 'wd') {
-					$lvupskill += rand ( 6, 8 );
-				}elseif($skname){
-					$lvupskill += rand ( 4, 6 );
-				}
-				$lvupspref += round($pa['msp'] * 0.1);		
-			}
-			//应用升级
-			$pa['lvl'] += $lvup;
-			$up_exp_temp = round ( (2 * $pa['lvl'] + 1) * $baseexp );
-			if ($pa['lvl'] >= 255) {
-				$pa['lvl'] = 255;
-				$pa['exp'] = $up_exp_temp;
-			}
-			$pa['upexp'] = $up_exp_temp;
-			$pa['hp'] += $lvuphp;
-			$pa['mhp'] += $lvuphp;
-			$pa['sp'] += $lvupsp;
-			$pa['msp'] += $lvupsp;
-			$pa['att'] += $lvupatt;
-			$pa['def'] += $lvupdef;
-			$pa['skillpoint'] += $lvup;
-			if(!empty($skname))
-			{
-				if ($skname == 'all') {
-					$pa['wp'] += $lvupskill;
-					$pa['wk'] += $lvupskill;
-					$pa['wg'] += $lvupskill;
-					$pa['wc'] += $lvupskill;
-					$pa['wd'] += $lvupskill;
-					$pa['wf'] += $lvupskill;
-				} elseif ($skname) {
-					$pa[$skname] += $lvupskill;
-				}
-			}
-			$pa['sp'] = min($lvupspref+$pa['sp'],$pa['msp']);
-			
-			if ($skname) {
-				$sklog = "，{$sklanginfo[$skname]}+{$lvupskill}";
-			}
-			$lvlup_log = "<span class=\"yellow\">{$pa['nm']}升了{$lvup}级！生命上限+{$lvuphp}，体力上限+{$lvupsp}，攻击+{$lvupatt}，防御+{$lvupdef}";
-			if(isset($sklog)) $lvlup_log .= $sklog;
-			$lvlup_log .= "，体力恢复了{$lvupspref}，获得了{$lvup}点技能点！</span><br>";
-			if(!$pa['type'])
-			{
-				if($pa['nm'] == '你') $log.= $lvlup_log;
-				else $pa['lvlup_log'] = $lvlup_log;
-			}
-		} elseif ($pa['lvl'] >= 255) {
-			$pa['lvl'] = 255;
-			$pa['exp'] = $up_exp_temp;
-		}
-		$upexp = round(($pa['lvl']*$baseexp)+(($pa['lvl']+1)*$baseexp));
-		return;
-	}
-
-	# NPC自动换装
-	#说实话没有完全看懂，但是能跑就行
-	function npc_changewep_rev(&$pa,&$pd,$acitve)
-	{
-		global $now,$log;
-		global $rangeinfo,$ex_dmg_def;
-
-		if(!$pa['type'] || $pa['club'] != 98) return;
-
-		$dice = diceroll(99);
-		
-		if($dice > 50)
-		{
-			$weplist = Array();
-			$wepklist = Array($pa['wepk']); $weplist2 = Array();
-			for($i=0;$i<=6;$i++)
-			{
-				if(!empty($pa['itms'.$i]) && !empty($pa['itme'.$i]) && strpos($pa['itmk'.$i],'W')===0)
-				{
-					$weplist[] = Array($i,$pa['itm'.$i],$pa['itmk'.$i],$pa['itme'.$i],$pa['itms'.$i],$pa['itmsk'.$i]);
-					$wepklist[] = $pa['itmk'.$i];
-				}
-			}
-			if(!empty($weplist))
-			{
-				$wepklist = array_unique($wepklist);
-				$temp_pd_ex_keys = array_merge(get_equip_ex_array($pd),get_wep_ex_array($pd));
-				$wepkAI = $wepskAI = true;
-				if(!empty($temp_pd_ex_keys))
-				{
-					if(count($wepklist)<=1) $wepkAI = false;
-					foreach($temp_pd_ex_keys as $ex)
-					{
-						if(in_array($ex,Array('A','B'))) $wepkAI = false;
-						if(in_array($ex,Array('a','b'))) $wepskAI = false;
-					}
-				}
-				if($wepkAI)
-				{
-					$wepk_temp = $pa['wepk'];
-					foreach($weplist as $val)
-					{
-						if($rangeinfo[substr($val[2],1,1)] >= $rangeinfo[substr($wepk_temp,1,1)] && !in_array(substr($val[2],1,1),$temp_pd_ex_keys))
-						{
-							$weplist2[] = $val;
-						}
-					}
-					if($weplist2)
-					{
-						$weplist = $weplist2;
-					}
-				}
-				if($wepskAI && $weplist)
-				{
-					$minus = array();
-					foreach($weplist as $val)
-					{
-						foreach($ex_dmg_def as $key => $val2){
-							if(strpos($val[5],$key)!==false && !in_array($val2,$temp_pd_ex_keys)){
-								$minus[] = $val;
-							}
-						}
-					}
-					if(count($minus) < count($weplist)){
-						$weplist = array_diff($weplist,$minus);
-					}				
-				}
-			}
-			else 
-			{
-				//没有获取到可换装列表，直接返回
-				return;
-			}
-			
-			if(!empty($weplist))
-			{
-				$oldwep = $pa['wep'];
-				shuffle($weplist);
-				$chosen = $weplist[0];$c = $chosen[0];
-				//var_dump($chosen);
-				//刷新套装效果
-				include_once GAME_ROOT.'./include/game/itemmain.func.php';
-				reload_single_set_item($pa,'wep',$oldwep);
-				reload_single_set_item($pa,'wep',$chosen[1],1);
-				$pa['itm'.$c] = $pa['wep']; $pa['itmk'.$c] = $pa['wepk']; $pa['itmsk'.$c] = $pa['wepsk'];
-				$pa['itme'.$c] = $pa['wepe']; $pa['itms'.$c] = $pa['weps'];
-				$pa['wep'] = $chosen[1]; $pa['wepk'] = $chosen[2]; $pa['wepe'] = $chosen[3]; $pa['weps'] = $chosen[4]; $pa['wepsk'] = $chosen[5];
-				get_wep_kind($pa);
-				$pa['wep_range'] = get_wep_range($pa);
-				$pa['wep_skill'] = get_wep_skill($pa);
-				$pa['change_wep_log'] = "<span class=\"yellow\">{$pa['nm']}</span>将手中的<span class=\"yellow\">{$oldwep}</span>卸下，装备了<span class=\"yellow\">{$pa['wep']}</span>！<br>";
-			}
-		}
-		return;
-	}
-
-	# NPC喊话
-	# pa指npc pd指另一视角
-	function npc_chat_rev(&$pa,&$pd,$mode='') 
-	{
-		global $npcchat;
-		if(!empty($npcchat[$pa['type']][$pa['name']])) 
-		{
-			$nchat = $npcchat[$pa['type']][$pa['name']];
-			$chatcolor = $nchat['color'];
-			$npcwords = !empty($chatcolor) ? "<span class = \"{$chatcolor}\">" : '<span>';
-			switch ($mode) 
-			{
-				case 'attack' :
-					if (empty($pa['itmsk0'])) 
-					{
-						$npcwords .= "{$nchat[0]}";
-						$pa['itmsk0'] = 1;
-					}
-					elseif ($pa['hp'] > ($pa['mhp'] / 2)) 
-					{
-						$dice = rand ( 1, 2 );
-						$npcwords .= "{$nchat[$dice]}";
-					} 
-					else 
-					{
-						$dice = rand ( 3, 4 );
-						$npcwords .= "{$nchat[$dice]}";
-					}
-					break;
-				case 'defend' :
-					if (empty($pa['itmsk0']))
-					{
-						$npcwords .= "{$nchat[0]}";
-						$pa['itmsk0'] = 1;
-					}
-					elseif($pa['hp'] > ($pa['mhp'] / 2)) 
-					{
-						$dice = rand ( 5, 6 );
-						$npcwords .= "{$nchat[$dice]}";
-					} 
-					else 
-					{
-						$dice = rand ( 7, 8 );
-						$npcwords .= "{$nchat[$dice]}";
-					}
-					break;
-				case 'death' :
-					$npcwords .= "{$nchat[9]}";
-					break;
-				case 'escape' :
-					$npcwords .= "{$nchat[10]}";
-					break;
-				case 'cannot' :
-					$npcwords .= "{$nchat[11]}";
-					break;
-				case 'critical' :
-					$npcwords .= "{$nchat[12]}";
-					break;
-				case 'kill' :
-					$npcwords .= "{$pa['nm']}对{$pd['nm']}说道：{$nchat[13]}";
-					break;
-			}
-			$npcwords .= '</span><br>';
-			return $npcwords;
-		} 
-		elseif ($mode == 'death') 
-		{
-			global $lwinfo;
-			if (is_array($lwinfo[$pa['type']])) 
-			{
-				$lastword = $lwinfo[$pa['type']][$pa['name']];
-			} 
-			else 
-			{
-				$lastword = $lwinfo[$pa['type']];
-			}
-			$npcwords = "<span class=\"yellow\">“{$lastword}”</span><br>";
-			return $npcwords;
-		}
-		else 
-		{
-			return;
-		}
-	}
-
-	function checkdmg($p1, $p2, $d) {
 		if ($d < 0) {
 			$words = "{$p1}为{$p2}回复了<span class=\"lime\">".abs($d)."</span>点生命……这是咋回事呢？";
 		} elseif (($d >= 100) && ($d < 150)) {
@@ -1477,41 +682,5 @@
 		}
 		return;
 	}
-
-	function addnoise($wp_kind, $wsk, $ntime, $npls, $nid1, $nid2, $nmode) {
-	
-		//在隐藏地图内不会传出声音信息
-		global $plsinfo;
-		if(!array_key_exists($npls,$plsinfo)) return;
-		
-		if ((($wp_kind == 'G') && (strpos ( $wsk, 'S' ) === false)) || ($wp_kind == 'F')) {
-			global $noisetime, $noisepls, $noiseid, $noiseid2, $noisemode;
-			$noisetime = $ntime;
-			$noisepls = $npls;
-			$noiseid = $nid1;
-			$noiseid2 = $nid2;
-			$noisemode = $nmode;
-			save_combatinfo ();
-		} elseif (strpos ( $wsk, 'd' ) !== false){
-			global $noisetime, $noisepls, $noiseid, $noiseid2, $noisemode;
-			$noisetime = $ntime;
-			$noisepls = $npls;
-			$noiseid = $nid1;
-			$noiseid2 = $nid2;
-			$noisemode = 'D';
-			save_combatinfo ();
-		}
-		if (strlen($wp_kind)>=3){
-			global $noisetime, $noisepls, $noiseid, $noiseid2, $noisemode,$wep;
-			$noisetime = $ntime;
-			$noisepls = $npls;
-			$noiseid = $nid1;
-			$noiseid2 = $nid2;
-			$noisemode = $wp_kind;
-			save_combatinfo ();
-		}
-		
-		return;
-	}
-
+}
 ?>

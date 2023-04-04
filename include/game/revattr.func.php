@@ -1,16 +1,16 @@
 <?php
+namespace revattr
+{
 
 	if(!defined('IN_GAME')) {
 		exit('Access Denied');
 	}
 
-	//include_once GAME_ROOT.'./include/game/dice.func.php';
-	include_once GAME_ROOT.'./include/game/clubskills.func.php';
-	//include_once GAME_ROOT.'./include/game/revclubskills.func.php';
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
+	include_once GAME_ROOT.'./include/game/revattr.calc.php';
 	include_once GAME_ROOT.'./include/game/revattr_extra.func.php';
 
-	//获取真实攻击类别
+	# 获取真实攻击类别
 	function get_wep_kind(&$pa,$wep_kind='',$pd_range=NULL)
 	{
 		global $nosta,$attinfo;
@@ -76,28 +76,27 @@
 		return $pa['wep_kind']; //保险起见……
 	}
 
-	//获取武器射程
+	# 获取武器射程
 	function get_wep_range(&$pa)
 	{
 		global $rangeinfo;
+
 		if(empty($pa['wep_kind'])) get_wep_kind($pa);
+
 		$range = isset($rangeinfo[$pa['wep_kind']]) ? $rangeinfo[$pa['wep_kind']] : NULL;
-		#「穿杨」效果判定：
-		if(isset($pa['bskill_c4_sniper']))
-		{
-			//获取射程加成
-			$sk_rn = get_skillvars('c4_sniper','rangegain');
-			$range += $sk_rn;
-		}
+
+		# 获取社团技能对武器射程的修正
+		$range = get_clbskill_wep_range($pa,$range);
+
 		return $range;
 	}
 
-	//获取武器对应熟练度
+	# 获取武器对应熟练度
 	function get_wep_skill(&$pa)
 	{
 		global $skillinfo,$log;
+
 		if(empty($pa['wep_kind'])) get_wep_kind($pa);
-		# 获取真实熟练度 保存在$pa['wep_skill']内
 
 		# 天赋异禀在计算熟练时附加25%别系熟练
 		if ($pa['club'] == 10)
@@ -113,17 +112,156 @@
 		{
 			$wep_skill = $pa[$skillinfo[$pa['wep_kind']]];
 		}
-		# 「天威」技能判定
-		if(isset($pa['bskill_c6_godpow']))
+
+		# 获取社团技能对武器熟练度的修正
+		$wep_skill = get_clbskill_wep_skill($pa,$wep_skill);
+		return $wep_skill;
+	}
+
+	# 初始化进攻方(pa)的主动技能参数
+	function get_attr_bskills(&$pa,&$pd,$active)
+	{
+		global $log,$cskills,$now;
+
+		# 检查先攻者是否有要发动的主动技能：
+		# 1.玩家：须自主发动
+		# 2.NPC：如满足条件则随机发动
+		if($pa['type'] && !empty($pa['clbpara']['skill']))
 		{
-			$sk_fix = min($pa['rage']+($pa['lvl']/6),get_skillvars('c6_godpow','skmax'));
-			if(!empty($sk_fix))
+			# 先攻者是NPC时，打乱并遍历pa技能队列 寻找可用战斗技
+			if($pa['type'])
 			{
-				$wep_skill += $sk_fix;
-				$pa['bskilllog2'] .='<span class="yellow">「天威」使'.$pa['nm'].'的熟练度暂时增加了'.ceil($sk_fix).'点！</span><br>';
+				$npc_skill = $pa['clbpara']['skill'];
+				shuffle($npc_skill);
+				foreach($npc_skill as $sk)
+				{
+					if(get_skilltags($sk,'battle') && !check_skill_unlock($sk,$pa) && !check_skill_cost($sk,$pa))
+					{
+						$pa['bskill'] = $sk;
+						break;
+					}
+				}
 			}
 		}
-		return $wep_skill;
+		if(!empty($pa['bskill']))
+		{
+			# 检查战斗技是否可用，可用则执行流程
+			if(!check_skill_unlock($pa['bskill'],$pa) && !check_skill_cost($pa['bskill'],$pa))
+			{
+				$bsk = $pa['bskill'];
+				$bsk_name = $cskills[$bsk]['name'];
+				# 扣除怒气
+				$bsk_cost = get_skillvars($bsk,'ragecost');
+				if($bsk_cost) $pa['rage'] -= $bsk_cost;
+				# 成功释放主动技，应用标记
+				$pa['bskill_'.$bsk] = 1;
+				$pa['bskilllog'] = "<span class=\"lime\">{$pa['nm']}对{$pd['nm']}发动了技能「{$bsk_name}」！</span><br>";
+				# 限次技每次使用时次数+1
+				if(get_skilltags($bsk,'limit'))
+				{
+					set_skillpara($bsk,'active_t',get_skillpara($bsk,'active_t',$pa['clbpara'])+1,$pa['clbpara']);
+				}
+				# 重新判定双系武器的攻击方式
+				if(isset($cskills[$bsk]['wepk']) && !in_array($pa['wep_kind'],$cskills[$bsk]['wepk']))
+				{
+					get_wep_kind($pa,$cskills[$bsk]['wepk'][0]);
+				}
+				# 检查是否需要addnews
+				addnews($now,'bsk_'.$bsk,$pa['name'],$pd['name']);
+				# 检查是否需要进行logsave
+				if(!$pd['type'] && $pd['nm']!='你') $pd['logsave'] .= "<span class=\"yellow\">{$pa['name']}</span>对你发动了技能<span class=\"red\">「{$bsk_name}」</span>！";
+				elseif(!$pa['type'] && $pa['nm']!='你') $pa['logsave'] .= "你对<span class=\"yellow\">{$pd['name']}</span>发动了技能<span class=\"red\">「{$bsk_name}」</span>！";
+			}
+			else 
+			{
+				# 主动技不满足使用条件或来源非法，直接注销标记
+				unset($pa['bskill']);
+			}
+		}
+		return;
+	}
+
+	# 初始化指定pa的被动技能参数，这里通常只判定技能是否生效，如生效，则提供一个标记
+	function get_attr_passive_skills(&$pa,&$pd,$active)
+	{
+		global $cskills,$log;
+
+		if(!empty($pa['clbpara']['skill']))
+		{
+			$pa['skilllog'] = '';
+			# 遍历pa技能队列 检查是否解锁
+			foreach($pa['clbpara']['skill'] as $sk)
+			{
+				# passive、buff、inf标签技能通用判定
+				# 对于解锁技能，如果有特殊触发条件，在这里加入判定，否则会默认给一个触发标记
+				if((get_skilltags($sk,'passive') || get_skilltags($sk,'buff') || get_skilltags($sk,'inf')) && !check_skill_unlock($sk,$pa))
+				{
+					# 「猛击」特殊判定
+					if($sk == 'c1_crit')
+					{
+						$sk_dice = diceroll(99);
+						# 「偷袭」或「闷棍」技能生效时，「猛击」必定触发；
+						$sk_obbs = isset($pa['bskill_c1_stalk'])||isset($pa['bskill_c1_bjack']) ? 100 : get_skillvars('c1_crit','rate');
+						# 成功触发时
+						if($sk_dice < $sk_obbs) $pa['skill_c1_crit'] = 1;
+					}
+					# 「枭眼」特殊判定：射程不小于对方时激活效果
+					elseif($sk == 'c3_hawkeye' && $pa['wep_range'] >= $pd['wep_range'])
+					{
+						$pa['skill_c3_hawkeye'] = 1;
+					}
+					# 「护盾」特殊判定：生命值不小于指定百分比时激活一个护盾
+					elseif($sk == 'c7_shield')
+					{
+						$sk_lvl = get_skilllvl('c7_shield',$pa);
+						$hpalert = get_skillvars('c7_shield','hpalert',$sk_lvl);
+						if($pa['hp'] <= $pa['mhp']*($hpalert/100))
+						{
+							getclubskill('buff_shield',$pa['clbpara']);
+							set_skillpara('buff_shield','svar',get_skillvars('c7_shield','svar',$sk_lvl),$data['clbpara']);
+							$pa['skill_buff_shield'] = 1;
+							//$pa['skilllog'] .= "<span class='lime'>感知到危险，闪烁着淡蓝幽光的护盾自动出现在{$pa['nm']}身旁！<br></span>";
+							$log .= "<span class='lime'>感知到危险，闪烁着淡蓝幽光的护盾自动出现在{$pa['nm']}身旁！<br></span>";
+						}
+					}
+					# 「暗杀」特殊判定：输出一段破隐log，并丢失buff技能
+					elseif($sk == 'buff_assassin')
+					{
+						$pa['skill_buff_assassin'] = 1;
+						$pa['skilllog'] .= "<span class='yellow'>{$pa['nm']}从阴影中现出身形，打了{$pd['nm']}一个措手不及！</span><br>";
+						lostclubskill('buff_assassin',$pa['clbpara']);
+					}
+					# 「洞察」特殊判定：熟练度高于对方时触发
+					elseif($sk == 'c10_insight' && $pa['wep_skill'] > $pd['wep_skill'])
+					{
+						$pa['skill_c10_insight'] = 1;
+						$pa['skilllog'] .= "<span class='yellow'>{$pa['nm']}凭借丰富的经验看穿了{$pd['nm']}的破绽！</span><br>";
+					}
+					# 「海虎」特殊判定：
+					elseif($sk == 'c12_swell')
+					{
+						$sk_var = get_skillvars('c12_swell','swellr') * calc_enmity_losshpr($pa,$pd);
+						$dice = diceroll(99);
+						if($dice < $sk_var)
+						{
+							$pa['skill_c12_swell'] = $pa['hp'] <= $pa['mhp']*0.3 ? 2 : 1;
+						}
+					}
+					# 其他非特判技能，默认给一个触发标记
+					else 
+					{
+						$pa['skill_'.$sk] = 1;
+						//$pa['skill_'.$sk.'_log'] = "";
+					}
+				}
+				# switch标签技能通用判定：active为1时才算激活
+				if(get_skilltags($sk,'switch') && !empty(get_skillpara($sk,'active',$pa['clbpara'])) && !check_skill_unlock($sk,$pa))
+				{
+					$pa['askill_'.$sk] = 1;
+				}
+			}
+		}
+		return;
 	}
 
 	//获取防具上的属性
@@ -195,41 +333,6 @@
 		# 「天义」效果判定：
 		if(isset($pa['skill_c6_justice']) && (empty($pa['ex_keys']) || !in_array('N',$pa['ex_keys']))) $pa['ex_keys'][] = 'N';
 		return;
-	}
-
-	//在初始化战斗阶段触发的事件。即：无论是否反击都只会触发1次的事件。
-	function combat_prepare_events(&$pa,&$pd,$active)
-	{
-		# 社团技能初始化（主动型/战斗技）
-		attr_extra_active_skills($pa,$pd,$active);
-		//attr_extra_active_skills($pd,$pa,$active); 
-		# 社团技能初始化（被动型）（最好不要在这个阶段输出log，把log和成功触发的标记保存进对应角色里，到实际结算效果时再显示。）
-		if(!empty($pa['clbpara']['skill'])) attr_extra_passive_skills($pa,$pd,$active);
-		if(!empty($pd['clbpara']['skill'])) attr_extra_passive_skills($pd,$pa,$active);
-		
-		# 百命猫 初始化事件： 每次初始化战斗时都会提升等级与怒气
-		if (($pa['type'] == 89 && $pa['name']=='是TSEROF啦！') || ($pd['type'] == 89 && $pd['name']=='是TSEROF啦！'))
-		{ 
-			attr_extra_89_100lifecat($pa,$pd,$active);
-		}
-
-		# 笼中鸟 初始化事件：喂养成功会跳过战斗
-		if($pa['type'] == 89 && $pa['name'] =='笼中鸟')
-		{
-			$flag = attr_extra_89_cagedbird($pa,$pd,$active);
-			if($flag < 0) return $flag;
-		}
-		elseif($pd['type'] == 89 && $pd['name'] =='笼中鸟')
-		{
-			$flag = attr_extra_89_cagedbird($pd,$pa,$active);
-			if($flag < 0) return $flag;
-		}
-
-		# 检查成就503
-		if(!empty($pa['arbs']) && $pa['arb'] == '【智代专用熊装】') attr_ach53_check($pa,$pd,$active);
-		if(!empty($pd['arbs']) && $pd['arb'] == '【智代专用熊装】') attr_ach53_check($pd,$pa,$active);
-	
-		return 1;
 	}
 
 	//攻击方(pa)在命中流程前触发的事件（直死、DOT结算、踩陷阱……） 返回值小于0：中止打击流程
@@ -601,12 +704,6 @@
 			$pa['wepe_t'] = $pa['wepe'] * 2;
 		}
 
-		# 获取pa社团技能对攻击力的加成（旧）
-		/*if(!empty($pa['skills']))
-		{
-			rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
-			$pa['att'] += $att1;
-		}*/
 		# 汇总：：
 		$base_att = $pa['att'] + $pa['wepe_t'];
 
@@ -725,7 +822,7 @@
 		{
 			$tooltip = "<span tooltip=\" 基础防御值：{$base_def}+{$equip_def}";
 			if(!empty($def1)) $tooltip .="+{$def1}";
-			if(!empty($sk_def)) $tooltip .="\r技能加成：+{$sk_def}";
+			if(!empty($sk_def)) $tooltip .="+{$sk_def}(技能加成)";
 			$tooltip .= "\r";
 		}
 		# 计算防御力修正
@@ -767,13 +864,6 @@
 			}
 		}
 		
-		# 计算社团技能对pd防御力的修正（旧）
-		/*$club_def_per = 100;
-		if(!empty($pd['club']) || !empty($pd['skills']))
-		{
-			rev_get_clubskill_bonus_p($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$attfac,$deffac);
-			$club_def_per *= $deffac;
-		}*/
 		# 计算社团技能对pd防御力的修正（新）	
 		#「根性」技能加成
 		if(!check_skill_unlock('c12_garrison',$pd))
@@ -853,6 +943,7 @@
 				$damage += $pa['wepe'];
 			}
 		}
+		$pa['original_dmg'] += $damage;
 		return $damage;
 	}
 
@@ -1013,15 +1104,13 @@
 			//检查抹消属性是否生效
 			if($dice > $obbs)
 			{
+				$pd['phy_def_flag'] =  2;
 				#「脉冲」效果判定：
 				if(isset($pa['bskill_c7_emp']) || isset($pd['bskill_c7_emp']))
 				{
 					$log .= "<span class='yellow'>在电磁脉冲的干扰下，伤害抹消力场被无效化了！</span><br>";
 					$pa['bskill_c7_emp'] = 2;
-				}
-				else 
-				{
-					$pd['phy_def_flag'] =  2;
+					unset($pd['phy_def_flag']);
 				}
 			}
 			else 
@@ -1369,15 +1458,13 @@
 			//检查抹消属性是否生效
 			if($dice > $obbs)
 			{
+				$pd['ex_def_flag'] =  2;
 				#「脉冲」效果判定：
 				if(isset($pa['bskill_c7_emp']) || isset($pd['bskill_c7_emp']))
 				{
 					$log .= "<span class='yellow'>在电磁脉冲的干扰下，属性抹消力场被无效化了！</span><br>";
 					$pa['bskill_c7_emp'] = 2;
-				}
-				else 
-				{
-					$pd['ex_def_flag'] =  2;
+					unset($pd['ex_def_flag'] );
 				}
 			}
 			else 
@@ -1484,10 +1571,10 @@
 			$pa['ex_dmgpsh_log'] = '';$pa['ex_dmginf_log'] = ''; $pa['ex_dmgdef_log'] = '';
 			//计算单个属性的基础属性伤害： 基础伤害 + 效果↔伤害系数修正 + 熟练↔伤害系数修正
 			$ex_dmg = $ex_base_dmg[$ex] + $pa['wepe']/$ex_wep_dmg[$ex] + $pa['wep_skill']/$ex_skill_dmg[$ex];
-			//计算单个属性能造成的基础伤害上限
-			$ex_dmg = get_ex_base_dmg_max($pa,$pd,$active,$ex,$ex_dmg);
 			//计算得意武器类型对单个属性伤害的系数修正
 			if(isset($ex_good_wep[$ex]) && $ex_good_wep[$ex] == $pa['wep_kind']) $ex_dmg *= 2;
+			//计算单个属性能造成的基础伤害上限
+			$ex_dmg = get_ex_base_dmg_max($pa,$pd,$active,$ex,$ex_dmg);
 			//计算属性伤害浮动
 			$ex_dmg = round($ex_dmg * rand(100-$ex_dmg_fluc[$ex],100+$ex_dmg_fluc[$ex])/100);
 			//计算单个属性的属性伤害变化：
@@ -1552,60 +1639,6 @@
 			}
 		}
 		return $total_ex_dmg;
-	}
-
-	//计算单个属性伤害上限
-	function get_ex_base_dmg_max(&$pa,&$pd,$active,$ex,$ex_dmg)
-	{
-		global $ex_max_dmg;
-		# 「过载」效果判定：
-		if($ex == 'e' && isset($pa['skill_c7_overload'])) return $ex_dmg;
-		if($ex_max_dmg[$ex]>0 && $ex_dmg>$ex_max_dmg[$ex]) $ex_dmg = $ex_max_dmg[$ex];
-		return $ex_dmg;
-	}
-
-	//计算单个属性伤害系数变化
-	function get_ex_base_dmg_p(&$pa,&$pd,$active,$ex,$ex_dmg)
-	{
-		global $ex_good_wep,$ex_inf,$ex_inf_punish,$exdmginf,$exdmgname,$log;
-		# 「高能」效果判定：
-		if(isset($pa['bskill_c5_higheg']) && $ex == 'd')
-		{
-			$log.="<span class='yellow'>「高能」使{$pa['nm']}造成的爆炸伤害不受影响！</span><br>";
-			return $ex_dmg;
-		}
-		# 「死疗」效果判定（不会受其他技能加成）：
-		if(isset($pd['skill_c8_deadheal']) && $ex == 'p')
-		{
-			$sk_p = get_skillvars('c8_deadheal','exdmgr');
-			$ex_dmg = min($pd['mhp']-$pd['hp'],ceil($ex_dmg*($sk_p/100)));
-			$pd['hp'] += $ex_dmg;
-			$log .= "<span class='purple'>{$pd['nm']}从毒雾中汲取养分，恢复了<span class='lime'>{$ex_dmg}</span>点生命！</span><br>";
-			return 0;
-		}
-		//计算社团技能对单个属性伤害的系数补正
-		$ex_dmg *= get_clbskill_ex_base_dmg_r($pa,$pd,$active,$ex);
-		//计算社团技能对单个属性伤害的补正
-		$ex_dmg += get_clbskill_ex_base_dmg_fix($pa,$pd,$active,$ex);
-		//计算已经进入的异常状态对属性攻击伤害的影响
-		if(isset($ex_inf[$ex]) && strpos($pd['inf'],$ex_inf[$ex])!==false && isset($ex_inf_punish[$ex]))
-		{
-			$ex_dmg *= $ex_inf_punish[$ex];
-			$pa['ex_dmgpsh_log'] .= "由于{$pd['nm']}已经{$exdmginf[$ex_inf[$ex]]}，{$exdmgname[$ex]}的伤害";
-			$pa['ex_dmgpsh_log'] .= $ex_inf_punish[$ex]>1 ? "增加了！" : "减少了！";
-		}
-		//计算属性伤害是否被防御
-		if(!empty($pd['ex_def_flag']) && ($pd['ex_def_flag'] == 1 || (is_array($pd['ex_def_flag']) && in_array($ex,$pd['ex_def_flag']))))
-		{
-			$ex_dmg = round($ex_dmg*0.5);
-			$pa['ex_dmgdef_log'] = 1;
-		}
-		# 「催化」效果计数：
-		if(isset($pa['bskill_c8_catalyst']) && $ex == 'p')
-		{
-			$pa['bskill_c8_catalyst'] ++;
-		}
-		return $ex_dmg;
 	}
 
 	//计算属性总伤害加成
@@ -2028,87 +2061,9 @@
 			}
 		}
 
-		# 「磁暴」效果判定
-		if(isset($pa['bskill_c7_electric']))
-		{
-			if(strpos($pd['inf'],'e')!==false)
-			{
-				$flag = get_skillinf_rev($pd,'inf_dizzy',get_skillvars('c7_electric','lasttimes'));
-				if($flag)
-				{
-					$log .= "<span class='yellow'>由于已经处于麻痹状态，狂暴的电流直接将{$pd['nm']}电晕了！</span><br>";
-					if(!$pd['type'] && $pd['nm']!='你') $pd['logsave'] .= "狂暴的电流直接将你电晕！<br>";
-					elseif(!$pa['type'] && $pa['nm']!='你') $pa['logsave'] .= "狂暴的电流直接将<span class=\"yellow\">{$pd['name']}</span>电晕！<br>";
-				}
-			}
-			else 
-			{
-				$infr = get_skillvars('c7_electric','infr');
-				$dice = diceroll(99);
-				if($dice < $infr)
-				{
-					$flag = get_inf_rev($pd,'e');
-					$log .= "<span class='yellow'>「磁暴」使{$pd['nm']}{$exdmginf['e']}了！</span><br>";
-				}
-				else
-				{
-					$log .= "<span class='yellow'>{$pd['nm']}没有受到「磁暴」影响！</span><br>";
-				}
-			}
-		}
-
-		# 「脉冲」效果判定
-		if(isset($pa['bskill_c7_emp']) && $pa['bskill_c7_emp'] > 1)
-		{
-			if(strpos($pd['inf'],'e')!==false)
-			{
-				$flag = get_skillinf_rev($pd,'inf_dizzy',get_skillvars('c7_electric','lasttimes'));
-				if($flag)
-				{
-					$log .= "<span class='yellow'>由于已经处于麻痹状态，狂暴的能量脉冲直接把{$pd['nm']}冲晕了过去！</span><br>";
-					if(!$pd['type'] && $pd['nm']!='你') $pd['logsave'] .= "狂暴的能量脉冲把你冲晕了过去！<br>";
-					elseif(!$pa['type'] && $pa['nm']!='你') $pa['logsave'] .= "狂暴的能量脉冲把<span class=\"yellow\">{$pd['name']}</span>冲晕了过去！<br>";
-				}
-			}
-			else 
-			{
-				$flag = get_inf_rev($pd,'e');
-				$log .= "<span class='yellow'>「脉冲」使{$pd['nm']}{$exdmginf['e']}了！</span><br>";
-			}
-		}
-
-		# 「渗透」效果判定
-		if(isset($pa['skill_c8_infilt']))
-		{
-			$sk_lvl = get_skilllvl('c8_infilt',$pa);
-			$infr = get_skillvars('c8_infilt','infr',$sk_lvl);
-			$dice = diceroll(99);
-			if($dice < $infr)
-			{
-				$flag = get_inf_rev($pd,'p');
-				include_once GAME_ROOT.'./include/game/itemmain.func.php';
-				check_item_edit_event($pa,$pd,'c8_infilt');
-				if($flag) $log .= "<span class='yellow'>「渗透」使{$pd['nm']}{$exdmginf['p']}了！</span><br>";
-				else $log .= "<span class='yellow'>{$pd['nm']}没有受到「渗透」影响……大概吧？</span><br>";
-			}
-			else
-			{
-				$log .= "<span class='yellow'>{$pd['nm']}没有受到「渗透」影响！</span><br>";
-			}
-		}
-
 		# 将pa造成的伤害记录在pd的成就里
 		if(!$pd['type'] && $pa['final_damage'] >= 1000000) $pd['clbpara']['achvars']['takedmg'] = $pa['final_damage'];
 		
-		return;
-	}
-
-	# 战斗后结算rp事件
-	function get_killer_rp(&$pa,&$pd,$active)
-	{
-		# 杀人rp结算
-		$rpup = $pd['type'] ? 20 : max(80,$pd['rp']);
-		rpup_rev($pa,$rpup);
 		return;
 	}
 
@@ -2146,388 +2101,6 @@
 			return 1;	
 		}
 		return 0;
-	}
-
-	//打击结束，已经应用扣血后的事件结算
-	function rev_combat_result_events(&$pa,&$pd,$active)
-	{
-		global $now,$log,$infinfo,$exdmginf,$plsinfo;
-
-		# 真蓝凝防守事件：
-		if($pd['type'] == 19 && $pd['name'] == '蓝凝')
-		{
-			attr_extra_19_azure($pa,$pd,$active);
-		}
-
-		# 「灭气」技能效果
-		if(isset($pa['skill_c1_burnsp']))
-		{
-			$pd['sp'] = max($pd['sp']-round($pa['final_damage']*2/3),1);
-			//$log .= "<span class='yellow'>「灭气」使{$pd['nm']}的体力降低了！</span><br>";
-		}
-
-		# 「猛击」眩晕效果
-		if(isset($pa['skill_c1_crit']))
-		{
-			$sk_lvl = get_skilllvl('c1_crit',$pa);
-			$sk_lst = get_skillvars('c1_crit','stuntime',$sk_lvl);
-			$flag = get_skillinf_rev($pd,'inf_dizzy',$sk_lst);
-			if($flag)
-			{
-				if(!$pd['type'] && $pd['nm']!='你') $pd['logsave'] .= "凶猛的一击直接将你打晕了过去！<br>";
-				elseif(!$pa['type'] && $pa['nm']!='你') $pa['logsave'] .= "你凶猛的一击直接将<span class=\"yellow\">{$pd['name']}</span>打晕了过去！<br>";
-			}
-		}
-		
-		# 「冰心」效果判定
-		if (isset($pd['skill_c9_iceheart']) && !empty($pd['inf']))
-		{
-			$purify = get_skillvars('c9_iceheart','purify');
-			# 获取当前异常队列
-			$now_inf = str_split($pd['inf']);
-			# 计算最多可净化异常数
-			$purify = min($purify,count($now_inf));
-			for($p=0;$p<$purify;$p++)
-			{
-				$heal_inf = $now_inf[$p];
-				$flag = heal_inf_rev($pd,$heal_inf);
-				if($flag)
-				{
-					$log .= "<span class='yellow'>{$pd['nm']}敛神聚气，从{$exdmginf[$heal_inf]}中恢复了！</span><br>";
-					$pd['rage'] = max(255,$pd['rage']+get_skillvars('c9_iceheart','ragegain'));
-				}
-			}
-		}
-
-		# 「天佑」技能判定
-		if(isset($pd['skill_c6_godbless']) && empty($pd['skill_buff_godbless']) && !empty($pa['final_damage']))
-		{
-			$actmhp = get_skillvars('c6_godbless','actmhp');
-			if($pa['final_damage'] >= $pd['mhp']*($actmhp/100) && $pd['hp'] > 0)
-			{
-				getclubskill('buff_godbless',$pd['clbpara']);
-				$log .= "<span class=\"yellow\">{$pd['nm']}的技能「天佑」被触发，暂时进入了无敌状态！</span><br>";
-			}
-		}
-
-		# 「火花」技能判定：触发后不会再触发协战流程
-		if(isset($pa['askill_c20_sparkle']))
-		{
-			$sk = 'c20_sparkle';
-			$dice = diceroll(99);
-			$obbs = get_skillvars($sk,'tpr');
-			if($dice < $obbs)
-			{
-				$pa['askill_c20_sparkle'] = 2;
-				$plslist = get_safe_plslist(); 
-				$sp_pls = $plslist[array_rand($plslist)];
-				# 切换地图
-				$pd['pls'] = $sp_pls;
-				$pd['tp_by_sparkle'] = $sp_pls;
-				# NPC敌人扣血，玩家在被送到新地图后强制探索一次
-				if($pd['type'])
-				{
-					$pd['hp'] -= min($pd['hp']-1,rand(1,$sp_pls * 10));
-				}
-				else 
-				{
-					$pd['action'] = 'tpmove';
-					$pd['logsave'] .= "<span class=\"grey\">{$pa['name']}点燃火花，将你传送到了{$plsinfo[$sp_pls]}！</span><br>";
-				}
-				$log .= "<span class=\"yellow\">你点燃火花，将{$pd['nm']}送到了{$plsinfo[$sp_pls]}！祝他好运吧……</span><br>";
-				addnews($now,'sparklemove',$pa['name'],$pd['name'],$plsinfo[$sp_pls]);
-				return;
-			}
-		}
-
-		# 「协战」判定
-		# 拥有佣兵的情况下，主动攻击敌人/成功反击敌人，且敌人仍存活时，判定是否有佣兵协战
-		if(!empty(get_skillpara('c11_merc','id',$pa['clbpara'])))
-		{
-			$sk = 'c11_merc';
-			$cancovers = get_skillpara($sk,'cancover',$pa['clbpara']);
-			shuffle($cancovers);
-			$dice = diceroll(99);
-			foreach($cancovers as $mkey => $mcan)
-			{
-				if($mcan)
-				{
-					$mcps = get_skillpara($sk,'coverp',$pa['clbpara'])[$mkey];
-					if($dice < $mcps)
-					{
-						# 触发协战，将协战者ID记录在coopatk_flag内
-						$pa['coveratk_flag'] = get_skillpara($sk,'id',$pa['clbpara'])[$mkey];
-						//echo "触发了协战！协战对象ID：{$pa['coveratk_flag']}<br>";
-						break;
-					}
-				}
-			}
-		}
-		# 「灵俑」协战判定
-		if(empty($pa['coveratk_flag']) && !empty($pa['clbpara']['zombieid']))
-		{
-			# 「灵俑」基础协战率：50
-			$cover_obbs = 50; $cover_dice = diceroll(99);
-			if($cover_dice < $cover_obbs)
-			{
-				$mate_list = $pa['clbpara']['mate']; shuffle($mate_list); 
-				foreach($mate_list as $mid)
-				{
-					$mdata = fetch_playerdata_by_pid($mid);
-					# 跳过不在同一地图的灵俑
-					if($mdata['pls'] != $pd['pls'] || $mdata['hp'] < 1) continue;
-					# 触发协战
-					$pa['coveratk_flag'] = $mid;
-					break;
-				}
-			}
-		}
-		return;
-	}
-
-	// 获取pa在探索时的遇敌率（遇敌率越低道具发现率越高）
-	function calc_meetman_rate(&$pa)
-	{
-		global $gamestate,$pose_find_modifier,$pls_find_modifier,$weather_find_r;
-		# 基础遇敌率
-		$enemyrate = 40;
-		# 连斗阶段遇敌率+20
-		if($gamestate == 40){$enemyrate += 20;}
-		# 死斗阶段遇敌率+40
-		elseif($gamestate == 50){$enemyrate += 40;}
-		# 姿态对遇敌率的修正
-		if(!empty($pose_find_modifier[$pa['pose']])) $enemyrate += $pose_find_modifier[$pa['pose']];
-		# 天气对遇敌率的修正
-		if(!empty($weather_find_r['weather'])) $enemyrate += $weather_find_r['weather'];
-		# 地图场景对遇敌率的修正
-		if(!empty($pls_find_modifier[$pa['pls']])) $enemyrate += $pls_find_modifier[$pa['pls']];
-		
-		# 社团技能修正（新）
-		# 「专注」效果判定
-		if(!empty($pa['clbpara']['skill']) && !check_skill_unlock('c5_focus',$pa)) 
-		{
-			# 探人模式遇敌率提升
-			if(get_skillpara('c5_focus','choice',$pa['clbpara']) == 1)
-			{
-				$sk_var = get_skillvars('c5_focus','meetgain');
-				$enemyrate += $sk_var;
-			}
-			# 探物模式遇敌率降低
-			elseif(get_skillpara('c5_focus','choice',$pa['clbpara']) == 2)
-			{
-				$sk_var = get_skillvars('c5_focus','itmgain');
-				$enemyrate -= $sk_var;
-			}
-		}
-		return $enemyrate;
-	}
-
-	// 获取pd面对pa时的躲避率
-	function get_hide_r_rev(&$pa,&$pd,$mode=0)
-	{
-		global $weather,$weather_hide_r,$pls_hide_modifier,$pose_hide_modifier,$tactic_hide_modifier;
-		
-		# 获取基础躲避率
-		$hide_r = 0;
-		# 计算天气对躲避率的修正
-		$wth_r = $weather_hide_r[$weather] ?: 0 ;
-		# 计算地点对躲避率的修正
-		$pls_r = $pls_hide_modifier[$pd['pls']] ?: 0 ;
-		# 计算pd姿态对于躲避率的修正：
-		$pose_r = $pose_hide_modifier[$pd['pose']] ?: 0;
-		# 计算pd策略对于躲避率的修正：
-		$tac_r = $tactic_hide_modifier[$pd['tactic']] ?: 0;
-		# 基础汇总：
-		$hide_r += $wth_r + $pose_r + $tac_r;
-
-		include_once GAME_ROOT.'./include/game/clubskills.func.php';
-		# 计算社团技能对躲避率的系数修正（旧）：
-		//$hide_r *= get_clubskill_bonus_hide($pd['club'],$pd['skills']);
-		# 计算社团技能对躲避率的定值修正：
-		$hide_r = get_clbskill_hide_rate_fix($pa,$pd,$hide_r); 
-		
-		//echo "hide_r = {$hide_r}<br>";
-		return $hide_r;
-	}
-
-	// 获取pa对pd的先制攻击概率
-	// $mode 0-标准战斗 1-鏖战 2-追击（追击&鏖战基础先制率不受天气姿态影响）
-	function get_active_r_rev(&$pa,&$pd,$mode=0)
-	{
-		global $log,$now,$active_obbs,$weather,$gamevars,$gamecfg,$chase_active_obbs;
-		include config('combatcfg',$gamecfg);
-		$pa['clbpara'] = get_clbpara($pa['clbpara']);
-		$pd['clbpara'] = get_clbpara($pd['clbpara']);
-		# 获取基础先攻率：
-		if(!$mode)
-		{
-			$active_r = $active_obbs;
-			# 计算天气对先攻率的修正：
-			$wth_ar = $weather_active_r[$weather] ?: 0;
-			# 光玉雨特殊效果判定：
-			if($weather == 18 && $gamevars['wth18pid'] == $pa['pid'])
-			{
-				# 计算雨势
-				$wthlastime = $now - $gamevars['wth18stime'];
-				# 雨势在前7分钟递增，后3分钟递减
-				$wthlastime = $wthlastime <= 420 ? $wthlastime : 600 - $wthlastime;
-				$wthpow = min(7,max(1,round($wthlastime / 60)));
-				# 效力加成
-				$wth_ar += diceroll($wthpow) + diceroll($wthpow);
-			}
-			# 计算pa姿态对于先攻率的修正：
-			$a_pose_ar = $pose_active_modifier[$pa['pose']] ?: 0;
-			# 计算pd姿态对于先攻率的修正：
-			$d_pose_ar = $pose_active_modifier[$pd['pose']] ?: 0;
-			# 基础汇总：
-			$active_r += $wth_ar + $a_pose_ar - $d_pose_ar;
-		}
-		else
-		{
-			$active_r = $chase_active_obbs;
-			# 计算追击状态下pa对pd的先攻加成。默认：战场距离*10%
-			if($mode == 2) $range_ar += get_battle_range($pa,$pd,1) * 10;
-		}
-
-		# 计算社团技能对于先攻率的系数修正（旧）：
-		//$active_r *= get_clubskill_bonus_active($pa['club'],$pa['skills'],$pd['club'],$pd['skills']);
-		# 计算社团技能对于先攻率的定值修正（新）：
-		$active_r = get_clbskill_active_rate_fix($pa,$pd,$active_r);
-
-		# 计算先攻率上下限：
-		$active_r = max(min($active_r,96),4);
-
-		# 计算pa身上的异常状态对先攻率的修正：（pd身上的异常状态不会影响pa的先制率，这个机制以后考虑改掉）
-		if(!empty($pa['inf']))
-		{
-			$inf_ar = 1;
-			foreach ($inf_active_p as $inf_ky => $value) 
-			{
-				if(strpos($pa['inf'], $inf_ky)!==false){$inf_ar *= $value;}
-			}
-			$active_r *= $inf_ar;
-		}
-		# 计算pd身上的特殊异常（技能类）对先攻率的修正：
-		if(!empty($pd['clbpara']['skill']))
-		{
-			# 眩晕状态下必被先手
-			if(in_array('inf_dizzy',$pd['clbpara']['skill']))
-			{
-				$log.="{$pd['name']}正处于眩晕状态！<br>";
-				$active_r = 100;
-			}
-		}
-		
-		//echo 'active = '.$active_r.' <br>';
-		return $active_r;
-	}
-
-	// 判断pd是否满足反击pa的基础条件（最高优先级）
-	function check_can_counter(&$pa,&$pd,$active)
-	{
-		# 被协战攻击无法反击
-		if(isset($pa['is_coveratk']))
-		{
-			$pd['cannot_counter_log'] = "{$pd['nm']}双拳难敌四手，逃跑了！";
-			return 0;
-		}
-		# 被偷袭无法反击
-		if(isset($pa['bskill_c1_stalk']))
-		{
-			$pd['cannot_counter_log'] = "{$pd['nm']}无法反击！";
-			return 0;
-		}
-		# 被留手了应不应该反击……？暂时定不会反击，但是会反击也很合理，人心险恶嘛！
-		if(isset($pa['askill_c19_dispel']) && $pa['askill_c19_dispel'] == 2)
-		{
-			$pd['cannot_counter_log'] = "被你放了一马的{$pd['nm']}一瘸一拐地逃开了。<br>希望你的决定是正确的……";
-			return 0;
-		}
-		# 被火花传送走了不能反击
-		if(isset($pd['tp_by_sparkle']))
-		{
-			$pd['cannot_counter_log'] = "{$pd['nm']}传送走了！<br>";
-			return 0;
-		}
-		# 处于眩晕状态时，无法反击
-		if(isset($pd['skill_inf_dizzy']))
-		{
-			$pd['cannot_counter_log'] = "{$pd['nm']}正处于眩晕状态，无法反击！";
-			return 0;
-		}
-		# 治疗姿态、躲避策略不能反击
-		if($pd['pose'] == 5 || $pd['tactic'] == 4)
-		{
-			$pd['cannot_counter_log'] = "{$pd['nm']}处于无法反击的状态！转身逃开了！";
-			return 0;
-		}
-		# 哨戒姿态不会反击，但是会生气……
-		if($pd['pose'] == 7)
-		{
-			$pd['cannot_counter_log'] = "{$pd['nm']}看起来非常生气！还是离他远点吧……";
-			return 0;
-		}
-		return 1;
-	}
-
-	// 判断pa是否处于pd的反击射程内（次优先级）
-	function check_in_counter_range(&$pa,&$pd,$active)
-	{
-		if(!empty($pa['wep_range']) && $pd['wep_range'] >= $pa['wep_range']) return 1;
-		# 鏖战状态下无视射程反击（爆系武器除外）
-		if((isset($pd['is_dfight']) || isset($pa['is_dfight'])) && !empty($pd['wep_range'])) return 1;
-		#「直感」触发后可以超射程反击：
-		if(isset($pd['skill_c2_intuit']))
-		{
-			$sk_dice = diceroll(99);
-			$sk_lvl = get_skilllvl('c2_intuit',$pd);
-			$sk_obbs = get_skillvars('c2_intuit','rangerate',$sk_lvl);
-			if($sk_dice < $sk_obbs) 
-			{
-				return 1;
-			}
-		}
-		return 0;
-	}
-
-	// 获取pd成功对pa发起反击的概率
-	function get_counter_rev(&$pa,&$pd,$active)
-	{
-		global $counter_obbs,$inf_counter_p,$pose_counter_modifier,$tactic_counter_modifier;
-
-		# 获取攻击方式的基础反击率：
-		$counter = $counter_obbs[$pd['wep_kind']];
-
-		# 获取姿态、策略对反击率的修正：
-		$counter += $pose_counter_modifier[$pd['pose']];
-		$counter += $tactic_counter_modifier[$pd['tactic']];
-
-		# 计算双方射程差对反击率的影响：（高射程武器受低射程武器攻击时，反击率下降(双方射程差x10)%，最低不会低于8%）
-		if($pd['wep_range'] > $pa['wep_range'] && $counter > 8)
-		{
-			$counter = $counter - (($pd['wep_range'] - $pa['wep_range'])*10);
-			$counter = max(8,$counter);
-		}
-
-		# 鏖战状态下，将基础反击率修正为100
-		if(isset($pd['is_dfight']) || isset($pa['is_dfight'])) $counter = 100;
-
-		# 获取社团技能对反击率的修正（旧）
-		//$counter *= rev_get_clubskill_bonus_counter($pd['club'],$pd['skills'],$pd,$pa['club'],$pa['skills'],$pa);
-		# 获取社团技能对反击率的修正（新）
-		$counter = get_clbskill_counterate($pd,$pa,$active,$counter);
-
-		# 获取异常状态对反击率的影响
-		if(!empty($pd['inf']))
-		{
-			foreach ($inf_counter_p as $inf_ky => $value) 
-			{
-				if(strpos($pd['inf'], $inf_ky)!==false) $counter *= $value;
-			}	
-		}
-
-		//echo "{$pd['nm']}对{$pa['nm']}的反击率是{$counter}%<br>";
-		return $counter;
 	}
 
 	//计算战场距离：仅供追击/鏖战机制使用
@@ -2584,27 +2157,5 @@
 		if(isset($pd['clbpara']['battle_turns'])) unset($pd['clbpara']['battle_turns']);
 		return;
 	}
-
-	//检查是否循环打击流程
-	function check_loop_rev_attack(&$pa,&$pd,$active)
-	{
-		global $log;
-		$loop = 0;
-		# 「双响」效果判定
-		if(isset($pa['bskill_c5_double']))
-		{
-			unset($pa['bskill_c5_double']);unset($pa['bskilllog']);
-			$log .= "<span class=\"yellow\">{$pa['nm']}引爆了预埋的另一组爆炸物！</span><br>";
-			$loop = 1;
-		}
-		# 「海虎」效果判定
-		if(isset($pa['skill_c12_swell']))
-		{
-			$pa['skill_c12_swell'] --;
-			if(empty($pa['skill_c12_swell'])) unset($pa['skill_c12_swell']);
-			$log .= "<span class=\"lime\">{$pa['nm']}以雷霆万钧之势再度袭向{$pd['nm']}！</span><br>";
-			$loop = 1;
-		}
-		return $loop;
-	}
+}
 ?>

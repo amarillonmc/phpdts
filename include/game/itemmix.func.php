@@ -46,7 +46,7 @@ function itemmix_rev($mlist, $itemselect=-1, &$data=NULL)
 		if($club == 19)
 		{
 			$rpup = -30;
-			include_once GAME_ROOT.'./include/game/revcombat.func.php';
+			include_once GAME_ROOT.'./include/state.func.php';
 			rpup_rev($data,$rpup);
 		}
 	}

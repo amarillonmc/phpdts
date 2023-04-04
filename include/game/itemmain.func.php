@@ -55,7 +55,7 @@ function calc_trap_escape_rate(&$pa,$playerflag=0,$selflag=0)
 	if($selflag) $escrate *= 1.5;
 	# 陷阱探测属性加成（锡安陷阱探测属性效果+10）
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
-	if(empty($pa['ex_keys'])) $pa['ex_keys'] = array_merge(get_equip_ex_array($pa),get_wep_ex_array($pa));
+	if(empty($pa['ex_keys'])) $pa['ex_keys'] = array_merge(\revattr\get_equip_ex_array($pa),\revattr\get_wep_ex_array($pa));
 	if(!empty($pa['ex_keys']) && in_array('M',$pa['ex_keys']))
 	{
 		$pa['minedetect'] = 1;
@@ -83,7 +83,7 @@ function check_trap_def_event(&$pa,$damage,$playerflag=0,$selflag=0)
 	if($pa['itmk0'] == 'TOc') return $damage;
 	# 检查是否有迎击属性
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
-	if(empty($pa['ex_keys'])) $pa['ex_keys'] = array_merge(get_equip_ex_array($pa),get_wep_ex_array($pa));
+	if(empty($pa['ex_keys'])) $pa['ex_keys'] = array_merge(\revattr\get_equip_ex_array($pa),\revattr\get_wep_ex_array($pa));
 	# 计算迎击概率（锡安迎击率+20）
 	if(!empty($pa['ex_keys']) && in_array('m',$pa['ex_keys'])) 
 	{
@@ -220,7 +220,7 @@ function trap(&$data=NULL){
 
 			# 踩雷rp结算
 			$rp_up = -1 * $rp / 2; 
-			include_once GAME_ROOT.'./include/game/revcombat.func.php';
+			include_once GAME_ROOT.'./include/state.func.php';
 			if($rp_up) rpup_rev($data,$rp_up);
 
 			if($goodmancard)
@@ -1304,7 +1304,7 @@ function getcorpse($item,&$data=NULL)
 		$log.="你销毁了{$edata['name']}的尸体。<br>但这一切值得吗……？<br>";
 		# 销毁尸体rp结算
 		$rp_up = diceroll($rpup_destory_corpse);
-		include_once GAME_ROOT.'./include/game/revcombat.func.php';
+		include_once GAME_ROOT.'./include/state.func.php';
 		rpup_rev($data,$rp_up);
 
 		addnews($now,'cdestroy',$name,$edata['name']);
@@ -1403,6 +1403,58 @@ function getcorpse($item,&$data=NULL)
 	}
 	$action = ''; $bid = 0;
 	$mode = 'command';
+	return;
+}
+
+# 切换副武器
+function change_subwep($s=2,&$data=NULL)
+{
+	global $log,$nosta;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
+	# 初始化主武器名
+	$eqp = 'wep';
+	# 初始化副武器名
+	$seqp = 'wep'.$s;
+	$seqpk = $seqp.'k';
+	$seqpe = $seqp.'e';
+	$seqps = $seqp.'s';
+	$seqpsk = $seqp.'sk';
+	# 保存副武器数据
+	$swep=${$seqp}; $swepk=${$seqpk};
+	$swepe=${$seqpe}; $sweps=${$seqps}; $swepsk=${$seqpsk};
+	# 主武器为空、副武器不为空的情况下，直接替换为副武器
+	if(($wepk == 'WN' || !$weps) && ($swepk != 'WN'))
+	{
+		${$eqp} = $swep; ${$seqp} = '拳头';
+		${$eqp.'k'} = $swepk; ${$seqpk} = 'WN';
+		${$eqp.'e'} = $swepe; ${$seqpe} = 0;
+		${$eqp.'s'} = $sweps; ${$seqps} = $nosta;
+		${$eqp.'sk'} = $swepsk; ${$seqpsk} = '';
+		$log.="你将{$wep}拿在了手上。<br>";
+	}
+	# 主武器不为空的情况下，副武器替换为主武器
+	elseif($wepk != 'WN')
+	{
+		${$seqp} = ${$eqp}; ${$eqp} = $swep; 
+		${$seqpk} = ${$eqp.'k'}; ${$eqp.'k'} = $swepk;
+		${$seqpe} = ${$eqp.'e'}; ${$eqp.'e'} = $swepe; 
+		${$seqps} = ${$eqp.'s'}; ${$eqp.'s'} = $sweps; 
+		${$seqpsk} = ${$eqp.'sk'}; ${$eqp.'sk'} = $swepsk; 
+		$log.="你将{$wep2}收了起来";
+		if($wepk != 'WN') $log .="，将{$wep}拿在了手上";
+		$log.="。<br>";
+	}
+	else 
+	{
+		$log.="你没有装备副武器！去给自己找一个吧！<br>";
+	}
 	return;
 }
 

@@ -699,7 +699,7 @@ function event_rp_up($rpup)
 	}
 	extract($data,EXTR_REFS);
 
-	include_once GAME_ROOT.'./include/game/revcombat.func.php';
+	include_once GAME_ROOT.'./include/state.func.php';
 	rpup_rev($data,$rpup);
 	
 	/*if($club != 19 || $rpup <= 0){

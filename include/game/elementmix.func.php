@@ -277,7 +277,7 @@
 		$ep_dice = rand(0,$total_addev);
 		if($ep_dice>70)
 		{
-			include_once GAME_ROOT.'./include/game/revcombat.func.php';
+			include_once GAME_ROOT.'./include/state.func.php';
 			rpup_rev($data,$ep_dice);
 			$log.="……但是这一切真的值得吗？<br>";
 		}
@@ -361,7 +361,7 @@
 			$ep_dice = rand(0,$total_addev);
 			if($ep_dice>0)
 			{
-				include_once GAME_ROOT.'./include/game/revcombat.func.php';
+				include_once GAME_ROOT.'./include/state.func.php';
 				rpup_rev($data,-$ep_dice);
 			}
 			$log.="<br>";

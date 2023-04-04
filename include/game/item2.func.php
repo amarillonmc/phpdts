@@ -429,7 +429,7 @@ function deathnote($sfn,$itmd=0,$dnname='',$dndeath='',$dngender='m',$dnicon=1) 
 				//kill('dn',$dnname,0,$edata['pid'],$dndeath);
 				//$killnum++;
 				$pdata['wep_name'] = $dndeath;
-				include_once GAME_ROOT.'./include/game/revcombat.func.php';
+				include_once GAME_ROOT.'./include/state.func.php';
 				pre_kill_events($pdata,$edata,1,'dn');
 				// 如果希望被DN后能够复活，可以在这里调用一次复活判定函数
 				final_kill_events($pdata,$edata,1);
