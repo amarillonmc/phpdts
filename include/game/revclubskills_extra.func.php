@@ -172,7 +172,6 @@
 				$gamevars['wth18pid'] = $pid;
 				save_gameinfo();
 				addnews($now, 'wthchange', $name, $weather, '自己积攒的善德');
-				include_once GAME_ROOT.'./include/game/revcombat.func.php';
 				$sn = 'song';
 				addnoise($sn,'__',$now,$pls,0,0,$sn);
 				$clbpara['event_bgmbook'] = Array('wth18');
@@ -633,7 +632,7 @@
 			# 出生啊！
 			$max_rp_dice = $pdata['itme0']+$pdata['itms0'] > 300 ? $pdata['itme0']+$pdata['itms0'] : 300;
 			$rp_dice = rand(300,$max_rp_dice);
-			include_once GAME_ROOT.'./include/game/revcombat.func.php';
+			include_once GAME_ROOT.'./include/state.func.php';
 			rpup_rev($pdata,$rp_dice);
 			# 做成棍了就没有尸体了
 			destory_corpse($edata);

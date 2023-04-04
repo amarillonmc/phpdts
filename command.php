@@ -403,8 +403,8 @@ if($hp > 0){
 					$log.="<span class='red'>你身上没有背包，或是没有将背包装备上！<br>";
 				}
 			} elseif(strpos($command,'changewep') !==false) {
-				include_once GAME_ROOT.'./include/game/revbattle.func.php';
-				change_wep_in_battle();
+				include_once GAME_ROOT.'./include/game/itemmain.func.php';
+				change_subwep();
 				$mode = 'command';
 			}
 		} elseif($mode == 'special') {
@@ -467,7 +467,7 @@ if($hp > 0){
 			chase_flag:
 			include_once GAME_ROOT.'./include/game/revbattle.func.php';
 			if(!isset($message)) $message = '';
-			revbattle_prepare($command,$message);
+			\revbattle\revbattle_prepare($command,$message);
 		} elseif($mode == 'rest') {
 			include_once GAME_ROOT.'./include/state.func.php';
 			rest($command);

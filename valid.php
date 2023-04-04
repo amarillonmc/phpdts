@@ -131,9 +131,9 @@ if($mode == 'enter') {
 		$itm[3] = '★Monster Energy★';
 	}
 	$itmk[3] = 'HB'; $itme[3] = 70; $itms[3] = 15;
-	//$itm[5] = 'GRAND OPENING 「开门大吉」'; $itmk[5] = 'p000'; $itme[5] = 1; $itms[5] = 1;
-	$dice = rand(0,1); $dice = $dice ? 11 : 19; $dice_name = $clubinfo[$dice];
-	$itm[5] = '「'.$dice_name.' 社团卡」'; $itmk[5] = 'ZB'; $itme[5] = $dice; $itms[5] = 1;
+	$itm[5] = 'GRAND OPENING 「开门大吉」'; $itmk[5] = 'p000'; $itme[5] = 1; $itms[5] = 1;
+	/*$dice = rand(0,1); $dice = $dice ? 11 : 19; $dice_name = $clubinfo[$dice];
+	$itm[5] = '「'.$dice_name.' 社团卡」'; $itmk[5] = 'ZB'; $itme[5] = $dice; $itms[5] = 1;*/
 
 	if ($wingames <=1){
 	$itm[6] = '银白盒子'; $itmk[6] = 'ps'; $itme[6] = 1; $itms[6] = 1; $itmsk[6] = '';

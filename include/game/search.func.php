@@ -4,6 +4,12 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
+include_once GAME_ROOT.'./include/state.func.php';
+include_once GAME_ROOT.'./include/game/itemmain.func.php';
+include_once GAME_ROOT.'./include/game/revbattle.func.php';
+include_once GAME_ROOT.'./include/game/revbattle.calc.php';
+include_once GAME_ROOT.'./include/game/revcombat.func.php';
+
 function check_can_move($pls,$pgroup,$moveto)
 {
 	global $log,$plsinfo,$hplsinfo,$arealist,$areanum,$hack;
@@ -133,7 +139,6 @@ function move($moveto = 99,&$data=NULL) {
 		$hp -= $damage;
 		$log .= "被<span class=\"blue\">冰雹</span>击中，生命减少了<span class=\"red\">$damage</span>点！<br>";
 		if($hp <= 0 ) {
-			include_once GAME_ROOT.'./include/state.func.php';
 			death('hsmove','',0,'',$data);
 			return;
 //		} else {
@@ -211,8 +216,7 @@ function move($moveto = 99,&$data=NULL) {
 	# 移动到指定地点，结算移动探索事件
 	move_search_events($data,'move');
 
-	include_once GAME_ROOT.'./include/game/revattr.func.php';
-	$enemyrate =  calc_meetman_rate($data);
+	$enemyrate =  \revbattle\calc_meetman_rate($data);
 	//echo "enemyrate = {$enemyrate}%";
 	discover($enemyrate,$data);
 	return;
@@ -287,7 +291,6 @@ function search(&$data=NULL){
 		$hp -= $damage;
 		$log .= "被<span class=\"blue\">冰雹</span>击中，生命减少了<span class=\"red\">$damage</span>点！<br>";
 		if($hp <= 0 ) {
-			include_once GAME_ROOT.'./include/state.func.php';
 			death('hsmove','',0,'',$data);
 			return;
 //		} else {
@@ -360,14 +363,14 @@ function search(&$data=NULL){
 	# 探索指定地点，结算探索事件
 	move_search_events($data,'search');
 	
-	include_once GAME_ROOT.'./include/game/revattr.func.php';
-	$enemyrate =  calc_meetman_rate($data);
+	$enemyrate = \revbattle\calc_meetman_rate($data);
 	//echo "enemyrate = {$enemyrate}%";
 	discover($enemyrate,$data);
 	return;
 
 }
 
+# 探索或移动行为会触发的事件
 function move_search_events(&$data,$act)
 {
 	global $log,$inf_move_hp,$inf_move_sp,$infwords,$weather,$gamevars,$now,$elements_info;
@@ -402,7 +405,6 @@ function move_search_events(&$data,$act)
 				if($damage > 0) $log .= "{$infwords[$inf_ky]}减少了<span class=\"red\">$damage</span>点生命！<br>";
 				elseif($damage < 0) $log .= "{$infwords[$inf_ky]}恢复了<span class=\"lime\">".abs($damage)."</span>点生命！<br>";
 				if($hp <= 0 ){
-					include_once GAME_ROOT.'./include/state.func.php';
 					death($inf_ky.'move','',0,'',$data);
 					return;
 				}
@@ -587,7 +589,6 @@ function discover($schmode = 0,&$data=NULL)
 		//看地图上有没有陷阱	
 		if($trpnum)
 		{
-			include_once GAME_ROOT.'./include/game/itemmain.func.php';
 			$fstrp = $db->fetch_array($trapresult);
 			//奇迹雷
 			$xtrpflag = $fstrp['itmk'] == 'TOc' ? true : false;
@@ -615,7 +616,6 @@ function discover($schmode = 0,&$data=NULL)
 			}
 		}
 	}
-	include_once GAME_ROOT.'./include/game/attr.func.php';
 	$mode_dice = rand(0,99);
 	if($mode_dice < $schmode) 
 	{
@@ -636,12 +636,12 @@ function discover($schmode = 0,&$data=NULL)
 		//移除了重复调用discover()的设定，尝试用一种正常一点的办法确保敌人/尸体发现率符合基础设定值，不然现在的尸体确实太难摸了。
 		//现在触发遇敌事件只会返回三种结果：1、发现尸体；2、发现敌人、3、敌人隐藏起来；所以实际的尸体发现率=$enemyrate*$corpse_obbs
 		$meetman_flag = 0;
-		include_once GAME_ROOT.'./include/game/revattr.func.php';
 		foreach($enemyarray as $enum)
 		{
 			$db->data_seek($result, $enum);
 			$edata = $db->fetch_array($result);
-			$edata['clbpara'] = get_clbpara($edata['clbpara']);
+			# 使用fetch_playerdata_by_pid重新获取敌人数据，以应用各种在载入玩家数据时进行的判定
+			$edata = fetch_playerdata_by_pid($edata['pid']);
 			if(!$edata['type'] || $gamestate < 50)
 			{
 				if($edata['hp'] <= 0)
@@ -677,11 +677,11 @@ function discover($schmode = 0,&$data=NULL)
 					if(!empty($edata['clbpara']['mate']) && in_array($pid,$edata['clbpara']['mate'])) continue;
 					# 灵子状态只能遭遇同为灵子状态的对象，非灵子状态对象无法发现灵子状态下的对象……但是尸体就没有这种考量了
 					if(($edata['pose'] == 8 || $data['pose'] == 8) && $data['pose'] != $edata['pose']) continue;
-					# 「量心」技能效果判定：
-					if(!check_skill_unlock('c19_dispel',$data) && !empty(get_skillpara('c19_dispel','active',$clbpara)) && $edata['hp'] <= 1) continue;
+					# 「量心」技能效果判定（不会遭遇HP为1的敌人）：
+					if(!check_skill_unlock('c19_dispel',$data) && !empty(get_skillpara('c19_dispel','active',$clbpara)) && $edata['hp'] == 1) continue;
 					
 					# 计算活人发现率
-					$hide_r = get_hide_r_rev($data,$edata);
+					$hide_r = \revbattle\calc_hide_rate($data,$edata);
 					$enemy_dice = diceroll(99);
 					# 把find_r杀了，现在技能都是用躲避率去判断的了，躲避率为负就等于发现率增幅了
 					$meetman_flag = $enemy_dice < ($enemy_obbs - $hide_r) ? 1 : -1;
@@ -699,7 +699,6 @@ function discover($schmode = 0,&$data=NULL)
 				{
 					$bid = $edata['pid'];
 					$action = 'team';
-					include_once GAME_ROOT.'./include/game/battle.func.php';
 					findteam($edata);
 					return;
 				} 
@@ -708,7 +707,6 @@ function discover($schmode = 0,&$data=NULL)
 				{
 					$bid = $edata['pid'];
 					$action = 'neut';
-					include_once GAME_ROOT.'./include/game/revbattle.func.php';
 					findneut($edata,1);
 					return;
 				}
@@ -716,12 +714,8 @@ function discover($schmode = 0,&$data=NULL)
 				else 
 				{
 					battle_flag:
-					include_once GAME_ROOT.'./include/game/revbattle.func.php';
-					include_once GAME_ROOT.'./include/game/revcombat.func.php';
-					//刷新敌人时效性状态
-					if(!empty($edata['clbpara']['lasttimes'])) $edata = check_skilllasttimes($edata);
 					//计算先攻概率
-					$active_r = get_active_r_rev($data,$edata);
+					$active_r = \revbattle\calc_active_rate($data,$edata);
 					$bid = $edata['pid'];
 					$active_dice = diceroll(99);
 					//先制
@@ -731,12 +725,12 @@ function discover($schmode = 0,&$data=NULL)
 						if($data['pass'] != 'bot')
 						{
 							
-							findenemy_rev($edata);
+							\revbattle\findenemy_rev($edata);
 						}
 						else 
 						{
 							echo "进入战斗！<br>";
-							rev_combat_prepare($data,$edata,1,'',0);
+							\revcombat\rev_combat_prepare($data,$edata,1,'',0);
 						}
 						return;
 					}
@@ -746,11 +740,11 @@ function discover($schmode = 0,&$data=NULL)
 						if($data['pass'] != 'bot')
 						{
 							
-							rev_combat_prepare($edata,$data,0);
+							\revcombat\rev_combat_prepare($edata,$data,0);
 						}
 						else 
 						{
-							rev_combat_prepare($edata,$data,0,'',0);
+							\revcombat\rev_combat_prepare($edata,$data,0,'',0);
 						}
 						return;
 					}
@@ -775,10 +769,12 @@ function discover($schmode = 0,&$data=NULL)
 		}
 		$mode = 'command';
 		return;
-	} else {
+	} 
+	else 
+	{
 		//echo "进入道具判定<br>";
-		$find_r = get_find_r($weather,$pls,$pose,$tactic,$club,$inf);
-		$find_obbs = $item_obbs + $find_r;
+		//$find_r = get_find_r($weather,$pls,$pose,$tactic,$club,$inf);
+		$find_obbs = $item_obbs;
 		$item_dice = rand(0,99);
 		if($item_dice < $find_obbs) 
 		{
@@ -838,7 +834,6 @@ function focus_item(&$data=NULL,$id=NULL)
 	$db->query("DELETE FROM {$tablepre}mapitem WHERE iid='$iid'");
 	if($itms0)
 	{
-		include_once GAME_ROOT.'./include/game/itemmain.func.php';
 		if($data['pass'] == 'bot') 
 		{
 			itemget($data);
