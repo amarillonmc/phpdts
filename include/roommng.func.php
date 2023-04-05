@@ -18,7 +18,7 @@ function roommng_verify_db_game_structure()
 	$result = $db->query("DESCRIBE {$gtablepre}game groomid");
 	if(!$db->num_rows($result))
 	{
-		$db->query("ALTER TABLE {$gtablepre}game ADD groomid tinyint(3) unsigned NOT NULL DEFAULT '0' '' AFTER gamestate");
+		$db->query("ALTER TABLE {$gtablepre}game ADD groomid tinyint(3) unsigned NOT NULL DEFAULT '0' AFTER gamestate");
 		echo "向game表中添加了字段groomid<br>";
 	}
 	$result = $db->query("DESCRIBE {$gtablepre}game groomnums");
@@ -66,21 +66,31 @@ function roommng_create_new_room(&$udata)
 	}
 
 	# 统计当前已新建房间数量
-	$result = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid>0 ");
+	$result = $db->query("SELECT groomid FROM {$gtablepre}game WHERE groomid>0 ");
 	$now_room_nums = $db->num_rows($result);
 	if($now_room_nums >= $max_rooms)
 	{
 		$rerror = 'room_num_limit';
 		return;
 	}
+	
+	if($now_room_nums)
+	{
+		$room_ids = range(1,$max_rooms);
+		$now_room_ids = $db->fetch_array($result);
+		$new_room_id = array_shift(array_diff($room_ids,$now_room_ids));
+	}
+	else 
+	{
+		$new_room_id = 1;
+	}
 
 	# 新建并初始化房间状态
-	$now_room_nums++;
 	$starttime = $now + $startmin*5;
-	$db->query("INSERT INTO {$gtablepre}game (gamenum,groomid,groomownid,gamestate,starttime) VALUES ('1','$now_room_nums','{$udata['username']}','0','$starttime')");
-	
+	$db->query("INSERT INTO {$gtablepre}game (gamenum,groomid,groomownid,gamestate,starttime) VALUES ('1','$new_room_id','{$udata['username']}','0','$starttime')");
+
 	# 加入房间
-	roommng_join_room($now_room_nums,$udata);
+	roommng_join_room($new_room_id,$udata);
 
 	return;
 }
