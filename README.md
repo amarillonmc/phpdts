@@ -35,4 +35,4 @@ bash ./bot/bot_enable.sh
 4. 目前只加入了`src`和`config`文件夹，demo文件见`C:\git\phpdts\src\Controller\HomeController.php`
 5. 可以使用[Yii Dev Panel](https://yiisoft.github.io/yii-dev-panel)来调试
 6. 数据库配置请修改 `config\common\params.php`，默认使用`Yiisoft\Db\Mysql\ConnectionPDO`
-7. 目前只用了`yii serve`使用php原生自带的Routing file功能做路由，nginx和`.htaccess`在做了在做了
+7. 目前只用了`yii serve -t .`， `-t`参数是必要的，用来指定docroot，不然访问不到静态文件，使用php原生自带的Routing file功能做路由，nginx和`.htaccess`在做了在做了
