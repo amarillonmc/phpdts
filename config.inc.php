@@ -55,7 +55,7 @@
 // [EN] !ATTENTION! Do NOT modify following after your board was settle down
 // [CH] 游戏投入使用后不能修改的变量
 
-	$tablepre = 'acbra3_';   			// 表名前缀, 同一数据库安装多个游戏请修改此处
+	$tablepre = 'acbra2_';   			// 表名前缀, 同一数据库安装多个游戏请修改此处
 						// table prefix, modify this when you are installingmore than 1 Discuz! in the same database.
 
 	$authkey = 'bra';		//game encrypt key ,the same of plus key
@@ -64,13 +64,13 @@
 // [EN] !ATTENTION! Preservation or debugging for developing
 // [CH] 切勿修改以下变量,仅供程序开发调试用!
 
-	$database = 'pdo';			// 'mysql' for MySQL version and 'pgsql' for PostgreSQL version
+	$database = 'mysqli';			// 'mysql' for MySQL version and 'pgsql' for PostgreSQL version
 						// MySQL 版本请设?'mysql', PgSQL 版本请设?'pgsql'
 
 	$charset = 'utf-8';			// default character set, 'gbk', 'big5', 'utf-8' are available
 						// 游戏默认字符? 可?'gbk', 'big5', 'utf-8'
 
-	$dbcharset = 'utf8';			// default database character set, 'gbk', 'big5', 'utf8', 'latin1' and blank are available
+	$dbcharset = 'utf8mb4';			// default database character set, 'gbk', 'big5', 'utf8', 'latin1' and blank are available
 						// MySQL 字符? 可?'gbk', 'big5', 'utf8', 'latin1', 留空为按照游戏字符集设定
 
 	$attackevasive = 0;			// protect against attacks via common request, 0=off, 1=cookie refresh limitation, 2=deny proxy request, 3=both
@@ -91,7 +91,7 @@
 	$title = '大 逃 杀';     //game title
 							//游戏标题
 
-	$errorinfo = 0;				//是否开启错误信息提示，1为开启，0为关闭。开启会泄漏游戏安装路径
+	$errorinfo = 1;				//是否开启错误信息提示，1为开启，0为关闭。开启会泄漏游戏安装路径
 // 以下为salt，请勿修改。
 	$salt = '3012becebcc626720409336f6375bcdd';
 
