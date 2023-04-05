@@ -141,9 +141,9 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 				}
 			} elseif($news == 'death27') {
 				if(($c)&&($c!=' ')){
-					$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因触发了<span class=\"yellow\">$c</span>设置的陷阱{$d}被杀死";
+					$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因触发了<span class=\"yellow\">$c</span>设置的陷阱<span class=\"red\">{$d}</span>被杀死";
 				} else {
-					$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因触发了陷阱{$d}被杀死";
+					$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因触发了陷阱<span class=\"red\">{$d}</span>被杀死";
 				}
 			} elseif($news == 'death28') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因<span class=\"yellow\">$d</span>意外身亡";

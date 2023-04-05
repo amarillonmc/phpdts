@@ -68,7 +68,27 @@ $clubinfo = Array(
 );
 //新游戏开局时会生成的天气：晴天、多云、小雨、暴雨、下雪；
 $rswtharr = Array(0,2,3,4,7);
-$wthinfo = Array('晴天','大晴','多云','小雨','暴雨','台风','雷雨','下雪','起雾','浓雾','<span class="yellow">瘴气</span>','<span class="red">龙卷风</span>','<span class="clan">暴风雪</span>','<span class="blue">冰雹</span>','<span class="linen">离子暴</span>','<span class="green">辐射尘</span>','<span class="purple">臭氧洞</span>','<span class="gold">极光</span>','<span class="minirainbow">光玉雨</span>');
+$wthinfo = Array(
+	0 => '晴天',
+	1 => '大晴',
+	2 => '多云',
+	3 => '小雨',
+	4 => '暴雨',
+	5 => '台风',
+	6 => '雷雨',
+	7 => '下雪',
+	8 => '起雾',
+	9 => '浓雾',
+	10 => '<span class="yellow">瘴气</span>',
+	11 => '<span class="red">龙卷风</span>',
+	12 => '<span class="clan">暴风雪</span>',
+	13 => '<span class="blue">冰雹</span>',
+	14 => '<span class="linen">离子暴</span>',
+	15 => '<span class="green">辐射尘</span>',
+	16 => '<span class="purple">臭氧洞</span>',
+	17 => '<span class="gold">极光</span>',
+	18 => '<span class="minirainbow">光玉雨</span>'
+);
 $sexinfo = Array(0=> '未定', 'm' => '男生', 'f' => '女生');
 $raceinfo = Array(0=> '人类', 1=> '兽人', 2=> '妖精', 3=> '龙', 4=> '鱼人', 5=> 'ＡＩ');
 $hpinfo = Array('<span class="clan">并无大碍</span>','<span class="yellow">伤痕累累</span>','<span class="red">生命危险</span>','<span class="red">已经死亡</span>');
@@ -1190,16 +1210,16 @@ $depots = Array(5,28);
 $shops = Array(0,14,27);
 $hospitals = Array(11,19,32);
 $plsinfo = Array(
-	0=>'无月之影',
-	1=>'端点',
-	2=>'RF高校',
-	3=>'雪之镇',
-	4=>'索拉利斯',
-	5=>'指挥中心',
-	6=>'梦幻馆',
-	7=>'清水池',
-	8=>'白穗神社',
-	9=>'墓地',
+	0=> '无月之影',
+	1=> '端点',
+	2=> 'RF高校',
+	3=> '雪之镇',
+	4=> '索拉利斯',
+	5=> '指挥中心',
+	6=> '梦幻馆',
+	7=> '清水池',
+	8=> '白穗神社',
+	9=> '墓地',
 	10=>'麦斯克林',
 	11=>'对天使用作战本部',
 	12=>'夏之镇',

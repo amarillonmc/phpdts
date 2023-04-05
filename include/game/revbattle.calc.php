@@ -28,6 +28,8 @@ namespace revbattle
 		# 社团技能对遇敌率的修正
 		$enemyrate = calc_clbskill_meetman_rate($pa,$enemyrate);
 
+		//echo "enemyrate = {$enemyrate}";
+
 		return $enemyrate;
 	}
 
@@ -130,7 +132,7 @@ namespace revbattle
 		# pd持有「天助」时的效果判定：
 		if(!check_skill_unlock('c6_godsend',$pd))
 		{
-			$sk_r = get_skilllvl('c6_godsend','hidegain',$pd['clbpara']);
+			$sk_r = get_skillpara('c6_godsend','hidegain',$pd['clbpara']);
 			if(!empty($sk_r)) $r += $sk_r;
 		}
 		# pd处于「暗杀」状态下的效果判定：
