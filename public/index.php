@@ -16,6 +16,9 @@ if (PHP_SAPI === 'cli-server') {
         return false;
     }
 
+    if (is_file(dirname(__DIR__) . $path)) {
+        return false;
+    }
     // Explicitly set for URLs with dot.
     $_SERVER['SCRIPT_NAME'] = '/index.php';
 }

@@ -6,18 +6,16 @@ use Yiisoft\Router\Group;
 use Yiisoft\Router\Route;
 
 use Yiisoft\DataResponse\Middleware\FormatDataResponseAsJson;
+use Yiisoft\DataResponse\Middleware\FormatDataResponseAsHtml;
 
 use NMForce\PHPDTS\Controller\HomeController;
 
 return [
     Group::create()
-        ->middleware(FormatDataResponseAsJson::class)
+        ->middleware(FormatDataResponseAsHtml::class)
         ->routes(
             Route::get('[/]')
                 ->action([HomeController::class, 'index'])
-                ->name('default'),
-            Route::get('/home')
-                ->action([HomeController::class, 'index'])
-                ->name('home'),
+                ->name('/acdts/index'),
         ),
 ];
