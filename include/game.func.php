@@ -793,7 +793,7 @@ function npc_changewep_rev(&$pa,&$pd,$acitve)
 		if(!empty($weplist))
 		{
 			$wepklist = array_unique($wepklist);
-			$temp_pd_ex_keys = array_merge(get_equip_ex_array($pd),get_wep_ex_array($pd));
+			$temp_pd_ex_keys = array_merge(\revattr\get_equip_ex_array($pd),\revattr\get_wep_ex_array($pd));
 			$wepkAI = $wepskAI = true;
 			if(!empty($temp_pd_ex_keys))
 			{
