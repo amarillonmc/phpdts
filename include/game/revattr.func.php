@@ -1096,7 +1096,7 @@ namespace revattr
 		{
 			$dice = diceroll(99);
 			# 失效率
-			$obbs = 1 - $specialrate['B'];
+			$obbs = 100 - $specialrate['B'];
 			# 「天义」效果判定：
 			if(isset($pa['skill_c6_justice'])) $obbs *= get_skillvars('c6_justice','pdefbkr');
 			# 「暗杀」效果判定：
@@ -1165,9 +1165,10 @@ namespace revattr
 		{
 			$dice = diceroll(99);
 			# 未贯穿率
-			$obbs = 1 - $specialrate['n'];
+			$obbs = 100 - $specialrate['n'];
 			# 「暗杀」效果判定：
 			if(isset($pa['skill_buff_assassin'])) $obbs += get_skillvars('buff_assassin','pdefbkr');
+
 			if($dice > $obbs)
 			{
 				if(!empty($pd['phy_def_flag']))
@@ -1452,7 +1453,7 @@ namespace revattr
 		{
 			$dice = diceroll(99);
 			# 失效率
-			$obbs = 1 - $specialrate['b'];
+			$obbs = 100 - $specialrate['b'];
 			# 「暗杀」效果判定：
 			if(isset($pa['skill_buff_assassin'])) $obbs += get_skillvars('buff_assassin','pdefbkr');
 			//检查抹消属性是否生效
@@ -1524,7 +1525,7 @@ namespace revattr
 		{
 			$dice = diceroll(99);
 			# 未破格率
-			$obbs = 1 - $specialrate['y'];
+			$obbs = 100 - $specialrate['y'];
 			# 「暗杀」效果判定：
 			if(isset($pa['skill_buff_assassin'])) $obbs += get_skillvars('buff_assassin','pdefbkr');
 			if ($dice > $obbs) 
