@@ -147,7 +147,7 @@ namespace revcombat
 		{
 			$sk_lvl = get_skilllvl('c1_crit',$pa);
 			$sk_lst = get_skillvars('c1_crit','stuntime',$sk_lvl);
-			$flag = get_skillinf_rev($pd,'inf_dizzy',$sk_lst);
+			$flag = \revattr\get_skillinf_rev($pd,'inf_dizzy',$sk_lst);
 			if($flag)
 			{
 				if(!$pd['type'] && $pd['nm']!='你') $pd['logsave'] .= "凶猛的一击直接将你打晕了过去！<br>";
@@ -160,7 +160,7 @@ namespace revcombat
 		{
 			if(strpos($pd['inf'],'e')!==false)
 			{
-				$flag = get_skillinf_rev($pd,'inf_dizzy',get_skillvars('c7_electric','lasttimes'));
+				$flag = \revattr\get_skillinf_rev($pd,'inf_dizzy',get_skillvars('c7_electric','lasttimes'));
 				if($flag)
 				{
 					$log .= "<span class='yellow'>由于已经处于麻痹状态，狂暴的电流直接将{$pd['nm']}电晕了！</span><br>";
@@ -174,7 +174,7 @@ namespace revcombat
 				$dice = diceroll(99);
 				if($dice < $infr)
 				{
-					$flag = get_inf_rev($pd,'e');
+					$flag = \revattr\get_inf_rev($pd,'e');
 					$log .= "<span class='yellow'>「磁暴」使{$pd['nm']}{$exdmginf['e']}了！</span><br>";
 				}
 				else
@@ -189,7 +189,7 @@ namespace revcombat
 		{
 			if(strpos($pd['inf'],'e')!==false)
 			{
-				$flag = get_skillinf_rev($pd,'inf_dizzy',get_skillvars('c7_electric','lasttimes'));
+				$flag = \revattr\get_skillinf_rev($pd,'inf_dizzy',get_skillvars('c7_electric','lasttimes'));
 				if($flag)
 				{
 					$log .= "<span class='yellow'>由于已经处于麻痹状态，狂暴的能量脉冲直接把{$pd['nm']}冲晕了过去！</span><br>";
@@ -199,7 +199,7 @@ namespace revcombat
 			}
 			else 
 			{
-				$flag = get_inf_rev($pd,'e');
+				$flag = \revattr\get_inf_rev($pd,'e');
 				$log .= "<span class='yellow'>「脉冲」使{$pd['nm']}{$exdmginf['e']}了！</span><br>";
 			}
 		}
@@ -212,7 +212,7 @@ namespace revcombat
 			$dice = diceroll(99);
 			if($dice < $infr)
 			{
-				$flag = get_inf_rev($pd,'p');
+				$flag = \revattr\get_inf_rev($pd,'p');
 				include_once GAME_ROOT.'./include/game/itemmain.func.php';
 				check_item_edit_event($pa,$pd,'c8_infilt');
 				if($flag) $log .= "<span class='yellow'>「渗透」使{$pd['nm']}{$exdmginf['p']}了！</span><br>";
