@@ -20,17 +20,17 @@ namespace revcombat
 	{
 		# 初始化pd相关攻击参数
 		\revattr\get_wep_kind($pd); 
+		$pd['wep_skill'] = \revattr\get_wep_skill($pd);
 		\revattr\get_attr_passive_skills($pd,$pa,$active);
 		$pd['wep_range'] = \revattr\get_wep_range($pd);
-		$pd['wep_skill'] = \revattr\get_wep_skill($pd);
 		$pd['wep_name'] = $pd['wep'];
 
 		# 初始化pa相关攻击参数
 		\revattr\get_wep_kind($pa,$wep_kind,$pd['wep_range']); 
 		\revattr\get_attr_bskills($pa,$pd,$active);
+		$pa['wep_skill'] = \revattr\get_wep_skill($pa);
 		\revattr\get_attr_passive_skills($pa,$pd,$active);
 		$pa['wep_range'] = \revattr\get_wep_range($pa);
-		$pa['wep_skill'] = \revattr\get_wep_skill($pa);
 		$pa['wep_name'] = $pa['wep'];
 	}
 
@@ -132,7 +132,7 @@ namespace revcombat
 		# 真蓝凝防守事件：
 		if($pd['type'] == 19 && $pd['name'] == '蓝凝')
 		{
-			attr_extra_19_azure($pa,$pd,$active);
+			\revattr\attr_extra_19_azure($pa,$pd,$active);
 		}
 
 		# 「灭气」技能效果
