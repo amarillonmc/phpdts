@@ -235,7 +235,7 @@ namespace revcombat
 			for($p=0;$p<$purify;$p++)
 			{
 				$heal_inf = $now_inf[$p];
-				$flag = heal_inf_rev($pd,$heal_inf);
+				$flag = \revattr\heal_inf_rev($pd,$heal_inf);
 				if($flag)
 				{
 					$log .= "<span class='yellow'>{$pd['nm']}敛神聚气，从{$exdmginf[$heal_inf]}中恢复了！</span><br>";
