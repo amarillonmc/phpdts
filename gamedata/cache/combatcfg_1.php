@@ -148,11 +148,11 @@ $pose_defend_active = 0;
 //姿态对防御力的影响（单位：百分比加算）
 $pose_defend_modifier = Array(0,25,0,-25,-50,-50,-466,777,10);
 //姿态对遇敌率的影响（遇敌率越低道具发现率越高）
-$pose_find_modifier = Array(0,5,10,-20,10,5,25,85,10);
+$pose_find_modifier = Array(0,15,20,-20,20,5,80,85,10);
 //姿态对躲避率的影响
-$pose_hide_modifier = Array(0,-25,-10,-10,10,-25,-40,-40,0);
+$pose_hide_modifier = Array(0,-25,-10,-10,10,-25,-80,-40,0);
 //姿态对先制率的影响（单位：百分比加算）（计算方式：进攻方姿态先制率-防守方姿态先制率）
-$pose_active_modifier = Array(0,0,50,0,25,-25,5,-100,0);
+$pose_active_modifier = Array(0,0,50,0,25,-5,5,-100,0);
 //姿态对反击率的影响（单位：百分比加算）
 $pose_counter_modifier = Array(0,0,0,0,0,-100,0,-100,0);
 
