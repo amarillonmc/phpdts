@@ -81,7 +81,7 @@ namespace revbattle
 		{
 			$active_r = $chase_active_obbs;
 			# 计算追击状态下pa对pd的先攻加成。默认：战场距离*10%
-			if($mode == 2) $range_ar += get_battle_range($pa,$pd,1) * 10;
+			if($mode == 2) $range_ar += \revattr\get_battle_range($pa,$pd,1) * 10;
 		}
 
 		# 社团技能对先攻率的修正
@@ -205,7 +205,7 @@ namespace revbattle
 			$r += $sk_r;
 		}
 		# pa持有「洞察」时的效果判定：（只在主动发现敌人时应用）
-		if(!check_skill_unlock('c10_insight',$pa) && get_wep_skill($pa) > get_wep_skill($pd))
+		if(!check_skill_unlock('c10_insight',$pa) && \revattr\get_wep_skill($pa) > \revattr\get_wep_skill($pd))
 		{
 			$sk_lvl = get_skilllvl('c10_insight',$pa);
 			$sk_r = get_skillvars('c10_insight','actgain',$sk_lvl);

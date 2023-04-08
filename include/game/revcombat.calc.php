@@ -107,7 +107,7 @@ namespace revcombat
 		$active_r = 0;
 		$active_dice = diceroll(99);
 		# 计算战场距离
-		$range = get_battle_range($pa,$pd,$active);
+		$range = \revattr\get_battle_range($pa,$pd,$active);
 		# pa或pd身上存在鏖战标记、或战场距离为0
 		if(strpos($pa['action'],'dfight')===0 || strpos($pd['action'],'dfight')===0 || !$range)
 		{
@@ -186,12 +186,12 @@ namespace revcombat
 		if($chase_flag)
 		{
 			# 满足追击/鏖战条件，判定战斗轮次步进
-			change_battle_turns($pa,$pd,$active);
+			\revattr\change_battle_turns($pa,$pd,$active);
 		}
 		else 
 		{
 			# 不满足追击/鏖战条件，重置战斗轮次
-			rs_battle_turns($pa,$pd);
+			\revattr\rs_battle_turns($pa,$pd);
 		}
 		return;
 	}
