@@ -10,7 +10,7 @@ namespace revbattle
 	# 计算pa在探索/移动时会遭遇敌人的概率（遇敌率越低，道具发现率越高）
 	function calc_meetman_rate(&$pa)
 	{
-		global $gamestate,$pose_find_modifier,$pls_find_modifier,$weather_find_r;
+		global $gamestate,$weather,$pose_find_modifier,$pls_find_modifier,$weather_find_r;
 		
 		# 基础遇敌率
 		$enemyrate = 40;
@@ -21,7 +21,7 @@ namespace revbattle
 		# 姿态对遇敌率的修正
 		if(!empty($pose_find_modifier[$pa['pose']])) $enemyrate += $pose_find_modifier[$pa['pose']];
 		# 天气对遇敌率的修正
-		if(!empty($weather_find_r['weather'])) $enemyrate += $weather_find_r['weather'];
+		if(!empty($weather_find_r[$weather])) $enemyrate += $weather_find_r[$weather];
 		# 地图场景对遇敌率的修正
 		if(!empty($pls_find_modifier[$pa['pls']])) $enemyrate += $pls_find_modifier[$pa['pls']];
 		
