@@ -34,7 +34,7 @@ namespace revbattle
 	}
 
 	# pa发现pd时，计算pd被pa发现的概率
-	function calc_hide_rate(&$pa,&$pd,$mode=0)
+	function calc_hide_rate($pa,$pd,$mode=0)
 	{
 		global $weather,$weather_hide_r,$pls_hide_modifier,$pose_hide_modifier,$tactic_hide_modifier;
 		

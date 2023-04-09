@@ -652,15 +652,15 @@ function fetch_playerdata_by_name($n)
 	if(!empty($data['clbpara']['lasttimes'])) check_skilllasttimes($data);
 	# 读取套装效果
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
-	reload_set_items($pdata);
+	reload_set_items($data);
 
 	return $data;
 }
 //通过pid抓取指定玩家/NPC数据
-function fetch_playerdata_by_pid($pid)
+function fetch_playerdata_by_pid($id)
 {
 	global $db,$gtablepre,$tablepre;
-	$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid = '$pid'");
+	$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid = '$id'");
 	if(!$db->num_rows($result)) return NULL;
 	$data = $db->fetch_array($result);
 
@@ -670,7 +670,7 @@ function fetch_playerdata_by_pid($pid)
 	if(!empty($data['clbpara']['lasttimes'])) check_skilllasttimes($data);
 	# 读取套装效果
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
-	reload_set_items($pdata);
+	reload_set_items($data);
 
 	return $data;
 }
@@ -756,7 +756,7 @@ function addnoise($wp_kind, $wsk, $ntime, $npls, $nid1, $nid2, $nmode)
 //销毁尸体
 function destory_corpse(&$edata)
 {
-	if($edata)
+	if($edata && $edata['hp'] <= 0)
 	{
 		$edata['action'] = ''; $edata['bid'] = 0;
 		$edata['state'] = 16; $edata['hp'] = 0; $edata['money'] = 0; $edata['pls'] = 254;

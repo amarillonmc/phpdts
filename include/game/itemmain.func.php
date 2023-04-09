@@ -1269,15 +1269,17 @@ function getcorpse($item,&$data=NULL)
 		return;
 	}
 
-	$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$corpseid'");
-	if(!$db->num_rows($result)){
+	//$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$corpseid'");
+	$edata = fetch_playerdata_by_pid($corpseid);
+
+	if(!$edata){
 		$log .= '对方不存在！<br>';
 		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
 	}
 
-	$edata = $db->fetch_array($result);
+	//$edata = $db->fetch_array($result);
 	
 	if($edata['hp']>0) {
 		$log .= '对方尚未死亡！<br>';

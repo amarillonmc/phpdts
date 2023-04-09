@@ -18,20 +18,24 @@ namespace revcombat
 	# 2.进攻方攻击方式、进攻方主动技能参数、进攻方被动技能参数、武器射程、攻击熟练度、武器名；
 	function get_attr_wepbase(&$pa,&$pd,$active,$wep_kind='')
 	{
-		# 初始化pd相关攻击参数
+		# 初始化pd攻击方式参数
 		\revattr\get_wep_kind($pd); 
-		$pd['wep_skill'] = \revattr\get_wep_skill($pd);
-		\revattr\get_attr_passive_skills($pd,$pa,$active);
 		$pd['wep_range'] = \revattr\get_wep_range($pd);
 		$pd['wep_name'] = $pd['wep'];
 
-		# 初始化pa相关攻击参数
+		# 初始化pa攻击方式参数
 		\revattr\get_wep_kind($pa,$wep_kind,$pd['wep_range']); 
 		\revattr\get_attr_bskills($pa,$pd,$active);
-		$pa['wep_skill'] = \revattr\get_wep_skill($pa);
-		\revattr\get_attr_passive_skills($pa,$pd,$active);
 		$pa['wep_range'] = \revattr\get_wep_range($pa);
 		$pa['wep_name'] = $pa['wep'];
+
+		# 初始化pa、pd熟练度相关参数
+		$pd['wep_skill'] = \revattr\get_wep_skill($pd);
+		$pa['wep_skill'] = \revattr\get_wep_skill($pa);
+
+		# 初始化pa、pd被动技能相关参数
+		\revattr\get_attr_passive_skills($pd,$pa,$active);
+		\revattr\get_attr_passive_skills($pa,$pd,$active);
 	}
 
 	# 正式进入rev_combat战斗状态后，在判定伤害、反击流程前的事件执行阶段；

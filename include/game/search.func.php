@@ -641,8 +641,9 @@ function discover($schmode = 0,&$data=NULL)
 		{
 			$db->data_seek($result, $enum);
 			$edata = $db->fetch_array($result);
+			$eid = $edata['pid'];
 			# 使用fetch_playerdata_by_pid重新获取敌人数据，以应用各种在载入玩家数据时进行的判定
-			$edata = fetch_playerdata_by_pid($edata['pid']);
+			$edata = fetch_playerdata_by_pid($eid);
 			if(!$edata['type'] || $gamestate < 50)
 			{
 				if($edata['hp'] <= 0)
@@ -694,7 +695,7 @@ function discover($schmode = 0,&$data=NULL)
 		{
 			if($edata['hp'] > 0) 
 			{
-				if(isset($edata['clbpara'])) $edata['clbpara']=get_clbpara($edata['clbpara']);
+				//if(isset($edata['clbpara'])) $edata['clbpara']=get_clbpara($edata['clbpara']);
 				//发现队友
 				if($teamID&&(!$fog)&&($gamestate<40)&&($teamID == $edata['teamID']))
 				{

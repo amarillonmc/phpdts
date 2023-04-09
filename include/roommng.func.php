@@ -38,10 +38,10 @@ function roommng_verify_db_game_structure()
 	$gr = $db->fetch_array($result);
 	if($gr['Column_name'] != 'groomid')
 	{
-		if(!empty($gr['key_name']))
+		if(!empty($gr['Key_name']))
 		{
 			$db->query("ALTER TABLE`{$gtablepre}game` DROP PRIMARY KEY");
-			echo "取消了game表的主键{$gr['key_name']}<br>";
+			echo "取消了game表的主键{$gr['Key_name']}<br>";
 		}
 		$db->query("ALTER TABLE`{$gtablepre}game` ADD PRIMARY KEY (`groomid`)");
 		echo "将game表的主键变更为groomid<br>";
