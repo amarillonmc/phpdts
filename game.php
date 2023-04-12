@@ -112,7 +112,7 @@ elseif($action == 'chase' || $action == 'pchase' || $action == 'dfight'){
 	if($db->num_rows($result)>0){
 		$edata = $db->fetch_array($result);
 		include_once GAME_ROOT.'./include/game/revbattle.func.php';
-		findenemy_rev($edata);
+		\revbattle\findenemy_rev($edata);
 		$main = 'battle_rev';
 	}
 }
@@ -123,7 +123,7 @@ elseif($action == 'neut'){
 		if($db->num_rows($result)>0){
 			$edata = $db->fetch_array($result);
 			include_once GAME_ROOT.'./include/game/revbattle.func.php';
-			findneut($edata,1);
+			\revbattle\findneut($edata,1);
 			extract($edata,EXTR_PREFIX_ALL,'w');
 			init_battle_rev($pdata,$edata,1);
 			$main = 'battle_rev';

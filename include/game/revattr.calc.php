@@ -32,6 +32,13 @@ namespace revattr
 				$pa['bskilllog2'] .='<span class="yellow">「天威」使'.$pa['nm'].'的熟练度暂时增加了'.ceil($sk_fix).'点！</span><br>';
 			}
 		}
+
+		#「人杰」技能判定
+		if(isset($pa['skill_c11_renjie']))
+		{
+			foreach(Array('wp','wk','wc','wg','wd','wf') as $skw) $wep_skill = max($pa[$skw],$wep_skill);
+		}
+		
 		return $wep_skill;
 	}
 

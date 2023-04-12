@@ -709,7 +709,7 @@ function discover($schmode = 0,&$data=NULL)
 				{
 					$bid = $edata['pid'];
 					$action = 'neut';
-					findneut($edata,1);
+					\revbattle\findneut($edata,1);
 					return;
 				}
 				//发现敌人

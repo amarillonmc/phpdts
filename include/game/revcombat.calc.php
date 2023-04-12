@@ -114,7 +114,7 @@ namespace revcombat
 			# 添加鏖战状态
 			$pa['is_dfight'] = $pd['is_dfight'] = 1;
 			# 获取鏖战状态下pa对pd的先制率
-			$active_r = calc_active_rate($pa,$pd,1);
+			$active_r = \revbattle\calc_active_rate($pa,$pd,1);
 			# 如果pa身上存在逃跑失败的标记，则pa先制率降低50……这是偷懒行为，未来的你记得改掉
 			if(isset($pa['fail_escape'])) $active_r -= 50;
 			# 判断是否先制
@@ -126,7 +126,7 @@ namespace revcombat
 			# 添加追击状态
 			$pa['is_chase'] = 1; $pd['is_pchase'] = 1;
 			# 获取追击状态下pa对pd的先制率
-			$active_r = calc_active_rate($pa,$pd,2);
+			$active_r = \revbattle\calc_active_rate($pa,$pd,2);
 			# 如果pd身上存在逃跑失败的标记，则pa先制率提升50
 			if(isset($pd['fail_escape'])) $active_r += 50;
 			# 判断是否先制
