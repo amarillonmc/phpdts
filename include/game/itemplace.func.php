@@ -181,11 +181,12 @@ function init_itemmix_tips($itemindex='',&$data=NULL)
 }
 
 function parse_smartmix_recipelink($itemindex, $stext = '', $sstyle = ''){
-	return "<a ".($sstyle ? "class=\"{$sstyle}\" " : '')."onclick=\"$('itemindex').value='$itemindex';postCmd('maincmd','command.php');\">".($stext ? $stext : $itemindex).'</a>';
+	$tt = get_item_place($itemindex);
+	return "<span tooltip2=\"{$tt}\"><a ".($sstyle ? "class=\"{$sstyle}\" " : '')."onclick=\"$('itemindex').value='$itemindex';postCmd('maincmd','command.php');\">".($stext ? $stext : $itemindex).'</a></span>';
 }
 function parse_itemmix_resultshow($rarr){
-	$ret = $rarr[0].'/'.parse_info_desc($rarr[1],'k','',0,'tooltip2').'/'.$rarr[2].'/'.$rarr[3];
-	$itmskw = !empty($rarr[4]) ? parse_info_desc($rarr[4],'sk',$rarr[1],0,'tooltip2') : '';
+	$ret = $rarr[0].'/'.parse_info_desc($rarr[1],'k','',0,'none').'/'.$rarr[2].'/'.$rarr[3];
+	$itmskw = !empty($rarr[4]) ? parse_info_desc($rarr[4],'sk',$rarr[1],0,'none') : '';
 	if($itmskw) $ret .= '/'.$itmskw;
 	return $ret;
 }

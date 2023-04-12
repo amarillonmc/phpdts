@@ -11,7 +11,7 @@ $mix_type = Array('normal' => '通常','sync' => '同调', 'overlay' => '超量'
 // 合成功能
 function itemmix_rev($mlist, $itemselect=-1, &$data=NULL) 
 {
-	global $log,$mode,$cmd;
+	global $log,$mode,$cmd,$main,$itemcmd;
 	if(!isset($data))
 	{
 		global $pdata;
@@ -33,7 +33,7 @@ function itemmix_rev($mlist, $itemselect=-1, &$data=NULL)
 	//没有合成选项
 	if(!$mix_res) {
 		$log .= "<span class=\"yellow\">{$itmstr}</span>不能合成！<br>";
-		$mode = 'itemmix';
+		$mode = 'itemmix'; $itemcmd = 'itemmix';
 	} elseif(count($mix_res) > 1) {//合成选项2个以上
 		if($itemselect >= 0) {//有选择则合成
 			itemmix_proc($mlist, $mix_res[$itemselect], $itmstr, $data);
@@ -113,7 +113,7 @@ function itemmix_option_show($mix_res,$mixmask)
 }
 function itemmix_place_check($mlist,&$data=NULL)
 {
-	global $mode,$log,$main;
+	global $mode,$log,$main,$itemcmd;
 	if(!isset($data))
 	{
 		global $pdata;
@@ -129,18 +129,18 @@ function itemmix_place_check($mlist,&$data=NULL)
 	$mlist2 = array_unique($mlist);	
 	if(count($mlist) != count($mlist2)) {
 		$log .= '相同道具不能进行合成！<br>';
-		$mode = 'itemmix';
+		$mode = 'itemmix'; 	$itemcmd = 'itemmix';
 		return false;
 	}
 	if(count($mlist) < 2){
 		$log .= '至少需要2个道具才能进行合成！';
-		$mode = 'itemmix';
+		$mode = 'itemmix'; 	$itemcmd = 'itemmix';
 		return false;
 	}
 	foreach($mlist as $val){
 		if(!$data['itm'.$val]){
 			$log .= '所选择的道具'.$val.'不存在！';
-			$mode = 'itemmix';
+			$mode = 'itemmix'; 	$itemcmd = 'itemmix';
 			return false;
 		}
 	}

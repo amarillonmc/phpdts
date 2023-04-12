@@ -103,11 +103,6 @@ namespace revattr
 		{
 			$wep_skill = round($pa[$skillinfo[$pa['wep_kind']]]+($pa['wp']+$pa['wk']+$pa['wc']+$pa['wg']+$pa['wd']+$pa['wf'])*0.25);
 		}
-		# 「人杰」技能判定
-		elseif(isset($pa['skill_renjie']))
-		{
-			foreach(Array('wp','wk','wc','wg','wd','wf') as $skw) $wep_skill = max($pa[$skw],$wep_skill);
-		}
 		else
 		{
 			$wep_skill = $pa[$skillinfo[$pa['wep_kind']]];
@@ -115,6 +110,7 @@ namespace revattr
 
 		# 获取社团技能对武器熟练度的修正
 		$wep_skill = get_clbskill_wep_skill($pa,$wep_skill);
+
 		return $wep_skill;
 	}
 
@@ -232,7 +228,7 @@ namespace revattr
 						lostclubskill('buff_assassin',$pa['clbpara']);
 					}
 					# 「洞察」特殊判定：熟练度高于对方时触发
-					elseif($sk == 'c10_insight' && $pa['wep_skill'] > $pd['wep_skill'])
+					elseif($sk == 'c10_insight' && get_wep_skill($pa) > get_wep_skill($pd))
 					{
 						$pa['skill_c10_insight'] = 1;
 						$pa['skilllog'] .= "<span class='yellow'>{$pa['nm']}凭借丰富的经验看穿了{$pd['nm']}的破绽！</span><br>";

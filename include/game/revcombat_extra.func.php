@@ -29,13 +29,13 @@ namespace revcombat
 		$pa['wep_range'] = \revattr\get_wep_range($pa);
 		$pa['wep_name'] = $pa['wep'];
 
-		# 初始化pa、pd熟练度相关参数
-		$pd['wep_skill'] = \revattr\get_wep_skill($pd);
-		$pa['wep_skill'] = \revattr\get_wep_skill($pa);
-
 		# 初始化pa、pd被动技能相关参数
 		\revattr\get_attr_passive_skills($pd,$pa,$active);
 		\revattr\get_attr_passive_skills($pa,$pd,$active);
+
+		# 初始化pa、pd熟练度相关参数
+		$pd['wep_skill'] = \revattr\get_wep_skill($pd);
+		$pa['wep_skill'] = \revattr\get_wep_skill($pa);
 	}
 
 	# 正式进入rev_combat战斗状态后，在判定伤害、反击流程前的事件执行阶段；

@@ -560,7 +560,7 @@
 					$action = 'enemy'; $bid = $mdata['clbpara']['mercchase'];
 					# 佣兵追击不一定能先制，要判定一下
 					include_once GAME_ROOT.'./include/game/revbattle.func.php';
-					revbattle_prepare('bskill_c11_merc'.$mkey,'noactive');
+					\revbattle\revbattle_prepare('bskill_c11_merc'.$mkey,'noactive');
 				}
 				else
 				{
