@@ -137,8 +137,8 @@ function hack($itmn = 0) {
 		$hack = 1;
 		$clbpara['achvars']['hack'] += 1;
 		$log .= '入侵禁区控制系统成功了！全部禁区都被解除了！<br>';
-		include_once GAME_ROOT.'./include/system.func.php';
-		movehtm();
+		//include_once GAME_ROOT.'./include/system.func.php';
+		//movehtm();
 		addnews($now,'hack',get_title_desc($nick).' '.$name);
 		storyputchat($now,'hack');
 		save_gameinfo();

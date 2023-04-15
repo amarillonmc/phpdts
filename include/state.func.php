@@ -311,7 +311,7 @@
 			check_battle_achievement_rev($pa,$pd);	
 		}
 		# 保存游戏进行状态
-		include_once GAME_ROOT.'./include/system.func.php';
+		//include_once GAME_ROOT.'./include/system.func.php';
 		save_gameinfo();
 		return;
 	}

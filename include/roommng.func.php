@@ -81,7 +81,7 @@ function roommng_create_new_room(&$udata)
 	if($now_room_nums)
 	{
 		$room_ids = range(1,$max_rooms);
-		$now_room_ids = $db->fetch_array($result);
+		while($now_room_ids[] = $db->fetch_array($result)['groomid']){};
 		$new_room_id = array_shift(array_diff($room_ids,$now_room_ids));
 	}
 	else 
@@ -157,7 +157,7 @@ function roommng_exit_room(&$udata)
 				if($db->num_rows($result2))
 				{
 					$udata2 = $db->fetch_array($result2);
-					$new_ownid = $udata2['uid'];
+					$new_ownid = $udata2['username'];
 					echo "将房主权限移交给了{$udata2['username']}<br>";
 				}
 			}

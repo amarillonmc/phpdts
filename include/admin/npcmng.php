@@ -34,7 +34,7 @@ if($command == 'kill' || $command == 'live' || $command == 'del') {
 						$operlist[${'npc_'.$i}] = $npcdata[$i]['name'].'(PID:'.$npcdata[$i]['pid'].')';
 						$npcdata[$i]['hp'] = 0;
 						$npcdata[$i]['state'] = 15;
-						$deathnum ++;$alivenum--;
+						$deathnum ++;//$alivenum--;
 						adminlog('killnpc',$npcdata[$i]['name']);
 					}else{
 						$gfaillist[] = $npcdata[$i]['name'].'(PID:'.$npcdata[$i]['pid'].')';
