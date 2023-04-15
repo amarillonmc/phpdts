@@ -10,6 +10,7 @@ if(version_compare(PHP_VERSION, '4.3.0', '<')) {
 	exit('PHP version must >= 4.3.0!');
 }
 require GAME_ROOT.'./include/global.func.php';
+require GAME_ROOT.'./include/system.func.php';
 error_reporting(E_ALL);
 set_error_handler('gameerrorhandler');
 $magic_quotes_gpc = false;
@@ -110,7 +111,7 @@ if(CURSCRIPT !== 'chat')
 			$hplayer = '';
 			$noisemode = '';
 			//save_gameinfo();
-			include_once GAME_ROOT.'./include/system.func.php';
+			//include_once GAME_ROOT.'./include/system.func.php';
 			rs_game(1+2+4+8+16+32);
 			//save_gameinfo();
 			$ginfochange = true;
@@ -132,7 +133,7 @@ if(CURSCRIPT !== 'chat')
 	}
 	//判定增加禁区
 	if (($gamestate > 10)&&($now > $areatime)) {
-		include_once GAME_ROOT.'./include/system.func.php';
+		//include_once GAME_ROOT.'./include/system.func.php';
 		while($now>$areatime){
 			$o_areatime = $areatime;
 			$areatime += $areahour*60;
@@ -142,7 +143,7 @@ if(CURSCRIPT !== 'chat')
 		}
 	//判定警告增加禁区	
 	}elseif(($gamestate > 10)&&($now > $areatime - $areawarntime)&&(!$areawarn)){
-		include_once GAME_ROOT.'./include/system.func.php';
+		//include_once GAME_ROOT.'./include/system.func.php';
 		areawarn();
 		$ginfochange = true;
 	}
@@ -177,15 +178,18 @@ if(CURSCRIPT !== 'chat')
 	}
 	
 	if (($gamestate >= 40)&&($now > $afktime + $antiAFKertime * 60)) {//判定自动反挂机
-		include_once GAME_ROOT.'./include/system.func.php';
+		//include_once GAME_ROOT.'./include/system.func.php';
 		antiAFK();
 		$afktime = $now;
 		$ginfochange = true;
 	}
 	
 	if($gamestate >= 40) {
+		$result = $db->query("SELECT pid FROM {$tablepre}players WHERE hp>0 AND type=0");
+		$alivenum = $db->num_rows($result);
+		save_gameinfo();
 		if($alivenum <= 1) {
-			include_once GAME_ROOT.'./include/system.func.php';
+			//include_once GAME_ROOT.'./include/system.func.php';
 			gameover();
 		}
 	}

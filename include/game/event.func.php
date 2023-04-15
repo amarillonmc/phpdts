@@ -635,7 +635,7 @@ function event(){
 //		addnews($now,'death13',$name,0);
 //		$alivenum--;
 //		$deathnum++;
-//		include_once GAME_ROOT.'./include/system.func.php';
+//		//include_once GAME_ROOT.'./include/system.func.php';
 //		save_gameinfo();
 		include_once GAME_ROOT . './include/state.func.php';
 		death('event');

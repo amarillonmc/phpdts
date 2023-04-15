@@ -978,8 +978,15 @@ function itemuse($itmn,&$data=NULL) {
 		//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
 		addnews($now,'present',$nickinfo.' '.$name,$itm,$in);
-		$itms1--;
+		/*$itms1--;
 		if ($itms1 <= 0) {
+			$log .= "<span class=\"red\">$itm</span>用光了。<br>";
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		}*/
+		// ？？？？？
+		$itms--;
+		if ($itms <= 0) {
 			$log .= "<span class=\"red\">$itm</span>用光了。<br>";
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
@@ -995,8 +1002,14 @@ function itemuse($itmn,&$data=NULL) {
 		//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
 		addnews($now,'present',$nickinfo.' '.$name,$itm,$in);
-		$itms1--;
+		/*$itms1--;
 		if ($itms1 <= 0) {
+			$log .= "<span class=\"red\">$itm</span>用光了。<br>";
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		}*/
+		$itms--;
+		if ($itms <= 0) {
 			$log .= "<span class=\"red\">$itm</span>用光了。<br>";
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;

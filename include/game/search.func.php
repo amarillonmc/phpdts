@@ -812,6 +812,7 @@ function focus_item(&$data=NULL,$id=NULL)
 		$result = $db->query("SELECT * FROM {$tablepre}mapitem WHERE pls = '$pls' AND iid = '$id'");
 		if(!$db->num_rows($result)) 
 		{
+			// 这是特性
 			$log .= "但是你想找的东西已经不见了！<br>";
 			return 0;
 		}

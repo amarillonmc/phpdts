@@ -29,8 +29,8 @@ if($command == 'wthedit'){
 		save_gameinfo();
 		adminlog('hackedit',$ihack);
 		addnews($now,'syshackchg',$ihack);		
-		include_once GAME_ROOT.'./include/system.func.php';
-		movehtm();
+		//include_once GAME_ROOT.'./include/system.func.php';
+		//movehtm();
 	}
 }elseif(strpos($command, 'gsedit')===0){
 	$igamestate = explode('_',$command);
@@ -65,7 +65,7 @@ if($command == 'wthedit'){
 		adminlog('gsedit',$igamestate);
 	}else{
 		$cmd_info = "第 $gamenum 局大逃杀紧急中止";
-		include_once GAME_ROOT.'./include/system.func.php';
+		//include_once GAME_ROOT.'./include/system.func.php';
 		gameover($now,'end6');
 		save_gameinfo();
 		adminlog('gameover');

@@ -226,7 +226,7 @@ function get_npc_helpinfo($nlist,$tooltip=1)
 								break;
 							}
 						}
-						if(isset($snpc['gd']))
+						if(!empty($snpc['gd']) && ($snpc['gd'] == 'm' || $snpc['gd'] == 'f'))
 						{
 							$snpc['gd'] = $snpc['gd']=='m' ? '男' : '女';
 						}
