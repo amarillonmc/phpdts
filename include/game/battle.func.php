@@ -177,7 +177,7 @@ function findcorpse(&$w_pdata){
 
 function senditem(){
 	//global $db,$tablepre,$log,$mode,$main,$command,$cmd,$battle_title,$pls,$plsinfo,$message,$now,$name,$w_log,$teamID,$gamestate,$action;
-	global $db,$tablepre,$log,$mode,$main,$command,$cmd,$battle_title,$plsinfo,$hplsinfo,$now,$gamestate;
+	global $db,$tablepre,$log,$mode,$main,$command,$cmd,$battle_title,$message,$plsinfo,$hplsinfo,$now,$gamestate;
 	if(!isset($data))
 	{
 		global $pdata;
