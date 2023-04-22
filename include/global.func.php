@@ -258,8 +258,16 @@ function save_gameinfo()
 	global $now,$db,$gtablepre,$tablepre;
 	global $groomid,$gamenum,$gamestate,$lastupdate,$starttime,$winmode,$winner,$arealist,$areanum,$areatime,$areawarn,$validnum,$alivenum,$deathnum,$afktime,$optime,$weather,$hack,$combonum,$gamevars;
 	if(!isset($gamenum)||!isset($gamestate)){return;}
-	if($alivenum < 0){$alivenum = 0;}
-	if($deathnum < 0){$deathnum = 0;}
+	
+	$result = $db->query("SELECT pid FROM {$tablepre}players WHERE type=0");
+	$validnum = $db->num_rows($result);
+	
+	$result = $db->query("SELECT pid FROM {$tablepre}players WHERE hp>0 AND type=0");
+	$alivenum = $db->num_rows($result);
+	
+	$result = $db->query("SELECT pid FROM {$tablepre}players WHERE hp<=0 OR state>=10");
+	$deathnum = $db->num_rows($result);
+	
 	if(empty($afktime)){$afktime = $now;}
 	if(empty($optime)){$optime = $now;}
 	$gameinfo = Array();
