@@ -19,6 +19,8 @@ $pls_bgm = Array
 (
 	# 在英灵殿会播放对应曲集
 	34 => Array('valhalla'),
+	33 => Array('pls33'),
+	0 => Array('introduction'),
 );
 
 # 会播放BGM的地图组（优先级低）
@@ -30,12 +32,14 @@ $regular_bgm = Array('besynthed');
 # 曲集内包含的BGM
 $bgmbook = Array
 (
-	'besynthed' => Array(0,1,2,5,6,7,8,9,10),
+	'besynthed' => Array(0,1,2,5,6,7,8,9,10,18,19,20,23,24),
 	'valhalla' => Array(3,4),
 	'event' => Array(11,12,13),
 	'wth18' => Array(14,15),
 	'tutorial' => Array(16),
 	'realcrimzure' => Array(17),
+	'pls33' => Array(21),
+	'introduction' => Array(22),
 );
 
 # 所有bgm编号清单：
@@ -129,6 +133,41 @@ $bgmlist = Array
 	17 => Array(
 		'name' => '真红暮·真蓝凝 ~ Azure Swear',
 		'url' => 'https://res.dts.gay/BGM/AzureSwear.mp3',
+		'type' => 'audio/mpeg',
+	),
+	18 => Array(
+		'name' => 'Skaven252 - A Defender Rises',
+		'url' => 'https://res.dts.gay/BGM/Skaven252-MMC-2019-Jan-ADefenderRises.mp3',
+		'type' => 'audio/mpeg',
+	),
+	19 => Array(
+		'name' => 'Skaven252 - Data Chase',
+		'url' => 'https://res.dts.gay/BGM/Skaven252-MMC-2023-02_DataChase.mp3',
+		'type' => 'audio/mpeg',
+	),
+	20 => Array(
+		'name' => 'Skaven252 - Spectradrome',
+		'url' => 'https://res.dts.gay/BGM/Skaven252-MMC-2022-03-Spectradrome.mp3',
+		'type' => 'audio/mpeg',
+	),
+	21 => Array(
+		'name' => 'Skaven252 - Sateensyömä',
+		'url' => 'https://res.dts.gay/BGM/Skaven252-MMC-2022-04-Sateensyoma.mp3',
+		'type' => 'audio/mpeg',
+	),
+	22 => Array(
+		'name' => 'Skaven252 - Thoughtless',
+		'url' => 'https://res.dts.gay/BGM/Skaven252-MMC-2023-01-Thoughtless.mp3',
+		'type' => 'audio/mpeg',
+	),
+	23 => Array(
+		'name' => 'Skaven252 - Loserboy',
+		'url' => 'https://res.dts.gay/BGM/Skaven252-MMC-2023-04_Loserboy.mp3',
+		'type' => 'audio/mpeg',
+	),
+	24 => Array(
+		'name' => 'Skaven252 - Life As A Hole',
+		'url' => 'https://res.dts.gay/BGM/Skaven252-MMC-2023-03_LifeAsAHole.mp3',
 		'type' => 'audio/mpeg',
 	),
 );
