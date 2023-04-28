@@ -616,8 +616,8 @@ function parse_info_desc($info,$type,$vars='',$short=0,$tiptype=0)
 			if($vars == 'WG' || $vars == 'WGK' || $vars == 'WDG')
 			{
 				if(empty($info)) $sk_tp.= "\r【需装填】：手枪子弹";
-				elseif(in_array('e',$info) || in_array('w',$info)) $sk_tp.= "\r【需装填】：枪械电池";
-				elseif(in_array('u',$info) || in_array('i',$info)) $sk_tp.= "\r【需装填】：能源弹药";
+				elseif(in_array('e',$info) || in_array('w',$info)) $sk_tp.= "\r【需装填】：能源弹药";
+				elseif(in_array('u',$info) || in_array('i',$info)) $sk_tp.= "\r【需装填】：气体弹药";
 				elseif(in_array('r',$info)) $sk_tp.= "\r【需装填】：机枪子弹";
 			}
 			if($vars == 'WJ') $sk_tp.= "\r【需装填】：重型弹药";
