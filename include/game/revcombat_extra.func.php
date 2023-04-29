@@ -339,6 +339,7 @@ namespace revcombat
 	{
 		global $log;
 		$loop = 0;
+
 		# 「双响」效果判定
 		if(isset($pa['bskill_c5_double']))
 		{
@@ -346,6 +347,7 @@ namespace revcombat
 			$log .= "<span class=\"yellow\">{$pa['nm']}引爆了预埋的另一组爆炸物！</span><br>";
 			$loop = 1;
 		}
+
 		# 「海虎」效果判定
 		if(isset($pa['skill_c12_swell']))
 		{
@@ -354,6 +356,16 @@ namespace revcombat
 			$log .= "<span class=\"lime\">{$pa['nm']}以雷霆万钧之势再度袭向{$pd['nm']}！</span><br>";
 			$loop = 1;
 		}
+
+		# 循环打击触发时，注销所有的主动技触发标记
+		if($loop && !empty($pa['bskill']) && !empty($pa['bskill_'.$pa['bskill']]))
+		{
+			unset($pa['bskill_'.$pa['bskill']]);
+			unset($pa['bskill']);
+			if(!empty($pa['bskilllog'])) unset($pa['bskilllog']);
+			if(!empty($pa['bskilllog2'])) unset($pa['bskilllog2']);
+		}
+
 		return $loop;
 	}
 
