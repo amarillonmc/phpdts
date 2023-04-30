@@ -409,7 +409,7 @@
 			$rageback = get_skillvars('c6_godpow','rageback');
 			if(!empty($rageback))
 			{
-				$pa['rage'] = max(255,$pa['rage']+$rageback);
+				$pa['rage'] = min(255,$pa['rage']+$rageback);
 				$log .= '<span class="yellow">「天威」使'.$pa['nm'].'的怒气回复了'.$rageback.'点！</span><br>';
 			}
 		}

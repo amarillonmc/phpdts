@@ -243,7 +243,7 @@ namespace revcombat
 				if($flag)
 				{
 					$log .= "<span class='yellow'>{$pd['nm']}敛神聚气，从{$exdmginf[$heal_inf]}中恢复了！</span><br>";
-					$pd['rage'] = max(255,$pd['rage']+get_skillvars('c9_iceheart','ragegain'));
+					$pd['rage'] = min(255,$pd['rage']+get_skillvars('c9_iceheart','ragegain'));
 				}
 			}
 		}
