@@ -130,7 +130,7 @@ function findcorpse(&$w_pdata){
 				$s_value = $value.'s';
 				$sk_value = $value.'sk';
 			}
-			if(!empty($$s_value))
+			if(!empty($$value))
 			{
 				# 初始化名称样式
 				${$value.'_words'} = parse_info_desc($$value,'m');

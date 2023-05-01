@@ -513,6 +513,8 @@ function player_format_with_db_structure($data){
         if(isset($data[$key]) && is_array($data[$key])) $data[$key]=json_encode($data[$key],JSON_UNESCAPED_UNICODE);
 		$ndata[$key]=isset($data[$key]) ? $data[$key] : '';
     }
+	include_once GAME_ROOT.'./include/game/itemmain.func.php';
+	reload_equip_items($ndata);
     return $ndata;
 }
 function parse_info_desc($info,$type,$vars='',$short=0,$tiptype=0)

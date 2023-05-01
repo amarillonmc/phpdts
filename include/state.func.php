@@ -112,6 +112,8 @@
 		# 执行死亡事件（灵魂绑定等）
 		check_death_events(create_dummy_playerdata(),$data,1);
 
+		player_save($data);
+
 		save_gameinfo ();
 		return $killmsg;
 	}
@@ -311,7 +313,7 @@
 			check_battle_achievement_rev($pa,$pd);	
 		}
 		# 保存游戏进行状态
-		//include_once GAME_ROOT.'./include/system.func.php';
+		player_save($pd);
 		save_gameinfo();
 		return;
 	}

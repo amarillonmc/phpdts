@@ -1460,6 +1460,31 @@ function change_subwep($s=2,&$data=NULL)
 	return;
 }
 
+# 初始化玩家/NPC数据时，检查对应部位是否可装备道具、或是否缺少基础装备
+function reload_equip_items(&$pa)
+{
+	global $nowep,$noarb,$nosta;
+
+	if(empty($pa['wep']) || empty($pa['weps']))
+	{
+		$pa['wep'] = $nowep;
+		$pa['wepk'] = 'WN';
+		$pa['wepe'] = 0;
+		$pa['weps'] = $nosta;
+		$pa['wepsk'] = '';
+	}
+
+	if(empty($pa['arb']) || empty($pa['arbs']))
+	{
+		$pa['arb'] = $noarb;
+		$pa['arbk'] = 'DN';
+		$pa['arbe'] = 0;
+		$pa['arbs'] = $nosta;
+		$pa['arbsk'] = '';
+	}
+	return;
+}
+
 # 初始化玩家/NPC数据时，重载套装效果
 function reload_set_items(&$pa)
 {

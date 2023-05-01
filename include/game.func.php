@@ -646,13 +646,7 @@ function fetch_playerdata_by_name($n)
 	if(!$db->num_rows($result)) return NULL;
 	$data = $db->fetch_array($result);
 
-	# 转码clbpara
-	if(!empty($data['clbpara'])) $data['clbpara'] = get_clbpara($data['clbpara']);
-	# 判断时效性状态
-	if(!empty($data['clbpara']['lasttimes'])) check_skilllasttimes($data);
-	# 读取套装效果
-	include_once GAME_ROOT.'./include/game/itemmain.func.php';
-	reload_set_items($data);
+	check_player_misc_states($data);
 
 	return $data;
 }
@@ -664,13 +658,7 @@ function fetch_playerdata_by_pid($id)
 	if(!$db->num_rows($result)) return NULL;
 	$data = $db->fetch_array($result);
 
-	# 转码clbpara
-	if(!empty($data['clbpara'])) $data['clbpara'] = get_clbpara($data['clbpara']);
-	# 判断时效性状态
-	if(!empty($data['clbpara']['lasttimes'])) check_skilllasttimes($data);
-	# 读取套装效果
-	include_once GAME_ROOT.'./include/game/itemmain.func.php';
-	reload_set_items($data);
+	check_player_misc_states($data);
 
 	return $data;
 }
@@ -688,6 +676,19 @@ function player_save($data){
 		$db->array_update("{$tablepre}players",$ndata,"pid='$pid'");
 	}
 	return;
+}
+
+function check_player_misc_states(&$data)
+{
+	# 转码clbpara
+	if(!empty($data['clbpara'])) $data['clbpara'] = get_clbpara($data['clbpara']);
+	# 刷新时效性状态
+	if(!empty($data['clbpara']['lasttimes'])) check_skilllasttimes($data);
+	# 刷新装备状态
+	include_once GAME_ROOT.'./include/game/itemmain.func.php';
+	reload_equip_items($data);
+	reload_set_items($data);
+	return $data;
 }
 
 //获取安全地图范围
