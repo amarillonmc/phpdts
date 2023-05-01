@@ -651,7 +651,7 @@ function discover($schmode = 0,&$data=NULL)
 					//直接略过无效尸体
 					if($gamestate>=40) continue;
 					$ret = false;
-					foreach(array('money','arhs','aras','arfs','arts','itms1','itms2','itms3','itms4','itms5','itms6') as $chkval)
+					foreach(array('weps','wep2s','money','arhs','aras','arfs','arts','itms1','itms2','itms3','itms4','itms5','itms6') as $chkval)
 					{
 						if($edata[$chkval]) 
 						{

@@ -1358,14 +1358,14 @@ function getcorpse($item,&$data=NULL)
 		return;
 	}
 	
-	if($item == 'wep') {
-		$itm0 = $edata['wep'];
-		$itmk0 = $edata['wepk'];
-		$itme0 = $edata['wepe'];
-		$itms0 = $edata['weps'];
-		$itmsk0 = $edata['wepsk'];
-		$edata['wep'] = $edata['wepk'] = $edata['wepsk'] = '';
-		$edata['wepe'] = $edata['weps'] = 0;  
+	if($item == 'wep' || $item == 'wep2') {
+		$itm0 = $edata[$item];
+		$itmk0 = $edata[$item.'k'];
+		$itme0 = $edata[$item.'e'];
+		$itms0 = $edata[$item.'s'];
+		$itmsk0 = $edata[$item.'sk'];
+		$edata[$item] = $edata[$item.'k'] = $edata[$item.'sk'] = '';
+		$edata[$item.'e'] = $edata[$item.'s'] = 0;  
 	} elseif(strpos($item,'ar') === 0) {
 		$itm0 = $edata[$item];
 		$itmk0 = $edata[$item.'k'];

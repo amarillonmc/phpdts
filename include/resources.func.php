@@ -9,7 +9,7 @@ if(!defined('IN_GAME')) {
 function get_equip_list($mode=0)
 {
 	//装备列表
-	$equip_list = Array('wep','arb','arh','ara','arf','art');
+	$equip_list = Array('wep','wep2','arb','arh','ara','arf','art');
 	$equip_list2 = Array
 	(
 		'W' => 'wep',
