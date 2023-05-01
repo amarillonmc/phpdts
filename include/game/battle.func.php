@@ -115,7 +115,7 @@ function findcorpse(&$w_pdata){
 		$log .= '你发现了<span class="red">'.$w_name.'</span>的尸体！<br>';
 
 		// 初始化尸体tooltip
-		foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
+		foreach (Array('wep','wep2','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
 		{
 			$value = 'w_'.$value;
 			if(strpos($value,'itm')!==false)
