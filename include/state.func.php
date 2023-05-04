@@ -110,6 +110,7 @@
 		//$alivenum = $db->result($db->query("SELECT COUNT(*) FROM {$tablepre}players WHERE hp>0 AND type=0"), 0);
 		
 		# 执行死亡事件（灵魂绑定等）
+		if(!$data['type'] && empty($data['nm'])) $data['nm'] = '你';
 		check_death_events(create_dummy_playerdata(),$data,1);
 
 		player_save($data);
@@ -366,34 +367,33 @@
 		}
 
 		# 灵魂绑定事件：
-		foreach(Array('wep','arb','arh','ara','arf','art') as $equip)
+		foreach(get_equip_list() as $equip)
 		{
 			// ……我为什么不把这个装备名数组放进resources里……用了一万遍了
+			// 哈哈，放了！
 			if(!empty($pd[$equip.'s']) && strpos($pd[$equip.'sk'],'v')!==false)
 			{
-				$log .= "伴随着{$pd['nm']}的死亡，<span class=\"yellow\">{$pd[$equip]}</span>也化作灰烬消散了。<br>";
-				$pd[$equip] = $pd[$equip.'k'] = $pd[$equip.'sk'] = '';
-				$pd[$equip.'e'] = $pd[$equip.'s'] = 0;
-				if($equip == 'wep')
-				{
-					$pd[$equip] = '拳头'; $pd[$equip.'k'] = 'WN'; $pd[$equip.'sk'] = '';
-					$pd[$equip.'e'] = 0; $pd[$equip.'s'] = $nosta;
-				}
-				elseif($equip == 'arb')
-				{
-					$pd[$equip] = '内衣'; $pd[$equip.'k'] = 'DN'; $pd[$equip.'sk'] = '';
-					$pd[$equip.'e'] = 0; $pd[$equip.'s'] = $nosta;
-				}
+				$log .= "伴随着{$pd['nm']}的死亡，<span class=\"yellow\">{$pd[$equip]}</span>化作灰烬消散了。<br>";
+				include_once GAME_ROOT.'./include/game/itemmain.func.php';
+				destory_single_equip($pd,$equip);
 			}
 		}
 		for($i=0;$i<=6;$i++)
 		{
 			if(!empty($pd['itms'.$i]) && strpos($pd['itmsk'.$i],'v')!==false)
 			{
-				$log .= "伴随着{$pd['nm']}的死亡，<span class=\"yellow\">{$pd['itm'.$i]}</span>也化作灰烬消散了。<br>";
-				$pd['itm'.$i] = $pd['itmk'.$i] = $pd['itmsk'.$i] = '';
-				$pd['itme'.$i] = $pd['itms'.$i] = 0;
+				$log .= "伴随着{$pd['nm']}的死亡，<span class=\"yellow\">{$pd['itm'.$i]}</span>化作灰烬消散了。<br>";
+				include_once GAME_ROOT.'./include/game/itemmain.func.php';
+				destory_single_item($pd,$i);
 			}
+		}
+
+		# 带有“天然”属性的副武器，在死亡时会掉到地图上……
+		if(!empty($pd['wep2e']) && !empty($pd['wep2sk']) && in_array('z',get_itmsk_array($pd['wep2sk'])))
+		{
+			$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk ,pls) VALUES ('{$pd['wep2']}', '{$pd['wep2k']}', '{$pd['wep2e']}', '{$pd['wep2s']}', '{$pd['wep2sk']}', '{$pd['pls']}')");
+			include_once GAME_ROOT.'./include/game/itemmain.func.php';
+			destory_single_equip($pd,'wep2');
 		}
 
 		#「掠夺」判定：

@@ -651,7 +651,9 @@ function discover($schmode = 0,&$data=NULL)
 					//直接略过无效尸体
 					if($gamestate>=40) continue;
 					$ret = false;
-					foreach(array('weps','wep2s','money','arhs','aras','arfs','arts','itms1','itms2','itms3','itms4','itms5','itms6') as $chkval)
+					# 略过无效尸体的条件是……全身装备/道具存在耐久不为0的部分
+					# 但是空手和内衣又属于特例……这两个部位就只能判断效果不为0了
+					foreach(array('wepe','wep2e','money','arhs','arbe','aras','arfs','arts','itms1','itms2','itms3','itms4','itms5','itms6') as $chkval)
 					{
 						if($edata[$chkval]) 
 						{

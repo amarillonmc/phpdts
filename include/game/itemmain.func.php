@@ -1460,6 +1460,41 @@ function change_subwep($s=2,&$data=NULL)
 	return;
 }
 
+# 销毁指定装备
+function destory_single_equip(&$pa,$equip)
+{
+	$equip_list = get_equip_list();
+
+	if(in_array($equip,$equip_list))
+	{
+		$pa[$equip] = $pa[$equip.'k'] = $pa[$equip.'sk'] = '';
+		$pa[$equip.'e'] = $pa[$equip.'s'] = 0;
+		reload_equip_items($pa);
+	}
+	else 
+	{
+		return "传入了非法的装备位名。";
+	}
+	return;
+}
+
+# 销毁指定道具（传入的i必须为1~6范围内的数字）
+function destory_single_item(&$pa,$i)
+{
+	$item_list = range(1,6);
+
+	if(in_array($i,$item_list))
+	{
+		$pa['itm'.$i] = $pa['itmk'.$i] = $pa['itmsk'.$i] = '';
+		$pa['itme'.$i] = $pa['itms'.$i] = 0;
+	}
+	else 
+	{
+		return "传入了非法的道具位名。";
+	}
+	return;
+}
+
 # 初始化玩家/NPC数据时，检查对应部位是否可装备道具、或是否缺少基础装备
 function reload_equip_items(&$pa)
 {
