@@ -210,8 +210,8 @@
 				#奥罗拉复活效果
 				$revival_flag = 18; //保存复活标记为通过光玉雨复活
 				addnews($now,'wth18_revival',$dname);
-				$pd['hp'] += min($pd['mhp'],max($wth18_obbs,1)); 
-				$pd['sp'] += min($pd['msp'],max($wth18_obbs,1));
+				$pd['hp'] = max($wth18_obbs,1);  
+				$pd['sp'] = max($wth18_obbs,1); 
 				$pd['state'] = 0;
 				$log.= "<span class=\"lime\">但是，飞舞着的光玉们钻进了{$pd['nm']}的身体，让{$pd['nm']}重新站了起来！</span><br>";;
 				return $revival_flag;
@@ -228,8 +228,8 @@
 				#奥罗拉复活效果
 				$revival_flag = 17; //保存复活标记为通过奥罗拉复活
 				addnews($now,'aurora_revival',$dname);
-				$pd['hp'] += min($pd['mhp'],max($aurora_dice,1)); 
-				$pd['sp'] += min($pd['msp'],max($aurora_dice,1));
+				$pd['hp'] = max($aurora_dice,1); 
+				$pd['sp'] = max($aurora_dice,1);
 				$pd['state'] = 0;
 				$log.= "<span class=\"lime\">但是，空气中弥漫着的奥罗拉让{$pd['nm']}重新站了起来！</span><br>";;
 				return $revival_flag;
