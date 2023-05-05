@@ -238,7 +238,7 @@ function trap(&$data=NULL){
 					// 陷阱有主 走击杀判定
 					$last = pre_kill_events($wdata,$data,0,'trap');
 					// 检查是否复活
-					$revival_flag = revive_process($wdata,$data,$active);
+					$revival_flag = revive_process($wdata,$data,0);
 					// 没有复活 走完击杀流程
 					if(!$revival_flag) final_kill_events($wdata,$data,0,$last);
 					player_save($wdata);
