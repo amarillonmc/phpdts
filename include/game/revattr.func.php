@@ -214,7 +214,7 @@ namespace revattr
 						if($pa['hp'] <= $pa['mhp']*($hpalert/100))
 						{
 							getclubskill('buff_shield',$pa['clbpara']);
-							set_skillpara('buff_shield','svar',get_skillvars('c7_shield','svar',$sk_lvl),$data['clbpara']);
+							set_skillpara('buff_shield','svar',get_skillvars('c7_shield','svar',$sk_lvl),$pa['clbpara']);
 							$pa['skill_buff_shield'] = 1;
 							//$pa['skilllog'] .= "<span class='lime'>感知到危险，闪烁着淡蓝幽光的护盾自动出现在{$pa['nm']}身旁！<br></span>";
 							$log .= "<span class='lime'>感知到危险，闪烁着淡蓝幽光的护盾自动出现在{$pa['nm']}身旁！<br></span>";
