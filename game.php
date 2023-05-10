@@ -162,6 +162,10 @@ if(isset($clbpara['dialogue']))
 	$dialogue_id = $clbpara['dialogue'];
 }
 	
-include template('game');
+if (!strstr($_SERVER['HTTP_REFERER'], 'php')) {
+	include './api.php';
+}	else {
+	include template('game');
+}
 
 ?>

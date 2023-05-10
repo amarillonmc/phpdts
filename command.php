@@ -706,7 +706,11 @@ ob_clean();
 $jgamedata = compatible_json_encode($gamedata);
 //$json = new Services_JSON();
 //$jgamedata = $json->encode($gamedata);
-echo $jgamedata;
+if (!strstr($_SERVER['HTTP_REFERER'], 'php')) {
+	include './api.php';
+}	else {
+	echo $jgamedata;
+}
 
 ob_end_flush();
 //$t_e=getmicrotime();

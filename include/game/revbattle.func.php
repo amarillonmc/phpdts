@@ -194,6 +194,7 @@ namespace revbattle
 	{
 		global $db,$tablepre,$log,$mode,$main,$cmd,$battle_title,$attinfo,$skillinfo,$nosta,$cskills;
 		global $fog,$pdata;
+    global $battle_skills;
 
 		//格式化双方clbpara
 		$edata['clbpara'] = get_clbpara($edata['clbpara']);
