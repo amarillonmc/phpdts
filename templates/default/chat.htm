@@ -1,6 +1,6 @@
 <table id="chat" border="0" width="720" cellspacing="0" cellpadding="0" style="valign:top">
 	<tr>
-		<td height="20px" width="100%" class="b1"><span>{lang chat}</span></td>
+		<td height="20px" width="100%" class="b1"><span id="chattitle">{lang chat}</span></td>
 	</tr>
 	<tr>
 		<td valign="top" class="b3" style="text-align: left" height="1px">
@@ -8,6 +8,10 @@
 				<!--{loop $chatdata['msg'] $msg}-->
 				$msg
 				<!--{/loop}-->
+			</div>
+			<div id="newslist" style="display:none" class="newslist">
+				<!--{eval $chat_news = nparse_news(0,$newslimit);}-->
+				$chat_news
 			</div>
 		</td>
 	</tr>
@@ -30,14 +34,39 @@
 						</select>
 					</span>
 					<input type="text" id="chatmsg" name="chatmsg" maxlength="60">
-					<input type="button" id="send"
-						onClick="document['sendchat']['sendmode'].value='send';chat('send',$chatrefresh);return false;"
+					<input type="button" id="send" onClick="
+						if($('sendmode').value=='ref')
+						{
+							document['sendchat']['sendmode'].value='send';
+							chat('send',$chatrefresh);
+						}
+						return false;"
 						value="{lang send}">
-					<input type="button" id="ref"
-						onClick="document['sendchat']['sendmode'].value='ref';chat('ref',$chatrefresh);return false;"
+					<input type="button" id="ref" onClick="
+						if($('sendmode').value=='news'){
+							chat('news',$chatrefresh);
+						}else{
+							document['sendchat']['sendmode'].value='ref';chat('ref',$chatrefresh);
+						}
+						return false;"
 						value="{lang refresh}">
+					<!-- 迷你进行状况 -->
+					<input type="button" id="switch" onClick="
+						if($('sendmode').value=='news'){
+							$('sendmode').value='ref';
+							$('chatlist').style.display='';
+							$('newslist').style.display='none';
+							$('chattitle').innerHTML='聊天讯息';
+						}else{
+							$('sendmode').value='news';
+							$('chatlist').style.display='none';
+							$('newslist').style.display='';
+							$('chattitle').innerHTML='进行状况';
+						}
+					chat($('sendmode').value,$chatrefresh);
+					return false;" value="{lang chatswitch}">
 					<!-- 表情 -->
-					<input type="button" id="embtn" value="表情">
+					<input type="button" id="embtn" value="{lang emoji}">
 					<div id="empanel" style="display:none;">
 						<!--{loop $emdata $em}-->
 						$em
