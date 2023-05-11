@@ -44,6 +44,7 @@ unset($dbhost, $dbuser, $dbpw, $dbname, $pconnect);
 
 require GAME_ROOT.'./gamedata/system.php';
 require GAME_ROOT.'./include/init.func.php';
+require GAME_ROOT.'./include/news.func.php';
 require GAME_ROOT.'./include/resources.func.php';
 require GAME_ROOT.'./include/roommng.func.php';
 require GAME_ROOT.'./include/game/revclubskills.func.php';

@@ -17,7 +17,7 @@ if($command == 'info') {
 	init_playerdata();
 	init_profile();
 } elseif($command == 'news') {
-	include  GAME_ROOT.'./include/news.func.php';
+	//include  GAME_ROOT.'./include/news.func.php';
 	$hnewsfile = GAME_ROOT."./gamedata/bak/{$gnum}_newsinfo.html";
 	if(file_exists($hnewsfile)){
 		$hnewsinfo = readover($hnewsfile);

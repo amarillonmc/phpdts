@@ -369,6 +369,19 @@ word-break:break-all;
 overflow:auto;
 position:relative;
 }
+#newslist{
+MARGIN: 0px;
+height:120px;
+width:100%;
+word-break:normal;
+overflow:auto;
+position:relative;
+}
+.newslist ul{
+margin: 0; 
+padding: 2px; 
+padding-left: 20px;
+}
 #sendchat{
 MARGIN: 0px;
 padding:0px;

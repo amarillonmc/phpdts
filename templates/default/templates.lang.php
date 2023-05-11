@@ -138,7 +138,7 @@ $language = array
 	'arb' => '防具',
 	'effect' => '攻击',
 	'cmd_choice' => '你想要做什么？',
-	'chat' => '消息',
+	'chat' => '聊天讯息',
 	'moneyunit' => '元',
 	'wp' => '殴',
 	'wk' => '斩',
@@ -154,6 +154,8 @@ $language = array
 	'end' => '游戏结束！',
 	'send' => '发送',
 	'refresh' => '刷新',
+	'emoji' => '表情',
+	'chatswitch' => '切换',
 	'maptitle' => '虚拟世界地图',
 	);
 

@@ -375,7 +375,8 @@ function chat(mode,reftime) {
 	clearTimeout(refchat);
 	var oXmlHttp = zXmlHttp.createRequest();
 	var sBody = getRequestBody(document.forms['sendchat']);
-	oXmlHttp.open("post", "chat.php", true);
+	if(mode == 'news') oXmlHttp.open("post", "news.php", true);
+	else oXmlHttp.open("post", "chat.php", true);
 	oXmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	oXmlHttp.onreadystatechange = function () {
 		if (oXmlHttp.readyState == 4) {
@@ -389,7 +390,8 @@ function chat(mode,reftime) {
 	oXmlHttp.send(sBody);
 	if(mode == 'send'){$('chatmsg').value = '';$('sendmode').value = 'ref';}
 	rtime = reftime;
-	refchat = setTimeout("chat('ref',rtime)",rtime);
+	if(mode == 'news') refchat = setTimeout("chat('news',rtime)",rtime);
+	else refchat = setTimeout("chat('ref',rtime)",rtime);
 }
 
 
@@ -403,8 +405,11 @@ function showChatdata(jsonchat) {
 			newchat += chatdata['msg'][cid];
 		}
 		$('chatlist').innerHTML = newchat + $('chatlist').innerHTML;
-	}			
+	}else{
+		$('newslist').innerHTML = jsonchat;
+	}
 }
+
 
 function openShutManager(oSourceObj,oTargetObj,shutAble,oOpenTip,oShutTip){
 	var sourceObj = typeof oSourceObj == "string" ? document.getElementById(oSourceObj) : oSourceObj;

@@ -6,7 +6,7 @@ require './include/common.inc.php';
 require './include/game.func.php';
 //$t_s=getmicrotime();
 //require_once GAME_ROOT.'./include/JSON.php';
-require_once GAME_ROOT.'./include/news.func.php';
+//require_once GAME_ROOT.'./include/news.func.php';
 //include_once GAME_ROOT.'./include/system.func.php';
 
 /*
@@ -23,7 +23,15 @@ $last_newsinfo = nparse_news(0,50);
 
 if(!isset($newsmode)){$newsmode = '';}
 
-if($newsmode == 'last') {
+if (isset($sendmode) && $sendmode == 'news') {//游戏页面查看进行状况的调用
+	//$lastnid = (int)$lastnid;
+	$newsinfo = nparse_news(0,$newslimit);
+	ob_clean();
+	//$jgamedata = gencode($newsinfo);
+	$jgamedata = $newsinfo;
+	echo $jgamedata;
+	ob_end_flush();
+} elseif($newsmode == 'last') {
 	echo $last_newsinfo;
 	$newsdata['innerHTML']['newsinfo'] = ob_get_contents();
 	if(isset($error)){$newsdata['innerHTML']['error'] = $error;}
