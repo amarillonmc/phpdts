@@ -19,6 +19,66 @@ function swap(&$a,&$b)
 	$t=$a; $a=$b; $b=$t;
 }
 
+function getrandclbKeys($randclblist,$mkey1, $mkey2, $uid, $gid, $gamenum) 
+{
+    $keys = array();
+    
+    // 确定第一个键名
+    $key1 = ($mkey1 + $uid + $gid) % count($randclblist);
+    $keys[] = $randclblist[$key1];
+    
+    // 确定第二个键名
+    $key2 = ($mkey2 + $uid + $gamenum) % count($randclblist);
+    while($key2 == $key1)
+    {
+        $key2++;
+        if($key2 >= count($randclblist)) $key2 = 0; 
+    }
+    $keys[] = $randclblist[$key2];
+    
+    // 确定第三个键名
+    $key3 = ($mkey1 + $mkey2 + $gid + $gamenum) % count($randclblist);
+    while($key3 == $key1 || $key3 == $key2)
+    {
+        $key3++;
+        if($key3 >= count($randclblist)) $key3 = 0; 
+    }
+    $keys[] = $randclblist[$key3];
+
+    return $keys;
+}
+
+# 在入场界面确定可选社团列表
+
+# 普通社团列表
+function valid_getclublist_t2($udata)
+{
+	# 固定可选：0 1-殴 2-斩 3-投 4-射 5-爆 9-灵 7-锡安 8-黑衣
+	$t2_list = Array(0,1,2,3,4,5,9,7,8);
+	return $t2_list;
+}
+
+# 特殊社团列表
+function valid_getclublist_t1($udata)
+{
+	# 随机可选范围（选3）：6-疾风 10-天赋 11-富家 12-全能 19-晶莹
+	$temp_t1_list = Array(6,10,11,12,19);
+
+	global $db,$gtablepre;
+
+	# 种子生成器看不懂……让gpt帮我整一个……
+	$mkey1 = 11131;
+	$mkey2 = 6397;
+	$uid = $udata['uid'] + 1; 
+	$result = $db->query("SELECT gid FROM {$gtablepre}winners ORDER BY gid desc LIMIT 1");
+	$gid = $db->fetch_array($result)['gid'] + 2;
+	$result = $db->query("SELECT gamenum FROM {$gtablepre}game WHERE groomid='{$udata['roomid']}'");
+	$gamenum = $db->fetch_array($result)['gamenum'] + 3;
+	
+	$t1_list = getrandclbKeys($temp_t1_list,$mkey1, $mkey2, $uid, $gid, $gamenum);
+	return $t1_list;
+}
+
 function getclub($who, &$c1, &$c2, &$c3)
 {
 	global $db,$gtablepre,$tablepre,$starttime,$validtime;
@@ -125,11 +185,21 @@ function selectclub($id)
 {
 	global $name, $club;
 	if ($club!=0) return 1;
-	if ($id==0) return 2;
-	getclub($name,$c1,$c2,$c3);
+	if (!$id) return 2;
+
+	$t1_list = valid_getclublist_t1($udata);
+	$t2_list = valid_getclublist_t2($udata);
+	if(in_array($id,$t1_list) || in_array($id,$t2_list))
+	{
+		$club = $id; 
+		updateskill(); 
+		return 0;
+	}
+
+	/*getclub($name,$c1,$c2,$c3);
 	if ($id==1) { $club=$c1; updateskill(); return 0; }
 	if ($id==2) { $club=$c2; updateskill(); return 0; }
-	if ($id==3) { $club=$c3; updateskill(); return 0; }
+	if ($id==3) { $club=$c3; updateskill(); return 0; }*/
 	return 3;
 }
 

@@ -11,9 +11,18 @@
 
 	<form method="post"  action="valid.php" name="valid">
 		<input type="hidden" name="mode" value="enter"> {lang name} : $username <br />
-		{template usergdicon}<br />
-		{template userwords}<br />
-
+		<center>
+		<table>
+			<tr>
+				<td align="center">
+					<table>
+					<tr><td>{template usergdicon}<br /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+					<td>{template userwords}<br /></td></tr>
+					</table>
+				</td>
+			</tr>
+			</table>
+		</center>
 		<input type="submit" name="enter" value="{lang submit}">
 		<input type="reset" name="reset" value="{lang reset}">
 	</form>

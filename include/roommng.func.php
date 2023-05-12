@@ -89,9 +89,13 @@ function roommng_create_new_room(&$udata)
 		$new_room_id = 1;
 	}
 
+	# 获取当前游戏回数
+	$result = $db->query("SELECT max(gamenum) AS max_value FROM {$gtablepre}game WHERE groomid>=0 ");
+	$new_gamenum = $db->fetch_array($result)['max_value'];
+
 	# 新建并初始化房间状态
 	$starttime = $now + $startmin*5;
-	$db->query("INSERT INTO {$gtablepre}game (gamenum,groomid,groomownid,gamestate,starttime) VALUES ('1','$new_room_id','{$udata['username']}','0','$starttime')");
+	$db->query("INSERT INTO {$gtablepre}game (gamenum,groomid,groomownid,gamestate,starttime) VALUES ('$new_gamenum','$new_room_id','{$udata['username']}','0','$starttime')");
 
 	# 加入房间
 	roommng_join_room($new_room_id,$udata);
@@ -216,7 +220,7 @@ function roommng_close_own_room(&$udata)
 }
 
 # 强制解散指定房间
-function roommng_close_room($rkey,$adminlog = 0)
+function roommng_close_room($rkey,$adminlog = 0,$check_in_game = 0)
 {
 	global $db,$gtablepre,$rerror,$cmd_info;
 
@@ -230,6 +234,16 @@ function roommng_close_room($rkey,$adminlog = 0)
 	if($db->num_rows($result))
 	{
 		$gdata = $db->fetch_array($result);
+		# 检查是否为闲置房间
+		if($check_in_game)
+		{
+			# 不能解散正在游戏中的房间
+			if($gdata['gamestate'] > 10 && $gdata['alivenum'])
+			{
+				$cmd_info .= "房间 {$rkey} 内仍有存活玩家，无法关闭。<br>";
+				return;
+			}
+		}
 		# 清空房间内玩家
 		if($gdata['groomnums']) $db->query("UPDATE {$gtablepre}users SET roomid=0 WHERE roomid={$rkey}");
 		# 关闭房间

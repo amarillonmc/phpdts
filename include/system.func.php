@@ -459,6 +459,7 @@ function duel($time = 0,$keyitm = ''){
 //模式：0保留：程序故障；1：全部死亡；2：最后幸存；3：禁区解除；4：无人参加；5：核爆全灭；6：GM中止
 function gameover($time = 0, $mode = '', $winname = '') {
 	global $gamestate,$winmode,$alivenum,$winner,$now,$gamenum,$db,$gtablepre,$tablepre,$gamenum,$starttime,$validnum,$hdamage,$hplayer;
+	global $groomid;
 	if($gamestate < 10){return;}
 	if((!$mode)||(($mode==2)&&(!$winname))) {//在没提供游戏结束模式的情况下，自行判断模式
 		if($validnum <= 0) {//无激活者情况下，全部死亡
@@ -559,7 +560,14 @@ function gameover($time = 0, $mode = '', $winname = '') {
 	//addnews($time, "end$winmode" , $winner);
 	addnews($time, "end$winmode",$winner);
 	//addnews($time, 'gameover',$gamenum);
-	addnews($time, 'gameover' ,$gamenum);
+	if($groomid)
+	{
+		addnews($time, 'roomgameover' ,$gamenum, $groomid);
+	}
+	else 
+	{
+		addnews($time, 'gameover' ,$gamenum);
+	}	
 	systemputchat($time,'gameover');
 	include_once './include/news.func.php';
 	$newsinfo = nparse_news(0,65535);

@@ -76,24 +76,24 @@ while($roominfo = $db->fetch_array($result))
 if($cuser)
 {
 	$tr = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$cuser'");
-	$tp = $db->fetch_array($tr);
+	$udata = $db->fetch_array($tr);
 }
-$rid = isset($tp['roomid']) ? $tp['roomid'] : 0;
-$groomid = $rid;
+$groomid = isset($udata['roomid']) ? $udata['roomid'] : 0;
 
-if(!empty($rid))
+if(!empty($groomid))
 {
-	$result = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid='$rid'");
+	$result = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid='$groomid'");
 	if(!$db->num_rows($result))
 	{
-		$gr = $db->query("SELECT gamenum FROM {$gtablepre}game WHERE groomid=0");
-		$gnums = $db->result($result, 0) + $rid;
+		roommng_create_new_room($udata);
+		/*$gr = $db->query("SELECT gamenum FROM {$gtablepre}game WHERE groomid=0");
+		$gnums = $db->result($result, 0) + $groomid;
 		$starttime = $now + $startmin*5;
-		$db->query("INSERT INTO {$gtablepre}game (gamenum,groomid,groomnums,gamestate,starttime) VALUES ('$gnums','$rid','1','0','$starttime')");
+		$db->query("INSERT INTO {$gtablepre}game (gamenum,groomid,groomnums,gamestate,starttime) VALUES ('$gnums','$groomid','1','0','$starttime')");*/
 	}
 }
 
-$tablepre = !empty($rid) ? $tablepre.'s'.$rid.'_' : $tablepre;
+$tablepre = !empty($groomid) ? $tablepre.'s'.$groomid.'_' : $tablepre;
 
 if(CURSCRIPT !== 'chat')
 {
@@ -123,12 +123,21 @@ if(CURSCRIPT !== 'chat')
 	{
 		if($now >= $starttime) {
 			$gamestate = 20;
-			//save_gameinfo();
-			//addnews($starttime,'newgame',$gamenum);
-			addnews($starttime,'newgame',$gamenum);
+			
+			# 小房间开始游戏
+			if(!empty($groomid))
+			{
+				addnews($starttime,'newroomgame',$gamenum,$groomid);
+			}
+			# 大房间开始游戏
+			else 
+			{
+				addnews($starttime,'newgame',$gamenum);
+				# 是否部署BOT -> 数量;  只有大房间会部署bot
+				$gamevars['botplayer'] = $rsgame_bots;
+			}
+
 			systemputchat($starttime,'newgame');
-			//是否部署BOT -> 数量;  
-			$gamevars['botplayer'] = $rsgame_bots;
 			$ginfochange = true;
 		}
 	}

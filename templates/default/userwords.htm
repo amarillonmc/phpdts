@@ -1,4 +1,36 @@
 <table align="center">
+	<!--{if !empty($udata)}-->
+	<tr>
+		<td>{lang usertitle}</td>
+		<td>
+			<!--{eval $utlist = !empty($utlist) ? $utlist : Array(0 => '参展者');}-->
+			<select name="nick">
+				<!--{loop $utlist $key $val}-->
+					<option value="{$val}"<!--{if $udata['nick'] == $val}-->selected<!--{/if}-->>$val</option>
+				<!--{/loop}-->
+			</select>
+			选择一个有趣的头衔，部分头衔存在特殊的入场效果。
+		</td>
+	</tr>
+	<tr>
+		<td>内定称号</td>
+		<td>
+			<select name="club">
+				<optgroup label="普通称号">
+					<!--{loop $t2_list $key}-->
+						<option value="{$key}">$clubinfo[$key]</option>
+					<!--{/loop}-->
+				</optgroup>
+				<optgroup label="特殊称号">
+					<!--{loop $t1_list $key}-->
+						<option value="{$key}">$clubinfo[$key]</option>
+					<!--{/loop}-->
+				</optgroup>
+			</select>
+			选择“无”时，可在游戏内使用<span class="lime">称号卡</span>变更称号。
+		</td>
+	</tr>
+	<!--{/if}-->
 	<tr>
 		<td>{lang motto}</td>
 		<td><input size="30" type="text" name="motto" maxlength="30" value="{$motto}">{lang motto_comment}</td>

@@ -39,8 +39,8 @@
 				<!--<td class="b3" width="120px">运行时间</td>-->
 				<td class="b3" width="80px">
 				<!--{if !empty($cuser) && !empty($cpass)}-->
-					<!--{if !empty($rid)}-->
-						<!--{if $rid == $rkey}-->
+					<!--{if !empty($groomid)}-->
+						<!--{if $groomid == $rkey}-->
 							<span tooltip2="退出房间后，如房间内没有其他玩家，则房间会解散；房主退出房间会将房主权限转移给房间内其他玩家；">
 								<input type="button" value="退出" onclick="$('roomact').value='exit';postCmd('roomact','index.php');" >
 							</span>

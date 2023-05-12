@@ -47,8 +47,12 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		//$sec='??';
 		if($news == 'newgame') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">第{$a}回ACFUN大逃杀开始了</span><br>\n";
+		} elseif($news == 'newroomgame') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">{$b}号房间内，第{$a}回ACFUN大逃杀开始了</span><br>\n";
 		} elseif($news == 'gameover') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">第{$a}回ACFUN大逃杀结束了</span><br>\n";
+		} elseif($news == 'roomgameover') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">{$b}号房间内，第{$a}回ACFUN大逃杀结束了</span><br>\n";
 		} elseif($news == 'newpc') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}({$b})进入了大逃杀战场</span><br>\n";
 		} elseif($news == 'newgm') {
