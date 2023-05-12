@@ -21,6 +21,11 @@ if($gamestate >= 30 && $udata['groupid'] < 6 && $cuser != $gamefounder) {
 	gexit($_ERROR['valid_stop'],__file__,__line__);
 }
 
+# 入场时可选内定称号表 t1-随机选3 t2-固定出现
+include_once GAME_ROOT.'./include/game/clubslct.func.php';
+$t1_list = valid_getclublist_t1($udata);
+$t2_list = valid_getclublist_t2($udata);
+
 if($mode == 'enter') {
 	if($iplimit) {
 		$result = $db->query("SELECT * FROM {$gtablepre}users AS u, {$tablepre}players AS p WHERE u.ip='{$udata['ip']}' AND ( u.username=p.name AND p.type=0)");
@@ -100,7 +105,10 @@ if($mode == 'enter') {
 	$pose = 3;
 	$tactic = 2;
 	$icon = $icon ? $icon : rand(1,$iconlimit);
-	$club = 0;
+	//$club = 0;
+
+	# 入场内定称号合法性检查
+	if($club && !in_array($club,$t1_list) && !in_array($club,$t2_list)) $club = 17;
 
 	$wep2 = '拳头'; $wep2k = 'WN'; $wep2e = 0; $wep2s = $nosta; $wep2sk = '';
 	$arb = $gd == 'm' ? '男生校服' : '女生校服';
@@ -301,6 +309,9 @@ if($mode == 'enter') {
 	# 初始化套装信息
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
 	reload_set_items($ndata);
+
+	# 初始化称号技能
+	if($ndata['club']) updateskill($ndata);
 
 	$ndata = player_format_with_db_structure($ndata);
 	if(!empty($ndata)) $db->array_insert("{$tablepre}players", $ndata);

@@ -445,7 +445,8 @@ if($hp > 0){
 				$shop = substr($command,4,2);
 				shoplist($shop);
 			} elseif(strpos($command,'clubsel') === 0) {
-				$clubchosen = substr($command,7,1);
+				# 后续更新中，将停用在游戏内直接选择称号的方式
+				$clubchosen = (int)str_replace('clubsel','',$command);
 				include_once GAME_ROOT.'./include/game/clubslct.func.php';
 				$retval=selectclub($clubchosen);
 				if ($retval==0)
