@@ -172,6 +172,11 @@ if($hp > 0){
 					if($club == 20){
 						include_once GAME_ROOT.'./include/game/elementmix.calc.php';
 						$emax = emix_calc_maxenum();
+						if($clbstatusa)
+						{
+							$log .= "你习惯性摸了摸腰间，但那里已经没有元素口袋了……呼，至少元素们还没有离开你。<br>";
+							$main = ''; $itemcmd = 'command';
+						}
 					}
 					$mode = $itemcmd;
 				}

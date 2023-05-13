@@ -1346,6 +1346,7 @@ function itemuse($itmn,&$data=NULL) {
 				$itme = & ${'itme'.$i};
 				$itms = & ${'itms'.$i};
 				$itmsk = & ${'itmsk'.$i};
+				# ventus
 				if ($itm=='黑色发卡') {$flag=true;}
 				$itm = '';
 				$itmk = '';
@@ -1356,36 +1357,66 @@ function itemuse($itmn,&$data=NULL) {
 			//global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
 			$karma=$rp*$killnum-$def+$att;
 			$f1=false;
+
 			//『G.A.M.E.O.V.E.R』itmk:Y itme:1 itms:1 itmsk:zxZ
-			if (($ss>=600)&&($killnum<=15)){
-				$itm0='『T.E.R.R.A』';
+
+			# terra
+			$tflag = (($ss>=600)&&($killnum<=15)) ? 1 : 0;
+			# aqua
+			$hflag = $karma<=2000 ? 1 : 0;
+
+			# 元素大师使用chaos时，不再需要进一步合成，但是会失去元素合成功能
+			if($club == 20)
+			{
+				$log .= "系在你腰间的口袋剧烈颤动着，下一刻，你的直觉被某物触动了。<br>
+				在你的视界里，浮现出了难以描绘、似真似幻的独特“元素”：<br><br>";
+				if($tflag) $log .= "有生命的热火、有逝者的悲怆；<br>";
+				if($hflag) $log .= "有命运的尾迹、有因缘的蟠结；<br>";
+				if($flag) $log .= "有衬出影子的光、有糅在光里的影。<br>";
+				$log .= "<br>然后，你的<span class='sparkle'>{$sparkle}元素口袋{$sparkle}</span>飞了出去——<br><br>";
+				# 失去元素口袋
+				$clbstatusa = 1;
+				# 直接获得gameover
+				$itm0='『G.A.M.E.O.V.E.R』';
 				$itmk0='Y';
 				$itme0=1;
 				$itms0=1;
-				$itmsk0='z';
-				include_once GAME_ROOT . './include/game/itemmain.func.php';
-				itemget($data);
+				$itmsk0='zv';
 				$f1=true;
+				itemget($data);
 			}
-			if ($karma<=2000){
-				$itm0='『A.Q.U.A』';
-				$itmk0='Y';
-				$itme0=1;
-				$itms0=1;
-				$itmsk0='x';
-				include_once GAME_ROOT . './include/game/itemmain.func.php';
-				itemget($data);
-				$f1=true;
-			}
-			if ($flag==true){
-				$itm0='『V.E.N.T.U.S』';
-				$itmk0='Y';
-				$itme0=1;
-				$itms0=1;
-				$itmsk0='Z';
-				include_once GAME_ROOT . './include/game/itemmain.func.php';
-				itemget($data);
-				$f1=true;
+			else
+			{
+				if ($tflag){
+					$itm0='『T.E.R.R.A』';
+					$itmk0='Y';
+					$itme0=1;
+					$itms0=1;
+					$itmsk0='z';
+					include_once GAME_ROOT . './include/game/itemmain.func.php';
+					itemget($data);
+					$f1=true;
+				}
+				if ($hflag){
+					$itm0='『A.Q.U.A』';
+					$itmk0='Y';
+					$itme0=1;
+					$itms0=1;
+					$itmsk0='x';
+					include_once GAME_ROOT . './include/game/itemmain.func.php';
+					itemget($data);
+					$f1=true;
+				}
+				if ($flag==true){
+					$itm0='『V.E.N.T.U.S』';
+					$itmk0='Y';
+					$itme0=1;
+					$itms0=1;
+					$itmsk0='Z';
+					include_once GAME_ROOT . './include/game/itemmain.func.php';
+					itemget($data);
+					$f1=true;
+				}
 			}
 			if ($f1==false){
 				$itm0='『S.C.R.A.P』';
