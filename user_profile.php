@@ -102,6 +102,7 @@ if(!empty($udata['achievement']) && empty($udata['achrev']))
 //解析成就的完成情况
 $alist = get_achlist();
 $atype = get_achtype();
+$dtype = get_achtype(1);
 $h_atype = get_hidden_achtype();
 //判断是否存在每日任务
 $atype['daily']['ach'] = empty($dailyarr[0]) ? Array() : $dailyarr;

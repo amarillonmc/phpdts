@@ -387,6 +387,13 @@
 			$log .= "你思考了一会儿，还是没明白你到底想要干什么……<br>";
 			return;
 		}
+
+		if($clbstatusa)
+		{
+			$log .= "你习惯性摸了摸腰间，但那里已经没有元素口袋了……呼，至少元素们还没有离开你。<br>";
+			return;
+		}
+
 		# 打散队列
 		$list = explode('+',$list);
 		$nums = explode('+',$nums);
