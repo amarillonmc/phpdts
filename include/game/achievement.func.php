@@ -1541,6 +1541,36 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 	include_once GAME_ROOT.'./include/game/titles.func.php';
 	$atotal = Array();
 
+	//解离相关
+	if($i == '『G.A.M.E.O.V.E.R』')
+	{
+		$aid = $done = 0;
+
+		// 103.使用元素大师合成出的GAMEOVER达成幻境解离结局
+		if(strpos($isk,'z') !== false) $aid = 103;
+
+		if(!empty($aid))
+		{
+			$alvl = check_achievement_rev($aid,$nn);
+			$achlist = get_achlist($aid);
+			// 增加一次完成次数
+			$avars = fetch_achievement_rev($aid,$nn)+1;
+			update_achievement_rev($aid,$nn,$avars);
+			// 检查是否满足条件进入下一阶段（如果累计的次数足够一次性完成多个阶段，会依次完成）
+			while(!$alvl && $avars) 
+			{
+				$done = 1;
+				// alvl代表的是当前阶段 所以先获取当前阶段的奖励 之后提升alvl
+				if(!empty($achlist['title'][$alvl])) get_title($achlist['title'][$alvl],$nn);
+				$c1 += $achlist['c1'][$alvl]; $c2 += $achlist['c2'][$alvl];
+				// 阶段步进
+				$alvl ++;
+			}
+			// 阶段有所变化时，增加阶段次数
+			if($done) done_achievement_rev($aid,$alvl,$nn);
+		}
+	}
+
 	//解禁相关
 	if ($i == "游戏解除钥匙")
 	{

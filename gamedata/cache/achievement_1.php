@@ -30,27 +30,39 @@ $ach_type = Array
 	),
 	'mixitem' => Array(
 		'name' => '合成成就',
-		'desc' => '<font color="olive">这里是与合成各种物品相关的成就。<br>
-		如果看合成表觉得麻烦，只以这些物品为目标似乎也不错。<br></font>',
-		'ach' => Array(48,47,35,36,37,38,39,40,41,42,43,44,45,46,0,14,15,49,51,52,50),
+		'desc' => '<font color="olive">这里是与合成某些特殊物品相关的成就。<br>
+		物是人的延展，这些物品背后或许有些值得一听的故事。<br></font>',
+		'ach' => Array(0,14,15,49,51,52,50),
 	),
 	'explore' => Array(
 		'name' => '探索成就',
 		'desc' => '<font color="olive">这里是与你在游戏中会遇到的惊奇发现相关的成就。<br>
 		今天又会遇到些什么呢？<br></font>',
-		'ach' => Array(33,31),
+		'ach' => Array(33,31,32),
 	),
 	'lifetime' => Array(
 		'name' => '生涯成就',
 		'desc' => '<font color="olive">这里是记录了你在这个游戏中的积累相关的成就。<br>
 		呜呼——玩家们出发了……<br></font>',
-		'ach' => Array(29,30,53,54,55,600,255),
+		'ach' => Array(29,30,53,54,55,208,600,255),
 	),
 	'challenge' => Array(
 		'name' => '挑战成就',
 		'desc' => '<font color="olive">这里是与特定游戏中挑战相关的成就。<br>
 		虽然颇为浮云，但毕竟山就在那里。<br></font>',
-		'ach' => Array(1,200,201,28,202,203,208,204,205,206,207,32,255),
+		'ach' => Array(1,200,201,28,202,203,204,205,206,207,255),
+	),
+);
+
+# 日记大类列表：
+$diary_type = Array
+(
+	'mixdiary' => Array
+	(
+		'name' => '合成日记',
+		'desc' => '<font color="olive">这里记载着你在游戏中合成过的道具的记录。<br>
+		这些内容不会被统计在总成就完成度内。<br></font>',
+		'ach' => Array(35,36,37,38,39,40,41,42,43,44,45,46,47,48),
 	),
 );
 
@@ -67,6 +79,9 @@ $hidden_ach_type = Array
 	504 => 'explore',
 	//KEY系隐藏成就：一击秒杀【守卫者 静流】
 	505 => 'explore',
+
+	//元素大师隐藏成就：通过元素合成获得G.A.M.E.O.V.E.R
+	103 => 'explore',
 );
 
 # 成就登记列表：
@@ -499,6 +514,17 @@ $ach_list = Array
 		'c2' => Array(1730),
 		'desc' => Array( 
 			'使用 <span class="sienna">未名存在 Dark Force</span> 掉落的道具达成结局：锁定解除',
+		),
+	),
+	# 元素大师达成幻境解离结局
+	103 => Array(
+		'lvl' => 1, 
+		'name' => Array('我的口袋呢？'), 
+		'title' => Array('元素大师'),
+		'c1' => Array(0),
+		'c2' => Array(0),
+		'desc' => Array( 
+			'以<span class="sienna">追本溯源</span>的方式达成结局：幻境解离',
 		),
 	),
 

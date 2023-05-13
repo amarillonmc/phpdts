@@ -76,9 +76,10 @@ function get_npcinit()
 }
 
 # achievement_1.php
-function get_achtype()
+function get_achtype($mode=0)
 {
 	include config("achievement",1);
+	if($mode) return $diary_type;
 	return $ach_type;
 }
 function get_hidden_achtype()
