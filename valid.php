@@ -165,7 +165,7 @@ if($mode == 'enter') {
 
 	/*if(strpos($wepk,'WG') === 0){
 		$itm[3] = '手枪子弹'; $itmk[3] = 'GB'; $itme[3] = 1; $itms[3] = 12; $itmsk[3] = '';
-	}*/
+	}
 	
 	include_once GAME_ROOT.'./include/game/clubslct.func.php';
 	getclub($name,$tc1,$tc2,$tc3);
@@ -179,7 +179,7 @@ if($mode == 'enter') {
 		{
 			$itm[4] = '电池'; $itmk[4] = 'BE'; $itme[4] = 2; $itms[4] = 1; $itmsk[4] = '';
 		}
-	}
+	}*/
 //	$itm[5] = '好人卡'; $itmk[5] = 'Y'; $itme[5] = 1; $itms[5] = 20; $itmsk[5] = '';
 	//$itm[5] = '特别赠礼'; $itmk[5] = 'p'; $itme[5] = 1; $itms[5] = 1; $itmsk[5] = '';
 //	$shenzhuang = rand(1,10);

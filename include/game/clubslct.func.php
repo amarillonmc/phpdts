@@ -133,8 +133,16 @@ function changeclub($clb,&$data=NULL)
 
 function updateskill(&$data=NULL)
 {
-	
-	global $club, $wp, $wk, $wc, $wg, $wd, $wf, $money, $hp, $mhp, $att, $def ,$clbpara, $club_skillslist;
+	//global $club, $wp, $wk, $wc, $wg, $wd, $wf, $money, $hp, $mhp, $att, $def ,$clbpara, $club_skillslist;
+	global $club_skillslist;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
 	if ($club==1) {$wp+=50;}
 	if ($club==2) $wk+=50;
 	if ($club==3) $wc+=50;
