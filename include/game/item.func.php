@@ -172,7 +172,7 @@ function itemuse($itmn,&$data=NULL) {
 			$addhp = $mhp - $hp < $hpup ? $mhp - $hp : $hpup;
 			if($addhp > 0) $hp += $addhp;
 			else $addhp = 0;
-			$log .= "你使用了<span class=\"red\">$itm</span>，恢复了<span class=\"yellow\">$hpup</span>点生命。<br>";
+			$log .= "你使用了<span class=\"red\">$itm</span>，恢复了<span class=\"yellow\">$addhp</span>点生命。<br>";
 			if ($itms != $nosta) {
 				$itms --;
 				if ($itms <= 0) {
