@@ -1614,8 +1614,12 @@ function itemuse($itmn,&$data=NULL) {
 			addnpc ( 2, 2, 4);
 			addnpc ( 2, 3, 4);
 			addnews ($now , 'key0', $name);						
-			$itm = $itmk = $itmsk = '';
-			$itme = $itms = 0;
+			$itms --;
+			if($itms <= 0){
+				$log .= "<span class=\"red\">$itm</span>用光了。<br>";
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
 		} elseif ($itm == '✦NPC钥匙·一阶段') {
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '已解锁一阶段NPC！<br>似乎大量NPC已经部署至游戏内……<br>';
@@ -1631,8 +1635,12 @@ function itemuse($itmn,&$data=NULL) {
 			addnpc ( 13, 1,1);
 			addnpc ( 13, 2,1);
 			addnews ($now , 'key1', $name);						
-			$itm = $itmk = $itmsk = '';
-			$itme = $itms = 0;
+			$itms --;
+			if($itms <= 0){
+				$log .= "<span class=\"red\">$itm</span>用光了。<br>";
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
 		} elseif ($itm == '✦✦NPC钥匙·二阶段') {
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '已解锁二阶段NPC！<br>似乎凶恶NPC已经部署至游戏内……<br>';
@@ -1647,8 +1655,12 @@ function itemuse($itmn,&$data=NULL) {
 			//假蓝凝
 			addnpc ( 9, 0,1);
 			addnews ($now , 'key2', $name);						
-			$itm = $itmk = $itmsk = '';
-			$itme = $itms = 0;
+			$itms --;
+			if($itms <= 0){
+				$log .= "<span class=\"red\">$itm</span>用光了。<br>";
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
 		} elseif ($itm == '✦种火钥匙') {
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '虽然不知道你究竟想干啥，<br>但总之你放出了更多的种火……<br>';
@@ -1666,8 +1678,12 @@ function itemuse($itmn,&$data=NULL) {
 			addnpc ( 92, 3,10);
 			addnpc ( 92, 4,10);
 			addnews ($now , 'key3', $name);						
-			$itm = $itmk = $itmsk = '';
-			$itme = $itms = 0;
+			$itms --;
+			if($itms <= 0){
+				$log .= "<span class=\"red\">$itm</span>用光了。<br>";
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
 		} elseif ($itm == '✦种火定点移位装置✦') {
 			//global $db, $tablepre, $pls;
 			$result = $db->query("SELECT * FROM {$tablepre}players WHERE type = 92"); //SELECT 全部种火NPC
@@ -1823,8 +1839,12 @@ function itemuse($itmn,&$data=NULL) {
 			}
 			$log.= '【电掣】公司为你服务，你点的神秘乐子已送达，祝你愉快！<br>';
 			//销毁物品
-			$itm = $itmk = $itmsk = '';
-			$itme = $itms = 0;
+			$itms --;
+			if($itms <= 0){
+				$log .= "<span class=\"red\">$itm</span>用光了。<br>";
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
 		} elseif ($itm == '【我想要领略真正的红杀之力】') {	
 		//文案
 			//global $db, $tablepre, $pls;
