@@ -25,7 +25,7 @@ function itemuse($itmn,&$data=NULL) {
 
 	$nickinfo = get_title_desc($nick);
 
-	if ($itmn < 1 || $itmn > 6) {
+	if (($itmn < 1 || $itmn > 6) && $itmn != 0 ){
 		$log .= '此道具不存在，请重新选择。';
 		$mode = 'command';
 		return;
@@ -532,7 +532,7 @@ function itemuse($itmn,&$data=NULL) {
 	
 	} elseif (strpos ( $itmk, 'V' ) === 0) {
 		$skill_minimum = 100;
-		$skill_limit = 300;
+		$skill_limit = 380;
 		$log .= "你阅读了<span class=\"red\">$itm</span>。<br>";
 		$dice = rand ( - 10, 10 );
 		if (strpos ( $itmk, 'VV' ) === 0) {
@@ -698,8 +698,8 @@ function itemuse($itmn,&$data=NULL) {
 		
 		if (strpos ( $itmk, 'MA' ) === 0) {
 			//global $att;
-			$att_min = 200;
-			$att_limit = 500;
+			$att_min = 500;
+			$att_limit = 2500;
 			$dice = rand ( - 5, 5 );
 			if ($att < $att_min) {
 				$mefct = $itme;
@@ -717,8 +717,8 @@ function itemuse($itmn,&$data=NULL) {
 			$mdname = "基础攻击力";
 		} elseif (strpos ( $itmk, 'MD' ) === 0) {
 			//global $def;
-			$def_min = 200;
-			$def_limit = 500;
+			$def_min = 500;
+			$def_limit = 2500;
 			$dice = rand ( - 5, 5 );
 			if ($def < $def_min) {
 				$mefct = $itme;
@@ -755,7 +755,7 @@ function itemuse($itmn,&$data=NULL) {
 		} elseif (strpos ( $itmk, 'MV' ) === 0) {
 			//global $wp, $wk, $wg, $wc, $wd, $wf;
 			$skill_minimum = 100;
-			$skill_limit = 300;
+			$skill_limit = 380;
 			$dice = rand ( - 10, 10 );
 			$ws_sum = $wp + $wk + $wg + $wc + $wd + $wf;
 			if ($ws_sum < $skill_minimum * 5) {
