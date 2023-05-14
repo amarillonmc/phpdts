@@ -84,19 +84,23 @@
 						$clubinfo[$club]
 					<!--{else}-->
 						<!-- 后续更新中，将停用在游戏内直接选择称号的方式。 -->
-						<!--{eval $t1_list = valid_getclublist_t1($udata); $t2_list = valid_getclublist_t2($udata);}-->
-						<select id="clubsel" name="clubsel" onchange="$('mode').value='special';$('command').value=$('clubsel').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
-							<optgroup label="普通称号">
-								<!--{loop $t2_list $key}-->
-									<option value="clubsel$key">$clubinfo[$key]</option>
-								<!--{/loop}-->
-							</optgroup>
-							<optgroup label="特殊称号">
-								<!--{loop $t1_list $key}-->
-									<option value="clubsel$key">$clubinfo[$key]</option>
-								<!--{/loop}-->
-							</optgroup>
-						</select>
+						<!--{if function_exists('valid_getclublist_t1') && function_exists('valid_getclublist_t2')}-->
+							<!--{eval $t1_list = valid_getclublist_t1($udata); $t2_list = valid_getclublist_t2($udata);}-->
+							<select id="clubsel" name="clubsel" onchange="$('mode').value='special';$('command').value=$('clubsel').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
+								<optgroup label="普通称号">
+									<!--{loop $t2_list $key}-->
+										<option value="clubsel$key">$clubinfo[$key]</option>
+									<!--{/loop}-->
+								</optgroup>
+								<optgroup label="特殊称号">
+									<!--{loop $t1_list $key}-->
+										<option value="clubsel$key">$clubinfo[$key]</option>
+									<!--{/loop}-->
+								</optgroup>
+							</select>
+						<!--{else}-->
+							$clubinfo[$club]
+						<!--{/if}-->
 					<!--{/if}-->
 					</span></td>
 					<td class="b2"><span><!--{if $wc >= 100}-->{lang wc}{lang skill}<!--{else}--><span class="grey">{lang wc}{lang skill}</span><!--{/if}--></span></td>
