@@ -30,11 +30,12 @@ if($pdata['pass'] != $cpass) {
 	}
 }
 
-
-
 if($gamestate == 0) {
 	header("Location: end.php");exit();
 }
+
+//临时用
+$gametype = 0;
 
 $pdata['clbpara'] = get_clbpara($pdata['clbpara']);
 extract($pdata,EXTR_REFS);
@@ -156,10 +157,16 @@ if ($club==0)
 	getclub($name,$c1,$c2,$c3);
 	$clubavl[0]=0; $clubavl[1]=$c1; $clubavl[2]=$c2; $clubavl[3]=$c3;
 }
-if(isset($clbpara['dialogue']))
+if(!empty($clbpara['dialogue']) || !empty($clbpara['noskip_dialogue']))
 {
-	include_once config('dialogue',$gamecfg);
-	$dialogue_id = $clbpara['dialogue'];
+	$opendialog = $clbpara['noskip_dialogue'];
+	if(!empty($clbpara['dialogue'])) $dialogue_id = $clbpara['dialogue'];
+}
+if(isset($opendialog))
+{
+	$log.="<script>
+	$('{$opendialog}').showModal();
+	</script>";
 }
 	
 if (!strstr($_SERVER['HTTP_REFERER'], 'php') && $_SERVER['HTTP_REFERER'] != '') {

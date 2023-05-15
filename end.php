@@ -33,7 +33,7 @@ if($hp<=0 || $state>=10) {
 	}
 }
 
-include template('end');
+include template('ending');
 
 
 ?>

@@ -1,0 +1,37 @@
+{template header}
+
+<p><center>
+	<!--{if $hp<=0}-->
+		<div class="subtitle">{$stateinfo[$state]}</div>
+	<!--{else}-->
+		<div class="subtitle">{$gwin[$winmode]}</div>
+	<!--{/if}-->
+	<div id="op_sht_markpage" style="display: none;">0</div>
+	<div id="shootings_container" class="dialog-box" style="width:60%;height:70%;">
+		{template ending_story}
+	</div>
+	<div id="storyboard_control">
+		<div class="glow_buttons h25 w125" id="shooting_previous" style="margin: 5px;" onclick="changePages('op_sht_',-1);">上一页</div>
+		<div class="glow_buttons h25 w125" id="shooting_next" style="margin: 5px;" onclick="changePages('op_sht_',1);">下一页</div>
+		<div class="glow_buttons h25 w125" id="shooting_ending" style="margin: 5px;" onclick="window.location.href='index.php'">{lang backindex}</div>
+	</div>
+</center></p>
+
+<script>
+	if($('op_sht_endpage').innerHTML == 0)
+	{
+		$('shooting_ending').style.display = 'inline-block';
+		$('shooting_next').style.display = 'none';
+    	$('shooting_previous').style.display = 'none';
+	}
+	else
+	{
+		$('shooting_ending').style.display = 'none';
+    	$('shooting_previous').style.display = 'none';
+		$('shooting_next').style.display = 'inline-block';
+	}
+    $('op_sht_0').style.display = 'inline-block';
+</script>
+
+
+{template footer}

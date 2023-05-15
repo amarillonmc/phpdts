@@ -110,9 +110,10 @@ if($hp > 0){
 		goto chase_flag;
 	}
 	//执行动作前检查是否有无法跳过且未阅览过的对话框
-	if(isset($clbpara['noskip_dialogue']) && strpos($command,'end_dialogue')===false)
+	if(!empty($clbpara['noskip_dialogue']) && strpos($command,'end_dialogue')===false)
 	{
-		$dialogue_id = $clbpara['dialogue'];
+		$opendialog = $clbpara['noskip_dialogue'];
+		if(!empty($clbpara['dialogue'])) $dialogue_id = $clbpara['dialogue'];
 	}elseif($coldtimeon && $rmcdtime > 0 && (strpos($command,'move')===0 || strpos($command,'search')===0 || (strpos($command,'itm')===0)&&($command != 'itemget') || strpos($sp_cmd,'sp_weapon')===0 || strpos($command,'song')===0)){
 		$log .= '<span class="yellow">冷却时间尚未结束！</span><br>';
 		cd_flag:
@@ -307,7 +308,7 @@ if($hp > 0){
 				}
 			} elseif(strpos($command,'end_dialogue') === 0) {
 				//$log.="【DEBUG】关闭了对话框。";
-				if(isset($dialogue_log[$clbpara['dialogue']])) $log.= $dialogue_log[$clbpara['dialogue']];
+				if(!empty($dialogue_log[$clbpara['dialogue']])) $log.= $dialogue_log[$clbpara['dialogue']];
 				unset($clbpara['dialogue']); unset($clbpara['noskip_dialogue']);
 			} elseif (strpos($command,'memory')===0) {
 				$smn = substr($command,6);
@@ -635,8 +636,9 @@ if($hp > 0){
 		$gamedata['innerHTML']['ingamebgm'] = $bgm_player;
 	}
 	//检查执行动作后是否有对话框产生
-	if(isset($clbpara['dialogue']))
+	if(!empty($clbpara['dialogue']))
 	{
+		$opendialog = 'dialogue';
 		$dialogue_id = $clbpara['dialogue'];
 	}
 	//显示指令执行结果

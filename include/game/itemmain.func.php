@@ -1479,12 +1479,18 @@ function destory_single_equip(&$pa,$equip)
 }
 
 # 销毁指定道具（传入的i必须为1~6范围内的数字）
-function destory_single_item(&$pa,$i)
+function destory_single_item(&$pa,$i,$costlog=0)
 {
+	global $log;
+
 	$item_list = range(1,6);
 
 	if(in_array($i,$item_list))
 	{
+		if($costlog)
+		{
+			$log .= "<span class=\"red\">{$pa['itm'.$i]}</span>用光了。<br>";
+		}
 		$pa['itm'.$i] = $pa['itmk'.$i] = $pa['itmsk'.$i] = '';
 		$pa['itme'.$i] = $pa['itms'.$i] = 0;
 	}
@@ -1580,7 +1586,7 @@ function reload_single_set_item(&$pa,$eqp,$enm,$active=0)
 }
 
 
-//在背包内寻找道具进行编辑
+//在包裹内寻找道具进行编辑
 function check_item_edit_event($pa,&$pd,$event)
 {
 	$flag = 0;

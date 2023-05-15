@@ -1615,11 +1615,7 @@ function itemuse($itmn,&$data=NULL) {
 			addnpc ( 2, 3, 4);
 			addnews ($now , 'key0', $name);						
 			$itms --;
-			if($itms <= 0){
-				$log .= "<span class=\"red\">$itm</span>用光了。<br>";
-				$itm = $itmk = $itmsk = '';
-				$itme = $itms = 0;
-			}
+			if($itms <= 0) destory_single_item($data,$itmn,1);
 		} elseif ($itm == '✦NPC钥匙·一阶段') {
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '已解锁一阶段NPC！<br>似乎大量NPC已经部署至游戏内……<br>';

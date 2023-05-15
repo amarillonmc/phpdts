@@ -358,10 +358,6 @@ function showData(sdata){
 	{
 		window.location.reload();
 	}
-	if($('dialogue'))
-	{
-		$('dialogue').showModal();
-	}
 	if($('open-dialog'))
 	{
 		dialogid = $('open-dialog').innerHTML;
@@ -520,12 +516,21 @@ function changeBGM(mode=1){
 	$('gamebgm').play();
 }
 
-function changePages(nowpage,nextpage)
+function changePages(mode,cPages)
 {
-	var np = 'd'+nowpage;
-	var pp = 'd'+nextpage;
-	$(np).style.display="none";
-	$(pp).style.display="block";
+	var nowpage = Number($(mode + 'markpage').innerHTML);
+	var endpage = Number($(mode + 'endpage').innerHTML);
+	if(nowpage < 0 || nowpage > endpage)
+	{
+		nowpage = 0;
+	}
+	var nextpage = nowpage + cPages;
+	$(mode + 'markpage').innerHTML = nowpage + cPages;
+	$(mode + nowpage).style.display="none";
+	$(mode + nextpage).style.display="inline-block";
+	$('shooting_previous').style.display = nextpage > 0 ? 'inline-block' : 'none';
+	$('shooting_next').style.display = (nextpage >= endpage) ? 'none' : 'inline-block';
+	$('shooting_ending').style.display = (nextpage == endpage) ? 'inline-block' : 'none';
 }
 
 ////////////////////////////////////////////////////////////////////////
