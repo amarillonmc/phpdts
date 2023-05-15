@@ -1,6 +1,11 @@
 <dialog id="dialogue" style="width: 460px; max-width: 90%;max-height: 80%;">
 <p><center>
-<!--{eval $maxdkey = count($dialogues[$dialogue_id]);}-->
+
+<!-- 当前阅读页面 -->
+<div id="dmarkpage" style="display: none;">0</div>
+<!-- 对话框尾页 -->
+<!--{eval $endpage = count($dialogues[$dialogue_id])-1;}-->
+<div id="dendpage" style="display: none;">$endpage</div>
 
 <!-- 对白分段显示 -->
 <!--{loop $dialogues[$dialogue_id] $dkey $dinfo}-->
@@ -25,10 +30,10 @@
     </table>
     <br>
     <!--{if $dkey > 0}-->
-        <input type="button" class="cmdbutton" id="c" style="margin-right: 5%;" value="[C]上一页" onclick="changePages($dkey,$dkey-1);">
+        <input type="button" class="cmdbutton" id="c" style="margin-right: 5%;" value="[C]上一页" onclick="changePages('d',-1);">
     <!--{/if}-->
-    <!--{if (($dkey < ($maxdkey-1)) || (isset($dialogue_branch[$dialogue_id])))}-->
-        <input type="button" class="cmdbutton" id="z" value="[Z]下一页" onclick="changePages($dkey,$dkey+1);">
+    <!--{if (($dkey <= ($endpage-1)) || (isset($dialogue_branch[$dialogue_id])))}-->
+        <input type="button" class="cmdbutton" id="z" value="[Z]下一页" onclick="changePages('d',1);">
     <!--{elseif isset($dialogue_end[$dialogue_id])}-->
         $dialogue_end[$dialogue_id]    
     <!--{/if}-->
@@ -53,6 +58,3 @@
     <img class="dialog-background" src="img/profile.gif" id="x" onclick="closeDialog($('dialogue'));$('command').value='end_dialogue';postCmd('gamecmd','command.php');this.disabled=true;">
 <!--{/if}-->
 </dialog>
-<script>
-    $('dialogue').showModal();
-</script>

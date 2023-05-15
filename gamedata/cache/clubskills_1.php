@@ -169,7 +169,7 @@ $cskills = Array
 		'name' => '猛击',
 		'tags' => Array('passive'),
 		'desc' => '持殴系武器战斗时<span class="yellow">[:rate:]%</span>几率触发，触发则物理伤害增加<span class="yellow">[:attgain:]%</span>，<br>
-		且晕眩敌人<span class="cyan">[:stuntime:]</span>秒。晕眩状态下敌人无法进行任何行动或战斗。<br></span>',
+		且晕眩敌人<span class="clan">[:stuntime:]</span>秒。晕眩状态下敌人无法进行任何行动或战斗。<br></span>',
 		'maxlvl' => 2,
 		'cost' => Array(10,11,-1),
 		'input' => '升级',
@@ -1319,7 +1319,7 @@ $cskills = Array
 		'name' => '渗透',
 		'tags' => Array('passive'),
 		'desc' => '当你处于<span class="purple">中毒</span>状态时，攻击额外附加<span class="yellow">[:exext:]</span>次毒属性攻击，<br>
-		且有<span class="yellow">[:infr:]%</span>概率使敌人陷入<span class="purple">中毒</span>状态，并使敌人背包内的补给<span class="purple">带毒</span>',
+		且有<span class="yellow">[:infr:]%</span>概率使敌人陷入<span class="purple">中毒</span>状态，并使敌人包裹内的补给<span class="purple">带毒</span>',
 		'maxlvl' => 6,
 		'cost' => Array(2,3,4,5,6,9,-1),
 		'input' => '升级',

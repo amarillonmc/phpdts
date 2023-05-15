@@ -259,6 +259,10 @@ if($mode == 'enter') {
 	include_once config('audio',$gamecfg);
 	$clbpara['valid_bgmbook'] = $regular_bgm;
 	$clbpara['bgmbook'] = $clbpara['valid_bgmbook'];
+
+	# 显示开场剧情模态框
+	$clbpara['noskip_dialogue'] = 'opening';
+
 	//$nick=$udata['nick'];
 	$nicks=$udata['nicks'];
 	if (($nicks=='')||($nick=='')){
@@ -334,7 +338,8 @@ if($mode == 'enter') {
 
 	include template('validover');
 } elseif($mode == 'notice') {
-	include template('notice');
+	//include template('notice');
+	header("Location: game.php");
 } elseif($mode == 'tutorial') {
 	if(!isset($tmode)){$tmode = 0;}
 	$nexttmode = $tmode +1;

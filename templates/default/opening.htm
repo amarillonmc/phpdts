@@ -1,0 +1,30 @@
+<dialog id="opening" class="storyboard" style="width: 70%;height: 76%;">
+<p><center>
+    <div id="op_sht_markpage" style="display: none;">0</div>
+    <div id="shootings_container" class="dialog-box" style="width:90%;height:86%;">
+		{template opening_story}
+	</div>
+    <div id="storyboard_control">
+		<div class="glow_buttons h25 w125" id="shooting_previous" style="margin: 5px;" onclick="changePages('op_sht_',-1);">上一页</div>
+		<div class="glow_buttons h25 w125" id="shooting_next" style="margin: 5px;" onclick="changePages('op_sht_',1);">下一页</div>
+        <div class="glow_buttons h25 w125" id="shooting_ending" style="margin: 5px;" onclick="closeDialog($('opening'));$('command').value='end_dialogue';postCmd('gamecmd','command.php');this.disabled=true;">进入战场</div>
+	</div>
+</center></p>
+    <img class="dialog-background" src="img/profile.gif" id="x" onclick="closeDialog($('opening'));$('command').value='end_dialogue';postCmd('gamecmd','command.php');this.disabled=true;">
+</dialog>
+
+<script>
+	if($('op_sht_endpage').innerHTML == 0)
+	{
+		$('shooting_ending').style.display = 'inline-block';
+		$('shooting_next').style.display = 'none';
+    	$('shooting_previous').style.display = 'none';
+	}
+	else
+	{
+		$('shooting_ending').style.display = 'none';
+    	$('shooting_previous').style.display = 'none';
+		$('shooting_next').style.display = 'inline-block';
+	}
+    $('op_sht_0').style.display = 'inline-block';
+</script>

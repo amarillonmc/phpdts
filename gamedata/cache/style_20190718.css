@@ -133,7 +133,10 @@ table.infotable th {
 .seagreen{color:#4EEE94;font: bold 10pt "微软雅黑" serif;line-height:16px}
 .dmg {color:#ff0000;font: bold 10pt "微软雅黑" serif;}
 .grey{color:#999; font: bold 10pt "微软雅黑" serif;line-height:16px}
-.linen{color:rgb(200,192,184); font: bold 10pt "微软雅黑" serif;line-height:16px}
+.lightpink{color:rgb(250,180,180);font: bold 10pt "微软雅黑" serif;line-height:16px}
+.ltcrimson{color:rgb(255,120,150);font: bold 10pt "微软雅黑" serif;line-height:16px}
+.ltazure{color:rgb(110,210,255);font: bold 10pt "微软雅黑" serif;line-height:16px}
+.linen{color:rgb(200,192,184);font: bold 10pt "微软雅黑" serif;line-height:16px}
 .L5{color: #ff0000;font: bold 10pt "微软雅黑" serif;line-height:16px;background:url("../../img/backround4.gif") repeat-x;}
 .redseed{color:#ff6599; font: bold 10pt "微软雅黑" serif;line-height:16px}
 .blueseed{color:#b5d5f7; font: bold 10pt "微软雅黑" serif;line-height:16px}
@@ -503,20 +506,31 @@ span.drop:hover .dropdown-menu{
 	display: none;
 }
 
-/* 用dialog实现的气泡框 */
+/* dialog模态框 */
+dialog:focus {
+	outline: none;
+}
 dialog{
 	position:fixed; left:0px; top:0px;
 	max-width: 80%; max-height: 80%;
 	margin:auto auto; padding: 15px;
-	font:10pt 微软雅黑 serif; text-align: left; overflow-x:hidden; overflow-y:auto;
-	border: #000 0px none; color: #fff; border-radius: 5px;
+	font:10pt 微软雅黑 serif; color: #fff; text-align: left; overflow-x:hidden; overflow-y:auto;
+	border: 2px solid rgba(119, 119, 119, 0.5); border-radius: 10px;
 	background-color:rgba(17, 17, 17, 0.9); *BACKGROUND:rgb(17,17,17); *filter:alpha(opacity=50);
-	box-shadow: 0px 2px 6px rgb(87, 87, 87);
+	box-shadow: 0px 2px 6px rgb(36, 36, 36);
 	z-index:20;
+}
+dialog.storyboard{
+	border: 0px;
 }
 dialog::backdrop{
 	font: bold 10pt "微软雅黑" serif;text-decoration: none;color: #ddd; cursor: crosshair;
 	background-color:rgba(17,17,17,0.5); *BACKGROUND:rgb(17,17,17); *filter:alpha(opacity=50);
+	backdrop-filter: blur(6px);
+}
+dialog.storyboard::backdrop{
+	background-color:rgba(46, 46, 46, 0.8);
+	backdrop-filter: blur(10px);
 }
 .dialog-background {
 	display: flex;
@@ -529,6 +543,38 @@ dialog::backdrop{
 	height: 100%;
 	object-fit: cover;
 	z-index:-2;
+}
+div.dialog-box
+{
+	background-color:rgba(20,22,24,0.5); *BACKGROUND: rgb(20,22,24); *filter:alpha(opacity=50); 
+	display:Inline-block;overflow-y:auto;
+	text-align:center; vertical-align:middle;
+	margin:5px;	border:1px solid rgba(168, 166, 166, 0.5);border-radius:10px;
+}
+dialog::-webkit-scrollbar,div.dialog-box::-webkit-scrollbar
+{
+	height: 5px;
+	width: 9px;
+}
+dialog::-webkit-scrollbar-thumb
+{
+	background: rgba(119, 119, 119, 0.5);
+	border-radius: 100px;
+	background-clip: padding-box;
+	border: 2px solid rgba(119, 119, 119, 0.5);
+	border-top: none;
+	border-bottom: none;
+	min-height: 10px;
+}
+div.dialog-box::-webkit-scrollbar-thumb 
+{
+	background: rgba(108, 102, 102, 0.5);
+	border-radius: 100px;
+	background-clip: padding-box;
+	border: 2px solid rgba(108, 102, 102, 0.5);
+	border-top: none;
+	border-bottom: none;
+	min-height: 10px;
 }
 
 /* 滑动选择器（半废弃） */
@@ -635,6 +681,7 @@ div.ach_box
 {
 	background-color:rgba(20,22,24,0.5); *BACKGROUND: rgb(20,22,24); *filter:alpha(opacity=50); 
 	display:Inline-block;
+	overflow-y: auto;
 	width:320px; min-height:106px;text-align:left; vertical-align:middle;
 	margin:5px;	border:1px solid rgba(225, 124, 226, 0.4);	border-radius:7px;
 }
@@ -662,3 +709,154 @@ div.ach_box_empty
 }
 
 span.ach_title{font-weight:bold;font-size:12pt;line-height:14pt;}
+
+/* 剧情分镜（移植） */
+#storyboard_container {
+	background-color:rgba(17,17,17,0.5);
+}
+
+#storyboard_control {
+	position:relative;
+}
+
+#storyboard_control input.cmdbutton{
+	width:120px;height:25px;margin:2;
+}
+
+#shootings_container{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.shootings {
+	text-align:center;
+	display:none;
+}
+
+/* glow_buttons（移植） */
+.glow_buttons {
+	background-color:transparent;
+	width:70px;
+	height:20px;
+	margin:auto;
+	border:1px solid;
+	   -moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	        border-radius: 6px;
+	cursor:pointer;
+	overflow-x:hidden;
+	overflow-y:hidden;
+	white-space:nowrap;
+	text-align:center;
+	line-height:20px;
+}
+
+.glow_buttons.w35{width:35px;}
+.glow_buttons.w115{width:115px;}
+.glow_buttons.w125{width:125px;}
+.glow_buttons.w140{width:140px;}
+.glow_buttons.h15{height:15px;line-height:15px;}
+.glow_buttons.h25{height:25px;line-height:25px;}
+.glow_buttons.h30{height:30px;line-height:30px;}
+.glow_buttons.h50{height:50px;line-height:50px;}
+
+.glow_buttons span{
+	line-height:20px;
+}
+
+.glow_buttons:hover {
+	-webkit-box-shadow: 0 0 12px #fff;
+	        box-shadow: 0 0 12px #fff;
+}
+
+.glow_buttons:active {
+	background-color:rgba(221,221,221,0.5);
+}
+
+.glow_buttons.yellow:hover {
+	-webkit-box-shadow: 0 0 18px #ff0;
+	        box-shadow: 0 0 18px #ff0;
+}
+
+.glow_buttons.yellow:active {
+	background-color:rgba(255,255,0,0.5);
+}
+
+.glow_buttons.red:hover {
+	-webkit-box-shadow: 0 0 18px #f00;
+	        box-shadow: 0 0 18px #f00;
+}
+
+.glow_buttons.red:active {
+	background-color:rgba(255,0,0,0.5);
+}
+
+.glow_buttons.cyan:hover {
+	-webkit-box-shadow: 0 0 18px #0ff;
+	        box-shadow: 0 0 18px #0ff;
+}
+
+.glow_buttons.cyan:active {
+	background-color:rgba(0,255,255,0.5);
+}
+
+.glow_buttons.lime:hover {
+	-webkit-box-shadow: 0 0 18px #0f0;
+	        box-shadow: 0 0 18px #0f0;
+}
+
+.glow_buttons.lime:active {
+	background-color:rgba(0,255,0,0.5);
+}
+
+.glow_buttons.grey:hover {
+	-webkit-box-shadow: 0 0 18px #999;
+	        box-shadow: 0 0 18px #999;
+}
+
+.glow_buttons.grey:active {
+	background-color:rgba(153,153,153,0.5);
+}
+
+.glow_buttons.darkgrey:hover {
+	-webkit-box-shadow: 0 0 18px #666;
+	        box-shadow: 0 0 18px #666;
+}
+
+.glow_buttons.darkgrey:active {
+	background-color:rgba(102,102,102,0.5);
+}
+
+.glow_buttons.evergreen:hover {
+	-webkit-box-shadow: 0 0 18px #98fb98;
+	        box-shadow: 0 0 18px #98fb98;
+}
+
+.glow_buttons.evergreen:active {
+	background-color:rgba(152,251,152,0.5);
+}
+
+.glow_buttons.forbidden{
+	cursor:crosshair;
+}
+
+.glow_buttons.forbidden:hover{
+	-webkit-box-shadow: none;
+	        box-shadow: none;
+}
+
+.glow_buttons.forbidden:active{
+	background-color:transparent;
+}
+
+.glow_buttons:disabled{
+	cursor:crosshair;
+	color:#999;
+	border-color:#999;
+}
+
+.glow_buttons:disabled:hover{
+	-webkit-box-shadow: none;
+	        box-shadow: none;
+}
