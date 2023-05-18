@@ -216,6 +216,7 @@ function move($moveto = 99,&$data=NULL) {
 
 	# 移动到指定地点，结算移动探索事件
 	move_search_events($data,'move');
+	if($hp <= 0) return;
 
 	$enemyrate =  \revbattle\calc_meetman_rate($data);
 	//echo "enemyrate = {$enemyrate}%";
@@ -363,6 +364,7 @@ function search(&$data=NULL){
 	
 	# 探索指定地点，结算探索事件
 	move_search_events($data,'search');
+	if($hp <= 0) return;
 	
 	$enemyrate = \revbattle\calc_meetman_rate($data);
 	//echo "enemyrate = {$enemyrate}%";
