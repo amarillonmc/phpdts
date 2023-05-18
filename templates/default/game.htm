@@ -27,7 +27,9 @@
 				<!--{/if}-->
 			</div>
 			<div id="hidden-model">
-				{template opening}
+				<!--{if !empty($clbpara['noskip_dialogue']) && $clbpara['noskip_dialogue'] == 'opening'}-->
+					{template opening}
+				<!--{/if}-->
 			</div>
 		</td>
 		<td valign="top" rowspan="2">
