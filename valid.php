@@ -304,10 +304,12 @@ if($mode == 'enter') {
 	}
 
 	# 格式化插入player数据
-	$ndata = update_db_player_structure();
-	foreach($ndata as $key)
+	$ndata = update_db_player_structure(1);
+	foreach($ndata as $key => $type)
 	{
 		if(isset($$key)) $ndata[$key] = $$key; 
+		elseif(strpos($type,'int')!==false) $ndata[$key] = 0;
+		else $ndata[$key] = '';
 	}
 
 	# 初始化套装信息

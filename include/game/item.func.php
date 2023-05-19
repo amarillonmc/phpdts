@@ -92,7 +92,7 @@ function itemuse($itmn,&$data=NULL) {
 			
 			// 装备道具时，进行单次套装检测
 			include_once GAME_ROOT.'./include/game/itemmain.func.php';
-			reload_single_set_item($pdata,$eqp,$itm,1);
+			reload_single_set_item($data,$eqp,$itm,1);
 
 			${$eqp} = $itm;
 			${$eqp.'k'} = $itmk;
@@ -107,9 +107,9 @@ function itemuse($itmn,&$data=NULL) {
 			// 替换装备时，进行单次套装检测
 			// 先检测目前穿的装备
 			include_once GAME_ROOT.'./include/game/itemmain.func.php';
-			reload_single_set_item($pdata,$eqp,${$eqp});
+			reload_single_set_item($data,$eqp,${$eqp});
 			// 再检测要替换的装备，类型为1，表示装备
-			reload_single_set_item($pdata,$eqp,$itm,1);
+			reload_single_set_item($data,$eqp,$itm,1);
 
 			$itmt = ${$eqp};
 			$itmkt = ${$eqp.'k'};
@@ -292,9 +292,9 @@ function itemuse($itmn,&$data=NULL) {
 				}
 				$edata['wep_name'] = $itm;
 				include_once GAME_ROOT.'./include/state.func.php';
-				$last = pre_kill_events($edata,$pdata,0,'poison');
-				if($itmsk == $pdata['pid']) $last = 0;
-				final_kill_events($edata,$pdata,0,$last);
+				$last = pre_kill_events($edata,$data,0,'poison');
+				if($itmsk == $data['pid']) $last = 0;
+				final_kill_events($edata,$data,0,$last);
 				player_save($edata); //current_player_save();
 			} else {
 				//$bid = 0;
@@ -332,7 +332,7 @@ function itemuse($itmn,&$data=NULL) {
 		
 		if ($exp >= $upexp) {
 			include_once GAME_ROOT . './include/state.func.php';
-			lvlup_rev($pdata,$pdata,1);
+			lvlup_rev($data,$data,1);
 		}
 		if ($itms != $nosta) {
 			$itms --;
@@ -351,7 +351,7 @@ function itemuse($itmn,&$data=NULL) {
 		}
 		if (strpos ($wepk,'WG')===false){
 			if ($itmk=='GBh'){
-			$bulletnum = 1;	
+			$bulletnum = 3;	
 			}else{
 			$log .= "<span class=\"red\">枪械类型和弹药类型不匹配。</span><br>";
 			$mode = 'command';
@@ -364,7 +364,7 @@ function itemuse($itmn,&$data=NULL) {
 			return;
 		} elseif (strpos ( $wepsk, 'e' ) !== false || strpos ( $wepsk, 'w' ) !== false) {
 			if ($itmk == 'GBe') {
-				$bulletnum = 10;
+				$bulletnum = 18;
 			} else {
 				$log .= "<span class=\"red\">枪械类型和弹药类型不匹配。</span><br>";
 				$mode = 'command';
@@ -372,7 +372,7 @@ function itemuse($itmn,&$data=NULL) {
 			}
 		} elseif (strpos ( $wepsk, 'i' ) !== false || strpos ( $wepsk, 'u' ) !== false) {
 			if ($itmk == 'GBi') {
-				$bulletnum = 10;
+				$bulletnum = 18;
 			} else {
 				$log .= "<span class=\"red\">枪械类型和弹药类型不匹配。</span><br>";
 				$mode = 'command';
@@ -381,7 +381,7 @@ function itemuse($itmn,&$data=NULL) {
 		} else {
 			if (strpos ( $wepsk, 'r' ) !== false) {
 				if ($itmk == 'GBr') {
-					$bulletnum = 20;
+					$bulletnum = 24;
 				} else {
 					$log .= "<span class=\"red\">枪械类型和弹药类型不匹配。</span><br>";
 					$mode = 'command';
@@ -389,7 +389,7 @@ function itemuse($itmn,&$data=NULL) {
 				}
 			} else {
 				if ($itmk == 'GB') {
-					$bulletnum = 6;
+					$bulletnum = 12;
 				} else {
 					$log .= "<span class=\"red\">枪械类型和弹药类型不匹配。</span><br>";
 					$mode = 'command';
@@ -790,7 +790,7 @@ function itemuse($itmn,&$data=NULL) {
 			
 			if ($exp >= $upexp) {
 				include_once GAME_ROOT . './include/state.func.php';
-				lvlup_rev($pdata,$pdata,1);
+				lvlup_rev($data,$data,1);
 			}
 		}
 		if ($itms != $nosta) {
@@ -1472,7 +1472,7 @@ function itemuse($itmn,&$data=NULL) {
 				$log .= '你突然感觉到一种不可思议的力量贯通全身！<br>';
 				$wp = $wk = $wg = $wc = $wd = $wf = 8010;
 				$att = $def = 13337;
-				changeclub(15,$pdata);
+				changeclub(15,$data);
 				addnews ( $now, 'suisidefail',$nickinfo.' '.$name );
 				$itm = $itmk = $itmsk = '';
 				$itme = $itms = 0;
@@ -1558,7 +1558,7 @@ function itemuse($itmn,&$data=NULL) {
 				include_once GAME_ROOT . './include/state.func.php';
 				death ( 'SCP', '', 0, $itm );
 			} else {
-				changeclub(17,$pdata);
+				changeclub(17,$data);
 				addnews ( $now, 'notworthit', $nickinfo.' '.$name );
 			}
 			$itms --;
@@ -1949,7 +1949,7 @@ function itemuse($itmn,&$data=NULL) {
 				$log .= '你突然感觉到一种不可思议的力量贯通全身！<br>';
 				$wp = $wk = $wg = $wc = $wd = $wf = 8010;
 				$att = $def = 13337;
-				changeclub(15,$pdata);
+				changeclub(15,$data);
 				addnews ( $now, 'suisidefail',$nickinfo.' '.$name );
 			}
 			elseif ($itme == 17 || $itme > 22){ //状态机社团以及不存在的社团
@@ -1978,7 +1978,7 @@ function itemuse($itmn,&$data=NULL) {
 				【其之零】一切都是数字的假象而已。<br>
 				正在你回味着这句话的时候，一切已经恢复如初。";
 				//社团变更
-				changeclub(20,$pdata);
+				changeclub(20,$data);
 				//获取初始元素与第一条配方
 				$dice = rand(0,5); $dice2 = rand(0,1); $dice3 = rand(0,3);
 				${'element'.$dice} += 500+$dice;
@@ -1996,7 +1996,7 @@ function itemuse($itmn,&$data=NULL) {
 				$log .="再等等吧……<br>";
 			}
 			else{//直接将社团卡的效果写入玩家club
-				changeclub($itme,$pdata);
+				changeclub($itme,$data);
 				$log .="你的称号被改动了！";
 			}
 			//销毁物品
@@ -2083,7 +2083,7 @@ function itemuse($itmn,&$data=NULL) {
 			$log.="<br>获得了<span class='sparkle'>{$sparkle}元素口袋{$sparkle}</span>！<br>";
 			$log.="……这到底是怎么一回事呢？<br><br>";
 			//社团变更
-			changeclub(20,$pdata);
+			changeclub(20,$data);
 			//获取初始元素与第一条配方
 			$dice = rand(0,5);
 			//global ${'element'.$dice};
