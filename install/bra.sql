@@ -73,6 +73,7 @@ CREATE TABLE bra_users (
   `motto` char(30) NOT NULL DEFAULT '',
   `killmsg` char(30) NOT NULL DEFAULT '',
   `lastword` char(30) NOT NULL DEFAULT '',
+  `u_templateid` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY  (uid),
   UNIQUE KEY username (username)
 

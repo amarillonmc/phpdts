@@ -8,24 +8,26 @@
 	<span id="info" class="yellow"></span>
 </p>
 <center>
-	<form method="post" action="user.php" name="userdata">
-		<input type="hidden" name="mode" value="edit">
-		<table style="text-align: center">
-			<tr>
-				<td style="vertical-align:top"><span class ="yellow">{lang basicdata}</span>{template userbasicdata}</td>
-				<td rowspan="2"style="vertical-align:top"><span class ="yellow">{lang advanceddata}</span>{template useradvdata}</td>
-			</tr>
-			<tr>
-				<td><span class ="yellow">{lang creditsdata}</span>{template usercrdtsdata}</td>
-			</tr>
-		</table>
-		
-		
-		<div id="postdata">
-			<input type="submit" id="post" onClick="postCmd('userdata','user.php');return false;" value="{lang submit}">
-			<input type="reset" id="reset" name="reset" value="{lang reset}">
+<form method="post" action="user.php" name="userdata">
+	<input type="hidden" name="mode" value="edit">
+	<div>
+		<div style="display:inline-block;">
+			<span class ="yellow b">{lang basicdata}</span>
+				{template userbasicdata}
 		</div>
-	</form>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<div style="display:inline-block;">
+			<span class ="yellow b">{lang advanceddata}</span>
+				{template useradvdata}
+		</div>
+	</div>
+	
+	
+	<div id="postdata">
+		<input type="submit" id="post" onClick="postCmd('userdata','user.php');return false;" value="{lang submit}">
+		<input type="reset" id="reset" name="reset" value="{lang reset}">
+	</div>
+</form>
 </center>
 	<br />
 {template footer} 

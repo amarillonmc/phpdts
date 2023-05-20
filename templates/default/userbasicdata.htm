@@ -36,6 +36,12 @@
 			<td><input type="password" id="rnpass" name="rnpass" size="15" maxlength="24" value=""></td>
 			<td>{lang password_comment}</td>
 		</tr>
+		<tr>
+			<td>{lang bgmvolume}</td>
+			<!--{eval $volume = isset($_COOKIE["volume"]) ? filter_var($_COOKIE["volume"],FILTER_VALIDATE_FLOAT)*100 : 20; $v = isset($volume) ? $volume : 20;}-->
+			<td><input type="number" name="volume" min="0" max="100" value="{$v}">%</td>
+			<td>{lang bgmvolume_comment}</td>
+		</tr>
 	<!--{else}-->
 		<tr>
 			<td>{lang username}</td>

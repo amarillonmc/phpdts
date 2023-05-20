@@ -9,7 +9,7 @@
 
 <!-- 对白分段显示 -->
 <!--{loop $dialogues[$dialogue_id] $dkey $dinfo}-->
-<div id="d{$dkey}" <!--{if $dkey == 0}--> class="ach_box" style="border:0; text-align: center; min-height: min-content; width: max-content; max-width: 560px;" <!--{else}-->  style="display: none;"  <!--{/if}-->>
+<div id="d{$dkey}" <!--{if $dkey == 0}--> class="ach_box" style="overflow-y: auto; border:0; text-align: center; min-height: min-content; width: max-content; max-width: 560px;" <!--{else}-->  style="display: none;"  <!--{/if}-->>
     <table>
         <tr>
         <!-- 带头像对白 -->

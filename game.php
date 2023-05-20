@@ -169,7 +169,8 @@ if(isset($opendialog))
 	</script>";
 }
 	
-if (!strstr($_SERVER['HTTP_REFERER'], 'php') && $_SERVER['HTTP_REFERER'] != '') {
+//if (!strstr($_SERVER['HTTP_REFERER'], 'php') && $_SERVER['HTTP_REFERER'] != '') {
+if($udata['u_templateid'] == 1 && !strstr($_SERVER['HTTP_REFERER'], 'php') && $_SERVER['HTTP_REFERER'] != ''){
 	include './api.php';
 }	else {
 	include template('game');
