@@ -1,5 +1,5 @@
 <table align="center">
-	<!--{if !empty($udata)}-->
+<!--{if !empty($udata)}-->
 	<tr>
 		<td>{lang usertitle}</td>
 		<td>
@@ -12,6 +12,7 @@
 			选择一个有趣的头衔，部分头衔存在特殊的入场效果。
 		</td>
 	</tr>
+	<!--{if !empty($t1_list) && !empty($t2_list)}-->
 	<tr>
 		<td>内定称号</td>
 		<td>
@@ -31,6 +32,7 @@
 		</td>
 	</tr>
 	<!--{/if}-->
+<!--{/if}-->
 	<tr>
 		<td>{lang motto}</td>
 		<td><input size="30" type="text" name="motto" maxlength="30" value="{$motto}">{lang motto_comment}</td>

@@ -1,51 +1,10 @@
-<table align="center">
+<table>
 	<tr>
-		<td>{lang gender}</td>
-		<td>
-			<input type="radio" id="male" name="gender" onclick="userIconMover()" value="m" <!--{if $gender != "f"}-->checked<!--{/if}--> >$sexinfo['m'] 
-			<input type="radio" name="gender" onclick="userIconMover()" value="f" <!--{if $gender == "f"}-->checked<!--{/if}-->>$sexinfo['f']
+		<td align="center">
+			<table>
+			<tr><td>{template usergdicon}<br /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td>{template userwords}<br /></td></tr>
+			</table>
 		</td>
 	</tr>
-	<tr>
-		<td>{lang icon}</td>
-		<td>
-			<select id="icon" name="icon" onchange="userIconMover()">
-				<!--{loop $iconarray $icon}-->
-				{$icon}
-				<!--{/loop}-->
-			</select>（0为随机）
-			<div id="userIconImg" class="iconImg" >
-				<img src="img/<!--{if $gender != 'f'}-->m<!--{else}-->f<!--{/if}-->_{$select_icon}.gif" alt="$select_icon">
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>{lang motto}</td>
-		<td><input size="30" type="text" name="motto" maxlength="30" value="{$motto}">{lang motto_comment}</td>
-	</tr>
-	<tr>
-	<tr>
-		<td>{lang killmsg}</td>
-		<td><input size="30" type="text" name="killmsg" maxlength="30" value="{$killmsg}">{lang killmsg_comment}</td>
-	</tr>
-	<tr>
-		<td>{lang lastword}</td>
-		<td><input size="30" type="text" name="lastword" maxlength="30" value="{$lastword}">{lang lastword_comment}</td>
-	</tr>
-	<tr>
-		<td>{lang usertitle}</td>
-		<td>
-			<!--{eval $utlist = !empty($utlist) ? $utlist : Array(0 => '参展者');}-->
-			<select name="nick">
-				<!--{loop $utlist $key $val}-->
-				<option value="{$val}" <!--{if $udata['nick'] == $val}-->selected<!--{/if}-->>$val</option>
-				<!--{/loop}-->
-			</select>
-		</td>
-	</tr>
-	<tr>
-		<td>{lang bgmvolume}</td>
-		<!--{eval $volume = isset($_COOKIE["volume"]) ? filter_var($_COOKIE["volume"],FILTER_VALIDATE_FLOAT)*100 : 20; $v = isset($volume) ? $volume : 20;}-->
-		<td><input style="width: 45px;" size="2" type="number" name="volume" min="0" max="100" value="{$v}">% {lang bgmvolume_comment}</td>
-	</tr>
-</table> 
+	</table>

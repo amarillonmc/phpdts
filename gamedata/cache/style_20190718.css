@@ -681,7 +681,6 @@ div.ach_box
 {
 	background-color:rgba(20,22,24,0.5); *BACKGROUND: rgb(20,22,24); *filter:alpha(opacity=50); 
 	display:Inline-block;
-	overflow-y: auto;
 	width:320px; min-height:106px;text-align:left; vertical-align:middle;
 	margin:5px;	border:1px solid rgba(225, 124, 226, 0.4);	border-radius:7px;
 }

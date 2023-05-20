@@ -46,7 +46,7 @@ if($mode == 'edit') {
 		$gamedata['innerHTML']['info'] .= $_INFO['pass_failure'].'<br />';
 	}
 	$credits = $udata['credits'];$credits2 = $udata['credits2'];
-	if($exchg12||$exchg21){
+	/*if($exchg12||$exchg21){
 		//if(!is_numeric($exchg12)||$exchg12<0){$gamedata['innerHTML']['info'] .= $_INFO['credits_failure'];}
 		if(!is_numeric($exchg12)||!is_numeric($exchg21)||$exchg12<0||$exchg21<0){$gamedata['innerHTML']['info'] .= $_INFO['credits_failure'];}
 		elseif($exchg12 && $exchg21){$gamedata['innerHTML']['info'] .= $_INFO['credits_conflicts'];}
@@ -71,11 +71,24 @@ if($mode == 'edit') {
 				}
 			}
 		}
-	}
+	}*/
+	# 头像编辑
 	if ($icon>$iconlimit) $icon=0;
+	# 入场音量编辑
 	$volume = round($volume/100,2); $volume = round(min(1,max(0,$volume)),2);
 	gsetcookie('volume',$volume,86400*30,0);
-	$db->query("UPDATE {$gtablepre}users SET gender='$gender', icon='$icon',{$passqry}motto='$motto',  killmsg='$killmsg', lastword='$lastword', credits='$credits', credits2='$credits2' ,nick='$nick' WHERE username='$cuser'");
+	# 切换用户界面
+	if(!empty($templateid))
+	{
+		if($templateid != 1) $templateid = 1;
+		# 暂时只允许管理员账户切换至新界面
+		if($udata['groupid'] < 9)
+		{
+			$templateid = 0;
+			$gamedata['innerHTML']['info'] .= '界面切换失败，新版界面暂未实装。<br>';
+		}
+	}
+	$db->query("UPDATE {$gtablepre}users SET gender='$gender', icon='$icon',{$passqry}motto='$motto',  killmsg='$killmsg', lastword='$lastword', credits='$credits', credits2='$credits2' ,nick='$nick', u_templateid='$templateid' WHERE username='$cuser'");
 	if($db->affected_rows()){
 		$gamedata['innerHTML']['info'] .= $_INFO['data_success'];
 	}else{

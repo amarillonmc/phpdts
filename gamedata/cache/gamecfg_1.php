@@ -173,6 +173,12 @@ $ip_max_rooms = 2;
 $login_exit_room = 0;
 
 //版本更新时是否需要检查增补数据库字段
-$need_update_db_structrue = 0;
+$need_update_db_structrue = 1;
+
+//使用新版UI时，访问旧页面时重定向至新版UI界面的完整路径
+$u_templateid_url = Array
+(
+    1 => '',
+);
 
 ?>
