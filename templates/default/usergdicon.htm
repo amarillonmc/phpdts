@@ -26,6 +26,7 @@
 			</div>
 		</td>
 	</tr>
+	<!--{if CURSCRIPT == 'user'}-->
 	<tr>
 		<td>当前界面</td>
 		<td>
@@ -33,4 +34,5 @@
 			<input type="radio" id="template_2" name="templateid" value="1" <!--{if $u_templateid == 1}-->checked<!--{/if}-->><a onclick="sl('template_2')">LULUXIA（未开放）</span>
 		</td>
 	</tr>
+	<!--{/if}-->
 </table>
