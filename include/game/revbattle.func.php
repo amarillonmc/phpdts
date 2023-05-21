@@ -343,6 +343,7 @@ namespace revbattle
 			addnews($now,'gpost_success',$sordata['uname'],$itm0,$pdata['name']);
 			//再见了~快递员！
 			unset($edata['clbpara']['post']);unset($edata['clbpara']['postid']);unset($edata['clbpara']['sponsor']);
+			$edata['hp'] = 0;
 			destory_corpse($edata);
 			//解除快递锁
 			$db->query("UPDATE {$tablepre}gambling SET bnid=0 WHERE uid='$sponsorid'");
