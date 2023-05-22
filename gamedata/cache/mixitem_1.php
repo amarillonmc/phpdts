@@ -40,9 +40,9 @@ $mixinfo = array
 	array('class' => 'wk', 'stuff' => array('护手剑','毒药'),'result' => array('浸毒刺剑','WK',50,45,'NKp'),),
 	array('class' => 'wk', 'stuff' => array('浸毒刺剑','妖精的羽翼','『祝福宝石』'),'result' => array('☆公主细剑☆','WK',225,80,'Nnp'),),
 	array('class' => 'wk', 'stuff' => array('☆公主细剑☆','★荆棘王冠★','真 - 幻想戏服'),'result' => array('★女王细剑★','WK',655,255,'HNnpc'),),
-	array('class' => 'wk', 'stuff' => array('★女王细剑★','神之操控','安雅人体冰雕'),'result' => array('「女王蔷薇」','WK',1926,'∞','HNnrpc'),),
-	array('class' => 'wk', 'stuff' => array('「女王蔷薇」','■DeathNote■','悲叹之种'),'result' => array('「皇家蔷薇」','WK',17740,'∞','Nnrpc'),),
-	array('class' => 'wk', 'stuff' => array('「皇家蔷薇」','龙虎旗帜'),'result' => array('「猩红蔷薇」','WK',179310,'∞','BNnrfc'),),
+	array('class' => 'wk', 'stuff' => array('★女王细剑★','神之操控','职人的拿手','传说的绒边手套','安雅人体冰雕'),'result' => array('「女王蔷薇」','WK',1926,'∞','HNnrpc'),),
+	array('class' => 'wk', 'stuff' => array('「女王蔷薇」','■DeathNote■','悲叹之种','魔法蜂针'),'result' => array('「皇家蔷薇」','WK',17740,'∞','Nnrpcv'),),
+	array('class' => 'wk', 'stuff' => array('「皇家蔷薇」','龙虎旗帜'),'result' => array('「猩红蔷薇」','WK',179310,'∞','BNnrfcV'),),
 	
 	array('class' => 'wp', 'stuff' => array('电击鞭','原型武器P','实验装甲A'),'result' => array('『T-LINK念动冲拳』','WP',180,'∞','eN'),),
 	array('class' => 'wp', 'stuff' => array('☆电击器☆','原型武器P','实验装甲A'),'result' => array('『T-LINK念动冲拳』','WP',240,'∞','eN'),),

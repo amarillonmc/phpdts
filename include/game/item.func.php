@@ -883,10 +883,10 @@ function itemuse($itmn,&$data=NULL) {
 		//你们这帮乱用itmk的都乖乖自觉归类！itmk空间也是有限的！
 		$log.="你打开了<span class=\"yellow\">$itm</span>。<br>";
 
-		$itms--;
+		$itms--; $oitm = $itm; $oitmk = $itmk;
 		if($itms <= 0) destory_single_item($data,$itmn,1);
 
-		if(strpos( $itmk, 'ps' ) === 0){//银色盒子
+		if(strpos( $oitmk, 'ps' ) === 0){//银色盒子
 			include_once config('randomitem',$gamecfg);
 			//1st case of the new diceroll system.
 			//include_once GAME_ROOT.'./include/game/dice.func.php';
@@ -915,7 +915,7 @@ function itemuse($itmn,&$data=NULL) {
 				$rand = rand(0,count($itemflag)-1);
 				list($in,$ik,$ie,$is,$isk) = explode(',',$itemflag[$rand]);
 			}
-		}elseif(strpos( $itmk, 'p0' ) === 0){//新福袋·VOL1
+		}elseif(strpos( $oitmk, 'p0' ) === 0){//新福袋·VOL1
 			// 用$clbpara['opened_pack']记录打开福袋的名称，只要有这个名称，就搞事！
  			if(!empty($clbpara['opened_pack'])){
 				$log.="似乎你本轮已经打开过福袋，因此不能再打开更多的福袋！<br>";
@@ -978,13 +978,13 @@ function itemuse($itmn,&$data=NULL) {
 		}		
 		//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
-		addnews($now,'present',$name,$itm,$in);
+		addnews($now,'present',$name,$oitm,$in);
 
 		include_once GAME_ROOT.'./include/game/itemmain.func.php';
 		itemget($data);			
 	} elseif(strpos ( $itmk, 'ygo' ) === 0){
 		$log.="你打开了<span class=\"yellow\">$itm</span>。<br>";
-		$itms--;
+		$itms--; $oitm = $itm;
 		if($itms <= 0) destory_single_item($data,$itmn,1);
 
 		$file1 = config('box',$gamecfg);
@@ -993,13 +993,13 @@ function itemuse($itmn,&$data=NULL) {
 		list($in,$ik,$ie,$is,$isk) = explode(',',$plist1[$rand1]);
 		//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
-		addnews($now,'present',$nickinfo.' '.$name,$itm,$in);
+		addnews($now,'present',$nickinfo.' '.$name,$oitm,$in);
 
 		include_once GAME_ROOT.'./include/game/itemmain.func.php';
 		itemget($data);	
 	} elseif(strpos ( $itmk, 'fy' ) === 0){
 		$log.="你打开了<span class=\"yellow\">$itm</span>。<br>";
-		$itms--;
+		$itms--; $oitm = $itm;
 		if($itms <= 0) destory_single_item($data,$itmn,1);
 
 		$file1 = config('fy',$gamecfg);
@@ -1008,7 +1008,7 @@ function itemuse($itmn,&$data=NULL) {
 		list($in,$ik,$ie,$is,$isk) = explode(',',$plist1[$rand1]);
 		//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
-		addnews($now,'present',$nickinfo.' '.$name,$itm,$in);
+		addnews($now,'present',$nickinfo.' '.$name,$oitm,$in);
 
 		include_once GAME_ROOT.'./include/game/itemmain.func.php';
 		itemget($data);	
