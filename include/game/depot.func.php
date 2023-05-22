@@ -81,6 +81,11 @@
 			$log.="<span class='red'>你身上的钱不足以支付储存道具的手续费！</span><br>";
 			return;
 		}
+		if(strpos(${'itmsk'.$i},'V')!==false)
+		{
+			$log.="<span class='red'>你尝试着把诅咒道具扔进安全箱，但安全箱又立刻将它吐了出来！</span><br>";
+			return;
+		}
 		if(strpos(${'itmsk'.$i},'v')!==false)
 		{
 			$log.="<span class='red'>你尝试着把灵魂绑定的道具扔进安全箱，但安全箱又立刻将它吐了出来！</span><br>";

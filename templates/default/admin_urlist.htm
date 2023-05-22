@@ -29,13 +29,11 @@
 			<th>分数2</th>
 			<th>性别</th>
 			<th>头像</th>
-			<!--<th>社团</th>
-			<th>成就</th>
-			<th>成就（新）</th>
-			<th>称号表</th>-->
 			<th>口头禅</th>
 			<th>杀人留言</th>
 			<th>遗言</th>
+			<th>添加头衔</th>
+			<th>删除头衔</th>
 			<th>操作</th>
 		</tr>
 		<!--{if $urdata}-->
@@ -58,10 +56,6 @@
 				</select>
 			</td>
 			<td><input type="text" name="icon_$n" size="2" maxlength="2" value="$ur['icon']" disabled="true"></td>
-			<!--<td>{$clubinfo[$ur['club']]}</td>
-			<td><input type="text" name="achievement_$n" size="20" maxlength="400" value="$ur['achievement']" disabled="true"></td>
-			<td><input type="text" name="achrev_$n" size="20" maxlength="400" value="$ur['achrev']" disabled="true"></td>
-			<td><input type="text" name="nicks_$n" size="20" maxlength="300" value="$ur['nicks']" disabled="true"></td>-->
 			<td><input type="text" name="motto_$n" size="20" maxlength="60" value="$ur['motto']" disabled="true"></td>
 			<td><input type="text" name="killmsg_$n" size="20" maxlength="20" value="$ur['killmsg']" disabled="true"></td>
 			<td><input type="text" name="lastword_$n" size="20" maxlength="20" value="$ur['lastword']" disabled="true"></td>
@@ -85,13 +79,23 @@
 				</select>
 			</td>
 			<td><input type="text" name="icon_$n" size="2" maxlength="2" value="$ur['icon']"></td>
-			<!--<td>{$clubinfo[$ur['club']]}</td>
-			<td><input type="text" name="achievement_$n" size="20" maxlength="400" value="$ur['achievement']"></td>
-			<td><textarea name="achrev_$n" style="overflow:auto">$ur['achrev']</textarea></td>
-			<td><input type="text" name="nicks_$n" size="20" maxlength="300" value="$ur['nicks']"></td>-->
 			<td><input type="text" name="motto_$n" size="20" maxlength="60" value="$ur['motto']"></td>
 			<td><input type="text" name="killmsg_$n" size="20" maxlength="60" value="$ur['killmsg']"></td>
 			<td><input type="text" name="lastword_$n" size="20" maxlength="60" value="$ur['lastword']"></td>
+			<td>
+				<select name="addtitles_$n">
+					<!--{loop $titles_list $nkey $ninfo}-->
+						<option value="$nkey">$ninfo</option>
+					<!--{/loop}-->
+				</select>
+			</td>
+			<td>
+				<select name="deltitles_$n">
+					<!--{loop $ur['nicksrev']['nicks'] $nkey}-->
+						<option value="$nkey">$titles_list[$nkey]</option>
+					<!--{/loop}-->
+				</select>
+			</td>
 			<td>
 				<input type="submit" value="修改" onclick="$('urcmd').value='edit_{$n}_{$ur['uid']}'">
 			</td>

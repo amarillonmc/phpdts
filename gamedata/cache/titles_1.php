@@ -222,6 +222,7 @@ if(!defined('IN_GAME')) exit('Access Denied');
     14 => Array(
       'money' => '[:+=:]3210',
       'wep' => '增殖之腿', 'wepk' => 'WCP', 'wepe' => 10,  'weps' => '∞', 'wepsk' => 'd',
+      'arf' => '腿？', 'arfk' => 'DF', 'arfe' => 9, 'arfs' => 99, 'arfsk' => 'VxK',
     ),
     # 19. 美食家
     19 => Array(

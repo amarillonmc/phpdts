@@ -53,8 +53,8 @@
 
 </center></p>
 <!--{if (isset($dialogue_branch[$dialogue_id]) || isset($dialogue_end[$dialogue_id]))}-->
-    <img class="dialog-background" src="img/profile.gif" id="x" onclick="">
+    <img class="dialog-background" src="img/profile.gif" onclick="">
 <!--{else}-->
-    <img class="dialog-background" src="img/profile.gif" id="x" onclick="closeDialog($('dialogue'));$('command').value='end_dialogue';postCmd('gamecmd','command.php');this.disabled=true;">
+    <img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('dialogue'));$('command').value='end_dialogue';postCmd('gamecmd','command.php');this.disabled=true;">
 <!--{/if}-->
 </dialog>

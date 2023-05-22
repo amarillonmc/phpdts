@@ -415,6 +415,14 @@ function itemget(&$data=NULL)
 	}
 	extract($data,EXTR_REFS);
 	$log .= "获得了物品<span class=\"yellow\">$itm0</span>。<br>";
+
+	# 拾取诅咒物品时，触发霉运
+	if(!empty($itmsk0) && in_array('V',get_itmsk_array($itmsk0)))
+	{
+		$log .= "<span class=\"grey\">你感觉自己要倒大霉了……</span><br>";
+		getclubskill('inf_cursed',$clbpara);
+	}
+
 	//PORT
 	if(strpos($itmsk0,'^')!==false){
 		$keep_flag = false;
@@ -469,7 +477,6 @@ function itemget(&$data=NULL)
 			}
 			return;
 		}
-		
 	}
 
 	itemadd($data);
@@ -544,6 +551,13 @@ function itemdrop($item,&$data=NULL) {
 		$mode = 'command';
 		return;
 	}
+	# 诅咒装备不能被丢弃
+	if(in_array('V',get_itmsk_array($itmsk)))
+	{
+		$log .= "你丢弃了……<br>你忽然忘记自己原本想干什么了。<br>";
+		$mode = 'command';
+		return;
+	}
 	if(!$itms||!$itmk||$itmk=='WN'||$itmk=='DN'){
 		$log .= '该物品不存在！<br>';
 		$mode = 'command';
@@ -599,8 +613,15 @@ function itemoff($item){
 		$mode = 'command';
 		return;
 	}
-		if(($itmk=='XX')||(($itmk=='XY'))){
+	if(($itmk=='XX')||(($itmk=='XY'))){
 		$log .= '该物品不能卸下。<br>';
+		$mode = 'command';
+		return;
+	}
+	# 诅咒装备不能主动卸下
+	if(in_array('V',get_itmsk_array($itmsk)))
+	{
+		$log .= "你尝试着卸下{$itm}……但它就像长在了你身上一样，纹丝不动！<br>";
 		$mode = 'command';
 		return;
 	}
@@ -1549,6 +1570,20 @@ function reload_set_items(&$pa)
 			$sid = $set_items[$eqp][$pa[$eqp]];
 			$pa['clbpara']['setitems'][$sid] += 1;
 		}
+		# 身上存在诅咒装备时，触发霉运效果
+		if(!empty($pa[$eqp.'sk']) && in_array('V',get_itmsk_array($pa[$eqp.'sk'])))
+		{
+			$cursed_flag = 1;
+		}
+	}
+	# 身上存在诅咒效果
+	if(isset($cursed_flag))
+	{
+		if(check_skill_unlock('inf_cursed',$pa)) getclubskill('inf_cursed',$pa['clbpara']);
+	}
+	else 
+	{
+		if(!check_skill_unlock('inf_cursed',$pa)) lostclubskill('inf_cursed',$pa['clbpara']);
 	}
 	# 身上存在套装效果
 	if(!empty($pa['clbpara']['setitems']))
