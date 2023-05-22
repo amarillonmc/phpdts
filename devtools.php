@@ -28,6 +28,8 @@ set_time_limit() 函数用于设置脚本的最大执行时间。将参数设置
 这行代码设置了 zlib.output_compression 选项为 0，禁用了输出内容的压缩。默认情况下，PHP 可能会对输出内容进行压缩以减少数据传输量，但该行代码禁用了这种压缩。
 这些代码的目的是为了确保在输出内容到浏览器时能够实时显示，并禁用浏览器缓存和服务器端的输出缓冲。这对于实时显示动态内容或长时间运行的脚本非常有用。 */
 
+define('CURSCRIPT', 'devtools');
+
 require './include/common.inc.php';
 
 if(!$udata) { gexit($_ERROR['no_login'],__file__,__line__); }
