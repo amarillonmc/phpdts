@@ -27,14 +27,15 @@ if($urcmd){
 	} else {
 		while($ur = $db->fetch_array($result)) {
 			if(!$ur['gender']){$ur['gender']='0';}
-			$urdata[] = $ur;			
+			$ur = format_userdata($ur);
+			$urdata[] = $ur;
 		}
 		$startno = $start + 1;
 		$endno = $start + count($urdata);
 		$resultinfo = '第'.$startno.'条-第'.$endno.'条记录';
 	}
 }
-if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del' || $urcmd == 'checkach') {
+if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del') {
 	$operlist = $gfaillist = $ffaillist = array();
 	for($i=0;$i<$showlimit;$i++){
 		if(isset(${'user_'.$i})) {
@@ -46,46 +47,6 @@ if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del' || $urcmd == 'checkac
 					$urdata[$i]['groupid'] = 1;
 				}elseif($urcmd == 'del'){
 					unset($urdata[$i]);
-				}elseif($urcmd == 'checkach'){
-					$adata = $urdata[$i]; $n = $urdata[$i]['username'];
-					$adata['achrev'] = json_decode($adata['achrev'],true);
-					$new_ach = Array(); $cpl = Array(); $prc = Array();
-					//手动变化成就储存结构
-					if(!empty($adata['achievement']) && empty($adata['achrev']))
-					{
-						include_once GAME_ROOT.'./include/game/achievement.func.php';
-						$alist = get_achlist();
-						foreach($alist as $a => $aarr)
-						{
-							if($a <= 57)
-							{
-								$cpl[$a]=check_achievement($a,$n);
-								$prc[$a]=fetch_achievement($a,$n);
-								//新成就储存结构内，只会保存有进度的成就
-								if(!empty($cpl[$a]) || !empty($prc[$a]))
-								{
-									// 到达999阶段的成就 替换为配置中预设的达成等级
-									if($cpl[$a] == 999)
-									{
-										if($a == 16 || $a == 17 || $a == 18 || $a == 19) 
-										{
-											//特判：四个结局成就阶段会变更为1...就这样了！
-											$cpl[$a] = 1;
-										}
-										else
-										{
-											$cpl[$a] = $aarr['lvl'] ?: count($aarr['name']);
-										}
-									}
-									$new_ach[$a]['l'] = $cpl[$a] ?: 0;
-									$new_ach[$a]['v'] = $prc[$a] ?: 0;
-								}
-							}
-						}
-						$new_ach = json_encode($new_ach);
-						$db->query("UPDATE {$gtablepre}users SET achrev='$new_ach' WHERE username='".$n."'" );
-					}
-					//$new_ach = '';
 				}
 //				adminlog('banur',$urdata[$i]['username']);
 			}elseif(isset($urdata[$i]) && $urdata[$i]['uid'] == ${'user_'.$i}){
@@ -106,10 +67,8 @@ if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del' || $urcmd == 'checkac
 		}elseif($urcmd == 'del'){
 			$operword = '删除';
 			$qryword = "DELETE FROM {$gtablepre}users ";
-		}elseif($urcmd == 'checkach'){
-			$cmd_info .= " 帐户 $opernames 调整了成就储存结构";
 		}
-		if($operlist && $urcmd != 'checkach'){
+		if($operlist){
 			$qrywhere = '('.implode(',',array_keys($operlist)).')';
 			$opernames = implode(',',($operlist));
 			$db->query("$qryword WHERE uid IN $qrywhere");
@@ -159,14 +118,43 @@ if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del' || $urcmd == 'checkac
 		}else{
 			$urdata[$no]['gender'] = $urgender = ${'gender_'.$no};
 		}
+		if(!empty(${'addtitles_'.$no}) && isset($titles_list[${'addtitles_'.$no}]))
+		{
+			$nkey = ${'addtitles_'.$no};
+			$flag = titles_get_new($urdata[$no],$nkey);
+			if($flag)
+			{
+				$cmd_info .= "".$urdata[$no]['username']." 获得了头衔 {$titles_list[$nkey]} <br>";
+				$db->query("UPDATE {$gtablepre}users SET nicksrev='{$urdata[$no]['nicksrev']}' WHERE uid='$uid'");
+			}
+			else 
+			{
+				$cmd_info .= "".$urdata[$no]['username']." 已拥有头衔 {$titles_list[$nkey]} ，不能重复获取<br>";
+			}
+		}
+		if(!empty(${'deltitles_'.$no}) && isset($titles_list[${'deltitles_'.$no}]))
+		{
+			$nkey = ${'deltitles_'.$no};
+			$flag = titles_delete($urdata[$no],$nkey);
+			if($flag)
+			{
+				$cmd_info .= "从".$urdata[$no]['username']." 的头衔列表中删去了 {$titles_list[$nkey]} <br>";
+				$db->query("UPDATE {$gtablepre}users SET nicksrev='{$urdata[$no]['nicksrev']}' WHERE uid='$uid'");
+			}
+			else 
+			{
+				$cmd_info .= "".$urdata[$no]['username']." 未持有头衔 {$titles_list[$nkey]}<br>";
+			}
+		}
 		if(!empty(${'pass_'.$no})){
 			$urpass = md5(${'pass_'.$no});
 			$db->query("UPDATE {$gtablepre}users SET motto='$urmotto',killmsg='$urkillmsg',lastword='$urlastword',icon='$uricon',gender='$urgender',password='$urpass',credits='$urcredits',credits2='$urcredits2' WHERE uid='$uid'");
-			$cmd_info = "帐户 ".$urdata[$no]['username']." 的密码及其他信息已修改！";
+			$cmd_info .= "帐户 ".$urdata[$no]['username']." 的密码及其他信息已修改！";
 		}else{
 			$db->query("UPDATE {$gtablepre}users SET motto='$urmotto',killmsg='$urkillmsg',lastword='$urlastword',icon='$uricon',gender='$urgender',credits='$urcredits',credits2='$urcredits2' WHERE uid='$uid'");
-			$cmd_info = "帐户 ".$urdata[$no]['username']." 的信息已修改！";
-		}		
+			$cmd_info .= "帐户 ".$urdata[$no]['username']." 的信息已修改！";
+		}
+		$urdata[$no] = fetch_userdata_by_username($urdata[$no]['username']);
 	}
 	$urcmd = 'list';
 }

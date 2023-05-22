@@ -83,6 +83,20 @@ function itemuse($itmn,&$data=NULL) {
 			$mode = 'command';
 			return;
 		}
+		# 诅咒装备不能主动卸下
+		if(in_array('V',get_itmsk_array(${$eqp.'sk'})))
+		{
+			$log .= "你尝试着将{$$eqp}替换下来……但它就像长在了你身上一样，纹丝不动！<br>";
+			$mode = 'command';
+			return;
+		}
+		# 主动装备诅咒装备时，会变得不幸！
+		if(in_array('V',get_itmsk_array($isk)))
+		{
+			$log .= "<span class=\"grey\">你感觉自己要倒大霉了……</span><br>";
+			getclubskill('inf_cursed',$clbpara);
+		}
+
 		//PORT
 		if(strpos($itmsk,'^')!==false){
 			//global $itmnumlimit;

@@ -39,9 +39,9 @@ function get_title($t,$n)
 
 function titles_get_new(&$udata,$tkey,$mode=0)
 {
-	global $db,$gtablepre,$gamecfg;
-	include config("titles",$gamecfg);
+	global $titles_list;
 
+	$flag = 0;
 	$tkey = (int)$tkey;
 
 	if(empty($udata['nicksrev'])) $udata['nicksrev'] = Array('nicks' => Array(0));
@@ -49,11 +49,37 @@ function titles_get_new(&$udata,$tkey,$mode=0)
 	$nicksrev = is_array($nicksrev) ? $nicksrev : json_decode($nicksrev,true);
 
 	# 要获得的头衔编号必须存在于头衔列表内
-	if(isset($titles_list[$tkey]) && !in_array($tkey,$nicksrev['nicks'])) $nicksrev['nicks'][] = $tkey;
+	if(isset($titles_list[$tkey]) && !in_array($tkey,$nicksrev['nicks']))
+	{
+		$nicksrev['nicks'][] = $tkey;
+		$flag = 1;
+	}
 
 	$nicksrev = json_encode($nicksrev);
 
-	return;
+	return $flag;
+}
+
+function titles_delete(&$udata,$tkey,$mode=0)
+{
+	global $titles_list;
+
+	$flag = 0;
+	$tkey = (int)$tkey;
+
+	$nicksrev = &$udata['nicksrev'];
+	$nicksrev = is_array($nicksrev) ? $nicksrev : json_decode($nicksrev,true);
+
+	# 要获得的头衔编号必须存在于头衔列表内
+	if(isset($titles_list[$tkey]) && in_array($tkey,$nicksrev['nicks']))
+	{
+		unset($nicksrev['nicks'][array_search($tkey,$nicksrev['nicks'])]);
+		$flag = 1;
+	}
+
+	$nicksrev = json_encode($nicksrev);
+
+	return $flag;
 }
 
 function titles_get_desc($tkey,$mode=0)

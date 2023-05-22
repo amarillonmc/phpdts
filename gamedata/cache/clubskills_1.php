@@ -2060,6 +2060,12 @@ $cskills = Array
 			'lasttimes' => 0, //真正作用的持续时间
 		),
 	),
+	'inf_cursed' => Array
+	(
+		'name' => '霉运',
+		'tags' => Array('inf'),
+		'desc' => '<span class="red b">你感觉自己要倒大霉了……</span>',
+	),
 );
 
 
