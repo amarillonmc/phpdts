@@ -5,7 +5,7 @@ namespace revcombat
 		exit('Access Denied');
 	}
 
-	include_once GAME_ROOT.'./include/game/titles.func.php';
+	
 	include_once GAME_ROOT.'./include/state.func.php';
 	include_once GAME_ROOT.'./include/game/revcombat_extra.func.php';
 	include_once GAME_ROOT.'./include/game/revcombat.calc.php';

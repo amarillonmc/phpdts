@@ -18,8 +18,8 @@ if($command != 'submitedit'){
 $in_file = config('itmlist',$gamecfg);
 if(!file_exists($in_file))
 {
-	require 'sp_ilist.php';
-	get_itm_namelist();
+	include GAME_ROOT.'./include/devtools/printitm.func.php';
+	print_itm_namelist();
 }
 include_once($in_file);
 $temp_item_namelist = $item_namelist;

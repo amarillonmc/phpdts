@@ -239,7 +239,7 @@
       /** 玩家信息 */
       "playerInfo" => array(
         /** 称号 */
-        "nick" => get_title_desc($nick),
+        "nick" => titles_get_desc($nick),
         /** 姓名 */
         "name" => $name,
         /** 性别 */

@@ -149,7 +149,7 @@ $bot_player_list = Array
 		0 => array
 		(
 			'name' => '雷文·Ｋ',
-			'nick' => '参展者',
+			'nick' => 0,
 			'icon' => 128,
 			'gd' => 'f',
 			'club' => 2,
@@ -167,7 +167,7 @@ $bot_player_list = Array
 		1 => array
 		(
 			'name' => '雷文·Ｇ',
-			'nick' => '参展者',
+			'nick' => 0,
 			'icon' => 128,
 			'gd' => 'f',
 			'club' => 4,
@@ -185,7 +185,7 @@ $bot_player_list = Array
 		2 => array
 		(
 			'name' => '雷文·Ｃ',
-			'nick' => '参展者',
+			'nick' => 0,
 			'icon' => 128,
 			'gd' => 'f',
 			'club' => 3,
@@ -203,7 +203,7 @@ $bot_player_list = Array
 		3 => array
 		(
 			'name' => '雷文·Ｐ',
-			'nick' => '参展者',
+			'nick' => 0,
 			'icon' => 128,
 			'gd' => 'f',
 			'club' => 1,

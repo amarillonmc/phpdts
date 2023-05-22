@@ -167,7 +167,7 @@ function reset_daily_achievement($who)
 function check_mixitem_achievement_rev($nn,$item)
 {
 	global $now,$validtime,$starttime,$gamecfg,$name,$db,$gtablepre;
-	include_once GAME_ROOT.'./include/game/titles.func.php';
+	
 	$done = 0;
 	$atotal = Array();
 	//1. 快速KEY弹成就
@@ -242,14 +242,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(0,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+700 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("流星",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(0,$nn)>=5 && (check_achievement_rev(0,$nn)<2)) {
 		done_achievement_rev(0,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+200 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("幻想",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(0,$nn)>=1 && (check_achievement_rev(0,$nn)<1)) {
@@ -266,14 +266,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(14,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+700 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("TERRA",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(14,$nn)>=5 && (check_achievement_rev(14,$nn)<2)) {
 		done_achievement_rev(14,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+200 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("树形图",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(14,$nn)>=1 && (check_achievement_rev(14,$nn)<1)) {
@@ -290,14 +290,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(15,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+700 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("未来战士",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(15,$nn)>=5 && (check_achievement_rev(15,$nn)<2)) {
 		done_achievement_rev(15,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+200 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("素描本",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(15,$nn)>=1 && (check_achievement_rev(15,$nn)<1)) {
@@ -314,7 +314,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(33,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+522 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("剑圣",$nn);
 		}
 	}
@@ -326,14 +326,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(35,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("殴系爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(35,$nn)>=51 && (check_achievement_rev(35,$nn)<2)) {
 		done_achievement_rev(35,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("热血机师",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(35,$nn)>=1 && (check_achievement_rev(35,$nn)<1)) {
@@ -350,14 +350,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(36,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("斩系爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(36,$nn)>=51 && (check_achievement_rev(36,$nn)<2)) {
 		done_achievement_rev(36,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("苍蓝之光",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(36,$nn)>=1 && (check_achievement_rev(36,$nn)<1)) {
@@ -374,14 +374,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(37,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("钥刃大师",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(37,$nn)>=51 && (check_achievement_rev(37,$nn)<2)) {
 		done_achievement_rev(37,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("合二为一",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(37,$nn)>=1 && (check_achievement_rev(37,$nn)<1)) {
@@ -398,14 +398,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(38,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("射系爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(38,$nn)>=51 && (check_achievement_rev(38,$nn)<2)) {
 		done_achievement_rev(37,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("勇闯仙境",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(38,$nn)>=1 && (check_achievement_rev(38,$nn)<1)) {
@@ -422,14 +422,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(39,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("重枪爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(39,$nn)>=51 && (check_achievement_rev(39,$nn)<2)) {
 		done_achievement_rev(39,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("黑洞边缘",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(39,$nn)>=1 && (check_achievement_rev(39,$nn)<1)) {
@@ -446,14 +446,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(40,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("决斗者",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(40,$nn)>=51 && (check_achievement_rev(40,$nn)<2)) {
 		done_achievement_rev(40,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("光的道路",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(40,$nn)>=1 && (check_achievement_rev(40,$nn)<1)) {
@@ -470,14 +470,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(41,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("聚集的祈愿",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(41,$nn)>=51 && (check_achievement_rev(41,$nn)<2)) {
 		done_achievement_rev(41,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("加速同调",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(41,$nn)>=1 && (check_achievement_rev(41,$nn)<1)) {
@@ -494,14 +494,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(42,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("投系爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(42,$nn)>=51 && (check_achievement_rev(42,$nn)<2)) {
 		done_achievement_rev(42,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("平和之心",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(42,$nn)>=1 && (check_achievement_rev(42,$nn)<1)) {
@@ -518,14 +518,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(43,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("爆系爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(43,$nn)>=51 && (check_achievement_rev(43,$nn)<2)) {
 		done_achievement_rev(43,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("红烧天堂",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(43,$nn)>=1 && (check_achievement_rev(43,$nn)<1)) {
@@ -542,14 +542,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(44,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("★啪啪啪★",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(44,$nn)>=51 && (check_achievement_rev(44,$nn)<2)) {
 		done_achievement_rev(44,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("★刷刷刷★",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(44,$nn)>=1 && (check_achievement_rev(44,$nn)<1)) {
@@ -566,14 +566,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(45,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("灵系爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(45,$nn)>=51 && (check_achievement_rev(45,$nn)<2)) {
 		done_achievement_rev(45,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("皇家烈焰",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(45,$nn)>=1 && (check_achievement_rev(45,$nn)<1)) {
@@ -590,14 +590,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(46,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("贤者之石",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(46,$nn)>=51 && (check_achievement_rev(46,$nn)<2)) {
 		done_achievement_rev(46,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("五行大师",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(46,$nn)>=1 && (check_achievement_rev(46,$nn)<1)) {
@@ -614,14 +614,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(47,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("知人和",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(47,$nn)>=51 && (check_achievement_rev(47,$nn)<2)) {
 		done_achievement_rev(47,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("知地利",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(47,$nn)>=1 && (check_achievement_rev(47,$nn)<1)) {
@@ -638,14 +638,14 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(48,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("混沌的深渊",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(48,$nn)>=51 && (check_achievement_rev(48,$nn)<2)) {
 		done_achievement_rev(48,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("混沌爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(48,$nn)>=1 && (check_achievement_rev(48,$nn)<1)) {
@@ -662,7 +662,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(49,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+700 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("键·四季赞歌",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(49,$nn)>=1 && (check_achievement_rev(49,$nn)<1)) {
@@ -679,7 +679,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(50,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+700 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("★一发逆转！★",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(50,$nn)>=1 && (check_achievement_rev(50,$nn)<1)) {
@@ -696,7 +696,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(51,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+700 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("『ＥＸ』",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(51,$nn)>=1 && (check_achievement_rev(51,$nn)<1)) {
@@ -713,7 +713,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		done_achievement_rev(52,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+700 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("◎胜利之光◎",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(52,$nn)>=1 && (check_achievement_rev(52,$nn)<1)) {
@@ -738,7 +738,7 @@ function check_mixitem_achievement_rev($nn,$item)
 function check_end_achievement_rev($w,$m,$data=NULL)
 {
 	global $now,$validtime,$starttime,$gamecfg,$name,$db,$gtablepre;
-	include_once GAME_ROOT.'./include/game/titles.func.php';
+	
 
 	$done = 0;
 	$atotal = Array();
@@ -946,7 +946,7 @@ function check_end_achievement_rev($w,$m,$data=NULL)
 function check_battle_achievement_rev($pa,$pd)
 {
 	global $gamestate,$gamecfg,$db,$gtablepre;
-	include_once GAME_ROOT.'./include/game/titles.func.php';
+	
 
 	// 旧版成就参数兼容
 	$is_npc = $pd['type'];
@@ -1259,7 +1259,7 @@ function check_battle_achievement_rev($pa,$pd)
 			update_achievement_rev(31,$nn,((int)fetch_achievement_rev(31,$nn))+1);
 			if ((int)fetch_achievement_rev(31,$nn)>=1 && (check_achievement_rev(31,$nn)<999)) {
 				done_achievement_rev(31,999,$nn);
-				include_once GAME_ROOT.'./include/game/titles.func.php';
+				
 				get_title("R.T.S",$nn);
 				get_title("善有善报",$killname);
 				}
@@ -1275,7 +1275,7 @@ function check_battle_achievement_rev($pa,$pd)
 		if ((strpos($ns2,"LOOP")!==false)||(strpos($ns1,"LOOP")!==false)){
 			if (check_achievement_rev(32,$nn)<999) done_achievement_rev(32,999,$nn);
 			if (check_achievement_rev(32,$killname)<999) done_achievement_rev(32,999,$killname);
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("LOOP",$nn);
 			get_title("LOOP",$killname);
 		}
@@ -1288,14 +1288,14 @@ function check_battle_achievement_rev($pa,$pd)
 		done_achievement_rev(3,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+500 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+15 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("最后一步",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(3,$nn)>=500 && (check_achievement_rev(3,$nn)<2)) {
 		done_achievement_rev(3,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+200 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("黑客",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(3,$nn)>=100 && (check_achievement_rev(3,$nn)<1)) {
@@ -1327,7 +1327,7 @@ function check_battle_achievement_rev($pa,$pd)
 		update_achievement_rev(4,$nn,((int)fetch_achievement_rev(4,$nn))+1);
 		if ((int)fetch_achievement_rev(4,$nn)>=9 && (check_achievement_rev(4,$nn)<999)) {
 		done_achievement_rev(4,999,$nn);
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("越红者",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(4,$nn)>=1 && (check_achievement_rev(4,$nn)<1)) {
@@ -1342,7 +1342,7 @@ function check_battle_achievement_rev($pa,$pd)
 		update_achievement_rev(13,$nn,((int)fetch_achievement_rev(13,$nn))+1);
 		if ((int)fetch_achievement_rev(13,$nn)>=3 && (check_achievement_rev(13,$nn)<999)) {
 		done_achievement_rev(13,999,$nn);
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("跨过彩虹",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(13,$nn)>=1 && (check_achievement_rev(13,$nn)<1)) {
@@ -1359,7 +1359,7 @@ function check_battle_achievement_rev($pa,$pd)
 		done_achievement_rev(20,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+268 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+263 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("寻星者",$nn);
 		}
 	}
@@ -1371,7 +1371,7 @@ function check_battle_achievement_rev($pa,$pd)
 		done_achievement_rev(21,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+233 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+233 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("寂静洪流",$nn);
 		}
 	}
@@ -1383,7 +1383,7 @@ function check_battle_achievement_rev($pa,$pd)
 		done_achievement_rev(22,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+2333 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("l33t",$nn);
 		}
 	}
@@ -1395,7 +1395,7 @@ function check_battle_achievement_rev($pa,$pd)
 		done_achievement_rev(23,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+888 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("赌玉狂魔",$nn);
 		}
 	}
@@ -1407,7 +1407,7 @@ function check_battle_achievement_rev($pa,$pd)
 		done_achievement_rev(24,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+211 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+299 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("时代眼泪",$nn);
 		}
 	}
@@ -1419,7 +1419,7 @@ function check_battle_achievement_rev($pa,$pd)
 		done_achievement_rev(25,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+111 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+333 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("卸腿者",$nn);
 		}
 	}
@@ -1431,7 +1431,7 @@ function check_battle_achievement_rev($pa,$pd)
 		done_achievement_rev(26,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+1 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+111 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("吉祥物",$nn);
 		}
 	}
@@ -1443,7 +1443,7 @@ function check_battle_achievement_rev($pa,$pd)
 		done_achievement_rev(27,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+500 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("替天行道",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(27,$nn)>=30 && (check_achievement_rev(27,$nn)<2)) {
@@ -1465,14 +1465,14 @@ function check_battle_achievement_rev($pa,$pd)
 		done_achievement_rev(56,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+250 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("除错大师",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(56,$nn)>=180 && (check_achievement_rev(56,$nn)<2)) {
 		done_achievement_rev(56,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("都市传说",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(56,$nn)>=1 && (check_achievement_rev(56,$nn)<1)) {
@@ -1506,14 +1506,14 @@ function check_battle_achievement_rev($pa,$pd)
 		done_achievement_rev(57,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+250 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("暴雷骤雨",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(57,$nn)>=52 && (check_achievement_rev(57,$nn)<2)) {
 		done_achievement_rev(57,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("风驰电掣",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(57,$nn)>=1 && (check_achievement_rev(57,$nn)<1)) {
@@ -1538,7 +1538,7 @@ function check_battle_achievement_rev($pa,$pd)
 function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 {
 	global $gamecfg,$name,$db,$gtablepre,$now,$starttime,$gamestate;
-	include_once GAME_ROOT.'./include/game/titles.func.php';
+	
 	$atotal = Array();
 
 	//解离相关
@@ -1634,7 +1634,7 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 		done_achievement_rev(28,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+250 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("神触",$nn);
 		}
 		//604. 日常开启一次死斗
@@ -1667,14 +1667,14 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 		done_achievement_rev(29,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("补给掠夺者",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(29,$nn)>=142857 && (check_achievement_rev(29,$nn)<2)) {
 		done_achievement_rev(29,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("美食家",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(29,$nn)>=32767 && (check_achievement_rev(29,$nn)<1)) {
@@ -1692,14 +1692,14 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 		done_achievement_rev(30,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("贝爷",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(30,$nn)>=133 && (check_achievement_rev(30,$nn)<2)) {
 		done_achievement_rev(30,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("神农",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(30,$nn)>=5 && (check_achievement_rev(30,$nn)<1)) {
@@ -1718,21 +1718,21 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 			done_achievement_rev(34,999,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("脚底抹油",$nn);
 			}
 			elseif ((int)fetch_achievement_rev(34,$nn)>=36 && (check_achievement_rev(34,$nn)<2)) {
 			done_achievement_rev(34,2,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits+50 WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("现实主义者",$nn);
 			}
 			elseif ((int)fetch_achievement_rev(34,$nn)>=1 && (check_achievement_rev(34,$nn)<1)) {
 			done_achievement_rev(34,1,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits+10 WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("实用主义者",$nn);
 			}
 	}
@@ -1746,14 +1746,14 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 			done_achievement_rev(53,999,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("无情打钉者",$nn);
 			}
 			elseif ((int)fetch_achievement_rev(53,$nn)>=1777 && (check_achievement_rev(53,$nn)<2)) {
 			done_achievement_rev(53,2,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("棍棒爱好者",$nn);
 			}
 			elseif ((int)fetch_achievement_rev(53,$nn)>=777 && (check_achievement_rev(53,$nn)<1)) {
@@ -1772,14 +1772,14 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 			done_achievement_rev(54,999,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("无情磨刀者",$nn);
 			}
 			elseif ((int)fetch_achievement_rev(54,$nn)>=1777 && (check_achievement_rev(54,$nn)<2)) {
 			done_achievement_rev(54,2,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("磨刀爱好者",$nn);
 			}
 			elseif ((int)fetch_achievement_rev(54,$nn)>=777 && (check_achievement_rev(54,$nn)<1)) {
@@ -1798,14 +1798,14 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 		done_achievement_rev(55,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("无情补丁",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(55,$nn)>=1777 && (check_achievement_rev(55,$nn)<2)) {
 		done_achievement_rev(55,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("补丁爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(55,$nn)>=777 && (check_achievement_rev(55,$nn)<1)) {
@@ -1831,7 +1831,7 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 function check_misc_achievement_rev(&$pa)
 {
 	global $gamestate,$gamecfg,$db,$gtablepre;
-	include_once GAME_ROOT.'./include/game/titles.func.php';
+	
 
 	$done = 0;
 	$atotal = Array();
@@ -2075,7 +2075,7 @@ function check_misc_achievement_rev(&$pa)
 function check_nums_achievement($nn,$aid,$anums=1)
 {
 	global $gamestate,$gamecfg,$db,$gtablepre;
-	include_once GAME_ROOT.'./include/game/titles.func.php';
+	
 
 	//每日任务计数成就
 	if($aid == 600)
@@ -2211,14 +2211,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(0,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+700 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("流星",$nn);
 		}
 		elseif ((int)fetch_achievement(0,$nn)>=5 && (check_achievement(0,$nn)<2)) {
 		done_achievement(0,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+200 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("幻想",$nn);
 		}
 		elseif ((int)fetch_achievement(0,$nn)>=1 && (check_achievement(0,$nn)<1)) {
@@ -2236,7 +2236,7 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(1,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+30 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+16 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("KEY男",$nn);
 		}
 	}
@@ -2248,14 +2248,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(14,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+700 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("TERRA",$nn);
 		}
 		elseif ((int)fetch_achievement(14,$nn)>=5 && (check_achievement(14,$nn)<2)) {
 		done_achievement(14,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+200 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("树形图",$nn);
 		}
 		elseif ((int)fetch_achievement(14,$nn)>=1 && (check_achievement(14,$nn)<1)) {
@@ -2272,14 +2272,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(15,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+700 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("未来战士",$nn);
 		}
 		elseif ((int)fetch_achievement(15,$nn)>=5 && (check_achievement(15,$nn)<2)) {
 		done_achievement(15,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+200 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("素描本",$nn);
 		}
 		elseif ((int)fetch_achievement(15,$nn)>=1 && (check_achievement(15,$nn)<1)) {
@@ -2296,7 +2296,7 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(33,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+522 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("剑圣",$nn);
 		}
 	}
@@ -2308,14 +2308,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(35,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("殴系爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement(35,$nn)>=51 && (check_achievement(35,$nn)<2)) {
 		done_achievement(35,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("热血机师",$nn);
 		}
 		elseif ((int)fetch_achievement(35,$nn)>=1 && (check_achievement(35,$nn)<1)) {
@@ -2332,14 +2332,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(36,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("斩系爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement(36,$nn)>=51 && (check_achievement(36,$nn)<2)) {
 		done_achievement(36,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("苍蓝之光",$nn);
 		}
 		elseif ((int)fetch_achievement(36,$nn)>=1 && (check_achievement(36,$nn)<1)) {
@@ -2356,14 +2356,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(37,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("钥刃大师",$nn);
 		}
 		elseif ((int)fetch_achievement(37,$nn)>=51 && (check_achievement(37,$nn)<2)) {
 		done_achievement(37,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("合二为一",$nn);
 		}
 		elseif ((int)fetch_achievement(37,$nn)>=1 && (check_achievement(37,$nn)<1)) {
@@ -2380,14 +2380,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(38,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("射系爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement(38,$nn)>=51 && (check_achievement(38,$nn)<2)) {
 		done_achievement(37,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("勇闯仙境",$nn);
 		}
 		elseif ((int)fetch_achievement(38,$nn)>=1 && (check_achievement(38,$nn)<1)) {
@@ -2404,14 +2404,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(39,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("重枪爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement(39,$nn)>=51 && (check_achievement(39,$nn)<2)) {
 		done_achievement(39,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("黑洞边缘",$nn);
 		}
 		elseif ((int)fetch_achievement(39,$nn)>=1 && (check_achievement(39,$nn)<1)) {
@@ -2428,14 +2428,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(40,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("决斗者",$nn);
 		}
 		elseif ((int)fetch_achievement(40,$nn)>=51 && (check_achievement(40,$nn)<2)) {
 		done_achievement(40,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("光的道路",$nn);
 		}
 		elseif ((int)fetch_achievement(40,$nn)>=1 && (check_achievement(40,$nn)<1)) {
@@ -2452,14 +2452,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(41,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("聚集的祈愿",$nn);
 		}
 		elseif ((int)fetch_achievement(41,$nn)>=51 && (check_achievement(41,$nn)<2)) {
 		done_achievement(41,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("加速同调",$nn);
 		}
 		elseif ((int)fetch_achievement(41,$nn)>=1 && (check_achievement(41,$nn)<1)) {
@@ -2476,14 +2476,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(42,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("投系爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement(42,$nn)>=51 && (check_achievement(42,$nn)<2)) {
 		done_achievement(42,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("平和之心",$nn);
 		}
 		elseif ((int)fetch_achievement(42,$nn)>=1 && (check_achievement(42,$nn)<1)) {
@@ -2500,14 +2500,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(43,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("爆系爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement(43,$nn)>=51 && (check_achievement(43,$nn)<2)) {
 		done_achievement(43,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("红烧天堂",$nn);
 		}
 		elseif ((int)fetch_achievement(43,$nn)>=1 && (check_achievement(43,$nn)<1)) {
@@ -2524,14 +2524,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(44,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("★啪啪啪★",$nn);
 		}
 		elseif ((int)fetch_achievement(44,$nn)>=51 && (check_achievement(44,$nn)<2)) {
 		done_achievement(44,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("★刷刷刷★",$nn);
 		}
 		elseif ((int)fetch_achievement(44,$nn)>=1 && (check_achievement(44,$nn)<1)) {
@@ -2548,14 +2548,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(45,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("灵系爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement(45,$nn)>=51 && (check_achievement(45,$nn)<2)) {
 		done_achievement(45,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("皇家烈焰",$nn);
 		}
 		elseif ((int)fetch_achievement(45,$nn)>=1 && (check_achievement(45,$nn)<1)) {
@@ -2572,14 +2572,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(46,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("贤者之石",$nn);
 		}
 		elseif ((int)fetch_achievement(46,$nn)>=51 && (check_achievement(46,$nn)<2)) {
 		done_achievement(46,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("五行大师",$nn);
 		}
 		elseif ((int)fetch_achievement(46,$nn)>=1 && (check_achievement(46,$nn)<1)) {
@@ -2596,14 +2596,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(47,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("知人和",$nn);
 		}
 		elseif ((int)fetch_achievement(47,$nn)>=51 && (check_achievement(47,$nn)<2)) {
 		done_achievement(47,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("知地利",$nn);
 		}
 		elseif ((int)fetch_achievement(47,$nn)>=1 && (check_achievement(47,$nn)<1)) {
@@ -2620,14 +2620,14 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(48,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+350 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("混沌的深渊",$nn);
 		}
 		elseif ((int)fetch_achievement(48,$nn)>=51 && (check_achievement(48,$nn)<2)) {
 		done_achievement(48,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("混沌爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement(48,$nn)>=1 && (check_achievement(48,$nn)<1)) {
@@ -2644,7 +2644,7 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(49,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+700 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("键·四季赞歌",$nn);
 		}
 		elseif ((int)fetch_achievement(49,$nn)>=1 && (check_achievement(49,$nn)<1)) {
@@ -2661,7 +2661,7 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(50,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+700 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("★一发逆转！★",$nn);
 		}
 		elseif ((int)fetch_achievement(50,$nn)>=1 && (check_achievement(50,$nn)<1)) {
@@ -2678,7 +2678,7 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(51,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+700 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("『ＥＸ』",$nn);
 		}
 		elseif ((int)fetch_achievement(51,$nn)>=1 && (check_achievement(51,$nn)<1)) {
@@ -2695,7 +2695,7 @@ function check_mixitem_achievement($nn,$item)
 		done_achievement(52,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+700 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("◎胜利之光◎",$nn);
 		}
 		elseif ((int)fetch_achievement(52,$nn)>=1 && (check_achievement(52,$nn)<1)) {
@@ -2718,7 +2718,7 @@ function check_end_achievement($w,$m)
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+150 WHERE username='".$w."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$w."'" );
 		done_achievement(16,999,$w);
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("生存者",$w);
 		}
 	}
@@ -2730,7 +2730,7 @@ function check_end_achievement($w,$m)
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$w."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+100 WHERE username='".$w."'" );
 		done_achievement(17,999,$w);
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("叶子钦定！",$w);
 		}
 	}
@@ -2742,7 +2742,7 @@ function check_end_achievement($w,$m)
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+500 WHERE username='".$w."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$w."'" );
 		done_achievement(18,999,$w);
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("最后的荣光",$w);
 		}
 	}
@@ -2754,7 +2754,7 @@ function check_end_achievement($w,$m)
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+1000 WHERE username='".$w."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+1000 WHERE username='".$w."'" );
 		done_achievement(19,999,$w);
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("奇迹的篝火",$w);
 		}
 	}
@@ -2773,14 +2773,14 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		done_achievement(2,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("G.D.M",$nn);
 		}
 		elseif ((int)fetch_achievement(2,$nn)>=100 && (check_achievement(2,$nn)<2)) {
 		done_achievement(2,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+500 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("二度打",$nn);
 		}
 		elseif ((int)fetch_achievement(2,$nn)>=10 && (check_achievement(2,$nn)<1)) {
@@ -2798,7 +2798,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 			update_achievement(31,$nn,((int)fetch_achievement(31,$nn))+1);
 			if ((int)fetch_achievement(31,$nn)>=1 && (check_achievement(31,$nn)<999)) {
 				done_achievement(31,999,$nn);
-				include_once GAME_ROOT.'./include/game/titles.func.php';
+				
 				get_title("R.T.S",$nn);
 				get_title("善有善报",$killname);
 				}
@@ -2814,7 +2814,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		if ((strpos($ns2,"LOOP")!==false)||(strpos($ns1,"LOOP")!==false)){
 			if (check_achievement(32,$nn)<999) done_achievement(32,999,$nn);
 			if (check_achievement(32,$killname)<999) done_achievement(32,999,$killname);
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("LOOP",$nn);
 			get_title("LOOP",$killname);
 		}
@@ -2827,14 +2827,14 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		done_achievement(3,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+500 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+15 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("最后一步",$nn);
 		}
 		elseif ((int)fetch_achievement(3,$nn)>=500 && (check_achievement(3,$nn)<2)) {
 		done_achievement(3,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+200 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("黑客",$nn);
 		}
 		elseif ((int)fetch_achievement(3,$nn)>=100 && (check_achievement(3,$nn)<1)) {
@@ -2849,7 +2849,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		update_achievement(4,$nn,((int)fetch_achievement(4,$nn))+1);
 		if ((int)fetch_achievement(4,$nn)>=9 && (check_achievement(4,$nn)<999)) {
 		done_achievement(4,999,$nn);
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("越红者",$nn);
 		}
 		elseif ((int)fetch_achievement(4,$nn)>=1 && (check_achievement(4,$nn)<1)) {
@@ -2864,7 +2864,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		update_achievement(13,$nn,((int)fetch_achievement(13,$nn))+1);
 		if ((int)fetch_achievement(13,$nn)>=3 && (check_achievement(13,$nn)<999)) {
 		done_achievement(13,999,$nn);
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("跨过彩虹",$nn);
 		}
 		elseif ((int)fetch_achievement(13,$nn)>=1 && (check_achievement(13,$nn)<1)) {
@@ -2881,7 +2881,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		done_achievement(20,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+268 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+263 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("寻星者",$nn);
 		}
 	}
@@ -2893,7 +2893,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		done_achievement(21,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+233 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+233 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("寂静洪流",$nn);
 		}
 	}
@@ -2905,7 +2905,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		done_achievement(22,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+2333 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("l33t",$nn);
 		}
 	}
@@ -2917,7 +2917,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		done_achievement(23,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+888 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("赌玉狂魔",$nn);
 		}
 	}
@@ -2929,7 +2929,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		done_achievement(24,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+211 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+299 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("时代眼泪",$nn);
 		}
 	}
@@ -2941,7 +2941,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		done_achievement(25,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+111 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+333 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("卸腿者",$nn);
 		}
 	}
@@ -2953,7 +2953,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		done_achievement(26,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+1 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+111 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("吉祥物",$nn);
 		}
 	}
@@ -2965,7 +2965,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		done_achievement(27,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+500 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("替天行道",$nn);
 		}
 		elseif ((int)fetch_achievement(27,$nn)>=30 && (check_achievement(27,$nn)<2)) {
@@ -2987,14 +2987,14 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		done_achievement(56,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+250 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("除错大师",$nn);
 		}
 		elseif ((int)fetch_achievement(56,$nn)>=180 && (check_achievement(56,$nn)<2)) {
 		done_achievement(56,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("都市传说",$nn);
 		}
 		elseif ((int)fetch_achievement(56,$nn)>=1 && (check_achievement(56,$nn)<1)) {
@@ -3011,14 +3011,14 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		done_achievement(57,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+250 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("暴雷骤雨",$nn);
 		}
 		elseif ((int)fetch_achievement(57,$nn)>=52 && (check_achievement(57,$nn)<2)) {
 		done_achievement(57,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("风驰电掣",$nn);
 		}
 		elseif ((int)fetch_achievement(57,$nn)>=1 && (check_achievement(57,$nn)<1)) {
@@ -3043,7 +3043,7 @@ function check_item_achievement($nn,$i,$ie,$is,$ik,$isk)
 		done_achievement(28,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+250 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("神触",$nn);
 		}
 	}
@@ -3059,14 +3059,14 @@ function check_item_achievement($nn,$i,$ie,$is,$ik,$isk)
 		done_achievement(29,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("补给掠夺者",$nn);
 		}
 		elseif ((int)fetch_achievement(29,$nn)>=142857 && (check_achievement(29,$nn)<2)) {
 		done_achievement(29,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("美食家",$nn);
 		}
 		elseif ((int)fetch_achievement(29,$nn)>=32767 && (check_achievement(29,$nn)<1)) {
@@ -3084,14 +3084,14 @@ function check_item_achievement($nn,$i,$ie,$is,$ik,$isk)
 		done_achievement(30,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("贝爷",$nn);
 		}
 		elseif ((int)fetch_achievement(30,$nn)>=133 && (check_achievement(30,$nn)<2)) {
 		done_achievement(30,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
-		include_once GAME_ROOT.'./include/game/titles.func.php';
+		
 		get_title("神农",$nn);
 		}
 		elseif ((int)fetch_achievement(30,$nn)>=5 && (check_achievement(30,$nn)<1)) {
@@ -3110,21 +3110,21 @@ function check_item_achievement($nn,$i,$ie,$is,$ik,$isk)
 			done_achievement(34,999,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("脚底抹油",$nn);
 			}
 			elseif ((int)fetch_achievement(34,$nn)>=36 && (check_achievement(34,$nn)<2)) {
 			done_achievement(34,2,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits+50 WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("现实主义者",$nn);
 			}
 			elseif ((int)fetch_achievement(34,$nn)>=1 && (check_achievement(34,$nn)<1)) {
 			done_achievement(34,1,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits+10 WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("实用主义者",$nn);
 			}
 	}
@@ -3138,14 +3138,14 @@ function check_item_achievement($nn,$i,$ie,$is,$ik,$isk)
 			done_achievement(53,999,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("无情打钉者",$nn);
 			}
 			elseif ((int)fetch_achievement(53,$nn)>=1777 && (check_achievement(53,$nn)<2)) {
 			done_achievement(53,2,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("棍棒爱好者",$nn);
 			}
 			elseif ((int)fetch_achievement(53,$nn)>=777 && (check_achievement(53,$nn)<1)) {
@@ -3164,14 +3164,14 @@ function check_item_achievement($nn,$i,$ie,$is,$ik,$isk)
 			done_achievement(54,999,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("无情磨刀者",$nn);
 			}
 			elseif ((int)fetch_achievement(54,$nn)>=1777 && (check_achievement(54,$nn)<2)) {
 			done_achievement(54,2,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("磨刀爱好者",$nn);
 			}
 			elseif ((int)fetch_achievement(54,$nn)>=777 && (check_achievement(54,$nn)<1)) {
@@ -3190,14 +3190,14 @@ function check_item_achievement($nn,$i,$ie,$is,$ik,$isk)
 			done_achievement(55,999,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("无情补丁",$nn);
 			}
 			elseif ((int)fetch_achievement(55,$nn)>=1777 && (check_achievement(55,$nn)<2)) {
 			done_achievement(55,2,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
 			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
-			include_once GAME_ROOT.'./include/game/titles.func.php';
+			
 			get_title("补丁爱好者",$nn);
 			}
 			elseif ((int)fetch_achievement(55,$nn)>=777 && (check_achievement(55,$nn)<1)) {

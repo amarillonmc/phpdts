@@ -1,7 +1,7 @@
  <?php
  //require_once './include/common.inc.php';
 
- include_once GAME_ROOT.'./include/game/titles.func.php';
+ 
  
  function sing($sn){
 	global $log,$msg,$now,$pls,$name,$nick,$plsinfo,$hplsinfo,$ss,$mss,$noiseinfo,$arte;
@@ -41,7 +41,7 @@
 		$db->query ( "UPDATE {$tablepre}players SET def=def+30 WHERE `pls` ={$pls} AND hp>0 AND type=0 ");
 		$def+=30;
 		addnoise($sn,'__',$now,$pls,0,0,$sn);
-		addnews($now,'song',get_title_desc($nick).' '.$name,$plsinfo[$pls],$noiseinfo[$sn]);
+		addnews($now,'song',titles_get_desc($nick).' '.$name,$plsinfo[$pls],$noiseinfo[$sn]);
 		return;
 		
 	}elseif ($sn=="Crow Song"){
@@ -57,7 +57,7 @@
 		$db->query ("UPDATE {$tablepre}players SET att=att+30 WHERE `pls`={$pls} AND hp>0 AND type=0");
 		$att+=30;
 		addnoise($sn,'__',$now,$pls,0,0,$sn);
-		addnews($now,'song',get_title_desc($nick).' '.$name,$plsinfo[$pls],$noiseinfo[$sn]);
+		addnews($now,'song',titles_get_desc($nick).' '.$name,$plsinfo[$pls],$noiseinfo[$sn]);
 		return;
 	
 	
@@ -75,7 +75,7 @@
 		$mss=$ss;
 		$rp-=50;
 		addnoise($sn,'__',$now,$pls,0,0,$sn);
-		addnews($now,'song',get_title_desc($nick).' '.$name,$plsinfo[$pls],$noiseinfo[$sn]);
+		addnews($now,'song',titles_get_desc($nick).' '.$name,$plsinfo[$pls],$noiseinfo[$sn]);
 		return;
 	
 	
@@ -94,7 +94,7 @@
 		$db->query ( "UPDATE {$tablepre}players SET weps=wepes=55 WHERE `pls` ={$pls} AND hp>0 AND type=0 ");
 		$db->query ( "UPDATE {$tablepre}players SET wepsk='z' WHERE `pls` ={$pls} AND hp>0 AND type=0 ");
 		addnoise($sn,'__',$now,$pls,0,0,$sn);
-		addnews($now,'song',get_title_desc($nick).' '.$name,$plsinfo[$pls],$noiseinfo[$sn]);
+		addnews($now,'song',titles_get_desc($nick).' '.$name,$plsinfo[$pls],$noiseinfo[$sn]);
 		return;
 	}
 	

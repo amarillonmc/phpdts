@@ -3,14 +3,11 @@
 define('CURSCRIPT', 'user');
 
 require './include/common.inc.php';
-require './include/user.func.php';
-include_once GAME_ROOT.'./include/game/titles.func.php';
+//require './include/user.func.php';
+
 
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
-
-$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$cuser'");
-if(!$db->num_rows($result)) { gexit($_ERROR['login_check'],__file__,__line__); }
-$udata = $db->fetch_array($result);
+if(!$udata) { gexit($_ERROR['login_check'],__file__,__line__); }
 if($udata['password'] != $cpass) { gexit($_ERROR['wrong_pw'], __file__, __line__); }
 if($udata['groupid'] <= 0) { gexit($_ERROR['user_ban'], __file__, __line__); }
 
@@ -105,7 +102,7 @@ if($mode == 'edit') {
 } else {
 	//$ustate = 'edit';
 	extract($udata);
-	$nickinfo = get_title_desc($nick);
+	$nickinfo = titles_get_desc($nick);
 	$iconarray = get_iconlist($icon);
 	$select_icon = $icon;
 	//这里假定player表里有usertitle字段而且储存方式是这样蛋疼的。具体程序虚子你写。

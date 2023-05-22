@@ -173,8 +173,8 @@
 		$db->query ( "INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$now','$lwname','$dpls','$lastword')" );
 
 		//发送news
-		$kname = $pa['type'] ? $pa['name'] : get_title_desc($pa['nick']).' '.$pa['name'];
-		//$dname = $pd['type'] ? $pd['name'] : get_title_desc($pd['nick']).' '.$pd['name'];
+		$kname = $pa['type'] ? $pa['name'] : titles_get_desc($pa['nick']).' '.$pa['name'];
+		//$dname = $pd['type'] ? $pd['name'] : titles_get_desc($pd['nick']).' '.$pd['name'];
 		addnews ($now,'death'.$pd['state'],$dname,$dtype,$kname,$pa['wep_name'],$lastword );
 
 		return $lastword;
@@ -192,7 +192,7 @@
 
 		$revival_flag = 0;
 
-		$dname = $pd['type'] ? $pd['name'] : get_title_desc($pd['nick']).' '.$pd['name'];
+		$dname = $pd['type'] ? $pd['name'] : titles_get_desc($pd['nick']).' '.$pd['name'];
 
 		#光玉雨天气下，提供者有概率复活
 		if (!$revival_flag && $weather == 18 && $gamevars['wth18pid'] == $pd['pid'])

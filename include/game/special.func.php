@@ -5,13 +5,14 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
-include_once GAME_ROOT.'./include/game/titles.func.php';
+
 
 function getword(){
 	global $db,$gtablepre,$tablepre,$name,$motto,$lastword,$killmsg;
-	
-	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$name'");
-	$userinfo = $db->fetch_array($result);
+	global $udata;
+	//$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$name'");
+	//$userinfo = $db->fetch_array($result);
+	$userinfo = $udata;
 	$motto = $userinfo['motto'];
 	$lastword = $userinfo['lastword'];
 	$killmsg = $userinfo['killmsg'];
@@ -20,10 +21,10 @@ function getword(){
 
 function chgword($nmotto,$nlastword,$nkillmsg) {
 	global $db,$gtablepre,$tablepre,$name,$log;
-	
-	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$name'");
-	$userinfo = $db->fetch_array($result);
-
+	global $udata;
+	//$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$name'");
+	//$userinfo = $db->fetch_array($result);
+	$userinfo = $udata;
 //	foreach ( Array('<','>',';',',','\\\'','\\"') as $value ) {
 //		if(strpos($nmotto,$value)!==false){
 //			$nmotto = str_replace ( $value, '', $nmotto );
@@ -323,8 +324,8 @@ function syncro($sb){
 	global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$name,$nick;
 	list($n,$k,$e,$s,$sk,$r)=explode('_',$sb);
 	$itm0=$n;$itmk0=$k;$itme0=$e;$itms0=$s;$itmsk0=$sk;
-	if ($r>0) {addnews($now,'syncmix',get_title_desc($nick).' '.$name,$itm0);}
-	else {addnews($now,'overmix',get_title_desc($nick).' '.$name,$itm0);}
+	if ($r>0) {addnews($now,'syncmix',titles_get_desc($nick).' '.$name,$itm0);}
+	else {addnews($now,'overmix',titles_get_desc($nick).' '.$name,$itm0);}
 			//检查成就
 			include_once GAME_ROOT.'./include/game/achievement.func.php';
 			check_mixitem_achievement_rev($name,$itm0);
