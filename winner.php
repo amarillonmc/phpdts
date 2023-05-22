@@ -41,7 +41,14 @@ if($command == 'info') {
 		else 
 		{
 			$wdata['iconImg'] = $wdata['gd'] == 'f' ? 'f_'.$wdata['icon'].'.gif' : 'm_'.$wdata['icon'].'.gif';
-			$wdata['nickinfo'] = !empty($wdata['nick']) ? titles_get_desc($wdata['nick']) : '';
+			if(!empty($wdata['nick']) && !is_numeric($wdata['nick']))
+			{
+				$wdata['nickinfo'] = titles_get_desc($wdata['nick'],1);
+			}
+			else 
+			{
+				$wdata['nickinfo'] = !empty($wdata['nick']) || $wdata['nick'] == 0 ? titles_get_desc($wdata['nick']) : '';
+			}
 		}
 		$winfo[$wdata['gid']] = $wdata;
 	}

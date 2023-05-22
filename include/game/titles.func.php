@@ -61,8 +61,11 @@ function titles_get_desc($tkey,$mode=0)
 	global $db,$gtablepre,$gamecfg;
 	include config("titles",$gamecfg);
 
+	# 兼容旧显示方式
+	if($mode && !is_numeric($tkey)) $tkey = array_search($tkey,$titles_list);
+
 	$tkey = (int)$tkey;
-	$n = $titles_list[$tkey];
+	$n = $titles_list[$tkey] ?: $tkey;
 
 	if(isset($title_desc[$tkey]))
 	{
