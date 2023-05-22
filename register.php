@@ -4,7 +4,7 @@ define('CURSCRIPT', 'register');
 
 require './include/common.inc.php';
 
-include './include/user.func.php';
+//include './include/user.func.php';
 include './gamedata/banlist.list';
 
 if(isset($cuser) && isset($cpass)){
@@ -39,10 +39,11 @@ if(!isset($cmd)){
 			$groupid = 1;
 			$credits = 0;
 			$password = md5($npass);
-			$nick='参展者';
-			$nicks='参展者';
 			$result = $db->query("INSERT INTO {$gtablepre}users (username,password,groupid,ip,credits,gender,icon,motto,killmsg,lastword) VALUES ('$username', '$password', '$groupid', '$onlineip', '$credits', '$gender', '$icon', '$motto', '$killmsg', '$lastword')");
-			$db->query("UPDATE {$gtablepre}users SET nick='$nick', nicks='$nicks' WHERE username='".$username."'" );
+			$nick = 0;
+			$nicksrev = Array('nicks' => Array(0));
+			$nicksrev = json_encode($nicksrev);
+			$db->query("UPDATE {$gtablepre}users SET nick='$nick',nicksrev='$nicksrev' WHERE username='".$username."'" );
 			if($result){
 				$gamedata['innerHTML']['info'] = $_INFO['reg_success'];
 				$ustate = 'check';

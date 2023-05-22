@@ -39,7 +39,7 @@ function diceroll($dice){
         $nikstatusa = $nikstatuse = 0;
     }
 
-    if($nick =="奇迹的篝火"){
+    if($nick == 69){
         $log .= "你本次骰子的检定结果为：<br><span class=\"red\">$result</span>＼<span class=\"yellow\">$dice</span>！<br>";
     }
     //$log .= "【DEBUG】你本次骰子的检定结果为：<br><span class=\"red\">$result</span>＼<span class=\"yellow\">$dice</span>！<br>";

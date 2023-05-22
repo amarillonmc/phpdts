@@ -37,7 +37,7 @@ if($mode == 'quit') {
 	exit();
 
 }
-include './include/user.func.php';
+//include './include/user.func.php';
 include './gamedata/banlist.list';
 //require GAME_ROOT.'./include/db_'.$database.'.class.php';
 //$db = new dbstuff;

@@ -3,8 +3,8 @@
 define('CURSCRIPT', 'user_profile');
 
 require './include/common.inc.php';
-require './include/user.func.php';
-include_once GAME_ROOT.'./include/game/titles.func.php';
+//require './include/user.func.php';
+
 
 $_REQUEST = gstrfilter($_REQUEST);
 if (empty($_REQUEST["playerID"]))
@@ -32,7 +32,7 @@ else
 }
 
 $iconarray = get_iconlist($icon);
-$nickinfo = get_title_desc($nick);
+$nickinfo = titles_get_desc($nick);
 $select_icon = $icon;
 $winning_rate=$validgames?round($wingames/$validgames*100)."%":'0%';
 

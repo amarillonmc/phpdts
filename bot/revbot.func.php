@@ -52,8 +52,8 @@ function bot_player_valid($vnums)
 			if(!empty($ndata)) $db->array_insert("{$tablepre}players", $ndata);
 			$ids[] = $db->insert_id();
 			# 初始化头衔tooltip
-			include_once GAME_ROOT.'./include/game/titles.func.php';
-			$nickinfo = get_title_desc($nick);
+			
+			$nickinfo = titles_get_desc($nick);
 			addnews($now,'newpc',$nickinfo.' '.$name,"{$sexinfo[$gd]}{$sNo}号",$ip,$nick);
 		}
 		return $ids;
@@ -399,13 +399,13 @@ function bot_check_can_mixitem(&$pa)
 	if(empty($stf['r2']) && isset($stf['r0']) && isset($stf['r1']))
 	{
 		$pa['clbpara']['botstf']['r2'] = 1;
-		addnews($now,'itemmix',get_title_desc($nick).' '.$name,'广域生命探测器');
+		addnews($now,'itemmix',titles_get_desc($nick).' '.$name,'广域生命探测器');
 	}
 
 	if(empty($stf['p3']) && isset($stf['p1']) && isset($stf['p2']))
 	{
 		$pa['clbpara']['botstf']['p3'] = 1;
-		addnews($now,'itemmix',get_title_desc($nick).' '.$name,'移动 PC');
+		addnews($now,'itemmix',titles_get_desc($nick).' '.$name,'移动 PC');
 	}
 
 	if($pa['club'] == 1)

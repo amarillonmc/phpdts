@@ -4,7 +4,7 @@ if (! defined ( 'IN_GAME' )) {
 	exit ( 'Access Denied' );
 }
 
-include_once GAME_ROOT.'./include/game/titles.func.php';
+
 include_once GAME_ROOT.'./include/game/clubslct.func.php';
 
 function itemuse($itmn,&$data=NULL) {
@@ -23,7 +23,7 @@ function itemuse($itmn,&$data=NULL) {
 	}
 	extract($data,EXTR_REFS);
 
-	$nickinfo = get_title_desc($nick);
+	$nickinfo = titles_get_desc($nick);
 
 	if (($itmn < 1 || $itmn > 6) && $itmn != 0 ){
 		$log .= '此道具不存在，请重新选择。';
@@ -868,6 +868,10 @@ function itemuse($itmn,&$data=NULL) {
 	} elseif(strpos ( $itmk, 'p' ) === 0){
 		//你们这帮乱用itmk的都乖乖自觉归类！itmk空间也是有限的！
 		$log.="你打开了<span class=\"yellow\">$itm</span>。<br>";
+
+		$itms--;
+		if($itms <= 0) destory_single_item($data,$itmn,1);
+
 		if(strpos( $itmk, 'ps' ) === 0){//银色盒子
 			include_once config('randomitem',$gamecfg);
 			//1st case of the new diceroll system.
@@ -899,7 +903,7 @@ function itemuse($itmn,&$data=NULL) {
 			}
 		}elseif(strpos( $itmk, 'p0' ) === 0){//新福袋·VOL1
 			// 用$clbpara['opened_pack']记录打开福袋的名称，只要有这个名称，就搞事！
- 			if($clbpara['opened_pack']){
+ 			if(!empty($clbpara['opened_pack'])){
 				$log.="似乎你本轮已经打开过福袋，因此不能再打开更多的福袋！<br>";
 				$db->query("INSERT INTO {$tablepre}shopitem (kind,num,price,area,item,itmk,itme,itms,itmsk) VALUES ('17','1','20','0','$itm','$itmk','$itme','$itms','$itmsk')");
 				$log.="<span class=\"yellow\">$itm</span>从你的手中飞出，向商店的方向飞去。<br>";
@@ -961,16 +965,14 @@ function itemuse($itmn,&$data=NULL) {
 		//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
 		addnews($now,'present',$name,$itm,$in);
-		$itms--;
-		if ($itms <= 0) {
-			$log .= "<span class=\"red\">$itm</span>用光了。<br>";
-			$itm = $itmk = $itmsk = '';
-			$itme = $itms = 0;
-		}
+
 		include_once GAME_ROOT.'./include/game/itemmain.func.php';
 		itemget($data);			
 	} elseif(strpos ( $itmk, 'ygo' ) === 0){
 		$log.="你打开了<span class=\"yellow\">$itm</span>。<br>";
+		$itms--;
+		if($itms <= 0) destory_single_item($data,$itmn,1);
+
 		$file1 = config('box',$gamecfg);
 		$plist1 = openfile($file1);
 		$rand1 = rand(0,count($plist1)-1);
@@ -978,23 +980,14 @@ function itemuse($itmn,&$data=NULL) {
 		//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
 		addnews($now,'present',$nickinfo.' '.$name,$itm,$in);
-		/*$itms1--;
-		if ($itms1 <= 0) {
-			$log .= "<span class=\"red\">$itm</span>用光了。<br>";
-			$itm = $itmk = $itmsk = '';
-			$itme = $itms = 0;
-		}*/
-		// ？？？？？
-		$itms--;
-		if ($itms <= 0) {
-			$log .= "<span class=\"red\">$itm</span>用光了。<br>";
-			$itm = $itmk = $itmsk = '';
-			$itme = $itms = 0;
-		}
+
 		include_once GAME_ROOT.'./include/game/itemmain.func.php';
 		itemget($data);	
 	} elseif(strpos ( $itmk, 'fy' ) === 0){
 		$log.="你打开了<span class=\"yellow\">$itm</span>。<br>";
+		$itms--;
+		if($itms <= 0) destory_single_item($data,$itmn,1);
+
 		$file1 = config('fy',$gamecfg);
 		$plist1 = openfile($file1);
 		$rand1 = rand(0,count($plist1)-1);
@@ -1002,18 +995,7 @@ function itemuse($itmn,&$data=NULL) {
 		//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
 		addnews($now,'present',$nickinfo.' '.$name,$itm,$in);
-		/*$itms1--;
-		if ($itms1 <= 0) {
-			$log .= "<span class=\"red\">$itm</span>用光了。<br>";
-			$itm = $itmk = $itmsk = '';
-			$itme = $itms = 0;
-		}*/
-		$itms--;
-		if ($itms <= 0) {
-			$log .= "<span class=\"red\">$itm</span>用光了。<br>";
-			$itm = $itmk = $itmsk = '';
-			$itme = $itms = 0;
-		}
+
 		include_once GAME_ROOT.'./include/game/itemmain.func.php';
 		itemget($data);	
 	}elseif ($itmk=='U') {

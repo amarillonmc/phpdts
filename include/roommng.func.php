@@ -41,6 +41,13 @@ function roommng_verify_db_game_structure()
 		echo "向users表中添加了字段u_templateid<br>";
 	}
 
+	$result = $db->query("DESCRIBE {$gtablepre}users nicksrev");
+	if(!$db->num_rows($result))
+	{
+		$db->query("ALTER TABLE {$gtablepre}users ADD nicksrev text NOT NULL default '' AFTER nicks");
+		echo "向users表中添加了字段nicksrev<br>";
+	}
+
 	$result = $db->query("SHOW INDEX FROM {$gtablepre}game");
 	$gr = $db->fetch_array($result);
 	if($gr['Column_name'] != 'groomid')

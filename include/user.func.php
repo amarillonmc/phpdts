@@ -115,4 +115,29 @@ function get_utitlelist(){//称号
 	}
 	return $utlist;
 }
+
+# 通过username获取指定用户数据
+function fetch_userdata_by_username($n)
+{
+	global $db,$gtablepre;
+	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$n'");
+	if(!$db->num_rows($result)) return NULL;
+	$data = $db->fetch_array($result);
+
+	$data = format_userdata($data);
+
+	return $data;
+}
+
+# 格式化从数据库中获取到的用户数据
+function format_userdata($data)
+{
+	$data['achrev'] = get_clbpara($data['achrev']);
+	$data['nicksrev'] = get_clbpara($data['nicksrev']);
+    return $data;
+}
+
+# 将用户数据格式化后保存回数据库
+
+
 ?>

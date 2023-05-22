@@ -3,7 +3,7 @@
 define('CURSCRIPT', 'winner');
 
 require './include/common.inc.php';
-include_once GAME_ROOT.'./include/game/titles.func.php';
+
 
 if(!isset($command)){$command = 'ref';}
 if($command == 'info') {
@@ -41,7 +41,7 @@ if($command == 'info') {
 		else 
 		{
 			$wdata['iconImg'] = $wdata['gd'] == 'f' ? 'f_'.$wdata['icon'].'.gif' : 'm_'.$wdata['icon'].'.gif';
-			$wdata['nickinfo'] = !empty($wdata['nick']) ? get_title_desc($wdata['nick']) : '';
+			$wdata['nickinfo'] = !empty($wdata['nick']) ? titles_get_desc($wdata['nick']) : '';
 		}
 		$winfo[$wdata['gid']] = $wdata;
 	}

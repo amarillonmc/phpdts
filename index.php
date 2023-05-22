@@ -25,9 +25,7 @@ if(!empty($roomact))
 {
 	$rindex = Array();
 	if(!$cuser||!$cpass) {$rerror = 'no_login'; goto roommng_flag; }
-	$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$cuser'");
-	if(!$db->num_rows($result)) {$rerror = 'login_check'; goto roommng_flag;}
-	$udata = $db->fetch_array($result);
+	if(!$udata) {$rerror = 'login_check'; goto roommng_flag;}
 	if($udata['password'] != $cpass) {$rerror = 'wrong_pw'; goto roommng_flag;}
 	if($udata['groupid'] <= 0) {$rerror = 'user_ban'; goto roommng_flag;}
 

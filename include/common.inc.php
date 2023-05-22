@@ -11,6 +11,7 @@ if(version_compare(PHP_VERSION, '4.3.0', '<')) {
 }
 require GAME_ROOT.'./include/global.func.php';
 require GAME_ROOT.'./include/system.func.php';
+require GAME_ROOT.'./include/user.func.php';
 error_reporting(E_ALL);
 set_error_handler('gameerrorhandler');
 $magic_quotes_gpc = false;
@@ -49,6 +50,7 @@ require GAME_ROOT.'./include/resources.func.php';
 require GAME_ROOT.'./include/roommng.func.php';
 require GAME_ROOT.'./include/game/revclubskills.func.php';
 require GAME_ROOT.'./include/game/dice.func.php';
+require GAME_ROOT.'./include/game/titles.func.php';
 require config('resources',$gamecfg);
 require config('gamecfg',$gamecfg);
 require config('combatcfg',$gamecfg);
@@ -56,6 +58,7 @@ require config('clubskills',$gamecfg);
 require config('dialogue',$gamecfg);
 require config('audio',$gamecfg);
 require config('tooltip',$gamecfg);
+require config('titles',$gamecfg);
 
 $gtablepre = $tablepre;
 
@@ -73,11 +76,8 @@ while($roominfo = $db->fetch_array($result))
 	$roomlist[$roominfo['groomid']] = $roominfo;
 }
 
-if($cuser)
-{
-	$tr = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$cuser'");
-	$udata = $db->fetch_array($tr);
-}
+if($cuser) $udata = fetch_userdata_by_username($cuser);
+
 $groomid = isset($udata['roomid']) ? $udata['roomid'] : 0;
 
 if(!empty($groomid))

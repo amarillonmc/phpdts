@@ -12,7 +12,7 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
-include_once GAME_ROOT.'./include/game/titles.func.php';
+
 
 # 计算发现陷阱后的“触发率”
 function calc_real_trap_obbs($pa,$trpnum)
@@ -214,7 +214,7 @@ function trap(&$data=NULL){
 
 			if($playerflag)
 			{
-				addnews($now,'trap',get_title_desc($nick).' '.$name,$trname,$itm0);
+				addnews($now,'trap',titles_get_desc($nick).' '.$name,$trname,$itm0);
 			}
 			$log .= "糟糕，你触发了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>！受到<span class=\"dmg\">$damage</span>点伤害！<br>";
 
@@ -295,7 +295,7 @@ function trap(&$data=NULL){
 			# logsave
 			if($playerflag)
 			{
-				addnews($now,'trapdef',get_title_desc($nick).' '.$name,$trname,$itm0);
+				addnews($now,'trapdef',titles_get_desc($nick).' '.$name,$trname,$itm0);
 				if(!$selflag)
 				{
 					$w_log = "<span class=\"yellow\">{$name}触发了你设置的陷阱{$itm0}，但是没有受到任何伤害！</span><br>";
@@ -330,7 +330,7 @@ function trap(&$data=NULL){
 		# logsave
 		if($playerflag && !$selflag)
 		{
-			addnews($now,'trapmiss',get_title_desc($nick).' '.$name,$trname,$itm0);
+			addnews($now,'trapmiss',titles_get_desc($nick).' '.$name,$trname,$itm0);
 			$w_log = "<span class=\"yellow\">{$name}回避了你设置的陷阱{$itm0}！</span><br>";
 			logsave ( $itmsk0, $now, $w_log ,'b');
 		}
@@ -808,7 +808,7 @@ function itemmix($mlist, $itemselect=-1) {
 			$isntove=true;
 			if ($isoverlay==true){
 				$log.="<span class=\"red\">超量失败！所有素材消失！说明写这段代码的人还是一个有良知，明是非的中国人！</span><br>";
-				addnews($now,'mixfail',get_title_desc($nick).' '.$name,$itm0);
+				addnews($now,'mixfail',titles_get_desc($nick).' '.$name,$itm0);
 				foreach($mlist as $val){
 					${'itm'.$val} = ${'itmk'.$val} = ${'itmsk'.$val} = '';
 					${'itme'.$val} = ${'itms'.$val} = 0;
@@ -823,7 +823,7 @@ function itemmix($mlist, $itemselect=-1) {
 		if ($isoverlay==true){
 			if ((strlen(${'itmk'.$val})<4)||((substr(${'itmk'.$val},2,2)!=$ostar)&&($ostar!=0))){
 				$log.="<span class=\"red\">超量失败！所有素材消失！说明写这段代码的人还是一个有良知，明是非的中国人！</span><br>";
-				addnews($now,'mixfail',get_title_desc($nick).' '.$name,$itm0);
+				addnews($now,'mixfail',titles_get_desc($nick).' '.$name,$itm0);
 				foreach($mlist as $val){
 					${'itm'.$val} = ${'itmk'.$val} = ${'itmsk'.$val} = '';
 					${'itme'.$val} = ${'itms'.$val} = 0;
@@ -836,7 +836,7 @@ function itemmix($mlist, $itemselect=-1) {
 			if ((strlen(${'itmk'.$val})>=4)&&(strpos(${'itmsk'.$val},'J')!==false)){
 				if (substr(${'itmk'.$val},2,2)!=$ostar){
 					$log.="<span class=\"red\">超量失败！所有素材消失！说明写这段代码的人还是一个有良知，明是非的中国人！</span><br>";
-					addnews($now,'mixfail',get_title_desc($nick).' '.$name,$itm0);
+					addnews($now,'mixfail',titles_get_desc($nick).' '.$name,$itm0);
 					foreach($mlist as $val){
 						${'itm'.$val} = ${'itmk'.$val} = ${'itmsk'.$val} = '';
 						${'itme'.$val} = ${'itms'.$val} = 0;
@@ -850,7 +850,7 @@ function itemmix($mlist, $itemselect=-1) {
 		if ($issyncro==true){
 			if ((strlen(${'itmk'.$val})<4)&&($isntsyn==false)){
 				$log.="<span class=\"red\">同调失败！所有素材消失！真是大快人心啊！</span><br>";
-				addnews($now,'mixfail',get_title_desc($nick).' '.$name,$itm0);
+				addnews($now,'mixfail',titles_get_desc($nick).' '.$name,$itm0);
 				foreach($mlist as $val){
 					${'itm'.$val} = ${'itmk'.$val} = ${'itmsk'.$val} = '';
 					${'itme'.$val} = ${'itms'.$val} = 0;
@@ -859,7 +859,7 @@ function itemmix($mlist, $itemselect=-1) {
 			}
 			if (strpos(${'itmsk'.$val},'s')!==false){
 				$log.="<span class=\"red\">同调失败！所有素材消失！真是大快人心啊！</span><br>";
-				addnews($now,'mixfail',get_title_desc($nick).' '.$name,$itm0);
+				addnews($now,'mixfail',titles_get_desc($nick).' '.$name,$itm0);
 				foreach($mlist as $val){
 					${'itm'.$val} = ${'itmk'.$val} = ${'itmsk'.$val} = '';
 					${'itme'.$val} = ${'itms'.$val} = 0;
@@ -877,7 +877,7 @@ function itemmix($mlist, $itemselect=-1) {
 					continue;
 				}else{
 					$log.="<span class=\"red\">同调失败！所有素材消失！真是大快人心啊！</span><br>";
-					addnews($now,'mixfail',get_title_desc($nick).' '.$name,$itm0);
+					addnews($now,'mixfail',titles_get_desc($nick).' '.$name,$itm0);
 					foreach($mlist as $val){
 						${'itm'.$val} = ${'itmk'.$val} = ${'itmsk'.$val} = '';
 						${'itme'.$val} = ${'itms'.$val} = 0;
@@ -917,7 +917,7 @@ function itemmix($mlist, $itemselect=-1) {
 				${'itm'.$val} = ${'itmk'.$val} = ${'itmsk'.$val} = '';
 				${'itme'.$val} = ${'itms'.$val} = 0;
 			}
-			addnews($now,'mixfail',get_title_desc($nick).' '.$name,$itm0);
+			addnews($now,'mixfail',titles_get_desc($nick).' '.$name,$itm0);
 			return;
 		}
 		if ($itemselect==-1)
@@ -985,7 +985,7 @@ function itemmix($mlist, $itemselect=-1) {
 				${'itm'.$val} = ${'itmk'.$val} = ${'itmsk'.$val} = '';
 				${'itme'.$val} = ${'itms'.$val} = 0;
 			}
-			addnews($now,'mixfail',get_title_desc($nick).' '.$name,$itm0);
+			addnews($now,'mixfail',titles_get_desc($nick).' '.$name,$itm0);
 			return;
 		}
 		if ($itemselect==-1)
@@ -1059,7 +1059,7 @@ function itemmix($mlist, $itemselect=-1) {
 		list($itm0,$itmk0,$itme0,$itms0,$itmsk0) = $minfo['result'];
 		$log .= "<span class=\"yellow\">$itmstr</span>合成了<span class=\"yellow\">{$minfo['result'][0]}</span><br>";
 		//var_dump($minfo['result'][0]);
-		addnews($now,'itemmix',get_title_desc($nick).' '.$name,$itm0);
+		addnews($now,'itemmix',titles_get_desc($nick).' '.$name,$itm0);
 		//if($club == 5) { $wd += 2; }
 		//else { $wd+=1; }
 		$wd+=1;
@@ -1463,6 +1463,8 @@ function change_subwep($s=2,&$data=NULL)
 # 销毁指定装备
 function destory_single_equip(&$pa,$equip)
 {
+	global $log;
+	
 	$equip_list = get_equip_list();
 
 	if(in_array($equip,$equip_list))
@@ -1473,7 +1475,8 @@ function destory_single_equip(&$pa,$equip)
 	}
 	else 
 	{
-		return "传入了非法的装备位名。";
+		$log .= "传入了非法的道具位名。";
+		return;
 	}
 	return;
 }
@@ -1483,7 +1486,7 @@ function destory_single_item(&$pa,$i,$costlog=0)
 {
 	global $log;
 
-	$item_list = range(1,6);
+	$item_list = range(0,6);
 
 	if(in_array($i,$item_list))
 	{
@@ -1496,7 +1499,8 @@ function destory_single_item(&$pa,$i,$costlog=0)
 	}
 	else 
 	{
-		return "传入了非法的道具位名。";
+		$log .= "传入了非法的道具位名。";
+		return;
 	}
 	return;
 }

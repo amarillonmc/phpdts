@@ -65,6 +65,7 @@ CREATE TABLE bra_users (
   `daily` varchar(255) NOT NULL DEFAULT '',
   `nick` text NOT NULL,
   `nicks` text NOT NULL,
+  `nicksrev` text NOT NULL default '',
   `validgames` smallint(5) unsigned NOT NULL DEFAULT '0',
   `wingames` smallint(5) unsigned NOT NULL DEFAULT '0',
   `gender` char(1) NOT NULL DEFAULT '0',

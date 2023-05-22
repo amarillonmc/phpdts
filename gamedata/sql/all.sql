@@ -191,6 +191,7 @@ CREATE TABLE `acbra2_players` (
   achievement text NOT NULL default '',
   nick text NOT NULL default '',
   nicks text NOT NULL default '',
+  nicksrev text NOT NULL default '',
   skillpoint smallint unsigned NOT NULL default '0',
   skills smallint unsigned NOT NULL default '0',
   cdsec int(10) unsigned NOT NULL default '0',

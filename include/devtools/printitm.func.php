@@ -1,22 +1,8 @@
 <?php
 
-define('CURSCRIPT', 'sp_ilist');
-
-require './include/common.inc.php';
-
-if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
-$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$cuser'");
-if(!$db->num_rows($result)) { gexit($_ERROR['login_check'],__file__,__line__); }
-$udata = $db->fetch_array($result);
-if($udata['password'] != $cpass) { gexit($_ERROR['wrong_pw'], __file__, __line__); }
-elseif(($udata['groupid'] <= 1)&&($cuser!==$gamefounder)) { gexit($_ERROR['no_admin'], __file__, __line__); }
-
-//初始化道具名词库
-get_itm_namelist();
-
-function get_itm_namelist()
+function print_itm_namelist()
 {
-	global $checkstr,$gamecfg;
+	global $checkstr,$gamecfg,$exit;
 	$in_file = config('itmlist',$gamecfg);
 	if(!file_exists($in_file))
 	{
@@ -195,11 +181,11 @@ function get_itm_namelist()
 		$cont .= '$item_namelist = ' . var_export($iarr,1).";\r\n?>";
 		writeover($in_file, $cont);
 		chmod($in_file,0777);
-		echo "成功生成了道具名列表。<br>";
+		echo "成功生成了道具名列表。<br>".$exit;
 	}
 	else 
 	{
-		echo "道具名列表已存在，如需要重新生成，请删除{$in_file}后再次打开本页面。<br>";
+		echo "道具名列表已存在，如需要重新生成，请删除{$in_file}后再次打开本页面。<br>".$exit;
 	}
 }
 

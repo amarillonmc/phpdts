@@ -272,8 +272,8 @@ function senditem(){
 				$log .= "你将<span class=\"yellow\">{$edata['itm'.$i]}</span>送给了<span class=\"yellow\">$w_name</span>。<br>";
 				$w_log = "<span class=\"yellow\">$name</span>将<span class=\"yellow\">{$edata['itm'.$i]}</span>送给了你。";
 				if(!$w_type){logsave($w_pid,$now,$w_log,'t');}
-				include_once GAME_ROOT.'./include/game/titles.func.php';
-				addnews($now,'senditem',get_title_desc($nick).' '.$name,$w_name,$itm);
+				
+				addnews($now,'senditem',titles_get_desc($nick).' '.$name,$w_name,$itm);
 				//w_save($w_pid);
 				player_save($edata);
 				$itm = $itmk = $itmsk = '';
