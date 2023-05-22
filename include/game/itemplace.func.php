@@ -401,14 +401,14 @@ function get_item_place($which)
 	//NPC掉落
 	$result .= get_item_npcdrop($which);
 	//头衔附赠
-	global $title_valid;
+	global $title_valid,$titles_list;
 	foreach($title_valid as $tv => $tvarr)
 	{
 		foreach($tvarr as $tvkey => $tvitm)
 		{
 			if(in_array($tvkey,array('wep','arb','arh','ara','arf','art','itm1','itm2','itm3','itm4','itm5','itm6')) && ($which == $tvitm))
 			{
-				$result.="头衔【{$tv}】的入场奖励 \r";
+				$result.="头衔【{$titles_list[$tv]}】的入场奖励 \r";
 				break;
 			}
 		}

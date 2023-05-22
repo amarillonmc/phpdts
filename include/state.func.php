@@ -280,7 +280,7 @@
 			//死者是玩家，增加击杀数并保存系统状况。
 			$pa['killnum'] ++;
 			$alivenum --;
-			if(!empty($last)) $log .= "<span class='evergreen'>你用尽最后的力气喊道：“".$last."”</span><br>";
+			if(!empty($last)) $log .= "<span class='evergreen'>{$pd['nm']}用尽最后的力气喊道：“".$last."”</span><br>";
 		}
 		else 
 		{
