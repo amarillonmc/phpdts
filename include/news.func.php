@@ -33,7 +33,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		'newpc' => 'd',
 		'hack' => 'b',
 		'hack2' => 'b',
-		'itemmix' => 'c',
+		'itemmix' => 'd',
 		'syncmix' => 'c',
 		'overmix' => 'c',
 		'senditem' => 'd',
