@@ -392,7 +392,6 @@
       "elements" => $result,
       "hint" => emix_init_elements_info($pdata),
       "max" => emix_calc_maxenum(),
-      "test" => $elements_info,
     );
   }
   echo (json_encode(array(
@@ -789,6 +788,5 @@
     ),
     /** 行动日志 */
     "actionLog" => $log,
-    "temp" => $mode,
   )));
 ?>
