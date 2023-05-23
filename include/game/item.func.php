@@ -23,8 +23,6 @@ function itemuse($itmn,&$data=NULL) {
 	}
 	extract($data,EXTR_REFS);
 
-	$nickinfo = titles_get_desc($nick);
-
 	if (($itmn < 1 || $itmn > 6) && $itmn != 0 ){
 		$log .= '此道具不存在，请重新选择。';
 		$mode = 'command';
@@ -286,12 +284,12 @@ function itemuse($itmn,&$data=NULL) {
 			$result = $db->query ( "SELECT * FROM {$tablepre}players WHERE pid='$itmsk'" );
 			$wdata = $db->fetch_array ( $result );
 			$log .= "糟糕，<span class=\"yellow\">$itm</span>中被<span class=\"yellow\">{$wdata['name']}</span>掺入了毒药！你受到了<span class=\"dmg\">$damage</span>点伤害！<br>";
-			addnews ( $now, 'poison', $nickinfo.' '.$name, $wdata ['name'], $itm );
+			addnews ( $now, 'poison', $name, $wdata ['name'], $itm , $nick);
 		} else {
 			$log .= "糟糕，<span class=\"yellow\">$itm</span>有毒！你受到了<span class=\"dmg\">$damage</span>点伤害！<br>";
 		}
 		if ($hp <= 0) {
-			if ($itmsk) {
+			if ($itmsk && is_numeric($itmsk)) {
 				$bid = $itmsk;
 				$result = $db->query ( "SELECT * FROM {$tablepre}players WHERE pid='$itmsk'" );
 				$edata = $db->fetch_array ( $result );
@@ -676,7 +674,7 @@ function itemuse($itmn,&$data=NULL) {
 				if($flag)
 				{
 					$log.="哇！没想到这本书里竟然介绍了<span class='yellow'>「{$cskills[$itmsk]['name']}」</span>的原理！<br>获得了技能<span class='yellow'>「{$cskills[$itmsk]['name']}」</span>！<br>你心满意足地把<span class='red'>{$itm}</span>吃进了肚里。<br>";
-					addnews($now,'getsk_'.$itmsk,$name,$itm);
+					addnews($now,'getsk_'.$itmsk,$name,$itm,$nick);
 				}
 				else 
 				{
@@ -978,7 +976,7 @@ function itemuse($itmn,&$data=NULL) {
 		}		
 		//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
-		addnews($now,'present',$name,$oitm,$in);
+		addnews($now,'present',$name,$oitm,$in,$nick);
 
 		include_once GAME_ROOT.'./include/game/itemmain.func.php';
 		itemget($data);			
@@ -993,7 +991,7 @@ function itemuse($itmn,&$data=NULL) {
 		list($in,$ik,$ie,$is,$isk) = explode(',',$plist1[$rand1]);
 		//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
-		addnews($now,'present',$nickinfo.' '.$name,$oitm,$in);
+		addnews($now,'present',$name,$oitm,$in,$nick);
 
 		include_once GAME_ROOT.'./include/game/itemmain.func.php';
 		itemget($data);	
@@ -1008,7 +1006,7 @@ function itemuse($itmn,&$data=NULL) {
 		list($in,$ik,$ie,$is,$isk) = explode(',',$plist1[$rand1]);
 		//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
-		addnews($now,'present',$nickinfo.' '.$name,$oitm,$in);
+		addnews($now,'present',$name,$oitm,$in,$nick);
 
 		include_once GAME_ROOT.'./include/game/itemmain.func.php';
 		itemget($data);	
@@ -1065,7 +1063,7 @@ function itemuse($itmn,&$data=NULL) {
 					}				
 					$val['pls'] = $npls;$npls = $plsinfo[$npls];
 					$log .= "<span class=\"yellow\">{$key}</span>响应道具号召，移动到了<span class=\"yellow\">{$npls}</span>。<br>";
-					addnews($now,'npcmove',$name,$key);
+					addnews($now,'npcmove',$name,$key,$nick);
 				}
 				$db->multi_update("{$tablepre}players",$ndata,'pid');
 				if($itms != $nosta){$itms --;}
@@ -1220,7 +1218,7 @@ function itemuse($itmn,&$data=NULL) {
 			$tm = $now - $corpseprotect;//尸体保护
 			$db->query ( "UPDATE {$tablepre}players SET weps='0',arbs='0',arhs='0',aras='0',arfs='0',arts='0',itms0='0',itms1='0',itms2='0',itms3='0',itms4='0',itms5='0',itms6='0',money='0' WHERE hp <= 0 AND endtime <= $tm" );
 			$cnum = $db->affected_rows ();
-			addnews ( $now, 'corpseclear', $nickinfo.' '.$name, $cnum );
+			addnews ( $now, 'corpseclear', $name, $cnum ,$nick);
 			$log .= "使用了<span class=\"yellow\">$itm</span>。<br>突然刮起了一阵怪风，吹走了地上的{$cnum}具尸体！<br>";
 			$itms --; $isk = $cnum;
 			
@@ -1231,12 +1229,12 @@ function itemuse($itmn,&$data=NULL) {
 				$weather = rand ( 10, 13 );
 				include_once GAME_ROOT . './include/system.func.php';
 				save_gameinfo ();
-				addnews ( $now, 'wthchange', $name, $weather );
+				addnews ( $now, 'wthchange', $name, $weather ,$nick);
 				$log .= "你转动了几下天候棒。<br>天气突然转变成了<span class=\"red\">$wthinfo[$weather]</span>！<br>";
 			}
 			else 
 			{
-				addnews ( $now, 'wthfail', $name, $weather );
+				addnews ( $now, 'wthfail', $name, $weather ,$nick);
 				$log .= "你转动了几下天候棒。<br>但天气并未发生改变！<br>";
 			}
 			$itms --;
@@ -1256,7 +1254,7 @@ function itemuse($itmn,&$data=NULL) {
 			}
 			$log .= "使用了<span class='yellow'>天然呆四面的奖赏</span>。<br>";
 			$log .= "你召唤了<span class='lime'>天然呆四面</span>对你的武器进行改造！<br>";
-			addnews ( $now, 'newwep', $name, $itm, $wep );
+			addnews ( $now, 'newwep', $name, $itm, $wep ,$nick);
 			$dice=rand(0,99);
 			if ($dice<70)
 			{
@@ -1316,7 +1314,7 @@ function itemuse($itmn,&$data=NULL) {
 				$kind = "提高了{$wep}的<span class=\"yellow\">攻击力</span>！";
 			}
 			$log .= "你使用了<span class=\"yellow\">$itm</span>，{$kind}";
-			addnews ( $now, 'newwep', $nickinfo.' '.$name, $itm, $wep );
+			addnews ( $now, 'newwep', $name, $itm, $wep ,$nick);
 			if (strpos ( $wep, '-改' ) === false) {
 				$wep = $wep . '-改';
 			}
@@ -1469,7 +1467,7 @@ function itemuse($itmn,&$data=NULL) {
 				$wp = $wk = $wg = $wc = $wd = $wf = 8010;
 				$att = $def = 13337;
 				changeclub(15,$data);
-				addnews ( $now, 'suisidefail',$nickinfo.' '.$name );
+				addnews ( $now, 'suisidefail',$name,$nick);
 				$itm = $itmk = $itmsk = '';
 				$itme = $itms = 0;
 			} else {
@@ -1555,7 +1553,7 @@ function itemuse($itmn,&$data=NULL) {
 				death ( 'SCP', '', 0, $itm );
 			} else {
 				changeclub(17,$data);
-				addnews ( $now, 'notworthit', $nickinfo.' '.$name );
+				addnews ( $now, 'notworthit',$name,$nick);
 			}
 			$itms --;
 			if($itms <= 0){
@@ -1569,7 +1567,7 @@ function itemuse($itmn,&$data=NULL) {
 			addnpc ( 7, 0,1);
 			addnpc ( 7, 1,1);
 			addnpc ( 7, 2,1);
-			addnews ($now , 'secphase',$nickinfo.' '.$name);
+			addnews ($now,'secphase',$name,$nick);
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == '破灭之诗') {
@@ -1584,19 +1582,19 @@ function itemuse($itmn,&$data=NULL) {
 			include_once GAME_ROOT . './include/game/item2.func.php';
 			$log .= '世界响应着这旋律，产生了异变……<br>';
 			wthchange( $itm,$itmsk);
-			addnews ($now , 'thiphase',$nickinfo.' '.$name);
+			addnews ($now,'thiphase',$name,$nick);
 			$hack = 1;
 			$gamevars['apis'] = $gamevars['api'] = 5;
 			$log .= '因为破灭之歌的作用，全部锁定被打破了！<br>';
 			movehtm();
-			addnews($now,'hack2',$nickinfo.' '.$name);
+			addnews($now,'hack2',$name,$nick);
 			save_gameinfo();
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == '黑色碎片') {
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '你已经呼唤了一个未知的存在，现在寻找并击败她，<br>并且搜寻她的游戏解除钥匙吧！<br>';
-			addnews ($now , 'dfphase', $nickinfo.' '.$name);
+			addnews ($now,'dfphase',$name,$nick);
 			addnpc ( 12, 0,1);
 			
 			$itm = $itmk = $itmsk = '';
@@ -1609,7 +1607,7 @@ function itemuse($itmn,&$data=NULL) {
 			addnpc ( 2, 1, 4);
 			addnpc ( 2, 2, 4);
 			addnpc ( 2, 3, 4);
-			addnews ($now , 'key0', $name);						
+			addnews ($now , 'key0', $name,$nick);						
 			$itms --;
 			if($itms <= 0) destory_single_item($data,$itmn,1);
 		} elseif ($itm == '✦NPC钥匙·一阶段') {
@@ -1626,7 +1624,7 @@ function itemuse($itmn,&$data=NULL) {
 			addnpc ( 13, 0,1);
 			addnpc ( 13, 1,1);
 			addnpc ( 13, 2,1);
-			addnews ($now , 'key1', $name);						
+			addnews ($now , 'key1', $name,$nick);						
 			$itms --;
 			if($itms <= 0){
 				$log .= "<span class=\"red\">$itm</span>用光了。<br>";
@@ -1646,7 +1644,7 @@ function itemuse($itmn,&$data=NULL) {
 			addnpc ( 6, 0,1);
 			//假蓝凝
 			addnpc ( 9, 0,1);
-			addnews ($now , 'key2', $name);						
+			addnews ($now , 'key2', $name,$nick);						
 			$itms --;
 			if($itms <= 0){
 				$log .= "<span class=\"red\">$itm</span>用光了。<br>";
@@ -1669,7 +1667,7 @@ function itemuse($itmn,&$data=NULL) {
 			addnpc ( 92, 2,10);
 			addnpc ( 92, 3,10);
 			addnpc ( 92, 4,10);
-			addnews ($now , 'key3', $name);						
+			addnews ($now , 'key3', $name,$nick);						
 			$itms --;
 			if($itms <= 0){
 				$log .= "<span class=\"red\">$itm</span>用光了。<br>";
@@ -1730,7 +1728,7 @@ function itemuse($itmn,&$data=NULL) {
 				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｅ】','','看起来有搅局的人出现了，我们被全扔去了【FARGO前基地】')");
 				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｐ】','','唔……这里是【试炼】之地呢。')");
 			}
-			addnews ($now , 'fsmove', $name, '', $pls);
+			addnews ($now , 'fsmove', $name, '', $pls,$nick);
 			//销毁物品
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;			
@@ -1744,7 +1742,7 @@ function itemuse($itmn,&$data=NULL) {
 			$log .= '你使用了种火聚集装置。<br>地图上全部种火被移动到了你所在的位置！<br>';
 			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｅ】','','看起来有搅局的人出现了，我们被什么玩家全体移动了位置呢。')");
 			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｐ】','','看一下「游戏状况」，来确认一下吧！')");			
-			addnews ($now , 'fsmove', $name, '', $pls);
+			addnews ($now , 'fsmove', $name, '', $pls,$nick);
 			//销毁物品
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;		
@@ -1758,7 +1756,7 @@ function itemuse($itmn,&$data=NULL) {
 			$log .= '你使用了种火聚集装置。<br>地图上全部种火被移动到了你所在的位置！<br>';
 			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｅ】','','听到了……')");
 			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【Ｐ】','','…………召唤…………')");			
-			addnews ($now , 'fsmove', $name, '', $pls);
+			addnews ($now , 'fsmove', $name, '', $pls,$nick);
 		} elseif ($itm == '镣铐的碎片') {
 //			include_once GAME_ROOT . './include/system.func.php';
 //			$log .= '呜哦，看起来你闯了大祸……<br>请自己去收拾残局！<br>';
@@ -1844,7 +1842,7 @@ function itemuse($itmn,&$data=NULL) {
 			$log .= '你拿起了这个球状物体，重重地向天空抛去！<br>地图上空出现了红杀组织的龙虎徽标！<br>';
 			addnpc(19,0,1);
 			addnpc(19,1,1);
-			addnews ($now , 'keyuu', $name, '', $pls);
+			addnews ($now , 'keyuu', $name, '', $pls,$nick);
 			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【红暮】','','切，真是少见的要求，那么我会在【无月之影】等着你们的挑战！')");
 			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【蓝凝】','','英雄就该姗姗来迟，我会和姐姐一起迎接你们！')");
 			//销毁物品
@@ -1946,7 +1944,7 @@ function itemuse($itmn,&$data=NULL) {
 				$wp = $wk = $wg = $wc = $wd = $wf = 8010;
 				$att = $def = 13337;
 				changeclub(15,$data);
-				addnews ( $now, 'suisidefail',$nickinfo.' '.$name );
+				addnews ( $now, 'suisidefail',$name ,$nick);
 			}
 			elseif ($itme == 17 || $itme > 22){ //状态机社团以及不存在的社团
 				$log .="但是什么都没有发生！";
@@ -2009,7 +2007,7 @@ function itemuse($itmn,&$data=NULL) {
 			$wp = $wk = $wg = $wc = $wd = $wf = 8010;
 			$att = $def = 13337;
 			//$club = 15; 因为是神力嘛！↓但是下面这个还是要适用的。
-			addnews ( $now, 'suisidefail',$nickinfo.' '.$name );
+			addnews ( $now, 'suisidefail',$name,$nick);
 			//销毁物品
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;

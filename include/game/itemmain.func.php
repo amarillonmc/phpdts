@@ -214,7 +214,7 @@ function trap(&$data=NULL){
 
 			if($playerflag)
 			{
-				addnews($now,'trap',titles_get_desc($nick).' '.$name,$trname,$itm0);
+				addnews($now,'trap',$name,$trname,$itm0,$nick);
 			}
 			$log .= "糟糕，你触发了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>！受到<span class=\"dmg\">$damage</span>点伤害！<br>";
 
@@ -295,7 +295,7 @@ function trap(&$data=NULL){
 			# logsave
 			if($playerflag)
 			{
-				addnews($now,'trapdef',titles_get_desc($nick).' '.$name,$trname,$itm0);
+				addnews($now,'trapdef',$name,$trname,$itm0,$nick);
 				if(!$selflag)
 				{
 					$w_log = "<span class=\"yellow\">{$name}触发了你设置的陷阱{$itm0}，但是没有受到任何伤害！</span><br>";
@@ -330,7 +330,7 @@ function trap(&$data=NULL){
 		# logsave
 		if($playerflag && !$selflag)
 		{
-			addnews($now,'trapmiss',titles_get_desc($nick).' '.$name,$trname,$itm0);
+			addnews($now,'trapmiss',$name,$trname,$itm0,$nick);
 			$w_log = "<span class=\"yellow\">{$name}回避了你设置的陷阱{$itm0}！</span><br>";
 			logsave ( $itmsk0, $now, $w_log ,'b');
 		}

@@ -64,7 +64,7 @@ function wthchange($itm,$itmsk,$wlog=1){
 	global $now,$log,$weather,$wthinfo,$name,$nick,$clbpara;
 	$weathertd = $weather;
 	if($weather >= 14 && $weather <= 18){
-		addnews ( $now, 'wthfail', titles_get_desc($nick).' '.$name, $weather, $itm );
+		addnews ( $now, 'wthfail',$name, $weather, $itm , $nick);
 		$log .= "你使用了{$itm}。<br /><span class=\"red\">但是天气并未发生任何变化！</span><br />";
 	}else{
 		if($itmsk==99){$weather = rand ( 0, 13 );}//随机全天气
@@ -102,7 +102,7 @@ function wthchange($itm,$itmsk,$wlog=1){
 		} else {
 			include_once GAME_ROOT . './include/system.func.php';
 			save_gameinfo ();
-			addnews ( $now, 'wthchange', titles_get_desc($nick).' '.$name, $weather, $itm );
+			addnews ( $now, 'wthchange', $name, $weather, $itm , $nick);
 			if($wlog) $log .= "你使用了<span class=\"yellow\">{$itm}</span>。<br />天气突然转变成了<span class=\"red\">$wthinfo[$weather]</span>！<br />";
 		}
 		$clbpara['achvars']['wthchange'] += 1;
@@ -139,7 +139,7 @@ function hack($itmn = 0) {
 		$log .= '入侵禁区控制系统成功了！全部禁区都被解除了！<br>';
 		//include_once GAME_ROOT.'./include/system.func.php';
 		//movehtm();
-		addnews($now,'hack',titles_get_desc($nick).' '.$name);
+		addnews($now,'hack',$name,$nick);
 		storyputchat($now,'hack');
 		save_gameinfo();
 	} else {
@@ -517,7 +517,7 @@ function qianghua($itmn = 0) {
 			}else{$flag = false;}
 	  }	
   }	
-  addnews ( $now, 'newwep2',titles_get_desc($nick).' '.$name, $baoshi, $o_itm );
+  addnews ( $now, 'newwep2',$name, $baoshi, $o_itm , $nick);
 	if ($flag){
 
 	 $log .= "<span class=\"yellow\">『一道神圣的闪光照耀在你的眼睛上，当你恢复视力时，发现你的装备闪耀着彩虹般的光芒』</span><br>";

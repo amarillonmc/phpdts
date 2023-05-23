@@ -272,9 +272,9 @@ if($mode == 'enter') {
 	$db->query("UPDATE {$gtablepre}users SET lastgame='$gamenum' WHERE username='$name'");
 
 	if($udata['groupid'] >= 6 || $cuser == $gamefounder){
-		addnews($now,'newgm',$nickinfo.' '.$name,"{$sexinfo[$gd]}{$sNo}号",$ip,$nick);
+		addnews($now,'newgm',$name,"{$sexinfo[$gd]}{$sNo}号",$ip,$nick);
 	}else{
-		addnews($now,'newpc',$nickinfo.' '.$name,"{$sexinfo[$gd]}{$sNo}号",$ip,$nick);
+		addnews($now,'newpc',$name,"{$sexinfo[$gd]}{$sNo}号",$ip,$nick);
 	}
 	
 	if($validnum >= $validlimit && $gamestate == 20){

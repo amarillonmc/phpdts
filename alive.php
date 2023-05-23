@@ -8,15 +8,22 @@ require './include/game/special.func.php';
 //unset($_GET);
 
 if(!isset($alivemode) || $alivemode == 'last'){
-	$result = $db->query("SELECT * FROM {$gtablepre}users RIGHT JOIN {$tablepre}players ON {$tablepre}players.name={$gtablepre}users.username WHERE {$tablepre}players.type=0 AND {$tablepre}players.hp>0 ORDER BY {$tablepre}players.money DESC, {$tablepre}players.killnum DESC LIMIT $alivelimit");
+	//$result = $db->query("SELECT * FROM {$gtablepre}users RIGHT JOIN {$tablepre}players ON {$tablepre}players.name={$gtablepre}users.username WHERE {$tablepre}players.type=0 AND {$tablepre}players.hp>0 ORDER BY {$tablepre}players.money DESC, {$tablepre}players.killnum DESC LIMIT $alivelimit");
+	$result = $db->query("SELECT * FROM {$tablepre}players WHERE {$tablepre}players.type=0 AND {$tablepre}players.hp>0 ORDER BY {$tablepre}players.money DESC, {$tablepre}players.killnum DESC LIMIT $alivelimit");
 }elseif($alivemode == 'all'){
-	$result = $db->query("SELECT * FROM {$gtablepre}users RIGHT JOIN {$tablepre}players ON {$tablepre}players.name={$gtablepre}users.username WHERE {$tablepre}players.type=0 AND {$tablepre}players.hp>0 ORDER BY {$tablepre}players.money DESC, {$tablepre}players.killnum DESC");
+	//$result = $db->query("SELECT * FROM {$gtablepre}users RIGHT JOIN {$tablepre}players ON {$tablepre}players.name={$gtablepre}users.username WHERE {$tablepre}players.type=0 AND {$tablepre}players.hp>0 ORDER BY {$tablepre}players.money DESC, {$tablepre}players.killnum DESC");
+	$result = $db->query("SELECT * FROM {$tablepre}players WHERE {$tablepre}players.type=0 AND {$tablepre}players.hp>0 ORDER BY {$tablepre}players.money DESC, {$tablepre}players.killnum DESC");
 }else{
 	echo 'error';
 	exit();
 }
 $alivedata = $apdata = Array();
-while($apdata = $db->fetch_array($result)) {
+while($apdata = $db->fetch_array($result)) 
+{
+	$uresult = $db->query("SELECT * FROM {$gtablepre}users WHERE username = '{$apdata['name']}'");
+	$urdata = $db->fetch_array($uresult);
+	$apdata = array_merge($urdata,$apdata);
+	unset($uresult); unset($urdata);
 	$apdata['iconImg'] = "{$apdata['gd']}_{$apdata['icon']}.gif";
 	$apdata['winrate'] = $apdata['wingames'] ? round($apdata['wingames']/$apdata['validgames']*100).'%' : '0%';
 	if (($apdata['endtime'] - $apdata['validtime'])>0) {

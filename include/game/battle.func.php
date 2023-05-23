@@ -282,7 +282,7 @@ function senditem(){
 				$w_log = "<span class=\"yellow\">$name</span>将<span class=\"yellow\">{$edata['itm'.$i]}</span>送给了你。";
 				if(!$w_type){logsave($w_pid,$now,$w_log,'t');}
 				
-				addnews($now,'senditem',titles_get_desc($nick).' '.$name,$w_name,$itm);
+				addnews($now,'senditem',$name,$w_name,$itm,$nick);
 				//w_save($w_pid);
 				player_save($edata);
 				$itm = $itmk = $itmsk = '';

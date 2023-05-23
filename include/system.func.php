@@ -447,8 +447,7 @@ function duel($time = 0,$keyitm = ''){
 		$gamestate = 50;
 		save_gameinfo();
 		
-		$nickinfo = titles_get_desc($nick);
-		addnews($time,'duelkey',$nickinfo.' '.$name,$keyitm);
+		addnews($time,'duelkey',$name,$keyitm,$nick);
 		addnews($time,'duel');
 		systemputchat($time,'duel');
 		return 50;
