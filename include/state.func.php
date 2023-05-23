@@ -90,9 +90,12 @@
 			$kname = '';
 			$killmsg = '';
 		}
+
+		$dname = $name;
 		
 		if (!$type) 
 		{
+			$dname = (!empty($nick) || $nick == 0) ? $nick.'|'.$name : $name;
 			$alivenum--;
 			$deathnum++;
 			$result = $db->query ( "SELECT lastword FROM {$gtablepre}users WHERE username = '$name'" );
@@ -107,9 +110,7 @@
 		//$knick = $db->result($result, 0);
 		//$kname= !empty($knick) || $knick == 0 ? $knick.'+'.$ : 'none';
 
-		$dname = !empty($nick) || $nick == 0 ? $nick.'|'.$name : $name;
-		
-		addnews ($now,'death'.$state,$dname,$type,$knname,$annex,$lastword);
+		addnews ($now,'death'.$state,$dname,$type,$kname,$annex,$lastword);
 
 		//$alivenum = $db->result($db->query("SELECT COUNT(*) FROM {$tablepre}players WHERE hp>0 AND type=0"), 0);
 		
@@ -176,8 +177,8 @@
 		$db->query ( "INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$now','$dname','$dpls','$lastword')" );
 
 		//发送news
-		$dname = (!empty($pd['nick']) || $pd['nick'] == 0) ? $pd['nick'].'|'.$pd['name'] : $pd['name'];
-		$kname = (!empty($pa['nick']) || $pa['nick'] == 0) ? $pa['nick'].'|'.$pa['name'] : $pa['name'];
+		$dname = !$pd['type'] && (!empty($pd['nick']) || $pd['nick'] == 0) ? $pd['nick'].'|'.$pd['name'] : $pd['name'];
+		$kname = !$pa['type'] && (!empty($pa['nick']) || $pa['nick'] == 0) ? $pa['nick'].'|'.$pa['name'] : $pa['name'];
 		addnews ($now,'death'.$pd['state'],$dname,$dtype,$kname,$pa['wep_name'],$lastword);
 
 		return $lastword;
