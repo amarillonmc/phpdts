@@ -1,6 +1,8 @@
 <?php
   include_once GAME_ROOT.'./include/game/itemplace.func.php';
   include_once GAME_ROOT.'./include/game/depot.func.php';
+  include_once GAME_ROOT.'./include/game/elementmix.func.php';
+  /** 获取对尸体的行动 */
   function getCorpseAction() {
     $list = array();
     if ($club == 20) {
@@ -38,106 +40,160 @@
     );
     return $list;
   }
+  /** 获取敌方物品信息 */
   function getCorpseItems($tdata) {
     $list = array();
     if ($tdata['weps'] && $tdata['wepe']) {
       $list[] = array(
         "key" => "wep",
-        "title" => $tdata['wep'],
+        "type" => parse_info_desc($tdata['wepk'], 'k'),
+        "name" => $tdata['wep'],
+        "props" => $tdata['wepsk'] ? parse_info_desc($tdata['wepsk'], 'sk', 'wepsk', 1) : '',
+        "quality" => $tdata['wepe'],
+        "durability" => $tdata['weps'],
       );
     }
     //$w_arbs && $w_arbe
     if ($tdata['arbs'] && $tdata['arbe']) {
       $list[] = array(
         "key" => "arb",
-        "title" => $tdata['arb'],
+        "type" => parse_info_desc($tdata['arbk'], 'k'),
+        "name" => $tdata['arb'],
+        "props" => $tdata['arbsk'] ? parse_info_desc($tdata['arbsk'], 'sk', 'arbsk', 1) : '',
+        "quality" => $tdata['arbe'],
+        "durability" => $tdata['arbs'],
       );
     }
     //$w_arhs
     if ($tdata['arhs']) {
       $list[] = array(
         "key" => "arh",
-        "title" => $tdata['arh'],
+        "type" => parse_info_desc($tdata['arhk'], 'k'),
+        "name" => $tdata['arh'],
+        "props" => $tdata['arhsk'] ? parse_info_desc($tdata['arhsk'], 'sk', 'arhsk', 1) : '',
+        "quality" => $tdata['arhe'],
+        "durability" => $tdata['arhs'],
       );
     }
     //w_aras
     if ($tdata['aras']) {
       $list[] = array(
         "key" => "ara",
-        "title" => $tdata['ara'],
+        "type" => parse_info_desc($tdata['arak'], 'k'),
+        "name" => $tdata['ara'],
+        "props" => $tdata['arask'] ? parse_info_desc($tdata['arask'], 'sk', 'arask', 1) : '',
+        "quality" => $tdata['arae'],
+        "durability" => $tdata['aras'],
       );
     }
     // w_arfs
     if ($tdata['arfs']) {
       $list[] = array(
         "key" => "arf",
-        "title" => $tdata['arf'],
+        "type" => parse_info_desc($tdata['arfk'], 'k'),
+        "name" => $tdata['arf'],
+        "props" => $tdata['arfsk'] ? parse_info_desc($tdata['arfsk'], 'sk', 'arfsk', 1) : '',
+        "quality" => $tdata['arfe'],
+        "durability" => $tdata['arfs'],
       );
     }
     // w_arts
     if ($tdata['arts']) {
       $list[] = array(
         "key" => "art",
-        "title" => $tdata['art'],
+        "type" => parse_info_desc($tdata['artk'], 'k'),
+        "name" => $tdata['art'],
+        "props" => $tdata['artsk'] ? parse_info_desc($tdata['artsk'], 'sk', 'artsk', 1) : '',
+        "quality" => $tdata['arte'],
+        "durability" => $tdata['arts'],
       );
     }
     //w_itms0
     if ($tdata['itms0']) {
       $list[] = array(
         "key" => "itm0",
-        "title" => $tdata['itm0'],
+        "type" => parse_info_desc($tdata['itmk0'], 'k'),
+        "name" => $tdata['itm0'],
+        "props" => $tdata['itmsk0'] ? parse_info_desc($tdata['itmsk0'], 'sk', 'itmsk0', 1) : '',
+        "quality" => $tdata['itme0'],
+        "durability" => $tdata['itms0'],
       );
     }
     //w_itms1
     if ($tdata['itms1']) {
       $list[] = array(
         "key" => "itm1",
-        "title" => $tdata['itm1'],
+        "type" => parse_info_desc($tdata['itmk1'], 'k'),
+        "name" => $tdata['itm1'],
+        "props" => $tdata['itmsk1'] ? parse_info_desc($tdata['itmsk1'], 'sk', 'itmsk1', 1) : '',
+        "quality" => $tdata['itme1'],
+        "durability" => $tdata['itms1'],
       );
     }
     //w_itms2
     if ($tdata['itms2']) {
       $list[] = array(
         "key" => "itm2",
-        "title" => $tdata['itm2'],
+        "type" => parse_info_desc($tdata['itmk2'], 'k'),
+        "name" => $tdata['itm2'],
+        "props" => $tdata['itmsk2'] ? parse_info_desc($tdata['itmsk2'], 'sk', 'itmsk2', 1) : '',
+        "quality" => $tdata['itme2'],
+        "durability" => $tdata['itms2'],
       );
     }
     //w_itms3
     if ($tdata['itms3']) {
       $list[] = array(
         "key" => "itm3",
-        "title" => $tdata['itm3'],
+        "type" => parse_info_desc($tdata['itmk3'], 'k'),
+        "name" => $tdata['itm3'],
+        "props" => $tdata['itmsk3'] ? parse_info_desc($tdata['itmsk3'], 'sk', 'itmsk3', 1) : '',
+        "quality" => $tdata['itme3'],
+        "durability" => $tdata['itms3'],
       );
     }
     //w_itms4
     if ($tdata['itms4']) {
       $list[] = array(
         "key" => "itm4",
-        "title" => $tdata['itm4'],
+        "type" => parse_info_desc($tdata['itmk4'], 'k'),
+        "name" => $tdata['itm4'],
+        "props" => $tdata['itmsk4'] ? parse_info_desc($tdata['itmsk4'], 'sk', 'itmsk4', 1) : '',
+        "quality" => $tdata['itme4'],
+        "durability" => $tdata['itms4'],
       );
     }
     //w_itms5
     if ($tdata['itms5']) {
       $list[] = array(
         "key" => "itm5",
-        "title" => $tdata['itm5'],
+        "type" => parse_info_desc($tdata['itmk5'], 'k'),
+        "name" => $tdata['itm5'],
+        "props" => $tdata['itmsk5'] ? parse_info_desc($tdata['itmsk5'], 'sk', 'itmsk5', 1) : '',
+        "quality" => $tdata['itme5'],
+        "durability" => $tdata['itms5'],
       );
     }
     //w_itms6
     if ($tdata['itms6']) {
       $list[] = array(
         "key" => "itm6",
-        "title" => $tdata['itm6'],
+        "type" => parse_info_desc($tdata['itmk6'], 'k'),
+        "name" => $tdata['itm6'],
+        "props" => $tdata['itmsk6'] ? parse_info_desc($tdata['itmsk6'], 'sk', 'itmsk6', 1) : '',
+        "quality" => $tdata['itme6'],
+        "durability" => $tdata['itms6'],
       );
     }
     if ($tdata['money']) {
       $list[] = array(
         "key" => "money",
-        "title" => $tdata['money'].'元',
+        "name" => $tdata['money'].'元',
       );
     }
     return $list;
   }
+  /** 获取战斗中可使用的技能 */
   function getBattleSkills($battle_skills) {
     global $cskills;
     return array_map(function($item) use ($cskills) {
@@ -149,6 +205,7 @@
       );
     }, $battle_skills);
   }
+  /** 获取技能页面 */
   function getSkillPage() {
     global $pdata, $cskills, $itemspkinfo, $clubinfo;
     $uidata = $pdata;
@@ -232,6 +289,110 @@
 
     //返回最终的数组
     return $array;
+  }
+  /** 获取敌方技能页面 */
+  function getEnemySkillPage($tdata) {
+    global $cskills;
+    $array = array();
+    foreach ($tdata['clbpara']['skill'] as $skid) {
+      $cskill = $cskills[$skid];
+      $name = $cskill['name'];
+      $cdesc = parse_skilldesc($skid, $uidata);
+      $num_input = $cskill['num_input'];
+      $input = $cskill['input'];
+      $unlock_flag = check_skill_unlock($skid, $uidata);
+      $unlock_desc = parse_skilllockdesc($skid, $unlock_flag);
+      $new_array = array(
+        'id' => $skid,
+        'name' => $name,
+        'desc' => $cdesc,
+      );
+      $array[] = $new_array;
+    }
+    return $array;
+  }
+  /** 获取佣兵信息 */
+  function getMercInfo() {
+    global $pdata, $plsinfo, $pls, $arealist, $areanum, $hack;
+    $uidata = $pdata;
+    $clbpara = get_clbpara($uidata['clbpara']);
+    $merc_ids = get_skillpara('c11_merc', 'id', $clbpara);
+    $merc_num = !empty($merc_ids) ? count($merc_ids) : 0;
+    $merc_info = array();
+    if ($merc_num > 0) {
+      foreach ($merc_ids as $mkey => $mid) {
+        $nowmerc = fetch_playerdata_by_pid($mid);
+        $salary = get_skillpara('c11_merc', 'paid', $clbpara)[$mkey];
+        $merc_info[] = array(
+          // 佣兵ID
+          'id' => $mkey,
+          // 佣兵姓名
+          'name' => $nowmerc['name'],
+          // 佣兵头像
+          'avatar' => 'img/n_'.$nowmerc['icon'].'.gif',
+          // 佣兵是否死亡
+          'isDead' => $nowmerc['hp'] == 0,
+          // 佣兵友善度
+          'friendShip' => init_friedship_states($pdata, 'c11_merc', $mkey),
+          // 佣兵状态
+          'status' => init_single_hp_states($nowmerc),
+          // 佣兵工资
+          'salary' => $salary,
+          // 下次支付工资回合数
+          'nextPay' => get_skillvars('c11_merc','mst') - get_skillpara('c11_merc','mms',$clbpara)[$mkey],
+          // 佣兵位置
+          'position' => $plsinfo[$nowmerc['pls']],
+          // 佣兵是否可协战
+          'canAssist' => $nowmerc['pls'] == $pls,
+          // 佣兵出击消耗金钱
+          'attackCost' => $salary * get_skillvars('c11_merc','atkp'),
+          // 佣兵是否可追击
+          'canChase' => !empty($nowmerc['clbpara']['mercchase']),
+          // 佣兵移动消耗金钱
+          'moveCost' => $salary * get_skillvars('c11_merc','movep'),
+          // 解雇描述
+          'fireDesc' => get_skillpara('c11_merc', 'leave', $clbpara)[$mkey] ? '离开战场' : '留在原地',
+        );
+      }
+    }
+    $options = array();
+    foreach ($arealist as $pl) {
+      if (array_search($pl, $arealist) > $areanum || $hack) {
+        $options[] = $pl;
+      }
+    }
+    sort($options);
+    return array(
+      'moveList' => $options,
+      'mercList' => $merc_info,
+    );
+  }
+  /** 获取元素口袋信息 */
+  function getElement() {
+    global $pdata, $elements_info;
+    $elements = array('element0', 'element1', 'element2', 'element3', 'element4', 'element5');
+    $result = array();
+    foreach ($elements as $ekey => $enum) {
+      $result[] = array(
+        "title" => $elements_info[$ekey],
+        "num" => $pdata[$enum],
+        "mainType" => array(
+          emix_init_elements_tags($ekey, 'dom', 0, $pdata),
+          emix_init_elements_tags($ekey, 'dom', 1, $pdata),
+        ),
+        "subType" => array(
+          emix_init_elements_tags($ekey, 'sub', 0, $pdata),
+          emix_init_elements_tags($ekey, 'sub', 1, $pdata),
+          emix_init_elements_tags($ekey, 'sub', 2, $pdata),
+          emix_init_elements_tags($ekey, 'sub', 3, $pdata),
+        ),
+      );
+    }
+    return array(
+      "elements" => $result,
+      "hint" => emix_init_elements_info($pdata),
+      "max" => emix_calc_maxenum(),
+    );
   }
   echo (json_encode(array(
     /** 玩家状态 */
@@ -335,6 +496,8 @@
         /** 灵熟 */
         "spirit" => $wf,
       ),
+      /** 击杀数 */
+      "killNum" => $killnum,
       /** 负面状态 */
       "debuff" => $inf ? $inf : ['无'],
       "debuffList" => $infinfo,
@@ -392,43 +555,55 @@
       /** 背包 */
       "bag" => array(
         "item1" => $itm1 ? array(
+          "typeID" => $itmk1,
           "type" => $itmk1_words,
-          "name" => $itm1,
+          "name" => $itm1_words,
+          "propsID" => $itmsk1,
           "props" => $itmsk1_words != '--' ? $itmsk1_words : '',
           "quality" => $itme1,
           "durability" => $itms1,
         ) : null,
         "item2" => $itm2 ? array(
+          "typeID" => $itmk2,
           "type" => $itmk2_words,
-          "name" => $itm2,
+          "name" => $itm2_words,
+          "propsID" => $itmsk2,
           "props" => $itmsk2_words != '--' ? $itmsk2_words : '',
           "quality" => $itme2,
           "durability" => $itms2,
         ) : null,
         "item3" => $itm3 ? array(
+          "typeID" => $itmk3,
           "type" => $itmk3_words,
-          "name" => $itm3,
+          "name" => $itm3_words,
+          "propsID" => $itmsk3,
           "props" => $itmsk3_words != '--' ? $itmsk3_words : '',
           "quality" => $itme3,
           "durability" => $itms3,
         ) : null,
         "item4" => $itm4 ? array(
+          "typeID" => $itmk4,
           "type" => $itmk4_words,
-          "name" => $itm4,
+          "name" => $itm4_words,
+          "propsID" => $itmsk4,
           "props" => $itmsk4_words != '--' ? $itmsk4_words : '',
           "quality" => $itme4,
           "durability" => $itms4,
         ) : null,
         "item5" => $itm5 ? array(
+          "typeID" => $itmk5,
           "type" => $itmk5_words,
-          "name" => $itm5,
+          "name" => $itm5_words,
+          "propsID" => $itmsk5,
           "props" => $itmsk5_words != '--' ? $itmsk5_words : '',
           "quality" => $itme5,
           "durability" => $itms5,
         ) : null,
         "item6" => $itm6 ? array(
+          "typeID" => $itmk6,
           "type" => $itmk6_words,
-          "name" => $itm6,
+          "name" => $itm6_words,
+          "propsID" => $itmsk6,
           "props" => $itmsk6_words != '--' ? $itmsk6_words : '',
           "quality" => $itme6,
           "durability" => $itms6,
@@ -493,12 +668,35 @@
       "shop" => $itemdata,
       /** 行动是否可行 */
       "canAction" => array(
+        /** 商店 */
         "shop" => in_array($pls,$shops) || !check_skill_unlock('c11_ebuy',$pdata),
+        /** 静养 */
         "rest3" => in_array($pls,$hospitals),
+        /** 安全箱 */
         "depot" => in_array($pls,$depots),
+        /** 歌唱 */
+        "song" => strpos($artk,'ss') !== false,
+        /** 带电 */
+        "electric" => $club == 7,
+        /** 淬毒 */
+        "poison" => $club == 8,
+        /** 佣兵 */
+        "mercenary" => !empty(get_skillpara('c11_merc','id',$clbpara)),
+        /** 合成 */
+        "crafting" => $club != 20,
+        /** 元素口袋 */
+        "element" => $club == 20,
       ),
       /** 安全箱物品 */
       "depotItems" => depot_getlist($name,$type),
+      /** 报应点数 */
+      "rp" => $club == 19 ? $rp : null,
+      /** 佣兵信息 */
+      "mercenary" => getMercInfo(),
+      /** 雷达信息 */
+      "radar" => $radarscreen,
+      /** 元素口袋 */
+      "element" => $club == 20 ? getElement() : null,
     ),
     /** 搜寻状态 */
     "searchState" => array(
@@ -543,12 +741,16 @@
         "tactic" => $tdata['poseinfo'],
         /** 敌方受伤部位 */
         "hurt" => $tdata['infdata'],
+        /** 报应点数 */
+        "rp" => $club == 19 ? $tdata['rp'] : null,
         /** 战斗状态 */
         "battleState" => $battle_title,
         /** 发现尸体后的操作列表 */
         "actionList" => $battle_title === "发现尸体" ? getCorpseAction() : null,
         /** 敌方道具 */
-        "items" => getCorpseItems($tdata),
+        "items" => $battle_title === "发现尸体" ? getCorpseItems($tdata) : null,
+        /** 敌方技能 */
+        "skill" => $tdata['clbpara']['skill'] ? getEnemySkillPage($tdata) : null,
         /** 战斗技能 */
         "battleSkills" => $battle_skills ? getBattleSkills($battle_skills) : null,
       ) : null,
@@ -586,6 +788,5 @@
     ),
     /** 行动日志 */
     "actionLog" => $log,
-    "temp" => $mode,
   )));
 ?>
