@@ -26,13 +26,19 @@ function get_equip_list($mode=0)
 # mixitem_1.php; vnmixitem_1.php;
 function get_mixinfo()
 {
-	global $gamecfg;
+	global $gamecfg,$gamevars;
 	include config("mixitem",$gamecfg);
+
+	# 向合成列表中加入玩家自定义合成
 	if(file_exists(config("vnmixitem",$gamecfg)))
 	{
 		include config("vnmixitem",$gamecfg);
 	}
 	if(!empty($vn_mixinfo)) $mixinfo = array_merge($mixinfo,$vn_mixinfo);
+
+	# 向合成列表中加入每局随机合成
+	if(!empty($gamevars['random_mixlist']))  $mixinfo = array_merge($mixinfo,$gamevars['random_mixlist']);
+
 	return $mixinfo;
 }
 function get_syncmixinfo()

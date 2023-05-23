@@ -370,20 +370,80 @@ function itemmix_proc($mlist, $minfo, $itmstr, &$data=NULL)
 	//合成成功
 	$main = '';
 	//“通常”合成当动词实在是太奇怪了
-	$tpstr = (empty($uip['mixtp']) || $uip['mixtp']==$mix_type['normal']) ? '' : $mix_type[$uip['mixtp']];
+	$tpstr = $mix_type[$uip['mixtp']] == '通常' ? '' : $mix_type[$uip['mixtp']];
 
 	$log .= "<span class=\"yellow\">$itmstr</span>{$tpstr}合成了<span class=\"yellow\">{$itm0}</span>。<br>";
 	addnews($now,'itemmix',$name,$itm0,$tpstr);
 
-	$wd+=1;
-	if((strpos($itmk0,'H') === 0)&&($club == 16)&&($itms0 !== $nosta)){ $itms0 = ceil($itms0*2); }
-	elseif(($itmk0 == 'EE' || $itmk0 == 'ER') && ($club == 7)){ $itme0 *= 5; }
+	//执行合成合成成功时会触发的额外事件
+	itemmix_events($data);
 
 	//检查成就
 	include_once GAME_ROOT.'./include/game/achievement.func.php';
 	check_mixitem_achievement_rev($name,$itm0);
 
 	itemget($data);
+}
+
+//合成成功时会触发的额外事件
+function itemmix_events(&$data=NULL)
+{
+	global $log,$gamevars;
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
+	# 合成成功时爆熟+1
+	$wd+=1;
+
+	# 全能兄贵在合成补给品时，获得数量x2
+	if((strpos($itmk0,'H') === 0)&&($club == 16)&&($itms0 !== $nosta)){ $itms0 = ceil($itms0*2); }
+
+	# 锡安合成电子仪器时，耐久x2
+	if(($itmk0 == 'EE' || $itmk0 == 'ER') && ($club == 7)){ $itme0 *= 5; }
+
+	# 合成皇家蔷薇时，获得进一步合成的线索
+	if($itm0 == '「皇家蔷薇」')
+	{
+		if(empty($gamevars['random_mixlist']['royal_rose']))
+		{
+			# 可能出现的随机素材列表
+			$slip_list = Array('红石榴汁','红色的发圈','粉红雏菊','红豆面包',
+				'☆红楼梦精装本☆','红色方块','红宝石方块','院长红酒','冴月麟的生日蛋糕-红',
+				'鲜红的生血','真-红色的发圈','『红石电路』','【烈焰红唇】','红宝石方块','红莲魔龙 ★8');
+			$royal_rose_stuff = $slip_list[array_rand($slip_list)];
+			$royal_rose = Array(
+				'class' => 'hidden', 
+				'stuff' => array('「皇家蔷薇」','龙虎旗帜',$royal_rose_stuff),
+				'result' => array('「猩红蔷薇」','WK',179310,'∞','BNnrfcV'),
+			);
+			$gamevars['random_mixlist']['royal_rose'] = $royal_rose;
+			save_gameinfo();
+		}
+		else 
+		{
+			$royal_rose = $gamevars['random_mixlist']['royal_rose'];
+			$royal_rose_stuff = $royal_rose['stuff'][2];
+		}
+		# 混淆
+		$royal_rose_stuff = preg_replace('/[^红]/u', '＊', $royal_rose_stuff);
+		# 获得提示
+		$log .= "然后，你收到了来自某人的私聊——<br>
+		<br>
+		<span class='redseed'>“……嗯嗯嗯嗯，你在搜集这个东西啊……<br>
+		如果你还打算进一步合成的话，<br>
+		接下来就得去找‘{$royal_rose_stuff}’了。<br>
+		……你问‘＊’是什么……？<br>
+		‘＊’就是连在一起被和谐了，打不出来……你也是在网上冲浪的，应该能明白吧！<br>
+		嘛，总之你先对着字数找找吧！”</span><br>
+		<br>
+		啊……？<br>";
+	}
+
+	return;
 }
 
 ?>
