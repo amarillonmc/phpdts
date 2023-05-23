@@ -12,8 +12,8 @@ namespace revcombat
 		if(!empty($pa['wep_range']) && $pd['wep_range'] >= $pa['wep_range']) return 1;
 		# 鏖战状态下无视射程反击（爆系武器除外）
 		if((isset($pd['is_dfight']) || isset($pa['is_dfight'])) && !empty($pd['wep_range'])) return 1;
-		#「直感」触发后可以超射程反击：
-		if(isset($pd['skill_c2_intuit']))
+		#「直感」触发后可以超射程反击（爆系武器除外）
+		if(isset($pd['skill_c2_intuit']) && !empty($pa['wep_range']))
 		{
 			$sk_dice = diceroll(99);
 			$sk_lvl = get_skilllvl('c2_intuit',$pd);
