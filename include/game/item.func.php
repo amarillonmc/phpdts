@@ -966,7 +966,7 @@ function itemuse($itmn,&$data=NULL) {
 					$is = 1;
 					$isk = '';
 				}
-				$clbpara['opened_pack'] = $itm; //记录打开福袋
+				$clbpara['opened_pack'] = $oitm; //记录打开福袋
 			}
 		}else{//一般礼品盒
 			$file = config('present',$gamecfg);

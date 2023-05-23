@@ -26,16 +26,17 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 	$old_nicknews = Array
 	(
 		//使用道具发送的news统一不带头衔，以后要不要带以后再说
-		'teammake' => 'c',
-		'teamjoin' => 'c',
-		'teamquit' => 'c',
+		'teammake' => Array('b','c'),
+		'teamjoin' => Array('b','c'),
+		'teamquit' => Array('b','c'),
 		'newgm' => 'd',
 		'newpc' => 'd',
 		'hack' => 'b',
 		'hack2' => 'b',
-		'itemmix' => 'd',
-		'syncmix' => 'c',
-		'overmix' => 'c',
+		//合成消息显示头衔太丑了
+		//'itemmix' => 'd',
+		//'syncmix' => 'c',
+		//'overmix' => 'c',
 		'senditem' => 'd',
 		'csl_wthchange' => 'c',
 		'csl_hack' => 'b',

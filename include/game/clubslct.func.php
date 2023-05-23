@@ -191,12 +191,13 @@ function lostclub(&$data=NULL)
 
 function selectclub($id)
 {
-	global $name, $club;
+	global $name, $club, $udata;
 	if ($club!=0) return 1;
 	if (!$id) return 2;
 
 	$t1_list = valid_getclublist_t1($udata);
 	$t2_list = valid_getclublist_t2($udata);
+
 	if(in_array($id,$t1_list) || in_array($id,$t2_list))
 	{
 		$club = $id; 
