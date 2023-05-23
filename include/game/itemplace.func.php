@@ -414,6 +414,7 @@ function get_item_place($which)
 		}
 	}
 	if ($which == "悲叹之种") $result.="通过使用『灵魂宝石』强化物品失败获得 \r";
+	if (strpos($which,"（＊）")!==false) $result.="这是一项随机素材，素材名中的文字可能是对素材名的提示。\r在游戏内成功合成上一阶段的关键素材时，会获得更准确的提示。";
 	return $result;
 }
 

@@ -777,7 +777,7 @@ function itemmerge($itn1,$itn2){
 	//$mode = 'command';
 	return;
 }
-$syncn=$synck=$synce=$syncs=$syncsk=Array();
+/*$syncn=$synck=$synce=$syncs=$syncsk=Array();
 function itemmix($mlist, $itemselect=-1) {
 	global $log,$mode,$gamecfg,$name,$nosta,$gd,$name,$nick;
 	global $itm1,$itm2,$itm3,$itm4,$itm5,$itm6,$itms1,$itms2,$itms3,$itms4,$itms5,$itms6,$itme1,$itme2,$itme3,$itme4,$itme5,$itme6,$club,$clbpara,$wd;
@@ -1096,8 +1096,8 @@ function itemmix($mlist, $itemselect=-1) {
 		itemget();
 	}
 	return;
-}
-function itemreduce($item){ //只限合成使用！！
+}*/
+function itemreduce($item,$mode=0){ //只限合成使用！！
 	global $log;
 	if(strpos($item,'itm') === 0) {
 		$itmn = substr($item,3,1);
@@ -1112,7 +1112,16 @@ function itemreduce($item){ //只限合成使用！！
 	}
 
 	if(!$itms) { return; }
-	if(preg_match('/^(Y|B|C|X|TN|GB|H|P|V|M)/',$itmk)){$itms--;}
+	# 素材类道具作合成素材时只消耗耐久
+	if(preg_match('/^(Y|B|C|X|TN|GB|H|P|V|M)/',$itmk))
+	{
+		$itms--;
+	}
+	# 带有工具属性的道具作合成素材时，不会消耗
+	elseif(in_array('🧰',get_itmsk_array($itmsk)))
+	{
+		$itms = $itms;
+	}
 	else{$itms=0;}
 	if($itms <= 0) {
 		$itms = 0;
