@@ -141,6 +141,11 @@ table.infotable th {
 .redseed{color:#ff6599; font: bold 10pt "微软雅黑" serif;line-height:16px}
 .blueseed{color:#b5d5f7; font: bold 10pt "微软雅黑" serif;line-height:16px}
 .seedhint{background-image: url("../../img/rbfireseed.png");font: 8pt;-webkit-text-stroke: 0.3px white;}
+.tgrey{color:rgb(185, 185, 185); font: bold 10pt "微软雅黑" serif;line-height:16px}
+.tlime{color:rgb(74, 227, 74); font: bold 10pt "微软雅黑" serif;line-height:16px}
+.tclan{color:rgb(30, 150, 255); font: bold 10pt "微软雅黑" serif;line-height:16px}
+.tmagenta{color:rgb(221, 30, 255); font: bold 10pt "微软雅黑" serif;line-height:16px}
+.torange{color:rgb(255, 128, 0); font: bold 10pt "微软雅黑" serif;line-height:16px}
 
 @keyframes blueflicker {
 	0%, 18%, 22%, 25%, 53%, 57%, 100% {

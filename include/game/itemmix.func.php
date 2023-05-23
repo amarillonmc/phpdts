@@ -373,7 +373,7 @@ function itemmix_proc($mlist, $minfo, $itmstr, &$data=NULL)
 	$tpstr = $mix_type[$uip['mixtp']] == '通常' ? '' : $mix_type[$uip['mixtp']];
 
 	$log .= "<span class=\"yellow\">$itmstr</span>{$tpstr}合成了<span class=\"yellow\">{$itm0}</span>。<br>";
-	addnews($now,'itemmix',$name,$itm0,$tpstr);
+	addnews($now,'itemmix',$name,$itm0,$tpstr,$nick);
 
 	//执行合成合成成功时会触发的额外事件
 	itemmix_events($data);
