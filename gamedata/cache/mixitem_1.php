@@ -12,7 +12,7 @@ $mixinfo = array
 	array('class' => 'h', 'stuff' => array('面包','矿泉水','锅？'),'result' => array('☆法式长棍面包☆','HB',100,3,),),
 	array('class' => 'h', 'stuff' => array('治疗针','体力回复药','蒸馏水'),'result' => array('特级恢复药','HB',120,2,),),	
 	array('class' => 'h', 'stuff' => array('甜生姜','地雷酥糖'),'result' => array('曾经的荣光-橙黄','HB',50,2,),),
-	array('class' => 'h', 'stuff' => array('曾经的荣光-橙黄','面包'),'result' => array('更改菜谱后的不甜酱包','PB',300,8,'Z'),),
+	array('class' => 'h', 'stuff' => array('曾经的荣光-橙黄','面包'),'result' => array('更改菜谱后的不甜酱包','PB',300,8,20),),
 
 	
 	array('class' => 'wc', 'stuff' => array('汽油','空瓶'),'result' => array('☆火焰瓶☆','WC',80,50,'ud'),),	

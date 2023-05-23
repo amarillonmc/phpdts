@@ -289,7 +289,7 @@ function itemuse($itmn,&$data=NULL) {
 			$log .= "糟糕，<span class=\"yellow\">$itm</span>有毒！你受到了<span class=\"dmg\">$damage</span>点伤害！<br>";
 		}
 		if ($hp <= 0) {
-			if ($itmsk) {
+			if ($itmsk && is_numeric($itmsk)) {
 				$bid = $itmsk;
 				$result = $db->query ( "SELECT * FROM {$tablepre}players WHERE pid='$itmsk'" );
 				$edata = $db->fetch_array ( $result );

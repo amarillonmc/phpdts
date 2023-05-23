@@ -173,7 +173,7 @@
 			$lastword = $db->result ( $result, 0 );
 		}
 		//向聊天框发送遗言
-		$db->query ( "INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$now','$lwname','$dpls','$lastword')" );
+		$db->query ( "INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$now','$dname','$dpls','$lastword')" );
 
 		//发送news
 		$dname = (!empty($pd['nick']) || $pd['nick'] == 0) ? $pd['nick'].'|'.$pd['name'] : $pd['name'];
