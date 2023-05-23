@@ -103,10 +103,14 @@
 			$db->query ( "INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$now','$lwname','$pls','$lastword')" );
 		}
 		$deathtime = $now;
-		$result = $db->query("SELECT nick FROM {$tablepre}players WHERE name = '$kname' AND type = '$type'");
-		$knick = $db->result($result, 0);
-		$knname = isset($knick) ? $knick.' '.$kname : $kname;
-		addnews ( $now, 'death' . $state, $name, $type, $knname, $annex, $lastword );
+		//$result = $db->query("SELECT nick FROM {$tablepre}players WHERE name = '$kname' AND type = '$type'");
+		//$knick = $db->result($result, 0);
+		//$kname= !empty($knick) || $knick == 0 ? $knick.'+'.$ : 'none';
+
+		$dname = !empty($nick) || $nick == 0 ? $nick.'|'.$name : $name;
+		
+		addnews ($now,'death'.$state,$dname,$type,$knname,$annex,$lastword);
+
 		//$alivenum = $db->result($db->query("SELECT COUNT(*) FROM {$tablepre}players WHERE hp>0 AND type=0"), 0);
 		
 		# 执行死亡事件（灵魂绑定等）
@@ -157,7 +161,6 @@
 		}
 		//初始化死者信息
 		$dtype = $pd['type']; $dname = $pd['name']; $dpls = $pd['pls'];
-		$lwname = $typeinfo [$dtype] . ' ' . $dname;
 		//初始化NPC遗言
 		if($dtype)
 		{
@@ -173,9 +176,9 @@
 		$db->query ( "INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$now','$lwname','$dpls','$lastword')" );
 
 		//发送news
-		$kname = $pa['type'] ? $pa['name'] : titles_get_desc($pa['nick']).' '.$pa['name'];
-		//$dname = $pd['type'] ? $pd['name'] : titles_get_desc($pd['nick']).' '.$pd['name'];
-		addnews ($now,'death'.$pd['state'],$dname,$dtype,$kname,$pa['wep_name'],$lastword );
+		$dname = (!empty($pd['nick']) || $pd['nick'] == 0) ? $pd['nick'].'|'.$pd['name'] : $pd['name'];
+		$kname = (!empty($pa['nick']) || $pa['nick'] == 0) ? $pa['nick'].'|'.$pa['name'] : $pa['name'];
+		addnews ($now,'death'.$pd['state'],$dname,$dtype,$kname,$pa['wep_name'],$lastword);
 
 		return $lastword;
 	}
@@ -192,7 +195,7 @@
 
 		$revival_flag = 0;
 
-		$dname = $pd['type'] ? $pd['name'] : titles_get_desc($pd['nick']).' '.$pd['name'];
+		$dname = $pd['name']; $dnick = $pd['nick'];
 
 		#光玉雨天气下，提供者有概率复活
 		if (!$revival_flag && $weather == 18 && $gamevars['wth18pid'] == $pd['pid'])
@@ -209,7 +212,7 @@
 			{
 				#奥罗拉复活效果
 				$revival_flag = 18; //保存复活标记为通过光玉雨复活
-				addnews($now,'wth18_revival',$dname);
+				addnews($now,'wth18_revival',$dname,$dnick);
 				$pd['hp'] = max($wth18_obbs,1);  
 				$pd['sp'] = max($wth18_obbs,1); 
 				$pd['state'] = 0;
@@ -227,7 +230,7 @@
 			{
 				#奥罗拉复活效果
 				$revival_flag = 17; //保存复活标记为通过奥罗拉复活
-				addnews($now,'aurora_revival',$dname);
+				addnews($now,'aurora_revival',$dname,$dnick);
 				$pd['hp'] = max($aurora_dice,1); 
 				$pd['sp'] = max($aurora_dice,1);
 				$pd['state'] = 0;
@@ -241,7 +244,7 @@
 		{
 			# 「涅槃」复活效果：
 			$revival_flag = 'nirvan'; //保存复活标记为通过技能复活
-			addnews($now,'revival',$dname);	
+			addnews($now,'revival',$dname,$dnick);	
 			# 添加「涅槃」激活次数
 			set_skillpara('c19_nirvana','active_t',get_skillpara('c19_nirvana','active_t',$pd['clbpara'])+1,$pd['clbpara']);
 			$pd['state'] = 0; 

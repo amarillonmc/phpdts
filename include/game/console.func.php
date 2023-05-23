@@ -48,7 +48,7 @@
 			{$console_tips[2]}<br><br>";
 			$gamevars['api'] --;
 			save_gameinfo();
-			addnews($now, 'csl_wthchange', titles_get_desc($nick).' '.$name, $weather);
+			addnews($now, 'csl_wthchange',$name, $weather,$nick);
 		}
 		return;
 	}
@@ -193,7 +193,7 @@
 				$hack = 1;
 				movehtm();
 				storyputchat($now,'hack');
-				addnews($now,'csl_hack',titles_get_desc($nick).' '.$name);
+				addnews($now,'csl_hack',$name,$nick);
 				save_gameinfo();
 			}
 			else 
@@ -207,7 +207,7 @@
 			{
 				$log .= "提交指令后，你眼前的数据流开始闪烁。<br>与此同时，整处虚拟空间也开始发生变化……<br>{$console_tips[1]}已将下回禁区到来时间调整至5秒后</span><br>{$console_tips[2]}<br><br>";
 				$areatime = $now+5;
-				addnews($now,'csl_addarea',titles_get_desc($nick).' '.$name);
+				addnews($now,'csl_addarea',$name,$nick);
 				areawarn();
 				save_gameinfo();
 			}

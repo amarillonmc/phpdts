@@ -21,6 +21,31 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 //	}
 	$newsinfo = '<ul>';
 	$nday = 0;
+
+	//该来的躲不掉 会显示头衔的news内对应保存$nick的位置
+	$old_nicknews = Array
+	(
+		//使用道具发送的news统一不带头衔，以后要不要带以后再说
+		'teammake' => 'c',
+		'teamjoin' => 'c',
+		'teamquit' => 'c',
+		'newgm' => 'd',
+		'newpc' => 'd',
+		'hack' => 'b',
+		'hack2' => 'b',
+		'itemmix' => 'c',
+		'syncmix' => 'c',
+		'overmix' => 'c',
+		'senditem' => 'd',
+		'csl_wthchange' => 'c',
+		'csl_hack' => 'b',
+		'csl_addarea' => 'b',
+		'song' => 'd',
+		'revival' => 'b',
+		'wth18_revival' => 'b',
+		'aurora_revival' => 'b',
+	);
+
 	//for($i = $start;$i <= $r;$i++) {
 	//for($i = 0;$i < $nnum;$i++) {
 	while($news0=$db->fetch_array($result)) {
@@ -40,9 +65,16 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		if((strpos($news,'senditem')!==false||strpos($news,'poison')!==false||strpos($news,'trap')!==false||strpos($news,'wth')!==false||strpos($news,'newwep')!==false||strpos($news,'song')!==false||strpos($news,'present')!==false) && isset($c)) $c = parse_info_desc($c,'m');
 		//合成、使用死斗卡、使用仓库：道具名登记在$b上;
 		if((strpos($news,'mix')!==false||strpos($news,'duelkey')!==false||strpos($news,'depot')===0) && isset($b)) $b = parse_info_desc($b,'m');
-		
-		//新PC加入战场 格式化nick
-		//卧槽这可怎么搞……只能脏一把了
+	
+
+		if(!empty($old_nicknews[$news]))
+		{
+			$name = is_array($old_nicknews[$news]) ? $old_nicknews[$news][0] : 'a';
+			$nick = is_array($old_nicknews[$news]) ? $old_nicknews[$news][1] : $old_nicknews[$news];
+			if(!empty($$nick) || $$nick == 0) $$nick = titles_get_desc($$nick);
+			$$name = $$nick.' '.$$name;
+			unset($name);unset($nick);
+		}
 
 		//$sec='??';
 		if($news == 'newgame') {
@@ -105,6 +137,18 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		} elseif($news == 'wth18_revival')  {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}在光玉们的帮助下原地复活了！</span><br>\n";
 		} elseif(strpos($news,'death') === 0) {
+			if(!empty($a) && strpos($a,'|')!==false)
+			{
+				$arr = explode('|',$a);
+				$a = titles_get_desc($arr[0]).' '.$arr[1];
+				unset($arr);
+			}
+			if(!empty($c) && strpos($c,'|')!==false)
+			{
+				$arr = explode('|',$c);
+				$c = titles_get_desc($arr[0]).' '.$arr[1];
+				unset($arr);
+			}
 			if($news == 'death11') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因滞留在<span class=\"red\">禁区【{$plsinfo[$c]}】</span>死亡";
 			} elseif($news == 'death12') {

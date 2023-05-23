@@ -76,7 +76,7 @@ function teammake($tID,$tPass,$tIcon) {
 			$teamIcon = $tIcon;
 			$sp -= $team_sp;
 			$log .= '你创建了队伍<span class="yellow">'.$teamID.'</span>。<br>';
-			addnews($now,'teammake',$teamID,titles_get_desc($nick).' '.$name);
+			addnews($now,'teammake',$teamID,$name,$nick);
 //			global $gamedata,$chatinfo;
 //			$gamedata['innerHTML']['chattype'] = "<select name=\"chattype\" value=\"2\"><option value=\"0\" selected>$chatinfo[0]<option value=\"1\" >$chatinfo[1]</select>";
 //			$gamedata['value']['team'] = $teamID;
@@ -137,7 +137,7 @@ function teamjoin($tID,$tPass) {
 				$teamIcon = $teaminfo['teamIcon'];
 				$sp -= $teamj_sp;
 				$log .= '你加入了队伍<span class="yellow">'.$teamID.'</span>。<br>';
-				addnews($now,'teamjoin',$teamID,titles_get_desc($nick).' '.$name);
+				addnews($now,'teamjoin',$teamID,$name,$nick);
 //				global $gamedata,$chatinfo;
 //				$gamedata['innerHTML']['chattype'] = "<select name=\"chattype\" value=\"2\"><option value=\"0\" selected>$chatinfo[0]<option value=\"1\" >$chatinfo[1]</select>";
 //				$gamedata['value']['team'] = $teamID;
@@ -156,7 +156,7 @@ function teamquit() {
 
 	if($teamID && $gamestate<40){
 		$log .= '你退出了队伍<span class="yellow">'.$teamID.'</span>。<br>';
-		addnews($now,'teamquit',$teamID,titles_get_desc($nick).' '.$name);
+		addnews($now,'teamquit',$teamID,$name,$nick);
 		$teamID =$teamPass = '';
 //		global $gamedata,$chatinfo;
 //		$gamedata['innerHTML']['chattype'] = "<select name=\"chattype\" value=\"2\"><option value=\"0\" selected>$chatinfo[0]</select>";
