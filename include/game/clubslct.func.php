@@ -61,8 +61,8 @@ function valid_getclublist_t2($udata)
 # 特殊社团列表
 function valid_getclublist_t1($udata)
 {
-	# 随机可选范围（选3）：6-疾风 10-天赋 11-富家 12-全能 19-晶莹
-	$temp_t1_list = Array(6,10,11,12,19);
+	# 随机可选范围（选3）：6-疾风 10-天赋 11-富家 12-全能 13-铁拳 19-晶莹
+	$temp_t1_list = Array(6,10,11,12,13,19);
 
 	global $db,$gtablepre;
 
@@ -114,21 +114,11 @@ function getclub($who, &$c1, &$c2, &$c3)
 	if ($c2>$c3) swap($c2,$c3);
 }
 
-function changeclub($clb,&$data=NULL)
+function changeclub($clb,&$data)
 {
-	if(!isset($data))
-	{
-		global $club;
-		lostclub();
-		$club = $clb;
-		updateskill();
-	}
-	else 
-	{
-		lostclub($data);
-		$data['club'] = $clb;
-		updateskill($data);
-	}
+	lostclub($data);
+	$data['club'] = $clb;
+	updateskill($data);
 }
 
 function updateskill(&$data=NULL)
@@ -143,7 +133,7 @@ function updateskill(&$data=NULL)
 	}
 	extract($data,EXTR_REFS);
 
-	if ($club==1) {$wp+=50;}
+	if ($club==1 || $club==13) {$wp+=50;}
 	if ($club==2) $wk+=50;
 	if ($club==3) $wc+=50;
 	if ($club==4) $wg+=50;
@@ -151,22 +141,19 @@ function updateskill(&$data=NULL)
 	if ($club==9) $wf+=40;
 	if ($club==11) $money+=680;
 	if ($club==12) {$wp+=25; $wk+=25; $wc+=25; $wg+=25; $wd+=25; $wf+=25; $mhp+=250; $hp+=250; $att+=300; $def+=300;}
-	/*if ($club==16) { $wp+=25; $wk+=25; $wc+=25; $wg+=25; $wd+=25; $wf+=25; }
-	if ($club==13) { $mhp+=250; $hp+=250; }
-	if ($club==14) { $att+=300; $def+=300; }*/
 	
 	# 变更社团时 获取社团技能
-	//include_once GAME_ROOT.'./include/game/revclubskills.func.php';
-	if(!isset($data))
+	if(!empty($club_skillslist[$club]))
 	{
 		$cks = $club_skillslist[$club];
-		foreach($cks as $sk) getclubskill($sk,$clbpara);
+		foreach($cks as $sk)
+		{
+			# NPC不会学习带有'player'标签的技能
+			if(get_skilltags($sk,'player') && $type) continue;
+			getclubskill($sk,$clbpara);
+		}
 	}
-	else 
-	{
-		$cks = $club_skillslist[$data['club']];
-		foreach($cks as $sk) getclubskill($sk,$data['clbpara']);
-	}
+	return;
 }
 
 function lostclub(&$data=NULL)

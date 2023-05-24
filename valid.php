@@ -251,10 +251,10 @@ if($mode == 'enter') {
 
 	# 格式化插入player数据
 	$ndata = update_db_player_structure(1);
-	foreach($ndata as $key => $type)
+	foreach($ndata as $key => $ntype)
 	{
 		if(isset($$key)) $ndata[$key] = $$key; 
-		elseif(strpos($type,'int')!==false) $ndata[$key] = 0;
+		elseif(strpos($ntype,'int')!==false) $ndata[$key] = 0;
 		else $ndata[$key] = '';
 	}
 

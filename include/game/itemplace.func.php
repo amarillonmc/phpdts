@@ -3,6 +3,20 @@ if (! defined ( 'IN_GAME' )) {
 	exit ( 'Access Denied' );
 }
 
+# 创建一个合成索引
+function smartmix_create_recipe_quest($itm,$tp=0,&$data=NULL)
+{
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
+	# 创建新的合成索引时，清空旧索引内记录的数据
+	if(!empty($clbpara['smartmix'])) unset($clbpara['smartmix']);
+}
+
 //以道具名反查mixinfo数据
 //tp & 1 以原料反查，tp & 2 以产物反查
 //返回mixinfo里的单个array

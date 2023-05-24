@@ -76,11 +76,45 @@ function calc_trap_escape_rate(&$pa,$playerflag=0,$selflag=0)
 	return min($escrate,$max_escrate);
 }
 
-# 计算触发陷阱后的“迎击事件”
+# 计算触发陷阱后的陷阱伤害
+function calc_trap_damage(&$pa,$pd=NULL,$playerflag=0,$selflag=0)
+{
+	global $log;
+	// 奇迹陷阱
+	if($pa['itmk0'] == 'TOc')
+	{
+		$damage = $pa['hp'];
+		return $damage;
+	}
+	// 随机数大神的陷阱
+	if($pa['itmk0'] == 'TO8')
+	{ 
+		$damage = $pa['hp'] / 8;
+		return $damage;
+	}
+
+	$damage = round(rand(0,$pa['itme0']/2)+($pa['itme0']/2));
+
+	# 防御姿态可以降低陷阱伤害
+	$damage = $pa['tactic'] == 2 ? round($damage * 0.75) : $damage;
+
+	# 技能「宗师」效果判定
+	if(!check_skill_unlock('c13_master',$pa))
+	{
+		$pa['skilllog'] = "大祸临头，你却呵呵笑道：“雕虫小技，不足为惧！”<br>";
+		$damage_p = get_skillvars('c13_master','trapdmgloss');
+		$pa['skilllog'] .= "已经跳到你腿上的<span class='yellow'>{$pa['itm0']}</span>显然被你非凡的气魄震慑到了！你仅";
+		$damage = round($damage * (1 - ($damage_p/100)));
+	}
+	
+	return $damage;
+}
+
+# 计算触发陷阱后的伤害减免事件
 function check_trap_def_event(&$pa,$damage,$playerflag=0,$selflag=0)
 {
-	# 奇迹雷不能迎击
-	if($pa['itmk0'] == 'TOc') return $damage;
+	# 奇迹雷、神力雷不能迎击
+	if($pa['itmk0'] == 'TOc' || $pa['itmk0'] == 'TO8') return $damage;
 	# 检查是否有迎击属性
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
 	if(empty($pa['ex_keys'])) $pa['ex_keys'] = array_merge(\revattr\get_equip_ex_array($pa),\revattr\get_wep_ex_array($pa));
@@ -95,6 +129,14 @@ function check_trap_def_event(&$pa,$damage,$playerflag=0,$selflag=0)
 			$damage = 0;
 		}
 	}
+
+	# 「天佑」技能判定
+	if($damage && !check_skill_unlock('buff_godbless',$data))
+	{
+		$damage = 0;
+		$log .= "<span class=\"yellow\">「天佑」使你免疫了陷阱伤害！</span><br>";
+	}
+
 	return $damage;
 }
 
@@ -121,7 +163,6 @@ function calc_trap_reuse_rate($pa,$playerflag=0,$selflag=0)
 	}
 	return $fdrate;
 }
-
 
 function trap(&$data=NULL){
 	global $log,$cmd,$mode,$iteminfo;
@@ -167,47 +208,14 @@ function trap(&$data=NULL){
 	if($dice >= $escrate)
 	{
 		$bid = $itmsk0;
-		// 奇迹陷阱
-		if($itmk0 == 'TOc')
-		{
-			$damage = $hp;
-			$goodmancard = 0;
-			goto real_trap_damage;
-		}
-		// 随机数大神的陷阱
-		elseif($itmk0 == 'TO8')
-		{ 
-			$damage = $hp / 8;
-			$goodmancard = 0;
-		}
-		else
-		{
-			$damage = round(rand(0,$itme0/2)+($itme0/2));
-			// 防御姿态可以降低陷阱伤害
-			$damage = $tactic == 2 ? round($damage * 0.75) : $damage;
-			
-			//好人卡特别活动
-			//global $itm1,$itmk1,$itms1,$itm2,$itmk2,$itms2,$itm3,$itmk3,$itms3,$itm4,$itmk4,$itms4,$itm5,$itmk5,$itms5;
-			$goodmancard = 0;
-			for($i=1;$i<=5;$i++){
-				if(${'itms'.$i} && ${'itm'.$i} == '好人卡' && ${'itmk'.$i} == 'Y'){
-					$goodmancard += ${'itms'.$i};
-				}
-			}
-		}
 
+		# 计算陷阱伤害
+		$damage = calc_trap_damage($data,NULL,$playerflag,$selflag);
 		# 检查陷阱是否被迎击
 		$damage = check_trap_def_event($data,$damage,$playerflag,$selflag);
-		# 「天佑」技能判定
-		if($damage && $itmk0 != 'TOc' && !check_skill_unlock('buff_godbless',$data))
-		{
-			$damage = 0;
-			$log .= "<span class=\"yellow\">「天佑」使你免疫了陷阱伤害！</span><br>";
-		}
 
 		if($damage)
 		{
-			real_trap_damage:
 			$tmp_club=$club;
 			$hp -= $damage; 
 			$trapkill = false;
@@ -216,19 +224,15 @@ function trap(&$data=NULL){
 			{
 				addnews($now,'trap',$name,$trname,$itm0,$nick);
 			}
-			$log .= "糟糕，你触发了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>！受到<span class=\"dmg\">$damage</span>点伤害！<br>";
+			$log .= "糟糕，你触发了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>！<br>";
+			if($data['skilllog']) $log.= $data['skilllog'];
+			$log .= "受到<span class=\"dmg\">$damage</span>点伤害！<br>";
 
 			# 踩雷rp结算
 			$rp_up = -1 * $rp / 2; 
 			include_once GAME_ROOT.'./include/state.func.php';
 			if($rp_up) rpup_rev($data,$rp_up);
 
-			if($goodmancard)
-			{
-				$gm = ceil($goodmancard*rand(80,120)/100);
-				$log .= "在你身上的<span class=\"yellow\">好人卡</span>的作用下，你受到的伤害增加了<span class=\"red\">$gm</span>点！<br>";
-				$hp -= $gm;
-			}
 			# 陷阱击杀
 			if($hp <= 0) 
 			{

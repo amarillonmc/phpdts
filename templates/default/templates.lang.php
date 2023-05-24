@@ -157,6 +157,9 @@ $language = array
 	'emoji' => '表情',
 	'chatswitch' => '切换',
 	'maptitle' => '虚拟世界地图',
+
+	'skillpage_no_skill' => '目前没有任何技能，去选择一个内定称号、或在游戏中寻找更多技能吧！',
+
 	);
 
 

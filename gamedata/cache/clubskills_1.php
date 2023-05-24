@@ -6,7 +6,7 @@ if(!defined('IN_GAME')) exit('Access Denied');
 # 社团变更时可获得的技能清单：
 $club_skillslist = Array
 (
-	1  => Array('s_hp','s_ad','f_heal','c1_def','c1_crit','c1_stalk','c1_burnsp','c1_bjack','c1_veteran'), #'铁拳无敌',
+	1  => Array('s_hp','s_ad','f_heal','c1_def','c1_crit','c1_stalk','c1_burnsp','c1_bjack','c1_veteran'), #'街头霸王',
 	2  => Array('s_hp','s_ad','f_heal','c2_butcher','c2_intuit','c2_raiding','c2_master','c2_annihil'), #'见敌必斩',
 	3  => Array('s_hp','s_ad','f_heal','c3_pitchpow','c3_enchant','c3_potential','c3_hawkeye','c3_offset','c3_numerous'), #'灌篮高手',
 	4  => Array('s_hp','s_ad','f_heal','c4_stable','c4_break','c4_aiming','c4_loot','c4_roar','c4_sniper','c4_headshot'), #'狙击鹰眼',
@@ -18,6 +18,7 @@ $club_skillslist = Array
 	10 => Array('s_hp','s_ad','f_heal','c10_inspire','c10_insight','c10_decons'), #'天赋异禀', //高速成长与天赋异禀合并为天赋异禀
 	11 => Array('s_hp','s_ad','f_heal','c11_ebuy','c11_merc','c11_stock','c11_renjie'), #'富家子弟',
 	12 => Array('s_hp','s_ad','f_heal','c12_huge','c12_enmity','c12_garrison','c12_rage','c12_bloody','c12_swell'), #'全能兄贵', //根性兄贵、肌肉兄贵、全能骑士合并为全能兄贵
+	13 => Array('s_hp','s_ad','f_heal','c13_master','c13_kungfu','c13_quick','c13_wingchun','c13_parry','c13_duel'),
 	//13 => Array('s_hp','s_ad','f_heal'), #'根性兄贵',
 	//14 => Array('s_hp','s_ad','f_heal'), #'肌肉兄贵',
 	15 => Array('f_heal'), #'<span class="L5">L5状态</span>',
@@ -50,18 +51,21 @@ $cskills_wlist = Array
 # 社团技能标签介绍：
 $cskills_tags = Array
 (
+	//'club' => '<span tooltip="隐藏标签：代表这个技能会显示在称号技能页面" class="gold">【称号】</span>',
 	'battle' => '<span tooltip="可以在战斗中主动使用" class="gold">【战斗技】</span>',
 	'passive' => '<span tooltip="满足条件时自动触发" class="gold">【被动技】</span>',
 	'switch' => '<span tooltip="可主动启用或停用效果" class="gold">【开关技】</span>',
 	'active' => '<span tooltip="可在技能界面直接使用" class="gold">【主动技】</span>',
 	'openning' => '<span tooltip="仅在初次先制发现敌人时可用" class="gold">【开幕技】</span>',
 	'limit' => '<span tooltip="每局游戏内可发动次数有限" class="gold">【限次技】</span>',
-	//'buff' => '<span tooltip="隐藏标签：代表这是一个临时性状态" class="gold">【状态】</span>',
+	//'inf' => '<span tooltip="隐藏标签：代表这是一个负面状态，这个技能会显示在状态页面" class="gold">【异常】</span>',
+	//'buff' => '<span tooltip="隐藏标签：代表这是一个正面状态，这个技能会显示在状态页面" class="gold">【增益】</span>',
 	//'unlock_battle_hidden' => '<span tooltip="隐藏标签：未解锁时不会在战斗界面显示" class="gold">【隐藏】</span>',
 	//'player' => '<span tooltip="隐藏标签：只有玩家会有此技能" class="gold">【玩家】</span>',
 );
 
 // tips
+$sktrapidatk = '<span class="gold" tooltip2="【连续攻击】：攻击完毕、且造成的最终伤害结算后，在敌人反击前再度发起攻击">连续攻击</span>';
 $sktpshield = '<span class="gold" tooltip2="【护盾】：可抵消等同于护盾值的伤害。护盾值只在抵消属性伤害时消耗，抵消电击伤害时双倍消耗。护盾存在时不会受到反噬伤害或陷入异常状态。">护盾</span>';
 $sktprp = '<span class="yellow">报应点数</span>';
 $sktpwhitedmg = '<span class="gold" tooltip2="【纯粹伤害】：不会受防御、抹消或制御效果影响的定值伤害">纯粹伤害</span>';
@@ -878,8 +882,8 @@ $cskills = Array
 		'name' => '双响',
 		'tags' => Array('battle','limit'),
 		'wepk' => Array('D'),
-		'desc' => '本局已发动<span class="redseed"> [^skillpara|c5_double-active_t^]/[:maxactive_t:] </span>次<br>使用爆系武器方可发动，连续攻击[:chase_t:]次。',
-		'bdesc' => '本次战斗你将连续攻击[:chase_t:]次；本局已发动<span class="redseed">[^skillpara|c5_double-active_t^]/[:maxactive_t:]</span>次',
+		'desc' => '本局已发动<span class="redseed"> [^skillpara|c5_double-active_t^]/[:maxactive_t:] </span>次<br>使用爆系武器方可发动，'.$sktrapidatk.'[:chase_t:]次。',
+		'bdesc' => '本次战斗你将'.$sktrapidatk.'[:chase_t:]次；本局已发动<span class="redseed">[^skillpara|c5_double-active_t^]/[:maxactive_t:]</span>次',
 		'svars' => Array(
 			'active_t' => 0,
 		),
@@ -1674,7 +1678,7 @@ $cskills = Array
 		'name' => '海虎',
 		'tags' => Array('passive'),
 		'desc' => '在生命值低于<span class="yellow">50%/30%</span>生命上限的情况下，<br>
-		有<span class="yellow">[:swellr:]%×</span><span class="gold" tooltip2="底力系数计算公式：(1+2×已损失生命百分比)×已损失生命百分比">底力系数</span>概率连续造成<span class="yellow">2/3</span>次攻击',
+		有<span class="yellow">[:swellr:]%×</span><span class="gold" tooltip2="底力系数计算公式：(1+2×已损失生命百分比)×已损失生命百分比">底力系数</span>概率造成<span class="yellow">2/3</span>次'.$sktrapidatk.'',
 		'vars' => Array(
 			'swellr' => 19,
 		),
@@ -1685,6 +1689,155 @@ $cskills = Array
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 21',
 			'hp+mhp' => '[:hp:] <= [:mhp:]*0.5',
+		),
+	),
+	'c13_kungfu' => Array
+	(
+		'name' => '拳法',
+		'tags' => Array('passive'),
+		'desc' => '空手作战时，相当于持有等同于殴系熟练度数值的武器<br>
+		攻击时有<span class="yellow">35%/15%/5%/3%</span>的几率额外获得<span class="yellow">1/2/3/4</span>点熟练<br>',
+		'lockdesc' => Array(
+			'wepk+wep_kind' => "空手时可发动",
+		),
+		'unlock' => Array(
+			'wepk+wep_kind' => "strpos([:wepk:],'N')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'N')",
+		),
+	),
+	'c13_master' => Array
+	(
+		'name' => '宗师',
+		'tags' => Array('passive'),
+		'desc' => '手持武器时造成的物理伤害减少<span class="red">[:phydmgloss:]%</span>；<br>
+		若武器是带“拳”字的钝器则减少<span class="red">[:phydmgloss_2:]%</span>；<br>
+		你不能再埋设陷阱，且从陷阱处受到的伤害减少<span class="yellow">[:trapdmgloss:]%</span><br>',
+		'vars' => Array
+		(
+			'phydmgloss' => 90, 
+			'phydmgloss_2' => 50,
+			'trapdmgloss' => 60,
+		),
+	),
+	'c13_quick' => Array
+	(
+		'name' => '快拳',
+		'tags' => Array('passive'),
+		'desc' => '空手战斗时有<span class="yellow">[:rapidr:]%</span>概率'.$sktrapidatk.'2次',
+		'maxlvl' => 4,
+		'cost' => Array(3,3,4,4,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">技能「快拳」升级成功。</span><br>',
+		'status' => Array('skillpara|c13_quick-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c13_quick-lvl' => '+=::1',),
+		),
+		'svars' => Array('lvl' => 0),
+		'vars' => Array(
+			'rapidr' => Array(10,15,20,25,30),
+		),
+		'lockdesc' => Array(
+			'wepk+wep_kind' => "空手时可发动",
+		),
+		'unlock' => Array(
+			'wepk+wep_kind' => "strpos([:wepk:],'N')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'N')",
+		),
+	),
+	'c13_wingchun' => Array
+	(
+		'name' => '乱击',
+		'tags' => Array('battle'),
+		'maxlvl' => 2,
+		'cost' => Array(6,9,-1),
+		'input' => '升级',
+		'log' => '<span class="yellow">技能「乱击」升级成功。</span><br>',
+		'status' => Array('skillpara|c13_wingchun-lvl'),
+		'effect' => Array(
+			0 => Array('skillpara|c13_wingchun-lvl' => '+=::1',),
+		),
+		'svars' => Array('lvl' => 0),
+		'desc' => "空手时可发动，消耗<span class=\"yellow\">[:ragecost:]</span>点怒气；<br>
+		本次攻击附加<span class=\"yellow\">[:ragecost:]%</span>殴熟的物理伤害；<br>
+		且「快拳」的发动率<span class=\"yellow\">+[:rapidr:]</span>%<br>",
+		'bdesc' => "消耗<span class=\"red\">[:ragecost:]%</span>点怒气，附加等于<span class=\"yellow\">[:phydmgr:]%</span>殴熟的物理伤害；本次攻击「快拳」的触发率<span class=\"yellow\">+[:rapidr:]</span>%",
+		'vars' => Array(
+			'ragecost' => Array(30,40,45),
+			'phydmgr' => Array(25,33,50),
+			'rapidr' => Array(5,15,25),
+		),
+		'lockdesc' => Array(
+			'lvl' => '7级时解锁',
+			'wepk+wep_kind' => "空手时可发动",
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 7',
+			'wepk+wep_kind' => "strpos([:wepk:],'N')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'N')",
+		),
+	),
+	'c13_parry' => Array
+	(
+		'name' => '消力',
+		'tags' => Array('passive'),
+		'desc' => '你的基础防御力增加<span class="yellow">殴系熟练度</span>点；<br>
+		战斗中，你有<span class="yellow">[:parryr:]%</span>几率消去<span class="yellow">殴系熟练度</span>点伤害（最多<span class="yellow">[:maxparry:]</span>点）<br>',
+		'vars' => Array(
+			'parryr' => 20,
+			'maxparry' => 800,
+		),
+		'lockdesc' => Array(
+			'lvl' => '11级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 11',
+		),
+	),
+	'c13_duel' => Array
+	(
+		'name' => '决战',
+		'tags' => Array('active','limit'),
+		'desc' => '发动后获得增益效果：<br>
+		当前殴系熟练翻倍，但每次探索/移动时减少<span class="red">[:wploss:]</span>点殴熟；<br>
+		技能生效时，「快拳」与「消力」的发动率<span class="yellow">+[:rapidr:]%</span>',
+		'input' => '发动',
+		'no_reload_page' => 1,
+		'log' => '<span class="L5">你感觉一股力量贯通全身！</span><br>',
+		'status' => Array('wp','skillpara|c13_duel-active_t'),
+		'effect' => Array(
+			0 => Array(
+				'wp' => '*=::2',
+				'skillpara|c13_duel-active_t' => '+=::1'
+			),
+		),
+		'events' => Array('getskill_buff_duel','active_news'),
+		'link' => Array('buff_duel'),
+		'vars' => Array(),
+		'svars' => Array(
+			'active_t' => 0,
+		),
+		'lockdesc' => Array(
+			'skillpara|c13_duel-active_t' => '次数耗尽，已无法发动该技能',
+			'lvl' => '21级时解锁',
+			'wp' => '需要至少250点殴熟才能发动！',
+		),
+		'unlock' => Array(
+			'skillpara|c13_duel-active_t' => '[:skillpara|c13_duel-active_t:] < 1',
+			'lvl' => '[:lvl:] >= 21',
+			'wp' => '[:wp:] >= 250',
+		),
+	),
+	'buff_duel' => Array
+	(
+		'name' => '[状态]决战',
+		'tags' => Array('buff'),
+		'desc' => '<span class="lime">「决战」生效中！',
+		'vars' => Array(
+			'wploss' => 5, //每次移动减少的欧熟
+			'rapidr' => 20, //增加的技能发动率
+		),
+		'lockdesc' => Array(
+			'wp' => '需要至少5点殴熟才能生效！',
+		),
+		'unlock' => Array(
+			'wp' => '[:wp:] >= 5',
 		),
 	),
 	'c19_nirvana' => Array

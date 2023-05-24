@@ -72,6 +72,7 @@ function rs_game($mode = 0) {
 		//echo " - NPC初始化 - ";
 		$db->query("DELETE FROM {$tablepre}players WHERE type>0 ");
 		include_once config('npc',$gamecfg);
+		include_once GAME_ROOT."./include/game/clubslct.func.php";
 		//$typenum = sizeof($typeinfo);
 		$plsnum = sizeof($plsinfo);
 		$npcqry = '';
@@ -111,30 +112,10 @@ function rs_game($mode = 0) {
 					//$npc['wp'] = $npc['wk'] = $npc['wg'] = $npc['wc'] = $npc['wd'] = $npc['wf'] = $npc['skill'];
 					if($npc['gd'] == 'r'){$npc['gd'] = rand(0,1) ? 'm':'f';}
 
-					# NPC技能初始化
-		
-					// 社团技能初始化
-					global $club_skillslist;
-					if(isset($club_skillslist[$npc['club']]))
-					{
-						if(empty($npc['clbpara'])) $npc['clbpara']['skill'] = Array();
-						$npc_csk = $club_skillslist[$npc['club']];
-						foreach($npc_csk as $sk) getclubskill($sk,$npc['clbpara']);
-					}
-					// 自定技能初始化
-					global $cskills;
-					if(!empty($npc['clubskill']))
-					{
-						foreach($npc['clubskill'] as $sk) getclubskill($sk,$npc['clbpara']);
-					}
-					// 自定技能参数初始化
-					if(!empty($npc['clubskillpara']))
-					{
-						foreach($npc['clubskillpara'] as $sk => $skarr)
-						{
-							foreach($skarr as $skpara => $skvalue) set_skillpara($sk,$skpara,$skvalue,$npc['clbpara']);
-						}
-					}
+					# NPC称号技能初始化
+					if(!empty($npc['club'])) changeclub($npc['club'],$npc);
+					# NPC自定义技能初始化
+					if(!empty($npc['clubskill']) || !empty($npc['clubskillpara'])) customtclubskill($npc);
 					
 					//初始化NPC所在位置
 					global $hidding_typelist,$deepzones;
@@ -647,6 +628,8 @@ function movehtm($atime = 0) {
 function addnpc($type,$sub,$num,$time = 0,$clbstatus=NULL,$aitem=NULL,$apls=NULL) {
 	global $now,$db,$gtablepre,$tablepre,$log,$plsinfo,$typeinfo,$arealist,$areanum,$gamecfg;
 	global $hidding_typelist,$deepzones;
+	include_once GAME_ROOT."./include/game/clubslct.func.php";
+
 	$time = $time == 0 ? $now : $time;
 	$plsnum = sizeof($plsinfo);
 	/*if(empty($anpcinfo) || empty($npcinit)){
@@ -697,29 +680,12 @@ function addnpc($type,$sub,$num,$time = 0,$clbstatus=NULL,$aitem=NULL,$apls=NULL
 				}
 				//$npc['pls'] = rand(1,$plsnum-1);
 			}	
-			# NPC技能初始化
-			// 社团技能初始化
-			global $club_skillslist;
-			if(isset($club_skillslist[$npc['club']]))
-			{
-				if(empty($npc['clbpara'])) $npc['clbpara']['skill'] = Array();
-				$npc_csk = $club_skillslist[$npc['club']];
-				foreach($npc_csk as $sk) getclubskill($sk,$npc['clbpara']);
-			}
-			// 自定技能初始化
-			global $cskills;
-			if(!empty($npc['clubskill']))
-			{
-				foreach($npc['clubskill'] as $sk) getclubskill($sk,$npc['clbpara']);
-			}
-			// 自定技能参数初始化
-			if(!empty($npc['clubskillpara']))
-			{
-				foreach($npc['clubskillpara'] as $sk => $skarr)
-				{
-					foreach($skarr as $skpara => $skvalue) set_skillpara($sk,$skpara,$skvalue,$npc['clbpara']);
-				}
-			}
+
+			# NPC称号技能初始化
+			if(!empty($npc['club'])) changeclub($npc['club'],$npc);
+			# NPC自定义技能初始化
+			if(!empty($npc['clubskill']) || !empty($npc['clubskillpara'])) customtclubskill($npc);
+
 			//自定义addnpc出现位置，会覆盖原本预设的位置。 TODO：要不要发个特别的news？
 			if(isset($apls)) $npc['pls'] = (int)$apls;
 			//自定义addnpc身上携带的道具，会覆盖原本预设的道具。 格式：$aitem=Array($iid=>Array($itm,$itmk,$itme,$itms,$itmsk),...)

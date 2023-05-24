@@ -5,9 +5,6 @@
 	}
 
 	# 新社团技能：
-
-	//include_once GAME_ROOT.'./include/game/dice.func.php';
-
 	# 获得指定技能 $sk：技能名；$para：$clbpara
 	function getclubskill($sk,&$para)
 	{
@@ -41,7 +38,7 @@
 	function lostclubskill($sk,&$para)
 	{
 		global $cskills;
-		if(in_array($sk,$para['skill']))
+		if(!empty($para['skill']) && in_array($sk,$para['skill']))
 		{
 			# 检查技能丢失时是否要执行事件
 			if(isset($cskills[$sk]['lostevents']))
@@ -74,27 +71,29 @@
 		return;
 	}
 
-	# 激活指定技能（技能名，额外参数）（这个做法还是太离谱，暂时废弃）
-	/*function actclbskills($data,$sk,$skpara=NULL)
+	# 通过自定义方式初始化技能与技能参数
+	# 'clubskill' => Array('sk1'); # 获取指定技能
+	# 'clubskillpara' => Array('sk1' => 'sk1para' => Array('para_key' => 'para_values')); # 修改指定技能参数
+	function customtclubskill(&$data)
 	{
-		global $log,$cskills;
-
-		if(isset($cskills[$sk]))
+		if(!empty($data['clubskill']))
 		{
-			# 合法性检查
-			$flag = check_skill_unlock($sk,$data);
-			if($flag) return;
-			include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
-			$sk_func = 'skill_'.$sk.'act';
-			if(function_exists($sk_func))
+			foreach($data['clubskill'] as $sk) getclubskill($sk,$data['clbpara']);
+		}
+		if(!empty($data['clubskillpara']))
+		{
+			foreach($data['clubskillpara'] as $sk => $skpara)
 			{
-				if(!empty($skpara))
-					eval("$sk_func($skpara);");
-				else
-					eval("$sk_func();");
+				foreach($skpara as $para_key => $para_value)
+				{
+					//....
+					$data['clbpara']['skillpara'][$sk][$para_key] = $para_value;
+					//set_skillpara($sk,$para_key,$para_value,$data['clbpara']);
+				}
 			}
 		}
-	}*/
+		return;
+	}
 
 	# 升级指定技能 $sk：技能名；$nums：升级次数
 	function upgclbskills($sk,$nums=1)
@@ -328,6 +327,17 @@
 		return 0;
 	}
 
+	function get_skillragecost($sk,$data)
+	{
+		$ragecost = get_skillvars($sk,'ragecost');
+		if(is_array($ragecost))
+		{
+			$sk_lvl = get_skilllvl($sk,$data);
+			$ragecost = $ragecost[$sk_lvl];
+		}
+		return $ragecost;
+	}
+
 	# 技能是否满足消耗条件，返回0时为可激活，否则返回对应的未满足条件 $sk：技能名；$data：角色数据
 	function check_skill_cost($sk,$data)
 	{
@@ -336,8 +346,8 @@
 		$cannot_active_log = Array(
 			0 => '怒气不足，需要<span class="red">[:ragecost:]</span>点怒气',
 		);
+		$ragecost = get_skillragecost($sk,$data);
 		# 检查技能需要消耗的怒气条件是否满足
-		$ragecost = get_skillvars($sk,'ragecost');
 		if($ragecost && $data['rage'] < $ragecost)
 		{
 			$clog = str_replace('[:ragecost:]',$ragecost,$cannot_active_log[0]);
