@@ -129,22 +129,6 @@
 		return $smhint;
 	}
 
-	function print_elements_tags($e_key)
-	{
-		global $elements_info,$gamecfg,$iteminfo,$itemspkinfo;
-		include config('elementmix',$gamecfg);
-		$tinfo="已了解的特征：";
-		foreach($temp_etags[$e_key] as $tk => $tarr)
-		{
-			if(is_array($tarr))
-			{
-				foreach($tarr as $tm) 
-					$tinfo.= $tk == 'dom' ? "[主]".$iteminfo[$tm]." " : "[次]".$itemspkinfo[$tm]." ";
-			}
-		}
-		return $tinfo;
-	}
-
 	/********拆解元素部分********/
 	# 把尸体打散成元素
 	function split_corpse_to_elements(&$edata,$emode)

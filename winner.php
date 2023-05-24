@@ -47,7 +47,7 @@ if($command == 'info') {
 			}
 			else 
 			{
-				$wdata['nickinfo'] = !empty($wdata['nick']) || $wdata['nick'] == 0 ? titles_get_desc($wdata['nick']) : '';
+				$wdata['nickinfo'] = (!empty($wdata['nick']) || $wdata['nick'] === '0') ? titles_get_desc($wdata['nick']) : '';
 			}
 		}
 		$winfo[$wdata['gid']] = $wdata;

@@ -21,23 +21,7 @@
 		if (!$death) return;
 			
 		$hp = 0;
-		if ($death == 'N') {
-			$state = 20;
-		} elseif ($death == 'P') {
-			$state = 21;
-		} elseif ($death == 'K') {
-			$state = 22;
-		} elseif ($death == 'G') {
-			$state = 23;
-		} elseif ($death == 'C') {
-			$state = 24;
-		} elseif ($death == 'D') {
-			$state = 25;
-		} elseif ($death == 'F') {
-			$state = 29;
-		} elseif ($death == 'J') {
-			$state = 23;
-		}elseif ($death == 'poison') {
+		if ($death == 'poison') {
 			$state = 26;
 		} elseif ($death == 'trap') {
 			$state = 27;
@@ -101,19 +85,12 @@
 			$result = $db->query ( "SELECT lastword FROM {$gtablepre}users WHERE username = '$name'" );
 			$lastword = $db->result ( $result, 0 );
 			$lwname = $typeinfo [$type] . ' ' . $name;
-			/*$result = $db->query("SELECT pls FROM {$tablepre}players WHERE name = '$name' AND type = '$type'");
-			$pls = $db->result($result, 0);*/
 			$db->query ( "INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$now','$lwname','$pls','$lastword')" );
 		}
 		$deathtime = $now;
-		//$result = $db->query("SELECT nick FROM {$tablepre}players WHERE name = '$kname' AND type = '$type'");
-		//$knick = $db->result($result, 0);
-		//$kname= !empty($knick) || $knick == 0 ? $knick.'+'.$ : 'none';
 
 		addnews ($now,'death'.$state,$dname,$type,$kname,$annex,$lastword);
 
-		//$alivenum = $db->result($db->query("SELECT COUNT(*) FROM {$tablepre}players WHERE hp>0 AND type=0"), 0);
-		
 		# 执行死亡事件（灵魂绑定等）
 		if(!$data['type'] && empty($data['nm'])) $data['nm'] = '你';
 		check_death_events(create_dummy_playerdata(),$data,1);
@@ -124,7 +101,7 @@
 		return $killmsg;
 	}
 
-		# 执行不需要考虑复活问题的击杀事件：
+	# 执行不需要考虑复活问题的击杀事件：
 	# 再重复一遍：这里的第一个参数指的是杀人者(敌对方)视角，第二个参数指的是死者(受到伤害者)视角。
 	function pre_kill_events(&$pa,&$pd,$active,$death) 
 	{
@@ -174,6 +151,7 @@
 			$lastword = $db->result ( $result, 0 );
 		}
 		//向聊天框发送遗言
+		$dname = $typeinfo[$pd['type']].' '.$pd['name']; //以前有没有来着……
 		$db->query ( "INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$now','$dname','$dpls','$lastword')" );
 
 		//发送news
