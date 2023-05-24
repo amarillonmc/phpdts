@@ -341,7 +341,7 @@ namespace revcombat
 		$loop = 0;
 
 		# 「双响」效果判定
-		if(isset($pa['bskill_c5_double']))
+		if(!$loop && isset($pa['bskill_c5_double']))
 		{
 			unset($pa['bskill_c5_double']);unset($pa['bskilllog']);
 			$log .= "<span class=\"yellow\">{$pa['nm']}引爆了预埋的另一组爆炸物！</span><br>";
@@ -349,12 +349,32 @@ namespace revcombat
 		}
 
 		# 「海虎」效果判定
-		if(isset($pa['skill_c12_swell']))
+		if(!$loop && isset($pa['skill_c12_swell']))
 		{
 			$pa['skill_c12_swell'] --;
 			if(empty($pa['skill_c12_swell'])) unset($pa['skill_c12_swell']);
 			$log .= "<span class=\"lime\">{$pa['nm']}以雷霆万钧之势再度袭向{$pd['nm']}！</span><br>";
 			$loop = 1;
+		}
+
+		# 「快拳」效果判定
+		if(!$loop && isset($pa['skill_c13_quick']))
+		{
+			$sk_dice = diceroll(99);
+			$sk_obbs = get_skillvars('c13_quick','rapidr',get_skilllvl('c13_quick',$pa));
+
+			#「乱击」概率增幅
+			if(isset($pa['bskill_c13_wingchun'])) $sk_obbs += get_skillvars('c13_wingchun','rapidr',get_skilllvl('c13_wingchun',$pa));
+			#「决战」概率增幅
+			if(isset($pa['skill_buff_duel'])) $sk_obbs += get_skillvars('buff_duel','rapidr');
+
+			if($sk_dice <= $sk_obbs)
+			{
+				$pa['skill_c13_quick'] --;
+				if(empty($pa['skill_c13_quick'])) unset($pa['skill_c13_quick']);
+				$log .= "<span class=\"lime\">{$pa['nm']}身法灵动，再度出拳！</span><br>";
+				$loop = 1;
+			}
 		}
 
 		# 循环打击触发时，注销所有的主动技触发标记

@@ -147,7 +147,7 @@ namespace revattr
 				$bsk = $pa['bskill'];
 				$bsk_name = $cskills[$bsk]['name'];
 				# 扣除怒气
-				$bsk_cost = get_skillvars($bsk,'ragecost');
+				$bsk_cost = get_skillragecost($bsk,$pa);
 				if($bsk_cost) $pa['rage'] -= $bsk_cost;
 				# 成功释放主动技，应用标记
 				$pa['bskill_'.$bsk] = 1;
@@ -682,8 +682,14 @@ namespace revattr
 		if($pa['wep_kind'] == 'N') 
 		{
 			if(!isset($pa['wep_skill'])) $pa['wep_skill'] = get_wep_skill($pa);
-			$pa['wepe_t'] = round($pa['wep_skill']*2/3);	
-		} 
+			$pa['wepe_t'] = round($pa['wep_skill']*2/3);
+			
+			#「拳法」效果判定，在空手基础上再额外增加
+			if(isset($pa['skill_c13_kungfu']))
+			{
+				$pa['wepe_t'] = round($pa['wep_skill']);
+			}
+		}
 		//射系 武器伤害=面板数值
 		elseif($pa['wep_kind'] == 'G' || $pa['wep_kind'] == 'J') 
 		{
@@ -795,19 +801,22 @@ namespace revattr
 				$pa['charge_flag'] = 1;
 			}
 		}
-		# 获取pd社团技能对防御力的加成（旧）
-		/*if(!empty($pd['skills']))
-		{
-			rev_get_clubskill_bonus($pa['club'],$pa['skills'],$pa,$pd['club'],$pa['skills'],$pd,$att1,$def1);
-		}*/
+
 		# 获取pd社团技能对防御力的加成（新）
+		$sk_def = 0;
 		# 「格挡」技能加成
 		if(!check_skill_unlock('c1_def',$pd))
 		{
 			$def_trans_rate = $cskills['c1_def']['vars']['trans'];
 			$def_maxtrans = $cskills['c1_def']['vars']['maxtrans'];
-			$sk_def = min($def_maxtrans, $def_trans_rate * $pd['wepe'] / 100);
+			$sk_def += min($def_maxtrans, $def_trans_rate * $pd['wepe'] / 100);
 		}
+		# 「消力」技能加成
+		if(!check_skill_unlock('c13_parry',$pd))
+		{
+			$sk_def += $pd['wp'];
+		}
+
 		# 汇总：
 		$total_def = $base_def+$equip_def;
 		if(!empty($def1)) $total_def += $def1;
@@ -918,6 +927,8 @@ namespace revattr
 	//计算在原始伤害基础上附加的固定伤害
 	function get_original_fix_dmg_rev(&$pa,&$pd,$active)
 	{
+		global $log;
+
 		$damage = 0;
 		# 重枪
 		if ($pa['wep_kind'] == 'J') 
@@ -929,7 +940,6 @@ namespace revattr
 		# 灵力武器
 		if ($pa['wep_kind'] == 'F') 
 		{
-			global $log;
 			if(isset($pa['sldr_flag']) || isset($pd['sldr_flag'])) 
 			{
 				$log.="<span class=\"red\">由于灵魂抽取的作用，灵系武器伤害大幅降低了！</span><br>";
@@ -938,6 +948,14 @@ namespace revattr
 			{
 				$damage += $pa['wepe'];
 			}
+		}
+		#「乱击」判定：
+		if(isset($pa['bskill_c13_wingchun']))
+		{
+			$sk_p = get_skillvars('c13_wingchun','phydmgr',get_skilllvl('c13_wingchun',$pa));
+			$sk_dmg = round($pa['wep_skill'] * ($sk_p/100));
+			$log.="<span class='yellow'>{$pa['nm']}对着敌人打出了一屏幕的拳头，附加了{$sk_dmg}点伤害！</span><br>";
+			$damage += $sk_dmg;
 		}
 		$pa['original_dmg'] += $damage;
 		return $damage;
@@ -1072,6 +1090,14 @@ namespace revattr
 			$p = 1 + ($sk_p / 100);
 			$dmg_p[]= $p; 
 			$log.="<span class='yellow'>「解构」使{$pa['nm']}造成的物理伤害提高了{$sk_p}%！</span><br>";
+		}
+		#「宗师」判定：
+		if(isset($pa['skill_c13_master']) && $pa['wep_kind'] != 'N')
+		{
+			$sk_p = (strpos($pa['wep_name'],'拳')!==false && $pa['wep_kind'] == 'P') ? get_skillvars('c13_master','phydmgloss_2') : get_skillvars('c13_master','phydmgloss');
+			$p = 1 - ($sk_p / 100);
+			$dmg_p[]= $p; 
+			$log.="<span class='yellow'>{$pa['nm']}耻于使用武器战斗！造成的物理伤害降低了{$sk_p}%！</span><br>";
 		}
 		return $dmg_p;
 	}
@@ -1929,6 +1955,27 @@ namespace revattr
 			$sk_var = get_skillpara('buff_shield','svar',$pd['clbpara']);
 			$fin_dmg = max(0,$fin_dmg - $sk_var);
 			$log .= "<span class=\"lime\">「护盾」使{$pd['nm']}受到的伤害降低了{$sk_var}点！</span><br>";
+		}
+
+		# 「消力」效果判定
+		if(isset($pd['skill_c13_parry']))
+		{
+			$sk_dice = diceroll(99);
+			$sk_obbs = get_skillvars('c13_parry','parryr');
+
+			#「决战」概率增幅
+			if(isset($pd['skill_buff_duel'])) $sk_obbs += get_skillvars('buff_duel','rapidr');
+
+			if($sk_dice <= $sk_obbs)
+			{
+				$sk_var = min($pd['wep_skill'],get_skillvars('c13_parry','maxparry'));
+				if($sk_var)
+				{
+					$sk_var = min($fin_dmg,$sk_var);
+					$fin_dmg -= $sk_var;
+					$log .= "<span class=\"yellow\">{$pd['nm']}使出化劲儿，消去了{$sk_var}点伤害！</span><br>";
+				}
+			}
 		}
 
 		# 「灵俑」抵挡伤害判定

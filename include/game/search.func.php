@@ -527,6 +527,13 @@ function move_search_events(&$data,$act)
 		set_skillpara($sk,'ms',$ms,$data['clbpara']);
 	}
 
+	# 「决战」效果判定
+	if(!check_skill_unlock('buff_duel',$data))
+	{
+		$sk_var = get_skillvars('buff_duel','wploss');
+		if($data['wp'] >= $sk_var) $data['wp'] -= $sk_var;
+	}
+
 	return;
 }
 

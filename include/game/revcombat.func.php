@@ -566,9 +566,33 @@ namespace revcombat
 		if(!empty($pa['wep_imp_times'])) weapon_loss($pa,$pa['wep_imp_times']);
 		//发出声音
 		addnoise ( $pa['wep_kind'], $pa['wepsk'], $now, $pa['pls'], $pa['pid'], $pd['pid'], $pa['wep_kind'] );
-		//增加熟练度 //天赋异禀攻击时额外+1熟练度
-		$pa[$skillinfo[$pa['wep_kind']]] += $pa['club'] == 10 ? 2 : 1;
-		//print_r($pa);
+
+		# 增加熟练度
+		$pa[$skillinfo[$pa['wep_kind']]] += 1;
+		# 天赋异禀额外+1熟练度
+		if($pa['club'] == 10) $pa[$skillinfo[$pa['wep_kind']]] += 1;
+		# 「拳法」效果判定
+		if(isset($pa['skill_c13_kungfu']) && $pa['wep_kind'] == 'N')
+		{
+			$sk_obbs = diceroll(99);
+			if($sk_obbs >= 96)
+			{
+				$pa[$skillinfo[$pa['wep_kind']]] += 4;
+			}
+			elseif($sk_obbs >= 94)
+			{
+				$pa[$skillinfo[$pa['wep_kind']]] += 3;
+			}
+			elseif($sk_obbs >= 85)
+			{
+				$pa[$skillinfo[$pa['wep_kind']]] += 2;
+			}
+			elseif($sk_obbs >= 65)
+			{
+				$pa[$skillinfo[$pa['wep_kind']]] += 1;
+			}
+		}
+
 		return $damage;
 	}
 

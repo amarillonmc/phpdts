@@ -337,7 +337,7 @@ if(!defined('IN_GAME')) exit('Access Denied');
     # 24. 殴系爱好者
     24 => Array(
       'wp' => '[:+=:]50',
-      'itm6' => '「铁拳无敌」称号卡', 'itmk6' => 'ZB', 'itme6' => 1,  'itms6' => 1, 'itmsk6' => '',
+      'itm6' => '「街头霸王」称号卡', 'itmk6' => 'ZB', 'itme6' => 1,  'itms6' => 1, 'itmsk6' => '',
     ),
     # 26. 斩系爱好者
     26 => Array(

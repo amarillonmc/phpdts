@@ -449,7 +449,7 @@
 				if(isset($pa['bskill']) && isset($pa['bskill_'.$pa['bskill']]))
 				{
 					$bsk = $pa['bskill'];
-					$bsk_cost = get_skillvars($bsk,'ragecost');
+					$bsk_cost = get_skillragecost($bsk,'ragecost');
 					if($bsk_cost)
 					{
 						$pa['rage'] += round($bsk_cost*0.1);

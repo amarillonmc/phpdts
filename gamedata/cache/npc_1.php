@@ -6,6 +6,7 @@ $npcinit = array
 		'mhp' => 0,	'msp' => 0,	'att' => 0,	'def' => 0,	'pls' => 0,	'lvl' => 0,
 		'money' => 0,	'inf' => '',	'rage' => 0,	'pose' => 0,	'tactic' => 0,	
 		'killnum' => 0,	'state' => 1,	'teamID' => '',	'teamPass' => '','bid' => 0,
+		'clbpara' => Array(),
 		'wp' => 0, 'wk' => 0, 'wc' => 0, 'wg' => 0, 'wd' => 0, 'wf' => 0, 'skills' => 0, 'rp' => 0,
 		'wep' => '',	'wepk' => '',	'wepe' => 0,	'weps' => 0,	'wepsk' => '',
 		'arb' => '',	'arbk' => '',	'arbe' => 0,	'arbs' => 0,	'arbsk' => '',
@@ -1826,6 +1827,21 @@ $npcinfo = array
 			'gd' => 'f',
 			'icon' => 101,
 			'club' => 10,
+			'clubskill' => Array(
+				'c4_stable','c4_break',
+			),
+			'clubskillpara' => Array
+			(
+				'c4_stable' => Array(
+					'lvl' => 3,
+				),
+				'c4_break' => Array(
+					'lvl' => 3,
+				),
+				'c10_insight' => Array(
+					'lvl' => 4,
+				),
+			),
 			'mhp' => 4932,
 			'att' => 5120,
 			'skill' => 1500,
@@ -1977,7 +1993,22 @@ $npcinfo = array
 			'name' => '北京推倒你',
 			'gd' => 'm',
 			'icon' => 102,
-			'club' => 1,
+			'club' => 13,
+			'clubskill' => Array(
+				'buff_duel',
+			),
+			'clubskillpara' => Array
+			(
+				'c13_quick' => Array(
+					'lvl' => 4,
+				),
+				'c13_wingchun' => Array(
+					'lvl' => 2,
+				),
+				'c13_duel' => Array(
+					'active-t' => 1,
+				),
+			),
 			'skill' => 600,
 			'wep' => '拳头',
 			'wepk' => 'WN',
@@ -2017,6 +2048,20 @@ $npcinfo = array
 			'icon' => 105,
 			'hp' => 4900,
 			'club' => 4,
+			'clubskillpara' => Array
+			(
+				'c4_stable' => Array(
+					'lvl' => 6,
+					'costcount' => 20,
+				),
+				'c4_break' => Array(
+					'lvl' => 3,
+					'costcount' => 19,
+				),
+				'c4_sniper' => Array(
+					'active' => 1,
+				),
+			),
 			'skill' => 800,
 			'wep' => 'AKM-ExS',
 			'wepk' => 'WJ',
@@ -2031,6 +2076,15 @@ $npcinfo = array
 			'mhp' => 19000,
 			'icon' => 98,
 			'club' => 2,
+			'clubskill' => Array(
+				'buff_annihil'
+			),
+			'clubskillpara' => Array
+			(
+				'c2_intuit' => Array(
+					'lvl' => 6,
+				),
+			),
 			'skill' => 600,
 			'wep' => '画(ping)笔(ru)',
 			'wepk' => 'WK',
@@ -2044,6 +2098,19 @@ $npcinfo = array
 			'gd' => 'm',
 			'icon' => 10,
 			'club' => 7,
+			'clubskill' => Array
+			(
+				'buff_shield'
+			),
+			'clubskillpara' => Array
+			(
+				'c7_shield' => Array(
+					'lvl' => 5,
+				),
+				'buff_shield' => Array(
+					'svars' => 1766,
+				),
+			),
 			'skill' => 1000,
 			'wep' => '破解的PSP-3000',
 			'wepk' => 'WP',
@@ -2058,7 +2125,17 @@ $npcinfo = array
 			'pose' => 4,
 			'att' => 4000,
 			'icon' => 10,
+			'inf' => 'p',
 			'club' => 8,
+			'clubskillpara' => Array
+			(
+				'c8_expert' => Array(
+					'lvl' => 4,
+				),
+				'c8_infilt' => Array(
+					'lvl' => 6,
+				),
+			),
 			'skill' => 600,
 			'wep' => '超级☆无敌辰音LILY',
 			'wepk' => 'WD',
@@ -2073,6 +2150,20 @@ $npcinfo = array
 			'def' => 30250,
 			'icon' => 4,
 			'club' => 4,
+			'clubskillpara' => Array
+			(
+				'c4_stable' => Array(
+					'lvl' => 6,
+					'costcount' => 20,
+				),
+				'c4_break' => Array(
+					'lvl' => 3,
+					'costcount' => 19,
+				),
+				'c4_roar' => Array(
+					'active' => 1,
+				),
+			),
 			'skill' => 600,
 			'wep' => '光翼型近接支援残酷戦闘機',
 			'wepk' => 'WG',
@@ -2250,6 +2341,18 @@ $npcinfo = array
 			'gd' => 'm',
 			'icon' => 4,
 			'club' => 10,
+			'clubskill' => Array(
+				'c4_sniper',
+			),
+			'clubskillpara' => Array
+			(
+				'c4_sniper' => Array(
+					'active' => 1,
+				),
+				'c10_insight' => Array(
+					'lvl' => 4,
+				),
+			),
 			'wep' => '205mm绯牡丹加农炮',
 			'wepk' => 'WJ',
 			'wepe' => 800,

@@ -1,26 +1,5 @@
 <?php
 if(!defined('IN_GAME')) exit('Access Denied');
-$npcinit = array
-	(
-		'name' => '',	'pass' => 'bra', 'gd' => 'm',	'icon' => 0,	'club' => 0,	
-		'mhp' => 0,	'msp' => 0,	'att' => 0,	'def' => 0,	'pls' => 0,	'lvl' => 0,
-		'money' => 0,	'inf' => '',	'rage' => 0,	'pose' => 0,	'tactic' => 0,	
-		'killnum' => 0,	'state' => 1,	'teamID' => '',	'teamPass' => '','bid' => 0,
-		'wp' => 0, 'wk' => 0, 'wc' => 0, 'wg' => 0, 'wd' => 0, 'wf' => 0,
-		'wep' => '',	'wepk' => '',	'wepe' => 0,	'weps' => 0,	'wepsk' => '',
-		'arb' => '',	'arbk' => '',	'arbe' => 0,	'arbs' => 0,	'arbsk' => '',
-		'arh' => '',	'arhk' => '',	'arhe' => 0,	'arhs' => 0,	'arhsk' => '',
-		'arf' => '',	'arfk' => '',	'arfe' => 0,	'arfs' => 0,	'arfsk' => '',
-		'ara' => '',	'arak' => '',	'arae' => 0,	'aras' => 0,	'arask' => '',
-		'art' => '',	'artk' => '',	'arte' => 0,	'arts' => 0,	'artsk' => '',
-		'itm0' => '',	'itmk0' => '',	'itme0' => 0,	'itms0' => 0,	'itmsk0' => '',
-		'itm1' => '',	'itmk1' => '',	'itme1' => 0,	'itms1' => 0,	'itmsk1' => '',
-		'itm2' => '',	'itmk2' => '',	'itme2' => 0,	'itms2' => 0,	'itmsk2' => '',
-		'itm3' => '',	'itmk3' => '',	'itme3' => 0,	'itms3' => 0,	'itmsk3' => '',
-		'itm4' => '',	'itmk4' => '',	'itme4' => 0,	'itms4' => 0,	'itmsk4' => '',
-		'itm5' => '',	'itmk5' => '',	'itme5' => 0,	'itms5' => 0,	'itmsk5' => '',
-		'itm6' => '',	'itmk6' => '',	'itme6' => 0,	'itms6' => 0,	'itmsk6' => '',
-	);
 $anpcinfo = array
 	( 
 		2 => array
@@ -159,6 +138,12 @@ $anpcinfo = array
 		'num' => 1,
 		'pass' => 'bra',
 		'club' => 9,
+		'clubskillpara' => Array
+		(
+			'c9_spirit' => Array(
+				'lvl' => 3,
+			),
+		),
 		'bid' => 0,
 		'inf' => '',
 		'state' => 1,
@@ -278,6 +263,15 @@ $anpcinfo = array
 			'icon' => 3,
 			'gd' => 'f',
 			'club' => 9,
+			'clubskillpara' => Array
+			(
+				'c9_spirit' => Array(
+					'lvl' => 3,
+				),
+				'c9_charge' => Array(
+					'active-t' => 2,
+				),
+			),
 			'wep' => '简称为UCW的杏仁豆腐',
 			'wepk' => 'WK',
 			'wepe' => 133,
@@ -295,6 +289,16 @@ $anpcinfo = array
 			'icon' => 4,
 			'gd' => 'm',
 			'club' => 8,
+			'inf' => 'p',
+			'clubskillpara' => Array
+			(
+				'c8_expert' => Array(
+					'lvl' => 3,
+				),
+				'c8_infilt' => Array(
+					'lvl' => 5,
+				),
+			),
 			'wep' => '彩虹色的杏仁豆腐',
 			'wepk' => 'WD',
 			'wepe' => 100,
@@ -367,6 +371,19 @@ $anpcinfo = array
 			(
 			'name' => 'Acg_Xilin',
 			'icon' => 2,
+			'club' => 4,
+			'clubskillpara' => Array
+			(
+				'c4_stable' => Array(
+					'lvl' => 3,
+				),
+				'c4_break' => Array(
+					'lvl' => 2,
+				),
+				'c4_roar' => Array(
+					'active' => 1,
+				),
+			),
 			'wep' => '【全屏幕弹幕发射】',
 			'wepk' => 'WG',
 			'wepe' => 360,
@@ -390,9 +407,15 @@ $anpcinfo = array
 		'num' => 3,
 		'pass' => 'bra',
 		'club' => 9,
+		'clubskillpara' => Array
+		(
+			'c9_spirit' => Array(
+				'lvl' => 3,
+			),
+		),
 		'bid' => 0,
 		'inf' => '',
-		'rage' => 100,
+		'rage' => 255,
 		'pose'=> 1,
 		'tactic' => 3,
 		'killnum' => 0,
@@ -1524,7 +1547,16 @@ $anpcinfo = array
 			(
 			'name' => '坚韧之子·拉姆',
 			'icon' => 154,
-			'club' => 1,
+			'club' => 13,
+			'clubskillpara' => Array
+			(
+				'c13_quick' => Array(
+					'lvl' => 2,
+				),
+				'c13_wingchun' => Array(
+					'lvl' => 1,
+				),
+			),
 			'mhp' => 2904,
 			'msp' => 2233,
 			'att' => 201,
@@ -2160,7 +2192,22 @@ $anpcinfo = array
 			'mercsalary' => 50,
 			'mercfireaction' => 1,	
 			'coverp' => 50,
-			'club' => 1,
+			'club' => 13,
+			'clubskill' => Array(
+				'buff_duel',
+			),
+			'clubskillpara' => Array
+			(
+				'c13_quick' => Array(
+					'lvl' => 3,
+				),
+				'c13_wingchun' => Array(
+					'lvl' => 2,
+				),
+				'c13_duel' => Array(
+					'active-t' => 1,
+				),
+			),
 			'name' => 'Chuck Norris',
 			'icon' => 360,
 			'pose'=> 2,
