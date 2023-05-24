@@ -134,9 +134,9 @@ function roommng_join_room($rkey,&$udata)
 		$gdata = $db->fetch_array($result);
 		$gdata['groomnums']++;
 		# 更新房间内玩家数量
-		$db->query("UPDATE {$gtablepre}game SET groomnums={$gdata['groomnums']} WHERE groomid={$rkey}");
+		$db->query("UPDATE {$gtablepre}game SET groomnums='{$gdata['groomnums']}' WHERE groomid='{$rkey}'");
 		# 加入房间
-		$db->query("UPDATE {$gtablepre}users SET roomid={$rkey} WHERE username='{$udata['username']}'");
+		$db->query("UPDATE {$gtablepre}users SET roomid='{$rkey}' WHERE username='{$udata['username']}'");
 	}
 	else 
 	{
@@ -160,7 +160,7 @@ function roommng_exit_room(&$udata)
 	echo "已退出房间{$udata['roomid']}<br>";
 
 	# 退出房间时更新房间状态
-	$result = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid={$udata['roomid']}");
+	$result = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid='{$udata['roomid']}'");
 	if($db->num_rows($result))
 	{
 		$gdata = $db->fetch_array($result);
@@ -171,7 +171,7 @@ function roommng_exit_room(&$udata)
 			# 房主退出房间时，将房主权限移交给房间内其他人
 			if(!empty($gdata['groomownid']) && $gdata['groomownid'] == $udata['username'])
 			{
-				$result2 = $db->query("SELECT * FROM {$gtablepre}users WHERE roomid={$udata['roomid']} AND username!='{$udata['username']}'");
+				$result2 = $db->query("SELECT * FROM {$gtablepre}users WHERE roomid='{$udata['roomid']}' AND username!='{$udata['username']}'");
 				if($db->num_rows($result2))
 				{
 					$udata2 = $db->fetch_array($result2);
@@ -181,11 +181,11 @@ function roommng_exit_room(&$udata)
 			}
 			if(isset($new_ownid))
 			{
-				$db->query("UPDATE {$gtablepre}game SET groomnums={$gdata['groomnums']},groomownid={$new_ownid} WHERE groomid={$udata['roomid']}");
+				$db->query("UPDATE {$gtablepre}game SET groomnums='{$gdata['groomnums']}',groomownid='{$new_ownid}' WHERE groomid='{$udata['roomid']}'");
 			}
 			else 
 			{
-				$db->query("UPDATE {$gtablepre}game SET groomnums={$gdata['groomnums']} WHERE groomid={$udata['roomid']}");
+				$db->query("UPDATE {$gtablepre}game SET groomnums='{$gdata['groomnums']}' WHERE groomid='{$udata['roomid']}'");
 			}
 		}
 		else 
@@ -209,7 +209,7 @@ function roommng_close_own_room(&$udata)
 		return;
 	}
 
-	$result = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid={$udata['roomid']}");
+	$result = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid='{$udata['roomid']}'");
 	if($db->num_rows($result))
 	{
 		$gdata = $db->fetch_array($result);
@@ -259,9 +259,9 @@ function roommng_close_room($rkey,$adminlog = 0,$check_in_game = 0)
 			}
 		}
 		# 清空房间内玩家
-		if($gdata['groomnums']) $db->query("UPDATE {$gtablepre}users SET roomid=0 WHERE roomid={$rkey}");
+		if($gdata['groomnums']) $db->query("UPDATE {$gtablepre}users SET roomid=0 WHERE roomid='{$rkey}'");
 		# 关闭房间
-		$db->query("DELETE FROM {$gtablepre}game WHERE groomid={$rkey}");
+		$db->query("DELETE FROM {$gtablepre}game WHERE groomid='{$rkey}'");
 		$cmd_info .= "已关闭房间 {$rkey} 号<br>";
 		if($adminlog) adminlog('closeroom',$rkey);
 	}
