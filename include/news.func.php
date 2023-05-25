@@ -72,7 +72,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		{
 			$name = is_array($old_nicknews[$news]) ? $old_nicknews[$news][0] : 'a';
 			$nick = is_array($old_nicknews[$news]) ? $old_nicknews[$news][1] : $old_nicknews[$news];
-			if(!empty($$nick) || $$nick == 0) $$nick = titles_get_desc($$nick);
+			if(!empty($$nick) || $$nick == 0) $$nick = titles_get_desc($$nick,1);
 			$$name = $$nick.' '.$$name;
 			unset($name);unset($nick);
 		}
@@ -141,13 +141,14 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			if(!empty($a) && strpos($a,'|')!==false)
 			{
 				$arr = explode('|',$a);
-				$a = titles_get_desc($arr[0]).' '.$arr[1];
+				$old_a = $a;
+				$a = titles_get_desc($arr[0],1).' '.$arr[1];
 				unset($arr);
 			}
 			if(!empty($c) && strpos($c,'|')!==false)
 			{
 				$arr = explode('|',$c);
-				$c = titles_get_desc($arr[0]).' '.$arr[1];
+				$c = titles_get_desc($arr[0],1).' '.$arr[1];
 				unset($arr);
 			}
 			if($news == 'death11') {
@@ -221,8 +222,9 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			} else {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因<span class=\"red\">不明原因</span>死亡";
 			}
-			if($b) $dname = $typeinfo[$b].' '.$a;
-			else $dname = $a;
+			if(!isset($old_a)) $old_a = $a;
+			if($b) $dname = $typeinfo[$b].' '.$old_a;
+			else $dname = $typeinfo[0].' '.$old_a;
 //			if($b == 0) {
 //				//$dname = $a;
 //				$lwresult = $db->query("SELECT lastword FROM {$gtablepre}users WHERE username = '$a'");

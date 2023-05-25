@@ -47,10 +47,8 @@ function check_can_move($pls,$pgroup,$moveto)
 	return 1;
 }
 
-function move($moveto = 99,&$data=NULL) {
-	//global $lvl,$log,$pls,$pgroup,$plsinfo,$hplsinfo,$inf,$hp,$mhp,$sp,$def,$club,$arealist,$areanum,$hack,$areainfo,$gamestate,$pose,$weather;
-	//global $gamestate,$gamecfg,$pdata;
-
+function move($moveto = 99,&$data=NULL) 
+{
 	global $log,$weather,$plsinfo,$hplsinfo,$arealist,$areanum,$hack,$areainfo,$gamestate,$gamecfg;
 	global $inf_move_sp,$infwords,$inf_move_hp;
 
@@ -103,8 +101,6 @@ function move($moveto = 99,&$data=NULL) {
 			if(strpos($inf,$inf_ky)!==false){$movesp+=$sp_down;}
 		}
 	}
-	//if(strpos($inf, 'f') !== false){ $movesp += 5; }
-	//if(strpos($inf, 'i') !== false){ $movesp += 15; }
 	if($club == 6){
 		if($lvl>=20){
 			$movesp -= 14;
@@ -113,104 +109,24 @@ function move($moveto = 99,&$data=NULL) {
 		}
 	}
 
-	
 	if($sp <= $movesp){
 		$log .= "体力不足，不能移动！<br>还是先睡会儿吧！<br>";
 		return;
 	}
 
 	$sp -= $movesp;
-	$moved = false;
-	if($weather == 11) {//龙卷风
-		if($hpls_flag)
-		{
-			$pls = array_rand($hplsinfo[$pgroup]);
-			$moveto_info = $hplsinfo[$pgroup][$pls];
-		}
-		else 
-		{
-			if($hack){$pls = rand(0,sizeof($plsinfo)-1);}
-			else {$pls = rand($areanum+1,sizeof($plsinfo)-1);$pls=$arealist[$pls];}
-			$moveto_info = $plsinfo[$pls];
-		}
-		$log = ($log . "龙卷风把你吹到了<span class=\"yellow\">$moveto_info</span>！<br>");
-		$moved = true;
-	} elseif($weather == 13) {//冰雹
-		$damage = round($mhp/12) + rand(0,20);
-		$hp -= $damage;
-		$log .= "被<span class=\"blue\">冰雹</span>击中，生命减少了<span class=\"red\">$damage</span>点！<br>";
-		if($hp <= 0 ) {
-			death('hsmove','',0,'',$data);
-			return;
-//		} else {
-//			$pls = $moveto;
-//			$log .= "消耗<span class=\"yellow\">{$movesp}</span>点体力，移动到了<span class=\"yellow\">$plsinfo[$pls]</span>。<br>";
-		}
-	} elseif($weather == 14){//离子暴
-		$dice = rand(0,8);
-		if($dice ==0 && strpos($inf,'e')===false){
-			$log .= "空气中充斥着的<span class=\"linen\">狂暴电磁波</span>导致你<span class=\"yellow\">身体麻痹</span>了！<br>";
-			$inf = str_replace('e','',$inf);
-			$inf .= 'e';
-		}elseif($dice ==1 && strpos($inf,'w')===false){
-			$log .= "空气中充斥着的<span class=\"linen\">狂暴电磁波</span>导致你<span class=\"grey\">混乱</span>了！<br>";
-			$inf = str_replace('w','',$inf);
-			$inf .= 'w';
-		}elseif($dice ==2 && (strpos($inf,'w')===false || strpos($inf,'e')===false)){
-			if (strpos($inf,'w')===false)
-			{
-				$log .= "空气中充斥着的<span class=\"linen\">狂暴电磁波</span>导致你<span class=\"grey\">混乱</span>了！<br>";
-				$inf = str_replace('w','',$inf);
-				$inf .= 'w';
-			}
-			if (strpos($inf,'e')===false)
-			{
-				$log .= "空气中充斥着的<span class=\"linen\">狂暴电磁波</span>导致你<span class=\"yellow\">身体麻痹</span>了！<br>";
-				$inf = str_replace('e','',$inf);
-				$inf .= 'e';
-			}
-		}else{
-			$log .= "空气中充斥着狂暴的电磁波……<br>";
-		}
-	} elseif($weather == 15){//辐射尘
-		$dice = rand(0,3);
-		if($dice == 0){
-			$mhpdown = rand(4,8);
-			if($mhp > $mhpdown){
-				$log .= "空气中弥漫着的<span class=\"green\">放射性尘埃</span>导致你的生命上限减少了<span class=\"red\">{$mhpdown}</span>点！<br>";
-				$mhp -= $mhpdown;
-				if($hp > $mhp){$hp = $mhp;}
-			}
-		}elseif ($dice==1 && strpos($inf,'p')===false){
-			$log .= "空气中弥漫着的<span class=\"green\">放射性尘埃</span>导致你<span class=\"purple\">中毒</span>了！<br>";
-			$inf = str_replace('p','',$inf);
-			$inf .= 'p';
-		}else{
-			$log .= "空气中弥漫着放射性尘埃……<br>";
-		}
-	} elseif($weather == 16){//臭氧洞
-		$dice = rand(0,7);
-		if($dice <= 3){
-			$defdown = rand(4,8);
-			if($def > $defdown){
-				$log .= "高强度的<span class=\"purple\">紫外线照射</span>导致你的防御力减少了<span class=\"red\">{$defdown}</span>点！<br>";
-				$def -= $defdown;
-			}
-		}elseif($dice <=5 && strpos($inf,'u')===false){
-			$log .= "高强度的<span class=\"purple\">紫外线照射</span>导致你<span class=\"red\">烧伤</span>了！<br>";
-			$inf = str_replace('u','',$inf);
-			$inf .= 'u';
-		}else{
-			$log .= "高强度的紫外线灼烧着大地……<br>";
-		}
-	} 
 
-	if(!$moved) {
+	# 预移动、探索阶段事件结算
+	$moved = pre_move_search_events($data,'move');
+	if($hp <= 0) return;
+
+	if(!$moved) 
+	{
 		if(!$hpls_flag) $pgroup = 0;
 		$pls = $moveto;
 		$moveto_info = $hpls_flag ? $hplsinfo[$pgroup][$pls] : $plsinfo[$pls];
 		$log .= "消耗<span class=\"yellow\">{$movesp}</span>点体力，移动到了<span class=\"yellow\">{$moveto_info}</span>。<br>";
-	}else{$f=false;}
+	}
 	
 	$log .= $areainfo[$pls].'<br>';	
 
@@ -219,14 +135,12 @@ function move($moveto = 99,&$data=NULL) {
 	if($hp <= 0) return;
 
 	$enemyrate =  \revbattle\calc_meetman_rate($data);
-	//echo "enemyrate = {$enemyrate}%";
 	discover($enemyrate,$data);
 	return;
 }
 
-function search(&$data=NULL){
-	//global $pdata,$lvl,$log,$pls,$pgroup,$arealist,$areanum,$hack,$plsinfo,$hplsinfo,$club,$sp,$gamestate,$pose,$weather,$hp,$mhp,$def,$inf;
-	
+function search(&$data=NULL)
+{
 	global $log,$weather,$arealist,$areanum,$hack,$plsinfo,$hplsinfo,$gamestate;
 	global $inf_search_sp,$infwords,$inf_search_hp;
 
@@ -258,8 +172,6 @@ function search(&$data=NULL){
 			if(strpos($inf,$inf_ky)!==false){$schsp+=$sp_down;}
 		}
 	}
-	//if(strpos($inf, 'a') !== false){ $schsp += 5; }
-	//if(strpos($inf, 'i') !== false){ $schsp += 15; }
 	if($club == 6){
 		if($lvl>=20){
 			$schsp -= 14;
@@ -268,13 +180,47 @@ function search(&$data=NULL){
 		}
 	}
 
-
 	if($sp <= $schsp){
 		$log .= "体力不足，不能探索！<br>还是先睡会儿吧！<br>";
 		return;	
 	}
 
-	if($weather == 11) {//龙卷风
+	# 预移动、探索阶段事件结算
+	$moved = pre_move_search_events($data,'search');
+	if($hp <= 0) return;
+	
+	$sp -= $schsp;
+	$log .= "消耗<span class=\"yellow\">{$schsp}</span>点体力，你搜索着周围的一切。。。<br>";
+	
+	# 探索指定地点，结算探索事件
+	move_search_events($data,'search');
+	if($hp <= 0) return;
+	
+	$enemyrate = \revbattle\calc_meetman_rate($data);
+	discover($enemyrate,$data);
+	return;
+
+}
+
+# 预探索、移动阶段事件
+function pre_move_search_events(&$data,$act)
+{
+	global $log,$inf_move_hp,$inf_move_sp,$infwords,$now,$elements_info;
+	global $hpls_flag,$moveto,$hack,$areanum,$arealist,$plsinfo,$weather,$gamevars;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
+
+	$moved = 0;
+
+	# 天气事件
+	# 龙卷风
+	if($weather == 11) 
+	{
 		if($hpls_flag)
 		{
 			$pls = array_rand($hplsinfo[$pgroup]);
@@ -282,24 +228,28 @@ function search(&$data=NULL){
 		}
 		else 
 		{
-			if($hack){$pls = rand(0,sizeof($plsinfo)-1);}
-			else {$pls = rand($areanum+1,sizeof($plsinfo)-1);$pls=$arealist[$pls];}
+			$safepls = get_safe_plslist(0);
+			$pls = $safepls[array_rand($safepls)];
 			$moveto_info = $plsinfo[$pls];
 		}
 		$log = ($log . "龙卷风把你吹到了<span class=\"yellow\">$moveto_info</span>！<br>");
 		$moved = true;
-	} elseif($weather == 13) {//冰雹
+	}
+	# 冰雹
+	elseif($weather == 13) 
+	{
 		$damage = round($mhp/12) + rand(0,20);
 		$hp -= $damage;
 		$log .= "被<span class=\"blue\">冰雹</span>击中，生命减少了<span class=\"red\">$damage</span>点！<br>";
-		if($hp <= 0 ) {
+		if($hp <= 0 ) 
+		{
 			death('hsmove','',0,'',$data);
-			return;
-//		} else {
-//			$pls = $moveto;
-//			$log .= "消耗<span class=\"yellow\">{$movesp}</span>点体力，移动到了<span class=\"yellow\">$plsinfo[$pls]</span>。<br>";
+			return $moved;
 		}
-	} elseif($weather == 14){//离子暴
+	} 
+	# 离子暴
+	elseif($weather == 14)
+	{
 		$dice = rand(0,8);
 		if($dice ==0 && strpos($inf,'e')===false){
 			$log .= "空气中充斥着的<span class=\"linen\">狂暴电磁波</span>导致你<span class=\"yellow\">身体麻痹</span>了！<br>";
@@ -325,7 +275,10 @@ function search(&$data=NULL){
 		}else{
 			$log .= "空气中充斥着狂暴的电磁波……<br>";
 		}
-	} elseif($weather == 15){//辐射尘
+	} 
+	//辐射尘
+	elseif($weather == 15)
+	{
 		$dice = rand(0,3);
 		if($dice == 0){
 			$mhpdown = rand(4,8);
@@ -341,7 +294,10 @@ function search(&$data=NULL){
 		}else{
 			$log .= "空气中弥漫着放射性尘埃……<br>";
 		}
-	} elseif($weather == 16){//臭氧洞
+	} 
+	//臭氧洞
+	elseif($weather == 16)
+	{
 		$dice = rand(0,7);
 		if($dice <= 3){
 			$defdown = rand(4,8);
@@ -357,20 +313,33 @@ function search(&$data=NULL){
 			$log .= "高强度的紫外线灼烧着大地……<br>";
 		}
 	} 
-	
-	
-	$sp -= $schsp;
-	$log .= "消耗<span class=\"yellow\">{$schsp}</span>点体力，你搜索着周围的一切。。。<br>";
-	
-	# 探索指定地点，结算探索事件
-	move_search_events($data,'search');
-	if($hp <= 0) return;
-	
-	$enemyrate = \revbattle\calc_meetman_rate($data);
-	//echo "enemyrate = {$enemyrate}%";
-	discover($enemyrate,$data);
-	return;
 
+	# 「霉运」效果：移动/探索时有概率迷路到其他地图
+	if(!$moved && !check_skill_unlock('inf_cursed',$data))
+	{
+		# 迷路概率13%
+		$sk_obbs = 13;
+		$sk_dice = diceroll(99);
+		if($sk_dice <= $sk_obbs)
+		{
+			if($hpls_flag)
+			{
+				$pls = array_rand($hplsinfo[$pgroup]);
+				$moveto_info = $hplsinfo[$pgroup][$pls];
+			}
+			else 
+			{
+				$safepls = get_safe_plslist(0);
+				$pls = $safepls[array_rand($safepls)];
+				$moveto_info = $plsinfo[$pls];
+			}
+			$meta_act = $act == 'move' ? "走在前往{$plsinfo[$moveto]}的路上" : "在附近探索";
+			$log .= "<span class='red'>你正哼着小曲{$meta_act}，忽然眼前一黑！<br>回过神来时，你发现自己竟然走到了<span class=\"yellow\">$moveto_info</span>！</span><br>……<br>";
+			$moved = true;
+		}
+	}
+
+	return $moved;
 }
 
 # 探索或移动行为会触发的事件
