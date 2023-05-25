@@ -225,6 +225,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			if(!isset($old_a)) $old_a = $a;
 			if($b) $dname = $typeinfo[$b].' '.$old_a;
 			else $dname = $typeinfo[0].' '.$old_a;
+			unset($old_a);
 //			if($b == 0) {
 //				//$dname = $a;
 //				$lwresult = $db->query("SELECT lastword FROM {$gtablepre}users WHERE username = '$a'");
