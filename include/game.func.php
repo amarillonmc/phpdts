@@ -696,7 +696,7 @@ function check_player_misc_states(&$data)
 function get_safe_plslist($mode=1)
 {
 	global $areanum,$arealist,$hack,$deepzones;
-	$r = $hack ? array_slice($arealist,$areanum+1) : $arealist;
+	$r = $hack ? $arealist : array_slice($arealist,$areanum+1);
 	if($mode) $r = array_diff($r, $deepzones);
 	return $r;
 }

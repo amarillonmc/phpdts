@@ -105,8 +105,8 @@ function titles_get_desc($tkey,$mode=0)
 		{
 			$n_desc = "<span ";
 		}
-		# 存在样式，赋予一个样式：
-		if(isset($title_desc[$tkey]['class']))
+		# 存在样式、且允许输出样式，赋予一个样式：
+		if(!$mode && isset($title_desc[$tkey]['class']))
 		{
 			$n_class = "class=\"{$title_desc[$tkey]['class']}\" ";
 			$n_desc .= $n_class;

@@ -31,6 +31,7 @@ while($apdata = $db->fetch_array($result))
 	} else{
 		$apdata['apm'] = 0;
 	}
+	$apdata['nick'] = titles_get_desc($apdata['nick']);
 	//	$result3 = $db->query("SELECT motto FROM {$gtablepre}users WHERE username = '".$apdata['name']."'");
 //	$apdata['motto'] = $db->result($result3, 0);
 
