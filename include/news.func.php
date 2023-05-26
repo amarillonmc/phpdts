@@ -141,7 +141,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			if(!empty($a) && strpos($a,'|')!==false)
 			{
 				$arr = explode('|',$a);
-				$old_a = $a;
+				$old_a = $arr[1];
 				$a = titles_get_desc($arr[0],1).' '.$arr[1];
 				unset($arr);
 			}
