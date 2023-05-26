@@ -1482,7 +1482,7 @@ function check_battle_achievement_rev($pa,$pd)
 		}
 	}
 	// 605.日常击杀10名种火
-	if(in_array(605,$daily) && $is_npc == 89)
+	if(in_array(605,$daily) && $is_npc == 92)
 	{
 		$aid = 605;
 		$alvl = check_achievement_rev($aid,$nn);
