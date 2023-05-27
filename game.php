@@ -16,7 +16,7 @@ if(isset($mode) && $mode == 'quit') {
 }
 //$result = $db->query("SELECT * FROM {$tablepre}players WHERE name = '$cuser' AND type = 0");
 $pdata = fetch_playerdata_by_name($cuser);
-if(!$pdata) { header("Location: valid.php");exit(); }
+if(!$pdata) { header("Location: valid.php".'?'.$_SERVER['QUERY_STRING']);exit(); }
 
 //$pdata = $db->fetch_array($result);
 if($pdata['pass'] != $cpass) {

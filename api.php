@@ -395,6 +395,7 @@
     );
   }
   echo (json_encode(array(
+    "page" => "game",
     /** 玩家状态 */
     "playerState" => array(
       /** 玩家信息 */
@@ -697,6 +698,13 @@
       "radar" => $radarscreen,
       /** 元素口袋 */
       "element" => $club == 20 ? getElement() : null,
+      /** 死亡信息 */
+      "death" => $hp <= 0 ? array(
+        "title" => $stateinfo[$state],
+        "content" => $dinfo[$state],
+        "time" => $dtime,
+        "name" => (!empty($kname) && (in_array($state, Array(20, 21, 22, 23, 24, 28, 29)))) ? $kname : null,
+      ) : null,
     ),
     /** 搜寻状态 */
     "searchState" => array(
