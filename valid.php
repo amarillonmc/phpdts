@@ -284,7 +284,27 @@ if($mode == 'enter') {
 	save_gameinfo();
 	
 
-	include template('validover');
+	if ($_GET['is_new']) {
+		echo json_encode(array(
+			"page" => "validOver",
+			"nick" => $nickinfo,
+			"name" => $cuser,
+			"sub" => $sexinfo[$gd].$sNo.'号',
+			"avatar" => $gd.'_'.$icon.'.gif',
+			"nowHp" => $hp,
+			"maxHp" => $mhp,
+			"nowMp" => $sp,
+			"maxMp" => $msp,
+			"attack" => $att,
+			"defense" => $def,
+			"gift" => $clubinfo[$club],
+			"weapon" => $wep,
+			"randomItem1" => $itm[3],
+			"randomItem2" => $itm[4],
+		));
+	} else {
+		include template('validover');
+	}
 } elseif($mode == 'notice') {
 	//include template('notice');
 	header("Location: game.php");
@@ -305,7 +325,44 @@ if($mode == 'enter') {
 	$iconarray = get_iconlist($icon);
 	$utlist = get_utitlelist();
 	$select_icon = $icon;
-	include template('valid');
+	if ($_GET['is_new']) {
+		// 获取可选称号
+		$nickList = array_map(function($val) use ($titles_list) {
+			return array(
+				'id' => $val,
+				'title' => $titles_list[$val]
+			);
+		}, $nicksrev['nicks']);
+		// 获取可选普通内定称号
+		$normalGiftList = array_map(function($val) use ($clubinfo) {
+			return array(
+				'id' => $val,
+				'title' => $clubinfo[$val]
+			);
+		}, $t2_list);
+		// 获取可选特殊内定称号
+		$specialGiftList = array_map(function($val) use ($clubinfo) {
+			return array(
+				'id' => $val,
+				'title' => $clubinfo[$val]
+			);
+		}, $t1_list);
+		echo json_encode(array(
+			"page" => "valid",
+			"name" => $username,  // 用户名
+			"avatar" => $select_icon, // 头像
+			"gender" => $gender,  // 性别
+			"nick" => $udata['nick'], // 头衔
+			"nickList" => $nickList,  // 可选头衔
+			"normalGiftList" => $normalGiftList,  // 可选普通内定称号
+			"specialGiftList" => $specialGiftList,  // 可选特殊内定称号
+			"motto" => $motto,  // 口头禅
+			"killMessage" => $killmsg,  // 杀人宣言
+			"lastWord" => $lastword,  // 遗言
+		));
+	} else {
+		include template('valid');
+	}
 }
 
 function makeclub() {
