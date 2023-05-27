@@ -30,15 +30,8 @@ function gameerrorhandler($code, $msg, $file, $line){
 function gexit($message = '',$file = '', $line = 0) {
 	global $charset,$title,$extrahead,$allowcsscache,$errorinfo;
 	global $gameversion,$cuser,$cpass;
-	if ($_GET['is_new']) {
-		echo json_encode(array(
-			"error" => $message,
-		));
-		exit();
-	} else {
-		include template('error');
-		exit();
-	}
+	include template('error');
+	exit();
 }
 
 function output($content = '') {

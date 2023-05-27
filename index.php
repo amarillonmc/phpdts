@@ -57,46 +57,7 @@ if(!empty($roomact))
 }
 else 
 {
-  if ($_GET['is_new']) {
-    echo json_encode(array(
-      // 当前回合数
-      "num" => $gamenum,
-      // 当前游戏状态
-      "state" => $gstate[$gamestate],
-      // 当前游戏时间
-      "timing" => $timing,
-      // 显示当前游戏时间
-      "showNowTime" => $gamestate > 10,
-      // 显示下局游戏时间
-      "showNextTime" => $starttime > $now,
-      // 最高伤害玩家
-      "maxDamagePlayer" => $hplayer,
-      // 最高伤害值
-      "maxDamage" => $hdamage,
-      // 上局结果
-      "lastResult" => $gwin[$winmode],
-      // 上局优胜者
-      "lastWinner" => $winner,
-      // 禁区
-      "areaHour" => $areahour,
-	  "areaLimit" => $arealimit,
-	  "areaAdd" => $areaadd,
-	  "areaNum" => $areanum,
-	  // 自动逃避禁区
-	  "areaAutoHide" => $areaesc && $gamestate < 40,
-	  // 人数
-	  "validNum" => $validnum,
-	  "aliveNum" => $alivenum,
-	  "deathNum" => $deathnum,
-	  // 当前房间号：
-	  "roomID" => $groomid,
-	  // 用户名
-	  "username" => $cuser,
-    ));
-    return;
-  } else {
-    include template('index');
-  }
+	include template('index');
 }
 
 ?>
