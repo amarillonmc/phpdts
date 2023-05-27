@@ -72,7 +72,7 @@
 		
 		//$result = $db->query("select * from {$tablepre}players where pls='$pls' and hp>0 and type=0");
 		$ss+=20;
-		$mss=$ss;
+		$mss+=20;
 		$rp-=50;
 		addnoise($sn,'__',$now,$pls,0,0,$sn);
 		addnews($now,'song',$name,$plsinfo[$pls],$noiseinfo[$sn],$nick);

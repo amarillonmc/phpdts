@@ -1758,7 +1758,7 @@ $cskills = Array
 		'desc' => "空手时可发动，消耗<span class=\"yellow\">[:ragecost:]</span>点怒气；<br>
 		本次攻击附加<span class=\"yellow\">[:ragecost:]%</span>殴熟的物理伤害；<br>
 		且「快拳」的发动率<span class=\"yellow\">+[:rapidr:]</span>%<br>",
-		'bdesc' => "消耗<span class=\"red\">[:ragecost:]%</span>点怒气，附加等于<span class=\"yellow\">[:phydmgr:]%</span>殴熟的物理伤害；本次攻击「快拳」的触发率<span class=\"yellow\">+[:rapidr:]</span>%",
+		'bdesc' => "消耗<span class=\"red\">[:ragecost:]</span>点怒气，附加等于<span class=\"yellow\">[:phydmgr:]%</span>殴熟的物理伤害；本次攻击「快拳」的触发率<span class=\"yellow\">+[:rapidr:]</span>%",
 		'vars' => Array(
 			'ragecost' => Array(30,40,45),
 			'phydmgr' => Array(25,33,50),
