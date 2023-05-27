@@ -888,7 +888,7 @@ function itemuse($itmn,&$data=NULL) {
 		$log.="你打开了<span class=\"yellow\">$itm</span>。<br>";
 
 		$itms--; $oitm = $itm; $oitmk = $itmk;
-		if($itms <= 0) destory_single_item($data,$itmn,1);
+		//if($itms <= 0) destory_single_item($data,$itmn,1);
 
 		if(strpos( $oitmk, 'ps' ) === 0){//银色盒子
 			include_once config('randomitem',$gamecfg);
@@ -981,6 +981,7 @@ function itemuse($itmn,&$data=NULL) {
 			list($in,$ik,$ie,$is,$isk) = explode(',',$plist[$rand]);
 		}		
 		//global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$mode;
+		if($itms <= 0) destory_single_item($data,$itmn,1);
 		$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
 		addnews($now,'present',$name,$oitm,$in,$nick);
 
