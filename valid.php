@@ -284,7 +284,7 @@ if($mode == 'enter') {
 	save_gameinfo();
 	
 
-	if ($_GET['is_new']) {
+	if (isset($_GET['is_new'])) {
 		echo json_encode(array(
 			"page" => "validOver",
 			"nick" => $nickinfo,
@@ -325,7 +325,7 @@ if($mode == 'enter') {
 	$iconarray = get_iconlist($icon);
 	$utlist = get_utitlelist();
 	$select_icon = $icon;
-	if ($_GET['is_new']) {
+	if (isset($_GET['is_new'])) {
 		// 获取可选称号
 		$nickList = array_map(function($val) use ($titles_list) {
 			return array(

@@ -57,7 +57,7 @@ if(!empty($roomact))
 }
 else 
 {
-  if ($_GET['is_new']) {
+  if (isset($_GET['is_new'])) {
     echo json_encode(array(
       // 当前回合数
       "num" => $gamenum,
