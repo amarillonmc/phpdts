@@ -1591,7 +1591,7 @@ function itemuse($itmn,&$data=NULL) {
 			wthchange( $itm,$itmsk);
 			addnews ($now,'thiphase',$name,$nick);
 			$hack = 1;
-			$gamevars['apis'] = $gamevars['api'] = 5;
+			$gamevars['apis'] = $gamevars['api'] = 3;
 			$log .= '因为破灭之歌的作用，全部锁定被打破了！<br>';
 			movehtm();
 			addnews($now,'hack2',$name,$nick);
@@ -1614,6 +1614,10 @@ function itemuse($itmn,&$data=NULL) {
 			addnpc ( 2, 1, 4);
 			addnpc ( 2, 2, 4);
 			addnpc ( 2, 3, 4);
+			addnpc ( 2, 4, 4);
+			addnpc ( 2, 5, 4);
+			addnpc ( 2, 6, 4);
+			addnpc ( 2, 7, 4);
 			addnews ($now , 'key0', $name,$nick);						
 			$itms --;
 			if($itms <= 0) destory_single_item($data,$itmn,1);

@@ -1,11 +1,3 @@
-<!--{loop $plsinfo $places $info}-->
-	<!--{if (CURSCRIPT == 'game' && $pls==$places)}-->
-	<!--{eval $bgurl = "img/location/".$places.".jpg"}-->
-	<style>
-		body {background-image: url("$bgurl");background-position: center;}
-	</style>
-	<!--{/if}-->
-<!--{/loop}-->
 <table border="0" width="720" height="100%" cellspacing="0" cellpadding="0"  valign="middle">
 	<tr>
 		<td>
@@ -174,9 +166,14 @@
 					<td class="b3"><!--{if $skillpoint > 0}--><span class="lime">$skillpoint</span><!--{else}--><span>$skillpoint</span><!--{/if}--></td>
 				</tr>
 				<tr>
-					<td class="b2">游戏版本</td>
+					<td class="b2">战术界面</td>
 					<td class="b3">
-						「GE1167」</td>
+						<select id="horizon" name="horizon" onchange="$('mode').value='special';$('command').value=$('horizon').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
+							<!--{loop $horizoninfo $key $value}-->
+								<option value="hor$key"<!--{if $horizon == $key}-->selected<!--{/if}-->>$value
+							<!--{/loop}-->
+						</select>
+					</td>
 					<td class="b2"><span>{lang ss}</span></td>
 					<td class="b3"><span class="<!--{if $ss <= $mss*0.2}-->red<!--{elseif $ss <= $mss*0.5}-->yellow<!--{else}-->clan<!--{/if}-->">$ss / $mss</span></td>
 					<td class="b2"><span>{lang killnum}</span></td>

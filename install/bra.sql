@@ -100,7 +100,7 @@ CREATE TABLE bra_winners (
   `pass` char(32) NOT NULL DEFAULT '',
   `gd` char(1) NOT NULL DEFAULT 'm',
   `sNo` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `icon` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `icon` varchar(255) NOT NULL DEFAULT '0',
   `club` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `endtime` int(10) unsigned NOT NULL DEFAULT '0',
   `hp` smallint(5) unsigned NOT NULL DEFAULT '0',

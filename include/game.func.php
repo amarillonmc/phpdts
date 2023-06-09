@@ -4,42 +4,43 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
-function init_playerdata(){
-	global $lvl,$baseexp,$exp,$gd,$icon,$arbe,$arhe,$arae,$arfe,$weather,$fog,$weps,$arbs,$log,$upexp,$lvlupexp,$iconImg,$iconImgB,$ardef;
-	global $pls,$weather,$pose,$tactic,$clbpara;
-	global $udata;
+function init_playerdata($data=NULL)
+{
+	global $baseexp,$weather,$fog,$log,$upexp,$lvlupexp,$iconImg,$iconImgB;
+	global $pls,$weather;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
 
 	$upexp = round(($lvl*$baseexp)+(($lvl+1)*$baseexp));
 	$lvlupexp = $upexp - $exp;
+
 	$iconImg = $gd.'_'.$icon.'.gif'; 
 	if(file_exists('img/'.$gd.'_'.$icon.'a.gif')) $iconImgB = $gd.'_'.$icon.'a.gif'; 
-	$ardef = $arbe + $arhe + $arae + $arfe;
-	if(($weather == 8)||($weather == 9)||($weather == 12)) {
-		$fog = true;
-	}
 
-	if(!$weps) {
-		global $nowep,$nosta,$wep,$wepk,$wepsk,$wepe;
-		$wep = $nowep;$wepk = 'WN';$wepsk = '';
-		$wepe = 0; $weps = $nosta;
-	}
-	if(!$arbs) {
-		global $noarb,$nosta,$arb,$arbk,$arbsk,$arbe;
-		$arb = $noarb;$arbk = 'DN'; $arbsk = '';
-		$arbe = 0; $arbs = $nosta;
+	if(($weather == 8)||($weather == 9)||($weather == 12)) 
+	{
+		$fog = true;
 	}
 
 	$clbpara = get_clbpara($clbpara);
 }
 
-function init_profile(){
-	global $inf,$infinfo,$hp,$mhp,$sp,$msp,$hpcolor,$spcolor,$newhpimg,$newspimg,$ardef,$arbe,$arhe,$arae,$arfe;
-	global $iteminfo,$wepk,$arbk,$arhk,$arak,$arfk,$artk,$itmk0,$itmk1,$itmk2,$itmk3,$itmk4,$itmk5,$itmk6,$rp,$killnum,$karma,$def,$att;
-	global $itemspkinfo,$wepsk,$arbsk,$arhsk,$arask,$arfsk,$artsk,$itmsk0,$itmsk1,$itmsk2,$itmsk3,$itmsk4,$itmsk5,$itmsk6;
-	global $nospk,$wepsk_words,$arbsk_words,$arhsk_words,$arask_words,$arfsk_words,$artsk_words,$itmsk0_words,$itmsk1_words,$itmsk2_words,$itmsk3_words,$itmsk4_words,$itmsk5_words,$itmsk6_words;
-	global $wepk_words,$arbk_words,$arhk_words,$arak_words,$arfk_words,$artk_words,$itmk0_words,$itmk1_words,$itmk2_words,$itmk3_words,$itmk4_words,$itmk5_words,$itmk6_words;
-	global $wep,$arb,$arh,$ara,$arf,$art,$itm0,$itm1,$itm2,$itm3,$itm4,$itm5,$itm6;
-	global $clbpara,$weather,$definfo,$atkinfo,$pdata,$udata;
+function init_profile($data=NULL)
+{
+	global $infinfo,$hpcolor,$spcolor,$newhpimg,$newspimg,$karma;
+	global $notim,$nospk,$iteminfo,$itemspkinfo,$weather,$definfo,$atkinfo;
+
+	if(!isset($data))
+	{
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data,EXTR_REFS);
 
 	foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value) 
 	{
@@ -55,48 +56,26 @@ function init_profile(){
 			$s_value = $value.'s';
 			$sk_value = $value.'sk';
 		}
-		global $$s_value;
-		if(!empty($$s_value))
-		{
-			global ${$value.'_words'};
-			# 初始化名称样式
-			${$value.'_words'} = parse_info_desc($$value,'m');
-			# 初始化类别样式
-			if(${$k_value})
-			{
-				${$k_value.'_words'} = parse_info_desc($$k_value,'k');
-			} 
-			else 
-			{
-				${$k_value.'_words'} = '';
-			}
-			# 初始化属性样式
-			if(${$sk_value} && is_numeric(${$sk_value}) === false)
-			{
-				${$sk_value.'_words'} = parse_info_desc($$sk_value,'sk',$$k_value,1);
-			} 
-			else 
-			{
-				${$sk_value.'_words'} = $nospk;
-			}
-		}
+
+		global ${$value.'_words'},${$k_value.'_words'},${$s_value.'_words'},${$sk_value.'_words'};
+
+		# 初始化名称样式
+		${$value.'_words'} = parse_nameinfo_desc($$value,$horizon);
+		# 初始化类别样式
+		${$k_value.'_words'} = parse_kinfo_desc($$k_value,$$sk_value);
+		# 初始化属性样式
+		${$sk_value.'_words'} = parse_skinfo_desc($$sk_value,$$k_value,1);
 	}
 
-	$ardef = $arbe + $arhe + $arae + $arfe;
 	$karma = ($rp * $killnum - $def )+ $att;
 
 	$hpcolor = 'clan';
 	if($hp <= 0 ){
-		//$infimg .= '<img src="img/dead.gif" style="position:absolute;top:120;left:6;width:94;height:40">';
 		$hpcolor = 'red';
 	} elseif($hp <= $mhp*0.2){
-		//$infimg .= '<img src="img/danger.gif" style="position:absolute;top:120;left:5;width:95;height:37">';
 		$hpcolor = 'red';
 	} elseif($hp <= $mhp*0.5){
-		//$infimg .= '<img src="img/caution.gif" style="position:absolute;top:120;left:5;width:95;height:36">';
 		$hpcolor = 'yellow';
-	} elseif($inf == ''){
-		//$infimg .= '<img src="img/fine.gif" style="position:absolute;top:120;left:12;width:81;height:38">';
 	}
 	
 	if($sp <= $msp*0.2){
@@ -123,179 +102,6 @@ function init_profile(){
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
 	$atkinfo = \revattr\get_base_att($pdata,$pdata,1,1);
 	$definfo = \revattr\get_base_def($pdata,$pdata,1,1);
-
-	return;
-}
-
-function init_battle($ismeet = 0){
-	global $wep,$wepk;
-	global $w_type,$w_name,$w_gd,$w_sNo,$w_icon,$w_lvl,$w_rage,$w_hp,$w_sp,$w_mhp,$w_msp,$w_wep,$w_wepk,$w_wepe,$w_sNoinfo,$w_iconImg,$w_iconImgB,$w_hpstate,$w_spstate,$w_ragestate,$w_wepestate,$w_isdead,$hpinfo,$spinfo,$rageinfo,$wepeinfo,$fog,$typeinfo,$sexinfo,$infinfo,$w_exp,$w_upexp,$baseexp,$w_pose,$w_tactic,$w_inf,$w_infdata;
-	global $n_type,$n_name,$n_gd,$n_sNo,$n_icon,$n_hp,$n_mhp,$n_sp,$n_msp,$n_rage,$n_wep,$n_wepk,$n_wepe,$n_lvl,$n_pose,$n_tactic,$n_inf;
-	$w_upexp = round(($w_lvl*$baseexp)+(($w_lvl+1)*$baseexp));
-	
-	if (CURSCRIPT == 'botservice') 
-	{
-		echo "w_name=$w_name\n";
-		echo "w_type=$w_type\n";
-		echo "w_sNo=$w_sNo\n";
-	}
-	
-	if($w_hp <= 0) {
-		$w_hpstate = "<span class=\"red\">$hpinfo[3]</span>";
-		$w_spstate = "<span class=\"red\">$spinfo[3]</span>";
-		$w_ragestate = "<span class=\"red\">$rageinfo[3]</span>";
-		$w_isdead = true;
-		if (CURSCRIPT == 'botservice') echo "w_dead=1\n";
-	} else{
-		if($w_hp < $w_mhp*0.2) {
-			$w_hpstate = "<span class=\"red\">$hpinfo[2]</span>";
-			if (CURSCRIPT == 'botservice') echo "w_hpstate=2\n";
-		} elseif($w_hp < $w_mhp*0.5) {
-			$w_hpstate = "<span class=\"yellow\">$hpinfo[1]</span>";
-			if (CURSCRIPT == 'botservice') echo "w_hpstate=1\n";
-		} else {
-			$w_hpstate = "<span class=\"clan\">$hpinfo[0]</span>";
-			if (CURSCRIPT == 'botservice') echo "w_hpstate=0\n";
-		}
-		if($w_sp < $w_msp*0.2) {
-		$w_spstate = "$spinfo[2]";
-		} elseif($w_sp < $w_msp*0.5) {
-		$w_spstate = "$spinfo[1]";
-		} else {
-		$w_spstate = "$spinfo[0]";
-		}
-		if($w_rage >= 100) {
-		$w_ragestate = "<span class=\"red\">$rageinfo[2]</span>";
-		} elseif($w_rage >= 30) {
-		$w_ragestate = "<span class=\"yellow\">$rageinfo[1]</span>";
-		} else {
-		$w_ragestate = "$rageinfo[0]";
-		}
-	}
-
-	if($n_hp <= 0)
-	{
-		global $n_hpstate,$n_spstate,$n_ragestate,$n_isdead;
-		$n_hpstate = "<span class=\"red\">$hpinfo[3]</span>";
-		$n_spstate = "<span class=\"red\">$spinfo[3]</span>";
-		$n_ragestate = "<span class=\"red\">$rageinfo[3]</span>";
-		$n_isdead = true;
-	} elseif(isset($n_hp)) {
-		global $n_hpstate,$n_spstate,$n_ragestate;
-		if($n_hp < $n_mhp*0.2) {
-			$n_hpstate = "<span class=\"red\">$hpinfo[2]</span>";
-		} elseif($n_hp < $n_mhp*0.5) {
-			$n_hpstate = "<span class=\"yellow\">$hpinfo[1]</span>";
-		} else {
-			$n_hpstate = "<span class=\"clan\">$hpinfo[0]</span>";
-		}
-		if($n_sp < $n_msp*0.2) {
-			$n_spstate = "$spinfo[2]";
-		} elseif($n_sp < $n_msp*0.5) {
-			$n_spstate = "$spinfo[1]";
-		} else {
-			$n_spstate = "$spinfo[0]";
-		}
-		if($n_rage >= 100) {
-		$n_ragestate = "<span class=\"red\">$rageinfo[2]</span>";
-		} elseif($n_rage >= 30) {
-			$n_ragestate = "<span class=\"yellow\">$rageinfo[1]</span>";
-		} else {
-			$n_ragestate = "$rageinfo[0]";
-		}
-	}
-	
-	if($w_wepe >= 400) {
-		$w_wepestate = "$wepeinfo[3]";
-		if (CURSCRIPT == 'botservice') echo "w_wepestate=3\n";
-	} elseif($w_wepe >= 200) {
-		$w_wepestate = "$wepeinfo[2]";
-		if (CURSCRIPT == 'botservice') echo "w_wepestate=2\n";
-	} elseif($w_wepe >= 60) {
-		$w_wepestate = "$wepeinfo[1]";
-		if (CURSCRIPT == 'botservice') echo "w_wepestate=1\n";
-	} else {
-		$w_wepestate = "$wepeinfo[0]";
-		if (CURSCRIPT == 'botservice') echo "w_wepestate=0\n";
-	}
-	
-	//在战斗界面中加载敌我双方武器tooltip
-	global $wep_words,$wepk_words,$w_wep_words,$w_wepk_words;
-	$wep_words = parse_info_desc($wep,'m'); $wepk_words = parse_info_desc($wepk,'k');
-	if(!$fog||$ismeet) {
-		//非雾天显示敌人武器情报
-		$w_wep_words = parse_info_desc($w_wep,'m');
-		$w_wepk_words = parse_info_desc($w_wepk,'k');
-		//如果有的话 初始化第三方武器情报 
-		if(isset($n_type))
-		{
-			global $n_wep_words,$n_wepk_words,$n_iconImg;
-			$n_iconImg = $n_type ? 'n_'.$n_icon.'.gif' : $n_gd.'_'.$n_icon.'.gif';
-			$n_wep_words = parse_info_desc($n_wep,'m');
-			$n_wepk_words = parse_info_desc($n_wepk,'k');
-		}
-		$w_sNoinfo = "$typeinfo[$w_type]({$sexinfo[$w_gd]}{$w_sNo}号)";
-	 	$w_i = $w_type > 0 ? 'n' : $w_gd;
-		$w_iconImg = $w_i.'_'.$w_icon; $w_iconImgB = NULL;
-		if(file_exists('img/'.$w_iconImg.'a.gif'))
-		{
-			$w_iconImgB = $w_iconImg.'a.gif';
-		}
-		else 
-		{
-			$w_iconImg = $w_iconImg.'.gif';
-		}
-		if($w_inf) {
-			$w_infdata = '';
-			foreach ($infinfo as $inf_ky => $inf_nm) {
-				if(strpos($w_inf,$inf_ky) !== false) {
-					$w_infdata .= $inf_nm;
-				}
-			}
-			//$w_infdata = '<span class="red b">';
-			/*if(strpos($w_inf,'h') !== false){
-				$w_infdata .= $infinfo['h'];
-			}
-			if(strpos($w_inf,'a') !== false){
-				$w_infdata .= $infinfo['a'];
-			}
-			if(strpos($w_inf,'b') !== false){
-				$w_infdata .= $infinfo['b'];
-			}
-			if(strpos($w_inf,'f') !== false){
-				$w_infdata .= $infinfo['f'];
-			}*/
-			//$infdata .= '</span>';
-			/*if(strpos($w_inf,'p') !== false) {
-				$w_infdata .= "<span class=\"purple b\">{$infinfo['p']}</span>";
-			}
-			if(strpos($w_inf,'u') !== false) {
-				$w_infdata .= "<span class=\"yellow b\">{$infinfo['u']}</span>";
-			}
-			if(strpos($w_inf,'i') !== false) {
-				$w_infdata .= "<span class=\"clan b\">{$infinfo['i']}</span>";
-			}*/
-		} else {
-			$w_infdata = '';
-		}
-	} else {
-		//雾天显示？？？
-		$w_wep_words = '？？？';
-		$w_wepk_words = '？？？';
-		$w_sNoinfo = '？？？';
-		$w_iconImg = 'question.gif';
-		$w_name = '？？？';
-		$w_wep = '？？？';
-		$w_infdata = '？？？';
-		$w_pose = -1;
-		$w_tactic = -1;
-		$w_lvl = '？';
-		$w_hpstate = '？？？';
-		$w_spstate = '？？？';
-		$w_ragestate = '？？？';
-		$w_wepestate = '？？？';
-		$w_wepk = '';
-	}
 	return;
 }
 

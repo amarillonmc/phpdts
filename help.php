@@ -42,18 +42,19 @@ $npcinfo = get_npc_helpinfo($npcinfo);
 //print_r($npcinfo[14]['esub']);
 
 $ty1[1]=1; $ty1[2]=88; 
-$ty2[1]=5; $ty2[2]=6; 
+$ty2[1]=Array(5,'asub'); $ty2[2]=Array(6,'asub'); 
 $ty2a[1]=Array(19,'asub'); #真红蓝
-$ty3[1]=11;
+$ty3[1]=Array(11,'asub');
 $ty4[1]=90; $ty4[2]=92;
-$ty5[1]=2;
+//$ty5[1]=2; 
+$ty5[1] = Array(2,'asub');
 $ty6[1]=14; $ty6[2]=4; 
 $ty6e[1]=Array(14,'esub'); #女主第二形态情报
-$ty7[1]=13;
-$ty8[1]=15;
+$ty7[1]=Array(13,'asub'); 
+$ty8[1]=Array(15,'asub'); 
 $ty9[1]=22;
 $ty10[1]=21;
-$ty11[1]=89; 
+$ty11[1]=Array(89,'asub'); 
 $ty11e[1]=Array(89,'esub'); #电掣NPC第二形态情报
 $ty12[1]=24;
 $ty25a[1] = Array(25,'asub'); #佣兵NPC
@@ -61,35 +62,15 @@ $ty25a[1] = Array(25,'asub'); #佣兵NPC
 if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemtime($writefile) || filemtime($mapitemfile) > filemtime($writefile) || filemtime($synfile) > filemtime($writefile) || filemtime($ovlfile) > filemtime($writefile) || filemtime($presentfile) > filemtime($writefile) || filemtime($boxfile) > filemtime($writefile)){
 	$mixitem = array();
 	foreach($mixinfo as $mix){
-		if($mix['class'] !== 'hidden'){
+		if($mix['class'] !== 'hidden')
+		{
 			//名字
-			$mix['result'][0] = parse_info_desc($mix['result'][0],'m');
+			$mix['result'][0] = parse_nameinfo_desc($mix['result'][0]);
 			//属性
-			$mixitmsk = '';
-			if(!empty($mix['result'][4]) && !is_numeric($mix['result'][4])){
-				/*for ($j = 0; $j < strlen($mix['result'][4]); $j++) {
-					$sub = substr($mix['result'][4],$j,1);
-					if(!empty($sub)){
-						$mixitmsk .= $itemspkinfo[$sub].'+';
-					}
-				}
-				if(!empty($mixitmsk)){$mixitmsk = substr($mixitmsk,0,-1);}*/
-				/*$mix_sk = get_itmsk_array($mix['result'][4]); $mixitmsk = '';
-				foreach($mix_sk as $sk_value)
-				{
-					if(!empty($mixitmsk)) $mixitmsk .= '+'.parse_itm_desc($sk_value,'sk');
-					else $mixitmsk = parse_itm_desc($sk_value,'sk');
-				}*/
-				$mixitmsk = parse_info_desc($mix['result'][4],'sk',$mix['result'][1]);
-			}
+			$mixitmsk = empty($mix['result'][4]) ? '' : parse_skinfo_desc($mix['result'][4],$mix['result'][1]);
 			//类别
-			$mixitmk = parse_info_desc($mix['result'][1],'k');
-			/*foreach($iteminfo as $info_key => $info_value){
-				if(strpos($mix['result'][1],$info_key)===0){
-					$mixitmk = parse_itm_desc($info_key,'k');
-					break;
-				}
-			}*/
+			$mixitmk = parse_kinfo_desc($mix['result'][1],$mix['result'][4]);
+
 			$mixitem[$mix['class']][] = array('stuff' => $mix['stuff'], 'result' => array($mix['result'][0],$mixitmk,$mix['result'][2],$mix['result'][3],$mixitmsk));
 		}
 	}
@@ -169,27 +150,12 @@ if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemti
 		if($mix['class'] !== 'hidden')
 		{
 			//名字
-			//$mix['result'][0] = parse_itm_desc($mix['result'][0],'m');
-			$mix['result'][0] = parse_info_desc($mix['result'][0],'m');
+			$mix['result'][0] = parse_nameinfo_desc($mix['result'][0]);
 			//属性
-			$mixitmsk = '';
-			if(!empty($mix['result'][4]) && !is_numeric($mix['result'][4])){
-				/*$mix_sk = get_itmsk_array($mix['result'][4]); $mixitmsk = '';
-				foreach($mix_sk as $sk_value)
-				{
-					if(!empty($mixitmsk)) $mixitmsk .= '+'.parse_itm_desc($sk_value,'sk');
-					else $mixitmsk = parse_itm_desc($sk_value,'sk');
-				}*/
-				$mixitmsk = parse_info_desc($mix['result'][4],'sk',$mix['result'][1]);
-			}
+			$mixitmsk = empty($mix['result'][4]) ? '' : parse_skinfo_desc($mix['result'][4],$mix['result'][1]);
 			//类别
-			$mixitmk = parse_info_desc($mix['result'][1],'k');
-			/*foreach($iteminfo as $info_key => $info_value){
-				if(strpos($mix['result'][1],$info_key)===0){
-					$mixitmk = parse_itm_desc($info_key,'k');
-					break;
-				}
-			}*/
+			$mixitmk = parse_kinfo_desc($mix['result'][1],$mix['result'][4]);
+			
 			$vmixitem[$mix['class']][] = array('name' => $mix['name'], 'stuff' => $mix['stuff'], 'result' => array($mix['result'][0],$mixitmk,$mix['result'][2],$mix['result'][3],$mixitmsk));
 		}
 	}

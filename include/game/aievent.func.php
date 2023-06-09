@@ -175,7 +175,11 @@ function aievent($rate){
 					$itmchat[] = Array('type' => '2', 'time' => $now, 'send' => '【SANMA_TK】', 'msg' => $cht); 
 				}
 				if(!empty($itmchat)){
-					$db->multi_insert("{$tablepre}chat",$itmchat);
+					foreach($itmchat as $ickey => $icvalues)
+					{
+						$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('{$icvalues['type']}','{$icvalues['time']}','{$icvalues['send']}','','{$icvalues['msg']}')");
+					}
+					//$db->multi_insert("{$tablepre}chat",$itmchat);
 				}
 			}
 			

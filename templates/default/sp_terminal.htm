@@ -9,14 +9,23 @@
         <span class="grey">正在播放：～ <span id="bgmname">$bgmname</span> ～</span>
     </div>
     <!-- 战场地图 -->
-    <div style="width: 476px; float: left; margin-right: 5px;border-radius: 3px; border:2px solid rgba(225, 124, 226, 0.2);	">
+    <!-- 这是人能干出来的事吗? -->
+    <!--{if !$horizon}-->
+    <div style="width: 476px; float: left; margin-right: 5px;border-radius: 3px; border:2px solid rgba(225, 124, 226, 0.2);">
+    <!--{else}-->
+    <div style="width: 476px; float: left; margin-right: 5px;border-radius: 3px; border:2px solid rgba(82, 64, 139, 0.2);">
+    <!--{/if}-->
         <!--{eval $mapdata = init_mapdata();}-->
         $mapdata 
     </div>
     <!-- 控制菜单 -->
     <div style="width: 118px; float: right; margin-left: 5px;">
         <!-- 音乐控制指令 -->
+        <!--{if !$horizon}-->
         <table cellspacing="0" cellpadding="0" style="position:relative;border-radius: 3px; border:2px solid rgba(225, 124, 226, 0.2);">
+        <!--{else}-->    
+        <table cellspacing="0" cellpadding="0" style="position:relative;border-radius: 3px; border:2px solid rgba(82, 64, 139, 0.2);">
+        <!--{/if}-->
             <tr>
                 <TD colspan="2" class="b1" style="width: 120px; height: 24px;">播放控制</TD>
             </tr>

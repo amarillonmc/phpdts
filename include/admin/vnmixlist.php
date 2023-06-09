@@ -33,8 +33,7 @@ if(file_exists($cache_file))
 					$sk_arr = Array();
 					if(!empty($vn_info[4]))
 					{
-						$temp_mixinfo[$vn_key][$vn_type][4] = '';
-						$temp_mixinfo[$vn_key][$vn_type][4] = parse_info_desc($vn_info[4],'sk',$vn_info[1]);
+						$temp_mixinfo[$vn_key][$vn_type][4] = parse_skinfo_desc($vn_info[4],$vn_info[1]);
 					}
 				}
 			}
