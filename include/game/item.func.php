@@ -1377,6 +1377,8 @@ function itemuse($itmn,&$data=NULL) {
 				$log .= "<br>然后，你的<span class='sparkle'>{$sparkle}元素口袋{$sparkle}</span>飞了出去——<br><br>";
 				# 失去元素口袋
 				$clbstatusa = 1;
+				# 追加判定
+				if ($tflag and $hflag and $flag==true){
 				# 直接获得gameover
 				$itm0='『G.A.M.E.O.V.E.R』';
 				$itmk0='Y';
@@ -1385,6 +1387,17 @@ function itemuse($itmn,&$data=NULL) {
 				$itmsk0='zv';
 				$f1=true;
 				itemget($data);
+				}else{
+					$log .= "但似乎还是少了些什么东西……<br>";
+					# 大侠请重新来过
+					$itm0='『S.C.R.A.P』';
+					$itmk0='Y';
+					$itme0=1;
+					$itms0=1;
+					//$itmsk0='zv';
+					$f1=false;
+					itemget($data);
+				}
 			}
 			else
 			{

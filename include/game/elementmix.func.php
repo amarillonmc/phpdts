@@ -230,6 +230,8 @@
 			$gdata['clbpara']['mate'][] = $pid; $gdata['clbpara']['zombieoid'] = $pid;
 			# 获得灵俑状态技能
 			getclubskill('inf_zombie',$gdata['clbpara']);
+			# 人死魂灭 - 玩家灵俑强制变为 NPC
+			if ($gdata['type'] == 0){$gdata['type'] = 19;}
 			# 插入
 			$gdata = player_format_with_db_structure($gdata);
 			if(!empty($gdata))
