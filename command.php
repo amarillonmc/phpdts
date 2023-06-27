@@ -260,6 +260,37 @@ if($hp > 0){
 						}
 						$mode='command';
 					}
+                //码语行人提取
+                } elseif ($sp_cmd == 'sp_extract_trait') {
+                    $position = 0;
+                    if ($club == 21) {
+                        foreach (array(1, 2, 3, 4, 5, 6) as $imn)
+                            //遍历所有武器装备
+                            if (strpos(${'itmk' . $imn}, 'D') === 0 || strpos(${'itmk' . $imn}, 'W') === 0) {
+                                $position = $imn;
+                                break;
+                            }
+                        if (!$position) {
+                            $log .= '<span class="red">你没有武器或者装备，无法提取要素！</span><br />';
+                            $mode = 'command';
+                        } else  $mode = 'sp_extract_trait';
+                    } else {
+                        $log .= '<span class="red">你不懂得如何提取要素！</span><br />';
+                        $mode = 'command';
+                    }
+                } elseif ($sp_cmd == 'sp_extract_trait_selected') {
+                    if (!isset($choice) || $choice == 'menu') {
+                        $mode = 'command';
+                    } else {
+                        $choice = (int)$choice;
+                        if ($choice < 1 || $choice > 6)
+                            $log .= '<span class="red">无此物品。</span><br />';
+                        else {
+                            include_once GAME_ROOT . './include/game/special.func.php';
+                            item_extract_trait($choice);
+                        }
+                        $mode = 'command';
+                    }
 				}elseif($sp_cmd == 'sp_pbomb'){
 					$mode = 'sp_pbomb';
 				}elseif($sp_cmd == 'sp_weapon'){

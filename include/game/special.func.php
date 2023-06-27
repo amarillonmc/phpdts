@@ -478,6 +478,43 @@ function press_bomb(){
 	return;
 }
 
+//提取代码片段逻辑
+//——创建一个新的函数【ItemExtractTrait(...)】，读取物品的itm、itme、itms和itmsk属性，并清除其中的无效部分（例如排除不应该被提取的属性，如下毒者ID等），将其对应的值赋予一个新的itmk为"代码片段"的物品，并替代（摧毁）原物品。可以考虑为新物品添加一些额外的字段。
+function item_extract_trait($which){
+    //var_dump($itmn);
+    global $log,$mode,$club;
+    if($club != 21){
+        $log .= '你的称号不能使用该技能。';
+        $mode = 'command';
+        return;
+    }
+
+    if ( $which < 1 || $which > 6 ) {
+        $log .= '此道具不存在，请重新选择。';
+        $mode = 'command';
+        return;
+    }
+    
+    global ${'itm'.$which},${'itmk'.$which},${'itme'.$which},${'itms'.$which},${'itmsk'.$which};
+    $itm = & ${'itm'.$which};
+    $itmk = & ${'itmk'.$which};
+    $itme = & ${'itme'.$which};
+    $itms = & ${'itms'.$which};
+    $itmsk = & ${'itmsk'.$which};
+    
+    // 判断itmk是否以'D'或'W'开头
+    if (strpos($itmk, 'D') === 0 || strpos($itmk, 'W') === 0) {
+        // 将itmk替换为代码片段的itmk
+        $itmk = '代码片段';
+        // 给代码片段命名
+        $itm = $itm . '代码片段';
+        $log .= '成功将物品转换为代码片段。<br>';
+    } else {
+        $log .= '该物品无法转换为代码片段。<br>';
+    }
+
+}
+
 function shoplist($sn,$getlist=NULL) {
 	global $gamecfg,$mode,$itemdata,$areanum,$areaadd,$iteminfo,$itemspkinfo,$club;
 	global $db,$tablepre;

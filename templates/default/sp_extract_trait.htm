@@ -1,0 +1,26 @@
+<input type="hidden" name="mode" value="command">
+<input type="hidden" name="command" value="special">
+<input type="hidden" name="sp_cmd" value="sp_extract_trait_selected">
+<input type="hidden" id="choice" name="choice" value="menu">
+你想提取哪个的要素？<br>
+<br>
+<!--{if (strpos ( $itmk1, 'D' ) === 0  ) || (strpos ( $itmk1, 'W' ) === 0) }-->
+<input type="button" onclick="$('choice').value='1';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm1/$itme1/$itms1"><br>
+<!--{/if}-->
+<!--{if (strpos ( $itmk2, 'D' ) === 0  ) || (strpos ( $itmk2, 'W' ) === 0) }-->
+<input type="button" onclick="$('choice').value='2';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm2/$itme2/$itms2"><br>
+<!--{/if}-->
+<!--{if (strpos ( $itmk3, 'D' ) === 0  ) || (strpos ( $itmk3, 'W' ) === 0) }-->
+<input type="button" onclick="$('choice').value='3';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm3/$itme3/$itms3"><br>
+<!--{/if}-->
+<!--{if (strpos ( $itmk4, 'D' ) === 0  ) || (strpos ( $itmk4, 'W' ) === 0) }-->
+<input type="button" onclick="$('choice').value='4';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm4/$itme4/$itms4"><br>
+<!--{/if}-->
+<!--{if (strpos ( $itmk5, 'D' ) === 0  ) || (strpos ( $itmk5, 'W' ) === 0) }-->
+<input type="button" onclick="$('choice').value='5';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm5/$itme5/$itms5"><br>
+<!--{/if}-->
+<!--{if (strpos ( $itmk6, 'D' ) === 0  ) || (strpos ( $itmk6, 'W' ) === 0) }-->
+<input type="button" onclick="$('choice').value='6';postCmd('gamecmd','command.php');this.disabled=true;" value="$itm6/$itme6/$itms6"><br>
+<!--{/if}-->
+<br>
+<input type="button" class="cmdbutton" onclick="postCmd('gamecmd','command.php');this.disabled=true;" value="放弃">
