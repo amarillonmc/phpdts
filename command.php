@@ -294,6 +294,41 @@ if($hp > 0){
                         }
                         $mode = 'command';
                     }
+                //码语行人插入
+                } elseif ($sp_cmd == 'sp_add_trait') {
+                    $position = 0;
+                    if ($club == 21) {
+                        foreach (array(1, 2, 3, 4, 5, 6) as $imn)
+                            //遍历所有武器装备
+                            if (strpos(${'itmk' . $imn}, '🥚') === 0) {
+                                $position = $imn;
+                                break;
+                            }
+                        if (!$position) {
+                            $log .= '<span class="red">你没有代码片段，无法插入代码片段！</span><br />';
+                            $mode = 'command';
+                        } else  $mode = 'sp_add_trait';
+                    } else {
+                        $log .= '<span class="red">你不懂得如何插入代码片段！</span><br />';
+                        $mode = 'command';
+                    }
+                } elseif ($sp_cmd == 'sp_add_trait_selected') {
+                    if (!isset($choice) || $choice == 'menu') {
+                        var_dump($choice);
+                        $mode = 'command';
+                    } else {
+                        $choice = (int)($choice);
+                        $choice2 = (int)($choice2);
+                        //$choice = (int)$choice;
+                        var_dump($choice);
+                        if ($choice < 1 || $choice > 6 || $choice2 < 1 || $choice2 > 6)
+                            $log .= '<span class="red">无此物品。</span><br />';
+                        else {
+                            include_once GAME_ROOT . './include/game/special.func.php';
+                            item_add_trait($choice, $choice2);
+                        }
+                        $mode = 'command';
+                    }
 				}elseif($sp_cmd == 'sp_pbomb'){
 					$mode = 'sp_pbomb';
 				}elseif($sp_cmd == 'sp_weapon'){

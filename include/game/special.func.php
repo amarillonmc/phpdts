@@ -532,6 +532,51 @@ function item_extract_trait($which, $item_position){
 
 }
 
+//合并代码片段逻辑
+function  item_add_trait($choice1, $choice2){
+    global $log,$mode,$club;
+    if($club != 21){
+        $log .= '你的称号不能使用该技能。';
+        $mode = 'command';
+        return;
+    }
+    //获取choice1和choice2的itm itmk itme itms itmsk
+    global ${'itm'.$choice1},${'itmk'.$choice1},${'itme'.$choice1},${'itms'.$choice1},${'itmsk'.$choice1};
+    global ${'itm'.$choice2},${'itmk'.$choice2},${'itme'.$choice2},${'itms'.$choice2},${'itmsk'.$choice2};
+    $itm1 = & ${'itm'.$choice1};
+    $itmk1 = & ${'itmk'.$choice1};
+    $itme1 = & ${'itme'.$choice1};
+    $itms1 = & ${'itms'.$choice1};
+    $itmsk1 = & ${'itmsk'.$choice1};
+    $itm2 = & ${'itm'.$choice2};
+    $itmk2 = & ${'itmk'.$choice2};
+    $itme2 = & ${'itme'.$choice2};
+    $itms2 = & ${'itms'.$choice2};
+    $itmsk2 = & ${'itmsk'.$choice2};
+    //检查itmk1是否为🥚,itmk2是否为D或W开头
+    var_dump($itmk1);
+    if ($itmk1 != '🥚' || (strpos($itmk2, 'D') !== 0 && strpos($itmk2, 'W') !== 0)) {
+        $log .= '该物品无法合并。<br>';
+        return;
+    }
+    var_dump($itm1);
+    //让itm2属性合并itm1
+    $itm2 = $itm1 . $itm2;
+    $itmk2 = $itmk1 . $itmk2;
+    $itme2 = (int)$itme1 + (int)$itme2;
+    $itms2 = (int)$itms1 + (int)$itms2;
+    $itmsk2 = $itmsk1 . $itmsk2;
+    //清空itm1
+    $itm1 = '';
+    $itmk1 = '';
+    $itme1 = '0';
+    $itms1 = '0';
+    //去除itm2重复的属性
+    $itmsk2 = implode(array_unique(str_split($itmsk2)));
+    //去除itm2属性里的🥚
+    $itmk2 = str_replace('🥚', '', $itmk2);
+}
+
 function shoplist($sn,$getlist=NULL) {
 	global $gamecfg,$mode,$itemdata,$areanum,$areaadd,$iteminfo,$itemspkinfo,$club;
 	global $db,$tablepre;
@@ -587,5 +632,3 @@ function shoplist($sn,$getlist=NULL) {
 	return;
 
 }
-
-?>
