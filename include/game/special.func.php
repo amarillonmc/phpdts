@@ -479,31 +479,32 @@ function press_bomb(){
 }
 
 //提取代码片段逻辑
-function item_extract_trait($which, $item_position){
+function item_extract_trait($which, $item_position)
+{
     //去掉string which的最后一位
     $which = substr($which, 0, -1);
-    
-    global $log,$mode,$club;
-    if($club != 21){
+
+    global $log, $mode, $club;
+    if ($club != 21) {
         $log .= '你的称号不能使用该技能。';
         $mode = 'command';
         return;
     }
 
-    if ( $item_position < 1 || $item_position > 6 ) {
+    if ($item_position < 1 || $item_position > 6) {
         $log .= '此道具不存在，请重新选择。';
         $mode = 'command';
         return;
     }
-    global ${'itm'.$item_position},${'itmk'.$item_position},${'itme'.$item_position},${'itms'.$item_position},${'itmsk'.$item_position};
-    
-    $itm = & ${'itm'.$item_position};
-    $itmk = & ${'itmk'.$item_position};
-    $itme = & ${'itme'.$item_position};
-    $itms = & ${'itms'.$item_position};
-    $itmsk = & ${'itmsk'.$item_position};
+    global ${'itm' . $item_position}, ${'itmk' . $item_position}, ${'itme' . $item_position}, ${'itms' . $item_position}, ${'itmsk' . $item_position};
 
-    $tmp_trait = ${$which.$item_position};
+    $itm = &${'itm' . $item_position};
+    $itmk = &${'itmk' . $item_position};
+    $itme = &${'itme' . $item_position};
+    $itms = &${'itms' . $item_position};
+    $itmsk = &${'itmsk' . $item_position};
+
+    $tmp_trait = ${$which . $item_position};
 
     // 判断itmk是否以'D'或'W'开头
     if (strpos($itmk, 'D') === 0 || strpos($itmk, 'W') === 0) {
@@ -512,56 +513,71 @@ function item_extract_trait($which, $item_position){
         $itme = '0';
         $itms = '1';
         $itmsk = '';
-        ${$which.$item_position} = $tmp_trait;
+        ${$which . $item_position} = $tmp_trait;
         // 将itmk替换为代码片段的itmk
         $itmk = '🥚';
         // 给代码片段命名
         if ($which == 'itm') {
-            $itm = "名称".${$which.$item_position} . '代码片段';
+            $itm = "名称" . ${$which . $item_position} . '代码片段';
         } elseif ($which == 'itme') {
-            $itm = "效果".${$which.$item_position} . '代码片段';
+            $itm = "效果" . ${$which . $item_position} . '代码片段';
         } elseif ($which == 'itms') {
-            $itm = "耐久".${$which.$item_position} . '代码片段';
+            $itm = "耐久" . ${$which . $item_position} . '代码片段';
         } elseif ($which == 'itmsk') {
-            $itm = "属性".${$which.$item_position} . '代码片段';
+            $itm = "属性" . ${$which . $item_position} . '代码片段';
         }
         $log .= '成功将物品转换为代码片段。<br>';
     } else {
         $log .= '该物品无法转换为代码片段。<br>';
     }
-
 }
 
 //合并代码片段逻辑
-function  item_add_trait($choice1, $choice2){
-    global $log,$mode,$club;
-    if($club != 21){
+function  item_add_trait($choice1, $choice2)
+{
+    global $log, $mode, $club;
+    if ($club != 21) {
         $log .= '你的称号不能使用该技能。';
         $mode = 'command';
         return;
     }
     //获取choice1和choice2的itm itmk itme itms itmsk
-    global ${'itm'.$choice1},${'itmk'.$choice1},${'itme'.$choice1},${'itms'.$choice1},${'itmsk'.$choice1};
-    global ${'itm'.$choice2},${'itmk'.$choice2},${'itme'.$choice2},${'itms'.$choice2},${'itmsk'.$choice2};
-    $itm1 = & ${'itm'.$choice1};
-    $itmk1 = & ${'itmk'.$choice1};
-    $itme1 = & ${'itme'.$choice1};
-    $itms1 = & ${'itms'.$choice1};
-    $itmsk1 = & ${'itmsk'.$choice1};
-    $itm2 = & ${'itm'.$choice2};
-    $itmk2 = & ${'itmk'.$choice2};
-    $itme2 = & ${'itme'.$choice2};
-    $itms2 = & ${'itms'.$choice2};
-    $itmsk2 = & ${'itmsk'.$choice2};
-    //检查itmk1是否为🥚,itmk2是否为D或W开头
-    var_dump($itmk1);
-    if ($itmk1 != '🥚' || (strpos($itmk2, 'D') !== 0 && strpos($itmk2, 'W') !== 0)) {
+    global ${'itm' . $choice1}, ${'itmk' . $choice1}, ${'itme' . $choice1}, ${'itms' . $choice1}, ${'itmsk' . $choice1};
+    global ${'itm' . $choice2}, ${'itmk' . $choice2}, ${'itme' . $choice2}, ${'itms' . $choice2}, ${'itmsk' . $choice2};
+    $itm1 = &${'itm' . $choice1};
+    $itmk1 = &${'itmk' . $choice1};
+    $itme1 = &${'itme' . $choice1};
+    $itms1 = &${'itms' . $choice1};
+    $itmsk1 = &${'itmsk' . $choice1};
+    $itm2 = &${'itm' . $choice2};
+    $itmk2 = &${'itmk' . $choice2};
+    $itme2 = &${'itme' . $choice2};
+    $itms2 = &${'itms' . $choice2};
+    $itmsk2 = &${'itmsk' . $choice2};
+    //检查itmk1是否为🥚,itmk2是否为D或W开头或者是否为🥚
+    if ($itmk1 != '🥚' || (strpos($itmk2, 'D') !== 0 && strpos($itmk2, 'W') !== 0 && ($itmk2 !== '🥚'))) {
+        var_dump($itmk2);
         $log .= '该物品无法合并。<br>';
         return;
     }
-    var_dump($itm1);
     //让itm2属性合并itm1
-    $itm2 = $itm1 . $itm2;
+    //如果都是🥚，则去掉$itm的所有“代码片段”四个字，然后itm相加
+    if ($itmk1 == '🥚' && $itmk2 == '🥚') {
+        $itm1 = str_replace('代码片段', '', $itm1);
+        $itm2 = $itm1 . $itm2;
+        $itmk2 = $itmk1 . $itmk2;
+        $itme2 = (int)$itme1 + (int)$itme2;
+        $itms2 = (int)$itms1 + (int)$itms2;
+        $itmsk2 = $itmsk1 . $itmsk2;
+        //清空itm1
+        $itm1 = '';
+        $itmk1 = '';
+        $itme1 = '0';
+        $itms1 = '0';
+        $itmsk2 = '🥚';
+        $itms2 -= 1;
+        return;
+    }
     $itmk2 = $itmk1 . $itmk2;
     $itme2 = (int)$itme1 + (int)$itme2;
     $itms2 = (int)$itms1 + (int)$itms2;

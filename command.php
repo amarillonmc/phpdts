@@ -319,10 +319,11 @@ if($hp > 0){
                     } else {
                         $choice = (int)($choice);
                         $choice2 = (int)($choice2);
-                        //$choice = (int)$choice;
                         var_dump($choice);
                         if ($choice < 1 || $choice > 6 || $choice2 < 1 || $choice2 > 6)
                             $log .= '<span class="red">无此物品。</span><br />';
+                        elseif ($choice == $choice2)
+                            $log .= '<span class="red">你选择了相同的代码片段。</span><br />';
                         else {
                             include_once GAME_ROOT . './include/game/special.func.php';
                             item_add_trait($choice, $choice2);
