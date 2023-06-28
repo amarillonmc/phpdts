@@ -508,7 +508,34 @@ function item_extract_trait($which, $item_position)
 
     // 判断itmk是否以'D'或'W'开头
     if (strpos($itmk, 'D') === 0 || strpos($itmk, 'W') === 0) {
-        $itm = '';
+        // 给代码片段命名
+        if ($which == 'itm') {            
+            preg_match_all('/(改|棍棒)/u', $itm, $matches);
+            //var_dump($matches);
+            if (!empty($matches[0])) {
+                $itm = implode('', $matches[0]);
+                //转换成string
+                $itm = (string)$itm;
+                
+                $itm = "名称" . $itm . '代码片段';
+                $itmk = '';
+                $itme = '0';
+                $itms = '1';
+                $itmsk = '';
+                return;
+            }
+            else {
+                $log .= '该物品无法转换为代码片段。<br>';
+                return;
+            }
+        }
+        elseif ($which == 'itme') {
+            $itm = "效果" . ${$which . $item_position} . '代码片段';
+        } elseif ($which == 'itms') {
+            $itm = "耐久" . ${$which . $item_position} . '代码片段';
+        } elseif ($which == 'itmsk') {
+            $itm = "属性" . ${$which . $item_position} . '代码片段';
+        }
         $itmk = '';
         $itme = '0';
         $itms = '1';
@@ -516,20 +543,11 @@ function item_extract_trait($which, $item_position)
         ${$which . $item_position} = $tmp_trait;
         // 将itmk替换为代码片段的itmk
         $itmk = '🥚';
-        // 给代码片段命名
-        if ($which == 'itm') {
-            $itm = "名称" . ${$which . $item_position} . '代码片段';
-        } elseif ($which == 'itme') {
-            $itm = "效果" . ${$which . $item_position} . '代码片段';
-        } elseif ($which == 'itms') {
-            $itm = "耐久" . ${$which . $item_position} . '代码片段';
-        } elseif ($which == 'itmsk') {
-            $itm = "属性" . ${$which . $item_position} . '代码片段';
-        }
         $log .= '成功将物品转换为代码片段。<br>';
     } else {
         $log .= '该物品无法转换为代码片段。<br>';
     }
+    return;
 }
 
 //合并代码片段逻辑
@@ -574,7 +592,7 @@ function  item_add_trait($choice1, $choice2)
         $itmk1 = '';
         $itme1 = '0';
         $itms1 = '0';
-        $itmsk2 = '🥚';
+        $itmk2 = '🥚';
         $itms2 -= 1;
         return;
     }
