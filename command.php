@@ -282,12 +282,15 @@ if($hp > 0){
                     if (!isset($choice) || $choice == 'menu') {
                         $mode = 'command';
                     } else {
-                        $choice = (int)$choice;
-                        if ($choice < 1 || $choice > 6)
+                        var_dump($choice);
+                        $choice_position = (int)(substr($choice, -1));
+                        var_dump($choice_position);
+                        //$choice = (int)$choice;
+                        if ($choice_position < 1 || $choice_position > 6)
                             $log .= '<span class="red">无此物品。</span><br />';
                         else {
                             include_once GAME_ROOT . './include/game/special.func.php';
-                            item_extract_trait($choice);
+                            item_extract_trait($choice, $choice_position);
                         }
                         $mode = 'command';
                     }
