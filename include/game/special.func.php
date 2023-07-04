@@ -481,10 +481,11 @@ function press_bomb(){
 //提取代码片段逻辑
 function item_extract_trait($which, $item_position)
 {
+    include_once GAME_ROOT . './gamedata/club21cfg.php';
     //去掉string which的最后一位
     $which = substr($which, 0, -1);
 
-    global $log, $mode, $club;
+    global $log, $mode, $club, $sp;
     if ($club != 21) {
         $log .= '你的称号不能使用该技能。';
         $mode = 'command';
@@ -511,7 +512,6 @@ function item_extract_trait($which, $item_position)
         // 给代码片段命名
         if ($which == 'itm') {            
             preg_match_all('/(改|棍棒)/u', $itm, $matches);
-            //var_dump($matches);
             if (!empty($matches[0])) {
                 $itm = implode('', $matches[0]);
                 //转换成string
@@ -528,12 +528,33 @@ function item_extract_trait($which, $item_position)
                 $log .= '该物品无法转换为代码片段。<br>';
                 return;
             }
-        }
-        elseif ($which == 'itme') {
+        } elseif ($which == 'itme') {
+            if ($sp < $itme_extract_rate * $itme) {
+                $log .= '体力不足，无法转换为代码片段。<br>';
+                return;
+            }
             $itm = "效果" . ${$which . $item_position} . '代码片段';
+            $log .= '消耗体力' . $itme_extract_rate * $itme . '点。<br>';
+            $sp -= $itme_extract_rate * $itme;
         } elseif ($which == 'itms') {
+            if ($sp < $itms_extract_rate * $itms) {
+                $log .= '体力不足，无法转换为代码片段。<br>';
+                return;
+            }
             $itm = "耐久" . ${$which . $item_position} . '代码片段';
+            $log .= '消耗体力' . $itms_extract_rate * $itms . '点。<br>';
         } elseif ($which == 'itmsk') {
+            preg_match_all('/./u', $itmsk, $matches);
+            foreach ($matches[0] as $single_itmsk) {
+                if (isset($itmsk_extract_rate[$single_itmsk])) {
+                    $sum += 1 * $itmsk_extract_rate[$single_itmsk];
+                }
+            }
+            
+            if ($sp < $sum) {
+                $log .= '体力不足，无法转换为代码片段。<br>';
+                return;
+            }
             $itm = "属性" . ${$which . $item_position} . '代码片段';
         }
         $itmk = '';
@@ -574,7 +595,6 @@ function  item_add_trait($choice1, $choice2)
     $itmsk2 = &${'itmsk' . $choice2};
     //检查itmk1是否为🥚,itmk2是否为D或W开头或者是否为🥚
     if ($itmk1 != '🥚' || (strpos($itmk2, 'D') !== 0 && strpos($itmk2, 'W') !== 0 && ($itmk2 !== '🥚'))) {
-        var_dump($itmk2);
         $log .= '该物品无法合并。<br>';
         return;
     }

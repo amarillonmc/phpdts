@@ -282,9 +282,7 @@ if($hp > 0){
                     if (!isset($choice) || $choice == 'menu') {
                         $mode = 'command';
                     } else {
-                        var_dump($choice);
                         $choice_position = (int)(substr($choice, -1));
-                        var_dump($choice_position);
                         //$choice = (int)$choice;
                         if ($choice_position < 1 || $choice_position > 6)
                             $log .= '<span class="red">无此物品。</span><br />';
@@ -314,12 +312,10 @@ if($hp > 0){
                     }
                 } elseif ($sp_cmd == 'sp_add_trait_selected') {
                     if (!isset($choice) || $choice == 'menu') {
-                        var_dump($choice);
                         $mode = 'command';
                     } else {
                         $choice = (int)($choice);
                         $choice2 = (int)($choice2);
-                        var_dump($choice);
                         if ($choice < 1 || $choice > 6 || $choice2 < 1 || $choice2 > 6)
                             $log .= '<span class="red">无此物品。</span><br />';
                         elseif ($choice == $choice2)
