@@ -511,14 +511,32 @@ function item_extract_trait($which, $item_position)
     if (strpos($itmk, 'D') === 0 || strpos($itmk, 'W') === 0) {
         // 给代码片段命名
         if ($which == 'itm') {            
-            preg_match_all('/(改|棍棒)/u', $itm, $matches);
+            preg_match_all('/(改|棍棒|\+(\\d+))/u', $itm, $matches);
             if (!empty($matches[0])) {
+                $sp_cost = 0;
+                foreach ($matches[0] as $match) {
+                    if ($match == '改') {
+                        $sp_cost += $itm_extract_rate['改'] * 1;
+                    } elseif ($match == '棍棒') {
+                        $sp_cost += $itm_extract_rate['棍棒'] * 1;
+                    } else {
+                        preg_match('/\+(\d+)/', $match, $numberMatch);
+                        $number = isset($numberMatch[1]) ? (int) $numberMatch[1] : 0;
+                        $sp_cost += $itm_extract_rate['+'] + $itm_extract_rate['n'] * $number;
+                    }
+                }
+                if ($sp < $sp_cost) {
+                    $log .= '体力不足，无法转换为代码片段。<br>';
+                    return;
+                }
+                $sp -= $sp_cost;
+                $log .= '消耗体力' . $sp_cost . '点。<br>';
+
                 $itm = implode('', $matches[0]);
-                //转换成string
                 $itm = (string)$itm;
                 
                 $itm = "名称" . $itm . '代码片段';
-                $itmk = '';
+                $itmk = '🥚';
                 $itme = '0';
                 $itms = '1';
                 $itmsk = '';
@@ -574,7 +592,7 @@ function item_extract_trait($which, $item_position)
 //合并代码片段逻辑
 function  item_add_trait($choice1, $choice2)
 {
-    global $log, $mode, $club;
+    global $log, $mode, $club, $sp, $rage;
     if ($club != 21) {
         $log .= '你的称号不能使用该技能。';
         $mode = 'command';
@@ -614,6 +632,30 @@ function  item_add_trait($choice1, $choice2)
         $itms1 = '0';
         $itmk2 = '🥚';
         $itms2 -= 1;
+        return;
+    }
+    if ($rage < 50 ) {
+        $log .= '怒气不足，无法合并代码片段。<br>';
+        return;
+    }
+    $rage -= 50;
+    //如果itm1是名称开头的
+    if (strpos($itm1, '名称') === 0){
+        //去掉名称和代码片段后合并
+        $itm1 = str_replace('名称', '', $itm1);
+        $itm1 = str_replace('代码片段', '', $itm1);
+        var_dump($itm1);
+        $itm2 = $itm1 . $itm2;
+        $itmk2 = $itmk1 . $itmk2;
+        $itme2 = (int)$itme1 + (int)$itme2;
+        $itms2 = (int)$itms1 + (int)$itms2;
+        $itmsk2 = $itmsk1 . $itmsk2;
+        //清空itm1
+        $itm1 = '';
+        $itmk1 = '';
+        $itme1 = '0';
+        $itms1 = '0';
+        $itmk2 = str_replace('🥚', '', $itmk2);
         return;
     }
     $itmk2 = $itmk1 . $itmk2;
