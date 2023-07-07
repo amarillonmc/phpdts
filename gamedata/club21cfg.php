@@ -65,6 +65,7 @@ $itm_extract_rate = array(
 
 //物品效果和耐久的场合：按照1：1比率消耗体力进行提取
 $itms_extract_rate = 1; //耐久
+$itms_infinite_extract_rate = 50; //无限耐久
 $itme_extract_rate = 1; //效果
 
 //插入代码片段

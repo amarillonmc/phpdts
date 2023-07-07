@@ -557,6 +557,25 @@ function item_extract_trait($which, $item_position)
             $log .= '消耗体力' . $itme_extract_rate * $itme . '点。<br>';
             $sp -= $itme_extract_rate * $itme;
         } elseif ($which == 'itms') {
+            //如果itms为∞
+            if ($itms == '∞') {
+                if ($sp < $itms_infinite_extract_rate* 1) {
+                    $log .= '体力不足，无法转换为代码片段。<br>';
+                    return;
+                }
+                $itm = '🥚' . $oriitm . '🥚的耐久代码片段';
+                $log .= '消耗体力' . $itms_infinite_extract_rate* 1 . '点。<br>';
+                $sp -= $itms_infinite_extract_rate* 1;
+                $itmk = '';
+                $itme = '0';
+                $itms = '∞';
+                $itmsk = '';
+                ${$which . $item_position} = $tmp_trait;
+                // 将itmk替换为代码片段的itmk
+                $itmk = '🥚';
+                $log .= '成功将物品转换为代码片段。<br>';
+                return;
+            }
             if ($sp < $itms_extract_rate * $itms) {
                 $log .= '体力不足，无法转换为代码片段。<br>';
                 return;
@@ -564,14 +583,20 @@ function item_extract_trait($which, $item_position)
             //$itm = "耐久" . ${$which . $item_position} . '代码片段';
 			$itm = '🥚' . $oriitm . '🥚的耐久代码片段';
             $log .= '消耗体力' . $itms_extract_rate * $itms . '点。<br>';
+            $sp -= $itms_extract_rate * $itms;
         } elseif ($which == 'itmsk') {
             preg_match_all('/./u', $itmsk, $matches);
+            var_dump($matches);
+            //如果matches没有
+            if (empty($matches[0])) {
+                $log .= '该物品无法转换为代码片段。<br>';
+                return;
+            }
             foreach ($matches[0] as $single_itmsk) {
                 if (isset($itmsk_extract_rate[$single_itmsk])) {
                     $sum += 1 * $itmsk_extract_rate[$single_itmsk];
                 }
             }
-            
             if ($sp < $sum) {
                 $log .= '体力不足，无法转换为代码片段。<br>';
                 return;
@@ -586,6 +611,7 @@ function item_extract_trait($which, $item_position)
         $itms = '1';
         $itmsk = '';
         ${$which . $item_position} = $tmp_trait;
+        $itms += 1;
         // 将itmk替换为代码片段的itmk
         $itmk = '🥚';
         $log .= '成功将物品转换为代码片段。<br>';
@@ -630,7 +656,13 @@ function  item_add_trait($choice1, $choice2)
 		$itm2 = '🥚复合代码片段🥚';
         $itmk2 = $itmk1 . $itmk2;
         $itme2 = (int)$itme1 + (int)$itme2;
-        $itms2 = (int)$itms1 + (int)$itms2;
+        //当任意一个itms为∞
+        if ($itms1 == '∞' || $itms2 == '∞') {
+            $itms2 = '∞';
+        }
+        else {
+            $itms2 = (int)$itms1 + (int)$itms2 - 1;
+        }
         $itmsk2 = $itmsk1 . $itmsk2;
         //清空itm1
         $itm1 = '';
@@ -651,12 +683,18 @@ function  item_add_trait($choice1, $choice2)
         //去掉名称和代码片段后合并
         $itm1 = str_replace('名称', '', $itm1);
         $itm1 = str_replace('代码片段', '', $itm1);
-        var_dump($itm1);
+        //var_dump($itm1);
         //$itm2 = $itm1 . $itm2;
 		$itm2 = '🥚' . $itm1 . '🥚的复合代码片段';
         $itmk2 = $itmk1 . $itmk2;
         $itme2 = (int)$itme1 + (int)$itme2;
-        $itms2 = (int)$itms1 + (int)$itms2;
+        //当任意一个itms为∞
+        if ($itms1 == '∞' || $itms2 == '∞') {
+            $itms2 = '∞';
+        }
+        else {
+            $itms2 = (int)$itms1 + (int)$itms2 - 1;
+        }
         $itmsk2 = $itmsk1 . $itmsk2;
         //清空itm1
         $itm1 = '';
@@ -668,7 +706,13 @@ function  item_add_trait($choice1, $choice2)
     }
     $itmk2 = $itmk1 . $itmk2;
     $itme2 = (int)$itme1 + (int)$itme2;
-    $itms2 = (int)$itms1 + (int)$itms2;
+    //当任意一个itms为∞
+    if ($itms1 == '∞' || $itms2 == '∞') {
+        $itms2 = '∞';
+    }
+    else {
+        $itms2 = (int)$itms1 + (int)$itms2 - 1;
+    }
     $itmsk2 = $itmsk1 . $itmsk2;
     //清空itm1
     $itm1 = '';
