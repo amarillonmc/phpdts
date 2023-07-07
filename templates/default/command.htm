@@ -155,6 +155,14 @@
 			<input type="button" class="cmdbutton" id="sp_poison" name="sp_poison" value="检查毒物" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_poison';postCmd('gamecmd','command.php');this.disabled=true;">
 		</span>
 		<br />
+    <!--{elseif $club == 21}-->
+        <span tooltip="可以通过消耗体力，将武器·装备上的「要素」取出成为物品">
+            <input type="button" class="cmdbutton" id="sp_extract_trait" name="sp_extract_trait" value="提取代码片段" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_extract_trait';postCmd('gamecmd','command.php');this.disabled=true;">
+        </span>
+        <span tooltip="插回其他物品让其他物品获得这些属性">
+            <input type="button" class="cmdbutton" id="sp_add_trait" name="sp_add_trait" value="插入代码片段" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_add_trait';postCmd('gamecmd','command.php');this.disabled=true;">
+        </span>
+        <br />
 	<!--{elseif $club == 99}-->
 		<span tooltip="舍弃当前称号，使属性大副提升">
 			<input type="button" class="cmdbutton" id="sp_pbomb" name="sp_pbomb" value="X 按钮" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_pbomb';postCmd('gamecmd','command.php');this.disabled=true;">

@@ -1,0 +1,32 @@
+<input type="hidden" name="mode" value="command" />
+<input type="hidden" name="command" value="special" />
+<input type="hidden" name="sp_cmd" value="sp_add_trait_selected" />
+<input type="hidden" id="choice" name="choice" value="menu" />
+<input type="hidden" id="choice2" name="choice" value="menu" />
+
+
+你打算怎么插入代码片段？<br>
+
+<div style="padding: 5px;">
+    <select name="choice" onclick=sl('choice'); href="javascript:void(0);">
+    <option value="0">■ 道具一 ■<br />
+    <!--{if (strpos($itmk1, '🥚') === 0)}--><option value="1">$itm1/$itme1/$itms1<br /><!--{/if}-->
+    <!--{if (strpos($itmk2, '🥚') === 0)}--><option value="2">$itm2/$itme2/$itms2<br /><!--{/if}-->
+    <!--{if (strpos($itmk3, '🥚') === 0)}--><option value="3">$itm3/$itme3/$itms3<br /><!--{/if}-->
+    <!--{if (strpos($itmk4, '🥚') === 0)}--><option value="4">$itm4/$itme4/$itms4<br /><!--{/if}-->
+    <!--{if (strpos($itmk5, '🥚') === 0)}--><option value="5">$itm5/$itme5/$itms5<br /><!--{/if}-->
+    <!--{if (strpos($itmk6, '🥚') === 0)}--><option value="6">$itm6/$itme6/$itms6<br /><!--{/if}-->
+    </select>
+    <br><br>
+    <select name="choice2" onclick=sl('choice2'); href="javascript:void(0);">
+        <option value="0">■ 道具二 ■<br />
+        <!--{if (strpos ( $itmk1, 'D' ) === 0  ) || (strpos ( $itmk1, 'W' ) === 0) || (strpos ( $itmk1, '🥚' ) === 0) }--><option value="1">$itm1/$itme1/$itms1<br /><!--{/if}-->
+        <!--{if (strpos ( $itmk2, 'D' ) === 0  ) || (strpos ( $itmk2, 'W' ) === 0) || (strpos ( $itmk2, '🥚' ) === 0) }--><option value="2">$itm2/$itme2/$itms2<br /><!--{/if}-->
+        <!--{if (strpos ( $itmk3, 'D' ) === 0  ) || (strpos ( $itmk3, 'W' ) === 0) || (strpos ( $itmk3, '🥚' ) === 0) }--><option value="3">$itm3/$itme3/$itms3<br /><!--{/if}-->
+        <!--{if (strpos ( $itmk4, 'D' ) === 0  ) || (strpos ( $itmk4, 'W' ) === 0) || (strpos ( $itmk4, '🥚' ) === 0) }--><option value="4">$itm4/$itme4/$itms4<br /><!--{/if}-->
+        <!--{if (strpos ( $itmk5, 'D' ) === 0  ) || (strpos ( $itmk5, 'W' ) === 0) || (strpos ( $itmk5, '🥚' ) === 0) }--><option value="5">$itm5/$itme5/$itms5<br /><!--{/if}-->
+        <!--{if (strpos ( $itmk6, 'D' ) === 0  ) || (strpos ( $itmk6, 'W' ) === 0) || (strpos ( $itmk6, '🥚' ) === 0) }--><option value="6">$itm6/$itme6/$itms6<br /><!--{/if}-->
+        </select>
+</div>
+
+<input type="button" class="cmdbutton" id="zz" name="submit" value="[Z]提交" onclick="postCmd('gamecmd','command.php');this.disabled=true;">

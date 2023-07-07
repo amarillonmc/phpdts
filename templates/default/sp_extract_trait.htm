@@ -1,0 +1,49 @@
+<input type="hidden" name="mode" value="command">
+<input type="hidden" name="command" value="special">
+<input type="hidden" name="sp_cmd" value="sp_extract_trait_selected">
+<input type="hidden" id="choice" name="choice" value="menu">
+你想提取什么要素？<br>
+<br>
+<!--{if (strpos ( $itmk1, 'D' ) === 0  ) || (strpos ( $itmk1, 'W' ) === 0) }-->
+<input type="button" onclick="$('choice').value='itm1';postCmd('gamecmd','command.php');this.disabled=true;" value="名称">$itm1<br>
+<input type="button" onclick="$('choice').value='itme1';postCmd('gamecmd','command.php');this.disabled=true;" value="效果">$itme1<br>
+<input type="button" onclick="$('choice').value='itms1';postCmd('gamecmd','command.php');this.disabled=true;" value="耐久">$itms1<br>
+<input type="button" onclick="$('choice').value='itmsk1';postCmd('gamecmd','command.php');this.disabled=true;" value="属性">$itmsk1_words<br>
+<!--{/if}-->
+<br>
+<!--{if (strpos ( $itmk2, 'D' ) === 0  ) || (strpos ( $itmk2, 'W' ) === 0) }-->
+<input type="button" onclick="$('choice').value='itm2';postCmd('gamecmd','command.php');this.disabled=true;" value="名称">$itm2<br>
+<input type="button" onclick="$('choice').value='itme2';postCmd('gamecmd','command.php');this.disabled=true;" value="效果">$itme2<br>
+<input type="button" onclick="$('choice').value='itms2';postCmd('gamecmd','command.php');this.disabled=true;" value="耐久">$itms2<br>
+<input type="button" onclick="$('choice').value='itmsk2';postCmd('gamecmd','command.php');this.disabled=true;" value="属性">$itmsk2_words<br>
+<!--{/if}-->
+<br>
+<!--{if (strpos ( $itmk3, 'D' ) === 0  ) || (strpos ( $itmk3, 'W' ) === 0) }-->
+<input type="button" onclick="$('choice').value='itm3';postCmd('gamecmd','command.php');this.disabled=true;" value="名称">$itm3<br>
+<input type="button" onclick="$('choice').value='itme3';postCmd('gamecmd','command.php');this.disabled=true;" value="效果">$itme3<br>
+<input type="button" onclick="$('choice').value='itms3';postCmd('gamecmd','command.php');this.disabled=true;" value="耐久">$itms3<br>
+<input type="button" onclick="$('choice').value='itmsk3';postCmd('gamecmd','command.php');this.disabled=true;" value="属性">$itmsk3_words<br>
+<!--{/if}-->
+<br>
+<!--{if (strpos ( $itmk4, 'D' ) === 0  ) || (strpos ( $itmk4, 'W' ) === 0) }-->
+<input type="button" onclick="$('choice').value='itm4';postCmd('gamecmd','command.php');this.disabled=true;" value="名称">$itm4<br>
+<input type="button" onclick="$('choice').value='itme4';postCmd('gamecmd','command.php');this.disabled=true;" value="效果">$itme4<br>
+<input type="button" onclick="$('choice').value='itms4';postCmd('gamecmd','command.php');this.disabled=true;" value="耐久">$itms4<br>
+<input type="button" onclick="$('choice').value='itmsk4';postCmd('gamecmd','command.php');this.disabled=true;" value="属性">$itmsk4_words<br>
+<!--{/if}-->
+<br>
+<!--{if (strpos ( $itmk5, 'D' ) === 0  ) || (strpos ( $itmk5, 'W' ) === 0) }-->
+<input type="button" onclick="$('choice').value='itm5';postCmd('gamecmd','command.php');this.disabled=true;" value="名称">$itm5<br>
+<input type="button" onclick="$('choice').value='itme5';postCmd('gamecmd','command.php');this.disabled=true;" value="效果">$itme5<br>
+<input type="button" onclick="$('choice').value='itms5';postCmd('gamecmd','command.php');this.disabled=true;" value="耐久">$itms5<br>
+<input type="button" onclick="$('choice').value='itmsk5';postCmd('gamecmd','command.php');this.disabled=true;" value="属性">$itmsk5_words<br>
+<!--{/if}-->
+<br>
+<!--{if (strpos ( $itmk6, 'D' ) === 0  ) || (strpos ( $itmk6, 'W' ) === 0) }-->
+<input type="button" onclick="$('choice').value='itm6';postCmd('gamecmd','command.php');this.disabled=true;" value="名称">$itm6<br>
+<input type="button" onclick="$('choice').value='itme6';postCmd('gamecmd','command.php');this.disabled=true;" value="效果">$itme6<br>
+<input type="button" onclick="$('choice').value='itms6';postCmd('gamecmd','command.php');this.disabled=true;" value="耐久">$itms6<br>
+<input type="button" onclick="$('choice').value='itmsk6';postCmd('gamecmd','command.php');this.disabled=true;" value="属性">$itmsk6_words<br>
+<!--{/if}-->
+<br>
+<input type="button" class="cmdbutton" onclick="postCmd('gamecmd','command.php');this.disabled=true;" value="放弃">
