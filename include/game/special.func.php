@@ -499,7 +499,8 @@ function item_extract_trait($which, $item_position)
     }
     global ${'itm' . $item_position}, ${'itmk' . $item_position}, ${'itme' . $item_position}, ${'itms' . $item_position}, ${'itmsk' . $item_position};
 
-    $itm = &${'itm' . $item_position};
+    $oriitm = &${'itm' . $item_position};
+	$itm = &${'itm' . $item_position};
     $itmk = &${'itmk' . $item_position};
     $itme = &${'itme' . $item_position};
     $itms = &${'itms' . $item_position};
@@ -551,7 +552,8 @@ function item_extract_trait($which, $item_position)
                 $log .= '体力不足，无法转换为代码片段。<br>';
                 return;
             }
-            $itm = "效果" . ${$which . $item_position} . '代码片段';
+            //$itm = "效果" . ${$which . $item_position} . '代码片段';
+			$itm = '🥚' . $oriitm . '🥚的效果代码片段';
             $log .= '消耗体力' . $itme_extract_rate * $itme . '点。<br>';
             $sp -= $itme_extract_rate * $itme;
         } elseif ($which == 'itms') {
@@ -559,7 +561,8 @@ function item_extract_trait($which, $item_position)
                 $log .= '体力不足，无法转换为代码片段。<br>';
                 return;
             }
-            $itm = "耐久" . ${$which . $item_position} . '代码片段';
+            //$itm = "耐久" . ${$which . $item_position} . '代码片段';
+			$itm = '🥚' . $oriitm . '🥚的耐久代码片段';
             $log .= '消耗体力' . $itms_extract_rate * $itms . '点。<br>';
         } elseif ($which == 'itmsk') {
             preg_match_all('/./u', $itmsk, $matches);
@@ -573,7 +576,10 @@ function item_extract_trait($which, $item_position)
                 $log .= '体力不足，无法转换为代码片段。<br>';
                 return;
             }
-            $itm = "属性" . ${$which . $item_position} . '代码片段';
+            //$itm = "属性" . ${$which . $item_position} . '代码片段';
+			$itm = '🥚' . $oriitm . '🥚的属性代码片段';
+            $log .= '消耗体力' . $sum . '点。<br>';
+            $sp -= $sum;
         }
         $itmk = '';
         $itme = '0';
@@ -620,7 +626,8 @@ function  item_add_trait($choice1, $choice2)
     //如果都是🥚，则去掉$itm的所有“代码片段”四个字，然后itm相加
     if ($itmk1 == '🥚' && $itmk2 == '🥚') {
         $itm1 = str_replace('代码片段', '', $itm1);
-        $itm2 = $itm1 . $itm2;
+        //$itm2 = $itm1 . $itm2;
+		$itm2 = '🥚复合代码片段🥚';
         $itmk2 = $itmk1 . $itmk2;
         $itme2 = (int)$itme1 + (int)$itme2;
         $itms2 = (int)$itms1 + (int)$itms2;
@@ -645,7 +652,8 @@ function  item_add_trait($choice1, $choice2)
         $itm1 = str_replace('名称', '', $itm1);
         $itm1 = str_replace('代码片段', '', $itm1);
         var_dump($itm1);
-        $itm2 = $itm1 . $itm2;
+        //$itm2 = $itm1 . $itm2;
+		$itm2 = '🥚' . $itm1 . '🥚的复合代码片段';
         $itmk2 = $itmk1 . $itmk2;
         $itme2 = (int)$itme1 + (int)$itme2;
         $itms2 = (int)$itms1 + (int)$itms2;
