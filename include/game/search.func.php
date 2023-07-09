@@ -558,6 +558,8 @@ function discover($schmode = 0,&$data=NULL)
 		goto battle_flag;
 	}
 	
+	include_once GAME_ROOT. './include/game/fireseedevent.func.php';//club22 eventing
+	
 	$trap_dice=diceroll(99);
 	// 计算陷阱“发现率”
 	if($trap_dice < $trap_max_obbs)
