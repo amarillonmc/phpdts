@@ -102,7 +102,7 @@ function repairfireseed($fireseedID){
 
     #Repair Fireseed
     $repairFireSeed['hp'] = $repairFireSeed['mhp'];
-    $repairFireSeed['sp'] = $checkGivenRepairableFireseed['msp'];
+    $repairFireSeed['sp'] = $repairFireSeed['msp'];
 
     $repairFireseed['arb'] = $repairFireseed['arh'] = $repairFireseed['ara'] = $repairFireseed['arf'] = $repairFireseed['art'] = "✦修复数据";
     $repairFireseed['arbs'] = $repairFireseed['arhs'] = $repairFireseed['aras'] = $repairFireseed['arfs'] = $repairFireseed['arts'] = 1;
