@@ -448,7 +448,7 @@ namespace revattr
 				get_inf_rev($pd,'p');
 			}else{
 				$log .= "<span class=\"yellow\">体当冲刺朝你袭来！造成了<span class=\"red\">550</span>点伤害！<br>";
-				$dmg = 250;
+				$dmg = 550;
 			}
 			return $dmg;
 		}

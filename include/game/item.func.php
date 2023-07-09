@@ -1148,9 +1148,13 @@ function itemuse($itmn,&$data=NULL) {
 			}
 		} elseif (preg_match ( "/钉$/", $itm ) || preg_match ( "/钉\[/", $itm )) {
 			//global $wep, $wepk, $wepe, $weps, $wepsk;
-			if (( strpos ( $wep, '棍棒' ) !== false) && ($wepk == 'WP')) {
-				if (strpos($wepsk,'j')!==false){
-					$log.='多重武器不能改造。<br>';
+            //码语行人，$club==21的时候不能使用钉子
+            if ($club == 21) {
+                $log .= '<span class="yellow">码语行人，$club==21的时候不能使用针线包<br>';
+                return;
+            } elseif ((strpos($wep, '棍棒') !== false) && ($wepk == 'WP')) {
+                if (strpos($wepsk, 'j') !== false) {
+                    $log .= '多重武器不能改造。<br>';
 					return;
 				}
 				$dice = rand ( 0, 100 );
@@ -1177,7 +1181,11 @@ function itemuse($itmn,&$data=NULL) {
 			}
 		} elseif ($itm == '针线包') {
 			//global $arb, $arbk, $arbe, $arbs, $arbsk, $noarb;
-			if (($arb == $noarb) || ! $arb) {
+            //码语行人，$club==21的时候不能使用针线包
+            if ($club == 21) {
+                $log .= '<span class="yellow">码语行人，$club==21的时候不能使用针线包<br>';
+                return;
+            } elseif (($arb == $noarb) || !$arb) {
 				$log .= '你没有装备防具，不能使用针线包。<br>';
 			} elseif(strpos($arbsk,'^')!==false){
 				$log .= '<span class="yellow">你不能对背包使用针线包。<br>';
@@ -1247,16 +1255,21 @@ function itemuse($itmn,&$data=NULL) {
 			$itms --;
 		}	elseif ($itm == '天然呆四面的奖赏') {
 			//global $wep, $wepk, $wepe, $weps, $wepsk;
-			if (! $weps || ! $wepe) {
+            //码语行人，$club==21的时候不能使用天然呆四面的奖赏
+            if ($club == 21) {
+                $log .= '<span class="yellow">码语行人，$club==21的时候不能使用武器师安雅的奖赏<br>';
+                return;
+            }
+            if (!$weps || !$wepe) {
 				$log .= '请先装备武器。<br>';
 				return;
 			}
-			if (strpos($wepsk,'j')!==false){
-				$log.='多重武器不能改造。<br>';
+            if (strpos($wepsk, 'j') !== false) {
+                $log .= '多重武器不能改造。<br>';
 				return;
 			}
-			if (strpos($wepsk,'O')!==false){
-				$log.='进化武器不能改造。<br>';
+            if (strpos($wepsk, 'O') !== false) {
+                $log .= '进化武器不能改造。<br>';
 				return;
 			}
 			$log .= "使用了<span class='yellow'>天然呆四面的奖赏</span>。<br>";
@@ -1295,7 +1308,11 @@ function itemuse($itmn,&$data=NULL) {
 			}
 		}	elseif ($itm == '武器师安雅的奖赏') {
 			//global $wep, $wepk, $wepe, $weps, $wepsk, $wp, $wk, $wg, $wc, $wd, $wf;
-			if (! $weps || ! $wepe) {
+            //码语行人，$club==21的时候不能使用武器师安雅的奖赏
+            if ($club == 21) {
+                $log .= '<span class="yellow">码语行人，$club==21的时候不能使用武器师安雅的奖赏<br>';
+                return;
+            } elseif (!$weps || !$wepe) {
 				$log .= '请先装备武器。<br>';
 				return;
 			}
@@ -1377,6 +1394,8 @@ function itemuse($itmn,&$data=NULL) {
 				$log .= "<br>然后，你的<span class='sparkle'>{$sparkle}元素口袋{$sparkle}</span>飞了出去——<br><br>";
 				# 失去元素口袋
 				$clbstatusa = 1;
+				# 追加判定
+				if ($tflag and $hflag and $flag==true){
 				# 直接获得gameover
 				$itm0='『G.A.M.E.O.V.E.R』';
 				$itmk0='Y';
@@ -1385,6 +1404,17 @@ function itemuse($itmn,&$data=NULL) {
 				$itmsk0='zv';
 				$f1=true;
 				itemget($data);
+				}else{
+					$log .= "但似乎还是少了些什么东西……<br>";
+					# 大侠请重新来过
+					$itm0='『S.C.R.A.P』';
+					$itmk0='Y';
+					$itme0=1;
+					$itms0=1;
+					//$itmsk0='zv';
+					$f1=false;
+					itemget($data);
+				}
 			}
 			else
 			{
@@ -1991,18 +2021,17 @@ function itemuse($itmn,&$data=NULL) {
 				$clbpara['elements']['tags'] = Array($dice => Array('dom' => Array(0 => 1),'sub' => Array(0 => 1)));
 				$clbpara['elements']['info']['d']['d1'] = 1;
 				//初始化元素合成缓存文件
-				include_once GAME_ROOT.'./include/game/elementmix.func.php';
+                include_once GAME_ROOT . './include/game/elementmix.func.php';
 				emix_spawn_info();
-			}
-			elseif ($itme == 21){ //灵子梦魇特殊处理
-				$log .="再等等吧……<br>";
-			}
-			elseif ($itme == 22){ //偶像大师特殊处理
-				$log .="再等等吧……<br>";
-			}
-			else{//直接将社团卡的效果写入玩家club
-				changeclub($itme,$data);
-				$log .="你的称号被改动了！";
+            } elseif ($itme == 21) { //码语行人特殊处理
+                $log .= "码语行人特殊处理<br>";
+                //社团变更
+                changeclub(21, $data);
+            } elseif ($itme == 22) { //偶像大师特殊处理
+                $log .= "再等等吧……<br>";
+            } else { //直接将社团卡的效果写入玩家club
+                changeclub($itme, $data);
+                $log .= "你的称号被改动了！";
 			}
 			//销毁物品
 			$itm = $itmk = $itmsk = '';
@@ -2188,12 +2217,17 @@ function itemuse($itmn,&$data=NULL) {
 			}
 		} elseif ($itm == '『灵魂宝石』' || $itm == '『祝福宝石』') {
 			//global $cmd;
+            //码语行人，$club==21的时候不能使用宝石
+            if ($club == 21) {
+                $log .= '<span class="yellow">码语行人，$club==21的时候不能使用宝石<br>';
+                return;
+            }
 			$cmd = '<input type="hidden" name="mode" value="item"><input type="hidden" name="usemode" value="qianghua"><input type="hidden" name="itmp" value="' . $itmn . '">你想强化哪一件装备？<br><input type="radio" name="command" id="menu" value="menu" checked><a onclick=sl("menu"); href="javascript:void(0);" >返回</a><br><br><br>';
-			for($i = 1; $i <= 6; $i ++) {
+            for ($i = 1; $i <= 6; $i++) {
 				//global ${'itmsk' . $i};
-				if ((strpos ( ${'itmsk' . $i}, 'Z' ) !== false) && (strpos ( ${'itm' . $i}, '宝石』' ) === false)) {
+                if ((strpos(${'itmsk' . $i}, 'Z') !== false) && (strpos(${'itm' . $i}, '宝石』') === false)) {
 					//global ${'itm' . $i}, ${'itme' . $i}, ${'itms' . $i};
-					$cmd .= '<input type="radio" name="command" id="itm' . $i . '" value="itm' . $i . '"><a onclick=sl("itm' . $i . '"); href="javascript:void(0);" >' . "{${'itm'.$i}}/{${'itme'.$i}}/{${'itms'.$i}}" . '</a><br>';
+                    $cmd .= '<input type="radio" name="command" id="itm' . $i . '" value="itm' . $i . '"><a onclick=sl("itm' . $i . '"); href="javascript:void(0);" >' . "{${'itm' .$i}}/{${'itme' .$i}}/{${'itms' .$i}}" . '</a><br>';
 				  $flag = true;
 				}
 			}

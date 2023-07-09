@@ -1445,53 +1445,60 @@ function getcorpse($item,&$data=NULL)
 # 切换副武器
 function change_subwep($s=2,&$data=NULL)
 {
-	global $log,$nosta;
+    global $log,$nosta,$nowep;
 
-	if(!isset($data))
-	{
-		global $pdata;
-		$data = &$pdata;
-	}
-	extract($data,EXTR_REFS);
+    if(!isset($data))
+    {
+        global $pdata;
+        $data = &$pdata;
+    }
+    extract($data,EXTR_REFS);
 
-	# 初始化主武器名
-	$eqp = 'wep';
-	# 初始化副武器名
-	$seqp = 'wep'.$s;
-	$seqpk = $seqp.'k';
-	$seqpe = $seqp.'e';
-	$seqps = $seqp.'s';
-	$seqpsk = $seqp.'sk';
-	# 保存副武器数据
-	$swep=${$seqp}; $swepk=${$seqpk};
-	$swepe=${$seqpe}; $sweps=${$seqps}; $swepsk=${$seqpsk};
-	# 主武器为空、副武器不为空的情况下，直接替换为副武器
-	if(($wepk == 'WN' || !$weps) && ($swepk != 'WN'))
-	{
-		${$eqp} = $swep; ${$seqp} = '拳头';
-		${$eqp.'k'} = $swepk; ${$seqpk} = 'WN';
-		${$eqp.'e'} = $swepe; ${$seqpe} = 0;
-		${$eqp.'s'} = $sweps; ${$seqps} = $nosta;
-		${$eqp.'sk'} = $swepsk; ${$seqpsk} = '';
-		$log.="你将{$wep}拿在了手上。<br>";
-	}
-	# 主武器不为空的情况下，副武器替换为主武器
-	elseif($wepk != 'WN')
-	{
-		${$seqp} = ${$eqp}; ${$eqp} = $swep; 
-		${$seqpk} = ${$eqp.'k'}; ${$eqp.'k'} = $swepk;
-		${$seqpe} = ${$eqp.'e'}; ${$eqp.'e'} = $swepe; 
-		${$seqps} = ${$eqp.'s'}; ${$eqp.'s'} = $sweps; 
-		${$seqpsk} = ${$eqp.'sk'}; ${$eqp.'sk'} = $swepsk; 
-		$log.="你将{$wep2}收了起来";
-		if($wepk != 'WN') $log .="，将{$wep}拿在了手上";
-		$log.="。<br>";
-	}
-	else 
-	{
-		$log.="你没有装备副武器！去给自己找一个吧！<br>";
-	}
-	return;
+    # 初始化主武器名
+    $eqp = 'wep';
+    # 初始化副武器名
+    $seqp = 'wep'.$s;
+    $seqpk = $seqp.'k';
+    $seqpe = $seqp.'e';
+    $seqps = $seqp.'s';
+    $seqpsk = $seqp.'sk';
+    # 保存副武器数据
+    $swep=${$seqp}; $swepk=${$seqpk};
+    $swepe=${$seqpe}; $sweps=${$seqps}; $swepsk=${$seqpsk};
+
+    # 切换时，检查主手是否为空
+    $no_wepflag = 0;
+    if($wepk == 'WN' && $wep == $nowep && empty($wepe) && $weps == $nosta && empty($wepsk))
+    {
+        $no_wepflag = 1;
+    }
+
+    # 切换时，检查副武器槽是否为空
+    $no_swepflag = 0;
+    if(empty($swep) || ($swepk == 'WN' && $swep == $nowep && empty($swepe) && $sweps == $nosta && empty($swepsk)))
+    {
+        $swep = $nowep; $swepk = 'WN';
+        $swepe = 0; $sweps = $nosta; $swepsk = '';
+        $no_swepflag = 1;
+    }
+
+    ${$seqp} = ${$eqp}; ${$eqp} = $swep; 
+    ${$seqpk} = ${$eqp.'k'}; ${$eqp.'k'} = $swepk;
+    ${$seqpe} = ${$eqp.'e'}; ${$eqp.'e'} = $swepe; 
+    ${$seqps} = ${$eqp.'s'}; ${$eqp.'s'} = $sweps; 
+    ${$seqpsk} = ${$eqp.'sk'}; ${$eqp.'sk'} = $swepsk; 
+
+    $sweplog = '';
+    if(!$no_wepflag) $sweplog.="收起了<span class='yellow'>{$wep2}</span>";
+    if(!$no_swepflag) 
+    {
+        if(!empty($sweplog)) $sweplog .= '，';
+        $sweplog .="拿出了<span class='yellow'>{$wep}</span>";
+    }
+
+    $log .= $sweplog."。<br>";
+
+    return;
 }
 
 # 销毁指定装备
@@ -1545,6 +1552,7 @@ function reload_equip_items(&$pa)
 	global $nowep,$noarb,$nosta;
 
 	if(empty($pa['wep']) || empty($pa['weps']))
+	//if(empty($pa['weps']) && $pa['wep'] !== $nowep)
 	{
 		$pa['wep'] = $nowep;
 		$pa['wepk'] = 'WN';

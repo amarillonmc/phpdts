@@ -230,6 +230,8 @@
 			$gdata['clbpara']['mate'][] = $pid; $gdata['clbpara']['zombieoid'] = $pid;
 			# 获得灵俑状态技能
 			getclubskill('inf_zombie',$gdata['clbpara']);
+			# 人死魂灭 - 玩家灵俑强制变为 NPC
+			if ($gdata['type'] == 0){$gdata['type'] = 19;}
 			# 插入
 			$gdata = player_format_with_db_structure($gdata);
 			if(!empty($gdata))
@@ -394,7 +396,11 @@
 		if($itmer > 98 || $itmer < 1) $itmer = 55;
 		$emixarr = Array(); $emixnums = Array(); $farr = Array();
 		# 检查素材合法性
-		$domkey = Array(); $domnum = 0;
+		//$domkey = Array(); $domnum = 0;
+		arsort($nums);
+		$domid = array_key_first($nums);
+		$domkey = Array($domid);
+		$domnum = $nums[$domid];
 		for($i = 0; $i<= count($list); $i++)
 		{
 			if(isset($list[$i]) && !empty($nums[$i]))
@@ -412,10 +418,14 @@
 					return;
 				}
 				# 检查是否为主元素
-				if($emixnums[$i] >= $domnum - 10)
+//				if($emixnums[$i] >= $domnum - 10)
+//				{
+//					$domnum = $emixnums[$i];
+//					$domkey[] = $i;
+//				}
+				if(!in_array($i,$domkey) && $emixnums[$i] >= $domnum - 10)
 				{
-					$domnum = $emixnums[$i];
-					$domkey[] = $i;
+				    $domkey[] = $i;
 				}
 			}
 		}

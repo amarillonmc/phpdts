@@ -37,14 +37,14 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		//'itemmix' => 'd',
 		//'syncmix' => 'c',
 		//'overmix' => 'c',
-		'senditem' => 'd',
+		//'senditem' => 'd',
 		'csl_wthchange' => 'c',
 		'csl_hack' => 'b',
 		'csl_addarea' => 'b',
 		'song' => 'd',
-		'revival' => 'b',
-		'wth18_revival' => 'b',
-		'aurora_revival' => 'b',
+		//'revival' => 'b',
+		//'wth18_revival' => 'b',
+		//'aurora_revival' => 'b',
 	);
 
 	//for($i = $start;$i <= $r;$i++) {

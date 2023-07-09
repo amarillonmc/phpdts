@@ -413,7 +413,7 @@ namespace revattr
 					//没有灵抽的情况下，向属性数组中打入复制后武器的属性
 					if(!isset($pa['sldr_flag'])) $pa['ex_keys'] = array_merge($pa['ex_keys'],get_itmsk_array($pa['wepsk']));
 					get_wep_kind($pa);
-					$log .= "{$pa['nm']}使用{$pa['wep']}<span class=\"yellow\">{$attinfo[$pa['wep_kind']]}</span>{$pd['nm']}！<br>";
+					//$log .= "{$pa['nm']}使用{$pa['wep']}<span class=\"yellow\">{$attinfo[$pa['wep_kind']]}</span>{$pd['nm']}！<br>";
 				}
 			}
 			else

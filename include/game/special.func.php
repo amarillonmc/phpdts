@@ -478,6 +478,253 @@ function press_bomb(){
 	return;
 }
 
+//提取代码片段逻辑
+function item_extract_trait($which, $item_position)
+{
+    include_once GAME_ROOT . './gamedata/club21cfg.php';
+    //去掉string which的最后一位
+    $which = substr($which, 0, -1);
+
+    global $log, $mode, $club, $sp;
+    if ($club != 21) {
+        $log .= '你的称号不能使用该技能。';
+        $mode = 'command';
+        return;
+    }
+
+    if ($item_position < 1 || $item_position > 6) {
+        $log .= '此道具不存在，请重新选择。';
+        $mode = 'command';
+        return;
+    }
+    global ${'itm' . $item_position}, ${'itmk' . $item_position}, ${'itme' . $item_position}, ${'itms' . $item_position}, ${'itmsk' . $item_position};
+
+    $oriitm = &${'itm' . $item_position};
+	$itm = &${'itm' . $item_position};
+    $itmk = &${'itmk' . $item_position};
+    $itme = &${'itme' . $item_position};
+    $itms = &${'itms' . $item_position};
+    $itmsk = &${'itmsk' . $item_position};
+
+    $tmp_trait = ${$which . $item_position};
+
+    // 判断itmk是否以'D'或'W'开头
+    if (strpos($itmk, 'D') === 0 || strpos($itmk, 'W') === 0) {
+        // 给代码片段命名
+        if ($which == 'itm') {            
+            preg_match_all('/(改|棍棒|\+(\\d+))/u', $itm, $matches);
+            if (!empty($matches[0])) {
+                $sp_cost = 0;
+                foreach ($matches[0] as $match) {
+                    if ($match == '改') {
+                        $sp_cost += $itm_extract_rate['改'] * 1;
+                    } elseif ($match == '棍棒') {
+                        $sp_cost += $itm_extract_rate['棍棒'] * 1;
+                    } else {
+                        preg_match('/\+(\d+)/', $match, $numberMatch);
+                        $number = isset($numberMatch[1]) ? (int) $numberMatch[1] : 0;
+                        $sp_cost += $itm_extract_rate['+'] + $itm_extract_rate['n'] * $number;
+                    }
+                }
+                if ($sp < $sp_cost) {
+                    $log .= '体力不足，无法转换为代码片段。<br>';
+                    return;
+                }
+                $sp -= $sp_cost;
+                $log .= '消耗体力' . $sp_cost . '点。<br>';
+
+                $itm = implode('', $matches[0]);
+                $itm = (string)$itm;
+                
+                $itm = "名称" . $itm . '代码片段';
+                $itmk = '🥚';
+                $itme = '0';
+                $itms = '1';
+                $itmsk = '';
+                return;
+            }
+            else {
+                $log .= '该物品无法转换为代码片段。<br>';
+                return;
+            }
+        } elseif ($which == 'itme') {
+            if ($sp < $itme_extract_rate * $itme) {
+                $log .= '体力不足，无法转换为代码片段。<br>';
+                return;
+            }
+            //$itm = "效果" . ${$which . $item_position} . '代码片段';
+			$itm = '🥚' . $oriitm . '🥚的效果代码片段';
+            $log .= '消耗体力' . $itme_extract_rate * $itme . '点。<br>';
+            $sp -= $itme_extract_rate * $itme;
+        } elseif ($which == 'itms') {
+            //如果itms为∞
+            if ($itms == '∞') {
+                if ($sp < $itms_infinite_extract_rate* 1) {
+                    $log .= '体力不足，无法转换为代码片段。<br>';
+                    return;
+                }
+                $itm = '🥚' . $oriitm . '🥚的耐久代码片段';
+                $log .= '消耗体力' . $itms_infinite_extract_rate* 1 . '点。<br>';
+                $sp -= $itms_infinite_extract_rate* 1;
+                $itmk = '';
+                $itme = '0';
+                $itms = '∞';
+                $itmsk = '';
+                ${$which . $item_position} = $tmp_trait;
+                // 将itmk替换为代码片段的itmk
+                $itmk = '🥚';
+                $log .= '成功将物品转换为代码片段。<br>';
+                return;
+            }
+            if ($sp < $itms_extract_rate * $itms) {
+                $log .= '体力不足，无法转换为代码片段。<br>';
+                return;
+            }
+            //$itm = "耐久" . ${$which . $item_position} . '代码片段';
+			$itm = '🥚' . $oriitm . '🥚的耐久代码片段';
+            $log .= '消耗体力' . $itms_extract_rate * $itms . '点。<br>';
+            $sp -= $itms_extract_rate * $itms;
+        } elseif ($which == 'itmsk') {
+            preg_match_all('/./u', $itmsk, $matches);
+            var_dump($matches);
+            //如果matches没有
+            if (empty($matches[0])) {
+                $log .= '该物品无法转换为代码片段。<br>';
+                return;
+            }
+            foreach ($matches[0] as $single_itmsk) {
+                if (isset($itmsk_extract_rate[$single_itmsk])) {
+                    $sum += 1 * $itmsk_extract_rate[$single_itmsk];
+                }
+            }
+            if ($sp < $sum) {
+                $log .= '体力不足，无法转换为代码片段。<br>';
+                return;
+            }
+            //$itm = "属性" . ${$which . $item_position} . '代码片段';
+			$itm = '🥚' . $oriitm . '🥚的属性代码片段';
+            $log .= '消耗体力' . $sum . '点。<br>';
+            $sp -= $sum;
+        }
+        $itmk = '';
+        $itme = '0';
+        $itms = '1';
+        $itmsk = '';
+        ${$which . $item_position} = $tmp_trait;
+        $itms += 1;
+        // 将itmk替换为代码片段的itmk
+        $itmk = '🥚';
+        $log .= '成功将物品转换为代码片段。<br>';
+    } else {
+        $log .= '该物品无法转换为代码片段。<br>';
+    }
+    return;
+}
+
+//合并代码片段逻辑
+function  item_add_trait($choice1, $choice2)
+{
+    global $log, $mode, $club, $sp, $rage;
+    if ($club != 21) {
+        $log .= '你的称号不能使用该技能。';
+        $mode = 'command';
+        return;
+    }
+    //获取choice1和choice2的itm itmk itme itms itmsk
+    global ${'itm' . $choice1}, ${'itmk' . $choice1}, ${'itme' . $choice1}, ${'itms' . $choice1}, ${'itmsk' . $choice1};
+    global ${'itm' . $choice2}, ${'itmk' . $choice2}, ${'itme' . $choice2}, ${'itms' . $choice2}, ${'itmsk' . $choice2};
+    $itm1 = &${'itm' . $choice1};
+    $itmk1 = &${'itmk' . $choice1};
+    $itme1 = &${'itme' . $choice1};
+    $itms1 = &${'itms' . $choice1};
+    $itmsk1 = &${'itmsk' . $choice1};
+    $itm2 = &${'itm' . $choice2};
+    $itmk2 = &${'itmk' . $choice2};
+    $itme2 = &${'itme' . $choice2};
+    $itms2 = &${'itms' . $choice2};
+    $itmsk2 = &${'itmsk' . $choice2};
+    //检查itmk1是否为🥚,itmk2是否为D或W开头或者是否为🥚
+    if ($itmk1 != '🥚' || (strpos($itmk2, 'D') !== 0 && strpos($itmk2, 'W') !== 0 && ($itmk2 !== '🥚'))) {
+        $log .= '该物品无法合并。<br>';
+        return;
+    }
+    //让itm2属性合并itm1
+    //如果都是🥚，则去掉$itm的所有“代码片段”四个字，然后itm相加
+    if ($itmk1 == '🥚' && $itmk2 == '🥚') {
+        $itm1 = str_replace('代码片段', '', $itm1);
+        //$itm2 = $itm1 . $itm2;
+		$itm2 = '🥚复合代码片段🥚';
+        $itmk2 = $itmk1 . $itmk2;
+        $itme2 = (int)$itme1 + (int)$itme2;
+        //当任意一个itms为∞
+        if ($itms1 == '∞' || $itms2 == '∞') {
+            $itms2 = '∞';
+        }
+        else {
+            $itms2 = (int)$itms1 + (int)$itms2 - 1;
+        }
+        $itmsk2 = $itmsk1 . $itmsk2;
+        //清空itm1
+        $itm1 = '';
+        $itmk1 = '';
+        $itme1 = '0';
+        $itms1 = '0';
+        $itmk2 = '🥚';
+        $itms2 -= 1;
+        return;
+    }
+    if ($rage < 50 ) {
+        $log .= '怒气不足，无法合并代码片段。<br>';
+        return;
+    }
+    $rage -= 50;
+    //如果itm1是名称开头的
+    if (strpos($itm1, '名称') === 0){
+        //去掉名称和代码片段后合并
+        $itm1 = str_replace('名称', '', $itm1);
+        $itm1 = str_replace('代码片段', '', $itm1);
+        //var_dump($itm1);
+        //$itm2 = $itm1 . $itm2;
+		$itm2 = '🥚' . $itm1 . '🥚的复合代码片段';
+        $itmk2 = $itmk1 . $itmk2;
+        $itme2 = (int)$itme1 + (int)$itme2;
+        //当任意一个itms为∞
+        if ($itms1 == '∞' || $itms2 == '∞') {
+            $itms2 = '∞';
+        }
+        else {
+            $itms2 = (int)$itms1 + (int)$itms2 - 1;
+        }
+        $itmsk2 = $itmsk1 . $itmsk2;
+        //清空itm1
+        $itm1 = '';
+        $itmk1 = '';
+        $itme1 = '0';
+        $itms1 = '0';
+        $itmk2 = str_replace('🥚', '', $itmk2);
+        return;
+    }
+    $itmk2 = $itmk1 . $itmk2;
+    $itme2 = (int)$itme1 + (int)$itme2;
+    //当任意一个itms为∞
+    if ($itms1 == '∞' || $itms2 == '∞') {
+        $itms2 = '∞';
+    }
+    else {
+        $itms2 = (int)$itms1 + (int)$itms2 - 1;
+    }
+    $itmsk2 = $itmsk1 . $itmsk2;
+    //清空itm1
+    $itm1 = '';
+    $itmk1 = '';
+    $itme1 = '0';
+    $itms1 = '0';
+    //去除itm2重复的属性
+    $itmsk2 = implode(array_unique(str_split($itmsk2)));
+    //去除itm2属性里的🥚
+    $itmk2 = str_replace('🥚', '', $itmk2);
+}
+
 function shoplist($sn,$getlist=NULL) {
 	global $gamecfg,$mode,$itemdata,$areanum,$areaadd,$iteminfo,$itemspkinfo,$club,$horizon;
 	global $db,$tablepre;
@@ -530,5 +777,3 @@ function shoplist($sn,$getlist=NULL) {
 	return;
 
 }
-
-?>
