@@ -21,16 +21,15 @@ function parse_queue_vnmix_info($carr)
 		}
 	}
 	// 格式化名称
-	$carr['itm_desc'] = parse_info_desc($carr['itm'],'m');
+	$carr['itm_desc'] = parse_nameinfo_desc($carr['itm']);
 	// 格式化类别
-	$carr['itmk_desc'] = parse_info_desc($carr['itmk'],'k');
+	$carr['itmk_desc'] = parse_kinfo_desc($carr['itmk'],$carr['itmsk']);
 	// 合并显示类
 	$carr['result'] = $carr['itmk_desc'].'/'.$carr['itme'].'/'.$carr['itms'];
 	// 格式化属性
 	if(!empty($carr['itmsk']))
 	{
-		$carr['itmsk'] = get_itmsk_array($carr['itmsk']);
-		$carr['itmsk_desc'] = parse_info_desc($carr['itmsk'],'sk',$carr['itmk']);
+		$carr['itmsk_desc'] = parse_skinfo_desc($carr['itmsk'],$carr['itmk']);
 		$carr['result'] .= '/'.$carr['itmsk_desc'];
 	}
 	return $carr;

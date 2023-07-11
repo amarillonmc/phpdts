@@ -34,6 +34,13 @@ $action_list = Array
 	'pcover', //被敌人的协战者夹击时获得 bid为敌人协战者的id
 );
 
+//视界状态描述
+$horizoninfo = Array
+(
+	0 => '标准视界',
+	1 => '灵子视界',
+);
+
 //游戏状态描述
 $gstate = Array(0 => '<font color="grey">已结束</font>',10 => '即将开始',20 => '开放激活',30 => '停止激活',40=> '<font color="yellow">连斗中</font>',50=>'<font color="red">死斗中</font>',60=>'<font color="red">紧急状态！</font>');
 $gwin = Array(0 => '程序故障', 1 => '全部死亡',2 => '最后幸存',3 => '锁定解除',4 => '无人参加',5 => '核爆全灭',6 => 'GM中止',7=>'幻境解离');
@@ -96,10 +103,10 @@ $hpinfo = Array('<span class="clan">并无大碍</span>','<span class="yellow">�
 $spinfo = Array('精力充沛','略有疲惫','精疲力尽','已经死亡');
 $rageinfo = Array('平静','愤怒','暴怒','已经死亡');
 $wepeinfo = Array('不值一提','略有威胁','威力可观','无敌神器');
-$poseinfo = Array('通常','作战姿态','强袭姿态','探物姿态','偷袭姿态','治疗姿态','✧狂飙姿态✧','哨戒姿态','✧灵子姿态✧');
+$poseinfo = Array('通常','作战姿态','强袭姿态','探物姿态','偷袭姿态','治疗姿态','✧狂飙姿态✧','哨戒姿态');
 $tacinfo = Array('通常','','重视防御','重视反击','重视躲避');
 //可供玩家选择的姿态、策略
-$apose = Array(1,3,4,5,6,8);
+$apose = Array(1,3,4,5,6);
 $atac = Array(2,3,4);
 //不会生成在危险地图的NPC（执行官、女主）
 $hidding_typelist = Array(7,14);

@@ -21,17 +21,27 @@ function init_icon_states(&$pa,$pd,$ismeet=0)
 	//更新编号情报
 	$pa['sNoinfo'] = "(".$sexinfo[$pa['gd']].$pa['sNo']."号)";
 	$pa['typeinfo'] = $typeinfo[$pa['type']];
-	//更新头像情报
-	$itype = $pa['type'] > 0 ? 'n' : $pa['gd'];
-	$iname = $itype.'_'.$pa['icon']; 
-	if(file_exists('img/'.$iname.'a.gif'))
+	
+	# 更新头像情报
+	# 检查是否存在固定头像
+	if(file_exists('img/'.$pa['icon']))
 	{
-		$pa['iconImgB']= $iname.'a.gif';
+		$iconImg = $pa['icon'];
 	}
 	else 
 	{
-		$pa['iconImg'] = $iname.'.gif';
-		unset($pa['iconImgB']);
+		$itype = $pa['type'] > 0 ? 'n' : $pa['gd'];
+		$iconImg = $itype.'_'.$pa['icon'].'.gif';
+	}
+	# 检查是否存在大头像
+	$iconImgB = str_replace('.','a.',$iconImg);
+	if(file_exists('img/'.$iconImgB))
+	{
+		$pa['iconImgB'] = $iconImgB;
+	}
+	else 
+	{
+		$pa['iconImg'] = $iconImg;
 	}
 }
 
@@ -141,8 +151,8 @@ function init_wep_states(&$pa,$pd,$ismeet=0)
 	if(!check_skill_unlock('c6_godeyes',$pd))
 	{
 		$pa['wepestate'] = $pa['wepe'];
-		$pa['wep_words'] = parse_info_desc($pa['wep'],'m');
-		$pa['wepk_words'] =parse_info_desc($pa['wepk'],'k');
+		$pa['wep_words'] = parse_nameinfo_desc($pa['wep'],$pa['horizon']);
+		$pa['wepk_words'] = parse_kinfo_desc($pa['wepk'],$pa['wepsk']);
 		return;
 	}
 	if($fog && !$ismeet)
@@ -170,8 +180,8 @@ function init_wep_states(&$pa,$pd,$ismeet=0)
 	}
 
 	//更新武器名、武器类别情报
-	$pa['wep_words'] = parse_info_desc($pa['wep'],'m');
-	$pa['wepk_words'] = parse_info_desc($pa['wepk'],'k');
+	$pa['wep_words'] = parse_nameinfo_desc($pa['wep'],$pa['horizon']);
+	$pa['wepk_words'] = parse_kinfo_desc($pa['wepk'],$pa['wepsk']);
 }
 
 function init_inf_states(&$pa,$pd,$ismeet=0)

@@ -429,9 +429,11 @@ namespace revcombat
 			return 0;
 		}
 		# 哨戒姿态不会反击，但是会生气……
+		# 生气后会变更为强袭姿态
 		if($pd['pose'] == 7)
 		{
-			$pd['cannot_counter_log'] = "{$pd['nm']}看起来非常生气！还是离他远点吧……";
+			$pd['pose'] = 2;
+			$pd['cannot_counter_log'] = "{$pd['nm']}看起来非常生气！这回你可摊上事啦！";
 			return 0;
 		}
 

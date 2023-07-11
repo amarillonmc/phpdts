@@ -117,9 +117,13 @@ function rs_game($mode = 0) {
 					# NPC自定义技能初始化
 					if(!empty($npc['clubskill']) || !empty($npc['clubskillpara'])) customtclubskill($npc);
 					
-					//初始化NPC所在位置
+					# 初始化NPC所在位置
 					global $hidding_typelist,$deepzones;
-					//女主不会刷新在危险区域
+
+					# 位置信息为数组时，在两地中择一随机刷新
+					if(is_array($npc['pls'])) $npc['pls'] = $npc['pls'][array_rand($npc['pls'])];
+
+					# 女主不会刷新在危险区域
 					if(in_array($npc['type'],$hidding_typelist))
 					{
 						do{
@@ -130,7 +134,10 @@ function rs_game($mode = 0) {
 					{
 						do{$rpls=rand(1,$plsnum-1);}while ($rpls==34);
 					}
-					if($npc['pls'] == 99){$npc['pls'] = $rpls; }
+					if($npc['pls'] == 99)
+					{
+						$npc['pls'] = $rpls; 
+					}
 
 					$npc['state'] = 0;
 					$npc=player_format_with_db_structure($npc);
@@ -345,8 +352,8 @@ function add_once_area($atime) {
 		} else {
 			if($weather <= 9) $weather = rand(0,9);
 			if($hack > 0){$hack--;}
-			//重置控制面板可用次数
-			if(isset($gamevars['apis']) && isset($gamevars['api'])) $gamevars['api'] = $gamevars['apis'];
+			# 解锁子面板功能后，每次增加禁区时，释放一条被占用的信道
+			if(isset($gamevars['apis']) && isset($gamevars['api']) && $gamevars['api'] < $gamevars['apis']) $gamevars['api']++;
 			$areaaddlist = array_slice($arealist,$areanum+1,$areaadd);
 			$areanum += $areaadd;
 			movehtm();
@@ -625,7 +632,7 @@ function movehtm($atime = 0) {
 	//return;
 }
 
-function addnpc($type,$sub,$num,$time = 0,$clbstatus=NULL,$aitem=NULL,$apls=NULL) {
+function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
 	global $now,$db,$gtablepre,$tablepre,$log,$plsinfo,$typeinfo,$arealist,$areanum,$gamecfg;
 	global $hidding_typelist,$deepzones;
 	include_once GAME_ROOT."./include/game/clubslct.func.php";
@@ -661,7 +668,14 @@ function addnpc($type,$sub,$num,$time = 0,$clbstatus=NULL,$aitem=NULL,$apls=NULL
 			}
 			//$npc['wp'] = $npc['wk'] = $npc['wg'] = $npc['wc'] = $npc['wd'] = $npc['wf'] = $npc['skill'];
 			if($npc['gd'] == 'r'){$npc['gd'] = rand(0,1) ? 'm':'f';}
-			if($npc['pls'] == 99){
+			
+			# 位置信息为数组时，在两地中择一随机刷新
+			if(is_array($npc['pls']))
+			{
+				$npc['pls'] = $npc['pls'][array_rand($npc['pls'])];
+			}
+			elseif($npc['pls'] == 99)
+			{
 				$areaarr = array_slice($arealist,$areanum+1);
 				if(empty($areaarr)){
 					$npc['pls'] = 0;
@@ -686,27 +700,30 @@ function addnpc($type,$sub,$num,$time = 0,$clbstatus=NULL,$aitem=NULL,$apls=NULL
 			# NPC自定义技能初始化
 			if(!empty($npc['clubskill']) || !empty($npc['clubskillpara'])) customtclubskill($npc);
 
-			//自定义addnpc出现位置，会覆盖原本预设的位置。 TODO：要不要发个特别的news？
-			if(isset($apls)) $npc['pls'] = (int)$apls;
-			//自定义addnpc身上携带的道具，会覆盖原本预设的道具。 格式：$aitem=Array($iid=>Array($itm,$itmk,$itme,$itms,$itmsk),...)
-			if(isset($aitem))
+			# 自定义数据不为空时，覆盖原本预设的NPC数据
+			if(!empty($anpcdata))
 			{
-				$aid = $aitem[0];
-				$npc['itm'.$aid] = $aitem[1];$npc['itmk'.$aid] = $aitem[2];$npc['itme'.$aid] = $aitem[3];$npc['itms'.$aid] = $aitem[4];$npc['itmsk'.$aid] = $aitem[5];
-			}
-			//自定义addnpc身上的社团参数，会覆盖原本预设的参数。 格式：$clbstatus=Array('a'=>'int(10)',...'clbpara'=> $arr')
-			if(isset($clbstatus))
-			{
-				foreach(Array('a','b','c','d','e') as $cbs)
+				foreach($anpcdata as $adkey => $advalue)
 				{
-					if(isset($clbstatus[$cbs])) $npc['clbstatus'.$cbs] = $clbstatus[$cbs];
+					# 暂时跳过一些复杂内容，特事特判
+					if(is_array($advalue)) continue;
+					$npc[$adkey] = $advalue;
 				}
-				if(isset($clbstatus['clbpara']))
+				# 自定义addnpc身上的社团参数，会覆盖原本预设的参数。
+				if(isset($anpcdata['clbstatus']))
 				{
-					$npc['clbpara'] = is_array($npc['clbpara']) ? array_merge($npc['clbpara'],$clbstatus['clbpara']) : $clbstatus['clbpara'];
+					foreach(Array('a','b','c','d','e') as $cbs)
+					{
+						if(isset($anpcdata['clbstatus'][$cbs])) $npc['clbstatus'.$cbs] = $anpcdata['clbstatus'][$cbs];
+					}
+				}
+				if(isset($anpcdata['clbpara']))
+				{
+					$npc['clbpara'] = is_array($npc['clbpara']) ? array_merge($npc['clbpara'],$anpcdata['clbpara']) : $anpcdata['clbpara'];
 				}
 			}
-			//对将要插入数据库的npc数组格式化，现在可以直接在npc配置文件里预设那些后添加的字段了。
+			
+			# 对将要插入数据库的npc数组格式化，现在可以直接在npc配置文件里预设那些后添加的字段了。
 			$npc=player_format_with_db_structure($npc);
 			$db->array_insert("{$tablepre}players", $npc);
 			$summon_ids[] = $db->insert_id();

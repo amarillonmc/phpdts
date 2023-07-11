@@ -80,3 +80,6 @@ vendor
 
 # env file
 .env
+
+# daemon
+daemon*

@@ -484,12 +484,6 @@ if($hp > 0){
 			if(strpos($command,'pose') === 0) {
 				$cpose = substr($command,4,1);
 				if(in_array($cpose,$apose)){
-					if($cpose == 8 && isset($clbpara['starttimes']['pose8']) && ($now < ($clbpara['starttimes']['pose8'] + 60))){
-						$log .= "现在无法切换至{$poseinfo[$cpose]}。剩余冷却时间：".round($clbpara['starttimes']['pose8'] + 60 - $now)."秒。<br>";
-						goto command_end_flag;
-					} elseif($cpose == 8) {
-						$clbpara['starttimes']['pose8'] = $now;
-					}
 					$pose = $cpose;
 					$log .= "基础姿态变为<span class=\"yellow\">$poseinfo[$pose]</span>。<br> ";
 					$mode = 'command';
@@ -507,6 +501,19 @@ if($hp > 0){
 					$log .= "<span class=\"yellow\">这种策略太奇怪了！</span><br> ";
 					$mode = 'command';
 				}
+			} elseif(strpos($command,'hor') === 0) {
+				$chor = substr($command,3,1);
+				if(isset($horizoninfo[$chor])){
+					$horizon = $chor;
+					$log .= "视界切换为<span class=\"yellow\">$horizoninfo[$chor]</span>。<br> ";
+					# 切换视界后，丢失所有视野
+					lost_searchmemory('all',$pdata); 
+					# 向页面发送刷新标记
+					$log .= "<span id='HsUipfcGhU'></span>"; 
+				}else{
+					$log .= "<span class=\"yellow\">这种想法太奇怪了！</span><br> ";
+				}
+				$mode = 'command';
 			} elseif(strpos($command,'inf') === 0) {
 				$infpos = substr($command,3,1);
 				chginf($infpos);
