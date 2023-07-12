@@ -53,6 +53,8 @@ function fireseedrecruit($playerID, $fireseedID){
     $brandingFireseed['teampass'] = 'HerNameIsMAPLE';
     #Monster Reborn that Fireseed NPC
     $brandingFireseed['hp'] = $brandingFireseed['mhp'];
+    #Also drag them out from Horizon - cuz new update
+    $brandingFireseed['horizon'] = 0;
 
     //DEBUG
     $log .= "FIRESEED $fireseedID SUCCESSFULLY BRANDED WITH PLAYERID $playerID .<br>";
@@ -70,6 +72,7 @@ function fireseedenhance($rate, $fireseedID){
     #Rate up
     $rateupFireseed['clbstatusd'] += $rate;
     #Enhacing Fireseed
+    //Ultimately those should be configable from a file.
     for ($i = 1; $i<=$rate; $i++){
         $rateupFireseed['mhp'] *= 1 + $rate / 10;
         $rateupFireseed['msp'] *= 1 + $rate / 10;
@@ -131,11 +134,11 @@ function repairfireseed($fireseedID){
     
 }
 
-function spawnFireseed($pls, $playerID, $intensity){
+function spawnFireseed($pls, $playerID = 0, $intensity = 0){
     global $log, $db, $tablepre;
 
     //Create 1 真实的火种 at given $pls location.
-    $db->query("INSERT INTO {$tablepre}players 
+/*     $db->query("INSERT INTO {$tablepre}players 
     (type, name, icon, hp, mhp, sp, msp, att, def, pls, lvl, money, 
     wep, wepk, wepe, weps, wepsk,
     arb, arbk, arbe, arbs, arbsk,
@@ -152,7 +155,8 @@ function spawnFireseed($pls, $playerID, $intensity){
     '◆残火','DA','1','1','b',
     '◆永火','DF','1','1','M',
     '◆焰火','A','1','1','H',
-    $playerID, $intensity)");
+    $playerID, $intensity)"); */
+    addnpc(92,10,1,0,Array('clbstatusc' => $playerID, 'clbstatusd' => $intensity,));
 
     //DEBUG
     $log .= "TRUE FIRESEED ADD SUCCESSFUL.<br>";
