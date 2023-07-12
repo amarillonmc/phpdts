@@ -608,7 +608,7 @@ function item_extract_trait($which, $item_position)
         }
         $itmk = '';
         $itme = '0';
-        $itms = '1';
+        $itms = '0';
         $itmsk = '';
         ${$which . $item_position} = $tmp_trait;
         $itms += 1;
@@ -624,7 +624,7 @@ function item_extract_trait($which, $item_position)
 //合并代码片段逻辑
 function  item_add_trait($choice1, $choice2)
 {
-    global $log, $mode, $club, $sp, $rage;
+    global $log, $mode, $club, $sp, $rage, $pdata;
     if ($club != 21) {
         $log .= '你的称号不能使用该技能。';
         $mode = 'command';
@@ -697,10 +697,8 @@ function  item_add_trait($choice1, $choice2)
         }
         $itmsk2 = $itmsk1 . $itmsk2;
         //清空itm1
-        $itm1 = '';
-        $itmk1 = '';
-        $itme1 = '0';
-        $itms1 = '0';
+        destory_single_item($pdata, $choice1);
+
         $itmk2 = str_replace('🥚', '', $itmk2);
         return;
     }
@@ -715,10 +713,7 @@ function  item_add_trait($choice1, $choice2)
     }
     $itmsk2 = $itmsk1 . $itmsk2;
     //清空itm1
-    $itm1 = '';
-    $itmk1 = '';
-    $itme1 = '0';
-    $itms1 = '0';
+    destory_single_item($pdata, $choice1);
     //去除itm2重复的属性
     $itmsk2 = implode(array_unique(str_split($itmsk2)));
     //去除itm2属性里的🥚
