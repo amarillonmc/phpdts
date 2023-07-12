@@ -715,7 +715,7 @@ function  item_add_trait($choice1, $choice2)
         //清空itm1
         destory_single_item($pdata, $choice1);
 
-        $itmk2 = str_replace('🥚', '', $itmkc2);
+        $itmkc2 = str_replace('🥚', '', $itmkc2);
         return;
     }
     $itmkc2 = $itmkc1 . $itmkc2;
