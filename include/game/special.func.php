@@ -536,7 +536,7 @@ function item_extract_trait($which, $item_position)
                 $itm = implode('', $matches[0]);
                 $itm = (string)$itm;
                 
-                $itm = "名称" . $itm . '代码片段';
+                $itm = "🥚" . $itm . '🥚的代码片段';
                 $itmk = '🥚';
                 $itme = '0';
                 $itms = '1';
@@ -624,6 +624,7 @@ function item_extract_trait($which, $item_position)
 //合并代码片段逻辑
 function  item_add_trait($choice1, $choice2)
 {
+    var_dump($choice1, $choice2);
     global $log, $mode, $club, $sp, $rage, $pdata;
     if ($club != 21) {
         $log .= '你的称号不能使用该技能。';
@@ -633,91 +634,104 @@ function  item_add_trait($choice1, $choice2)
     //获取choice1和choice2的itm itmk itme itms itmsk
     global ${'itm' . $choice1}, ${'itmk' . $choice1}, ${'itme' . $choice1}, ${'itms' . $choice1}, ${'itmsk' . $choice1};
     global ${'itm' . $choice2}, ${'itmk' . $choice2}, ${'itme' . $choice2}, ${'itms' . $choice2}, ${'itmsk' . $choice2};
-    $itm1 = &${'itm' . $choice1};
-    $itmk1 = &${'itmk' . $choice1};
-    $itme1 = &${'itme' . $choice1};
-    $itms1 = &${'itms' . $choice1};
-    $itmsk1 = &${'itmsk' . $choice1};
-    $itm2 = &${'itm' . $choice2};
-    $itmk2 = &${'itmk' . $choice2};
-    $itme2 = &${'itme' . $choice2};
-    $itms2 = &${'itms' . $choice2};
-    $itmsk2 = &${'itmsk' . $choice2};
+    $itmc1 = &${'itm' . $choice1};
+    $itmkc1 = &${'itmk' . $choice1};
+    $itmec1 = &${'itme' . $choice1};
+    $itmsc1 = &${'itms' . $choice1};
+    $itmskc1 = &${'itmsk' . $choice1};
+    $itmc2 = &${'itm' . $choice2};
+    $itmkc2 = &${'itmk' . $choice2};
+    $itmec2 = &${'itme' . $choice2};
+    $itmsc2 = &${'itms' . $choice2};
+    $itmskc2 = &${'itmsk' . $choice2};
+    var_dump($itmc1, $itmc2);
     //检查itmk1是否为🥚,itmk2是否为D或W开头或者是否为🥚
-    if ($itmk1 != '🥚' || (strpos($itmk2, 'D') !== 0 && strpos($itmk2, 'W') !== 0 && ($itmk2 !== '🥚'))) {
+    if ($itmkc1 != '🥚' || (strpos($itmkc2, 'D') !== 0 && strpos($itmkc2, 'W') !== 0 && ($itmkc2 !== '🥚'))) {
         $log .= '该物品无法合并。<br>';
         return;
     }
     //让itm2属性合并itm1
     //如果都是🥚，则去掉$itm的所有“代码片段”四个字，然后itm相加
-    if ($itmk1 == '🥚' && $itmk2 == '🥚') {
-        $itm1 = str_replace('代码片段', '', $itm1);
-        //$itm2 = $itm1 . $itm2;
-		$itm2 = '🥚复合代码片段🥚';
-        $itmk2 = $itmk1 . $itmk2;
-        $itme2 = (int)$itme1 + (int)$itme2;
+    if ($itmkc1 == '🥚' && $itmkc2 == '🥚') {
+        var_dump($itmkc1, $itmkc2);
+        var_dump($itmc1, $itmc2);
+        preg_match_all('/(改|棍棒|\+(\\d+))/u', $itmc1, $matches1);
+        preg_match_all('/(改|棍棒|\+(\\d+))/u', $itmc2, $matches2);
+        if (!empty($matches1[0]) || !empty($matches2[0])) {
+            $itmn_result = '';
+            foreach ($matches1[0] as $match) {
+                $itmn_result .= $match;
+            }
+            foreach ($matches2[0] as $match) {
+                $itmn_result .= $match;
+            }
+            $itmc2 = '🥚' . $itmn_result . '🥚复合代码片段';
+        }
+        else {
+            $itmc2 = '🥚复合代码片段🥚';
+        }   
+        $itmkc2 = $itmkc1 . $itmkc2;
+        $itmec2 = (int)$itmec1 + (int)$itmec2;
         //当任意一个itms为∞
-        if ($itms1 == '∞' || $itms2 == '∞') {
+        if ($itmsc1 == '∞' || $itmsc2 == '∞') {
             $itms2 = '∞';
         }
         else {
-            $itms2 = (int)$itms1 + (int)$itms2 - 1;
+            $itms2 = (int)$itmsc1 + (int)$itmsc2 - 1;
         }
-        $itmsk2 = $itmsk1 . $itmsk2;
+        $itmskc2 = $itmskc1 . $itmskc2;
+        $itmkc2 = '🥚';
         //清空itm1
-        $itm1 = '';
-        $itmk1 = '';
-        $itme1 = '0';
-        $itms1 = '0';
-        $itmk2 = '🥚';
-        $itms2 -= 1;
+        destory_single_item($pdata, $choice1);
         return;
     }
-    if ($rage < 50 ) {
+    elseif ($rage < 50 ) {
         $log .= '怒气不足，无法合并代码片段。<br>';
         return;
     }
     $rage -= 50;
-    //如果itm1是名称开头的
-    if (strpos($itm1, '名称') === 0){
-        //去掉名称和代码片段后合并
-        $itm1 = str_replace('名称', '', $itm1);
-        $itm1 = str_replace('代码片段', '', $itm1);
-        //var_dump($itm1);
-        //$itm2 = $itm1 . $itm2;
-		$itm2 = '🥚' . $itm1 . '🥚的复合代码片段';
-        $itmk2 = $itmk1 . $itmk2;
-        $itme2 = (int)$itme1 + (int)$itme2;
+    //如果itm1含有棍棒或者改或者n
+    preg_match_all('/(改|棍棒|\+(\\d+))/u', $itmc1, $matches);
+    if (!empty($matches[0])) 
+    {
+        $itmn_result = '';
+        //合并match
+        foreach ($matches[0] as $match) {
+            $itmn_result .= $match;
+        }
+        $itmc2 = $itmc2 . $itmn_result;
+        $itmkc2 = $itmkc1 . $itmkc2;
+        $itmec2 = (int)$itmec1 + (int)$itmec2;
         //当任意一个itms为∞
-        if ($itms1 == '∞' || $itms2 == '∞') {
-            $itms2 = '∞';
+        if ($itmsc1 == '∞' || $itmsc2 == '∞') {
+            $itmsc2 = '∞';
         }
         else {
-            $itms2 = (int)$itms1 + (int)$itms2 - 1;
+            $itmsc2 = (int)$itmsc1 + (int)$itmsc2 - 1;
         }
-        $itmsk2 = $itmsk1 . $itmsk2;
+        $itmskc2 = $itmskc1 . $itmskc2;
         //清空itm1
         destory_single_item($pdata, $choice1);
 
-        $itmk2 = str_replace('🥚', '', $itmk2);
+        $itmkc2 = str_replace('🥚', '', $itmkc2);
         return;
     }
-    $itmk2 = $itmk1 . $itmk2;
-    $itme2 = (int)$itme1 + (int)$itme2;
+    $itmkc2 = $itmkc1 . $itmkc2;
+    $itmec2 = (int)$itmec1 + (int)$itmec2;
     //当任意一个itms为∞
-    if ($itms1 == '∞' || $itms2 == '∞') {
-        $itms2 = '∞';
+    if ($itmsc1 == '∞' || $itmsc2 == '∞') {
+        $itmsc2 = '∞';
     }
     else {
-        $itms2 = (int)$itms1 + (int)$itms2 - 1;
+        $itmsc2 = (int)$itmsc1 + (int)$itmsc2 - 1;
     }
-    $itmsk2 = $itmsk1 . $itmsk2;
+    $itmskc2 = $itmskc1 . $itmskc2;
     //清空itm1
     destory_single_item($pdata, $choice1);
     //去除itm2重复的属性
-    $itmsk2 = implode(array_unique(str_split($itmsk2)));
+    $itmskc2 = implode(array_unique(str_split($itmskc2)));
     //去除itm2属性里的🥚
-    $itmk2 = str_replace('🥚', '', $itmk2);
+    $itmkc2 = str_replace('🥚', '', $itmkc2);
 }
 
 function shoplist($sn,$getlist=NULL) {
