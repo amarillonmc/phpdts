@@ -92,15 +92,11 @@ function sumintensity($playerID){
 
     //process intensity SUM
     #Get all Intensity
-    $checkGivenPlayerIntensity = "SELECT * FROM {$tablepre}players WHERE type = 92 AND clbstatusc = $playerID";
+    $checkGivenPlayerIntensity = "SELECT SUM(clbstatusd) FROM {$tablepre}players WHERE type = 92 AND clbstatusc = $playerID";
     $givenPlayerIntensity = $db->query($checkGivenPlayerIntensity);
-    $idata = $db->fetch_array($givenPlayerIntensity);
-    #Sum Intensity
-    $sum = 0;
 
-    while ($idata){
-        $sum += $idata['clbstatusd'];
-    }
+    #Sum Intensity
+    $sum = $givenPlayerIntensity['SUM(clbstatusd)'];
 
     //DEBUG
     $log .= " <span class=\"yellow\">$sum</span> INTENSITY<br>";
