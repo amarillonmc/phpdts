@@ -683,7 +683,6 @@ function  item_add_trait($choice1, $choice2)
         $itmkc2 = '🥚';
         //清空itm1
         destory_single_item($pdata, $choice1);
-        var_dump("1");
         return;
     }
     elseif ($rage < 50 ) {
@@ -700,7 +699,6 @@ function  item_add_trait($choice1, $choice2)
         foreach ($matches[0] as $match) {
             $itmn_result .= $match;
         }
-        var_dump($itmn_result);
         $itmc2 = $itmc2 . $itmn_result;
         $itmkc2 = $itmkc1 . $itmkc2;
         $itmec2 = (int)$itmec1 + (int)$itmec2;
