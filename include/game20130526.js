@@ -567,6 +567,37 @@ function skill_unacquired_mouseout(e)
 		if (child.className == 'skill_unacquired_hint_transparent') 
 		{
 			child.className = 'skill_unacquired_hint';
-		}
+    	}
 	}
 }
+
+//录制处理
+var recordedData = [];
+var isRecording = false;
+function startRecording() {
+    isRecording = true;
+    console.log('startRecording');
+    window.alert('startRecording');
+    //监听所有按钮的点击事件
+    document.addEventListener('click', recordButtonClick);
+}
+
+function downloadRecordedData() {
+    // 创建一个 Blob 对象，将录制的数据保存为文件
+    var blob = new Blob(recordedData, { type: 'text/html' });
+
+    // 创建一个下载链接
+    var downloadLink = document.createElement('a');
+    downloadLink.href = URL.createObjectURL(blob);
+    downloadLink.download = 'recorded_data.html';
+
+    // 模拟点击下载链接
+    downloadLink.click();
+}
+
+function recordButtonClick(event) {
+    // 如果录制状态为 true，则将当前前端的全部静态网页数据保存到数组中
+    if (isRecording) {
+      recordedData.push(document.documentElement.outerHTML);
+    }
+  }
