@@ -20,6 +20,8 @@ namespace revcombat
 	function rev_combat_prepare(&$pa,&$pd,$active,$wep_kind='',$log_print=1) 
 	{
 		global $db,$tablepre,$log,$mode,$main,$cmd,$battle_title;
+		# Temp - Fix Replay XHR Exploit
+		$pa['action'] = $pd['action'] = '';
 
 		# 格式化双方clbpara：最后保存角色数据的时候会自动转写clbpara，所以想改什么直接改就行了
 		$pa['clbpara'] = get_clbpara($pa['clbpara']); $pd['clbpara'] = get_clbpara($pd['clbpara']);
