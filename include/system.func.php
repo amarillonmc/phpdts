@@ -440,6 +440,19 @@ function duel($time = 0,$keyitm = ''){
 function gameover($time = 0, $mode = '', $winname = '') {
 	global $gamestate,$winmode,$alivenum,$winner,$now,$gamenum,$db,$gtablepre,$tablepre,$gamenum,$starttime,$validnum,$hdamage,$hplayer;
 	global $groomid;
+    //遍历./records/$gamenum/下的所有txt文件
+    $filelist = glob("./records/$gamenum/**/*.txt");
+    //然后gzip压缩
+    foreach($filelist as $file){
+        $input = fopen($file, 'rb');
+        $output = gzopen($file . '.gz', 'wb');
+        while (!feof($input)) {
+            gzwrite($output, fread($input, 1024));
+        }
+        fclose($input);
+        //删除原文件
+        unlink($file);
+    }
 	if($gamestate < 10){return;}
 	if((!$mode)||(($mode==2)&&(!$winname))) {//在没提供游戏结束模式的情况下，自行判断模式
 		if($validnum <= 0) {//无激活者情况下，全部死亡

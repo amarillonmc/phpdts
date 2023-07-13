@@ -573,7 +573,7 @@ function skill_unacquired_mouseout(e)
 
 //录制处理
 var recordedData = [];
-var isRecording = false;
+var isRecording = true;
 function startRecording() {
     isRecording = true;
     console.log('startRecording');
@@ -587,7 +587,9 @@ function startRecording() {
       linkElement.setAttribute('onclick', 'stopRecording()');
     }
   }
-  
+
+document.addEventListener('click', recordButtonClick);
+
 function stopRecording() {
     isRecording = false;
 
@@ -599,7 +601,7 @@ function stopRecording() {
 
     // 停止监听
     document.removeEventListener('click', recordButtonClick);
-    downloadRecordedData();
+    //downloadRecordedData();
 }
 
 function downloadRecordedData() {
@@ -620,6 +622,7 @@ function recordButtonClick(event) {
     // 如果录制状态为 true，则将当前前端的全部静态网页数据保存到数组中
     if (isRecording) {
         recordedData.push(document.documentElement.outerHTML.concat("\n"));
+        sendLastRecordedData(recordedData);
     }
 }
 
@@ -664,6 +667,20 @@ function showPage(pageContent, currentPageIndex) {
             recordedDataDiv.innerHTML = '已经到达最后一页';
         }
     };
+    // 阻止链接跳转
+    var links = recordedDataDiv.getElementsByTagName('a');
+    for (var i = 0; i < links.length; i++) {
+        links[i].addEventListener('click', function (event) {
+            event.preventDefault();
+        });
+    }
+    // 删除具有 id="hidden-model" 的元素
+    var hiddenModelElement = document.getElementById('hidden-model');
+    if (hiddenModelElement) {
+        hiddenModelElement.remove();
+    }
+
+
 
 
     recordedDataDiv.insertBefore(nextPageButton, recordedDataDiv.firstChild);
@@ -706,12 +723,41 @@ function displayRecordedData(file) {
     }
 }
 
-window.onbeforeunload = function () {
+/*window.onbeforeunload = function () {
     if (isRecording) {
         window.alert('你正在录制游戏，之后将会自动下载录制数据。');
         downloadRecordedData();
     }
-};
+};*/
   
   
-  
+function sendLastRecordedData(recordedData) {
+    const nickinfoElement = document.getElementById('nickinfo');
+    if (!nickinfoElement) {
+
+        return;
+    }
+
+
+    const nickinfo = nickinfoElement.innerText;
+    const lastRecord = recordedData[recordedData.length - 1];
+
+    fetch('record_backend.php', {
+        method: 'POST',
+        body: JSON.stringify({ lastRecord, nickinfo }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            // 处理从后端返回的响应
+            //console.log(data);
+        })
+        .catch(error => {
+            // 处理错误
+            console.error(error);
+        });
+}
+
+
