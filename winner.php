@@ -23,6 +23,7 @@ if($command == 'info') {
 		$hnewsinfo = readover($hnewsfile);
 	}
 } else {
+    $download_button = [];
 	if(!isset($start) || !$start){
 		$result = $db->query("SELECT gid,name,nick,icon,gd,wep,wmode,teamID,teamMate,teamIcon,getime,motto,hdp,hdmg,hkp,hkill FROM {$gtablepre}winners ORDER BY gid desc LIMIT $winlimit");
 	} else {
@@ -50,7 +51,14 @@ if($command == 'info') {
 				$wdata['nickinfo'] = (!empty($wdata['nick']) || $wdata['nick'] === '0') ? titles_get_desc($wdata['nick']) : '';
 			}
 		}
-		$winfo[$wdata['gid']] = $wdata;
+        $winfo[$wdata['gid']] = $wdata;
+        //遍历./records/$wdata['gid']/下的所有gz文件
+        $filelist = glob("./records/{$wdata['gid']}/**/*.gz");
+        foreach ($filelist as $file) {
+            //下载按钮,html
+            $dirname = basename(dirname($file));
+            $download_buttons[$wdata['gid']] .= "<br><a href=\"$file\" download=\"$dirname\">下载 $dirname</a>";
+        }
 	}
 	$listnum = floor($gamenum/$winlimit);
 

@@ -80,3 +80,6 @@ vendor
 
 # env file
 .env
+
+# 录像文件
+records
