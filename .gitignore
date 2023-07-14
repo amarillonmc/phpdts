@@ -74,6 +74,7 @@ web.config
 
 *.psd
 *.xlsx
+*.bak
 
 # composer
 vendor
