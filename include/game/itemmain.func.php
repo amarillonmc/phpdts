@@ -1496,7 +1496,8 @@ function change_subwep($s=2,&$data=NULL)
         $sweplog .="拿出了<span class='yellow'>{$wep}</span>";
     }
 
-    $log .= $sweplog."。<br>";
+    if(!$sweplog) $log .= '你左手交叠右手，大喝一声：“我特殊召唤两个拳头！”<br>';
+    else $log .= $sweplog."。<br>";
 
     return;
 }
