@@ -1,23 +1,12 @@
 想购买什么物品？<br><br>
 <input type="hidden" name="mode" value="special">
-<input type="radio" name="command" id="menu" value="menu" checked><a onclick=sl('menu'); href="javascript:void(0);" onmouseover="status=' ';return true;">离开商店</a><br><br>
-<input type="radio" name="command" id="shop1" value="shop1"><a onclick=sl('shop1'); href="javascript:void(0);" onmouseover="status=' ';return true;">【补给品】</a><br>
-<input type="radio" name="command" id="shop2" value="shop2"><a onclick=sl('shop2'); href="javascript:void(0);" onmouseover="status=' ';return true;">【药剂】</a><br>
-<input type="radio" name="command" id="shop3" value="shop3"><a onclick=sl('shop3'); href="javascript:void(0);" onmouseover="status=' ';return true;">【$iteminfo['WP']】</a><br>
-<input type="radio" name="command" id="shop4" value="shop4"><a onclick=sl('shop4'); href="javascript:void(0);" onmouseover="status=' ';return true;">【$iteminfo['WK']】</a><br>
-<input type="radio" name="command" id="shop5" value="shop5"><a onclick=sl('shop5'); href="javascript:void(0);" onmouseover="status=' ';return true;">【$iteminfo['WG']】</a><br>
-<input type="radio" name="command" id="shop6" value="shop6"><a onclick=sl('shop6'); href="javascript:void(0);" onmouseover="status=' ';return true;">【$iteminfo['WC']】</a><br>
-<input type="radio" name="command" id="shop7" value="shop7"><a onclick=sl('shop7'); href="javascript:void(0);" onmouseover="status=' ';return true;">【$iteminfo['WD']】</a><br>
-<input type="radio" name="command" id="shop8" value="shop8"><a onclick=sl('shop8'); href="javascript:void(0);" onmouseover="status=' ';return true;">【{$iteminfo['WF']}材料】</a><br>
-<input type="radio" name="command" id="shop9" value="shop9"><a onclick=sl('shop9'); href="javascript:void(0);" onmouseover="status=' ';return true;">【防具】</a><br>
-<input type="radio" name="command" id="shop10" value="shop10"><a onclick=sl('shop10'); href="javascript:void(0);" onmouseover="status=' ';return true;">【书籍】</a><br>
-<input type="radio" name="command" id="shop11" value="shop11"><a onclick=sl('shop11'); href="javascript:void(0);" onmouseover="status=' ';return true;">【电子装备】</a><br>
-<input type="radio" name="command" id="shop12" value="shop12"><a onclick=sl('shop12'); href="javascript:void(0);" onmouseover="status=' ';return true;">【杂物】</a><br>
-<input type="radio" name="command" id="shop17" value="shop17"><a onclick=sl('shop17'); href="javascript:void(0);" onmouseover="status=' ';return true;"><font style="background:url(img/backround2.gif) repeat-x">【限量福袋】</font></a><br>
-<input type="radio" name="command" id="shop13" value="shop13"><a onclick=sl('shop13'); href="javascript:void(0);" onmouseover="status=' ';return true;"><font style="background:url(img/backround3.gif) repeat-x">【埃克法轻工特供武器】</font></a><br>
-<input type="radio" name="command" id="shop14" value="shop14"><a onclick=sl('shop14'); href="javascript:void(0);" onmouseover="status=' ';return true;"><font style="background:url(img/backround3.gif) repeat-x">【林苍月的提示】</font></a><br>
-<input type="radio" name="command" id="shop15" value="shop15"><a onclick=sl('shop15'); href="javascript:void(0);" onmouseover="status=' ';return true;"><font style="background:url(img/backround3.gif) repeat-x">【Key社纪念品专卖】</font></a><br>
-<input type="radio" name="command" id="shop16" value="shop16"><a onclick=sl('shop16'); href="javascript:void(0);" onmouseover="status=' ';return true;"><font style="background:url(img/backround3.gif) repeat-x">【NPC解锁钥匙】</font></a><br>
-<input type="radio" name="command" id="shop18" value="shop18"><a onclick=sl('shop18'); href="javascript:void(0);" onmouseover="status=' ';return true;"><font style="background:url(img/backround9.gif) repeat-x">【上级者向物品】</font></a><br>
-<br><br>
-<input type="button" class="cmdbutton" id="zz" name="submit" value="[Z]提交" onclick="postCmd('gamecmd','command.php');this.disabled=true;">
+<input type="hidden" id="command" name="command" value="menu">
+<input type="button" class="cmdbutton" value="离开" onclick="$('command').value='menu';postCmd('gamecmd','command.php');this.disabled=true;">
+<br>
+<!--{loop Array(1=>'补给品',2=>'药剂',3=>$iteminfo['WP'],4=>$iteminfo['WK'],5=>$iteminfo['WG'],6=>$iteminfo['WC'],7=>$iteminfo['WD'],8=>$iteminfo['WF'].'材料',9=>'防具',10=>'书籍',11=>'电子装备',12=>'杂物',17=>'限量福袋',13=>'埃克法轻工特供武器',14=>'林苍月的提示',15=>'Key社纪念品专卖',16=>'NPC解锁钥匙',18=>'上级者向物品') $sid $scmt}-->
+<!--{if $sid % 2}--><br><!--{/if}-->
+<input type="button" class="cmdbutton" name="$sid" value="{$scmt}" style="
+<!--{if mb_strlen($scmt)>8}-->width:140px;<!--{else}-->width:100px;<!--{/if}--> 
+<!--{if $sid == 17}-->background-image:url(img/backround2.gif) repeat-x<!--{elseif $sid == 13 || $sid == 14 || $sid == 15 || $sid == 16}-->background-image:url(img/backround3.gif) repeat-x<!--{elseif $sid == 18}-->background-image:url(img/backround9.gif) repeat-x<!--{/if}-->" 
+onclick="$('command').value='shop{$sid}';postCmd('gamecmd','command.php');this.disabled=true;">
+<!--{/loop}-->
