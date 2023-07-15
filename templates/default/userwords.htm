@@ -3,12 +3,13 @@
 	<tr>
 		<td>{lang usertitle}</td>
 		<td>
-			<select name="nick">
+			<select id="nick" name="nick" onchange="var nicklabel=$('nick').options[$('nick').selectedIndex].label;if(''!=nicklabel) $('nickcmt').innerHTML=nicklabel; else $('nickcmt').innerHTML='<br><br><br>';">
 				<!--{loop $nicksrev['nicks'] $val}-->
-					<option value="{$val}"<!--{if $udata['nick'] == $val}-->selected<!--{/if}-->>$titles_list[$val]</option>
+					<!--{eval $title_desc_tmp = str_replace("\r","<br>",$title_desc[$val]['title']);}-->
+					<option value="{$val}"<!--{if $udata['nick'] == $val}-->selected<!--{/if}--> label="{$title_desc_tmp}">$titles_list[$val]</option>
 				<!--{/loop}-->
 			</select>
-			选择一个有趣的头衔，部分头衔存在特殊的入场效果。
+			<span id="nickcmt">选择一个有趣的头衔，部分头衔存在特殊的入场效果。<br><br><br></span>
 		</td>
 	</tr>
 	<!--{if !empty($t1_list) && !empty($t2_list)}-->

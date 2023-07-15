@@ -372,9 +372,10 @@ text-align: center;
 #chatlist{
 MARGIN: 0px;
 height:120px;
-width:100%;
+width:720px;
 word-break:break-all;
-overflow:auto;
+overflow-x:hidden;
+overflow-y:auto;
 position:relative;
 }
 #newslist{
