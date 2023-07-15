@@ -58,6 +58,34 @@ if(!empty($roomact))
 else 
 {
   if (isset($_GET['is_new'])) {
+    $now_rooms = !empty($roomlist) ? count($roomlist) : 0;
+    $rooms = array();
+    foreach ($roomlist as $rkey => $rinfo) {
+      $room = array();
+      $room['id'] = $rkey;
+      $room['status'] = $gstate[$rinfo['gamestate']];
+      $room['owner'] = $rinfo['groomownid'];
+      $room['nums'] = $rinfo['groomnums'];
+      $action = array();
+      if (!empty($cuser) && !empty($cpass)) {
+        if (!empty($groomid)) {
+          if ($groomid == $rkey) {
+            $action[] = '退出';
+            if (!empty($rinfo['groomownid']) && $rinfo['groomownid'] == $cuser) {
+              $action[] = '解散';
+            }
+          } else {
+            $action[] = '-';
+          }
+        } else {
+          $action[] = '加入';
+        }
+      } else {
+        $action[] = '-';
+      }
+      $room['action'] = $action;
+      $rooms[] = $room;
+    }
     echo json_encode(array(
       // 当前回合数
       "num" => $gamenum,
@@ -90,6 +118,14 @@ else
 	  "deathNum" => $deathnum,
 	  // 当前房间号：
 	  "roomID" => $groomid,
+    // 最大房间数
+    "maxRooms" => $max_rooms,
+    // 是否可创建房间
+    "canCreateRoom" => $now_rooms < $max_rooms && !$groomid && (!empty($cuser) && !empty($cpass)),
+    // 房间
+    "rooms" => $rooms,
+	  // 站长留言
+	  "news" => $adminmsg,
 	  // 用户名
 	  "username" => $cuser,
     ));
