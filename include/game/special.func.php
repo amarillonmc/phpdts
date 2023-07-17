@@ -644,7 +644,6 @@ function  item_add_trait($choice1, $choice2)
     $itmec2 = &${'itme' . $choice2};
     $itmsc2 = &${'itms' . $choice2};
     $itmskc2 = &${'itmsk' . $choice2};
-    var_dump($itmc1, $itmc2);
     //检查itmk1是否为🥚,itmk2是否为D或W开头或者是否为🥚
     if ($itmkc1 != '🥚' || (strpos($itmkc2, 'D') !== 0 && strpos($itmkc2, 'W') !== 0 && ($itmkc2 !== '🥚'))) {
         $log .= '该物品无法合并。<br>';
@@ -674,10 +673,10 @@ function  item_add_trait($choice1, $choice2)
         $itmec2 = (int)$itmec1 + (int)$itmec2;
         //当任意一个itms为∞
         if ($itmsc1 == '∞' || $itmsc2 == '∞') {
-            $itms2 = '∞';
+            $itmsc2 = '∞';
         }
         else {
-            $itms2 = (int)$itmsc1 + (int)$itmsc2 - 1;
+            $itmsc2 = (int)$itmsc1 + (int)$itmsc2 - 1;
         }
         $itmskc2 = $itmskc1 . $itmskc2;
         $itmkc2 = '🥚';
