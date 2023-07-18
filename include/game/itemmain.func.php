@@ -1119,7 +1119,14 @@ function itemreduce($item,$mode=0){ //只限合成使用！！
 	# 素材类道具作合成素材时只消耗耐久
 	if(preg_match('/^(Y|B|C|X|TN|GB|H|P|V|M)/',$itmk))
 	{
-		$itms--;
+		# Added one additional check to deal with infinite stamina item - destroy it when used in mix.
+		if($itms = '∞'){
+			$itms = 0;
+			$log .= "<span class=\"red\">$itm</span>消失了。<br>";
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		}else{
+		$itms--;}
 	}
 	# 带有工具属性的道具作合成素材时，不会消耗
 	elseif(in_array('🧰',get_itmsk_array($itmsk)))
