@@ -64,13 +64,13 @@
 // [EN] !ATTENTION! Preservation or debugging for developing
 // [CH] 切勿修改以下变量,仅供程序开发调试用!
 
-	$database = 'pdo';			// 'mysql' for MySQL version and 'pgsql' for PostgreSQL version
+	$database = 'mysqli';			// 'mysql' for MySQL version and 'pgsql' for PostgreSQL version
 						// MySQL 版本请设?'mysql', PgSQL 版本请设?'pgsql'
 
 	$charset = 'utf-8';			// default character set, 'gbk', 'big5', 'utf-8' are available
 						// 游戏默认字符? 可?'gbk', 'big5', 'utf-8'
 
-	$dbcharset = 'utf8';			// default database character set, 'gbk', 'big5', 'utf8', 'latin1' and blank are available
+	$dbcharset = 'utf8mb4';			// default database character set, 'gbk', 'big5', 'utf8', 'latin1' and blank are available
 						// MySQL 字符? 可?'gbk', 'big5', 'utf8', 'latin1', 留空为按照游戏字符集设定
 
 	$attackevasive = 0;			// protect against attacks via common request, 0=off, 1=cookie refresh limitation, 2=deny proxy request, 3=both
@@ -93,7 +93,7 @@
 
 	$errorinfo = 0;				//是否开启错误信息提示，1为开启，0为关闭。开启会泄漏游戏安装路径
 // 以下为salt，请勿修改。
-	$salt = '3012becebcc626720409336f6375bcdd';
+	$salt = 'a29d8868b409591398e6ccca95f968ef';
 
 // ============================================================================
 

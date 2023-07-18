@@ -625,9 +625,21 @@ function showPage(pageContent, currentPageIndex) {
         hiddenModelElement.remove();
     }
 
-
-
-
+    var progressBar = document.createElement('div');
+    progressBar.className = 'progress-bar';
+    progressBar.style.width = ((currentPageIndex + 1) / pageContent.length) * 100 + '%';
+    
+    var progressBar = document.createElement('input');
+    progressBar.type = 'range';
+    progressBar.min = 0;
+    progressBar.max = pageContent.length - 1;
+    progressBar.value = currentPageIndex;
+    progressBar.oninput = function () {
+        currentPageIndex = parseInt(progressBar.value);
+        showPage(pageContent, currentPageIndex);
+    };
+    
+    recordedDataDiv.insertBefore(progressBar, recordedDataDiv.firstChild);
     recordedDataDiv.insertBefore(nextPageButton, recordedDataDiv.firstChild);
     recordedDataDiv.insertBefore(previousPageButton, recordedDataDiv.firstChild);
 }
