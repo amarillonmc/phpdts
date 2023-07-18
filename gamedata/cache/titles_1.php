@@ -289,7 +289,7 @@ if(!defined('IN_GAME')) exit('Access Denied');
     ),
     # 0. 参展者
     0 => Array(
-      'arb' => '二次元漫展背包', 'arbk' => 'DB', 'arbe' => 2,  'arbs' => 2, 'arbsk' => '^',
+      'arb' => '二次元漫展背包', 'arbk' => 'DB', 'arbe' => 5,  'arbs' => 5, 'arbsk' => '^',
     ),
     # 66. 叶子钦定！
     66 => Array(
