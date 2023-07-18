@@ -65,7 +65,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		//赠送道具、吃到毒补给、陷阱、改变天气、强化武器、唱歌、打开礼物盒：道具名登记在$c上；
 		if((strpos($news,'senditem')!==false||strpos($news,'poison')!==false||strpos($news,'trap')!==false||strpos($news,'wth')!==false||strpos($news,'newwep')!==false||strpos($news,'song')!==false||strpos($news,'present')!==false) && isset($c)) $c = parse_nameinfo_desc($c);
 		//合成、使用死斗卡、使用仓库：道具名登记在$b上;
-		if((strpos($news,'mix')!==false||strpos($news,'duelkey')!==false||strpos($news,'depot')===0) && isset($b)) $b = parse_nameinfo_($b);
+		if((strpos($news,'mix')!==false||strpos($news,'duelkey')!==false||strpos($news,'depot')===0) && isset($b)) $b = parse_nameinfo_desc($b);
 	
 
 		if(!empty($old_nicknews[$news]))
