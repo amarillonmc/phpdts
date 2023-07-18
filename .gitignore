@@ -84,3 +84,5 @@ vendor
 
 # 录像文件
 records
+gamedata/adminlog.php
+templates/default/lastgb.htm
