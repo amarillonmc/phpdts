@@ -142,7 +142,10 @@ if($hp > 0){
 			$mode = 'command';
 			//$action = '';
 		} elseif($mode == 'command') {
-			if($command == 'move') {
+			if(!empty($itms0) && !in_array($command, Array('itemget','itm0','dropitm0','split_itm'))){//手里拿着道具的时候否决一切其他命令，防止道具被覆盖！
+				$log .= "你的双手都已经抓满了东西。为了完成所想，你集中意念召唤幻肢……<br>什么都没有发生，除了你的脑壳痛了起来。<br><br>";
+				$mode = 'command';
+			}	elseif($command == 'move') {
 				include_once GAME_ROOT.'./include/game/search.func.php';
 				move($moveto);
 				if($coldtimeon){$cmdcdtime=$movecoldtime;}
@@ -261,7 +264,7 @@ if($hp > 0){
 						$mode='command';
 					}
                 //码语行人提取
-                } elseif ($sp_cmd == 'sp_extract_trait') {
+        } elseif ($sp_cmd == 'sp_extract_trait') {
                     $position = 0;
                     if ($club == 21) {
                         foreach (array(1, 2, 3, 4, 5, 6) as $imn)
