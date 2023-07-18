@@ -567,6 +567,124 @@ function skill_unacquired_mouseout(e)
 		if (child.className == 'skill_unacquired_hint_transparent') 
 		{
 			child.className = 'skill_unacquired_hint';
-		}
+    	}
 	}
 }
+
+function selectRecordedFile() {
+    var input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".gz"; 
+
+    input.click();
+
+    // 处理选择的文件
+    input.onchange = function (event) {
+        var file = event.target.files[0]; 
+        console.log("选择的文件:", file);
+
+        displayRecordedData(file);
+    };
+}
+
+// 显示单个页面的内容
+function showPage(pageContent, currentPageIndex) {
+    var recordedDataDiv = document.getElementById('recordedData');
+    recordedDataDiv.innerHTML = pageContent[currentPageIndex];
+
+    var previousPageButton = document.createElement('button');
+    previousPageButton.textContent = '上一页';
+    previousPageButton.onclick = function () {
+        if (currentPageIndex > 0) {
+            currentPageIndex--;
+            showPage(pageContent, currentPageIndex);
+        } else {
+            recordedDataDiv.innerHTML = '已经到达第一页';
+        }
+    }
+    var nextPageButton = document.createElement('button');
+    nextPageButton.textContent = '下一页';
+    nextPageButton.onclick = function () {
+        if (currentPageIndex < pageContent.length - 1) {
+            currentPageIndex++;
+            showPage(pageContent, currentPageIndex);
+        } else {
+            recordedDataDiv.innerHTML = '已经到达最后一页';
+        }
+    };
+    // 阻止链接跳转
+    var links = recordedDataDiv.getElementsByTagName('a');
+    for (var i = 0; i < links.length; i++) {
+        links[i].addEventListener('click', function (event) {
+            event.preventDefault();
+        });
+    }
+    // 删除具有 id="hidden-model" 的元素
+    var hiddenModelElement = document.getElementById('hidden-model');
+    if (hiddenModelElement) {
+        hiddenModelElement.remove();
+    }
+
+    var progressBar = document.createElement('div');
+    progressBar.className = 'progress-bar';
+    progressBar.style.width = ((currentPageIndex + 1) / pageContent.length) * 100 + '%';
+    
+    var progressBar = document.createElement('input');
+    progressBar.type = 'range';
+    progressBar.min = 0;
+    progressBar.max = pageContent.length - 1;
+    progressBar.value = currentPageIndex;
+    progressBar.oninput = function () {
+        currentPageIndex = parseInt(progressBar.value);
+        showPage(pageContent, currentPageIndex);
+    };
+    
+    recordedDataDiv.insertBefore(progressBar, recordedDataDiv.firstChild);
+    recordedDataDiv.insertBefore(nextPageButton, recordedDataDiv.firstChild);
+    recordedDataDiv.insertBefore(previousPageButton, recordedDataDiv.firstChild);
+}
+
+
+function displayRecordedData(file) {
+    // 检查是否选择了文件
+    if (file) {
+        // 创建一个FileReader对象来读取文件内容
+        var reader = new FileReader();
+        reader.onload = function () {
+            // 将文件内容转换为ArrayBuffer
+            var arrayBuffer = reader.result;
+            // 创建一个Uint8Array来存储ArrayBuffer的数据
+            var uint8Array = new Uint8Array(arrayBuffer);
+
+            // 解压缩文件数据
+            var inflatedData = pako.inflate(uint8Array, { to: 'string' });
+            // 将解压缩后的数据按页进行切分
+            var pages = inflatedData.split('\n<html>');
+
+            // 逐页展示记录的内容
+            var recordedDataDiv = document.getElementById('recordedData');
+            recordedDataDiv.innerHTML = ''; // 清空之前的内容
+
+            // 创建一个包含每页内容的数组
+            var pageContent = [];
+            for (var i = 0; i < pages.length; i++) {
+                pageContent.push(pages[i]);
+            }
+
+            // 显示第一页的内容
+            showPage(pageContent, 0);
+        };
+        reader.readAsArrayBuffer(file);
+    } else { // 如果没有选择文件，则显示选择文件的提示消息 
+        var noticeDiv = document.getElementById('notice'); noticeDiv.textContent = '请先选择一个录像文件';
+    }
+}
+
+/*window.onbeforeunload = function () {
+    if (isRecording) {
+        window.alert('你正在录制游戏，之后将会自动下载录制数据。');
+        downloadRecordedData();
+    }
+};*/
+  
+  

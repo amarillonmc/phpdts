@@ -74,6 +74,7 @@ web.config
 
 *.psd
 *.xlsx
+*.bak
 
 # composer
 vendor
@@ -81,5 +82,10 @@ vendor
 # env file
 .env
 
+
 # daemon
 daemon*
+
+# 录像文件
+records
+

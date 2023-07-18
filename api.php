@@ -293,15 +293,12 @@
   /** 获取敌方技能页面 */
   function getEnemySkillPage($tdata) {
     global $cskills;
+    $uidata = $tdata;
     $array = array();
     foreach ($tdata['clbpara']['skill'] as $skid) {
       $cskill = $cskills[$skid];
       $name = $cskill['name'];
       $cdesc = parse_skilldesc($skid, $uidata);
-      $num_input = $cskill['num_input'];
-      $input = $cskill['input'];
-      $unlock_flag = check_skill_unlock($skid, $uidata);
-      $unlock_desc = parse_skilllockdesc($skid, $unlock_flag);
       $new_array = array(
         'id' => $skid,
         'name' => $name,
@@ -393,6 +390,27 @@
       "hint" => emix_init_elements_info($pdata),
       "max" => emix_calc_maxenum(),
     );
+  }
+  /** 检查获取的物品是否可进行合并 */
+  function checkMerge() {
+    global $wep, $wepk, $wepe, $weps, $wepsk;
+    global $itm0, $itmk0, $itme0, $itms0, $itmsk0, $nosta;
+    $check = false;
+    if (preg_match('/^(WC|WD|WF|Y|B|C|TN|GB|M|V)/', $itmk0) && $itms0 !== $nosta) {
+      if ($wep == $itm0 && $wepk == $itmk0 && $wepe == $itme0 && $wepsk == $itmsk0) {
+        $check = true;
+      } else {
+        for ($i = 1; $i <= 6; $i++) {
+          global ${'itm'.$i}, ${'itmk'.$i}, ${'itme'.$i}, ${'itms'.$i}, ${'itmsk'.$i};
+          if ((${'itms'.$i}) && ($itm0 == ${'itm'.$i}) && ($itmk0 == ${'itmk'.$i}) && ($itme0 == ${'itme'.$i}) && ($itmsk0 == ${'itmsk'.$i})) {
+            $check = true;
+          }
+        }
+      }
+    } else if (preg_match('/^H|^P/',$itmk0) && $itms0 !== $nosta) {
+      $check = true;
+    }
+    return $check;
   }
   echo (json_encode(array(
     "page" => "game",
@@ -637,6 +655,8 @@
         "areaNum" => $areanum,
         /** 每次禁区增加数 */
         "areaAdd" => $areaadd,
+        /** 是否解除禁区 */
+        "isHack" => $hack,
       ),
       /** 攻击方式 */
       "attackType" => array(
@@ -687,6 +707,8 @@
         "crafting" => $club != 20,
         /** 元素口袋 */
         "element" => $club == 20,
+        /** 控制面板 */
+        "control" => isset($clbpara['console']),
       ),
       /** 安全箱物品 */
       "depotItems" => depot_getlist($name,$type),
@@ -705,6 +727,21 @@
         "time" => $dtime,
         "name" => (!empty($kname) && (in_array($state, Array(20, 21, 22, 23, 24, 28, 29)))) ? $kname : null,
       ) : null,
+      /** 弹框 */
+      "dialog" => $clbpara['dialogue'],
+      /** 不可跳过弹框 */
+      "noSkipDialog" => $clbpara['noskip_dialogue'],
+      /** 游戏状态 */
+      "isGameOver" => $gamestate == 0,
+      /** 控制面板 */
+      "controlPanel" => array(
+        /** 可用信道 */
+        "channel" => $gamevars['api'],
+        /** 共计信道 */
+        "channelAll" => $gamevars['apis'],
+        /** 按钮 */
+        "noButton" => $clbpara['nobutton'],
+      )
     ),
     /** 搜寻状态 */
     "searchState" => array(
@@ -715,7 +752,7 @@
         "props" => $itmsk0_words != '--' ? $itmsk0_words : '',
         "quality" => $itme0,
         "durability" => $itms0,
-        "canMerge" => preg_match('/^H|^P/',$itmk0) && $itms0 !== $nosta,
+        "canMerge" => checkMerge(),
       ) : null,
       /** 发现敌人 */
       "findEnemy" => $tdata['nameinfo'] ? array(

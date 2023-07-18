@@ -788,9 +788,9 @@ $jgamedata = compatible_json_encode($gamedata);
 //$json = new Services_JSON();
 //$jgamedata = $json->encode($gamedata);
 //if(!strstr($_SERVER['HTTP_REFERER'], 'php')) {
-if($udata['u_templateid'] == 1 && !strstr($_SERVER['HTTP_REFERER'], 'php') && $_SERVER['HTTP_REFERER'] != ''){
+if ($udata['u_templateid'] == 1 && !strstr($_SERVER['HTTP_REFERER'], 'php') && $_SERVER['HTTP_REFERER'] != '') {
 	include './api.php';
-}	else {
+} else {
 	echo $jgamedata;
 }
 

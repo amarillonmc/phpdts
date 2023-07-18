@@ -372,9 +372,10 @@ text-align: center;
 #chatlist{
 MARGIN: 0px;
 height:120px;
-width:100%;
+width:720px;
 word-break:break-all;
-overflow:auto;
+overflow-x:hidden;
+overflow-y:auto;
 position:relative;
 }
 #newslist{
@@ -414,7 +415,7 @@ background-image: url("../../img/footer_line.gif");
 .clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; } 
 .clearfix {display: inline-table;} /* Hides from IE-mac \*/ * html .clearfix {height: 1%;} .clearfix {display: block;} /* End hide from IE-mac */ 
 
-#gamecmd input.cmdbutton{
+input.cmdbutton{
 	width:80px;height:25px;margin:2;
 }
 
@@ -591,7 +592,22 @@ input.range{
 	border-radius: 50px;
 	box-shadow:0 0 5px 1px rgba(0, 0, 0, 0.5);
 }
+/* 商店道具 */
+.shoprow{
+	width:100%;display:flex;height:40px;
+}
 
+.shoprow .leftbox{
+	width:50px;float:left;margin-right:5px;
+}
+.shoprow .leftbox input{width:50px;}
+.shoprow .rightbox{
+	width:60px;float:right;
+}
+.shoprow .rightbox input{width:60px;}
+.shoprow .rightbox .inputunit{
+	position:absolute;top:5%;right:25%;color:#aaaaaa;
+}
 /* EmojiIcon */
 .eicon{
 	filter: grayscale(100%) brightness(133%) blur(0px);

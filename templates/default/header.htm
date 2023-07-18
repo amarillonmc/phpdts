@@ -11,6 +11,10 @@
 <script type="text/javascript" src="include/common.js"></script>
 <script type="text/javascript" src="include/game20130526.js"></script>
 <script type="text/javascript" src="include/json.js"></script>
+<script type="text/javascript" src="include/pako.js"></script>
+<!--{if (CURSCRIPT == 'game')}-->
+<script type="text/javascript" src="include/record.js"></script>
+<!--{/if}-->
 <!--{if (CURSCRIPT == 'game' && $pls=='1')}-->
   <style>
   body {background-image: url("../../img/location/1.jpg");background-position: center;}
@@ -205,6 +209,10 @@
 </div>
 </a>
 </span>
+<!--{if (CURSCRIPT == 'game')}-->
+<a href="javascript:void(0)" onclick="stopRecording()">>>停止录像</a>
+<!--{/if}-->
+<a href="record.php">>>回放录像</a>
 <a href="admin.php">>>{lang admin}</a>
 <a href="https://bbs.brdts.online/" target="_blank">>>{lang report}</a>
 <a href="https://bbs.brdts.online/?thread-2.htm" target="_blank">>>{lang donate}</a>

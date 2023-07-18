@@ -55,6 +55,7 @@
 					<input type="button" value="角色信息" <!--{if $info['wmode'] && $info['wmode'] != 1 && $info['wmode'] !=4 && $info['wmode'] != 6}-->onclick="$('command').value='info';$('gnum').value='$gid';document.info.submit();"<!--{else}-->disabled<!--{/if}-->>
 					<!--{if $info['wmode'] && $info['wmode'] !=4}--><span class="white"><a href="winner.php?command=news&gnum=$info[gid]">📼</a></span><!--{else}-->　<!--{/if}-->
 					<input type="button" value="该局状况" <!--{if $info['wmode'] && $info['wmode'] !=4}-->onclick="$('command').value='news';$('gnum').value='$gid';document.info.submit();"<!--{else}-->disabled<!--{/if}-->>
+                    $download_buttons[$gid]
 				</span>
 			</TD>
 		</TR>
