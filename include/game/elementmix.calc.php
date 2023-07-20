@@ -571,7 +571,7 @@
 					# Trial Fix #2 - If array_search would result in a false, we skip the unset process.
 					//Let's see what happens:
 					$delsub = $minfo['stuff'];
-					if(array_search($delsub, $subtags)!= false){
+					if(array_search($delsub, $subtags)!== false){
 					# 配对成功！消除素材特征
 					foreach($minfo['stuff'] as $delsub) unset($subtags[array_search($delsub,$subtags)]);}
 					# 将组合结果加入属性队列
