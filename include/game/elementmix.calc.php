@@ -568,8 +568,11 @@
 						if(is_array($obbs)) $obbs = isset($obbs[$itmk]) ? $obbs[$itmk] : $obbs['default'];
 						if(rand(0,100) > $obbs) continue; 
 					}
+					# Trial Fix #1 - If array_search would result in a false, we skip the unset process.
+					//Let's see what happens:
+					if(array_search($delsub, $subtags)!= false){
 					# 配对成功！消除素材特征
-					foreach($minfo['stuff'] as $delsub) unset($subtags[array_search($delsub,$subtags)]);
+					foreach($minfo['stuff'] as $delsub) unset($subtags[array_search($delsub,$subtags)]);}
 					# 将组合结果加入属性队列
 					$sk[] = $minfo['result'];
 					# 将探索到的次要特征组合加入笔记内
