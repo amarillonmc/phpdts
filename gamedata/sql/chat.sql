@@ -5,7 +5,7 @@
 
 DROP TABLE IF EXISTS bra_chat;
 CREATE TABLE bra_chat (
-  cid smallint unsigned NOT NULL auto_increment,
+  cid mediumint unsigned NOT NULL auto_increment,
   type enum('0','1','2','3','4','5') NOT NULL default '0',
  `time` int(10) unsigned NOT NULL default '0',
   send char(24) NOT NULL default '',
