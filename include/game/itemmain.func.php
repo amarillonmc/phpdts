@@ -1122,7 +1122,7 @@ function itemreduce($item,$mode=0){ //只限合成使用！！
 		# Added one additional check to deal with infinite stamina item - destroy it when used in mix.
 		if($itms == '∞'){
 			$itms = 0;
-			$log .= "<span class=\"red\">$itm</span>消失了……它已被冴冴的天然呆给完全侵蚀了。";
+			$log .= "<span class=\"red\">$itm</span>消失了……它已被";
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		}else{
