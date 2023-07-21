@@ -100,3 +100,6 @@ apple-touch-icon.png
 favicon-16x16.png
 favicon-32x32.png
 site.webmanifest
+gamedata/adminlog.php
+config.inc.php
+templates/default/lastgb.htm
