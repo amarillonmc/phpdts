@@ -1120,7 +1120,7 @@ function itemreduce($item,$mode=0){ //只限合成使用！！
 	if(preg_match('/^(Y|B|C|X|TN|GB|H|P|V|M)/',$itmk))
 	{
 		# Added one additional check to deal with infinite stamina item - destroy it when used in mix.
-		if($itms = '∞'){
+		if($itms == '∞'){
 			$itms = 0;
 			$log .= "<span class=\"red\">$itm</span>消失了……它已被";
 			$itm = $itmk = $itmsk = '';
