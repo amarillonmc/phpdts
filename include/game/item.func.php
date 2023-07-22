@@ -923,7 +923,7 @@ function itemuse($itmn,&$data=NULL) {
 			// 用$clbpara['opened_pack']记录打开福袋的名称，只要有这个名称，就搞事！
  			if(!empty($clbpara['opened_pack'])){
 				$log.="似乎你本轮已经打开过福袋，因此不能再打开更多的福袋！<br>";
-				$db->query("INSERT INTO {$tablepre}shopitem (kind,num,price,area,item,itmk,itme,itms,itmsk) VALUES ('17','1','20','0','$itm','$itmk','$itme','$itms','$itmsk')");
+				$db->query("INSERT INTO {$tablepre}shopitem (kind,num,price,area,item,itmk,itme,itms,itmsk) VALUES ('17','1','20','0','$itm','$itmk','$itme','1','$itmsk')");
 				$log.="<span class=\"yellow\">$itm</span>从你的手中飞出，向商店的方向飞去。<br>";
 			} 
 			if(strpos( $itmk, 'p0P' ) === 0){
