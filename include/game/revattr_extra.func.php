@@ -232,10 +232,15 @@ namespace revattr
 		{
 			$rp_up = 0; $dmg_p = -1;
 			if($pd['name'] == '高中生·白神')
+			//Adding an additional check to reset a negative rp value to 1 before other rp checks to deal with an oddity.
 			{
 				if($phase == 'rp')
 				{
 					$log .= "<span class=\"yellow\">“你真的愿意对这个手无寸铁的高中女生下手么？”</span><br>";
+					if ($pa['rp'] < 0){
+						$log .= "<span class=\"glitch1\">“不管你之前积了多少德，一个决定就是一个决定。”</span><br>";
+						$pa['rp'] = 1;	
+					}
 					$dice = diceroll(444);
 					if($dice<=200){
 						$log .= "<span class=\"neonblue\">“你感觉到了罪恶感。”</span><br>";
@@ -259,7 +264,12 @@ namespace revattr
 				if($phase == 'rp')
 				{
 					$dice = diceroll(1777);
+
 					$log .= "<span class=\"yellow\">“对面似乎真的没有敌意，你还是决定要下手么？”</span><br>";
+					if ($pa['rp'] < 0){
+						$log .= "<span class=\"glitch1\">“不管你之前积了多少德，一个决定就是一个决定。”</span><br>";
+						$pa['rp'] = 1;	
+					}
 					if($dice<=200){
 						$log .= "<span class=\"neonblue\">“你感觉到了罪恶感。”</span><br>";
 					}elseif($dice<=400){
@@ -285,6 +295,10 @@ namespace revattr
 				{
 					$dice = rand(1777,4888);
 					$log .= "<span class=\"yellow\">“你对一位毫无反抗能力，并且已经表示无敌意的女高中生横下死手。”</span><br>";
+					if ($pa['rp'] < 0){
+						$log .= "<span class=\"glitch1\">“不管你之前积了多少德，一个决定就是一个决定。”</span><br>";
+						$pa['rp'] = 1;	
+					}
 					$log .= "<span class=\"neonblue\">“希望你的良心还能得以安生。”</span><br>";
 					//$log .= "<span class=\"neonblue\">“【DEBUG】你的rp上升了<span class=\"red\">$dice</span>点。”</span><br>";
 					$rp_up = $pa['rp'] + $dice;
