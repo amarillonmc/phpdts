@@ -1526,8 +1526,8 @@ function itemuse($itmn,&$data=NULL) {
 
 				if($club == 17){
 					$hpdown = $spdown = round($up * 1.5);
-				}elseif($club == 13){
-					$hpdown = $up+200;
+				}elseif($club == 12){
+					$hpdown = $up+250;
 					$spdown = $up;
 					//根性兄贵加成消失
 				}else{
