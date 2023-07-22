@@ -1,7 +1,7 @@
 你想丢掉什么？<br><br>
 <input type="hidden" name="mode" value="itemmain">
 <input type="radio" name="command" id="menu" value="menu" checked><a onclick=sl('menu'); href="javascript:void(0);" >返回</a>
-<!--{if $club==20}-->
+<!--{if $club==20 && $clbstatusa != 1}-->
 <input type="checkbox" id="split"
     onchange="if($('split').checked){$('zz').value='[Z]确定并提炼';for (var i=1; i<=6; i++){if($('itm' + i)){$('itm' + i).value = $('itm' + i).value.replace('dropitm','split_itm');}}}else{$('zz').value='[Z]确定并丢弃';for(var i=1; i<=6; i++){if($('itm' + i)){$('itm' + i).value = $('itm' + i).value.replace('split_itm','dropitm');}}}"><a
     onclick=$('split').click(); href="javascript:void(0);">提炼道具</a>

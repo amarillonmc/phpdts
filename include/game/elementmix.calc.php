@@ -568,8 +568,24 @@
 						if(is_array($obbs)) $obbs = isset($obbs[$itmk]) ? $obbs[$itmk] : $obbs['default'];
 						if(rand(0,100) > $obbs) continue; 
 					}
+					//18th fix: kudos to 低维生物
+					$delsub = $minfo['stuff'];
+					$count_delsub = count($mnifo['stuff']);
+					
+					for ($i = 0; $i < count($subtags); $i++){
+						if (in_array($subtags[$i], $minfo['stuff'])){
+							unset($subtags[$i]);
+							$count_delsub -= 1;
+							if ($count_delsub == 0) break;
+						}
+					}
+					if(array_search($delsub, $subtags)!== false){ //?
 					# 配对成功！消除素材特征
-					foreach($minfo['stuff'] as $delsub) unset($subtags[array_search($delsub,$subtags)]);
+					foreach($minfo['stuff'] as $delsub) unset($subtags[array_search($delsub,$subtags)]);}
+					//Alternative Fix: This will consume all properties in $subtags that matches $delsub.
+					//But stacking is better anyways. - comment out the above FOR loop then uncomment this to use
+					//$subtags = array_diff($subtags, $delsub);
+					$subtags = array_values($subtags);
 					# 将组合结果加入属性队列
 					$sk[] = $minfo['result'];
 					# 将探索到的次要特征组合加入笔记内

@@ -528,6 +528,16 @@ function qianghua($itmn = 0) {
   }	
   addnews ( $now, 'newwep2',$name, $baoshi, $o_itm , $nick);
 	if ($flag){
+		# Detect item names that's too long - if so, trigger this easter egg and fix the item name to prevent exploit.
+		if(mb_strlen($o_itm,'utf-8')>=30){
+			$log .= "<span class=\"yellow\">突然，有另一把声音插了进来！</span><br>";
+			$log .= "<span class=\"glitch1\">“我是大魔王昆顿，你们这些中二入脑的英雄们都喜欢将自己的装备名字取得很长，我很生气！<br>就让我毁灭你的中二吧！”</span><br>";
+
+		#搞事！
+		$itm = "★破灭的中二之魂★";
+		$log .= "<span class=\"yellow\">『你的全身被恐怖感缠绕，只能眼睁睁地看着大魔王将你的中二之魂打成了碎片！<br>但惊异的是，它的性能竟然毫无变化。』</span><br>";
+		$log .= "<span class=\"glitch1\">“毕竟老夫也不是什么恶魔嘛——那么我的气消了，凯莉你继续吧。”</span><br>";
+		}
 
 	 $log .= "<span class=\"yellow\">『一道神圣的闪光照耀在你的眼睛上，当你恢复视力时，发现你的装备闪耀着彩虹般的光芒』</span><br>";
 	 $nzitmlv = $zitmlv +1;

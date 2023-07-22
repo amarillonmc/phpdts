@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `acbra2_chat`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `acbra2_chat` (
-  `cid` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `cid` mediumint unsigned NOT NULL AUTO_INCREMENT,
   `type` enum('0','1','2','3','4','5') NOT NULL DEFAULT '0',
   `time` int(10) unsigned NOT NULL DEFAULT '0',
   `send` char(24) NOT NULL DEFAULT '',
@@ -156,7 +156,7 @@ DROP TABLE IF EXISTS `acbra2_newsinfo`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `acbra2_newsinfo` (
-  `nid` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `nid` mediumint unsigned NOT NULL AUTO_INCREMENT,
   `time` int(10) unsigned NOT NULL DEFAULT '0',
   `news` char(15) NOT NULL DEFAULT '',
   `a` varchar(255) NOT NULL DEFAULT '',
