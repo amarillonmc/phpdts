@@ -15,6 +15,7 @@ function itemuse($itmn,&$data=NULL) {
 	global $upexp,$baseexp,$elec_cap;
 	//Some globals seems to be still needed... ...
 	global $itemspkinfo,$plsinfo;
+	global $pid;
 
 	if(!isset($data))
 	{
@@ -2276,6 +2277,78 @@ function itemuse($itmn,&$data=NULL) {
 			//global $rp;
 			$rp = 0;
 			$log .= "你使用了<span class=\"yellow\">$itm</span>。你的RP归零了。<br>";
+		} elseif($itm == '😂我太酷啦！😂') {
+			$log .= "你毅然决然地高喊了一句：“我·太·酷·啦~”<br>一拳头锤碎了这个奇形怪状的按钮。<br>随后，在失去意识之前，你感觉你的身体飞上了天空。<br>";
+			# Also produce a chatlog
+			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','','「我·太·酷·啦~」')");
+
+			# Do an initial coin toss
+			$selfdestructdice1 = diceroll(1);
+			$selfdestructdice2 = diceroll(6);
+			
+			if ($selfdestructdice1 > 0){
+				# You'll self destruct into a bunch of happy items, to bring smile to others.
+				$happyitemname = $name . "的存在意义";
+				# Firstly, we look at your stats to see how strong those would be, and how many of them would it be.
+				$happyitemeffect = round($mhp / 20);
+				$happyitemnumber = round($exp / 20);
+				# Then, we look at the dice result to see what would you explode into.
+				if ($selfdestructdice2 == 1){
+					$happyitemkind = "HH";
+				}elseif ($selfdestructdice2 == 2){
+					$happyitemkind = "HS";
+				}elseif ($selfdestructdice2 == 3){
+					$happyitemkind = "PH";
+				}elseif ($selfdestructdice2 == 4){
+					$happyitemkind = "PS";
+				}elseif ($selfdestructdice2 == 5){
+					$happyitemkind = "HM";
+				}elseif ($selfdestructdice2 == 6){
+					$happyitemkind = "TO";
+				}else{
+					$happyitemkind = "T";
+				}
+
+				# Producing a valid arealist
+				$rndhappypls= rand(1,count($plsinfo)-2);
+
+				# Process the item insertation process.
+				# But, before that, a special treatment for map traps:
+				if ($selfdestructdice2 == 6){
+					# Insert traps into maptrap table.
+					for ($i = 0; $i < $happyitemnumber; $i++){
+						$rndhappypls= rand(1,count($plsinfo)-2);
+						$db->query("INSERT INTO {$tablepre}maptrap (itm, itmk, itme, itms, itmsk, pls) VALUES ('$happyitemname', '$happyitemkind', '$happyitemeffect', '1', '$pid', '$rndhappypls')");
+					}
+					$log .= "你的身体在高空中炸出了一片烟花。<br>
+					在那烟花中，那曾经属于你的存在落在了幻境的地面上，钻进了地底下。<br>
+					想必，这会为大家带来惊喜吧……<br>";
+				}else{
+					# Insert items into mapitem table.
+					for ($i = 0; $i < $happyitemnumber; $i++){
+						$rndhappypls= rand(1,count($plsinfo)-2);
+						$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$happyitemname', '$happyitemkind', '$happyitemeffect', '1', '$pid', '$rndhappypls')");
+					}
+					$log .= "你的身体在高空中炸出了一片烟花。<br>
+					在那烟花中，那曾经属于你的存在落在了幻境的地面上。<br>
+					想必，这会为大家带来笑容吧……<br>";
+				}
+				# Then we produce a chat for this feat.
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【幻境自检】','','检测到未经授权的地图物品！')");
+
+			}else{
+				# Nothing happens, you just self destruct.
+				$log .= "你的身体在高空中炸成了一片烟花，<br>
+				给虚拟幻境的天空带来了五彩的红霞。<br>
+				大家看到这祥瑞的天象，纷纷露出了笑容。<br>
+				这大概就是……「笑容世界」吧。<br>
+				大逃杀真是塔洛西啊！<br>";	
+			}
+			# Then we kill you to end everything.
+			include_once GAME_ROOT . './include/state.func.php';
+			death ( 'sdestruct', '', 0, $itm );
+			# But wait, since you exploded, you can't leave a body!
+			$db->query ( "UPDATE {$tablepre}players SET weps='0',arbs='0',arhs='0',aras='0',arfs='0',arts='0',itms0='0',itms1='0',itms2='0',itms3='0',itms4='0',itms5='0',itms6='0',money='0' WHERE pid = {$pid} " );
 		} else {
 			$log .= " <span class=\"yellow\">$itm</span> 该如何使用呢？<br>";
 		}
