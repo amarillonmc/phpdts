@@ -481,6 +481,37 @@ function AddElementsToList(ekey,enums)
 	$('emixinfotop').style.display = 'block';
 }
 
+function AddMixElements(emix_arr) {
+	var list = $('emixlist').value;
+	var nums = $('emixnums').value;
+	var desc = $('emixinfo').innerHTML;
+	var keyarr = [];
+	var numsarr = [];
+	var descarr = [];
+	const esum = [];
+	
+	for (let i = 0; i < emix_arr.length; i++) {
+		esum[emix_arr[i][0]] = (esum[emix_arr[i][0]] || 0) + emix_arr[i][1];
+	}		
+	for (let i = 0; i < emix_arr.length; i++) {
+		if($('maxe' + emix_arr[i][0] + 'num') === null || ($('maxe' + emix_arr[i][0] + 'num').value - esum[emix_arr[i][0]]) < 0) {
+			window.alert("合成所需的元素数量不足。");
+			return;
+		}
+	}
+	for (let i = 0; i < emix_arr.length; i++) {
+		$('maxe' + emix_arr[i][0] + 'num').value -= emix_arr[i][1];
+		$('e' + emix_arr[i][0] + 'num').value = $('maxe' + emix_arr[i][0] + 'num').value;
+		keyarr.push(emix_arr[i][0]);
+		numsarr.push(emix_arr[i][1]);
+		descarr.push(emix_arr[i][1] + ' 份 ' + $('edesc' + emix_arr[i][0]).innerHTML);
+	}
+	$('emixlist').value = keyarr.join('+');
+	$('emixnums').value = numsarr.join('+');
+	$('emixinfo').innerHTML = descarr.join('、');
+	$('emixinfotop').style.display = 'block';
+}
+
 function changeVolume(cv){ 
 	var v = $('gamebgm').volume;
 	v = v+cv;
