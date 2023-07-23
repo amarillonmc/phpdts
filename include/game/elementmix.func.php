@@ -129,6 +129,52 @@
 		return $smhint;
 	}
 
+	# 根据元素笔记中的已知公式快速投料
+	function quick_add_mix_elements($data)
+	{
+		global $elements_info,$r_elements_info,$gamecfg,$gamevars,$iteminfo,$itemspkinfo;
+		include config('elementmix',$gamecfg);
+		extract($data,EXTR_REFS);
+		include_once GAME_ROOT.'./include/game/itemplace.func.php';
+		if(!empty($clbpara['elements']['info']['d']))
+		{
+			foreach($emix_fixlist as $key => $list)
+			{
+				if(!empty($clbpara['elements']['info']['d']['d'.$key]))
+				{
+					$emix_arr = json_encode($list['stuff']);
+					$quickmix .= '<input type="button" value="投入" onclick="AddMixElements(' . $emix_arr .');"> ';
+					$quickmix .= "<span class=''>".parse_itemmix_resultshow($list['result'])."</span><br>";
+				}
+			}
+			$quickmix .= '</ul>';
+		}
+		if(!empty($clbpara['elements']['info']['hd']))
+		{
+			foreach($gamevars['rand_emixfixres'] as $key => $list)
+			{
+				if(!empty($clbpara['elements']['info']['hd']['h'.$key]))
+				{
+					$flag_complete = 1;
+					foreach($list['stuff'] as $skey => $slist)
+					{
+						if(empty($clbpara['elements']['info']['hd']['h'.$key]['s'.$skey]))
+						{
+							$flag_complete = 0;
+							break;
+						}
+					}
+					if($flag_complete == 0) break;
+					$emix_arr = json_encode($list['stuff']);
+					$quickmix .= '<input type="button" value="投入" onclick="AddMixElements(' . $emix_arr .');"> ';
+					$quickmix .= "<span class=''>".parse_itemmix_resultshow($rand_emix_fixlist[$key]['result'])."</span><br>";
+				}
+			}
+			$quickmix .= '</ul>';
+		}
+		return $quickmix;
+	}
+
 	/********拆解元素部分********/
 	# 把尸体打散成元素
 	function split_corpse_to_elements(&$edata,$emode)
