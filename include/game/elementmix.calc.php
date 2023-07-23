@@ -577,7 +577,12 @@
 					}
 					//18th fix: kudos to 低维生物
 					$delsub = $minfo['stuff'];
-					$count_delsub = count($mnifo['stuff']);
+					//$count_delsub = count($mnifo['stuff']);
+					$count_delsub = 0;
+					if(!empty($mnifo['stuff']))
+					{
+  					$count_delsub = $mnifo['stuff'];
+					}
 					
 					for ($i = 0; $i < count($subtags); $i++){
 						if (in_array($subtags[$i], $minfo['stuff'])){
