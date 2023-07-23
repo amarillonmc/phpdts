@@ -274,32 +274,40 @@
 						$fix_flag = 0;
 						break;
 					}
-					if($fix_flag == 1)
-					{
+				}
+				if($fix_flag == 1)
+				{
 					$fix_flag = $femix['result'];
 					# 将成功合成的条目保存在笔记内
 					if(empty($clbpara['elements']['info']['d']['d'.$ffkey])) $clbpara['elements']['info']['d']['d'.$ffkey] = 1;
-					}
+					break;
 				}
 			}
 		}
 		# 如果随机配方尚未生成，先生成随机配方
 		if(empty($gamevars['rand_emixfixres'])) $gamevars['rand_emixfixres'] = esp_spawn_rand_emixfixres();
-
-		# 检查随机配方
-		foreach($gamevars['rand_emixfixres'] as $fkkey => $femix)
+		
+		if ($fix_flag == 0)
 		{
-			if(count($femix['stuff']) == count($emlist))
+			# 检查随机配方
+			foreach($gamevars['rand_emixfixres'] as $fkkey => $femix)
 			{
-				$fix_flag = 1;
-				foreach($femix['stuff'] as $fkey => $farr)
+				if(count($femix['stuff']) == count($emlist))
 				{
-					if($farr[0] != $emlist[$fkey] || $farr[1] != $emnums[$fkey]) 
+					$fix_flag = 1;
+					foreach($femix['stuff'] as $fkey => $farr)
 					{
-						$fix_flag = 0;
+						if($farr[0] != $emlist[$fkey] || $farr[1] != $emnums[$fkey]) 
+						{
+							$fix_flag = 0;
+							break;
+						}
+					}
+					if($fix_flag == 1)
+					{
+						$fix_flag = $rand_emix_fixlist[$fkkey]['result'];
 						break;
 					}
-					if($fix_flag == 1) $fix_flag = $rand_emix_fixlist[$fkkey]['result'];
 				}
 			}
 		}
@@ -577,12 +585,7 @@
 					}
 					//18th fix: kudos to 低维生物
 					$delsub = $minfo['stuff'];
-					//$count_delsub = count($mnifo['stuff']);
-					$count_delsub = 0;
-					if(!empty($mnifo['stuff']))
-					{
-  					$count_delsub = $mnifo['stuff'];
-					}
+					$count_delsub = count($mnifo['stuff']);
 					
 					for ($i = 0; $i < count($subtags); $i++){
 						if (in_array($subtags[$i], $minfo['stuff'])){
