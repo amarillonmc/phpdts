@@ -260,20 +260,25 @@
 			$data = &$pdata;
 		}
 		extract($data,EXTR_REFS);
-		$fix_flag = 0;
+		
 		# 检查固定配方
 		foreach($emix_fixlist as $ffkey => $femix)
-		{
+		{			
 			if(count($femix['stuff']) == count($emlist))
 			{
+				$fix_flag = 1;
 				foreach($femix['stuff'] as $fkey => $farr)
 				{
-					if($farr[0] == $emlist[$fkey] && $farr[1] == $emnums[$fkey]) 
+					if($farr[0] != $emlist[$fkey] || $farr[1] != $emnums[$fkey]) 
 					{
-						$fix_flag = $femix['result'];
-						# 将成功合成的条目保存在笔记内
-						if(empty($clbpara['elements']['info']['d']['d'.$ffkey])) $clbpara['elements']['info']['d']['d'.$ffkey] = 1;
+						$fix_flag = 0;
 						break;
+					}
+					if($fix_flag == 1)
+					{
+					$fix_flag = $femix['result'];
+					# 将成功合成的条目保存在笔记内
+					if(empty($clbpara['elements']['info']['d']['d'.$ffkey])) $clbpara['elements']['info']['d']['d'.$ffkey] = 1;
 					}
 				}
 			}
@@ -286,13 +291,15 @@
 		{
 			if(count($femix['stuff']) == count($emlist))
 			{
+				$fix_flag = 1;
 				foreach($femix['stuff'] as $fkey => $farr)
 				{
-					if($farr[0] == $emlist[$fkey] && $farr[1] == $emnums[$fkey]) 
+					if($farr[0] != $emlist[$fkey] || $farr[1] != $emnums[$fkey]) 
 					{
-						$fix_flag = $rand_emix_fixlist[$fkkey]['result'];
+						$fix_flag = 0;
 						break;
 					}
+					if($fix_flag == 1) $fix_flag = $rand_emix_fixlist[$fkkey]['result'];
 				}
 			}
 		}
