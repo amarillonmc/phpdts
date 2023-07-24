@@ -236,13 +236,15 @@
 				return 0;
 			}
 			$numbers = array_fill(0, 6, 14);
-			# 生成5个随机数，使它们的和等于15
+			# 生成6个随机数，使它们的和等于16
 			$t = 16;
-			for ($i = 0; $i < 6; $i++) 
+			for ($i = 0; $i < 5; $i++) 
 			{
-				$at = rand(1,$t); $t -= $at;
+				$at = rand(1,5);
+				$t -= $at;
 				$numbers[$i] += $at;
 			}
+			$numbers[5] += $t;
 			$log .= "你把口袋中的元素搅混在一起……然后满怀期待得等着它们自己把自己整理好……<br>";
 			foreach($elements_info as $key => $info)
 			{
@@ -260,8 +262,8 @@
 		{
 			foreach($elements_info as $key => $info)
 			{
-				# 不足3000的，补足到3000
-				if(${'element'.$key} < 3000)
+				# 不足1000的，补足到3000
+				if(${'element'.$key} < 1000)
 				{
 					${'element'.$key} = 3000;
 					continue;

@@ -2240,26 +2240,31 @@ function itemuse($itmn,&$data=NULL) {
 			
 			for($i = 1; $i <= 6; $i ++) {
 				//global ${'itm' . $i}, ${'itmk' . $i},${'itms' . $i},${'itme' . $i},$wk;
-				foreach(Array('香蕉','苹果','西瓜') as $fruit){
-					
-					if ( strpos ( ${'itm' . $i} , $fruit ) !== false && strpos ( ${'itm' . $i} , '皮' ) === false && strpos ( ${'itm' . $i} , '■' ) === false && (strpos ( ${'itmk' . $i} , 'H' ) === 0 || strpos ( ${'itmk' . $i} , 'P' ) === 0 )) {
-						if($wk >= 120){
-							$log .= "练过刀就是好啊。你娴熟地削着果皮。<br><span class=\"yellow\">{${'itm'.$i}}</span>变成了<span class=\"yellow\">★残骸★</span>！<br>咦为什么会出来这种东西？算了还是不要吐槽了。<br>";
-							${'itm' . $i} = '★残骸★';
-							${'itme' . $i} *= rand(2,4);
-							${'itms' . $i} *= rand(3,5);
-							$flag = true;
-							$wk++;
+/* 				括号；
+				去除括号； */
+				if (strpos(${'itmsk' . $i}, '🍎') !== false) {
+					if($wk >= 120){
+						$log .= "练过刀就是好啊。你娴熟地削着果皮。<br><span class=\"yellow\">{${'itm'.$i}}</span>变成了<span class=\"yellow\">★残骸★</span>！<br>咦为什么会出来这种东西？算了还是不要吐槽了。<br>";
+						${'itm' . $i} = '★残骸★';
+						${'itme' . $i} *= rand(2,4);
+						${'itms' . $i} *= rand(3,5);
+						${'itmsk' . $i} = '';
+						$flag = true;
+						$wk++;
+					}else{
+						$log .= "想削皮吃<span class=\"yellow\">{${'itm'.$i}}</span>，没想到削完发现只剩下一堆果皮……<br>手太笨拙了啊。<br>";
+						if ((mb_substr(${'itm' . $i}, 0, 1) === '★') && (mb_substr(${'itm' . $i}, -1) === '★')){
+							${'itm' . $i} = mb_substr(${'itm' . $i}, 0, -1).'皮★';
 						}else{
-							$log .= "想削皮吃<span class=\"yellow\">{${'itm'.$i}}</span>，没想到削完发现只剩下一堆果皮……<br>手太笨拙了啊。<br>";
-							${'itm' . $i} = str_replace($fruit, $fruit.'皮',${'itm' . $i} );
-							${'itmk' . $i} = 'TN';
-							${'itms' . $i} *= rand(2,4);
-							$flag = true;
-							$wk++;
+							${'itm' . $i} = ${'itm' . $i}.'皮';
 						}
-						break;
+						${'itmk' . $i} = 'TN';
+						${'itms' . $i} *= rand(2,4);
+						${'itmsk' . $i} = '';
+						$flag = true;
+						$wk++;
 					}
+					break;
 				}
 				if($flag == true) {break;};
 			}
