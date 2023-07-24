@@ -741,7 +741,7 @@
 				# 前缀以“tags_”表示的，代表要选用带有对应标签的属性
 				elseif(strpos($snum,'tags_')===0)
 				{
-					$snum = $itmk_to_itmsk_tags[str_replace('tags_','',$snum)];
+					$snum = $itmk_to_itmsk_tags[(str_replace('tags_','',$snum)).'_0'];
 					shuffle($snum);
 					$skey = $snum[0];
 				}
