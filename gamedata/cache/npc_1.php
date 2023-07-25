@@ -1289,6 +1289,7 @@
 			8 => array
 			(
 			'name' => 'Yoshiko-G',
+			'horizon' => 1,
 			'gd' => 'f',
 			'def' => 30250,
 			'icon' => 4,
@@ -1310,13 +1311,14 @@
 			'skill' => 600,
 			'wep' => '光翼型近接支援残酷戦闘機',
 			'wepk' => 'WG',
-			'wepe' => 500,
+			'wepe' => 5000,
 			'weps' => 999,
 			'wepsk' => 'nre',
 			),
 			9 => array
 			(
 			'name' => 'lemon',
+			'horizon' => 1,
 			'gd' => 'r',
 			'icon' => 0,
 			'club' => 98,
@@ -1481,6 +1483,7 @@
 			1 => array
 			(
 			'name' => '星莲船四面BOSS',
+			'horizon' => 1,
 			'gd' => 'm',
 			'icon' => 4,
 			'club' => 10,
