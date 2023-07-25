@@ -59,6 +59,8 @@
 			$state = 40;
 		} elseif ($death == 's_escape'){
 			$state = 42;
+		} elseif ($death == 'sdestruct'){
+			$state = 50;
 		} else {
 			$state = 10;
 		}

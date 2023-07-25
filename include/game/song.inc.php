@@ -12,7 +12,11 @@
 	global $pdata;
 	
 	//登记非功能性地点信息时合并隐藏地点
-	foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
+	//To be frank, from a story perspective, hidden maps shouldn't be affected by songs anyways.
+	//Patch this out as a temp solution to the movelist oddity.
+	//foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
+
+	//A better fix would be removing $hplsinfo from $plsinfo after processing the song. But still.
 
 	//$log.=$sn.'_'.$now.'_'.$pls.'_'.$name."<br>";
 	$r=$arte;
