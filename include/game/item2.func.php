@@ -178,6 +178,7 @@ function hack($itmn = 0) {
 function newradar($m = 0){
 	global $mode,$log,$cmd,$main,$pls,$db,$tablepre,$plsinfo,$arealist,$areanum,$hack,$gamestate;
 	global $pnum,$npc2num,$npc3num,$npc4num,$npc5num,$npc6num,$radarscreen,$typeinfo,$weather;
+	global $horizon;
 	
 	if((CURSCRIPT !== 'botservice') && (!$mode)) {
 		$log .= '仪器使用失败！<br>';
@@ -191,7 +192,15 @@ function newradar($m = 0){
 			return;
 		}
 	}
-	$npctplist = Array(90,92,2,5,6,7,11,14,89);
+
+	if($horizon == 1) 
+	{
+		$npctplist = Array(92,89);
+	}
+	else
+	{
+		$npctplist = Array(90,2,5,6,11,14);
+	}
 	$tdheight = 20;
 	$screenheight = count($plsinfo)*$tdheight;
 	if (CURSCRIPT == 'botservice') 

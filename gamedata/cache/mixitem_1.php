@@ -118,6 +118,7 @@ $mixinfo = array
 	array('class' => 'item', 'stuff' => array('手机','笔记本电脑'),'result' => array('移动PC','EE',1,1,),),
 	array('class' => 'item', 'stuff' => array('高压线圈','原型武器G','原型武器C','某种机械设备'),'result' => array('电磁发射装置','X',1,1,''),),
 	//array('class' => 'item', 'stuff' => array('风见 幽香的ID卡','坂持 金发的ID卡','御坂 美琴的ID卡'),'result' => array('游戏解除钥匙','Y',1,1,),),
+	array('class' => 'item', 'stuff' => array('数据……碎片','全息幻象的自律回路'),'result' => array('调制解调器','Y',1,1,''),),
 	array('class' => 'item', 'stuff' => array('社员专用的ID卡','社员专用的ID卡','社员专用的ID卡'),'result' => array('游戏解除钥匙','Y',1,1,'v'),),
 	array('class' => 'item', 'stuff' => array('冰炎钥匙·炎','冰炎钥匙·冰'),'result' => array('游戏解除钥匙','Y',1,1,'Zv'),),
 	array('class' => 'item', 'stuff' => array('★荆棘式电子地雷★','★阔剑地雷★','★全图不唯一的野生巨大香蕉★'),'result' => array('★一发逆转神话★','TNc',1,1,'x'),),

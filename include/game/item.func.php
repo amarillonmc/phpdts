@@ -1622,7 +1622,7 @@ function itemuse($itmn,&$data=NULL) {
 			wthchange( $itm,$itmsk);
 			addnews ($now,'thiphase',$name,$nick);
 			$hack = 1;
-			$gamevars['apis'] = $gamevars['api'] = 5;
+			$gamevars['apis'] = $gamevars['api'] = 3;
 			$log .= '因为破灭之歌的作用，全部锁定被打破了！<br>';
 			movehtm();
 			addnews($now,'hack2',$name,$nick);
@@ -1641,10 +1641,14 @@ function itemuse($itmn,&$data=NULL) {
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '嗯……？只有碎片也能用吗？<br>好像将一小部分NPC部署进了游戏内……<br>';
 			//思念体 4*3
-			addnpc ( 2, 0, 4);
-			addnpc ( 2, 1, 4);
-			addnpc ( 2, 2, 4);
-			addnpc ( 2, 3, 4);
+			addnpc ( 2, 0, 2);
+			addnpc ( 2, 1, 2);
+			addnpc ( 2, 2, 2);
+			addnpc ( 2, 3, 2);
+			addnpc ( 2, 4, 2);
+			addnpc ( 2, 5, 2);
+			addnpc ( 2, 6, 2);
+			addnpc ( 2, 7, 2);
 			addnews ($now , 'key0', $name,$nick);						
 			$itms --;
 			if($itms <= 0) destory_single_item($data,$itmn,1);
@@ -2235,6 +2239,26 @@ function itemuse($itmn,&$data=NULL) {
 				$log .="宝石在你的手上发出异样的光芒，似乎有个奇怪的女声在你耳边说道<span class=\"yellow\">\"我是从天界来的凯丽\"</span>.";
 			}				
 			return;
+		} elseif ($itm == '调制解调器'){
+			if(!empty($gamevars['apis']))
+			{
+				$log .= '你将这件长得很像猫的东西放在了地上……目送它慢悠悠地爬走了。<br>';
+				if($gamevars['api'] < $gamevars['apis'])
+				{
+					$gamevars['api']++;
+					save_gameinfo();
+					$log .= '<span class="yellow">好像有什么东西恢复了！</span><br>';
+				}
+				else
+				{
+					$log .= '<span class="yellow">但是什么也没有发生！</span><br>';
+				}
+				$itms--;
+			}
+			else 
+			{
+				$log .= '这件长得很像猫的东西该怎么用呢？<br>';
+			}
 		} elseif ($itm == '水果刀') {
 			$flag = false;
 			

@@ -96,10 +96,10 @@
 					foreach($list['stuff'] as $skey => $slist)
 					{
 						if($skey != 0) $smhint .= ' + ';
-						$smhint .= "<span class='grey'>[主]</span>".parse_info_desc($slist,'k')."";
+						$smhint .= "<span class='grey'>[主]</span>".parse_kinfo_desc($slist)."";
 					}
 					$smobbs = !empty($list['obbs']) ? '('.$list['obbs'].'%)' : '';
-					$smhint .= " →  <span class='grey'>{$smobbs}</span>".parse_info_desc($list['result'],'k')."";
+					$smhint .= " →  <span class='grey'>{$smobbs}</span>".parse_kinfo_desc($list['result'])."";
 					$smhint .= '</span></li>';
 				}
 			}
@@ -117,10 +117,10 @@
 					foreach($list['stuff'] as $skey => $slist)
 					{
 						if($skey != 0) $smhint .= ' + ';
-						$smhint .= "<span class='grey'>[次]</span>".parse_info_desc($slist,'sk')."";
+						$smhint .= "<span class='grey'>[次]</span>".parse_skinfo_desc($slist)."";
 					}
 					$smobbs = !empty($list['obbs']) ? '('.$list['obbs'].'%)' : '';
-					$smhint .= " →  <span class='grey'>{$smobbs}</span>".parse_info_desc($list['result'],'sk')."";
+					$smhint .= " →  <span class='grey'>{$smobbs}</span>".parse_skinfo_desc($list['result'])."";
 					$smhint .= '</span></li>';
 				}
 			}

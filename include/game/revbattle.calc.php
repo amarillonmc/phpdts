@@ -64,6 +64,10 @@ namespace revbattle
 		global $log,$now,$weather,$gamevars,$gamecfg;
 		global $weather_active_r,$pose_active_modifier,$pose_active_modifier,$active_obbs,$chase_active_obbs;
 
+		# 敌人处于哨戒姿态下时，不会先攻
+		if($pd['pose'] == 7) return 100;
+		if($pa['pose'] == 7) return 0;
+
 		# 获取基础先攻率：
 		if(!$mode)
 		{

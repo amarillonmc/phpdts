@@ -50,7 +50,7 @@ function check_can_move($pls,$pgroup,$moveto)
 function move($moveto = 99,&$data=NULL) 
 {
 	global $log,$weather,$plsinfo,$hplsinfo,$arealist,$areanum,$hack,$areainfo,$gamestate,$gamecfg;
-	global $inf_move_sp,$infwords,$inf_move_hp;
+	global $actlog;
 
 	if(!isset($data))
 	{
@@ -93,28 +93,9 @@ function move($moveto = 99,&$data=NULL)
 		$hpls_flag = false;
 	}
 
-	//足部受伤，20；足球社，12；冻伤，30；正常，15；去gamecfg里改吧
-	$movesp = 15;
-	if ($inf) {
-		
-		foreach ($inf_move_sp as $inf_ky => $sp_down) {
-			if(strpos($inf,$inf_ky)!==false){$movesp+=$sp_down;}
-		}
-	}
-	if($club == 6){
-		if($lvl>=20){
-			$movesp -= 14;
-		}else{
-			$movesp -= 10+floor($lvl/5);
-		}
-	}
-
-	if($sp <= $movesp){
-		$log .= "体力不足，不能移动！<br>还是先睡会儿吧！<br>";
-		return;
-	}
-
-	$sp -= $movesp;
+	# 计算并扣除移动所需SP/HP
+	$flag = calc_move_search_sp_cost($data,'move');
+	if(!$flag) return;
 
 	# 预移动、探索阶段事件结算
 	$moved = pre_move_search_events($data,'move');
@@ -125,7 +106,7 @@ function move($moveto = 99,&$data=NULL)
 		if(!$hpls_flag) $pgroup = 0;
 		$pls = $moveto;
 		$moveto_info = $hpls_flag ? $hplsinfo[$pgroup][$pls] : $plsinfo[$pls];
-		$log .= "消耗<span class=\"yellow\">{$movesp}</span>点体力，移动到了<span class=\"yellow\">{$moveto_info}</span>。<br>";
+		$log .= "{$actlog}，移动到了<span class=\"yellow\">{$moveto_info}</span>。<br>";
 	}
 	
 	$log .= $areainfo[$pls].'<br>';	
@@ -142,7 +123,7 @@ function move($moveto = 99,&$data=NULL)
 function search(&$data=NULL)
 {
 	global $log,$weather,$arealist,$areanum,$hack,$plsinfo,$hplsinfo,$gamestate;
-	global $inf_search_sp,$infwords,$inf_search_hp;
+	global $actlog;
 
 	if(!isset($data))
 	{
@@ -165,32 +146,15 @@ function search(&$data=NULL)
 		$hpls_flag = false;
 	}
 
-	//腕部受伤，20；冻伤：30；侦探社，12；正常，15；改到gamecfg
-	$schsp =15;
-	if ($inf) {
-		foreach ($inf_search_sp as $inf_ky => $sp_down) {
-			if(strpos($inf,$inf_ky)!==false){$schsp+=$sp_down;}
-		}
-	}
-	if($club == 6){
-		if($lvl>=20){
-			$schsp -= 14;
-		}else{
-			$schsp -= 10+floor($lvl/5);
-		}
-	}
-
-	if($sp <= $schsp){
-		$log .= "体力不足，不能探索！<br>还是先睡会儿吧！<br>";
-		return;	
-	}
+	# 计算并扣除移动所需SP/HP
+	$flag = calc_move_search_sp_cost($data,'search');
+	if(!$flag) return;
 
 	# 预移动、探索阶段事件结算
 	$moved = pre_move_search_events($data,'search');
 	if($hp <= 0) return;
 	
-	$sp -= $schsp;
-	$log .= "消耗<span class=\"yellow\">{$schsp}</span>点体力，你搜索着周围的一切。。。<br>";
+	$log .= "{$actlog}，你搜索着周围的一切。。。<br>";
 	
 	# 探索指定地点，结算探索事件
 	move_search_events($data,'search');
@@ -200,6 +164,57 @@ function search(&$data=NULL)
 	discover($enemyrate,$data);
 	return;
 
+}
+
+# 计算移动 & 探索消耗的SP & HP
+function calc_move_search_sp_cost(&$data,$act)
+{
+	global $log,$movesp,$movehp,$inf_move_sp,$actlog;
+	extract($data,EXTR_REFS);
+
+	$flag = 0;
+	# 移动&探索的消耗基数
+	$costsp = $movesp;
+	# 代偿移动&探索的消耗系数
+	$costspr = $movehp;
+
+	# 移动&探索要消耗的属性类型
+	$actpoint = $horizon == 1 ? 'hp' : 'sp';
+	# 代偿移动&探索要消耗的属性类型
+	$subpoint = $horizon == 1 ? 'sp' : 'hp';
+
+	# 受伤时消耗增加
+	if($inf) 
+	{
+		foreach($inf_move_sp as $inf_ky => $sp_down)
+		{
+			if(strpos($inf,$inf_ky)!==false)
+			{
+				$costsp+=$sp_down;
+			}
+		}
+	}
+	# 宛如疾风消耗减少
+	if($club == 6) $costsp -= $lvl>=20 ? 14 : 10+floor($lvl/5);
+
+	if($$actpoint > $costsp)
+	{
+		$$actpoint -= $costsp;
+		$flag = $actpoint;
+	}
+	elseif($$subpoint > round($costsp * $costspr))
+	{
+		$$subpoint -= $costsp;
+		$flag = $subpoint;
+	}
+	else
+	{
+		$log .= "再动下去要出人命了！<br>还是先睡会儿吧！<br>";
+		return $flag;
+	}
+
+	$actlog = $flag == 'hp' ? "燃烧了<span class=\"red\">{$costsp}</span>点生命" : "消耗了<span class=\"yellow\">{$costsp}</span>点体力";
+	return $flag;
 }
 
 # 预探索、移动阶段事件
@@ -523,20 +538,6 @@ function discover($schmode = 0,&$data=NULL)
 	}
 	extract($data,EXTR_REFS);
 
-	$event_dice = rand(0,99);
-	if($data['pass'] == 'bot') $event_obbs = -1;
-	if(($event_dice < $event_obbs)||(($art!="Untainted Glory")&&($pls==34)&&($gamestate != 50))){
-		//echo "进入事件判定<br>";
-		include_once GAME_ROOT.'./include/game/event.func.php';
-		$event_flag = event();
-		//触发了事件，中止探索推进
-		if($event_flag)
-		{
-			$mode = 'command';
-			return;
-		}
-	}
-
 	# 判定移动、探索、事件后的BGM变化
 	if(array_key_exists($pls,$pls_bgm))
 	{
@@ -556,6 +557,20 @@ function discover($schmode = 0,&$data=NULL)
 		//触发了AI追击事件
 		$edata = $aidata;
 		goto battle_flag;
+	}
+
+	$event_dice = rand(0,99);
+	if($data['pass'] == 'bot') $event_obbs = -1;
+	if(($event_dice < $event_obbs)||(($art!="Untainted Glory")&&($pls==34)&&($gamestate != 50))){
+		//echo "进入事件判定<br>";
+		include_once GAME_ROOT.'./include/game/event.func.php';
+		$event_flag = event();
+		//触发了事件，中止探索推进
+		if($event_flag)
+		{
+			$mode = 'command';
+			return;
+		}
 	}
 	
 	$trap_dice=diceroll(99);
@@ -622,7 +637,10 @@ function discover($schmode = 0,&$data=NULL)
 			$eid = $edata['pid'];
 			# 使用fetch_playerdata_by_pid重新获取敌人数据，以应用各种在载入玩家数据时进行的判定
 			$edata = fetch_playerdata_by_pid($eid);
-			if(!$edata['type'] || $gamestate < 50)
+
+			# 不管是活人还是死人，都只会在处于相同视界的情况下遭遇
+			# 死斗模式无视视界限制
+			if($horizon == $edata['horizon'] || (!$edata['type'] && $gamestate == 50))
 			{
 				if($edata['hp'] <= 0)
 				{
@@ -657,8 +675,7 @@ function discover($schmode = 0,&$data=NULL)
 					if (($artk!='XX')&&($edata['artk']=='XX')&&($gamestate<50)) continue;
 					# 暂时直接略过盟友单位
 					if(!empty($edata['clbpara']['mate']) && in_array($pid,$edata['clbpara']['mate'])) continue;
-					# 灵子状态只能遭遇同为灵子状态的对象，非灵子状态对象无法发现灵子状态下的对象……但是尸体就没有这种考量了
-					if(($edata['pose'] == 8 || $data['pose'] == 8) && $data['pose'] != $edata['pose']) continue;
+
 					# 「量心」技能效果判定（不会遭遇HP为1的敌人）：
 					if(!check_skill_unlock('c19_dispel',$data) && !empty(get_skillpara('c19_dispel','active',$clbpara)) && $edata['hp'] == 1) continue;
 					
@@ -696,7 +713,7 @@ function discover($schmode = 0,&$data=NULL)
 				else 
 				{
 					battle_flag:
-					//计算先攻概率
+					//计算玩家对敌人的先攻概率
 					$active_r = \revbattle\calc_active_rate($data,$edata);
 					$bid = $edata['pid'];
 					$active_dice = diceroll(99);
@@ -745,7 +762,7 @@ function discover($schmode = 0,&$data=NULL)
 		}
 		else 
 		{
-			if($data['pose'] == 8) $log .= '<span class="yellow">周围没有同处于灵子状态的对象。</span><br>';
+			if($horizon == 1) $log .= '<span class="yellow">周围没有同处于灵子视界中的对象。</span><br>';
 			else $log .= '<span class="yellow">周围一个人都没有。</span><br>';
 		}
 		$mode = 'command';

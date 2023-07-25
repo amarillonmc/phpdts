@@ -19,10 +19,14 @@
 				<tr>
 					<td>
 						<span class="icon">
-							<IMG width=140px src="img/n_$npcinfo[$kind][$ksub][$key]['icon'].gif" border="0" valign="middle"/>
-							<!--{if file_exists('img/n_'.$npcinfo[$kind][$ksub][$key]['icon'].'a.gif')}-->
+							<!--{if !file_exists('img/'.$npcinfo[$kind][$ksub][$key]['icon'])}-->
+								<!--{eval $npcinfo[$kind][$ksub][$key]['icon'] = 'n_'.$npcinfo[$kind][$ksub][$key]['icon'].'.gif';}-->
+							<!--{/if}-->
+							<!--{eval $aicon = 'img/'.str_replace('.','a.',$npcinfo[$kind][$ksub][$key]['icon'])}-->
+							<IMG width=140px src="img/$npcinfo[$kind][$ksub][$key]['icon']" border="0" valign="middle"/>
+							<!--{if file_exists($aicon)}-->
 								<div class="icona">
-									<IMG class="aicon" width=140px src="img/n_$npcinfo[$kind][$ksub][$key]['icon']a.gif">
+									<IMG class="aicon" width=140px src="$aicon">
 								</div>
 							<!--{/if}-->
 						</span>
@@ -50,7 +54,11 @@
 									所处地点
 								</td>
 								<td width=100px align="center" class="b3">
-									<span class="yellow">
+								<!--{if $npcinfo[$kind][$ksub][$key]['horizon']}-->
+									<span class="darkviolet" tooltip="处于灵子视界中">
+								<!--{else}-->
+									<span class="yellow" tooltip="处于标准视界中">
+								<!--{/if}-->
 									$npcinfo[$kind][$ksub][$key]['pls']
 									</span>
 								</td>
@@ -211,7 +219,7 @@
 								</td>
 							</tr>
 							<!--{loop $itemlst $id $vid}-->
-							<!--{if isset($npcinfo[$kind][$ksub][$key]['itm'.$id])}-->
+							<!--{if !empty($npcinfo[$kind][$ksub][$key]['itms'.$id])}-->
 							<tr>
 								<td width=100px align="center" class="b1">
 									掉落物品

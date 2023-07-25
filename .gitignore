@@ -82,6 +82,10 @@ vendor
 # env file
 .env
 
+
+# daemon
+daemon*
+
 # 录像文件
 records
 

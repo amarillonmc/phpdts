@@ -61,11 +61,11 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		//登记非功能性地点信息时合并隐藏地点 为什么会有两个news.func.php？？？
 		foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
 		//死法（除DN外）：道具名登记在$d上；
-		if(strpos($news,'death')!==false && $news!=='death28' && isset($d)) $d = parse_info_desc($d,'m');
+		if(strpos($news,'death')!==false && $news!=='death28' && isset($d)) $d = parse_nameinfo_desc($d);
 		//赠送道具、吃到毒补给、陷阱、改变天气、强化武器、唱歌、打开礼物盒：道具名登记在$c上；
-		if((strpos($news,'senditem')!==false||strpos($news,'poison')!==false||strpos($news,'trap')!==false||strpos($news,'wth')!==false||strpos($news,'newwep')!==false||strpos($news,'song')!==false||strpos($news,'present')!==false) && isset($c)) $c = parse_info_desc($c,'m');
+		if((strpos($news,'senditem')!==false||strpos($news,'poison')!==false||strpos($news,'trap')!==false||strpos($news,'wth')!==false||strpos($news,'newwep')!==false||strpos($news,'song')!==false||strpos($news,'present')!==false) && isset($c)) $c = parse_nameinfo_desc($c);
 		//合成、使用死斗卡、使用仓库：道具名登记在$b上;
-		if((strpos($news,'mix')!==false||strpos($news,'duelkey')!==false||strpos($news,'depot')===0) && isset($b)) $b = parse_info_desc($b,'m');
+		if((strpos($news,'mix')!==false||strpos($news,'duelkey')!==false||strpos($news,'depot')===0) && isset($b)) $b = parse_nameinfo_desc($b);
 	
 
 		if(!empty($old_nicknews[$news]))
