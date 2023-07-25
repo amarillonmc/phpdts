@@ -2240,8 +2240,6 @@ function itemuse($itmn,&$data=NULL) {
 			
 			for($i = 1; $i <= 6; $i ++) {
 				//global ${'itm' . $i}, ${'itmk' . $i},${'itms' . $i},${'itme' . $i},$wk;
-/* 				括号；
-				去除括号； */
 				if (strpos(${'itmsk' . $i}, '🍎') !== false) {
 					if($wk >= 120){
 						$log .= "练过刀就是好啊。你娴熟地削着果皮。<br><span class=\"yellow\">{${'itm'.$i}}</span>变成了<span class=\"yellow\">★残骸★</span>！<br>咦为什么会出来这种东西？算了还是不要吐槽了。<br>";
@@ -2253,11 +2251,17 @@ function itemuse($itmn,&$data=NULL) {
 						$wk++;
 					}else{
 						$log .= "想削皮吃<span class=\"yellow\">{${'itm'.$i}}</span>，没想到削完发现只剩下一堆果皮……<br>手太笨拙了啊。<br>";
-						if ((mb_substr(${'itm' . $i}, 0, 1) === '★') && (mb_substr(${'itm' . $i}, -1) === '★')){
-							${'itm' . $i} = mb_substr(${'itm' . $i}, 0, -1).'皮★';
-						}else{
-							${'itm' . $i} = ${'itm' . $i}.'皮';
+						$brackets_arr = Array('☆☆','★★','〖〗','【】','『』','「」','✦✦','☾☽','☼☼','■■');
+						$if_brackets = 0;
+						foreach ($brackets_arr as $brackets)
+						{
+							if ((mb_substr(${'itm' . $i}, 0, 1)).(mb_substr(${'itm' . $i}, -1)) === $brackets){
+								$if_brackets = 1;
+								${'itm' . $i} = mb_substr(${'itm' . $i}, 0, -1).'皮'.mb_substr(${'itm' . $i}, -1);
+								break;
+							}							
 						}
+						if ($if_brackets == 0) ${'itm' . $i} = ${'itm' . $i}.'皮';
 						${'itmk' . $i} = 'TN';
 						${'itms' . $i} *= rand(2,4);
 						${'itmsk' . $i} = '';
