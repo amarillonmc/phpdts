@@ -164,7 +164,7 @@
 							break;
 						}
 					}
-					if($flag_complete == 0) break;
+					if($flag_complete == 0) continue;
 					$emix_arr = json_encode($list['stuff']);
 					$quickmix .= '<input type="button" value="投入" onclick="AddMixElements(' . $emix_arr .');"> ';
 					$quickmix .= "<span class=''>".parse_itemmix_resultshow($rand_emix_fixlist[$key]['result'])."</span><br>";
