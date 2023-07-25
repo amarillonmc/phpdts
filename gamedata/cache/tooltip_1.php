@@ -162,6 +162,7 @@ $tps_ik = Array
 	'XC' => Array('class'=>'yellow', 'title'=>"集齐三个同颜色的不同名代码残片，来合成单人脱出结局道具吧！",),
 	'ZB' => Array('class'=>'lime', 'title'=>"在没有决定称号的时候使用该物品，便可获得该对应称号。",),
 	'ZA' => Array('class'=>'neonyellow', 'title'=>"这个物品中似乎含有让你可以独自脱离幻境的方法……",),
+	'🥚' => Array('class'=>'purple', 'title'=>"通过提取物品产生的蛋状物品，看起来可以插回其他物品为之强化。",),
 );
 
 $tps_isk = Array
