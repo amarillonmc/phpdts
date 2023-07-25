@@ -586,7 +586,7 @@ function item_extract_trait($which, $item_position)
             $sp -= $itms_extract_rate * $itms;
         } elseif ($which == 'itmsk') {
             preg_match_all('/./u', $itmsk, $matches);
-            var_dump($matches);
+            //var_dump($matches);
             //如果matches没有
             if (empty($matches[0])) {
                 $log .= '该物品无法转换为代码片段。<br>';
@@ -624,7 +624,7 @@ function item_extract_trait($which, $item_position)
 //合并代码片段逻辑
 function  item_add_trait($choice1, $choice2)
 {
-    var_dump($choice1, $choice2);
+    //var_dump($choice1, $choice2);
     global $log, $mode, $club, $sp, $rage, $pdata;
     if ($club != 21) {
         $log .= '你的称号不能使用该技能。';
@@ -652,8 +652,8 @@ function  item_add_trait($choice1, $choice2)
     //让itm2属性合并itm1
     //如果都是🥚，则去掉$itm的所有“代码片段”四个字，然后itm相加
     if ($itmkc1 == '🥚' && $itmkc2 == '🥚') {
-        var_dump($itmkc1, $itmkc2);
-        var_dump($itmc1, $itmc2);
+        //var_dump($itmkc1, $itmkc2);
+        //var_dump($itmc1, $itmc2);
         preg_match_all('/(改|棍棒|\+(\\d+))/u', $itmc1, $matches1);
         preg_match_all('/(改|棍棒|\+(\\d+))/u', $itmc2, $matches2);
         if (!empty($matches1[0]) || !empty($matches2[0])) {

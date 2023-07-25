@@ -1151,7 +1151,13 @@ function itemuse($itmn,&$data=NULL) {
 			//global $wep, $wepk, $wepe, $weps, $wepsk;
             //码语行人，$club==21的时候不能使用钉子
             if ($club == 21) {
-                $log .= '<span class="yellow">码语行人，$club==21的时候不能使用针线包<br>';
+				$log .= "<span class=\"yellow\">突然，你的眼前出现了扭曲的字符！</span><br>";
+				$log .= "<span class=\"glitchb\">
+				“凌乱陈言省略号，<br>
+				数值爆炸知多少？<br>
+				玩家以外用不到，<br>
+				出了问题再来找！”<br></span><br>";
+				$log .= "<span class=\"yellow\">唔，看起来这个钉子对你似乎没有什么意义……</span><br>";
                 return;
             } elseif ((strpos($wep, '棍棒') !== false) && ($wepk == 'WP')) {
                 if (strpos($wepsk, 'j') !== false) {
@@ -1184,7 +1190,13 @@ function itemuse($itmn,&$data=NULL) {
 			//global $arb, $arbk, $arbe, $arbs, $arbsk, $noarb;
             //码语行人，$club==21的时候不能使用针线包
             if ($club == 21) {
-                $log .= '<span class="yellow">码语行人，$club==21的时候不能使用针线包<br>';
+				$log .= "<span class=\"yellow\">突然，你的眼前出现了扭曲的字符！</span><br>";
+				$log .= "<span class=\"glitchb\">
+				“冷汗直流小问号，<br>
+				防御堆到多少好？<br>
+				与其数值罩白梦，<br>
+				不如让她转生了！”<br></span><br>";
+				$log .= "<span class=\"yellow\">唔，看起来这个针线包对你似乎没有什么意义……</span><br>";
                 return;
             } elseif (($arb == $noarb) || !$arb) {
 				$log .= '你没有装备防具，不能使用针线包。<br>';
@@ -1258,7 +1270,13 @@ function itemuse($itmn,&$data=NULL) {
 			//global $wep, $wepk, $wepe, $weps, $wepsk;
             //码语行人，$club==21的时候不能使用天然呆四面的奖赏
             if ($club == 21) {
-                $log .= '<span class="yellow">码语行人，$club==21的时候不能使用武器师安雅的奖赏<br>';
+				$log .= "<span class=\"yellow\">突然，你的眼前出现了扭曲的字符！</span><br>";
+				$log .= "<span class=\"glitchb\">
+				“无语无言点句号，<br>
+				第四墙外看不到！<br>
+				无法干涉即取消，<br>
+				反正一个也不少！<br>”</span><br>";
+				$log .= "<span class=\"yellow\">唔，看起来这个奇怪的物品对你似乎没有什么意义……</span><br>";
                 return;
             }
             if (!$weps || !$wepe) {
@@ -1311,7 +1329,13 @@ function itemuse($itmn,&$data=NULL) {
 			//global $wep, $wepk, $wepe, $weps, $wepsk, $wp, $wk, $wg, $wc, $wd, $wf;
             //码语行人，$club==21的时候不能使用武器师安雅的奖赏
             if ($club == 21) {
-                $log .= '<span class="yellow">码语行人，$club==21的时候不能使用武器师安雅的奖赏<br>';
+				$log .= "<span class=\"yellow\">突然，你的眼前出现了扭曲的字符！</span><br>";
+				$log .= "<span class=\"glitchb\">
+				“奇诡无比省略号，<br>
+				奇葩捏他哪里找？<br>
+				横竖都是用不上。<br>
+				看我直接注释掉！”<br></span><br>";
+				$log .= "<span class=\"yellow\">唔，看起来武器师安雅的奖赏对你似乎没有什么意义……</span><br>";
                 return;
             } elseif (!$weps || !$wepe) {
 				$log .= '请先装备武器。<br>';
@@ -2025,9 +2049,16 @@ function itemuse($itmn,&$data=NULL) {
                 include_once GAME_ROOT . './include/game/elementmix.func.php';
 				emix_spawn_info();
             } elseif ($itme == 21) { //码语行人特殊处理
-                $log .= "码语行人特殊处理<br>";
+                //Let's have some fun !
+				$clbpara['dialogue'] = 'club21entry';
+				//$log .= "码语行人特殊处理<br>";
                 //社团变更
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','','「Ρжжηψψρип ρип, ρжжηψψρжжρип ρип」')");
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','','「ρψψρип ρип, ρип ρип ρжжηψψρжж ρδ」')");
                 changeclub(21, $data);
+				//And we inflict some pretty damage as entry fee.
+				$hp = $hp / 3;
+				$sp = 1;
             } elseif ($itme == 22) { //偶像大师特殊处理
                 $log .= "再等等吧……<br>";
             } else { //直接将社团卡的效果写入玩家club
@@ -2220,7 +2251,13 @@ function itemuse($itmn,&$data=NULL) {
 			//global $cmd;
             //码语行人，$club==21的时候不能使用宝石
             if ($club == 21) {
-                $log .= '<span class="yellow">码语行人，$club==21的时候不能使用宝石<br>';
+				$log .= "<span class=\"yellow\">突然，你的眼前出现了扭曲的字符！</span><br>";
+				$log .= "<span class=\"glitchb\">
+				“纠结纠结小问号，<br>
+				代码溢出怎么搞？<br>
+				干脆一刀禁了它。<br>
+				反正挨打不用愁！”<br></span><br>";
+				$log .= "<span class=\"yellow\">唔，看起来这个宝石对你似乎没有什么意义……</span><br>";
                 return;
             }
 			$cmd = '<input type="hidden" name="mode" value="item"><input type="hidden" name="usemode" value="qianghua"><input type="hidden" name="itmp" value="' . $itmn . '">你想强化哪一件装备？<br><input type="radio" name="command" id="menu" value="menu" checked><a onclick=sl("menu"); href="javascript:void(0);" >返回</a><br><br><br>';
