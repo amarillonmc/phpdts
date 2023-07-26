@@ -498,21 +498,39 @@ function qianghua($itmn = 0) {
 		$zitmlv = $zitmlv[1];
 		//$dengji = substr(${'itm'.$itmn},strpos(${'itm'.$itmn},"[+")+2,strlen(${'itm'.$itmn}) - strpos(${'itm'.$itmn},"]")+1);//北京你自己看着办
     //$dengji = str_replace(']','',$dengji);
-		if($zitmlv >= 3 && $baoshi != '『灵魂宝石』'){
-			$log .= '你所选的宝石只能强化装备到[+3]哦!DA☆ZE<br>';
+		if($zitmlv >= 4 && $baoshi != '『灵魂宝石』'){
+			$log .= '你所选的宝石只能强化装备到[+4]哦!DA☆ZE<br>';
 		  $mode = 'command';
 			return;
 		}else{
-			if ($zitmlv >= 4){
-				$gailv = rand(1,$zitmlv-2);
-			}elseif ($zitmlv >= 6){
-				$gailv = rand(1,$zitmlv-1);
-			}elseif ($zitmlv >= 10){
-				$gailv = rand(1,$zitmlv);
+			if ($zitmlv==3 && $baoshi=='『祝福宝石』'){ 
+				if ($baoshis<2)
+				{
+					$log .= '你需要至少2颗祝福宝石才能强化装备到[+4]哦!DA☆ZE<br>';
+					$mode = 'command';
+					return;
+				}
+				elseif ($baoshis==2) 	//两颗成功率1/3
+				{
+					$baoshis--;
+					$dice = rand(1,30);
+				}
+				else 			//3颗必定成功
+				{
+					$baoshis -= 2;
+					$dice = 1;
+				}
+			}elseif ($zitmlv >= 4){
+				$dice = rand(1,10*($zitmlv-2));//+5概率10/20，+6概率10/30，+7概率10/40，+8概率10/50与原来相同
+//				$gailv = rand(1,$zitmlv-2);//原代码因为错误的缘故只能执行这里，概率是1/(当前lv-2)，也即冲+5就是1/2,冲+6就是1/3以此类推
+//			}elseif ($zitmlv >= 6){
+//				$gailv = rand(1,$zitmlv-1);
+//			}elseif ($zitmlv >= 10){
+//				$gailv = rand(1,$zitmlv);
 			}else{
-				$gailv = 1;
+				$dice = 1;
 			}
-			if ($gailv == 1 ){
+			if ($dice <= 10 ){
 				$flag = true;
 			}else{$flag = false;}
 	  }	
