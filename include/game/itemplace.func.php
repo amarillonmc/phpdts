@@ -199,15 +199,15 @@ function parse_smartmix_recipelink($itemindex, $stext = '', $sstyle = ''){
 	return "<span tooltip2=\"{$tt}\"><a ".($sstyle ? "class=\"{$sstyle}\" " : '')."onclick=\"$('itemindex').value='$itemindex';postCmd('maincmd','command.php');\">".($stext ? $stext : $itemindex).'</a></span>';
 }
 function parse_itemmix_resultshow($rarr){
-	$ret = $rarr[0].'/'.parse_info_desc($rarr[1],'k','',0,'none').'/'.$rarr[2].'/'.$rarr[3];
-	$itmskw = !empty($rarr[4]) ? parse_info_desc($rarr[4],'sk',$rarr[1],0,'none') : '';
+	$ret = $rarr[0].'/'.parse_kinfo_desc($rarr[1],'','','none').'/'.$rarr[2].'/'.$rarr[3];
+	$itmskw = !empty($rarr[4]) ? parse_skinfo_desc($rarr[4],$rarr[1],'','none') : '';
 	if($itmskw) $ret .= '/'.$itmskw;
 	return $ret;
 }
 
 function get_npc_helpinfo($nlist,$tooltip=1)
 {
-	global $plsinfo,$hplsinfo,$gamecfg,$iteminfo,$clubinfo;
+	global $npcinit,$plsinfo,$hplsinfo,$gamecfg,$iteminfo,$clubinfo;
 	global $posetips,$tactips,$poseinfo,$tacinfo;
 	//登记非功能性地点信息时合并隐藏地点
 	foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
@@ -224,12 +224,13 @@ function get_npc_helpinfo($nlist,$tooltip=1)
 					foreach($npcs[$tsub] as $n => $npc)
 					{
 						$snpc = array_merge($npcs,$npc);
+						$snpc = array_merge($npcinit,$snpc);
 						unset($snpc['sub']);unset($snpc['asub']);unset($snpc['esub']);
 						foreach(Array('p','k','g','c','d','f') as $val)
 						{
-							if(isset($snpc['w'.$val]))
+							if(!empty($snpc['w'.$val]))
 							{
-								if(isset($snpc['skill']))
+								if(!empty($snpc['skill']))
 								{
 									$snpc['skill'] .= '(?)';
 								}
@@ -250,15 +251,26 @@ function get_npc_helpinfo($nlist,$tooltip=1)
 						}
 						if(isset($snpc['pls']))
 						{
-							if($tsub == 'esub')
+							if(is_array($snpc['pls']))
 							{
-								$snpc['pls'] = '原地';
+								$splss = '';
+								foreach($snpc['pls'] as $spls)
+								{
+									$splss .= empty($splss) ? $plsinfo[$spls] : '|'.$plsinfo[$spls];
+								}
+								$snpc['pls'] = $splss;
 							}
-							else 
+							else
 							{
-								$snpc['pls'] = $snpc['pls']==99 ? '随机' : $plsinfo[$snpc['pls']];
-							}
-							
+								if($tsub == 'esub')
+								{
+									$snpc['pls'] = '原地';
+								}
+								else 
+								{
+									$snpc['pls'] = $snpc['pls']==99 ? '随机' : $plsinfo[$snpc['pls']];
+								}
+							}							
 						}
 						if(isset($snpc['pose']))$snpc['poseinfo'] = "<span tooltip=\"{$posetips[$snpc['pose']]}\">".$poseinfo[$snpc['pose']]."</span>";
 						if(isset($snpc['tactic']))$snpc['tacinfo'] = "<span tooltip=\"{$tactips[$snpc['tactic']]}\">".$tacinfo[$snpc['tactic']]."</span>";
@@ -285,9 +297,9 @@ function get_npc_helpinfo($nlist,$tooltip=1)
 								//添加tooltip效果
 								if($tooltip)
 								{
-									if(!empty($snpc[$value])) $snpc[$value] = parse_info_desc($snpc[$value],'m');
-									if(!empty($snpc[$sk_value])) $snpc[$sk_value.'_words'] = parse_info_desc($snpc[$sk_value],'sk',$snpc[$k_value]);
-									if(!empty($snpc[$k_value])) $snpc[$k_value] = parse_info_desc($snpc[$k_value],'k');
+									if(!empty($snpc[$value])) $snpc[$value] = parse_nameinfo_desc($snpc[$value]);
+									if(!empty($snpc[$sk_value])) $snpc[$sk_value.'_words'] = parse_skinfo_desc($snpc[$sk_value],$snpc[$k_value]);
+									if(!empty($snpc[$k_value])) $snpc[$k_value] = parse_kinfo_desc($snpc[$k_value]);
 								}
 							}
 						}

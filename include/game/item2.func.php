@@ -178,6 +178,7 @@ function hack($itmn = 0) {
 function newradar($m = 0){
 	global $mode,$log,$cmd,$main,$pls,$db,$tablepre,$plsinfo,$arealist,$areanum,$hack,$gamestate;
 	global $pnum,$npc2num,$npc3num,$npc4num,$npc5num,$npc6num,$radarscreen,$typeinfo,$weather;
+	global $horizon;
 	
 	if((CURSCRIPT !== 'botservice') && (!$mode)) {
 		$log .= '仪器使用失败！<br>';
@@ -191,7 +192,15 @@ function newradar($m = 0){
 			return;
 		}
 	}
-	$npctplist = Array(90,92,2,5,6,7,11,14,89);
+
+	if($horizon == 1) 
+	{
+		$npctplist = Array(92,89);
+	}
+	else
+	{
+		$npctplist = Array(90,2,5,6,11,14);
+	}
 	$tdheight = 20;
 	$screenheight = count($plsinfo)*$tdheight;
 	if (CURSCRIPT == 'botservice') 
@@ -457,6 +466,7 @@ function deathnote($sfn,$itmd=0,$dnname='',$dndeath='',$dngender='m',$dnicon=1) 
 
 function qianghua($itmn = 0) {
 	global $mode,$log,$nosta,$name,$nick;
+	global $club;
 	global $itmp,${'itm'.$itmp},${'itms'.$itmp},${'itmk'.$itmp},${'itme'.$itmp},${'itmsk'.$itmp};
 	$baoshi = & ${'itm'.$itmp};
 	$baoshie = & ${'itme'.$itmp};
@@ -484,6 +494,18 @@ function qianghua($itmn = 0) {
 		$mode = 'command';
 		return;
 	}
+		# Detect if club 21, if so, output easter egg and return.
+	if ($club == 21){
+		$log .= "<span class=\"yellow\">突然，你的眼前出现了扭曲的字符！</span><br>";
+		$log .= "<span class=\"glitchb\">
+		“纠结纠结小问号，<br>
+		代码溢出怎么搞？<br>
+		干脆一刀禁了它。
+		反正挨打不用愁！<br>”</span><br>";
+		$log .= "<span class=\"yellow\">唔，看起来这个宝石对你似乎没有什么意义……</span><br>";
+		$mode = 'command';
+		return;
+		}
 	$o_itm = $itm;
 	if(!preg_match("/\[\+[0-9]\]/",$itm)){
 		$itm = ${'itm'.$itmn}.'[+0]';

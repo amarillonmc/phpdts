@@ -400,7 +400,8 @@ function itemmix_events(&$data=NULL)
 	$wd+=1;
 
 	# 全能兄贵在合成补给品时，获得数量x2
-	if((strpos($itmk0,'H') === 0)&&($club == 16)&&($itms0 !== $nosta)){ $itms0 = ceil($itms0*2); }
+	// 16 is in the past...
+	if((strpos($itmk0,'H') === 0)&&($club == 12)&&($itms0 !== $nosta)){ $itms0 = ceil($itms0*2); }
 
 	# 拆弹专家合成爆炸物耐久*1.5
 	if(($itmk0 == 'WD' || $itmk0 == 'WDG') && ($club == 5)){ $itms0 = ceil($itms0*1.5); }

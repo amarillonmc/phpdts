@@ -46,9 +46,9 @@
     if ($tdata['weps'] && $tdata['wepe']) {
       $list[] = array(
         "key" => "wep",
-        "type" => parse_info_desc($tdata['wepk'], 'k'),
-        "name" => $tdata['wep'],
-        "props" => $tdata['wepsk'] ? parse_info_desc($tdata['wepsk'], 'sk', 'wepsk', 1) : '',
+        "type" => parse_kinfo_desc($tdata['wepk'], $tdata['wepsk']),
+        "name" => parse_nameinfo_desc($tdata['wep'],$tdata['horizon']),
+        "props" => $tdata['wepsk'] ? parse_skinfo_desc($tdata['wepsk'], $tdata['wepk'] , 1) : '',
         "quality" => $tdata['wepe'],
         "durability" => $tdata['weps'],
       );
@@ -57,9 +57,9 @@
     if ($tdata['arbs'] && $tdata['arbe']) {
       $list[] = array(
         "key" => "arb",
-        "type" => parse_info_desc($tdata['arbk'], 'k'),
-        "name" => $tdata['arb'],
-        "props" => $tdata['arbsk'] ? parse_info_desc($tdata['arbsk'], 'sk', 'arbsk', 1) : '',
+        "type" => parse_kinfo_desc($tdata['arbk'], $tdata['arbsk']),
+        "name" => parse_nameinfo_desc($tdata['arb'],$tdata['horizon']),
+        "props" => $tdata['arbsk'] ? parse_skinfo_desc($tdata['arbsk'], $tdata['arbk'] , 1) : '',
         "quality" => $tdata['arbe'],
         "durability" => $tdata['arbs'],
       );
@@ -68,9 +68,9 @@
     if ($tdata['arhs']) {
       $list[] = array(
         "key" => "arh",
-        "type" => parse_info_desc($tdata['arhk'], 'k'),
-        "name" => $tdata['arh'],
-        "props" => $tdata['arhsk'] ? parse_info_desc($tdata['arhsk'], 'sk', 'arhsk', 1) : '',
+        "type" => parse_kinfo_desc($tdata['arhk'], $tdata['arhsk']),
+        "name" => parse_nameinfo_desc($tdata['arh'],$tdata['horizon']),
+        "props" => $tdata['arhsk'] ? parse_skinfo_desc($tdata['arhsk'], $tdata['arhk'] , 1) : '',
         "quality" => $tdata['arhe'],
         "durability" => $tdata['arhs'],
       );
@@ -79,9 +79,9 @@
     if ($tdata['aras']) {
       $list[] = array(
         "key" => "ara",
-        "type" => parse_info_desc($tdata['arak'], 'k'),
-        "name" => $tdata['ara'],
-        "props" => $tdata['arask'] ? parse_info_desc($tdata['arask'], 'sk', 'arask', 1) : '',
+        "type" => parse_kinfo_desc($tdata['arak'], $tdata['arask']),
+        "name" => parse_nameinfo_desc($tdata['ara'],$tdata['horizon']),
+        "props" => $tdata['arask'] ? parse_skinfo_desc($tdata['arask'], $tdata['arak'] , 1) : '',
         "quality" => $tdata['arae'],
         "durability" => $tdata['aras'],
       );
@@ -90,9 +90,9 @@
     if ($tdata['arfs']) {
       $list[] = array(
         "key" => "arf",
-        "type" => parse_info_desc($tdata['arfk'], 'k'),
-        "name" => $tdata['arf'],
-        "props" => $tdata['arfsk'] ? parse_info_desc($tdata['arfsk'], 'sk', 'arfsk', 1) : '',
+        "type" => parse_kinfo_desc($tdata['arfk'], $tdata['arfsk']),
+        "name" => parse_nameinfo_desc($tdata['arf'],$tdata['horizon']),
+        "props" => $tdata['arfsk'] ? parse_skinfo_desc($tdata['arfsk'], $tdata['arfk'] , 1) : '',
         "quality" => $tdata['arfe'],
         "durability" => $tdata['arfs'],
       );
@@ -101,9 +101,9 @@
     if ($tdata['arts']) {
       $list[] = array(
         "key" => "art",
-        "type" => parse_info_desc($tdata['artk'], 'k'),
-        "name" => $tdata['art'],
-        "props" => $tdata['artsk'] ? parse_info_desc($tdata['artsk'], 'sk', 'artsk', 1) : '',
+        "type" => parse_kinfo_desc($tdata['artk'], $tdata['artsk']),
+        "name" => parse_nameinfo_desc($tdata['art'],$tdata['horizon']),
+        "props" => $tdata['artsk'] ? parse_skinfo_desc($tdata['artsk'], $tdata['artk'] , 1) : '',
         "quality" => $tdata['arte'],
         "durability" => $tdata['arts'],
       );
@@ -112,9 +112,9 @@
     if ($tdata['itms0']) {
       $list[] = array(
         "key" => "itm0",
-        "type" => parse_info_desc($tdata['itmk0'], 'k'),
-        "name" => $tdata['itm0'],
-        "props" => $tdata['itmsk0'] ? parse_info_desc($tdata['itmsk0'], 'sk', 'itmsk0', 1) : '',
+        "type" => parse_kinfo_desc($tdata['itmk0'], $tdata['itmsk0']),
+        "name" => parse_nameinfo_desc($tdata['itm0'],$tdata['horizon']),
+        "props" => $tdata['artsk'] ? parse_skinfo_desc($tdata['itmsk0'], $tdata['itmk0'] , 1) : '',
         "quality" => $tdata['itme0'],
         "durability" => $tdata['itms0'],
       );
@@ -123,9 +123,9 @@
     if ($tdata['itms1']) {
       $list[] = array(
         "key" => "itm1",
-        "type" => parse_info_desc($tdata['itmk1'], 'k'),
-        "name" => $tdata['itm1'],
-        "props" => $tdata['itmsk1'] ? parse_info_desc($tdata['itmsk1'], 'sk', 'itmsk1', 1) : '',
+        "type" => parse_kinfo_desc($tdata['itmk1'], $tdata['itmsk1']),
+        "name" => parse_nameinfo_desc($tdata['itm1'],$tdata['horizon']),
+        "props" => $tdata['artsk'] ? parse_skinfo_desc($tdata['itmsk1'], $tdata['itmk1'] , 1) : '',
         "quality" => $tdata['itme1'],
         "durability" => $tdata['itms1'],
       );
@@ -134,9 +134,9 @@
     if ($tdata['itms2']) {
       $list[] = array(
         "key" => "itm2",
-        "type" => parse_info_desc($tdata['itmk2'], 'k'),
-        "name" => $tdata['itm2'],
-        "props" => $tdata['itmsk2'] ? parse_info_desc($tdata['itmsk2'], 'sk', 'itmsk2', 1) : '',
+        "type" => parse_kinfo_desc($tdata['itmk2'], $tdata['itmsk2']),
+        "name" => parse_nameinfo_desc($tdata['itm2'],$tdata['horizon']),
+        "props" => $tdata['artsk'] ? parse_skinfo_desc($tdata['itmsk2'], $tdata['itmk2'] , 1) : '',
         "quality" => $tdata['itme2'],
         "durability" => $tdata['itms2'],
       );
@@ -145,9 +145,9 @@
     if ($tdata['itms3']) {
       $list[] = array(
         "key" => "itm3",
-        "type" => parse_info_desc($tdata['itmk3'], 'k'),
-        "name" => $tdata['itm3'],
-        "props" => $tdata['itmsk3'] ? parse_info_desc($tdata['itmsk3'], 'sk', 'itmsk3', 1) : '',
+        "type" => parse_kinfo_desc($tdata['itmk3'], $tdata['itmsk3']),
+        "name" => parse_nameinfo_desc($tdata['itm3'],$tdata['horizon']),
+        "props" => $tdata['artsk'] ? parse_skinfo_desc($tdata['itmsk3'], $tdata['itmk3'] , 1) : '',
         "quality" => $tdata['itme3'],
         "durability" => $tdata['itms3'],
       );
@@ -156,9 +156,9 @@
     if ($tdata['itms4']) {
       $list[] = array(
         "key" => "itm4",
-        "type" => parse_info_desc($tdata['itmk4'], 'k'),
-        "name" => $tdata['itm4'],
-        "props" => $tdata['itmsk4'] ? parse_info_desc($tdata['itmsk4'], 'sk', 'itmsk4', 1) : '',
+        "type" => parse_kinfo_desc($tdata['itmk4'], $tdata['itmsk4']),
+        "name" => parse_nameinfo_desc($tdata['itm4'],$tdata['horizon']),
+        "props" => $tdata['artsk'] ? parse_skinfo_desc($tdata['itmsk4'], $tdata['itmk4'] , 1) : '',
         "quality" => $tdata['itme4'],
         "durability" => $tdata['itms4'],
       );
@@ -167,9 +167,9 @@
     if ($tdata['itms5']) {
       $list[] = array(
         "key" => "itm5",
-        "type" => parse_info_desc($tdata['itmk5'], 'k'),
-        "name" => $tdata['itm5'],
-        "props" => $tdata['itmsk5'] ? parse_info_desc($tdata['itmsk5'], 'sk', 'itmsk5', 1) : '',
+        "type" => parse_kinfo_desc($tdata['itmk5'], $tdata['itmsk5']),
+        "name" => parse_nameinfo_desc($tdata['itm5'],$tdata['horizon']),
+        "props" => $tdata['artsk'] ? parse_skinfo_desc($tdata['itmsk5'], $tdata['itmk5'] , 1) : '',
         "quality" => $tdata['itme5'],
         "durability" => $tdata['itms5'],
       );
@@ -178,9 +178,9 @@
     if ($tdata['itms6']) {
       $list[] = array(
         "key" => "itm6",
-        "type" => parse_info_desc($tdata['itmk6'], 'k'),
-        "name" => $tdata['itm6'],
-        "props" => $tdata['itmsk6'] ? parse_info_desc($tdata['itmsk6'], 'sk', 'itmsk6', 1) : '',
+        "type" => parse_kinfo_desc($tdata['itmk6'], $tdata['itmsk6']),
+        "name" => parse_nameinfo_desc($tdata['itm6'],$tdata['horizon']),
+        "props" => $tdata['artsk'] ? parse_skinfo_desc($tdata['itmsk6'], $tdata['itmk6'] , 1) : '',
         "quality" => $tdata['itme6'],
         "durability" => $tdata['itms6'],
       );

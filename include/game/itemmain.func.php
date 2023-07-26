@@ -131,7 +131,7 @@ function check_trap_def_event(&$pa,$damage,$playerflag=0,$selflag=0)
 	}
 
 	# 「天佑」技能判定
-	if($damage && !check_skill_unlock('buff_godbless',$data))
+	if($damage && !check_skill_unlock('buff_godbless',$pa))
 	{
 		$damage = 0;
 		$log .= "<span class=\"yellow\">「天佑」使你免疫了陷阱伤害！</span><br>";
@@ -225,7 +225,7 @@ function trap(&$data=NULL){
 				addnews($now,'trap',$name,$trname,$itm0,$nick);
 			}
 			$log .= "糟糕，你触发了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>！<br>";
-			if($data['skilllog']) $log.= $data['skilllog'];
+			if(!empty($data['skilllog'])) $log.= $data['skilllog'];
 			$log .= "受到<span class=\"dmg\">$damage</span>点伤害！<br>";
 
 			# 踩雷rp结算

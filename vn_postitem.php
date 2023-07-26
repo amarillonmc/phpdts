@@ -37,7 +37,7 @@ if(isset($_POST['editid']) || isset($_POST['editor']))
 	if($carr['itms'] == $nosta) $carr['itms'] = 0;
 	if(!empty($carr['itmsk']))
 	{
-		$carr['itmsk_desc'] = parse_info_desc(get_itmsk_array($carr['itmsk']),'sk',$carr['itmk']);
+		$carr['itmsk_desc'] = parse_skinfo_desc($carr['itmsk'],$carr['itmk']);
 	}
 	else 
 	{

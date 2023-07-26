@@ -524,6 +524,182 @@ function player_format_with_db_structure($data){
 	reload_equip_items($ndata);
     return $ndata;
 }
+
+# 处理道具名的显示信息
+function parse_nameinfo_desc($info,$subinfo='',$short='',$tiptype='')
+{
+	global $tps_name,$tps_names,$tps_name_lore,$noitm;
+	global $horizon;
+
+	if(empty($info)) return $noitm;
+
+	$ttypes = $tiptype ? $tiptype : 'tooltip';
+	$info_f = $info_tp = '';
+
+	# 首先检查带前缀的道具名是否有特殊介绍
+	# 如果没有，过滤掉前缀
+	if(!isset($tps_name[$info]) && !isset($tps_names[$info]))
+	{
+		$tinfo = preg_replace('/锋利的|电气|毒性|\[\+.*\]|-改/', '', $info);
+	}
+	else 
+	{
+		$tinfo = $info;
+	}
+
+	if(isset($tps_name[$tinfo]) && !is_array($tps_name[$tinfo]) && isset($tps_names[$tps_name[$tinfo]]))
+	{
+		$ts = $tps_names[$tps_name[$tinfo]];
+		$info_f = isset($ts['class']) ? $ts['class'] : '';
+		$info_tp = isset($ts['title']) ? $ts['title'] : '';
+	}
+	elseif(isset($tps_name[$tinfo]))
+	{
+		$info_f = isset($tps_name[$tinfo]['class']) ? $tps_name[$tinfo]['class'] : '';
+		$info_tp = isset($tps_name[$tinfo]['title']) ? $tps_name[$tinfo]['title'] : '';
+	}
+
+	# 灵子视界内，可以看到特殊信息
+	if($subinfo == 1 && isset($tps_name_lore[$tinfo]))
+	{
+		if(!empty($info_tp)) $info_tp .= "\r";
+		$info_tp .= $tps_name_lore[$tinfo]['title'];
+	}
+
+	if(!empty($info_f)) $info_f = "class=\"{$info_f}\"";
+	if(!empty($info_tp)) $info_tp = "{$ttypes}=\"{$info_tp}\"";
+
+	$info = "<span {$info_f} {$info_tp}>{$info}</span>";
+	return $info;
+}
+
+# 处理道具类别的显示信息
+function parse_kinfo_desc($info,$subinfo='',$short='',$tiptype='')
+{
+	global $iteminfo,$tps_ik,$noitm;
+
+	if(empty($info)) return $noitm;
+
+	$ttypes = $tiptype ? $tiptype : 'tooltip';
+
+	# 获取该道具的通用类别，保存在$v_info内
+	# 如果该道具类别没有特殊介绍，则直接使用通用类别
+	foreach($iteminfo as $info_key => $info_value)
+	{
+		if(strpos($info,$info_key)===0) 
+		{
+			$v_info = $info_key;
+			break;
+		}
+	}
+	if(!isset($tps_ik[$info])) $info = $v_info;
+
+	$info_f = isset($tps_ik[$info]['class']) ? $tps_ik[$info]['class'] : '';
+	$info_tp = isset($tps_ik[$info]['title']) ? $tps_ik[$info]['title'] : '';
+
+	# 传入了属性作为辅助参数时
+	if($info == 'WJ')
+	{
+		$info_tp.= "需装填「重型弹药」";
+	}
+	elseif(!empty($subinfo))
+	{
+		if(!empty($info_tp)) $info_tp .= "\r";
+		if(!is_array($subinfo)) $subinfo = get_itmsk_array($subinfo); 
+		if($info == 'WG' || $info == 'WGK' || $info == 'WDG')
+		{
+			if(in_array('e',$subinfo) || in_array('w',$subinfo)) $info_tp.= "需装填「能源弹药」";
+			elseif(in_array('u',$subinfo) || in_array('i',$subinfo)) $info_tp.= "需装填「气体弹药」";
+			elseif(in_array('r',$subinfo)) $info_tp.= "需装填「机枪子弹」";
+		}
+	}
+	else
+	{
+		if($info == 'WG' || $info == 'WGK' || $info == 'WDG') $info_tp.= "需装填「手枪弹药」";
+	}
+	
+	if(!empty($info_f)) $info_f = "class=\"{$info_f}\"";
+	if(!empty($info_tp)) $info_tp = "{$ttypes}=\"{$info_tp}\"";
+
+	# 道具类别里没有$info的介绍，使用通用类别$v_info
+	if(!isset($iteminfo[$info])) $info = $v_info;
+
+	return "<span {$info_tp} {$info_f}>{$iteminfo[$info]}</span>";
+}
+
+# 处理道具属性的显示信息
+function parse_skinfo_desc($info,$subinfo='',$short='',$tiptype='')
+{
+	global $itemspkinfo,$cskills,$tps_isk,$nospk;
+
+	# 属性为空时 返回 “--”
+	$ret = $nospk;
+	if(empty($info)) return $ret;
+
+	$ttypes = $tiptype ? $tiptype : 'tooltip';
+
+	# 处理该数量以上的属性时，将属性格式变为+...+的缩写
+	$short_nums = 4;
+
+	# 技能书特殊处理
+	if($subinfo == 'VS')
+	{
+		if(!empty($info) && isset($cskills[$info]))
+		{
+			$sk = $cskills[$info];  $sknm = $cskills[$info]['name'];
+			$ret = "<span {$ttypes}=\"使用后可习得技能「{$sknm}」\">知识</span>";
+		}
+		return $ret;
+	}
+	# 正常处理属性
+	else
+	{
+		# 数组化
+		if(!is_array($info)) $info = get_itmsk_array($info); 
+		# 计数
+		$sk_max = count($info); $sk_nums = 0; 
+		$sk_info = ''; $sk_tp = '';
+		# 属性中是否有奇迹属性？
+		if(in_array('x',$info)) $xflag = 1;
+		foreach($info as $sk)
+		{
+			$csk = $itemspkinfo[$sk];
+			# 检查属性有没有特殊样式
+			if(isset($tps_isk[$sk]['class'])) $csk = "<span class=\"".$tps_isk[$sk]['class']."\">".$csk."</span>"; 
+			# 将属性加入显示队列
+			$sk_info .= $csk;
+			# 如果不是最后一个属性 显示一个 + 号
+			if($sk_nums<$sk_max-1) $sk_info .= '+';
+			# 检查属性有没有tooltip
+			if(isset($tps_isk[$sk]['title']))
+			{
+				if($sk_max > 1)
+				{
+					# 奇迹属性隐藏tips
+					if(!empty($xflag) && isset($tps_isk[$sk]['x-title'])) $sk_tp .= $tps_isk[$sk]['x-title'];
+					# 标准tips
+					else $sk_tp .= "【{$itemspkinfo[$sk]}】: ".$tps_isk[$sk]['title'];
+					# 换行
+					if($sk_nums<$sk_max-1) $sk_tp .= "\r";
+				}
+				else 
+				{
+					$sk_tp = !empty($xflag) && isset($tps_isk[$sk]['x-title']) ? $tps_isk[$sk]['x-title'] : $tps_isk[$sk]['title'];
+				}
+			}
+			$sk_nums++;
+		}
+		if(!empty($sk_info)) $ret = $sk_info;
+		if($sk_max > $short_nums && $short) $ret = $itemspkinfo[$info[0]]."+...+".$itemspkinfo[end($info)];
+		if(!empty($sk_tp)) 
+		{
+			$ret = "<span {$ttypes}=\"{$sk_tp}\">{$ret}</span>";
+		}
+	}
+	return $ret;
+}
+
+/*
 function parse_info_desc($info,$type,$vars='',$short=0,$tiptype=0)
 {
 	global $iteminfo,$itemspkinfo,$cskills;
@@ -562,8 +738,29 @@ function parse_info_desc($info,$type,$vars='',$short=0,$tiptype=0)
 		}
 		# 类别不存在样式或提示时，用大类尝试一下
 		if(!isset($tps_ik[$info])) $info = $v_info;
-		$info_f = isset($tps_ik[$info]['class']) ? "class=\"{$tps_ik[$info]['class']}\"" : '';
-		$info_tp = isset($tps_ik[$info]['title']) ? "{$ttypes}=\"{$tps_ik[$info]['title']}\"" : '';
+		$info_f = isset($tps_ik[$info]['class']) ? $tps_ik[$info]['class'] : '';
+		$info_tp = isset($tps_ik[$info]['title']) ? $tps_ik[$info]['title'] : '';
+		# 输入了属性作为子参数
+		if(!empty($vars))
+		{
+			if(!empty($info_tp)) $info_tp .= "\r";
+			if(!is_array($vars)) $vars = get_itmsk_array($vars); 
+			if($v_info == 'WG' || $v_info == 'WGK' || $v_info == 'WDG')
+			{
+				if(in_array('e',$vars) || in_array('w',$vars)) $info_tp.= "需装填「能源弹药」";
+				elseif(in_array('u',$vars) || in_array('i',$vars)) $info_tp.= "需装填「气体弹药」";
+				elseif(in_array('r',$vars)) $info_tp.= "需装填「机枪子弹」";
+			}
+			if($v_info == 'WJ') $info_tp.= "需装填「重型弹药」";
+		}
+		else
+		{
+			if($v_info == 'WG' || $v_info == 'WGK' || $v_info == 'WDG') $info_tp.= "需装填「手枪弹药」";
+			if($v_info == 'WJ') $info_tp.= "需装填「重型弹药」";
+		}
+		
+		if(!empty($info_f)) $info_f = "class=\"{$info_f}\"";
+		if(!empty($info_tp)) $info_tp = "{$ttypes}=\"{$info_tp}\"";
 		if(!isset($iteminfo[$info])) $info = $v_info;
 		return "<span {$info_tp} {$info_f}>{$iteminfo[$info]}</span>";
 	}
@@ -621,15 +818,6 @@ function parse_info_desc($info,$type,$vars='',$short=0,$tiptype=0)
 				}
 				$sk_nums++;
 			}
-			# 枪械弹药类型特判
-			if($vars == 'WG' || $vars == 'WGK' || $vars == 'WDG')
-			{
-				if(empty($info)) $sk_tp.= "\r【需装填】：手枪子弹";
-				elseif(in_array('e',$info) || in_array('w',$info)) $sk_tp.= "\r【需装填】：能源弹药";
-				elseif(in_array('u',$info) || in_array('i',$info)) $sk_tp.= "\r【需装填】：气体弹药";
-				elseif(in_array('r',$info)) $sk_tp.= "\r【需装填】：机枪子弹";
-			}
-			if($vars == 'WJ') $sk_tp.= "\r【需装填】：重型弹药";
 			if(!empty($sk_info)) $ret = $sk_info;
 			if($sk_max > $short_nums && $short) $ret = $itemspkinfo[$info[0]]."+...+".$itemspkinfo[end($info)];
 			if(!empty($sk_tp)) 
@@ -640,7 +828,7 @@ function parse_info_desc($info,$type,$vars='',$short=0,$tiptype=0)
 		return $ret;
 	}
 	return $info;
-}
+}*/
 
 //省略显示
 //显示宽度20英文字符，假设汉字的显示宽度大约是英文字母的1.8倍

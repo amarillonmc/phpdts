@@ -172,7 +172,7 @@ function adtsk(){
 				$log .= '<span class="red">武器已经带有电击属性，不用改造！</span><br />';
 				$mode = 'command';
 				return;
-			}elseif(strlen($wepsk)>=5){
+			}elseif(strlen($wepsk)>=40){
 				$log .= '<span class="red">武器属性数目达到上限，无法改造！</span><br />';
 				$mode = 'command';
 				return;
@@ -210,7 +210,7 @@ function adtsk(){
 				$log .= '<span class="red">武器已经带毒，不用改造！</span><br />';
 				$mode = 'command';
 				return;
-			}elseif(strlen($wepsk)>=5){
+			}elseif(strlen($wepsk)>=40){
 				$log .= '<span class="red">武器属性数目达到上限，无法改造！</span><br />';
 				$mode = 'command';
 				return;
@@ -586,7 +586,7 @@ function item_extract_trait($which, $item_position)
             $sp -= $itms_extract_rate * $itms;
         } elseif ($which == 'itmsk') {
             preg_match_all('/./u', $itmsk, $matches);
-            var_dump($matches);
+            //var_dump($matches);
             //如果matches没有
             if (empty($matches[0])) {
                 $log .= '该物品无法转换为代码片段。<br>';
@@ -624,7 +624,7 @@ function item_extract_trait($which, $item_position)
 //合并代码片段逻辑
 function  item_add_trait($choice1, $choice2)
 {
-    var_dump($choice1, $choice2);
+    //var_dump($choice1, $choice2);
     global $log, $mode, $club, $sp, $rage, $pdata;
     if ($club != 21) {
         $log .= '你的称号不能使用该技能。';
@@ -652,8 +652,8 @@ function  item_add_trait($choice1, $choice2)
     //让itm2属性合并itm1
     //如果都是🥚，则去掉$itm的所有“代码片段”四个字，然后itm相加
     if ($itmkc1 == '🥚' && $itmkc2 == '🥚') {
-        var_dump($itmkc1, $itmkc2);
-        var_dump($itmc1, $itmc2);
+        //var_dump($itmkc1, $itmkc2);
+        //var_dump($itmc1, $itmc2);
         preg_match_all('/(改|棍棒|\+(\\d+))/u', $itmc1, $matches1);
         preg_match_all('/(改|棍棒|\+(\\d+))/u', $itmc2, $matches2);
         if (!empty($matches1[0]) || !empty($matches2[0])) {
@@ -734,7 +734,7 @@ function  item_add_trait($choice1, $choice2)
 }
 
 function shoplist($sn,$getlist=NULL) {
-	global $gamecfg,$mode,$itemdata,$areanum,$areaadd,$iteminfo,$itemspkinfo,$club;
+	global $gamecfg,$mode,$itemdata,$areanum,$areaadd,$iteminfo,$itemspkinfo,$club,$horizon;
 	global $db,$tablepre;
 	$arean = floor($areanum / $areaadd); 
 	$result=$db->query("SELECT * FROM {$tablepre}shopitem WHERE kind = '$sn' AND area <= '$arean' AND num > '0' AND price > '0' ORDER BY sid");
@@ -748,25 +748,22 @@ function shoplist($sn,$getlist=NULL) {
 		$itemdata[$i]['price']= $club == 11 ? round($itemlist['price']*0.75) : $itemlist['price'];
 		$itemdata[$i]['area']=$itemlist['area'];
 		$itemdata[$i]['item']=$itemlist['item'];
-		$itemdata[$i]['item_words']= parse_info_desc($itemdata[$i]['item'],'m');
+		$itemdata[$i]['item_words']= parse_nameinfo_desc($itemdata[$i]['item'],$horizon);
 		$itemdata[$i]['itme']=$itemlist['itme'];
 		$itemdata[$i]['itms']=$itemlist['itms'];
-		//list($sid,$kind,$num,$price,$area,$item,$itmk,$itme,$itms,$itmsk)=explode(',',$itemlist);
+
 		foreach($iteminfo as $info_key => $info_value){
 			if(strpos($itemlist['itmk'],$info_key)===0){
 				if(isset($getlist)) $itemdata[$i]['itmk'] = $info_value;
-				//$itemdata[$i]['itmk_words'] = parse_itm_desc($info_key,'k');
 				break;
 			}
 		}
-		$itemdata[$i]['itmk_words'] = parse_info_desc($itemlist['itmk'],'k');
+		$itemdata[$i]['itmk_words'] = parse_kinfo_desc($itemlist['itmk'],$itemlist['itmsk']);
 		$itemdata[$i]['itmsk_words'] = '';
 		if($itemlist['itmsk'] && ! is_numeric($itemlist['itmsk'])){
 			if(!isset($getlist))
 			{
-				$itemdata[$i]['itmsk_words'] = parse_info_desc($itemlist['itmsk'],'sk',$itemlist['itmk']);
-				//$tmp_sk = get_itmsk_array($itemlist['itmsk']);
-				//foreach($tmp_sk as $sk) $itemdata[$i]['itmsk_words'].= parse_itm_desc($sk,'sk');
+				$itemdata[$i]['itmsk_words'] = parse_skinfo_desc($itemlist['itmsk'],$itemlist['itmk']);
 			}
 			else 
 			{

@@ -5,7 +5,7 @@
 	}
 	global $can_lootdepot_type;
 	//个人仓库最多可以储存的道具数量 0=不限制
-	$max_saveitem_num = 0;
+	$max_saveitem_num = 6;
 	//储存每件道具的手续费
 	$saveitem_cost = 20;
 	//取出道具的手续费

@@ -15,6 +15,7 @@ function itemuse($itmn,&$data=NULL) {
 	global $upexp,$baseexp,$elec_cap;
 	//Some globals seems to be still needed... ...
 	global $itemspkinfo,$plsinfo;
+	global $pid;
 
 	if(!isset($data))
 	{
@@ -923,7 +924,7 @@ function itemuse($itmn,&$data=NULL) {
 			// 用$clbpara['opened_pack']记录打开福袋的名称，只要有这个名称，就搞事！
  			if(!empty($clbpara['opened_pack'])){
 				$log.="似乎你本轮已经打开过福袋，因此不能再打开更多的福袋！<br>";
-				$db->query("INSERT INTO {$tablepre}shopitem (kind,num,price,area,item,itmk,itme,itms,itmsk) VALUES ('17','1','20','0','$itm','$itmk','$itme','$itms','$itmsk')");
+				$db->query("INSERT INTO {$tablepre}shopitem (kind,num,price,area,item,itmk,itme,itms,itmsk) VALUES ('17','1','20','0','$itm','$itmk','$itme','1','$itmsk')");
 				$log.="<span class=\"yellow\">$itm</span>从你的手中飞出，向商店的方向飞去。<br>";
 			} 
 			if(strpos( $itmk, 'p0P' ) === 0){
@@ -1150,7 +1151,13 @@ function itemuse($itmn,&$data=NULL) {
 			//global $wep, $wepk, $wepe, $weps, $wepsk;
             //码语行人，$club==21的时候不能使用钉子
             if ($club == 21) {
-                $log .= '<span class="yellow">码语行人，$club==21的时候不能使用针线包<br>';
+				$log .= "<span class=\"yellow\">突然，你的眼前出现了扭曲的字符！</span><br>";
+				$log .= "<span class=\"glitchb\">
+				“凌乱陈言省略号，<br>
+				数值爆炸知多少？<br>
+				玩家以外用不到，<br>
+				出了问题再来找！”<br></span><br>";
+				$log .= "<span class=\"yellow\">唔，看起来这个钉子对你似乎没有什么意义……</span><br>";
                 return;
             } elseif ((strpos($wep, '棍棒') !== false) && ($wepk == 'WP')) {
                 if (strpos($wepsk, 'j') !== false) {
@@ -1183,7 +1190,13 @@ function itemuse($itmn,&$data=NULL) {
 			//global $arb, $arbk, $arbe, $arbs, $arbsk, $noarb;
             //码语行人，$club==21的时候不能使用针线包
             if ($club == 21) {
-                $log .= '<span class="yellow">码语行人，$club==21的时候不能使用针线包<br>';
+				$log .= "<span class=\"yellow\">突然，你的眼前出现了扭曲的字符！</span><br>";
+				$log .= "<span class=\"glitchb\">
+				“冷汗直流小问号，<br>
+				防御堆到多少好？<br>
+				与其数值罩白梦，<br>
+				不如让她转生了！”<br></span><br>";
+				$log .= "<span class=\"yellow\">唔，看起来这个针线包对你似乎没有什么意义……</span><br>";
                 return;
             } elseif (($arb == $noarb) || !$arb) {
 				$log .= '你没有装备防具，不能使用针线包。<br>';
@@ -1257,7 +1270,13 @@ function itemuse($itmn,&$data=NULL) {
 			//global $wep, $wepk, $wepe, $weps, $wepsk;
             //码语行人，$club==21的时候不能使用天然呆四面的奖赏
             if ($club == 21) {
-                $log .= '<span class="yellow">码语行人，$club==21的时候不能使用武器师安雅的奖赏<br>';
+				$log .= "<span class=\"yellow\">突然，你的眼前出现了扭曲的字符！</span><br>";
+				$log .= "<span class=\"glitchb\">
+				“无语无言点句号，<br>
+				第四墙外看不到！<br>
+				无法干涉即取消，<br>
+				反正一个也不少！<br>”</span><br>";
+				$log .= "<span class=\"yellow\">唔，看起来这个奇怪的物品对你似乎没有什么意义……</span><br>";
                 return;
             }
             if (!$weps || !$wepe) {
@@ -1310,7 +1329,13 @@ function itemuse($itmn,&$data=NULL) {
 			//global $wep, $wepk, $wepe, $weps, $wepsk, $wp, $wk, $wg, $wc, $wd, $wf;
             //码语行人，$club==21的时候不能使用武器师安雅的奖赏
             if ($club == 21) {
-                $log .= '<span class="yellow">码语行人，$club==21的时候不能使用武器师安雅的奖赏<br>';
+				$log .= "<span class=\"yellow\">突然，你的眼前出现了扭曲的字符！</span><br>";
+				$log .= "<span class=\"glitchb\">
+				“奇诡无比省略号，<br>
+				奇葩捏他哪里找？<br>
+				横竖都是用不上。<br>
+				看我直接注释掉！”<br></span><br>";
+				$log .= "<span class=\"yellow\">唔，看起来武器师安雅的奖赏对你似乎没有什么意义……</span><br>";
                 return;
             } elseif (!$weps || !$wepe) {
 				$log .= '请先装备武器。<br>';
@@ -1526,8 +1551,8 @@ function itemuse($itmn,&$data=NULL) {
 
 				if($club == 17){
 					$hpdown = $spdown = round($up * 1.5);
-				}elseif($club == 13){
-					$hpdown = $up+200;
+				}elseif($club == 12){
+					$hpdown = $up+250;
 					$spdown = $up;
 					//根性兄贵加成消失
 				}else{
@@ -1621,7 +1646,7 @@ function itemuse($itmn,&$data=NULL) {
 			wthchange( $itm,$itmsk);
 			addnews ($now,'thiphase',$name,$nick);
 			$hack = 1;
-			$gamevars['apis'] = $gamevars['api'] = 5;
+			$gamevars['apis'] = $gamevars['api'] = 3;
 			$log .= '因为破灭之歌的作用，全部锁定被打破了！<br>';
 			movehtm();
 			addnews($now,'hack2',$name,$nick);
@@ -1640,10 +1665,14 @@ function itemuse($itmn,&$data=NULL) {
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '嗯……？只有碎片也能用吗？<br>好像将一小部分NPC部署进了游戏内……<br>';
 			//思念体 4*3
-			addnpc ( 2, 0, 4);
-			addnpc ( 2, 1, 4);
-			addnpc ( 2, 2, 4);
-			addnpc ( 2, 3, 4);
+			addnpc ( 2, 0, 2);
+			addnpc ( 2, 1, 2);
+			addnpc ( 2, 2, 2);
+			addnpc ( 2, 3, 2);
+			addnpc ( 2, 4, 2);
+			addnpc ( 2, 5, 2);
+			addnpc ( 2, 6, 2);
+			addnpc ( 2, 7, 2);
 			addnews ($now , 'key0', $name,$nick);						
 			$itms --;
 			if($itms <= 0) destory_single_item($data,$itmn,1);
@@ -2020,9 +2049,16 @@ function itemuse($itmn,&$data=NULL) {
                 include_once GAME_ROOT . './include/game/elementmix.func.php';
 				emix_spawn_info();
             } elseif ($itme == 21) { //码语行人特殊处理
-                $log .= "码语行人特殊处理<br>";
+                //Let's have some fun !
+				$clbpara['dialogue'] = 'club21entry';
+				//$log .= "码语行人特殊处理<br>";
                 //社团变更
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','','「Ρжжηψψρип ρип, ρжжηψψρжжρип ρип」')");
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','','「ρψψρип ρип, ρип ρип ρжжηψψρжж ρδ」')");
                 changeclub(21, $data);
+				//And we inflict some pretty damage as entry fee.
+				$hp = $hp / 3;
+				$sp = 1;
             } elseif ($itme == 22) { //偶像大师特殊处理
                 $log .= "再等等吧……<br>";
             } else { //直接将社团卡的效果写入玩家club
@@ -2215,7 +2251,13 @@ function itemuse($itmn,&$data=NULL) {
 			//global $cmd;
             //码语行人，$club==21的时候不能使用宝石
             if ($club == 21) {
-                $log .= '<span class="yellow">码语行人，$club==21的时候不能使用宝石<br>';
+				$log .= "<span class=\"yellow\">突然，你的眼前出现了扭曲的字符！</span><br>";
+				$log .= "<span class=\"glitchb\">
+				“纠结纠结小问号，<br>
+				代码溢出怎么搞？<br>
+				干脆一刀禁了它。<br>
+				反正挨打不用愁！”<br></span><br>";
+				$log .= "<span class=\"yellow\">唔，看起来这个宝石对你似乎没有什么意义……</span><br>";
                 return;
             }
 			$cmd = '<input type="hidden" name="mode" value="item"><input type="hidden" name="usemode" value="qianghua"><input type="hidden" name="itmp" value="' . $itmn . '">你想强化哪一件装备？<br><input type="radio" name="command" id="menu" value="menu" checked><a onclick=sl("menu"); href="javascript:void(0);" >返回</a><br><br><br>';
@@ -2234,31 +2276,60 @@ function itemuse($itmn,&$data=NULL) {
 				$log .="宝石在你的手上发出异样的光芒，似乎有个奇怪的女声在你耳边说道<span class=\"yellow\">\"我是从天界来的凯丽\"</span>.";
 			}				
 			return;
+		} elseif ($itm == '调制解调器'){
+			if(!empty($gamevars['apis']))
+			{
+				$log .= '你将这件长得很像猫的东西放在了地上……目送它慢悠悠地爬走了。<br>';
+				if($gamevars['api'] < $gamevars['apis'])
+				{
+					$gamevars['api']++;
+					save_gameinfo();
+					$log .= '<span class="yellow">好像有什么东西恢复了！</span><br>';
+				}
+				else
+				{
+					$log .= '<span class="yellow">但是什么也没有发生！</span><br>';
+				}
+				$itms--;
+			}
+			else 
+			{
+				$log .= '这件长得很像猫的东西该怎么用呢？<br>';
+			}
 		} elseif ($itm == '水果刀') {
 			$flag = false;
 			
 			for($i = 1; $i <= 6; $i ++) {
 				//global ${'itm' . $i}, ${'itmk' . $i},${'itms' . $i},${'itme' . $i},$wk;
-				foreach(Array('香蕉','苹果','西瓜') as $fruit){
-					
-					if ( strpos ( ${'itm' . $i} , $fruit ) !== false && strpos ( ${'itm' . $i} , '皮' ) === false && strpos ( ${'itm' . $i} , '■' ) === false && (strpos ( ${'itmk' . $i} , 'H' ) === 0 || strpos ( ${'itmk' . $i} , 'P' ) === 0 )) {
-						if($wk >= 120){
-							$log .= "练过刀就是好啊。你娴熟地削着果皮。<br><span class=\"yellow\">{${'itm'.$i}}</span>变成了<span class=\"yellow\">★残骸★</span>！<br>咦为什么会出来这种东西？算了还是不要吐槽了。<br>";
-							${'itm' . $i} = '★残骸★';
-							${'itme' . $i} *= rand(2,4);
-							${'itms' . $i} *= rand(3,5);
-							$flag = true;
-							$wk++;
-						}else{
-							$log .= "想削皮吃<span class=\"yellow\">{${'itm'.$i}}</span>，没想到削完发现只剩下一堆果皮……<br>手太笨拙了啊。<br>";
-							${'itm' . $i} = str_replace($fruit, $fruit.'皮',${'itm' . $i} );
-							${'itmk' . $i} = 'TN';
-							${'itms' . $i} *= rand(2,4);
-							$flag = true;
-							$wk++;
+				if (strpos(${'itmsk' . $i}, '🍎') !== false) {
+					if($wk >= 120){
+						$log .= "练过刀就是好啊。你娴熟地削着果皮。<br><span class=\"yellow\">{${'itm'.$i}}</span>变成了<span class=\"yellow\">★残骸★</span>！<br>咦为什么会出来这种东西？算了还是不要吐槽了。<br>";
+						${'itm' . $i} = '★残骸★';
+						${'itme' . $i} *= rand(2,4);
+						${'itms' . $i} *= rand(3,5);
+						${'itmsk' . $i} = '';
+						$flag = true;
+						$wk++;
+					}else{
+						$log .= "想削皮吃<span class=\"yellow\">{${'itm'.$i}}</span>，没想到削完发现只剩下一堆果皮……<br>手太笨拙了啊。<br>";
+						$brackets_arr = Array('☆☆','★★','〖〗','【】','『』','「」','✦✦','☾☽','☼☼','■■');
+						$if_brackets = 0;
+						foreach ($brackets_arr as $brackets)
+						{
+							if ((mb_substr(${'itm' . $i}, 0, 1)).(mb_substr(${'itm' . $i}, -1)) === $brackets){
+								$if_brackets = 1;
+								${'itm' . $i} = mb_substr(${'itm' . $i}, 0, -1).'皮'.mb_substr(${'itm' . $i}, -1);
+								break;
+							}							
 						}
-						break;
+						if ($if_brackets == 0) ${'itm' . $i} = ${'itm' . $i}.'皮';
+						${'itmk' . $i} = 'TN';
+						${'itms' . $i} *= rand(2,4);
+						${'itmsk' . $i} = '';
+						$flag = true;
+						$wk++;
 					}
+					break;
 				}
 				if($flag == true) {break;};
 			}
@@ -2276,6 +2347,78 @@ function itemuse($itmn,&$data=NULL) {
 			//global $rp;
 			$rp = 0;
 			$log .= "你使用了<span class=\"yellow\">$itm</span>。你的RP归零了。<br>";
+		} elseif($itm == '😂我太酷啦！😂') {
+			$log .= "你毅然决然地高喊了一句：“我·太·酷·啦~”<br>一拳头锤碎了这个奇形怪状的按钮。<br>随后，在失去意识之前，你感觉你的身体飞上了天空。<br>";
+			# Also produce a chatlog
+			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','','「我·太·酷·啦~」')");
+
+			# Do an initial coin toss
+			$selfdestructdice1 = diceroll(1);
+			$selfdestructdice2 = diceroll(6);
+			
+			if ($selfdestructdice1 > 0){
+				# You'll self destruct into a bunch of happy items, to bring smile to others.
+				$happyitemname = $name . "的存在意义";
+				# Firstly, we look at your stats to see how strong those would be, and how many of them would it be.
+				$happyitemeffect = round($mhp / 20);
+				$happyitemnumber = round($exp / 20);
+				# Then, we look at the dice result to see what would you explode into.
+				if ($selfdestructdice2 == 1){
+					$happyitemkind = "HH";
+				}elseif ($selfdestructdice2 == 2){
+					$happyitemkind = "HS";
+				}elseif ($selfdestructdice2 == 3){
+					$happyitemkind = "PH";
+				}elseif ($selfdestructdice2 == 4){
+					$happyitemkind = "PS";
+				}elseif ($selfdestructdice2 == 5){
+					$happyitemkind = "HM";
+				}elseif ($selfdestructdice2 == 6){
+					$happyitemkind = "TO";
+				}else{
+					$happyitemkind = "T";
+				}
+
+				# Producing a valid arealist
+				$rndhappypls= rand(1,count($plsinfo)-2);
+
+				# Process the item insertation process.
+				# But, before that, a special treatment for map traps:
+				if ($selfdestructdice2 == 6){
+					# Insert traps into maptrap table.
+					for ($i = 0; $i < $happyitemnumber; $i++){
+						$rndhappypls= rand(1,count($plsinfo)-2);
+						$db->query("INSERT INTO {$tablepre}maptrap (itm, itmk, itme, itms, itmsk, pls) VALUES ('$happyitemname', '$happyitemkind', '$happyitemeffect', '1', '$pid', '$rndhappypls')");
+					}
+					$log .= "你的身体在高空中炸出了一片烟花。<br>
+					在那烟花中，那曾经属于你的存在落在了幻境的地面上，钻进了地底下。<br>
+					想必，这会为大家带来惊喜吧……<br>";
+				}else{
+					# Insert items into mapitem table.
+					for ($i = 0; $i < $happyitemnumber; $i++){
+						$rndhappypls= rand(1,count($plsinfo)-2);
+						$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$happyitemname', '$happyitemkind', '$happyitemeffect', '1', '$pid', '$rndhappypls')");
+					}
+					$log .= "你的身体在高空中炸出了一片烟花。<br>
+					在那烟花中，那曾经属于你的存在落在了幻境的地面上。<br>
+					想必，这会为大家带来笑容吧……<br>";
+				}
+				# Then we produce a chat for this feat.
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【幻境自检】','','检测到未经授权的地图物品！')");
+
+			}else{
+				# Nothing happens, you just self destruct.
+				$log .= "你的身体在高空中炸成了一片烟花，<br>
+				给虚拟幻境的天空带来了五彩的红霞。<br>
+				大家看到这祥瑞的天象，纷纷露出了笑容。<br>
+				这大概就是……「笑容世界」吧。<br>
+				大逃杀真是塔洛西啊！<br>";	
+			}
+			# Then we kill you to end everything.
+			include_once GAME_ROOT . './include/state.func.php';
+			death ( 'sdestruct', '', 0, $itm );
+			# But wait, since you exploded, you can't leave a body!
+			$db->query ( "UPDATE {$tablepre}players SET weps='0',arbs='0',arhs='0',aras='0',arfs='0',arts='0',itms0='0',itms1='0',itms2='0',itms3='0',itms4='0',itms5='0',itms6='0',money='0' WHERE pid = {$pid} " );
 		} else {
 			$log .= " <span class=\"yellow\">$itm</span> 该如何使用呢？<br>";
 		}

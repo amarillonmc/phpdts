@@ -96,10 +96,10 @@
 					foreach($list['stuff'] as $skey => $slist)
 					{
 						if($skey != 0) $smhint .= ' + ';
-						$smhint .= "<span class='grey'>[主]</span>".parse_info_desc($slist,'k')."";
+						$smhint .= "<span class='grey'>[主]</span>".parse_kinfo_desc($slist)."";
 					}
 					$smobbs = !empty($list['obbs']) ? '('.$list['obbs'].'%)' : '';
-					$smhint .= " →  <span class='grey'>{$smobbs}</span>".parse_info_desc($list['result'],'k')."";
+					$smhint .= " →  <span class='grey'>{$smobbs}</span>".parse_kinfo_desc($list['result'])."";
 					$smhint .= '</span></li>';
 				}
 			}
@@ -117,16 +117,62 @@
 					foreach($list['stuff'] as $skey => $slist)
 					{
 						if($skey != 0) $smhint .= ' + ';
-						$smhint .= "<span class='grey'>[次]</span>".parse_info_desc($slist,'sk')."";
+						$smhint .= "<span class='grey'>[次]</span>".parse_skinfo_desc($slist)."";
 					}
 					$smobbs = !empty($list['obbs']) ? '('.$list['obbs'].'%)' : '';
-					$smhint .= " →  <span class='grey'>{$smobbs}</span>".parse_info_desc($list['result'],'sk')."";
+					$smhint .= " →  <span class='grey'>{$smobbs}</span>".parse_skinfo_desc($list['result'])."";
 					$smhint .= '</span></li>';
 				}
 			}
 			$smhint .= '</ul>';
 		}
 		return $smhint;
+	}
+
+	# 根据元素笔记中的已知公式快速投料
+	function quick_add_mix_elements($data)
+	{
+		global $elements_info,$r_elements_info,$gamecfg,$gamevars,$iteminfo,$itemspkinfo;
+		include config('elementmix',$gamecfg);
+		extract($data,EXTR_REFS);
+		include_once GAME_ROOT.'./include/game/itemplace.func.php';
+		if(!empty($clbpara['elements']['info']['d']))
+		{
+			foreach($emix_fixlist as $key => $list)
+			{
+				if(!empty($clbpara['elements']['info']['d']['d'.$key]))
+				{
+					$emix_arr = json_encode($list['stuff']);
+					$quickmix .= '<input type="button" value="投入" onclick="AddMixElements(' . $emix_arr .');"> ';
+					$quickmix .= "<span class=''>".parse_itemmix_resultshow($list['result'])."</span><br>";
+				}
+			}
+			$quickmix .= '</ul>';
+		}
+		if(!empty($clbpara['elements']['info']['hd']))
+		{
+			foreach($gamevars['rand_emixfixres'] as $key => $list)
+			{
+				if(!empty($clbpara['elements']['info']['hd']['h'.$key]))
+				{
+					$flag_complete = 1;
+					foreach($list['stuff'] as $skey => $slist)
+					{
+						if(empty($clbpara['elements']['info']['hd']['h'.$key]['s'.$skey]))
+						{
+							$flag_complete = 0;
+							break;
+						}
+					}
+					if($flag_complete == 0) continue;
+					$emix_arr = json_encode($list['stuff']);
+					$quickmix .= '<input type="button" value="投入" onclick="AddMixElements(' . $emix_arr .');"> ';
+					$quickmix .= "<span class=''>".parse_itemmix_resultshow($rand_emix_fixlist[$key]['result'])."</span><br>";
+				}
+			}
+			$quickmix .= '</ul>';
+		}
+		return $quickmix;
 	}
 
 	/********拆解元素部分********/

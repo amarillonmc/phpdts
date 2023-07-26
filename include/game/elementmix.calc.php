@@ -260,35 +260,50 @@
 			$data = &$pdata;
 		}
 		extract($data,EXTR_REFS);
-		$fix_flag = 0;
+		
 		# 检查固定配方
 		foreach($emix_fixlist as $ffkey => $femix)
-		{
+		{			
 			if(count($femix['stuff']) == count($emlist))
 			{
+				$fix_flag = 1;
 				foreach($femix['stuff'] as $fkey => $farr)
 				{
-					if($farr[0] == $emlist[$fkey] && $farr[1] == $emnums[$fkey]) 
+					if($farr[0] != $emlist[$fkey] || $farr[1] != $emnums[$fkey]) 
 					{
-						$fix_flag = $femix['result'];
-						# 将成功合成的条目保存在笔记内
-						if(empty($clbpara['elements']['info']['d']['d'.$ffkey])) $clbpara['elements']['info']['d']['d'.$ffkey] = 1;
+						$fix_flag = 0;
 						break;
 					}
+				}
+				if($fix_flag == 1)
+				{
+					$fix_flag = $femix['result'];
+					# 将成功合成的条目保存在笔记内
+					if(empty($clbpara['elements']['info']['d']['d'.$ffkey])) $clbpara['elements']['info']['d']['d'.$ffkey] = 1;
+					break;
 				}
 			}
 		}
 		# 如果随机配方尚未生成，先生成随机配方
 		if(empty($gamevars['rand_emixfixres'])) $gamevars['rand_emixfixres'] = esp_spawn_rand_emixfixres();
-
-		# 检查随机配方
-		foreach($gamevars['rand_emixfixres'] as $fkkey => $femix)
+		
+		if ($fix_flag == 0)
 		{
-			if(count($femix['stuff']) == count($emlist))
+			# 检查随机配方
+			foreach($gamevars['rand_emixfixres'] as $fkkey => $femix)
 			{
-				foreach($femix['stuff'] as $fkey => $farr)
+				if(count($femix['stuff']) == count($emlist))
 				{
-					if($farr[0] == $emlist[$fkey] && $farr[1] == $emnums[$fkey]) 
+					$fix_flag = 1;
+					foreach($femix['stuff'] as $fkey => $farr)
+					{
+						if($farr[0] != $emlist[$fkey] || $farr[1] != $emnums[$fkey]) 
+						{
+							$fix_flag = 0;
+							break;
+						}
+					}
+					if($fix_flag == 1)
 					{
 						$fix_flag = $rand_emix_fixlist[$fkkey]['result'];
 						break;
@@ -473,10 +488,11 @@
 			{
 				$eitms = '∞';
 			}
-			# 大成功时防具耐久等于防具效果
+			# 大成功时防具效果和耐久等于两者中的较大值
 			if($emix_flag == 4)
 			{
-				$eitms = $eitme;
+				$eitms = max($eitme, $eitms);
+				$eitme = $eitms;
 			}
 		}
 		# 强化药物、技能书籍效耐调整：效果最大不能超过角色等级、耐久最大不超过角色等级的平方根，且向下调整
@@ -568,20 +584,25 @@
 						if(is_array($obbs)) $obbs = isset($obbs[$itmk]) ? $obbs[$itmk] : $obbs['default'];
 						if(rand(0,100) > $obbs) continue; 
 					}
+					# 配对成功！消除素材特征
 					//18th fix: kudos to 低维生物
-					$delsub = $minfo['stuff'];
-					$count_delsub = count($mnifo['stuff']);
+					//$delsub = $minfo['stuff'];
+					//$count_delsub = count($minfo['stuff']);
+					$count_delsub = 0;
+					if(!empty($minfo['stuff']))
+					{
+						$count_delsub = count($minfo['stuff']);
+					}
 					
 					for ($i = 0; $i < count($subtags); $i++){
 						if (in_array($subtags[$i], $minfo['stuff'])){
 							unset($subtags[$i]);
 							$count_delsub -= 1;
-							if ($count_delsub == 0) break;
+							if ($count_delsub <= 0) break;
 						}
 					}
-					if(array_search($delsub, $subtags)!== false){ //?
-					# 配对成功！消除素材特征
-					foreach($minfo['stuff'] as $delsub) unset($subtags[array_search($delsub,$subtags)]);}
+					//if(array_search($delsub, $subtags)!== false){ //?
+					//foreach($minfo['stuff'] as $delsub) unset($subtags[array_search($delsub,$subtags)]);}
 					//Alternative Fix: This will consume all properties in $subtags that matches $delsub.
 					//But stacking is better anyways. - comment out the above FOR loop then uncomment this to use
 					//$subtags = array_diff($subtags, $delsub);
@@ -720,7 +741,7 @@
 				# 前缀以“tags_”表示的，代表要选用带有对应标签的属性
 				elseif(strpos($snum,'tags_')===0)
 				{
-					$snum = $itmk_to_itmsk_tags[str_replace('tags_','',$snum)];
+					$snum = $itmk_to_itmsk_tags[(str_replace('tags_','',$snum)).'_0'];
 					shuffle($snum);
 					$skey = $snum[0];
 				}

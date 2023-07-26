@@ -59,6 +59,8 @@
 			$state = 40;
 		} elseif ($death == 's_escape'){
 			$state = 42;
+		} elseif ($death == 'sdestruct'){
+			$state = 50;
 		} else {
 			$state = 10;
 		}
@@ -833,11 +835,13 @@
 	function calculate_rest_upsp($rtime,&$pa)
 	{
 		global $sleep_time,$db,$tablepre,$log;
+
 		# 治疗姿态下恢复速率变为3倍
 		if($pa['pose'] == 5) $rtime *= 3;
 		$upsp = round ($pa['msp'] * $rtime / $sleep_time / 100 );
-		# 灵子姿态下，恢复速率受种火数量加成
-		if($pa['pose'] == 8 && $pa['sp'] < $pa['msp'])
+
+		# 灵子视界下，恢复速率受种火数量加成
+		if($pa['horizon'] && $pa['sp'] < $pa['msp'])
 		{
 			$result = $db->query("SELECT pid FROM {$tablepre}players WHERE type=92 AND pls={$pa['pls']} AND hp>0 ");
 			$nums = $db->num_rows($result);
@@ -855,11 +859,9 @@
 		# 治疗姿态下恢复速率变为3倍
 		if($pa['pose'] == 5) $rtime *= 3;
 		$uphp = round ($pa['mhp'] * $rtime / $heal_time / 100 );
-		/*if (strpos ($pa['inf'], 'b' ) !== false) {
-			$uphp = round ( $uphp / 2 );
-		}*/
-		# 灵子姿态下，恢复速率受种火数量加成
-		if($pa['pose'] == 8 && $pa['hp'] < $pa['mhp'])
+
+		# 灵子视界下，恢复速率受种火数量加成
+		if($pa['horizon'] && $pa['hp'] < $pa['mhp'])
 		{
 			$result = $db->query("SELECT pid FROM {$tablepre}players WHERE type=92 AND pls={$pa['pls']} AND hp>0 ");
 			$nums = $db->num_rows($result);
