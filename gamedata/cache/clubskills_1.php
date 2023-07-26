@@ -2139,11 +2139,11 @@ $cskills = Array
 		'pvars' => Array('skill-active','skillpara|c20_sparkle-active_t'),
 		'lockdesc' => Array(
 			'skillpara|c20_sparkle-active_t' => '已失去火花。',
-			'lvl' => '13级时解锁',
+			'lvl' => '15级时解锁',
 		),
 		'unlock' => Array(
 			'skillpara|c20_sparkle-active_t' => '[:skillpara|c20_sparkle-active_t:] < 1',
-			'lvl' => '[:lvl:] >= 13',
+			'lvl' => '[:lvl:] >= 15',
 		),
 	),
 	'c20_lotus' => Array
@@ -2172,11 +2172,11 @@ $cskills = Array
 		'pvars' => Array('skillpara|c20_lotus-active_t'),
 		'lockdesc' => Array(
 			'skillpara|c20_lotus-active_t' => '黑莲花已经用光了。',
-			'lvl' => '17级时解锁',
+			'lvl' => '21级时解锁',
 		),
 		'unlock' => Array(
 			'skillpara|c20_lotus-active_t' => '[:skillpara|c20_lotus-active_t:] < 3',
-			'lvl' => '[:lvl:] >= 17',
+			'lvl' => '[:lvl:] >= 21',
 		),
 	),
 	'inf_zombie' => Array

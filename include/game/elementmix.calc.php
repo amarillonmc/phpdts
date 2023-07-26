@@ -145,7 +145,7 @@
 			# 次优先：检查拆解关键词匹配道具名时的事件（改为手动添加判断条件）
 			if(strpos($t['itm'],'方块')!==false || strpos($t['itm'],'宝石方块')!==false)
 			{
-				$ev = strpos($t['itm'],'方块')!==false ? 400 : 1000;
+				$ev = strpos($t['itm'],'宝石方块')!==false ? 1000 : 400;
 				$ekey = rand(0,5);
 				$ev_arr[$ekey] += $ev;
 				continue; 

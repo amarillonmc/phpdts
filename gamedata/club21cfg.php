@@ -53,7 +53,8 @@ $itmsk_extract_rate = array(
     '*' => 200,
     '+' => 200,
     '^' => 1200,
-    '🧰' => 200
+    '🧰' => 200,
+	'🍎' => 1000
 );
 //itm
 $itm_extract_rate = array(
