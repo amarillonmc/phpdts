@@ -554,7 +554,7 @@ function gameover($time = 0, $mode = '', $winname = '') {
 	
 	rs_sttime();//重置游戏开始时间和当前游戏状态
 	$gamestate = 0;
-	save_gameinfo();
+	save_gameinfo();//先保存一次免得后面的处理过程太长，尽可能避免脏数据
 	//echo '**游戏结束**';
 	//$gamestate = 0;
 	//addnews($time, "end$winmode" , $winner);
@@ -576,6 +576,7 @@ function gameover($time = 0, $mode = '', $winname = '') {
 	//rs_sttime();
 	//save_gameinfo();
 	set_credits();
+	save_gameinfo();//set_credits()里也有修改$gamevars的需求，再存一次，反正就一条记录读写不可能高并发
 	return;
 }
 
@@ -965,10 +966,11 @@ function get_credit_up($data,$winner = '',$winmode = 0){
 	return $up;
 }
 
+//判定赌局结果的烂代码
 function get_gambling_result($clist, $winner='',$winmode=''){
-	global $db,$tablepre,$gtablepre,$hdamage,$validnum,$now,$areanum,$areaadd;
+	global $db,$tablepre,$gtablepre,$hdamage,$validnum,$now,$areanum,$areaadd,$gamevars;
 	$gblog = '';
-	$gbfile = GAME_ROOT.TPLDIR.'/lastgb.htm';
+	//$gbfile = GAME_ROOT.TPLDIR.'/lastgb.htm';
 	if(!in_array($winmode,Array(2,3,5,7))){//无人获胜，全部赌注被冴冴吃掉
 		$gblog .= '无人获胜，全部切糕被冴冴吃掉！';
 		$updatelist = false;
@@ -998,7 +1000,7 @@ function get_gambling_result($clist, $winner='',$winmode=''){
 				if($apm >= 1){$apmnum ++;}
 			}
 			
-			$avrcredit = $creditsum / $validnum;//平均战斗力
+			$avrcredit = $creditsum / ($validnum > 0 ? $validnum : 1);//平均战斗力
 			if($avrcredit > 10000){$creditodds = 1.25;}//平均战斗力超过10000则系数为1.25，否则系数减少，平均战斗力为4000时为1.1；
 			else{$creditodds = round((1 + $avrcredit / 40000)*1000)/1000;}
 			$apmodds = round(pow(1.02,$apmnum)*1000)/1000;//每有一名玩家达到60APM则乘以1.02
@@ -1074,11 +1076,14 @@ function get_gambling_result($clist, $winner='',$winmode=''){
 			}
 		}
 	}
-	ob_start();
-	include template('gbresult');
-	$gbresult = ob_get_contents();
-	ob_end_clean();
-	writeover($gbfile,$gbresult);
+	//上一轮赌局结果存入gamevars
+	$gamevars['gblog'] = $gblog;
+	$gamevars['bwlist'] = $bwlist;
+//	ob_start();
+//	include template('gbresult');
+//	$gbresult = ob_get_contents();
+//	ob_end_clean();
+//	writeover($gbfile,$gbresult);
 	return $updatelist;
 }
 ?>
