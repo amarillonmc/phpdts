@@ -327,10 +327,11 @@ if($mode == 'enter') {
 	$select_icon = $icon;
 	if (isset($_GET['is_new'])) {
 		// 获取可选称号
-		$nickList = array_map(function($val) use ($titles_list) {
+		$nickList = array_map(function($val) use ($titles_list, $title_desc) {
 			return array(
 				'id' => $val,
-				'title' => $titles_list[$val]
+				'title' => $titles_list[$val],
+				'desc' => $title_desc[$val]['title'],
 			);
 		}, $nicksrev['nicks']);
 		// 获取可选普通内定称号
