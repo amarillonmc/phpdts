@@ -443,7 +443,7 @@ $cskills = Array
 			'wepk+wep_kind' => '武器不适用，持<span class="yellow">投系武器</span>时生效',
 		),
 		'unlock' => Array(
-			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'C')",
+			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || strpos([:wepk:],'B')!==false || (!empty([:wep_kind:]) && ([:wep_kind:] == 'C' || [:wep_kind:] == 'B'))",
 		),
 	),
 	'c3_enchant' => Array
@@ -493,7 +493,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 5',
-			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'C')",
+			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || strpos([:wepk:],'B')!==false || (!empty([:wep_kind:]) && ([:wep_kind:] == 'C' || [:wep_kind:] == 'B'))",
 		),
 	),
 	'c3_potential' => Array
@@ -514,7 +514,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 7',
-			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'C')",
+			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || strpos([:wepk:],'B')!==false || (!empty([:wep_kind:]) && ([:wep_kind:] == 'C' || [:wep_kind:] == 'B'))",
 		),
 	),
 	'c3_hawkeye' => Array
@@ -534,7 +534,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 9',
-			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'C')",
+			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || strpos([:wepk:],'B')!==false || (!empty([:wep_kind:]) && ([:wep_kind:] == 'C' || [:wep_kind:] == 'B'))",
 		),
 	),
 	'c3_offset' => Array
@@ -567,7 +567,7 @@ $cskills = Array
 		),
 		'unlock' => Array(
 			'lvl' => '[:lvl:] >= 13',
-			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'C')",
+			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || strpos([:wepk:],'B')!==false || (!empty([:wep_kind:]) && ([:wep_kind:] == 'C' || [:wep_kind:] == 'B'))",
 		),
 	),
 	'c3_numerous' => Array
@@ -587,7 +587,7 @@ $cskills = Array
 		//……
 		'unlock' => Array(
 			'skillpara|c3_enchant-ur+skillpara|c3_enchant-ir+skillpara|c3_enchant-pr+skillpara|c3_enchant-er+skillpara|c3_enchant-wr+skillpara|c3_enchant-dr' => '[:skillpara|c3_enchant-ur:] >= 120 || [:skillpara|c3_enchant-ir:] >= 120 || [:skillpara|c3_enchant-er:] >= 120 || [:skillpara|c3_enchant-wr:] >= 120 || [:skillpara|c3_enchant-pr:] >= 120 || [:skillpara|c3_enchant-dr:] >= 120',
-			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || (!empty([:wep_kind:]) && [:wep_kind:] == 'C')",
+			'wepk+wep_kind' => "strpos([:wepk:],'C')!==false || strpos([:wepk:],'B')!==false || (!empty([:wep_kind:]) && ([:wep_kind:] == 'C' || [:wep_kind:] == 'B'))",
 		),
 	),
 	'c4_stable' => Array

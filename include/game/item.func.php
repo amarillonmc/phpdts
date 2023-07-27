@@ -434,6 +434,20 @@ function itemuse($itmn,&$data=NULL) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		}
+	} elseif(strpos ( $itmk, 'GA' ) === 0) {//使用箭矢
+		if (strpos ( $wepk, 'WB' ) !== 0) {
+			$log .= "<span class=\"red b\">你没有装备弓，不能给武器上箭。</span><br>";
+			$mode = 'command';
+			return;
+		}	elseif(0 === $itmn && !empty($weps)) {//捡到的箭矢不能马上拉弓，避免换箭覆盖itm0的问题
+			$log .= "你一只手捏着弓箭，一只手抓着刚捡到的箭矢，没法马上弯弓搭箭。<span class=\"red b\">还是先把箭矢收进包裹里吧。</span><br>";
+			$mode = 'command';
+			return;
+		} else {
+			//$theitem = Array('itm' => &$itm, 'itmk' => &$itmk, 'itme' => &$itme, 'itms' => &$itms, 'itmsk' => &$itmsk);
+			include_once GAME_ROOT . './include/game/item2.func.php';
+			itemuse_ugb($pdata, $itmn);
+		}
 	} elseif (strpos ( $itmk, 'R' ) === 0) {
 		//$log.= $itm .'已经废弃，请联系管理员。';
 		if ($itme > 0) {

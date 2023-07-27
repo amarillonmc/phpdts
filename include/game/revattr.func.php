@@ -73,17 +73,30 @@ namespace revattr
 			$pa['wep_kind'] = 'P';
 			$pa['is_wpg'] = 1;
 		}
+		//弓没子弹当做斩系
+		if($pa['wep_kind'] == 'B' && $pa['weps'] == $nosta)
+		{
+			$pa['wep_kind'] = 'K';
+			$pa['is_wpg'] = 1;//借用同一个变量吧，总不可能又是枪又是弓……能、能吗？
+		}
 		return $pa['wep_kind']; //保险起见……
 	}
 
 	# 获取武器射程
 	function get_wep_range(&$pa)
 	{
-		global $rangeinfo;
+		global $rangeinfo,$skillinfo;
 
 		if(empty($pa['wep_kind'])) get_wep_kind($pa);
 
 		$range = isset($rangeinfo[$pa['wep_kind']]) ? $rangeinfo[$pa['wep_kind']] : NULL;
+		
+		//弓系射程随熟练增加，每200点加1，最多加3
+		if($pa['wep_kind']=='B') {
+			$r_add = floor($pa[$skillinfo[$pa['wep_kind']]] / 200);
+			if($r_add > 3) $r = 3;
+			$range += $r_add;
+		}
 
 		# 获取社团技能对武器射程的修正
 		$range = get_clbskill_wep_range($pa,$range);
@@ -696,6 +709,7 @@ namespace revattr
 			$pa['wepe_t'] = $pa['wepe'];
 		}
 		//枪托打人 武器伤害=面板数值/5
+		//弓当斩系武器也用同一个数值好了，懒得多想
 		elseif(isset($pa['is_wpg'])) 
 		{
 			$pa['wepe_t'] = round ($pa['wepe']/ 5 );

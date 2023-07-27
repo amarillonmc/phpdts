@@ -880,4 +880,55 @@ function item_slip($snm,&$data)
 		'U' => '“纸条啥的……”<br>“希望这张纸条不会成为你的遗书。”<br>“总之祝你好运。”<br>',
 	);
 }
+
+//使用箭矢的功能拆在这里
+function itemuse_ugb(&$pdata, $itmn){
+	global $log, $mode, $nosta;
+	
+	$wep=&$pdata['wep']; $wepk=&$pdata['wepk']; 
+	$wepe=&$pdata['wepe']; $weps=&$pdata['weps']; $wepsk=&$pdata['wepsk']; 
+	
+	$itm=&$pdata['itm'.$itmn]; $itmk=&$pdata['itmk'.$itmn];
+	$itme=&$pdata['itme'.$itmn]; $itms=&$pdata['itms'.$itmn]; $itmsk=&$pdata['itmsk'.$itmn];
+	
+	//清除箭矢名
+	$swapn = wep_b_clean_arrow_name($wepk);
+	//清除武器上的箭属性
+	$swapsk = wep_b_clean_arrow_sk($wepsk);
+	//判定卸下来的箭矢数目，然后把武器改成无穷耐
+	$swapnum = 0;
+	if ($weps !== $nosta) {
+		$swapnum = $weps;
+		$weps = $nosta;
+	}
+	
+	$wepsk_arr = get_itmsk_array($wepsk);
+	$itmsk_arr = get_itmsk_array($itmsk);
+	//如果是箭矢或者弓有连射属性，那么箭矢上限就是连射次数上限
+	//判定连射次数按理也应该拆一个函数出来
+	$arrowmax = (in_array('r',$itmsk_arr) || in_array('r',$wepsk_arr)) ? 2 + min ( floor(${$skillinfo['B']} / 200), 4 ) : 1;
+	$arrownum = min($arrowmax, $itms);
+	//再修改一次武器的耐久值。其实如果弄一个卸箭的功能，卸箭和上箭应该要拆成两个函数
+	$weps = $arrownum;
+	$itms -= $arrownum;
+	
+	//记录箭矢名
+	$wepk .= '|'.$itm;
+	//为武器增加箭属性
+	if(!empty($itmsk_arr)){
+		$wepsk .= '|'.implode('', $itmsk_arr).'|';
+	}
+	
+	if(!$swapnum)	$log .= "为<span class=\"red b\">$wep</span>选用了<span class=\"red b\">$itm</span>，<span class=\"red b\">$wep</span>发射次数增加了<span class=\"yellow b\">$arrownum</span>。<br>";
+	else $log .= "为<span class=\"red b\">$wep</span>换上了<span class=\"red b\">$itm</span>，<span class=\"red b\">$wep</span>发射次数增加了<span class=\"yellow b\">$arrownum</span>。<br>";
+	if ($itms <= 0) {
+		$log .= "<span class=\"red b\">$itm</span>用光了。<br>";
+		$itm = $itmk = $itmsk = '';
+		$itme = $itms = 0;
+	}
+	if($swapnum){
+		$pdata['itm0'] = $swapn ? $swapn : '卸下的箭';$pdata['itmk0'] = 'GA';$pdata['itme0'] = 1;$pdata['itms0'] = $swapnum; $pdata['itmsk0'] = $swapsk;
+		itemget();
+	}
+}
 ?>
