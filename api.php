@@ -412,6 +412,18 @@
     }
     return $check;
   }
+  /** 合并物品列表 */
+  function mergeList() {
+    $sameitem = array();
+    for ($i=1; $i<=6; $i++) {
+      global $itm0, $itme0;
+      global ${'itm'.$i},${'itmk'.$i},${'itme'.$i},${'itms'.$i};
+      if (${'itms'.$i} && ($itm0 == ${'itm'.$i}) && ($itme0 == ${'itme'.$i}) && (preg_match('/^(H|P)/',${'itmk'.$i}))) {
+        $sameitem[] = 'item'.$i;
+      }
+    }
+    return $sameitem;
+  }
   echo (json_encode(array(
     "page" => "game",
     /** 玩家状态 */
@@ -464,7 +476,7 @@
         /** 当前称号 */
         "nowGiftId" => $club,
         /** 可选称号 */
-        "giftList" => $clubavl,
+        "giftList" => !$club ? array_merge(valid_getclublist_t2($udata), valid_getclublist_t1($udata)) : null,
         /** 称号类型 */
         "type" => $clubinfo,
       ),
@@ -493,6 +505,13 @@
         "type" => $poseinfo,
         /** 姿态tips */
         "tips" => $posetips,
+      ),
+      /** 战术界面 */
+      "horizon" => array(
+        /** 当前战术界面id */
+        "nowHorizonId" => $horizon,
+        /** 可选战术界面 */
+        "type" => $horizoninfo,
       ),
       /** 攻击力 */
       "attack" => $atkinfo,
@@ -753,6 +772,7 @@
         "quality" => $itme0,
         "durability" => $itms0,
         "canMerge" => checkMerge(),
+        "mergeList" => mergeList(),
       ) : null,
       /** 发现敌人 */
       "findEnemy" => $tdata['nameinfo'] ? array(
@@ -795,7 +815,7 @@
         /** 敌方道具 */
         "items" => $battle_title === "发现尸体" ? getCorpseItems($tdata) : null,
         /** 敌方技能 */
-        "skill" => $tdata['clbpara']['skill'] ? getEnemySkillPage($tdata) : null,
+        "skill" => isset($tdata['clbpara']['skill']) ? getEnemySkillPage($tdata) : null,
         /** 战斗技能 */
         "battleSkills" => $battle_skills ? getBattleSkills($battle_skills) : null,
       ) : null,
