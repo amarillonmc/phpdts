@@ -408,7 +408,6 @@ function itemfind(&$data=NULL) {
 	}
 }
 
-
 function itemget(&$data=NULL) 
 {
 	global $log,$nosta,$mode,$cmd;
@@ -436,7 +435,7 @@ function itemget(&$data=NULL)
 			return;
 		}
 	}
-	if(preg_match('/^(WC|WD|WF|Y|B|C|TN|GB|M|V)/',$itmk0) && $itms0 !== $nosta){
+	if(preg_match('/^(WC|WD|WF|Y|B|C|TN|GA|GB|M|V)/',$itmk0) && $itms0 !== $nosta){
 		//global $wep,$wepk,$wepe,$weps,$wepsk;
 		if($wep == $itm0 && $wepk == $itmk0 && $wepe == $itme0 && $wepsk == $itmsk0){
 			$weps += $itms0;
@@ -737,7 +736,7 @@ function itemmerge($itn1,$itn2){
 	}
 
 	if(($it1 == $it2)&&($ite1 == $ite2)) {
-		if(($itk1==$itk2)&&($itsk1==$itsk2)&&preg_match('/^(WC|WD|WF|Y|B|C|TN|GB|V|M)/',$itk1)) {
+		if(($itk1==$itk2)&&($itsk1==$itsk2)&&preg_match('/^(WC|WD|WF|Y|B|C|TN|GA|GB|V|M)/',$itk1)) {
 			$its2 += $its1;
 			$it1 = $itk1 = $itsk1 = '';
 			$ite1 = $its1 = 0;
@@ -1749,6 +1748,24 @@ function weapon_loss(&$pa,$hurtvalue,$force_imp=0,$check_sk=0)
 						$pa['weps'] = $nosta;
 					}
 				}
+				elseif($pa['wep_kind'] == 'B')
+				{
+					if(!$pa['type'])
+					{
+						if($hurtvalue > 0) $log .= "<span class='grey'>{$pa['nm']}的{$pa['wep']}用掉了{$hurtvalue}支箭。</span><br>";
+						else $log .= "<span class='grey'>{$pa['wep']}的箭矢数凭空多出了".abs($hurtvalue)."……啊？？</span><br>";
+					}
+					if(empty($pa['weps']))
+					{
+						$log .= "{$pa['nm']}的<span class=\"red\">{$pa['wep']}</span>的箭矢用光了！<br>";
+						$pa['weps'] = $nosta;
+						//弓系武器用光箭后刷新一次属性，剔除箭矢带来的属性
+						//箭矢用光时抹掉箭矢名
+						wep_b_clean_arrow_name($pa['wepk']);
+						//箭矢用光时抹掉箭矢带来的属性
+						wep_b_clean_arrow_sk($pa['wepsk']);
+					}
+				}
 			}
 		}
 		if($wep_loss_flag)
@@ -1763,6 +1780,7 @@ function weapon_loss(&$pa,$hurtvalue,$force_imp=0,$check_sk=0)
 	}
 	return;
 }
+
 
 //扣除指定装备的耐久。check_sk：是否在武器毁坏时重新检查属性数组$pa['ex_keys']
 function armor_hurt(&$pa,$which,$hurtvalue,$check_sk=0)
@@ -1818,6 +1836,31 @@ function unset_ex_from_array(&$pa,$exarr)
 		}
 	}
 	return;
+}
+
+//把箭矢名字抹掉
+	//认为武器类别|后的都是箭矢名，返回抹掉的名字
+function wep_b_clean_arrow_name(&$itmk){
+	if(strpos($itmk,'|')===false) return '';
+	$ofs = strpos($itmk,'|');
+	$ret = substr($itmk, $ofs+1);
+	$itmk = substr($itmk, 0, $ofs);
+	return $ret;
+}
+
+//把引用的参数中的箭矢带来的属性抹掉，返回抹掉的属性
+//认为|之间的属性都是箭矢属性
+function wep_b_clean_arrow_sk(&$itmsk){
+	if(strpos($itmsk,'|')===false) return '';
+	//如果奇数个，则结尾补一个|，嘿嘿
+	if(substr_count($itmsk, '|') % 2) $itmsk .= '|';
+	preg_match('/\|.*\|/s',$itmsk,$matches);
+	$ret = '';
+	if(!empty($matches)) {
+		$itmsk = preg_replace('/\|.*?\|/s','',$itmsk);
+		$ret = substr($matches[0], 1, -1);
+	}
+	return $ret;
 }
 
 

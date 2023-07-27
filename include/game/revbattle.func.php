@@ -266,13 +266,34 @@ namespace revbattle
 						}
 					}
 				}
+				//先制状态下可以自动给弓上箭
+				if (strpos ( $pdata['wepk'], 'WB' ) === 0 && $pdata['weps'] === $nosta) {			
+					//$tmp_log = $log;
+					$pos_a = 0;
+					//遍历所有包裹，寻找最靠前的箭矢装填
+					for($i=1; $i<=6; $i++){
+						if($pdata['itmk'.$i] == 'GA') {
+							$pos_a = $i;
+							break;
+						}
+					}
+					//直接调用上箭的函数
+					if($pos_a) {
+						$log .= '你及时弯弓搭箭，';
+						include_once GAME_ROOT . './include/game/item2.func.php';
+						itemuse_ugb($pdata, $pos_a);
+					}
+					//$tmp_log_2 = substr($log, strlen($tmp_log));
+					//$log = $tmp_log;//暂存一下$log，调整显示顺序，不过可能不利于以后扩展，再说吧……
+				}
+				//if(!empty($tmp_log_2)) $log .= $tmp_log_2;
 			}
 		}
 
 		//初始化玩家攻击方式信息
 		$w1 = substr($pdata['wepk'],1,1);
 		$w2 = substr($pdata['wepk'],2,1);
-		if(empty($w2) || is_numeric($w2)) $w2='';
+		if(empty($w2) || is_numeric($w2) || '|' == $w2) $w2='';
 		if (($w1 == 'G'||$w1=='J')&&($pdata['weps']==$nosta)) $w1 = 'P';
 
 		include template('battlecmd_rev');
