@@ -424,6 +424,29 @@
     }
     return $sameitem;
   }
+  /** 获取攻击方式 */
+  function getAttackType() {
+    global $pdata, $attinfo, $nosta;
+    $w1 = substr($pdata['wepk'], 1, 1);
+    $w2 = substr($pdata['wepk'], 2, 1);
+    if (empty($w2) || is_numeric($w2)) {
+      $w2 = '';
+    }
+    if (($w1 == 'G' || $w1 == 'J') && ($pdata['weps'] == $nosta)) {
+      $w1 = 'P';
+    }
+    $type['type1'] = array(
+      'id' => $w1,
+      'name' => $attinfo[$w1],
+    );
+    if ($w2) {
+      $type['type2'] = array(
+        'id' => $w2,
+        'name' => $attinfo[$w2],
+      );
+    }
+    return $type;
+  }
   echo (json_encode(array(
     "page" => "game",
     /** 玩家状态 */
@@ -537,7 +560,7 @@
       /** 击杀数 */
       "killNum" => $killnum,
       /** 负面状态 */
-      "debuff" => $inf ? $inf : ['无'],
+      "debuff" => $inf,
       "debuffList" => $infinfo,
       /** 装备 */
       "equipment" => array(
@@ -678,18 +701,7 @@
         "isHack" => $hack,
       ),
       /** 攻击方式 */
-      "attackType" => array(
-        /** 方式1 */
-        "type1" => array(
-          "id" => substr($wepk,1,1),
-          "name" => $attinfo[substr($wepk,1,1)],
-        ),
-        /** 方式2 */
-        "type2" => array(
-          "id" => substr($wepk,2,1) ? substr($wepk,2,1) : null,
-          "name" => substr($wepk,2,1) ? $attinfo[substr($wepk,2,1)] : null,
-        ),
-      ),
+      "attackType" => getAttackType(),
       /** 视野 */
       "semo" => $clbpara['smeo'],
       /** 合成 */
