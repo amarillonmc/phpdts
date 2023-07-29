@@ -411,7 +411,7 @@ function move_search_events(&$data,$act)
 		elseif ($sp_down <= 0) $sp_down = 1;
 		$sp = $sp - $sp_down;
 		$msp = $msp + round($gain_rate * $sp_down);
-		$log .= "因为体内<span class='glitchb'>数据风暴</span>肆虐减少了<span class=\"red\">$sp_down</span>点体力！<br>";
+		$log .= "因为体内<span class=\"glitchb\">数据风暴</span>肆虐减少了<span class=\"red\">$sp_down</span>点体力！<br>";
 		if($act == 'move')
 		{
 			$damage = round($mhp * ($burn_rate * $ms - $consume_rate * $clbpara['consumpt'])/100);
@@ -419,7 +419,7 @@ function move_search_events(&$data,$act)
 			elseif ($damage <= 0) $damage = 1;
 			$hp = $hp - $damage;
 			$mhp = $mhp + round($gain_rate * $damage);
-			$log .= "因为体内<span class='glitchb'>数据风暴</span>肆虐减少了<span class=\"red\">$damage</span>点生命！<br>";
+			$log .= "因为体内<span class=\"glitchb\">数据风暴</span>肆虐减少了<span class=\"red\">$damage</span>点生命！<br>";
 		}
 		set_skillpara($sk,'ms',$ms,$data['clbpara']);
 		return;

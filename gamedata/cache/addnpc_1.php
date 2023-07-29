@@ -1915,7 +1915,7 @@ $anpcinfo = array
 			'itme4' => 500,
 			'itms4' => 500,
 			'itmsk4' => 'HZ',
-			'itm6' => '☾愈合数据☽',
+			'itm6' => '❀愈合数据❀',
 			'itmk6' => 'HB',
 			'itme6' => 300,
 			'itms6' => '∞',
@@ -2598,8 +2598,8 @@ $anpcinfo = array
 		'weps' => 50,
 		'itm5' => '◆熟练数据',
 		'itmk5' => '🎆V',
-		'itme5' => 1,
-		'itms5' => 5,
+		'itme5' => 5,
+		'itms5' => 1,
 		),
 	2 => array
 		(
@@ -2611,8 +2611,8 @@ $anpcinfo = array
 		'weps' => 50,
 		'itm5' => '◆生命数据',
 		'itmk5' => '🎆O',
-		'itme5' => 1,
-		'itms5' => 10,
+		'itme5' => 10,
+		'itms5' => 1,
 		),
 	3 => array
 		(
@@ -2624,8 +2624,8 @@ $anpcinfo = array
 		'weps' => 50,
 		'itm5' => '◆意念数据',
 		'itmk5' => '🎆D',
-		'itme5' => 1,
-		'itms5' => 10,
+		'itme5' => 10,
+		'itms5' => 1,
 		),
 	4 => array
 		(

@@ -1082,6 +1082,15 @@ function itemuse($itmn,&$data=NULL) {
 			$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚，你感觉焕然一新！<br>";
 			$hp = $mhp;
 			$sp = $msp;
+
+			if ($itms != $nosta) {
+				$itms --;
+				if ($itms <= 0) {
+					$log .= "<span class=\"red\">$itm</span>的余烬崩解消失了……<br>";
+					$itm = $itmk = $itmsk = '';
+					$itme = $itms = 0;
+				}
+			}
 		}
 
 		# Logic for each of the 4 usages.
@@ -1117,7 +1126,6 @@ function itemuse($itmn,&$data=NULL) {
 				<br>
 				<span class=\"blueseed\">同时，你还隐约听见了一个声音：<br>
 				「你可能需要找个纯度更高的代码片段哟~」<br></span>";
-				$falsify = true;
 			}else{
 
 			$gainless = ($mhp + $gainmax) - $hp;
@@ -1135,6 +1143,15 @@ function itemuse($itmn,&$data=NULL) {
 				「看起来这个纯度的代码片段已经喂不饱你了。<br>
 				赶快找下一个纯度的代码片段吧！」<br></span>";
 			}
+
+			if ($itms != $nosta) {
+				$itms --;
+				if ($itms <= 0) {
+					$log .= "<span class=\"red\">$itm</span>的余烬崩解消失了……<br>";
+					$itm = $itmk = $itmsk = '';
+					$itme = $itms = 0;
+				}
+			}
 		}
 			}else{
 				$addsp = $msp - $sp < $itme ? $msp - $sp : $itme;
@@ -1146,6 +1163,15 @@ function itemuse($itmn,&$data=NULL) {
 
 				$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
 			治愈的代码片段为你恢复了<span class=\"yellow\">$addhp</span>点生命和<span class=\"yellow\">$addsp</span>点体力。<br>";
+
+			if ($itms != $nosta) {
+				$itms --;
+				if ($itms <= 0) {
+					$log .= "<span class=\"red\">$itm</span>的余烬崩解消失了……<br>";
+					$itm = $itmk = $itmsk = '';
+					$itme = $itms = 0;
+				}
+			}
 			}
 		}
 
@@ -1185,7 +1211,6 @@ function itemuse($itmn,&$data=NULL) {
 			<br>
 			<span class=\"blueseed\">同时，你还隐约听见了一个声音：<br>
 			「你可能需要找个纯度更高的代码片段哟~」<br></span>";
-			$falsify = true;
 			}else{
 
 			$gainless = $clbpara['fireseedmaxProfGain'] - $clbpara['fireseedmaxProfAdd'];
@@ -1203,6 +1228,15 @@ function itemuse($itmn,&$data=NULL) {
 				赶快找下一个纯度的代码片段吧！」<br></span>";
 			}
 
+			if ($itms != $nosta) {
+				$itms --;
+				if ($itms <= 0) {
+					$log .= "<span class=\"red\">$itm</span>的余烬崩解消失了……<br>";
+					$itm = $itmk = $itmsk = '';
+					$itme = $itms = 0;
+				}
+			}
+
 			}
 			}else{
 				$addw = $itme;
@@ -1215,6 +1249,15 @@ function itemuse($itmn,&$data=NULL) {
 
 				$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
 				载有熟练度的代码片段让你获得了<span class=\"yellow\">$addw</span>点全系熟练度！<br>";
+
+				if ($itms != $nosta) {
+					$itms --;
+					if ($itms <= 0) {
+						$log .= "<span class=\"red\">$itm</span>的余烬崩解消失了……<br>";
+						$itm = $itmk = $itmsk = '';
+						$itme = $itms = 0;
+					}
+				}
 			}
 		}
 
@@ -1248,7 +1291,6 @@ function itemuse($itmn,&$data=NULL) {
 			<br>
 			<span class=\"blueseed\">同时，你还隐约听见了一个声音：<br>
 			「你可能需要找个纯度更高的代码片段哟~」<br></span>";
-			$falsify = true;
 			}else{
 
 			$gainless = $clbpara['fireseedmaxHPGain'] - $clbpara['fireseedmaxHPAdd'];
@@ -1264,6 +1306,16 @@ function itemuse($itmn,&$data=NULL) {
 				$log.="<br><span class=\"redseed\">这时，有另一把声音插了进来：<br>
 				「看起来这个纯度的代码片段已经喂不饱你了。<br>
 				赶快找下一个纯度的代码片段吧！」<br></span>";
+
+			}
+
+			if ($itms != $nosta) {
+				$itms --;
+				if ($itms <= 0) {
+					$log .= "<span class=\"red\">$itm</span>的余烬崩解消失了……<br>";
+					$itm = $itmk = $itmsk = '';
+					$itme = $itms = 0;
+				}
 			}
 
 			}
@@ -1273,6 +1325,15 @@ function itemuse($itmn,&$data=NULL) {
 
 				$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
 				载有生命的代码片段让你获得了<span class=\"yellow\">$addmhp</span>点生命最大值！<br>";
+
+				if ($itms != $nosta) {
+					$itms --;
+					if ($itms <= 0) {
+						$log .= "<span class=\"red\">$itm</span>的余烬崩解消失了……<br>";
+						$itm = $itmk = $itmsk = '';
+						$itme = $itms = 0;
+					}
+				}
 			}
 		}
 
@@ -1306,7 +1367,6 @@ function itemuse($itmn,&$data=NULL) {
 			<br>
 			<span class=\"blueseed\">同时，你还隐约听见了一个声音：<br>
 			「你可能需要找个纯度更高的代码片段哟~」<br></span>";
-			$falsify = true;
 			}else{
 
 			$gainless = $clbpara['fireseedmaxDefGain'] - $clbpara['fireseedmaxDefAdd'];
@@ -1323,6 +1383,14 @@ function itemuse($itmn,&$data=NULL) {
 				「看起来这个纯度的代码片段已经喂不饱你了。<br>
 				赶快找下一个纯度的代码片段吧！」<br></span>";
 			}
+			if ($itms != $nosta) {
+				$itms --;
+				if ($itms <= 0) {
+					$log .= "<span class=\"red\">$itm</span>的余烬崩解消失了……<br>";
+					$itm = $itmk = $itmsk = '';
+					$itme = $itms = 0;
+				}
+			}
 
 			}
 			}else{
@@ -1331,28 +1399,36 @@ function itemuse($itmn,&$data=NULL) {
 
 				$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
 				载有防御数据的代码片段让你获得了<span class=\"yellow\">$adddef</span>点基础防御力！<br>";
+
+				if ($itms != $nosta) {
+					$itms --;
+					if ($itms <= 0) {
+						$log .= "<span class=\"red\">$itm</span>的余烬崩解消失了……<br>";
+						$itm = $itmk = $itmsk = '';
+						$itme = $itms = 0;
+					}
+				}
 			}
 		}
 
 		else{
 			$log.="这段代码……要如何使用呢？<br>";
-			$falsify = true;
 		}
 
-		//Process item decrease.
-		if ($itms != $nosta) {
+		//Process item decrease. - Changed to do it only after succeeding item usage.
+/* 		if ($itms != $nosta) {
 			$itms --;
 			if ($itms <= 0) {
 				$log .= "<span class=\"red\">$itm</span>用光了。<br>";
 				$itm = $itmk = $itmsk = '';
 				$itme = $itms = 0;
 			}
-		}
+		} */
 	# Special check for a poisoned fireseed item, WIP for now.	
 	}elseif($itmk == 'P🎆'){
 		$log.="这个<span class=\"yellow\">{$itm}</span>有毒！到底是谁干的！<br>";
 		# For Maximum Funniness, we destroy this item.
-		$log .= "<span class=\"red\">$itm</span>用光了。<br>";
+		$log .= "<span class=\"red\">$itm</span>的余烬向天上盘旋飞舞，消失了。<br>";
 		$itm = $itmk = $itmsk = '';
 		$itme = $itms = 0;
 	}elseif (strpos ( $itmk, 'Y' ) === 0 || strpos ( $itmk, 'Z' ) === 0) {

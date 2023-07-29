@@ -484,7 +484,7 @@
 			$death_obbs = get_skillvars('c21_sacrifice','death_obbs');
 			if ($sacrifice_dice < $death_obbs)
 			{
-				$log .= '（此处应有台词，没能成功提取出来）<br>';
+				$log .= '你尝试着引导着你体内的<span class="glitchb">数据风暴</span>，让它变成你想要的东西……<br>但什么都没发生。<br>';
 				$death_flag = -1;
 				return $death_flag;
 			}
@@ -493,7 +493,7 @@
 				$hp_cost = $hp - 1;
 				$hp -= $hp_cost;
 				$sp_cost = $sp;
-				$log .= '（此处可重写台词）你透支生命，消耗生命' . $hp_cost . '点代替了体力消耗。<br>';
+				$log .= '你一咬牙关，让<span class="glitchb">数据风暴</span>透支了你的生命，<br>因此消耗生命' . $hp_cost . '点代替了体力消耗。<br>';
 			}
 		}
 		else

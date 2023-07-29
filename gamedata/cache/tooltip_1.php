@@ -171,6 +171,8 @@ $tps_ik = Array
 	'🎆V' => Array('class'=>'lime', 'title'=>"神秘存在身上掉落的碎片，似乎和你很匹配。",),
 	'🎆O' => Array('class'=>'lime', 'title'=>"神秘存在身上掉落的碎片，似乎和你很匹配。",),
 	'🎆D' => Array('class'=>'lime', 'title'=>"神秘存在身上掉落的碎片，似乎和你很匹配。",),
+	'🎆B' => Array('class'=>'lime', 'title'=>"神秘存在身上掉落的碎片，你觉得它似乎能变成别的什么东西。",),
+	'🎆C' => Array('class'=>'lime', 'title'=>"鉮秘洊茬裑仩鋽落哋誶爿，沵覺嘚咜姒苸能變荿莂哋什庅崬覀。",),
 	'P🎆' => Array('class'=>'lime', 'title'=>"神秘存在身上掉落的碎片，似乎和你狠匹配。",),
 );
 
