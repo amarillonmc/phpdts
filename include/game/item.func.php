@@ -1664,12 +1664,18 @@ function itemuse($itmn,&$data=NULL) {
 			$dice = rand ( 0, 99 );
 			$dice2 = rand ( 0, 99 );
 			$skill = array ('WP' => $wp, 'WK' => $wk, 'WG' => $wg, 'WC' => $wc, 'WD' => $wd, 'WF' => $wf );
+			$skill_advanced = array ('WJ' => $wg, 'WB' => $wc );
 			arsort ( $skill );
 			$skill_keys = array_keys ( $skill );
+			$skill_advanced_keys = array_keys ( $skill_advanced );			
 			$nowsk = substr ( $wepk, 0, 2 );
+			if (strlen($wepk) > 2) $subsk = 'W'.$wepk[2];
 			$maxsk = $skill_keys [0];
-			if (($skill [$nowsk] != $skill [$maxsk]) && ($dice < 30)) {
-				$wepk = $maxsk;
+			// 复合武器只要其中一个类别是最高就不会改系
+			// 上位武器熟练超过1200不会改系，可能算加强六系称号
+			if (((!in_array($nowsk, $skill_advanced_keys) && ($skill [$nowsk] != $skill [$maxsk]) && (empty($subsk) || ((!empty($subsk) && !in_array($subsk, $skill_advanced_keys) && ($skill [$subsk] != $skill [$maxsk]))))) || (in_array($nowsk, $skill_advanced_keys) && ($skill_advanced [$nowsk] < 1200))) && ($dice < 30))
+			{
+				$wepk = substr_replace($wepk, $maxsk, 0, 2);
 				$kind = "更改了{$wep}的<span class=\"yellow\">类别</span>！";
 			} elseif (($weps != $nosta) && ($dice2 < 70)) {
 				$weps += ceil ( $wepe / 2 );

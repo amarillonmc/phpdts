@@ -283,6 +283,21 @@
           'list' => $list,
         );
       }
+	  // 驱血
+	  if ($skid === 'c21_creation') {
+        $para = get_clbpara($uidata['clbpara']);
+        $nchoice = $para['skillpara']['c21_creation']['choice'];
+        foreach ($cskills['c21_creation']['choice'] as $item) {
+          $list[] = array(
+            'id' => $item,
+            'title' => $itemspkinfo[$item],
+          );
+        }
+        $new_array['specialData'] = array(
+          'now' => $itemspkinfo[$nchoice],
+          'list' => $list,
+        );
+      }
       //将新的数组添加到空数组中，以$skid为键
       $array[] = $new_array;
     }

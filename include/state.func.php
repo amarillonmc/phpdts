@@ -59,6 +59,10 @@
 			$state = 40;
 		} elseif ($death == 's_escape'){
 			$state = 42;
+		} elseif ($death == 'club21_burnout'){
+			$state = 44;
+		} elseif ($death == 'club21_blaster'){
+			$state = 45;
 		} elseif ($death == 'sdestruct'){
 			$state = 50;
 		} else {

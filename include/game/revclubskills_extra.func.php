@@ -272,6 +272,77 @@
 			}
 			return 1;
 		}
+		# 事件：驱血
+		if($event == 'creation')
+		{
+			include GAME_ROOT.'./gamedata/club21cfg.php';
+			$new_itmsk = get_skillpara($sk,'choice',$clbpara);
+			$sp_rate = get_skillvars($sk,'sp_rate');
+			$skillpoint_value = get_skillvars($sk,'skillpoint_value');
+			if (!empty($itmsk_extract_rate[$new_itmsk]))
+			{
+				$sp_cost = $itmsk_extract_rate[$new_itmsk] * $sp_rate;
+				if ($sp < $sp_cost)
+				{
+					if ($sp + $skillpoint_value * $skillpoint >= $sp_cost)
+					{
+						$skillpoint_cost = ceil(($sp_cost - $sp) / $skillpoint_value);
+						$log .= "消耗" . $skillpoint_cost . "技能点，代替了体力消耗。<br>";
+						$skillpoint -= $skillpoint_cost;
+						$sp_cost = $sp;
+					}
+					else
+					{
+						$log .= "体力与技能点不足，无法制造代码片段。<br>";
+						return 1;
+					}
+				}
+				$log .= "消耗体力" . $sp_cost . "点，制造了该代码片段。<br>";
+				$sp = $sp - $sp_cost;
+				// 此处应有重新取名
+				$itm0 = "属性的代码片段";
+				$itmk0 = '🥚'; 
+				$itme0 = 0; 
+				$itms0 = 1; 
+				$itmsk0 = $new_itmsk;
+				return 1;
+			}
+			else 
+			{
+				$log .= "该属性代码片段无法制造！这可能是一个BUG，请联系管理员。<br>";
+			}
+			return 0;
+		}
+		# 事件：涌血
+		if($event == 'discovery')
+		{
+			global $gamevars;
+			include GAME_ROOT.'./include/game/club21.func.php';
+			if(empty($gamevars['name_fragment_list'])) $gamevars['name_fragment_list'] = generate_name_fragment_list($item_name_fragment_list, $name_fragment_available_num);
+			$rank = get_skillpara($sk,'rank',$clbpara);
+			$spcost = get_skillvars($sk,'spcost');
+			$hpcost = get_skillvars($sk,'hpcost');
+			
+			if (($sp > $spcost) && ($hp > $hpcost))
+			{
+				$log .= "消耗体力上限" . $spcost . "点。<br>";
+				$log .= "消耗生命上限" . $hpcost . "点。<br>";
+				$msp -= $spcost;
+				$mhp -= $hpcost;
+				if ($sp > $msp) $sp = $msp;
+				if ($hp > $mhp) $hp = $mhp;
+				/* 随机抽选一个片段； */
+				$rand_key = array_rand($gamevars['name_fragment_list'][$rank]);
+				$new_frag = $gamevars['name_fragment_list'][$rank][$rand_key];
+				$log .= "发现了字段<span class='yellow'>「" . $new_frag . "」</span>。<br>";
+				set_skillpara($sk,'frag',$new_frag,$clbpara);
+				return 1;
+			}
+			else{
+				$log .= "你的体力与生命上限无法支撑你的这次尝试。<br>";
+			}
+			return 0;			
+		}
 		# 事件：获取指定技能
 		if(strpos($event,'getskill_') === 0)
 		{

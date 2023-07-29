@@ -219,6 +219,10 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>被御柱创死了！";
 			} elseif($news == 'death42'){
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>活用了单人脱出程序机构，提前离开了虚拟幻境！";
+			} elseif($news == 'death44'){
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因为提取过于强大的力量而透支了生命";
+			} elseif($news == 'death45'){
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>在战斗中引爆代码片段而炸死了自己";
 			} elseif($news == 'death50'){
 				$newsinfo .= "<li><span class=\"rainbow\">{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>牺牲了自己，在虚拟幻境的天空中炸出了一片红霞</span>！";
 			} else {
