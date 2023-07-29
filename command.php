@@ -290,7 +290,7 @@ if($hp > 0){
                         if ($choice_position < 1 || $choice_position > 6)
                             $log .= '<span class="red">无此物品。</span><br />';
                         else {
-                            include_once GAME_ROOT . './include/game/club21.func.php';
+                            include_once GAME_ROOT . './include/game/special.func.php';
                             item_extract_trait($choice, $choice_position);
                         }
                         $mode = 'command';
@@ -324,7 +324,7 @@ if($hp > 0){
                         elseif ($choice == $choice2)
                             $log .= '<span class="red">你选择了相同的代码片段。</span><br />';
                         else {
-                            include_once GAME_ROOT . './include/game/club21.func.php';
+                            include_once GAME_ROOT . './include/game/special.func.php';
                             item_add_trait($choice, $choice2);
                         }
                         $mode = 'command';
@@ -822,7 +822,7 @@ $jgamedata = compatible_json_encode($gamedata);
 //$json = new Services_JSON();
 //$jgamedata = $json->encode($gamedata);
 //if(!strstr($_SERVER['HTTP_REFERER'], 'php')) {
-if ($udata['u_templateid'] == 1 && !strstr($_SERVER['HTTP_REFERER'], 'php') && $_SERVER['HTTP_REFERER'] != '') {
+if (isset($_GET['is_new'])) {
 	include './api.php';
 } else {
 	echo $jgamedata;

@@ -61,13 +61,25 @@ if(!isset($cmd)){
 		if(isset($error)){$gamedata['innerHTML']['error'] = $error;}
 		ob_clean();
 		$jgamedata = compatible_json_encode($gamedata);
-		echo $jgamedata;
+		if (isset($_GET['is_new'])) {
+			echo json_encode(array(
+				"info" => $gamedata['innerHTML']['info'],
+			));
+		} else {
+			echo $jgamedata;
+		}
 		ob_end_flush();
 	}else{
 		ob_clean();
 		if(isset($error)){$gamedata['innerHTML']['error'] = $error;}
 		$jgamedata = compatible_json_encode($gamedata);
-		echo $jgamedata;
+		if (isset($_GET['is_new'])) {
+			echo json_encode(array(
+				"info" => $gamedata['innerHTML']['info'],
+			));
+		} else {
+			echo $jgamedata;
+		}
 		ob_end_flush();
 	}
 }

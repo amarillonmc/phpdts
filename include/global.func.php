@@ -664,12 +664,15 @@ function parse_skinfo_desc($info,$subinfo='',$short='',$tiptype='')
 		foreach($info as $sk)
 		{
 			$csk = $itemspkinfo[$sk];
+			//键值为<:DUMMY:>的属性跳过（注意只是跳过了显示的处理）
+			if($csk == '<:DUMMY:>') continue;
+			# 如果不是第一个属性 显示一个 + 号
+			if($sk_nums>0) $sk_info .= '+';
 			# 检查属性有没有特殊样式
 			if(isset($tps_isk[$sk]['class'])) $csk = "<span class=\"".$tps_isk[$sk]['class']."\">".$csk."</span>"; 
 			# 将属性加入显示队列
 			$sk_info .= $csk;
-			# 如果不是最后一个属性 显示一个 + 号
-			if($sk_nums<$sk_max-1) $sk_info .= '+';
+			
 			# 检查属性有没有tooltip
 			if(isset($tps_isk[$sk]['title']))
 			{

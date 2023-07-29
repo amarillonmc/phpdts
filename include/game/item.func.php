@@ -434,6 +434,20 @@ function itemuse($itmn,&$data=NULL) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		}
+	} elseif(strpos ( $itmk, 'GA' ) === 0) {//使用箭矢
+		if (strpos ( $wepk, 'WB' ) !== 0) {
+			$log .= "<span class=\"red b\">你没有装备弓，不能给武器上箭。</span><br>";
+			$mode = 'command';
+			return;
+		}	elseif(0 === $itmn && !empty($weps)) {//捡到的箭矢不能马上拉弓，避免换箭覆盖itm0的问题
+			$log .= "你一只手捏着弓箭，一只手抓着刚捡到的箭矢，没法马上弯弓搭箭。<span class=\"red b\">还是先把箭矢收进包裹里吧。</span><br>";
+			$mode = 'command';
+			return;
+		} else {
+			//$theitem = Array('itm' => &$itm, 'itmk' => &$itmk, 'itme' => &$itme, 'itms' => &$itms, 'itmsk' => &$itmsk);
+			include_once GAME_ROOT . './include/game/item2.func.php';
+			itemuse_ugb($pdata, $itmn);
+		}
 	} elseif (strpos ( $itmk, 'R' ) === 0) {
 		//$log.= $itm .'已经废弃，请联系管理员。';
 		if ($itme > 0) {
@@ -1039,6 +1053,308 @@ function itemuse($itmn,&$data=NULL) {
 		}else{
 			$log.="你使用了<span class=\"yellow\">{$itm}</span>，但是没有发现陷阱。<br>";
 		}
+	}elseif (strpos ( $itmk, '🎆' ) === 0 ) {
+		//В ΜΑЛΨ, В ЩΑЁΨ, В ЦΨΨ ОΑЙЙ, В ТИХ ЩДТЖИΜД.
+		//ХЖ ДЖХЖТ, ЖХΨ ЦЩТΑВΜДЩ ТЖΑΡ, ΜΨЩ. ЩДВХΜЦ. ΡЖХΨ.
+		//Thanks Chantal for crunching those numbers - I'll make sure I find you something else to crunch on some other time...
+		# This method concerns 4 of them, and one additional check:
+		//$hp up, $w[X] up, $mhp up, $def up
+
+		# Then, decide on the Rank of the Fireseed Item, this will decide its maximum value:
+		$rank = 0;
+		# Those items will always start with either ◆,✦,★,☾, and ☼
+		if (strpos ( $itm, '◆' ) === 0){
+			$rank = 1;
+		}elseif (strpos ( $itm, '✦' ) === 0){
+			$rank = 2;
+		}elseif (strpos ( $itm, '★' ) === 0){
+			$rank = 3;
+		}elseif (strpos ( $itm, '☾' ) === 0){
+			$rank = 4;
+		}elseif (strpos ( $itm, '☼') === 0){
+			$rank = 5;
+		}else{
+			$rank = 0;
+		}
+
+		# Special check for a invalid item (Rank = 0), Just turn it into healing.
+		if($rank == 0){
+			$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚，你感觉焕然一新！<br>";
+			$hp = $mhp;
+			$sp = $msp;
+		}
+
+		# Logic for each of the 4 usages.
+		elseif($itmk == '🎆H'){
+			# This is healing item, it can heal beyond your $mhp based on its rank.
+			if ($rank == 1){
+				$gainmax = round($mhp * 0.51);
+			}elseif ($rank == 2){
+				$gainmax = round($mhp * 1.08);
+			}elseif ($rank == 3){
+				$gainmax = round($mhp * 2.33);
+			}elseif ($rank == 4){
+				$gainmax = round($mhp * 5.73);
+			}else{
+				$gainmax = '∞';
+			}
+			// Tracking how much HP one can overheal based on its rank.
+			$clbpara['fireseedMaxHPRecover'] = $gainmax;
+			if ($gainmax !== '∞'){
+			// Gain HP and SP - note we don't overheal SP here.
+			
+			$addsp = $msp - $sp < $itme ? $msp - $sp : $itme;
+			if($addsp > 0) $sp += $addsp;
+			else $addsp = 0;
+			// Calculating overheal HP value.
+			$addhp = ($mhp + $gainmax) - $hp < $itme ? ($mhp + $gainmax) - $hp : $itme;
+			if($addhp > 0) $hp += $addhp;
+			else $addhp = 0;
+
+			if ($addhp <= 0){
+				$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
+				但是似乎并没有回复生命！<br>
+				<br>
+				<span class=\"blueseed\">同时，你还隐约听见了一个声音：<br>
+				「你可能需要找个纯度更高的代码片段哟~」<br></span>";
+				$falsify = true;
+			}else{
+
+			$gainless = ($mhp + $gainmax) - $hp;
+
+			$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
+			治愈的代码片段为你恢复了<span class=\"yellow\">$addhp</span>点生命和<span class=\"yellow\">$addsp</span>点体力。<br>
+			<br>
+			<br>
+			<span class=\"blueseed\">同时，你还隐约听见了一个声音：<br>
+			「你还能获得{$gainless}点临时生命哟~<br>
+			但临时生命就是临时的，随时都有可能消失哟~」<br></span>";
+
+			if($gainless < $itme){
+				$log.="<br><span class=\"redseed\">这时，有另一把声音插了进来：<br>
+				「看起来这个纯度的代码片段已经喂不饱你了。<br>
+				赶快找下一个纯度的代码片段吧！」<br></span>";
+			}
+		}
+			}else{
+				$addsp = $msp - $sp < $itme ? $msp - $sp : $itme;
+				if($addsp > 0) $sp += $addsp;
+				else $addsp = 0;
+				
+				$addhp = $itme;
+				$hp += $addhp;
+
+				$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
+			治愈的代码片段为你恢复了<span class=\"yellow\">$addhp</span>点生命和<span class=\"yellow\">$addsp</span>点体力。<br>";
+			}
+		}
+
+		elseif ($itmk == '🎆V'){
+			# This is $w[X] up, it simply add to all $w[X] values.
+			if ($rank == 1){
+				$gainmax = 201;
+			}elseif ($rank == 2){
+				$gainmax = 502;
+			}elseif ($rank == 3){
+				$gainmax = 2003;
+			}elseif ($rank == 4){
+				$gainmax = 8011;
+			}else{
+				$gainmax = '∞';
+			}
+			// Tracking how much w value one can gain based on its rank.
+			$clbpara['fireseedmaxProfGain'] = $gainmax;
+			if ($gainmax !== '∞'){
+			// Gain w value
+			
+			$addw = $itme;
+			$clbpara['fireseedmaxProfAdd'] += $addw;
+			if($clbpara['fireseedmaxProfGain'] - $clbpara['fireseedmaxProfAdd'] > 0) {
+				$wp += $addw;
+				$wk += $addw;
+				$wg += $addw;
+				$wc += $addw;
+				$wd += $addw; 
+				$wf += $addw;}
+			else $addw = 0;
+
+			if ($addw <= 0){
+			$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
+			但是似乎什么都没有发生！<br>
+			<br>
+			<br>
+			<span class=\"blueseed\">同时，你还隐约听见了一个声音：<br>
+			「你可能需要找个纯度更高的代码片段哟~」<br></span>";
+			$falsify = true;
+			}else{
+
+			$gainless = $clbpara['fireseedmaxProfGain'] - $clbpara['fireseedmaxProfAdd'];
+
+			$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
+			载有熟练度的代码片段让你获得了<span class=\"yellow\">$addw</span>点全系熟练度！<br>
+			<br>
+			<br>
+			<span class=\"blueseed\">同时，你还隐约听见了一个声音：<br>
+			「你还能通过这个纯度的代码获得{$gainless}点熟练度哟~」<br></span>";
+
+			if($gainless < $itme){
+				$log.="<br><span class=\"redseed\">这时，有另一把声音插了进来：<br>
+				「看起来这个纯度的代码片段已经喂不饱你了。<br>
+				赶快找下一个纯度的代码片段吧！」<br></span>";
+			}
+
+			}
+			}else{
+				$addw = $itme;
+				$wp += $addw;
+				$wk += $addw;
+				$wg += $addw;
+				$wc += $addw;
+				$wd += $addw; 
+				$wf += $addw;
+
+				$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
+				载有熟练度的代码片段让你获得了<span class=\"yellow\">$addw</span>点全系熟练度！<br>";
+			}
+		}
+
+		elseif ($itmk == '🎆O'){
+			# This is $mhp up item, it simply add to that value.
+			if ($rank == 1){
+				$gainmax = 1001;
+			}elseif ($rank == 2){
+				$gainmax = 3002;
+			}elseif ($rank == 3){
+				$gainmax = 5003;
+			}elseif ($rank == 4){
+				$gainmax = 8008;
+			}else{
+				$gainmax = '∞';
+			}
+			// Tracking how much $mhp value one can gain based on its rank.
+			$clbpara['fireseedmaxHPGain'] = $gainmax;
+			if ($gainmax !== '∞'){
+			// Gain $mhp value
+			
+			$addmhp = $itme;
+			$clbpara['fireseedmaxHPAdd'] += $addmhp;
+			if($clbpara['fireseedmaxHPGain'] - $clbpara['fireseedmaxHPAdd'] > 0) $mhp += $addmhp;
+			else $addmhp = 0;
+
+			if ($addmhp <= 0){
+			$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
+			但是似乎什么都没有发生！<br>
+			<br>
+			<br>
+			<span class=\"blueseed\">同时，你还隐约听见了一个声音：<br>
+			「你可能需要找个纯度更高的代码片段哟~」<br></span>";
+			$falsify = true;
+			}else{
+
+			$gainless = $clbpara['fireseedmaxHPGain'] - $clbpara['fireseedmaxHPAdd'];
+
+			$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
+			载有生命的代码片段让你获得了<span class=\"yellow\">$addmhp</span>点生命最大值！<br>
+			<br>
+			<br>
+			<span class=\"blueseed\">同时，你还隐约听见了一个声音：<br>
+			「你还能通过这个纯度的代码获得{$gainless}点生命最大值哟~」<br></span>";
+
+			if($gainless < $itme){
+				$log.="<br><span class=\"redseed\">这时，有另一把声音插了进来：<br>
+				「看起来这个纯度的代码片段已经喂不饱你了。<br>
+				赶快找下一个纯度的代码片段吧！」<br></span>";
+			}
+
+			}
+			}else{
+				$addw = $itme;
+				$mhp += $addmhp;
+
+				$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
+				载有生命的代码片段让你获得了<span class=\"yellow\">$addmhp</span>点生命最大值！<br>";
+			}
+		}
+
+		elseif ($itmk == '🎆D'){
+			# This is $def up item, it simply add to that value.
+			if ($rank == 1){
+				$gainmax = 1001;
+			}elseif ($rank == 2){
+				$gainmax = 3002;
+			}elseif ($rank == 3){
+				$gainmax = 5003;
+			}elseif ($rank == 4){
+				$gainmax = 8008;
+			}else{
+				$gainmax = '∞';
+			}
+			// Tracking how much $def value one can gain based on its rank.
+			$clbpara['fireseedmaxDefGain'] = $gainmax;
+			if ($gainmax !== '∞'){
+			// Gain $def value
+			
+			$adddef = $itme;
+			$clbpara['fireseedmaxDefAdd'] += $adddef;
+			if($clbpara['fireseedmaxDefGain'] - $clbpara['fireseedmaxDefAdd'] > 0) $def += $adddef;
+			else $adddef = 0;
+
+			if ($adddef <= 0){
+			$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
+			但是似乎什么都没有发生！<br>
+			<br>
+			<br>
+			<span class=\"blueseed\">同时，你还隐约听见了一个声音：<br>
+			「你可能需要找个纯度更高的代码片段哟~」<br></span>";
+			$falsify = true;
+			}else{
+
+			$gainless = $clbpara['fireseedmaxDefGain'] - $clbpara['fireseedmaxDefAdd'];
+
+			$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
+			载有防御数据的代码片段让你获得了<span class=\"yellow\">$adddef</span>点基础防御力！<br>
+			<br>
+			<br>
+			<span class=\"blueseed\">同时，你还隐约听见了一个声音：<br>
+			「你还能通过这个纯度的代码获得{$gainless}点基础防御力哟~」<br></span>";
+
+			if($gainless < $itme){
+				$log.="<br><span class=\"redseed\">这时，有另一把声音插了进来：<br>
+				「看起来这个纯度的代码片段已经喂不饱你了。<br>
+				赶快找下一个纯度的代码片段吧！」<br></span>";
+			}
+
+			}
+			}else{
+				$adddef = $itme;
+				$def += $adddef;
+
+				$log.="你将<span class=\"yellow\">{$itm}</span>吞下了肚。<br>
+				载有防御数据的代码片段让你获得了<span class=\"yellow\">$adddef</span>点基础防御力！<br>";
+			}
+		}
+
+		else{
+			$log.="这段代码……要如何使用呢？<br>";
+			$falsify = true;
+		}
+
+		//Process item decrease.
+		if ($itms != $nosta) {
+			$itms --;
+			if ($itms <= 0) {
+				$log .= "<span class=\"red\">$itm</span>用光了。<br>";
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
+		}
+	# Special check for a poisoned fireseed item, WIP for now.	
+	}elseif($itmk == 'P🎆'){
+		$log.="这个<span class=\"yellow\">{$itm}</span>有毒！到底是谁干的！<br>";
+		# For Maximum Funniness, we destroy this item.
+		$log .= "<span class=\"red\">$itm</span>用光了。<br>";
+		$itm = $itmk = $itmsk = '';
+		$itme = $itms = 0;
 	}elseif (strpos ( $itmk, 'Y' ) === 0 || strpos ( $itmk, 'Z' ) === 0) {
 		if ($itm == '电池') {
 			//功能需要修改，改为选择道具使用YE类型道具可充电
@@ -1056,7 +1372,7 @@ function itemuse($itmn,&$data=NULL) {
 			if (! $flag) {
 				$log .= '你没有需要充电的物品。<br>';
 			}
-		}	elseif ($itm == '群青多面体') {
+			}elseif ($itm == '群青多面体') {
 			//global $plsinfo,$nosta,$db,$tablepre;
 			$result = $db->query("SELECT pid,name,pls FROM {$tablepre}players WHERE type = 14 && hp > 0");
 			$ndata = array();

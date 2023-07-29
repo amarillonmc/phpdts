@@ -75,7 +75,7 @@ CREATE TABLE bra_maptrap (
 
 DROP TABLE IF EXISTS bra_newsinfo;
 CREATE TABLE bra_newsinfo (
-  nid smallint unsigned NOT NULL auto_increment,
+  nid mediumint unsigned NOT NULL auto_increment,
  `time` int(10) unsigned NOT NULL default '0',
  `news` char(30) NOT NULL default '',
  `a` varchar(255) NOT NULL default '',
@@ -94,7 +94,7 @@ CREATE TABLE bra_newsinfo (
 
 DROP TABLE IF EXISTS bra_gambling;
 CREATE TABLE bra_gambling (
-  gid smallint unsigned NOT NULL auto_increment,
+  gid mediumint unsigned NOT NULL auto_increment,
   uid mediumint(8) unsigned NOT NULL default '0',
   uname char(15) NOT NULL default '',
   bid smallint unsigned NOT NULL default '0',
