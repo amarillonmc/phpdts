@@ -30,10 +30,10 @@
     </table>
     <br>
     <!--{if $dkey > 0}-->
-        <input type="button" class="cmdbutton" id="c" style="margin-right: 5%;" value="[C]上一页" onclick="changePages('d',-1);">
+        <input type="button" class="cmdbutton" id="i" style="margin-right: 5%;" value="[I]上一页" onclick="changePages('d',-1);">
     <!--{/if}-->
     <!--{if (($dkey <= ($endpage-1)) || (isset($dialogue_branch[$dialogue_id])))}-->
-        <input type="button" class="cmdbutton" id="z" value="[Z]下一页" onclick="changePages('d',1);">
+        <input type="button" class="cmdbutton" id="p" value="[P]下一页" onclick="changePages('d',1);">
     <!--{elseif isset($dialogue_end[$dialogue_id])}-->
         $dialogue_end[$dialogue_id]    
     <!--{/if}-->
