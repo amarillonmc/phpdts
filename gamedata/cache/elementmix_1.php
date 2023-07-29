@@ -278,7 +278,7 @@
 		Array('stuff'=>Array('WF','DB','WF'),'result'=>'VF'), 
 		Array('stuff'=>Array('HH','HS'),'result'=>'HB','obbs'=>77,), //回命+回体=命体回复
 		Array('stuff'=>Array('HH','WF'),'result'=>'HM','obbs'=>77,), //回命+灵=歌魂增加
-		Array('stuff'=>Array('HS','WD'),'result'=>'HT','obbs'=>77,), //回体+爆=歌魂恢复
+		Array('stuff'=>Array('HS','WD'),'result'=>'HT'), //回体+爆=歌魂恢复
 		Array('stuff'=>Array('HH','WG'),'result'=>'MH','obbs'=>15,), //回命+射=生命强化
 		Array('stuff'=>Array('HS','WC'),'result'=>'MS','obbs'=>60,), //回体+投=体力强化
 		//我认为这里应该有一个配方 可以合出有毒补给或者地雷（

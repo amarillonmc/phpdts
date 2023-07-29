@@ -162,9 +162,12 @@
         <span tooltip="插回其他物品让其他物品获得这些属性">
             <input type="button" class="cmdbutton" id="sp_add_trait" name="sp_add_trait" value="插入「🥚」" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_add_trait';postCmd('gamecmd','command.php');this.disabled=true;">
         </span>
+		<span tooltip="消耗代码片段，以永久减少移动/探索时的生命/体力损失">
+            <input type="button" class="cmdbutton" id="sp_consume_trait" name="sp_consume_trait" value="消耗「🥚」" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_consume_trait';postCmd('gamecmd','command.php');this.disabled=true;">
+        </span>
         <br />
 	<!--{elseif $club == 99}-->
-		<span tooltip="舍弃当前称号，使属性大副提升">
+		<span tooltip="舍弃当前称号，使属性大幅提升">
 			<input type="button" class="cmdbutton" id="sp_pbomb" name="sp_pbomb" value="X 按钮" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_pbomb';postCmd('gamecmd','command.php');this.disabled=true;">
 		</span>
 		<br />

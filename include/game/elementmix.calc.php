@@ -496,7 +496,7 @@
 			}
 		}
 		# 强化药物、技能书籍效耐调整：效果最大不能超过角色等级、耐久最大不超过角色等级的平方根，且向下调整
-		if(strpos($emix_itmk,'M')===0 || strpos($emix_itmk,'HM')===0 || strpos($emix_itmk,'V')===0) 
+		if(strpos($emix_itmk,'M')===0 || strpos($emix_itmk,'HM')===0 || strpos($emix_itmk,'HT')===0 || strpos($emix_itmk,'V')===0) 
 		{
 			$eitme = min($lvl,floor($eitme/$lvl));
 			$eitms = min(ceil(sqrt($lvl)),floor($eitms/$lvl));
