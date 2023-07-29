@@ -264,7 +264,7 @@ if($hp > 0){
 						$mode='command';
 					}
                 //码语行人提取
-				} elseif ($sp_cmd == 'sp_extract_trait') {
+                } elseif ($sp_cmd == 'sp_extract_trait') {
                     $position = 0;
                     if ($club == 21) {
                         foreach (array(1, 2, 3, 4, 5, 6) as $imn)
