@@ -329,7 +329,7 @@ if($hp > 0){
                         }
                         $mode = 'command';
                     }
-				//码语行人吃饭
+                //码语行人吃饭
                 } elseif ($sp_cmd == 'sp_consume_trait') {
                     $position = 0;
                     if ($club == 21) {
@@ -374,10 +374,19 @@ if($hp > 0){
 					calcskills($skarr);
 					$p12[1]=1; $p12[2]=2;
 					$mode='sp_skpts';
+				//妙手技能
+				}elseif($sp_cmd == 'sp_pickpocket_selected'){		
+					if (!isset($choice)) {
+						$mode = 'command';
+					} else {
+						$choice = (int)($choice);
+						include_once GAME_ROOT . './include/game/revclubskills_extra.func.php';
+						skill_tl_pickpocket_act($choice);
+ 					}
+					$mode = 'command';				
 				}else{
 					$mode = $sp_cmd;
-				}
-				
+				}				
 			} elseif($command == 'team') {
 				include_once GAME_ROOT.'./include/game/team.func.php';
 				if($teamcmd == 'teamquit') {				

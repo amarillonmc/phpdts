@@ -339,6 +339,16 @@ namespace revattr
 			$key = array_search('r',$pa['ex_keys']);
 			unset($pa['ex_keys'][$key]);
 		}
+		# 「妙手」效果判定：
+		if(isset($pa['bskill_tl_pickpocket']))
+		{
+			global $exdmgname;
+			foreach (array_keys($exdmgname) as $ex)
+			{
+				$key = array_search($ex,$pa['ex_keys']);
+				unset($pa['ex_keys'][$key]);
+			}
+		}
 		# 「天义」效果判定：
 		if(isset($pa['skill_c6_justice']) && (empty($pa['ex_keys']) || !in_array('N',$pa['ex_keys']))) $pa['ex_keys'][] = 'N';
 		return;
@@ -1104,6 +1114,12 @@ namespace revattr
 			$p = 1 + ($sk_p / 100);
 			$dmg_p[]= $p; 
 			$log.="<span class='yellow'>「解构」使{$pa['nm']}造成的物理伤害提高了{$sk_p}%！</span><br>";
+		}
+		#「妙手」判定：
+		if(isset($pa['bskill_tl_pickpocket']))
+		{
+			$dmg_p[]= 0; 
+			$log.="<span class='yellow'>「妙手」使{$pa['nm']}的本次攻击几乎没有造成任何伤害！</span><br>";
 		}
 		#「宗师」判定：
 		if(isset($pa['skill_c13_master']) && $pa['wep_kind'] != 'N')
@@ -1899,25 +1915,26 @@ namespace revattr
 			extract($data,EXTR_REFS);
 				
 			//引爆身上的全部代码片段，并记录效耐和与属性
-			$log .= "你引爆了身上所有的代码片段！<br>";
+			$log .= "{$pa['nm']}引爆了身上所有的代码片段！<br>";
 			foreach (array(1, 2, 3, 4, 5, 6) as $item_position)
 			{
-                if (mb_strpos(${'itmk' . $item_position}, '🥚') === 0)
+				if (mb_strpos(${'itmk' . $item_position}, '🥚') === 0)
 				{
 					$itme = &${'itme' . $item_position};
 					$itms = &${'itms' . $item_position};
 					$itmsk = &${'itmsk' . $item_position};
-                    $esum += $itme;
+					$esum += $itme;
 					if ($itms === '∞') $ssum += 120;
 					else $ssum += (int)$itms;
 					$sk_tot .= $itmsk;
-                    destory_single_item($pdata, $item_position);
+					destory_single_item($pdata, $item_position);
 				}
-            }
+			}
 			//对双方造成等同于这些片段上的异常状态
 			global $ex_inf, $exdmginf;				
 			$ex_inf_arr = '';
-			for ($i = 0; $i < mb_strlen($sk_tot); $i++) {
+			for ($i = 0; $i < mb_strlen($sk_tot); $i++)
+			{
 				if ((isset($ex_inf[$sk_tot[$i]])) && (mb_strpos($ex_inf_arr, $ex_inf[$sk_tot[$i]]) === false)) {
 					$ex_inf_arr .= $ex_inf[$sk_tot[$i]];
 					get_inf_rev($pa,$ex_inf[$sk_tot[$i]]);
@@ -1958,7 +1975,6 @@ namespace revattr
 			else
 			{
 				foreach ($rand_hurt_key as $key) {
-					/* echo $hurts[$key]; */
 					get_inf_rev($pd, $hurts[$key]);
 					$log .= "<span class=\"yellow\">爆炸的代码片段使{$pd['nm']}{$exdmginf[$hurts[$key]]}了！</span><br>";
 				}

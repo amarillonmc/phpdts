@@ -1387,6 +1387,15 @@ function getcorpse($item,&$data=NULL)
 		$mode = 'command';
 		return;
 	}
+	
+	if($item == 'pickpocket')
+	{
+		//用视野保存一下，可以吗？
+		check_add_searchmemory($edata['pid'],'corpse',$edata['name'],$data);
+		$log = '';
+		$mode = 'sp_pickpocket';
+		return;
+	}
 
 	if($item == 'loot_depot')
 	{

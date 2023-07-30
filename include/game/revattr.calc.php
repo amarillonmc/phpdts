@@ -16,6 +16,13 @@ namespace revattr
 			$sk_rn = get_skillvars('c4_sniper','rangegain');
 			$range += $sk_rn;
 		}
+		
+		#「妙手」效果判定：
+		if(isset($pa['bskill_tl_pickpocket']))
+		{
+			//射程与灵系相同
+			$range = 1;
+		}
 		return $range;
 	}
 
