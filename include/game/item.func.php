@@ -1415,6 +1415,9 @@ function itemuse($itmn,&$data=NULL) {
 			$log.="这段代码……要如何使用呢？<br>";
 		}
 
+		//Process a special check for total Ash item used, for future usage.
+		$clbpara['fireseedAshUsage'] += $rank;
+
 		//Process item decrease. - Changed to do it only after succeeding item usage.
 /* 		if ($itms != $nosta) {
 			$itms --;
