@@ -407,14 +407,14 @@ function move_search_events(&$data,$act)
 		$sk = 'c21_stormedge';
 		$ms = get_skillpara($sk,'ms',$data['clbpara']) + 1;
 		$sp_down = round($msp * ($burn_rate * $ms - $consume_rate * sqrt($clbpara['consumpt']))/100);
-		if ($sp <= $sp_down) $sp_down = $sp - 1;
-		elseif ($sp_down <= 0) $sp_down = 1;
+		if ($sp <= $sp_down) $sp_down = max($sp - 1, 0);
+		elseif ($sp_down < 0) $sp_down = 0;
 		$sp = $sp - $sp_down;
 		$msp = $msp + round($gain_rate * $sp_down);
 		$log .= "因为体内<span class=\"glitchb\">数据风暴</span>肆虐减少了<span class=\"red\">$sp_down</span>点体力！<br>";
 		if($act == 'move')
 		{
-			$damage = round($mhp * ($burn_rate * $ms - $consume_rate * $clbpara['consumpt'])/100);
+			$damage = round($mhp * ($burn_rate * $ms - $consume_rate * sqrt($clbpara['consumpt']))/100);
 			if ($hp <= $damage) $damage = $hp - 1;
 			elseif ($damage <= 0) $damage = 1;
 			$hp = $hp - $damage;

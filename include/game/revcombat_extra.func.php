@@ -227,6 +227,23 @@ namespace revcombat
 				$log .= "<span class='yellow'>{$pd['nm']}没有受到「渗透」影响！</span><br>";
 			}
 		}
+	
+		# 「妙手」效果判定
+		if (isset($pa['skill_tl_pickpocket']))
+		{
+			$picklimit = get_skillvars('tl_pickpocket','picklimit');
+			//这叫earn合适吗？
+			$earn = round($pd['money'] * rand(0, $picklimit) / 100);
+			if ($earn == 0) $log .= "<span class='yellow'>{$pa['nm']}没有从{$pd['nm']}身上获得金钱！</span><br>";
+			else
+			{
+				$pd['money'] -= $earn;
+				$pa['money'] += $earn;				
+				$log .= "<span class='yellow'>你从{$pd['nm']}身上获得了{$earn}元金钱！</span><br>";
+				if(!$pd['type'] && $pd['nm']!='你') $pd['logsave'] .= "你被窃走了{$earn}元金钱！<br>";
+				elseif(!$pa['type'] && $pa['nm']!='你') $pa['logsave'] .= "你从{$pd['name']}身上获得了{$earn}元金钱！<br>";
+			}
+		}
 		
 		# 「冰心」效果判定
 		if (isset($pd['skill_c9_iceheart']) && !empty($pd['inf']))

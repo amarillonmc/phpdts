@@ -27,7 +27,7 @@ $club_skillslist = Array
 	//18 => Array('s_hp','s_ad','f_heal'), #'天赋异禀',
 	19 => Array('s_hp','s_ad','f_heal','c19_nirvana','c19_reincarn','c19_purity','c19_crystal','c19_redeem','c19_dispel','c19_woesea'), #'晶莹剔透', //晶莹剔透、决死结界合并为晶莹剔透
 	20 => Array('s_hp','s_ad','f_heal','c20_fertile','c20_windfall','c20_lighting','c20_zombie','c20_sparkle','c20_lotus'), #'元素大师', #商店购买社团卡
-	21 => Array('s_hp','s_ad','f_heal','c21_stormedge','c21_creation','c21_sacrifice','c21_discovery','c21_blaster'), #'码语行人', #商店购买社团卡
+	21 => Array('s_hp','s_ad','f_heal','c21_stormedge','c21_creation','c21_discovery','c21_sacrifice','c21_blaster'), #'码语行人', #商店购买社团卡
 	22 => Array('s_hp','s_ad','f_heal'), #'偶像大师', #暂定名，「除错大师」头衔奖励
 	98 => Array('s_hp','s_ad','f_heal'), #'换装迷宫',
 	99 => Array('s_hp','s_ad','f_heal'), #'第一形态'
@@ -2190,9 +2190,9 @@ $cskills = Array
 		可以通过消耗代码片段来降低该系数，<br>
 		降低量：<span class="yellow">[:consume_rate:]%</span>×<span class="yellow">消耗代码片段效耐和的平方根</span>',
 		'vars' => Array(
-			'burn_rate' => 0.02,
+			'burn_rate' => 0.03,
 			'consume_rate' => 0.3,
-			'gain_rate' => 0.01
+			'gain_rate' => 0.005
 		),
 		'pvars' => Array('skillpara|c21_stormedge-ms', 'skillpara|c21_stormedge-consumpt'),
 	),
@@ -2221,6 +2221,35 @@ $cskills = Array
 			'lvl' => '[:lvl:] >= 5',
 		),
 	),
+	'c21_discovery' => Array
+	(
+		'name' => '涌血',
+		'tags' => Array('active'),
+		'desc' => '消耗<span class="yellow">[:spcost:]</span>体力上限和<span class="yellow">[:hpcost:]</span>生命上限，发现一个等级<span class="yellow">[^skillpara|c21_discovery-rank^]</span>的字段名。<br>
+		提取出上一次发现的字段达到<span class="yellow">[:task:]</span>次后，你不会再因为「斥血」损失生命和体力。<br>
+		<span class="grey">当前发现的字段：</span><span class="yellow">[^skillpara|c21_discovery-frag^]</span><br>
+		<span class="grey">当前已成功提取：[^skillpara|c21_discovery-count^]次</span>',
+		'input' => '发现',
+		'log' => '<span class="yellow">……</span>',
+		'events' => Array('discovery'),
+		'svars' => Array(
+			'frag' => '暂无',
+			'count' => 0,
+			'rank' => 1
+		),
+		'vars' => Array(
+			'spcost' => 15,
+			'hpcost' => 20,
+			'task' => 7
+		),
+		'pvars' => Array('skillpara|c21_discovery-frag', 'skillpara|c21_discovery-count', 'skillpara|c21_discovery-rank'),
+		'lockdesc' => Array(
+			'lvl' => '9级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 9',
+		),
+	),
 	'c21_sacrifice' => Array
 	(
 		'name' => '燃血',
@@ -2240,39 +2269,10 @@ $cskills = Array
 		),
 		'pvars' => Array('skill-active'),
 		'lockdesc' => Array(
-			'lvl' => '9级时解锁',
+			'lvl' => '16级时解锁',
 		),
 		'unlock' => Array(
-			'lvl' => '[:lvl:] >= 9',
-		),
-	),
-	'c21_discovery' => Array
-	(
-		'name' => '涌血',
-		'tags' => Array('active'),
-		'desc' => '消耗<span class="yellow">[:spcost:]</span>体力上限和<span class="yellow">[:hpcost:]</span>生命上限，发现一个等级<span class="yellow">[^skillpara|c21_discovery-rank^]</span>的字段名。<br>
-		提取出上一次发现的字段达到<span class="yellow">[:task:]</span>次后，你不会再因为「斥血」损失生命和体力。<br>
-		<span class="grey">当前发现的字段：</span><span class="yellow">[^skillpara|c21_discovery-frag^]</span><br>
-		<span class="grey">当前已成功提取：[^skillpara|c21_discovery-count^]次</span>',
-		'input' => '发现',
-		'log' => '<span class="yellow">……</span>',
-		'events' => Array('discovery'),
-		'svars' => Array(
-			'frag' => '暂无',
-			'count' => 0,
-			'rank' => 1
-		),
-		'vars' => Array(
-			'spcost' => 20,
-			'hpcost' => 30,
-			'task' => 7
-		),
-		'pvars' => Array('skillpara|c21_discovery-frag', 'skillpara|c21_discovery-count', 'skillpara|c21_discovery-rank'),
-		'lockdesc' => Array(
-			'lvl' => '15级时解锁',
-		),
-		'unlock' => Array(
-			'lvl' => '[:lvl:] >= 15',
+			'lvl' => '[:lvl:] >= 16',
 		),
 	),
 	'c21_blaster' => Array
@@ -2280,7 +2280,7 @@ $cskills = Array
 		'name' => '爆血',
 		'tags' => Array('battle'),
 		'desc' => '消耗<span class="yellow">[:ragecost:]</span>点怒气，引爆身上的全部代码片段，<br>
-		对对手和自己造成等同于这些片段上的异常状态，<br>
+		对敌人和自己造成等同于这些片段上的异常状态，<br>
 		并附加由这些片段的效果和与耐久和决定的最终伤害。<br>
 		你每因此受到<span class="yellow">[:dmgrate:]</span>点伤害，就随机造成敌人一处受伤。',
 		'bdesc' => "引爆身上的全部代码片段，根据片段的属性对双方造成额外伤害和效果；消耗<span class='red'>[:ragecost:]</span>怒气</span>",
@@ -2317,6 +2317,19 @@ $cskills = Array
 			'ragecost' => 100, 
 			'limit' => 2000,
 			'notype' => Array(88,92),//不能用来抡的NPC
+		),
+	),
+	'tl_pickpocket' => Array
+	(
+		'name' => '妙手',
+		'tags' => Array('battle','passive'),
+		'desc' => '消耗<span class="yellow">[:ragecost:]</span>点怒气，获得敌人随机数量的金钱，<br>
+		至多<span class="yellow">[:picklimit:]%</span>，但本次攻击不造成伤害，且射程与持灵系武器相同；<br>
+		发现尸体时，可消耗<span class="yellow">[:ragecost:]</span>点怒气，将一个物品置入尸体的持有物品中',
+		'bdesc' => '偷取敌人随机数量（至多<span class="yellow">[:picklimit:]%</span>）的金钱；消耗<span class="red">[:ragecost:]</span>怒气</span>',
+		'vars' => Array(
+			'picklimit' => 10,
+			'ragecost' => 30,
 		),
 	),
 	'inf_dizzy' => Array

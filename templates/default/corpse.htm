@@ -12,6 +12,9 @@
 <!--{if $cstick_flag}-->
 <input type="radio" name="command" id="cstick" value="cstick"><a onclick=sl('cstick'); href="javascript:void(0);" ><span tooltip="消耗100点怒气，将这具尸体变成一把殴系武器">抡起尸体！</span></a><br>
 <!--{/if}-->
+<!--{if $pickpocket_flag}-->
+<input type="radio" name="command" id="pickpocket" value="pickpocket"><a onclick=sl('pickpocket'); href="javascript:void(0);" ><span tooltip="消耗30点怒气，将自己的一个物品置入其中">置入物品</span></a><br>
+<!--{/if}-->
 <!--{if $loot_depot_flag}-->
 <input type="radio" name="command" id="loot_depot" value="loot_depot"><a onclick=sl('loot_depot'); href="javascript:void(0);" >转移安全箱权限</a><br>
 <!--{/if}-->

@@ -28,6 +28,12 @@
         "title" => "抡起尸体！"
       );
     }
+	if ($pickpocket_flag) {
+      $list[] = array(
+        "key" => "pickpocket",
+        "title" => "置入物品"
+      );
+    }
     if ($loot_depot_flag) {
       $list[] = array(
         "key" => "loot_depot",

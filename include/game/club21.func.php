@@ -324,26 +324,13 @@
 			if (mb_strlen($itmn_result) > 29 - $len_ori_name) {
 				$itmn_result = mb_substr($itmn_result, 0, 29 - $len_ori_name);
 			}
-			$itmc2 = $itmn_result. '🥚' . $itmc2;			
-			$itmkc2 = $itmkc1 . $itmkc2;
-			$itmec2 = (int)$itmec1 + (int)$itmec2;
-			$itmec2 = (int)($itmec2 * $namefrag_total_rate);
-			//当任意一个itms为∞
-			if ($itmsc1 == '∞' || $itmsc2 == '∞') {
-				$itmsc2 = '∞';
-			}
-			else {
-				$itmsc2 = (int)$itmsc1 + (int)$itmsc2 - 1;
-			}
-			$itmskc2 = $itmskc1 . $itmskc2;
-			//清空itm1
-			destory_single_item($pdata, $choice1);
-
-			$itmkc2 = str_replace('🥚', '', $itmkc2);
-			return;
+			//删除重复字段
+			$itmn_result = namefrag_unique($itmn_result);
+			$itmc2 = $itmn_result. '🥚' . $itmc2;
 		}
 		$itmkc2 = $itmkc1 . $itmkc2;
 		$itmec2 = (int)$itmec1 + (int)$itmec2;
+		$itmec2 = (int)($itmec2 * $namefrag_total_rate);
 		//当任意一个itms为∞
 		if ($itmsc1 == '∞' || $itmsc2 == '∞') {
 			$itmsc2 = '∞';
@@ -359,6 +346,7 @@
 		$itmskc2 = implode(array_unique(str_split($itmskc2)));
 		//去除itm2属性里的🥚
 		$itmkc2 = str_replace('🥚', '', $itmkc2);
+		return;
 	}
 	
 	# 生成随机的字段表
@@ -440,6 +428,36 @@
 			}
 		}		
 		return $namefrag_total_rate;
+	}
+	
+	# 删除道具名中的重复字段
+	function namefrag_unique($itm)
+	{
+		include GAME_ROOT.'./gamedata/club21cfg.php';
+		global $gamevars;
+		//合并所有等级的字段
+		$merged_fragment_list = array_merge($gamevars['name_fragment_list'][0], $gamevars['name_fragment_list'][1], $gamevars['name_fragment_list'][2], $gamevars['name_fragment_list'][3]);
+		//将存在的字段加入到代码片段名中
+		$namefrags = array();
+		$len_itm = mb_strlen($itm);
+		$pointer = 0;
+		while ($pointer < $len_itm) {
+			$found = false;
+			foreach ($merged_fragment_list as $fragment) {
+				$len_frag = mb_strlen($fragment);
+				if (mb_substr($itm, $pointer, $len_frag) === $fragment) {				
+					$namefrags[] = $fragment;
+					$pointer += $len_frag;
+					$found = true;
+					break;
+				}
+			}
+			if (!$found) {
+				$pointer++;
+			}
+		}
+		$frags_unique = implode(array_unique($namefrags));
+		return $frags_unique;
 	}
 	
 	# 消耗代码片段
