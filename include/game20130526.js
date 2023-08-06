@@ -52,6 +52,12 @@ function hotkey(evt)
 			else if(ky==67){
 				flag==1 ? hotkey_click('cc') : hotkey_click('c');
 			}
+			else if(ky==73){
+				flag==1 ? hotkey_click('ii') : hotkey_click('i');
+			}
+			else if(ky==80){
+				flag==1 ? hotkey_click('pp') : hotkey_click('p');
+			}
 			else if(ky==86){
 				hotkey_click('v');
 			}

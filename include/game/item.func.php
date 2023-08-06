@@ -1430,9 +1430,73 @@ function itemuse($itmn,&$data=NULL) {
 					}
 				}
 			}
-		}
+		}elseif($itmk == '🎆B'){
+			# Fireseed Box, containing various helpful items.
+			# Officially dubbed Silent Box.
+			$log.="你打开了<span class=\"yellow\">$itm</span>。<br>";
 
-		else{
+			$itms--; $oitm = $itm; $oitmk = $itmk;
+
+			include_once config('randomFS',$gamecfg);
+
+			$dice = diceroll(1000);
+			if($dice <= 420){
+				$itemflag = $lesserdata;
+			if($dice <= 740){
+				$itemflag = $item;
+			}elseif($dice <= 927){
+				$itemflag = $constructs;
+			}elseif($dice <= 998){
+				$itemflag = $material;
+			}else{
+				$itemflag = $sundata;
+				$clbpara['achvars']['gacha_ssr'] += 1;
+			}
+			if($itemflag){
+				$itemflag = explode("\r\n",$itemflag);
+				$rand = rand(0,count($itemflag)-1);
+				list($in,$ik,$ie,$is,$isk) = explode(',',$itemflag[$rand]);
+			}
+
+			if($itms <= 0) destory_single_item($data,$itmn,1);
+			$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
+			addnews($now,'present',$name,$oitm,$in,$nick);
+	
+			include_once GAME_ROOT.'./include/game/itemmain.func.php';
+			itemget($data);
+
+		}elseif($itmk == '🎆C'){
+			# Weird Fireseed Box, containing interesting items.
+			# Officially dubbed Weird Box.
+			$log.="你打开了<span class=\"yellow\">$itm</span>。<br>";
+
+			$itms--; $oitm = $itm; $oitmk = $itmk;
+
+			include_once config('randomFSW',$gamecfg);
+
+			$dice = diceroll(1000);
+			if($dice <= 660){
+				$itemflag = $selfjoke;
+			}elseif($dice <= 996){
+				$itemflag = $jokeonothers;
+			}else{
+				$itemflag = $superjoke;
+				$clbpara['achvars']['gacha_ssr'] += 1;
+			}
+			if($itemflag){
+				$itemflag = explode("\r\n",$itemflag);
+				$rand = rand(0,count($itemflag)-1);
+				list($in,$ik,$ie,$is,$isk) = explode(',',$itemflag[$rand]);
+			}
+
+			if($itms <= 0) destory_single_item($data,$itmn,1);
+			$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
+			addnews($now,'present',$name,$oitm,$in,$nick);
+	
+			include_once GAME_ROOT.'./include/game/itemmain.func.php';
+			itemget($data);
+
+		}else{
 			$log.="这段代码……要如何使用呢？<br>";
 		}
 

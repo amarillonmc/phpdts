@@ -249,6 +249,11 @@ if($mode == 'enter') {
 		}
 	}
 
+	# Generate 3 random number and place it in $clbpara for future usage.
+	$clbpara['randver1'] = rand(1,128);
+	$clbpara['randver2'] = rand(1,256);
+	$clbpara['randver3'] = rand(1,1024);
+
 	# 格式化插入player数据
 	$ndata = update_db_player_structure(1);
 	foreach($ndata as $key => $ntype)
