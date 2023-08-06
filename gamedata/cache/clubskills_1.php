@@ -2226,7 +2226,7 @@ $cskills = Array
 		'name' => '涌血',
 		'tags' => Array('active'),
 		'desc' => '消耗<span class="yellow">[:spcost:]</span>体力上限和<span class="yellow">[:hpcost:]</span>生命上限，发现一个等级<span class="yellow">[^skillpara|c21_discovery-rank^]</span>的字段名。<br>
-		提取出上一次发现的字段达到<span class="yellow">[:task:]</span>次后，你不会再因为「斥血」损失生命和体力。<br>
+		提取出当前发现的字段达到<span class="yellow">[:task:]</span>次后，你不会再因为「斥血」损失生命和体力。<br>
 		<span class="grey">当前发现的字段：</span><span class="yellow">[^skillpara|c21_discovery-frag^]</span><br>
 		<span class="grey">当前已成功提取：[^skillpara|c21_discovery-count^]次</span>',
 		'input' => '发现',
@@ -2337,7 +2337,7 @@ $cskills = Array
 	(
 		'name' => '延咒',
 		'tags' => Array('passive'),
-		'desc' => '你每次攻击命中后，有<span class="yellow">[:curse_obbs:]%</span>概率使敌人装备与背包中的随机一件道具添加<span class="red">诅咒属性</span>，<br>
+		'desc' => '你每次攻击命中后，有<span class="yellow">[:curse_obbs:]%</span>概率使敌人装备或背包中的随机一件道具添加<span class="red">诅咒属性</span>，<br>
 		若你的装备带有<span class="red">诅咒属性</span>，此概率变为<span class="yellow">[:curserate:]</span>倍',
 		'vars' => Array(
 			'curse_obbs' => 1,
