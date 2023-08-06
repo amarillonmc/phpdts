@@ -72,7 +72,7 @@ $splimit = 400;
 // 初始生命最大值 
 $hplimit = 400;
 // 怒气最大值 
-$mrage = 500;
+$mrage = 255;
 //携带金钱上限
 $moneylimit = 65500;
 

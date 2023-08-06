@@ -232,6 +232,27 @@ function itemuse($itmn,&$data=NULL) {
 		} else {
 			$log .= '你的歌魂不需要恢复。<br>';
 		}
+	}elseif (strpos ( $itmk, 'HR' ) === 0) {
+		$rageup=$itme;
+		require config('gamecfg',$gamecfg);
+		if ($rage < $mrage) {
+			$oldrage = $rage;
+			$rage += $rageup;
+			$rage = $rage > $mrage ? $mrage : $rage;
+			$oldrage = $rage - $oldrage;
+			$log .= "你吃了一口<span class=\"red\">$itm</span>，顿时感觉心中充满了愤怒。你的怒气值增加了<span class=\"yellow b\">$oldrage</span>点！<br>";
+			if ($itms != $nosta) {
+				$itms --;
+				if ($itms <= 0) {
+					$log .= "<span class=\"red\">$itm</span>用光了。<br>";
+					$itm = $itmk = $itmsk = '';
+					$itme = $itms = 0;
+				}
+			
+			}
+		} else {
+			$log .= '你已经出离愤怒了，动怒伤肝，还是歇歇吧！<br>';
+		}
 	} elseif (strpos ( $itmk, 'HB' ) === 0) {
 		//global $hp, $mhp, $sp, $msp,$club;
 		if (($hp < $mhp) || ($sp < $msp)) {

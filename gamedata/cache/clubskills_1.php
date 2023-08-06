@@ -2192,7 +2192,7 @@ $cskills = Array
 		'vars' => Array(
 			'burn_rate' => 0.03,
 			'consume_rate' => 0.3,
-			'gain_rate' => 0.005
+			'gain_rate' => 0.006
 		),
 		'pvars' => Array('skillpara|c21_stormedge-ms', 'skillpara|c21_stormedge-consumpt'),
 	),
@@ -2330,6 +2330,18 @@ $cskills = Array
 		'vars' => Array(
 			'picklimit' => 10,
 			'ragecost' => 30,
+		),
+	),
+	//技能名或许可以换一个
+	'tl_cursetouch' => Array
+	(
+		'name' => '延咒',
+		'tags' => Array('passive'),
+		'desc' => '你每次攻击命中后，有<span class="yellow">[:curse_obbs:]%</span>概率使敌人装备与背包中的随机一件道具添加<span class="red">诅咒属性</span>，<br>
+		若你的装备带有<span class="red">诅咒属性</span>，此概率变为<span class="yellow">[:curserate:]</span>倍',
+		'vars' => Array(
+			'curse_obbs' => 1,
+			'curserate' => 5,
 		),
 	),
 	'inf_dizzy' => Array

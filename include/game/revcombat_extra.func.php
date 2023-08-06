@@ -227,9 +227,24 @@ namespace revcombat
 				$log .= "<span class='yellow'>{$pd['nm']}没有受到「渗透」影响！</span><br>";
 			}
 		}
+		
+		# 「延咒」效果判定
+		if(isset($pa['skill_tl_cursetouch']))
+		{
+			$curse_obbs = get_skillvars('tl_cursetouch','curse_obbs');
+			$curserate = get_skillvars('tl_cursetouch','curserate');
+			$dice = diceroll(99);
+			if (in_array('V',$pa['ex_keys'])) $curse_obbs *= $curserate;
+			if($dice < $curse_obbs)
+			{
+				include_once GAME_ROOT.'./include/game/itemmain.func.php';
+				$flag = check_item_edit_event($pa,$pd,'tl_cursetouch');
+				if($flag) $log .= "<span class='yellow'>「延咒」使{$pd['nm']}受到了诅咒！</span><br>";
+			}
+		}
 	
 		# 「妙手」效果判定
-		if (isset($pa['skill_tl_pickpocket']))
+		if (isset($pa['bskill_tl_pickpocket']))
 		{
 			$picklimit = get_skillvars('tl_pickpocket','picklimit');
 			//这叫earn合适吗？

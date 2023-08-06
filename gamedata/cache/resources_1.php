@@ -1008,6 +1008,7 @@ $iteminfo = Array(//注意顺序，AB必须在A的前面，以此类推
 	'HB' => '命体恢复',
 	'HM' => '歌魂增加',
 	'HT' => '歌魂恢复',
+	'HR' => '怒气增加',
 	'GA' => '箭矢',	
 	'GBr' => '机枪弹药',
 	'GBi' => '气体弹药',
@@ -1020,6 +1021,7 @@ $iteminfo = Array(//注意顺序，AB必须在A的前面，以此类推
 	'N' => '无',	
 	'PM' => '歌魂增加',
 	'PT' => '歌魂恢复',
+	'PR' => '怒气增加',
 	'PH' => '生命恢复',
 	'PS' => '体力恢复',
 	'PB' => '命体恢复',
@@ -1126,7 +1128,7 @@ $itemspkinfo = Array(
 	'^' => '背包',
 	'🧰' => '工具',
 	'🍎' => '水果',
-	'|' => '<:DUMMY:>', //箭矢用的分隔符
+	//'|' => '<:DUMMY:>', //箭矢用的分隔符
 );
 
 //club20 元素大师：
@@ -1326,7 +1328,7 @@ $dinfo = Array(
 	40 => '“看起来好像没什么反应嘛……那是！！”<br>天空中突然降下的巨大柱状物瞬间将你的世界吞没。<br>你眼前一黑，便失去了意识。<br><br><div class="seedhint">………………<br>…………<br><span class="redseed">【Ｅ】是那位神灵啊，干嘛要招惹她呢？</span><br><span class="blueseed">【Ｐ】使用她的符卡，后果自负哟。</span><br></div>',
 	42 => '你摁下了手中的玩具般的按钮。<br>面前凭空出现了一扇闪光的门扉！<br>你毅然决然地踏了进去……<br>………………<br>…………<br>……<br>随着你独自摘下了VR设备站起身来，你松了一口气。<br>虽然其他的玩家还在这场游戏中冒死厮杀，但起码你自己毫发无伤地逃出了生天。<br>虽然这怎么说都无法让你成为胜利者，但就这一点本身，已经算是不错的成就了。<br>你回头看了一眼正显示着你所谓的死亡信息的屏幕，不禁笑了起来……<br><br>＝＝＝＝＝＝＝＝＝<br><span class="lime">独自逃脱成功！<br>你获得了20积分奖励！胜场+1！</span><br>＝＝＝＝＝＝＝＝＝<br>',
 	44 => '在你想着要获取更大，更多的力量时。<br>你没想到这将让你的身体承担不起。<br>在你身体里面肆虐的<span class="glitchb">数据风暴</span>终于无法制御，<br>从你的体内破体而出……<br><div class="seedhint">………………<br>…………<br><span class="redseed">【Ｅ】这里有个教训——</span><br><span class="blueseed">【Ｐ】在使用所谓的第三方库之前，最好先将它的底细摸清楚……</span><span class="redseed">【Ｅ】要说明白的话，那这个「🥚」其实并不是林氏出品的东西……</span><br><span class="blueseed">【Ｐ】总之，下次注意点吧！</span><br></div>',
-	45 => '你怀着必死的决心，向你的对手撞了上去，<br>丝毫未注意到<span class="glitchb">数据风暴</span>穿体而出所带来的疼痛。<br>各种颜色的<span class="glitchb">数据风暴</span>围绕着你们，<br>当一切结束后，战场上已经是一片狼藉……<br><div class="seedhint">………………<br>…………<br><span class="redseed">【Ｅ】热血漫画固有戏码——自爆！</span><br><span class="blueseed">【Ｐ】这是你自己的选择，我们也不评价了。</span><span class="redseed">【Ｅ】希望被你干掉的人值得你这么做。</span><br><span class="blueseed">【Ｐ】那么下次再见！</span><br></div>',
+	45 => '你怀着必死的决心，向你的对手撞了上去，<br>丝毫未注意到<span class="glitchb">数据风暴</span>穿体而出所带来的疼痛。<br>各种颜色的<span class="glitchb">数据风暴</span>围绕着你们，<br>当一切结束后，战场上已经是一片狼藉……<br><div class="seedhint">………………<br>…………<br><span class="redseed">【Ｅ】热血漫画固有戏码——自爆！</span><br><span class="blueseed">【Ｐ】这是你自己的选择，我们也不评价了。</span><br><span class="redseed">【Ｅ】希望被你干掉的人值得你这么做。</span><br><span class="blueseed">【Ｐ】那么下次再见！</span><br></div>',
 	50 => '你的身体化作了天边的红霞。<br>想必会为虚拟幻境中的各位带来笑容吧。<br><div class="seedhint">………………<br>…………<br><span class="redseed">【Ｅ】…………………………？</span><br><span class="blueseed">【Ｐ】……………………。</span><br></div>',
 );
 

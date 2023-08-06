@@ -1245,7 +1245,7 @@ function itembuy($item,$shop,$bnum=1,&$data=NULL)
 		$log .= '你的钱不够，不能购买此物品！<br><br>';
 		$mode = 'command';
 		return;
-	} elseif(!preg_match('/^(WC|WD|WF|Y|B|C|TN|GB|H|V|M)/',$iteminfo['itmk'])&&$bnum>1) {
+	} elseif(!preg_match('/^(WC|WD|WF|X|Y|B|C|TN|GA|GB|H|V|M|ygo|p)/',$iteminfo['itmk'])&&$bnum>1) {
 		$log .= '此物品一次只能购买一个。<br><br>';
 		$mode = 'command';
 		return;
@@ -1666,12 +1666,12 @@ function reload_single_set_item(&$pa,$eqp,$enm,$active=0)
 function check_item_edit_event($pa,&$pd,$event)
 {
 	$flag = 0;
-	for($i=0;$i<=6;$i++)
-	{
-		if(!empty($pd['itms'.$i]))
+	# 「渗透」效果判定
+	if($event == 'c8_infilt')
+	{	
+		for($i=0;$i<=6;$i++)
 		{
-			# 「渗透」效果判定
-			if($event == 'c8_infilt')
+			if(!empty($pd['itms'.$i]))
 			{
 				if(strpos($pd['itmk'.$i],'H')===0)
 				{
@@ -1680,6 +1680,36 @@ function check_item_edit_event($pa,&$pd,$event)
 					$flag = 1;
 				}
 			}
+		}
+	}
+	# 「延咒」效果判定
+	elseif($event == 'tl_cursetouch')
+	{
+		//偷懒，尝试12次添加诅咒属性
+		for($i=1;$i<=12;$i++)
+		{
+			
+			$curse_id = rand(1,12);
+			//1-6表示背包道具
+			if($curse_id <= 6)
+			{
+				if(!empty($pd['itms'.$i]) && strpos($pd['itmsk'.$i],'V')===False)
+				{					
+					$pd['itmsk'.$i] .= 'V';
+					$flag = 1;
+				}
+			}
+			//7-12表示装备
+			else
+			{
+				$curse_equipment = (Array('wep','arb','arh','ara','arf','art'))[$curse_id - 7];
+				if(!empty($pd[$curse_equipment]) && strpos($pd[$curse_equipment.'sk'],'V')===False)
+				{					
+					$pd[$curse_equipment.'sk'] .= 'V';
+					$flag = 1;
+				}				
+			}
+			if($flag == 1) break;
 		}
 	}
 	return $flag;
