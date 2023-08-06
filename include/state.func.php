@@ -525,8 +525,11 @@
 		if(isset($pa['bskill_c10_decons']) && $pa['final_damage'] > $pd['hp'])
 		{
 			$sk_up = ceil($pd['lvl'] - ($pa['lvl']*0.15));
-			$log.='<span class="yellow">「解构」使'.$pa['nm'].'获得了额外'.$sk_up.'点经验！</span><br>';
-			$expup += $sk_up;
+			if($sk_up > 0)
+			{
+				$log.='<span class="yellow">「解构」使'.$pa['nm'].'获得了额外'.$sk_up.'点经验！</span><br>';
+				$expup += $sk_up;
+			}		
 		}
 		if(!empty($expup)) $pa['exp'] += $expup;
 		//$log .= "$isplayer 的经验值增加 $expup 点<br>";
