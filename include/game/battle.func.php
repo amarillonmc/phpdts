@@ -82,6 +82,10 @@ function findcorpse(&$w_pdata)
 	$cstick_flag = 0;
 	if(!check_skill_unlock('tl_cstick',$pdata) && !check_skill_cost('tl_cstick',$pdata)) $cstick_flag = in_array($w_type,get_skillvars('tl_cstick','notype')) ? 0 : 1;
 	
+	// 初始化妙手数据
+	$pickpocket_flag = 0;
+	if(!check_skill_unlock('tl_pickpocket',$pdata) && !check_skill_cost('tl_pickpocket',$pdata)) $pickpocket_flag = 1;
+	
 	// 保存发现过女主尸体的记录
 	if($w_pdata['type'] == 14) $clbpara['achvars']['corpse_n14'] += 1;
 

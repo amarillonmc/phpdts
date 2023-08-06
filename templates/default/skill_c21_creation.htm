@@ -1,0 +1,64 @@
+<!--{eval $skid = 'c21_creation'; $cskill = $cskills[$skid];}-->
+<tr>
+    <td class="b1" width="40">
+        <span>{$cskill['name']}</span>
+    </td>
+    <td>
+        <!--{eval $unlock_skid_flag = check_skill_unlock('c21_creation',$uidata);}-->
+        <!--{eval $para = get_clbpara($uidata['clbpara']); $nchoice = $para['skillpara']['c21_creation']['choice'];}-->
+        <!--{if $unlock_skid_flag}-->
+        <div style="position:relative; height:100%; width:100%;" onmouseover="skill_unacquired_mouseover.call(this,event)" onmouseout="skill_unacquired_mouseout.call(this,event)">
+        <div class="skill_unacquired">
+        <!--{/if}-->
+            <table class="skilltable">
+                <tr>
+                    <td class="skilldesc_left b3">
+                        <span class="skilldesc">
+							<!--{eval $cdesc = parse_skilldesc($skid,$uidata);}-->
+							{$cdesc}
+							&nbsp;
+							<!--{if empty($no_skill_input)}-->
+								选择的属性为：
+								<select name="{$skid}upgpara" id="{$skid}upgpara" onchange="$('mode').value='revskpts';$('command').value='swtskill_{$skid}';postCmd('gamecmd','command.php');this.disabled=true;">
+								<!--{if empty($nchoice)}-->
+								<option value="" selected>无<br />
+								<!--{/if}-->
+								<!--{loop $cskills[$skid]['choice'] $key}-->
+									<!--{if $key != $nchoice}-->
+										<option value="$key">$itemspkinfo[$key]<br />
+									<!--{else}-->
+										<option value="$key" selected>$itemspkinfo[$key]<br />
+									<!--{/if}-->
+								<!--{/loop}-->
+								</select>
+								&nbsp;
+							<!--{/if}-->
+						</span>
+                    </td>
+                    <td class="skilldesc_right b3">
+					    <!--{if empty($no_skill_input)}-->
+                            <!--{if !empty($cskill['input']) && empty($max_lvl_flag)}-->
+                                <input type="button" onclick="$('mode').value='revskpts';$('command').value='upgskill_{$skid}';postCmd('gamecmd','command.php');this.disabled=true;" value="{$cskill['input']}">
+                            <!--{/if}-->
+                        <!--{/if}-->
+                    </td>
+                </tr>
+            </table>
+        <!--{if $unlock_skid_flag}-->
+            <!--{eval $unlock_desc = parse_skilllockdesc($skid,$unlock_skid_flag);}-->
+        </div>
+        <div class="skill_unacquired_hint">
+            <table class="skilltable">
+                <tr>
+                    <td valign="center" align="center">
+                        <span class="yellow">
+                            $unlock_desc
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        </div>
+        <!--{/if}-->
+    </td>
+</tr>

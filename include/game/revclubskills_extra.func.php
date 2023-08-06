@@ -272,6 +272,76 @@
 			}
 			return 1;
 		}
+		# 事件：驱血
+		if($event == 'creation')
+		{
+			include GAME_ROOT.'./gamedata/club21cfg.php';
+			$new_itmsk = get_skillpara($sk,'choice',$clbpara);
+			$sp_rate = get_skillvars($sk,'sp_rate');
+			$skillpoint_value = get_skillvars($sk,'skillpoint_value');
+			if (!empty($itmsk_extract_rate[$new_itmsk]))
+			{
+				$sp_cost = $itmsk_extract_rate[$new_itmsk] * $sp_rate;
+				if ($sp < $sp_cost)
+				{
+					if ($sp + $skillpoint_value * $skillpoint >= $sp_cost)
+					{
+						$skillpoint_cost = ceil(($sp_cost - $sp) / $skillpoint_value);
+						$log .= "消耗" . $skillpoint_cost . "技能点，代替了体力消耗。<br>";
+						$skillpoint -= $skillpoint_cost;
+						$sp_cost = $sp;
+					}
+					else
+					{
+						$log .= "体力与技能点不足，无法制造代码片段。<br>";
+						return 1;
+					}
+				}
+				$log .= "消耗体力" . $sp_cost . "点，制造了该代码片段。<br>";
+				$sp = $sp - $sp_cost;
+				$itm0 = "数据结成的属性代码片段";
+				$itmk0 = '🥚'; 
+				$itme0 = 0; 
+				$itms0 = 1; 
+				$itmsk0 = $new_itmsk;
+				return 1;
+			}
+			else 
+			{
+				$log .= "该属性代码片段无法制造！这可能是一个BUG，请联系管理员。<br>";
+			}
+			return 0;
+		}
+		# 事件：涌血
+		if($event == 'discovery')
+		{
+			global $gamevars;
+			include GAME_ROOT.'./include/game/club21.func.php';
+			if(empty($gamevars['name_fragment_list'])) $gamevars['name_fragment_list'] = generate_name_fragment_list($item_name_fragment_list, $name_fragment_available_num);
+			$rank = get_skillpara($sk,'rank',$clbpara);
+			$spcost = get_skillvars($sk,'spcost');
+			$hpcost = get_skillvars($sk,'hpcost');
+			
+			if (($sp > $spcost) && ($hp > $hpcost))
+			{
+				$log .= "消耗体力上限" . $spcost . "点。<br>";
+				$log .= "消耗生命上限" . $hpcost . "点。<br>";
+				$msp -= $spcost;
+				$mhp -= $hpcost;
+				if ($sp > $msp) $sp = $msp;
+				if ($hp > $mhp) $hp = $mhp;
+				// 随机抽取一个当前技能等级的字段
+				$rand_key = array_rand($gamevars['name_fragment_list'][$rank]);
+				$new_frag = $gamevars['name_fragment_list'][$rank][$rand_key];
+				$log .= "发现了字段<span class='yellow'>「" . $new_frag . "」</span>。<br>";
+				set_skillpara($sk,'frag',$new_frag,$clbpara);
+				return 1;
+			}
+			else{
+				$log .= "你的体力与生命上限无法支撑你的这次尝试。<br>";
+			}
+			return 0;			
+		}
 		# 事件：获取指定技能
 		if(strpos($event,'getskill_') === 0)
 		{
@@ -647,5 +717,80 @@
 		}
 		return;
 	}
+	
+	# 妙手给尸体/塞东西
+	function skill_tl_pickpocket_act($itmn)
+	{
+		global $log,$pdata,$cskills,$db,$tablepre;
+		$lock = check_skill_unlock('tl_pickpocket',$pdata);
+	
+		$id = (end($pdata['clbpara']['smeo']))[0];
+		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid = '$id'");
+		$edata = $db->fetch_array($result);
+		
+		if(!$edata)
+		{
+			$log .= "就当你刚拿出道具的时候，却发现先前看到的尸体已经不见了。这是怎么做到的？<br>";
+			$action = ''; $bid = 0;
+			$mode = 'command';
+			return;
+		}
+		
+		if(!$lock)
+		{
+			# 扣除怒气
+			$pdata['rage'] -= get_skillvars('tl_pickpocket','ragecost');
+			if(!$pdata['itms'.$itmn])
+			{
+				$log .= '此道具不存在！';
+				$action = ''; $bid = 0;
+				$mode = 'command';
+				return;
+			}
+			//诅咒物品都放？做个人吧！
+			elseif(strpos($pdata['itmsk'.$itmn],'V')!==false)
+			{
+				$log .= "你刚拿起这个道具，就感觉脑内一片空白。<br>……你本来打算干什么来着？<br>不知为何，你感到了强烈的负罪感。<br>";
+				$pdata['rp'] += 2333;
+				$action = ''; $bid = 0;
+				return;
+			}
+			//灵魂绑定物品放上去会消失，赛博烧纸
+			elseif(strpos($pdata['itmsk'.$itmn],'v')!==false)
+			{
+				$log .= "你将这个道具放到了尸体上，它瞬间化作灰烬消散了。<br>……<br>你感到内心稍微平静了一些。<br>";
+				destory_single_item($pdata, $itmn);
+				$pdata['rp'] -= 777;
+				$action = ''; $bid = 0;
+				return;
+			}
+
+			for($i = 1;$i <= 6; $i++)
+			{
+				if(!$edata['itms'.$i]) 
+				{
+					$edata['itm'.$i] = $pdata['itm'.$itmn];
+					$edata['itmk'.$i] = $pdata['itmk'.$itmn];
+					$edata['itme'.$i] = $pdata['itme'.$itmn];
+					$edata['itms'.$i] = $pdata['itms'.$itmn];
+					$edata['itmsk'.$i] = $pdata['itmsk'.$itmn];
+					player_save($edata);
+					$log .= '你冷静下来张望四周，然后迅速将一个道具放入了尸体身上的物品中。<br>希望不要有人发现……？<br>';
+					destory_single_item($pdata, $itmn);	
+					//坏东西！
+					$pdata['rp'] += 233;				
+					$action = ''; $bid = 0;
+					return;
+				}
+			}
+			$log .= "尸体身上已经放了不少东西，你找不到一个合适的位置来放下你的物品。<br>";
+		}
+		else 
+		{
+			$log .= isset($cskills['tl_pickpocket']['lockdesc'][$lock]) ? $cskills['tl_pickpocket']['lockdesc'][$lock] : $lock;
+		}
+		return;
+	}
+
 
 ?>

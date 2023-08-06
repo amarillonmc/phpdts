@@ -228,6 +228,38 @@ namespace revcombat
 			}
 		}
 		
+		# 「延咒」效果判定
+		if(isset($pa['skill_tl_cursetouch']))
+		{
+			$curse_obbs = get_skillvars('tl_cursetouch','curse_obbs');
+			$curserate = get_skillvars('tl_cursetouch','curserate');
+			$dice = diceroll(99);
+			if (in_array('V',$pa['ex_keys'])) $curse_obbs *= $curserate;
+			if($dice < $curse_obbs)
+			{
+				include_once GAME_ROOT.'./include/game/itemmain.func.php';
+				$flag = check_item_edit_event($pa,$pd,'tl_cursetouch');
+				if($flag) $log .= "<span class='yellow'>「延咒」使{$pd['nm']}受到了诅咒！</span><br>";
+			}
+		}
+	
+		# 「妙手」效果判定
+		if (isset($pa['bskill_tl_pickpocket']))
+		{
+			$picklimit = get_skillvars('tl_pickpocket','picklimit');
+			//这叫earn合适吗？
+			$earn = round($pd['money'] * rand(0, $picklimit) / 100);
+			if ($earn == 0) $log .= "<span class='yellow'>{$pa['nm']}没有从{$pd['nm']}身上获得金钱！</span><br>";
+			else
+			{
+				$pd['money'] -= $earn;
+				$pa['money'] += $earn;				
+				$log .= "<span class='yellow'>你从{$pd['nm']}身上获得了{$earn}元金钱！</span><br>";
+				if(!$pd['type'] && $pd['nm']!='你') $pd['logsave'] .= "你被窃走了{$earn}元金钱！<br>";
+				elseif(!$pa['type'] && $pa['nm']!='你') $pa['logsave'] .= "你从{$pd['name']}身上获得了{$earn}元金钱！<br>";
+			}
+		}
+		
 		# 「冰心」效果判定
 		if (isset($pd['skill_c9_iceheart']) && !empty($pd['inf']))
 		{

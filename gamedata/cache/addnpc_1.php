@@ -482,7 +482,7 @@ $anpcinfo = array
 			'itmk2' => 'WF',
 			'itme2' => 500,
 			'itms2' => 100,
-			'itmsk2' => 'cd',
+			'itmsk2' => 'crd',
 			),
 		1 => array
 			(
@@ -509,7 +509,7 @@ $anpcinfo = array
 			'itmk2' => 'WG',
 			'itme2' => 500,
 			'itms2' => 6,
-			'itmsk2' => 'd',
+			'itmsk2' => 'rdy',
 			),
 		),
 	),
@@ -1458,8 +1458,6 @@ $anpcinfo = array
 		'inf' => '',
 		'state' => 1,
 		'rage' => 5,
-		'pose'=> 0,
-		'tactic' => 4,
 		'killnum' => 0,
 		'teamID' => '',
 		'teampsss' => '',
@@ -1500,10 +1498,12 @@ $anpcinfo = array
 			(
 			'name' => '红暮',
 			'club' => 98,
+			'pose'=> 2,
+			'tactic' => 3,
 			'mhp' => 20800,
 			'msp' => 2800,
-			'att' => 1100,
-			'def' => 1500,
+			'att' => 3300,
+			'def' => 2500,
 			'skills' => 15566,
 			'icon' => 7,
 			'wep' => '喷气式红杀重铁剑',
@@ -1545,6 +1545,8 @@ $anpcinfo = array
 			(
 			'name' => '蓝凝',
 			'club' => 10,
+			'pose'=> 1,
+			'tactic' => 3,
 			'mhp' => 9999998,
 			'msp' => 1600,
 			'att' => 199900,
@@ -1913,7 +1915,7 @@ $anpcinfo = array
 			'itme4' => 500,
 			'itms4' => 500,
 			'itmsk4' => 'HZ',
-			'itm6' => '☾愈合数据☽',
+			'itm6' => '❀愈合数据❀',
 			'itmk6' => 'HB',
 			'itme6' => 300,
 			'itms6' => '∞',
@@ -2596,8 +2598,8 @@ $anpcinfo = array
 		'weps' => 50,
 		'itm5' => '◆熟练数据',
 		'itmk5' => '🎆V',
-		'itme5' => 1,
-		'itms5' => 5,
+		'itme5' => 5,
+		'itms5' => 1,
 		),
 	2 => array
 		(
@@ -2609,8 +2611,8 @@ $anpcinfo = array
 		'weps' => 50,
 		'itm5' => '◆生命数据',
 		'itmk5' => '🎆O',
-		'itme5' => 1,
-		'itms5' => 10,
+		'itme5' => 10,
+		'itms5' => 1,
 		),
 	3 => array
 		(
@@ -2622,8 +2624,8 @@ $anpcinfo = array
 		'weps' => 50,
 		'itm5' => '◆意念数据',
 		'itmk5' => '🎆D',
-		'itme5' => 1,
-		'itms5' => 10,
+		'itme5' => 10,
+		'itms5' => 1,
 		),
 	4 => array
 		(

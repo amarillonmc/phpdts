@@ -1,0 +1,29 @@
+<input type="hidden" name="mode" value="command" />
+<input type="hidden" name="command" value="special" />
+<input type="hidden" name="sp_cmd" value="sp_consume_trait_selected" />
+<input type="hidden" id="choice" name="choice" value="menu" />
+
+<span class="glitchb">／＊</span><br>
+<span class="blueseed">
+	「指指点点省略号……<br>
+    <br>
+    …………等等，这个界面你是怎么点进来的？NPC应该永远用不到它才对啊！<br>
+    如雪如果是你的话，回头给我报个BUG我再来看看……<br>
+    <br> 
+</span>
+<span class="glitchb">＊／</span><br>
+你的脑海中奇怪地闪过了以上内容。<br>……那么，你准备消耗哪个代码片段？<br>
+<br>
+<div style="padding: 5px;">
+    <select name="choice" onclick=sl('choice'); href="javascript:void(0);">
+    <!--{if (strpos($itmk1, '🥚') === 0)}--><option value="1">$itm1/$itme1/$itms1<br /><!--{/if}-->
+    <!--{if (strpos($itmk2, '🥚') === 0)}--><option value="2">$itm2/$itme2/$itms2<br /><!--{/if}-->
+    <!--{if (strpos($itmk3, '🥚') === 0)}--><option value="3">$itm3/$itme3/$itms3<br /><!--{/if}-->
+    <!--{if (strpos($itmk4, '🥚') === 0)}--><option value="4">$itm4/$itme4/$itms4<br /><!--{/if}-->
+    <!--{if (strpos($itmk5, '🥚') === 0)}--><option value="5">$itm5/$itme5/$itms5<br /><!--{/if}-->
+    <!--{if (strpos($itmk6, '🥚') === 0)}--><option value="6">$itm6/$itme6/$itms6<br /><!--{/if}-->
+    </select>
+    <br>
+</div>
+
+<input type="button" class="cmdbutton" id="zz" name="submit" value="[Z]提交" onclick="postCmd('gamecmd','command.php');this.disabled=true;">

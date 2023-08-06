@@ -339,6 +339,16 @@ namespace revattr
 			$key = array_search('r',$pa['ex_keys']);
 			unset($pa['ex_keys'][$key]);
 		}
+		# 「妙手」效果判定：
+		if(isset($pa['bskill_tl_pickpocket']))
+		{
+			global $exdmgname;
+			foreach (array_keys($exdmgname) as $ex)
+			{
+				$key = array_search($ex,$pa['ex_keys']);
+				unset($pa['ex_keys'][$key]);
+			}
+		}
 		# 「天义」效果判定：
 		if(isset($pa['skill_c6_justice']) && (empty($pa['ex_keys']) || !in_array('N',$pa['ex_keys']))) $pa['ex_keys'][] = 'N';
 		return;
@@ -1104,6 +1114,12 @@ namespace revattr
 			$p = 1 + ($sk_p / 100);
 			$dmg_p[]= $p; 
 			$log.="<span class='yellow'>「解构」使{$pa['nm']}造成的物理伤害提高了{$sk_p}%！</span><br>";
+		}
+		#「妙手」判定：
+		if(isset($pa['bskill_tl_pickpocket']))
+		{
+			$dmg_p[]= 0; 
+			$log.="<span class='yellow'>「妙手」使{$pa['nm']}的本次攻击几乎没有造成任何伤害！</span><br>";
 		}
 		#「宗师」判定：
 		if(isset($pa['skill_c13_master']) && $pa['wep_kind'] != 'N')
@@ -1882,6 +1898,90 @@ namespace revattr
 				}
 				$fin_dmg -= $offset_dmg;
 			}
+		}
+		# 「爆血」技能效果：
+		if(isset($pa['bskill_c21_blaster']))
+		{
+			$dmgrate = get_skillvars('c21_blaster','dmgrate');
+			$esum = 0;
+			$ssum = 0;
+			$sk_tot = '';
+			
+			if(!isset($data))
+			{
+				global $pdata;
+				$data = &$pdata;
+			}
+			extract($data,EXTR_REFS);
+				
+			//引爆身上的全部代码片段，并记录效耐和与属性
+			$log .= "{$pa['nm']}引爆了身上所有的代码片段！<br>";
+			foreach (array(1, 2, 3, 4, 5, 6) as $item_position)
+			{
+				if (mb_strpos(${'itmk' . $item_position}, '🥚') === 0)
+				{
+					$itme = &${'itme' . $item_position};
+					$itms = &${'itms' . $item_position};
+					$itmsk = &${'itmsk' . $item_position};
+					$esum += $itme;
+					if ($itms === '∞') $ssum += 120;
+					else $ssum += (int)$itms;
+					$sk_tot .= $itmsk;
+					destory_single_item($pdata, $item_position);
+				}
+			}
+			//对双方造成等同于这些片段上的异常状态
+			global $ex_inf, $exdmginf;				
+			$ex_inf_arr = '';
+			for ($i = 0; $i < mb_strlen($sk_tot); $i++)
+			{
+				if ((isset($ex_inf[$sk_tot[$i]])) && (mb_strpos($ex_inf_arr, $ex_inf[$sk_tot[$i]]) === false)) {
+					$ex_inf_arr .= $ex_inf[$sk_tot[$i]];
+					get_inf_rev($pa,$ex_inf[$sk_tot[$i]]);
+					get_inf_rev($pd,$ex_inf[$sk_tot[$i]]);
+					$log .= "<span class='yellow'>爆炸的代码片段使双方{$exdmginf[$ex_inf[$sk_tot[$i]]]}了！</span><br>";
+				}
+			}		
+			
+			//特定系数：耐久和100以下是0.2，500以上是0.4，2500以上是0.6，10000以上是1.0，30000以上是2.0
+			if ($ssum < 100) $s_factor = 0.2;
+			elseif ($ssum < 500) $s_factor = 0.3;
+			elseif ($ssum < 2500) $s_factor = 0.4;
+			elseif ($ssum < 10000) $s_factor = 0.6;
+			elseif ($ssum < 30000) $s_factor = 1.0;
+			else $s_factor = 2.0;
+			
+			//对双方造成等同于这些片段上的效果和除以特定系数的额外伤害
+			if ($esum == 0) $blaster_dmg = 1;
+			else $blaster_dmg = (int)($esum / $s_factor);
+			$pa['hp'] -= $blaster_dmg;
+			if ($pa['hp'] <= 0)
+			{
+				$pa['hp'] = 0;				
+				include_once GAME_ROOT . './include/state.func.php';
+				death('club21_blaster');
+			}
+			
+			//每受到100点伤害就随机炸伤对手身上一个部位
+			$hurt_times = min(floor($blaster_dmg/$dmgrate), 4);
+			$hurts = array('b','h','a','f');
+			$rand_hurt_key = array_rand($hurts, $hurt_times);
+			//array_rand怎么是这样的？
+			if ($hurt_times == 1)
+			{
+				get_inf_rev($pd, $hurts[$rand_hurt_key]);
+				$log .= "<span class=\"yellow\">爆炸的代码片段使{$pd['nm']}{$exdmginf[$hurts[$rand_hurt_key]]}了！</span><br>";
+			}
+			else
+			{
+				foreach ($rand_hurt_key as $key) {
+					get_inf_rev($pd, $hurts[$key]);
+					$log .= "<span class=\"yellow\">爆炸的代码片段使{$pd['nm']}{$exdmginf[$hurts[$key]]}了！</span><br>";
+				}
+			}
+			
+			$log .= "<span class=\"yellow\">爆炸的代码片段对双方造成了<span class=\"red\">$blaster_dmg</span>点额外伤害！</span><br>";
+			$fin_dmg += $blaster_dmg;
 		}
 		# 伤害制御判定：
 		if(in_array('h',$pd['ex_keys']) && $fin_dmg>=1950)

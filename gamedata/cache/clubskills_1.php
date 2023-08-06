@@ -27,7 +27,7 @@ $club_skillslist = Array
 	//18 => Array('s_hp','s_ad','f_heal'), #'天赋异禀',
 	19 => Array('s_hp','s_ad','f_heal','c19_nirvana','c19_reincarn','c19_purity','c19_crystal','c19_redeem','c19_dispel','c19_woesea'), #'晶莹剔透', //晶莹剔透、决死结界合并为晶莹剔透
 	20 => Array('s_hp','s_ad','f_heal','c20_fertile','c20_windfall','c20_lighting','c20_zombie','c20_sparkle','c20_lotus'), #'元素大师', #商店购买社团卡
-	21 => Array('s_hp','s_ad','f_heal'), #'码语行人'
+	21 => Array('s_hp','s_ad','f_heal','c21_stormedge','c21_creation','c21_discovery','c21_sacrifice','c21_blaster'), #'码语行人', #商店购买社团卡
 	22 => Array('s_hp','s_ad','f_heal'), #'偶像大师', #暂定名，「除错大师」头衔奖励
 	98 => Array('s_hp','s_ad','f_heal'), #'换装迷宫',
 	99 => Array('s_hp','s_ad','f_heal'), #'第一形态'
@@ -2179,6 +2179,122 @@ $cskills = Array
 			'lvl' => '[:lvl:] >= 17',
 		),
 	),
+	'c21_stormedge' => Array
+	(
+		'name' => '斥血',
+		'tags' => Array('passive'),
+		'desc' => '每次探索时，会损失一定比率的体力并增加体力上限；<br>
+		每次移动时，会损失一定比率的生命和体力并增加生命和体力上限；<br>
+		该损失比率：<span class="yellow">[:burn_rate:]%</span>×<span class="yellow">总行动次数</span><br>
+		你不会因为该效果损失生命而死。<br>
+		可以通过消耗代码片段来降低该系数，<br>
+		降低量：<span class="yellow">[:consume_rate:]%</span>×<span class="yellow">消耗代码片段效耐和的平方根</span>',
+		'vars' => Array(
+			'burn_rate' => 0.03,
+			'consume_rate' => 0.3,
+			'gain_rate' => 0.006
+		),
+		'pvars' => Array('skillpara|c21_stormedge-ms', 'skillpara|c21_stormedge-consumpt'),
+	),
+	'c21_creation' => Array
+	(
+		'name' => '驱血',
+		'tags' => Array('active'),
+		'desc' => '选择一个属性，消耗等同于该属性提取系数<span class="yellow">[:sp_rate:]</span>倍的体力值，<br>制造一个该属性的代码片段。<br>
+		体力不足时会使用技能点代替，每技能点相当于<span class="yellow">[:skillpoint_value:]</span>体力<br>',
+		'input' => '制造',
+		'log' => '……<br>',
+		'clog' => '……<br>',
+		'events' => Array('creation'),
+		'choice' => Array('A','a','B','b','C','c','D','d','E','e','F','f','G','g','H','h','I','i','J','j','K','k','l','M','m','N','n','o','P','p','q','R','r','S','s','U','u','V','v','W','w','X','x','y','Z','z','-','*','+','^','🧰','🍎'),
+		'svars' => Array(
+			'choice' => 'A',
+		),
+		'vars' => Array(
+			'sp_rate' => 2,
+			'skillpoint_value' => 30,
+		),
+		'lockdesc' => Array(
+			'lvl' => '5级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 5',
+		),
+	),
+	'c21_discovery' => Array
+	(
+		'name' => '涌血',
+		'tags' => Array('active'),
+		'desc' => '消耗<span class="yellow">[:spcost:]</span>体力上限和<span class="yellow">[:hpcost:]</span>生命上限，发现一个等级<span class="yellow">[^skillpara|c21_discovery-rank^]</span>的字段名。<br>
+		提取出当前发现的字段达到<span class="yellow">[:task:]</span>次后，你不会再因为「斥血」损失生命和体力。<br>
+		<span class="grey">当前发现的字段：</span><span class="yellow">[^skillpara|c21_discovery-frag^]</span><br>
+		<span class="grey">当前已成功提取：[^skillpara|c21_discovery-count^]次</span>',
+		'input' => '发现',
+		'log' => '<span class="yellow">……</span>',
+		'events' => Array('discovery'),
+		'svars' => Array(
+			'frag' => '暂无',
+			'count' => 0,
+			'rank' => 1
+		),
+		'vars' => Array(
+			'spcost' => 15,
+			'hpcost' => 20,
+			'task' => 7
+		),
+		'pvars' => Array('skillpara|c21_discovery-frag', 'skillpara|c21_discovery-count', 'skillpara|c21_discovery-rank'),
+		'lockdesc' => Array(
+			'lvl' => '9级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 9',
+		),
+	),
+	'c21_sacrifice' => Array
+	(
+		'name' => '燃血',
+		'tags' => Array('switch'),
+		'desc' => '技能开启后，在提取代码片段时，<br>
+		可以支付等量的生命值代替不足的体力，<br>
+		若生命值不足，<span class="yellow">[:death_obbs:]%</span>概率会立即死亡，若幸存则会剩余<span class="yellow">1</span>点生命值<br>
+		[^skill-active^]',
+		'input' => '切换',
+		'log' => '<span class="yellow">切换了「燃血」的状态。</span>',
+		'events' => Array('active|c21_sacrifice'),
+		'vars' => Array(	
+			'death_obbs' => 50 //入乡随俗
+		),
+		'svars' => Array(
+			'active' => 0, 
+		),
+		'pvars' => Array('skill-active'),
+		'lockdesc' => Array(
+			'lvl' => '16级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 16',
+		),
+	),
+	'c21_blaster' => Array
+	(
+		'name' => '爆血',
+		'tags' => Array('battle'),
+		'desc' => '消耗<span class="yellow">[:ragecost:]</span>点怒气，引爆身上的全部代码片段，<br>
+		对敌人和自己造成等同于这些片段上的异常状态，<br>
+		并附加由这些片段的效果和与耐久和决定的最终伤害。<br>
+		你每因此受到<span class="yellow">[:dmgrate:]</span>点伤害，就随机造成敌人一处受伤。',
+		'bdesc' => "引爆身上的全部代码片段，根据片段的属性对双方造成额外伤害和效果；消耗<span class='red'>[:ragecost:]</span>怒气</span>",
+		'vars' => Array(
+			'ragecost' => 100, 
+			'dmgrate' => 100, //造成一处部位受伤需要的伤害量
+		),
+		'lockdesc' => Array(
+			'lvl' => '20级时解锁',
+		),
+		'unlock' => Array(
+			'lvl' => '[:lvl:] >= 20',
+		),
+	),
 	'inf_zombie' => Array
 	(
 		'name' => '灵俑',
@@ -2201,6 +2317,31 @@ $cskills = Array
 			'ragecost' => 100, 
 			'limit' => 2000,
 			'notype' => Array(88,92),//不能用来抡的NPC
+		),
+	),
+	'tl_pickpocket' => Array
+	(
+		'name' => '妙手',
+		'tags' => Array('battle','passive'),
+		'desc' => '消耗<span class="yellow">[:ragecost:]</span>点怒气，获得敌人随机数量的金钱，<br>
+		至多<span class="yellow">[:picklimit:]%</span>，但本次攻击不造成伤害，且射程与持灵系武器相同；<br>
+		发现尸体时，可消耗<span class="yellow">[:ragecost:]</span>点怒气，将一个物品置入尸体的持有物品中',
+		'bdesc' => '偷取敌人随机数量（至多<span class="yellow">[:picklimit:]%</span>）的金钱；消耗<span class="red">[:ragecost:]</span>怒气</span>',
+		'vars' => Array(
+			'picklimit' => 10,
+			'ragecost' => 30,
+		),
+	),
+	//技能名或许可以换一个
+	'tl_cursetouch' => Array
+	(
+		'name' => '延咒',
+		'tags' => Array('passive'),
+		'desc' => '你每次攻击命中后，有<span class="yellow">[:curse_obbs:]%</span>概率使敌人装备或背包中的随机一件道具添加<span class="red">诅咒属性</span>，<br>
+		若你的装备带有<span class="red">诅咒属性</span>，此概率变为<span class="yellow">[:curserate:]</span>倍',
+		'vars' => Array(
+			'curse_obbs' => 1,
+			'curserate' => 5,
 		),
 	),
 	'inf_dizzy' => Array
