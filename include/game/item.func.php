@@ -1430,6 +1430,7 @@ function itemuse($itmn,&$data=NULL) {
 					}
 				}
 			}
+		}
 		}elseif($itmk == '🎆B'){
 			# Fireseed Box, containing various helpful items.
 			# Officially dubbed Silent Box.
