@@ -8,6 +8,24 @@
 <!--{if isset($extrahead)}-->$extrahead<!--{/if}-->
 <script async defer data-website-id="645ba563-c97e-4270-97af-d669335db957" src="https://tracker.dts.gay/umami.js"></script>
 <!--{if $allowcsscache}--><link rel="stylesheet" type="text/css" id="css" href="gamedata/cache/style_20190718.css"><!--{else}--><style type="text/css" id="css">{template css}</style><!--{/if}-->
+<!--{if (CURSCRIPT == 'messages')}-->
+<link rel="stylesheet" type="text/css" href="gamedata/cache/style_buttons.20180118.css">
+<link rel="stylesheet" type="text/css" href="gamedata/cache/style_messages.20180221.css">
+<!--{/if}-->
+
+<!-- 为了在移植时偷懒，我直接对jQuery进行一个入的引 -->
+<!-- jScrollPanel Utility Start -->
+<link type="text/css" href="include/javascript/jScrollPane/jquery.jscrollpane.css" rel="stylesheet" media="all" />
+<link type="text/css" href="include/javascript/jScrollPane/jquery.jscrollpane.lozenge.css" rel="stylesheet" media="all" />
+<script type="text/javascript" src="include/javascript/jScrollPane/jquery.min.js"></script>
+<script type="text/javascript" src="include/javascript/jScrollPane/jquery.mousewheel.js"></script>
+<script type="text/javascript" src="include/javascript/jScrollPane/mwheelIntent.js"></script>
+<script type="text/javascript" src="include/javascript/jScrollPane/jquery.jscrollpane.js"></script>
+<script type="text/javascript" id="sourcecode">
+jQuery.noConflict();
+</script>
+<!-- jScrollPanel Utility End -->
+
 <script type="text/javascript" src="include/common.js"></script>
 <script type="text/javascript" src="include/game20130526.js"></script>
 <script type="text/javascript" src="include/json.js"></script>
@@ -28,7 +46,13 @@
 <div class="title" >{lang title}</div>
 <div class="headerlink" >
 <a href="index.php">>>{lang index}</a>
-<!--{if isset($cuser) && isset($cpass)}--><a href="user_profile.php">>>{lang user}</a>
+<!--{if isset($cuser) && isset($cpass)}-->
+<a href="messages.php">>>{lang messages}
+	<!--{if !empty($new_messages)}-->
+	<span class="L5 b">NEW!</span>
+	<!--{/if}-->
+</a>
+<a href="user_profile.php">>>{lang user}</a>
 <!--{else}--><a href="register.php">>>{lang register}</a><!--{/if}-->
 <a href="game.php">>>{lang game}</a>
 <a href="map.php">>>{lang map}</a>
