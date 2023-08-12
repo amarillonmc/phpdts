@@ -10,7 +10,7 @@ $messages_autocreatedb = 1;//自动建表功能，一个很丑陋的开关
 
 //判定是邮箱页面还是垃圾箱页面，并拉取对应的站内信数据
 function init_messages($mode){
-	if('showdel' == $mode || 'recover' == $mode) {
+	if('showdel' == $mode || 'recover' == $mode || 'del2' == $mode) {
 		return deleted_message_load();
 	}else{
 		return message_load();
