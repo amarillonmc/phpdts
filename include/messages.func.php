@@ -5,8 +5,10 @@ if(!defined('IN_GAME')) {
 }
 
 $title2qiegao = 50;//已有头衔再次获得时转成多少切糕。单独一项配置不想放在其他文件里，干脆就丢这
+
 $messages_autocreatedb = 1;//自动建表功能，一个很丑陋的开关
 
+//判定是邮箱页面还是垃圾箱页面，并拉取对应的站内信数据
 function init_messages($mode){
 	if('showdel' == $mode || 'recover' == $mode) {
 		return deleted_message_load();
@@ -15,11 +17,11 @@ function init_messages($mode){
 	}
 }
 
-//判断有没有新站内信，基本上每次载入页面都需要调用
-//因为check这个词用在查收站内信上了，不要吐槽这个命名
-function is_there_new_messages(){
-	global $db, $gtablepre, $cuser, $new_messages, $messages_autocreatedb;
-	$new_messages = 0;
+//判断指定用户有没有新站内信，基本上每次载入页面都需要调用
+//如果没有新站内信则返回0，否则返回新站内信的数目
+function message_check_new($username)
+{
+	global $cuser,$db,$gtablepre;
 	if($cuser){
 		//考虑到devtools.php也得先载入common.inc.php，从而如果没有建表就会直接出错，必须在这里就做判断是否存在message表
 		//而既然做了判断为什么不直接建表呢？
@@ -31,13 +33,13 @@ function is_there_new_messages(){
 				create_messages_db();
 			}
 		}
-		
-		$result = $db->query("SELECT mid FROM {$gtablepre}messages WHERE receiver='$cuser' AND rd=0");
-		$new_messages = $db->num_rows($result);
 	}
+	$result = $db->query("SELECT mid FROM {$gtablepre}messages WHERE receiver='$username' AND rd=0");
+	$num = $db->num_rows($result);
+	return $num;
 }
 
-//很丑陋
+//自动建表，很丑陋
 function create_messages_db(){
 	global $db, $gtablepre;
 	$query = 
@@ -78,6 +80,8 @@ CREATE TABLE bra_del_messages (
 	$db->queries(str_replace('bra_',$gtablepre,$query));
 }
 
+//创建一封新邮件
+//$to为接收用户名，$title为标题，$content为内容文字，$enclosure为附件（现支持getqeigao_xxx和gettitle_xxx两种附件），$from为发件人，$t为时间
 function message_create($to, $title='', $content='', $enclosure='', $from='sys', $t=0)
 {
 	global $now,$db,$gtablepre;
@@ -94,15 +98,7 @@ function message_create($to, $title='', $content='', $enclosure='', $from='sys',
 	$db->array_insert("{$gtablepre}messages", $ins_arr);
 }
 
-//虽然直接放到sys模块里了，但是某些地方需要第二次更新的话，还是需要这个
-function message_check_new($username)
-{
-	global $db,$gtablepre;
-	$result = $db->query("SELECT mid FROM {$gtablepre}messages WHERE receiver='$username' AND rd=0");
-	$num = $db->num_rows($result);
-	return $num;
-}
-
+//载入当前用户有关的全部邮件，如果传入$mid_only则只拉取mid字段（一般是拉取数量用）
 function message_load($mid_only=0)
 {
 	global $udata,$db,$gtablepre;
@@ -116,11 +112,13 @@ function message_load($mid_only=0)
 	return $messages;
 }
 
-function deleted_message_load()
+//载入当前用户相关的垃圾箱邮件
+function deleted_message_load($mid_only=0)
 {
 	global $udata,$db,$gtablepre;
 	$username = $udata['username'];
-	$result = $db->query("SELECT * FROM {$gtablepre}del_messages WHERE receiver='$username' ORDER BY dtimestamp DESC, mid DESC");
+	if($mid_only) $result = $db->query("SELECT mid FROM {$gtablepre}del_messages WHERE receiver='$username' ORDER BY timestamp DESC, mid DESC");
+	else $result = $db->query("SELECT * FROM {$gtablepre}del_messages WHERE receiver='$username' ORDER BY dtimestamp DESC, mid DESC");
 	$d_messages = array();
 	while($r = $db->fetch_array($result)){
 		$d_messages[$r['mid']] = $r;
@@ -163,14 +161,16 @@ function message_disp($messages)
 			if($gettitle && !empty($titles_list[$gettitle])) {//不存在的头衔不要发
 				$nicksrev_disp = is_array($udata['nicksrev']) ? $udata['nicksrev'] : json_decode($udata['nicksrev'],true);
 				$nownew = !in_array($gettitle, $nicksrev_disp['nicks']);
-				$mv['encl_disp'] .= '<div>头衔：<span class="'.$title_desc[$gettitle]['class'].'">'.$titles_list[$gettitle].($nownew ? ' <span class="L5 b">NEW!</span>' : '').'</span></div>';
+				$title_class = '';
+				if(isset($title_desc[$gettitle]['class'])) $title_class=$title_desc[$gettitle]['class'];
+				$mv['encl_disp'] .= '<div>头衔：<span class="'.$title_class.'">'.$titles_list[$gettitle].($nownew ? ' <span class="L5 b">NEW!</span>' : '').'</span></div>';
 			}
 		}
 	}
 	return $messages;
 }
 
-//查收站内信
+//查收站内信，传入的$checklist是包含站内信cid的数组
 function message_check($checklist, $messages)
 {
 	global $udata,$db,$gtablepre,$info, $titles_list, $title_desc, $title2qiegao;
@@ -210,6 +210,7 @@ function message_check($checklist, $messages)
 		$n = $udata['username'];
 		$c = $udata['credits2']+$getqiegaosum;
 		$t = $udata['nicksrev'];
+		if(is_array($t)) $t = json_encode($t);
 		$db->array_update("{$gtablepre}users", Array('credits2' => $c, 'nicksrev' => $t), "username='".$n."'");
 	}
 }

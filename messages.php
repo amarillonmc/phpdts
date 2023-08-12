@@ -42,11 +42,12 @@ if($mode == 'del' || $mode == 'del2') {//删除
 	}
 	if(!empty($reclist)) {
 		$cost = $message_rec_cost * sizeof($reclist);
-		if($udata['gold'] < $cost) {
+		if($udata['credits2'] < $cost) {
 			$info[] = '切糕不足，无法恢复邮件！';
 		}else {
-			\cardbase\get_qiegao(-$cost, $udata);
+			$udata['credits2'] -= $cost;
 			$info[] = '支付了'.$cost.'切糕';
+			$db->array_update("{$gtablepre}users", Array('credits2' => $udata['credits2']), "username='".$udata['username']."'");
 			$editflag = 1;
 		}
 	}

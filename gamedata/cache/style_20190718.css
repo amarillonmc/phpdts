@@ -563,7 +563,7 @@ background-image: url("../../img/footer_line.gif");
 .clearfix {display: inline-table;} /* Hides from IE-mac \*/ * html .clearfix {height: 1%;} .clearfix {display: block;} /* End hide from IE-mac */ 
 
 input.cmdbutton{
-	width:80px;height:25px;margin:2;
+	min-width:80px;height:25px;margin:2;
 }
 
 .auto-style1 {

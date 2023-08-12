@@ -35,11 +35,11 @@ if($urcmd){
 		$resultinfo = '第'.$startno.'条-第'.$endno.'条记录';
 	}
 }
-if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del') {
+if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del' || $urcmd == 'sendmessage') {
 	$operlist = $gfaillist = $ffaillist = array();
 	for($i=0;$i<$showlimit;$i++){
 		if(isset(${'user_'.$i})) {
-			if(isset($urdata[$i]) && $urdata[$i]['uid'] == ${'user_'.$i} && $urdata[$i]['groupid'] < $mygroup){
+			if(isset($urdata[$i]) && $urdata[$i]['uid'] == ${'user_'.$i} && ($urdata[$i]['groupid'] < $mygroup || $urcmd == 'sendmessage')){
 				$operlist[${'user_'.$i}] = $urdata[$i]['username'];
 				if($urcmd == 'ban'){
 					$urdata[$i]['groupid'] = 0;
@@ -58,7 +58,9 @@ if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del') {
 	}
 	if($operlist || $gfaillist || $ffaillist){
 		$cmd_info = '';
-		if($urcmd == 'ban'){
+		if($urcmd == 'sendmessage'){
+			$operword = '发送邮件给';
+		}elseif($urcmd == 'ban'){
 			$operword = '封停';
 			$qryword = "UPDATE {$gtablepre}users SET groupid='0' ";
 		}elseif($urcmd == 'unban'){
@@ -69,10 +71,21 @@ if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del') {
 			$qryword = "DELETE FROM {$gtablepre}users ";
 		}
 		if($operlist){
-			$qrywhere = '('.implode(',',array_keys($operlist)).')';
-			$opernames = implode(',',($operlist));
-			$db->query("$qryword WHERE uid IN $qrywhere");
-			$cmd_info .= " 帐户 $opernames 被 $operword 。<br>";
+			if($urcmd == 'sendmessage'){
+				include_once './include/messages.func.php';
+				foreach($operlist as $receiver){
+					message_create($receiver, $stitle, $scontent, $senclosure, $from='sys');
+				}
+				$opernames = implode(',',($operlist));
+				$cmd_info .= " 给帐户 $opernames 发送了邮件 。<br>";
+				adminlog($urcmd.'ur',$opernames,json_encode($stitle,$scontent,$senclosure));
+			}else{
+				$qrywhere = '('.implode(',',array_keys($operlist)).')';
+				$opernames = implode(',',($operlist));
+				$db->query("$qryword WHERE uid IN $qrywhere");
+				$cmd_info .= " 帐户 $opernames 被 $operword 。<br>";
+			}
+			
 		}
 		if($gfaillist){
 			$gfailnames = implode(',',($gfaillist));

@@ -209,9 +209,8 @@ if(CURSCRIPT !== 'chat')
 	}
 	
 	//除拉取聊天以外的访问都判定一下是否有新的站内信。
-	$new_messages = 0;
 	include_once GAME_ROOT.'./include/messages.func.php';
-	is_there_new_messages();
+	$new_messages = message_check_new($cuser);
 	
 	fclose($plock); 
 }
