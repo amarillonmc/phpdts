@@ -1,0 +1,15 @@
+{template header}
+<div class="subtitle" align="center">{lang messages}</div>
+<center>
+	<div class="yellow b" id="info"></div>
+	<div>
+		<form method="post" name="message_cmd" onsubmit="messages.php">
+			<input type="hidden" id="mode" name="mode" value="show">
+			<input type="hidden" id="extracmd" name="extracmd" value="">
+			<div id="messages">
+				{template messages}
+			</div> 
+		</form>
+	</div>
+</center>
+{template footer}

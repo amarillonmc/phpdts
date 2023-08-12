@@ -7,8 +7,9 @@ $language = array
 	'index' => '首页',
 	'fullwin' => '全屏模式',
 	'backindex' => '返回首页',
-	
+	'messages' => '站内邮件',
 	'register' => '账号注册',
+	
 	'user' => '帐号资料',
 	'game' => '进入游戏',
 	'map' => '战场地图',

@@ -208,6 +208,10 @@ if(CURSCRIPT !== 'chat')
 		save_gameinfo();
 	}
 	
+	//除拉取聊天以外的访问都判定一下是否有新的站内信。
+	include_once GAME_ROOT.'./include/messages.func.php';
+	$new_messages = message_check_new($cuser);
+	
 	fclose($plock); 
 }
 ?>
