@@ -21,7 +21,7 @@ function init_messages($mode){
 //如果没有新站内信则返回0，否则返回新站内信的数目
 function message_check_new($username)
 {
-	global $cuser,$db,$gtablepre;
+	global $cuser,$db,$gtablepre,$messages_autocreatedb;
 	$num = 0;
 	if($cuser){
 		//考虑到devtools.php也得先载入common.inc.php，从而如果没有建表就会直接出错，必须在这里就做判断是否存在message表
@@ -34,7 +34,7 @@ function message_check_new($username)
 				create_messages_db();
 			}
 		}
-		$result = $db->query("SELECT mid FROM {$gtablepre}messages WHERE receiver='$username' AND rd=0");
+		$result = $db->query("SELECT mid FROM {$gtablepre}messages WHERE receiver='$cuser' AND rd=0");
 		$num = $db->num_rows($result);
 	}
 	return $num;
