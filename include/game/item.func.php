@@ -1465,7 +1465,6 @@ function itemuse($itmn,&$data=NULL) {
 	
 			include_once GAME_ROOT.'./include/game/itemmain.func.php';
 			itemget($data);
-		}
 
 		}elseif($itmk == '🎆C'){
 			# Weird Fireseed Box, containing interesting items.
