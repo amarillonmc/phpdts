@@ -1430,7 +1430,7 @@ function itemuse($itmn,&$data=NULL) {
 					}
 				}
 			}
-		}
+		
 		}elseif($itmk == '🎆B'){
 			# Fireseed Box, containing various helpful items.
 			# Officially dubbed Silent Box.
@@ -1514,6 +1514,7 @@ function itemuse($itmn,&$data=NULL) {
 			}
 		} */
 	# Special check for a poisoned fireseed item, WIP for now.	
+
 	}elseif($itmk == 'P🎆'){
 		$log.="这个<span class=\"yellow\">{$itm}</span>有毒！到底是谁干的！<br>";
 		# For Maximum Funniness, we destroy this item.
