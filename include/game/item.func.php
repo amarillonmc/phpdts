@@ -1194,9 +1194,7 @@ function itemuse($itmn,&$data=NULL) {
 				}
 			}
 			}
-		}
-
-		elseif ($itmk == '🎆V'){
+		}elseif ($itmk == '🎆V'){
 			# This is $w[X] up, it simply add to all $w[X] values.
 			if ($rank == 1){
 				$gainmax = 201;
@@ -1280,9 +1278,7 @@ function itemuse($itmn,&$data=NULL) {
 					}
 				}
 			}
-		}
-
-		elseif ($itmk == '🎆O'){
+		}elseif ($itmk == '🎆O'){
 			# This is $mhp up item, it simply add to that value.
 			if ($rank == 1){
 				$gainmax = 1001;
@@ -1356,9 +1352,7 @@ function itemuse($itmn,&$data=NULL) {
 					}
 				}
 			}
-		}
-
-		elseif ($itmk == '🎆D'){
+		}elseif ($itmk == '🎆D'){
 			# This is $def up item, it simply add to that value.
 			if ($rank == 1){
 				$gainmax = 1001;
