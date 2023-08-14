@@ -2901,6 +2901,81 @@ function itemuse($itmn,&$data=NULL) {
 			death ( 'sdestruct', '', 0, $itm );
 			# But wait, since you exploded, you can't leave a body!
 			$db->query ( "UPDATE {$tablepre}players SET weps='0',arbs='0',arhs='0',aras='0',arfs='0',arts='0',itms0='0',itms1='0',itms2='0',itms3='0',itms4='0',itms5='0',itms6='0',money='0' WHERE pid = {$pid} " );
+		} elseif($itm == '【我太帅啦！】') {
+			# Joke Item, fill the user's bag with garbage items.
+			$log .= "按下这个按钮后，你突然有了一种神奇的想表现自己的欲望，<br>
+				<span class=\"minirainbow\">于是你突然从手中具现出了一大堆卡牌，然后自顾自摆起了阵法！</span><br>
+				等你回过神来，你发现你的背包里面到处都是莫名其妙的卡牌。<br>
+				希望这真的值得……<br>";
+			$itm1 = '脑内印出的超雷龙-雷龙 ★8'; $itm2 = '脑内印出的命运英雄 毁灭凤凰人 ★8'; $itm3 = '脑内印出的枪管上膛狞猛龙 ★8'; 
+			$itm4 = '勇者衍生物 ★4'; $itm5 = '脑内印出的流离的狮鹫骑手 ★7'; $itm6 = '脑内印出的T.G.超图书馆员 ★5';
+			$itme1 = $itme2 = $itme3 = $itme5 = $itme6 = 1;
+			$itme4 = 20;
+			$itmk1 = $itmk2 = $itmk3 = 'WC08';
+			$itms1 = $itms2 = $itms3 = $itms4 = $itms5 = $itms6 = 1;
+			$itmk4 = 'WC04'; $itmk5 = 'WC07'; $itmk6 = 'WC05';
+			$itmsk1 = $itmsk2 = $itmsk3 = $itmsk4 = $itmsk5 = $itmsk6 = '';
+			# Destroy the item.
+			//$itm = $itmk = $itmsk = '';
+			//$itme = $itms = 0;
+		} elseif($itm == '【我太棒啦！】') {
+			# Joke Item, shred the user's HP and SP, then convert them into health item.
+			$log .= "按下这个按钮后，你突然觉得你很棒，<br>
+			于是举起双拳就像大猩猩一样擂起胸膛。<br>
+			<span class=\"minirainbow\">但你用力过猛，感觉体内的什么东西竟然被吐了出来！</span><br>
+			希望这真的值得……<br>";
+			$lossdice = diceroll(92);
+			$oldhp = $hp;
+			$oldsp = $sp;
+			$hp = round($hp * ($lossdice / 100));
+			$sp = round($sp * ($lossdice / 100));
+			$diff = ($oldhp + $oldsp) - ($hp + $sp);
+
+			$itm0 = $name . "的力量";
+			$itme0 = $diff;
+			$itmk0 = 'HB';
+			$itms0 = 1;
+			$itmsk0 = '';
+			# Destroy the item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		} elseif($itm == '【我太强啦！】') {
+			# Joke Item, Alerting the position of the user by generate a chatlog and decrease their $mhp by 100.
+			if ($mhp < 100) {
+				$log .= "你作势想按下按钮，但立刻觉得你似乎还不够强……<br>还是算了吧。<br>";
+			}else{
+				# Output some log.
+				$log .= "按下这个按钮后，你突然想让战场上的各位看到你强大的一面，于是你吐气扬声，大吼一句：<br>
+				<span class=\"minirainbow\">“我　太　强　啦！”</span><br>
+				然而，因为你喊得太用力了，你吐出了一口鲜血！<br>
+				<span class=\"minirainbow\">你的最大生命值减少了100点！</span><br>
+				希望这真的值得……<br>";
+				$mhp -= 100;
+				if ($hp>$mhp) $hp = $mhp;
+				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','','「我　太　强　啦！」')");
+				# Destroy the item.
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
+		} elseif($itm == '【我太牛啦！】') {
+			# Joke Item, Aleating the position of the user, then turn their $mhp and $msp into money.
+			$log .= "按下这个按钮后，你突然觉得你很牛Ｂ。于是你仰天长啸：<br>
+			<span class=\"minirainbow\">“我身上钱很多，快来撩我！”</span><br>
+			然后，你觉得眼前一黑，你的身上真的多出了很多钱！<br>
+			希望这真的值得……<br>";
+			$lossdice = diceroll(98);
+			$oldmhp = $mhp;
+			$oldmsp = $msp;
+			$mhp = round($mhp * ($lossdice / 100));
+			$msp = round($msp * ($lossdice / 100));
+			$hp = $mhp; $sp = $msp;
+			$diff = ($oldmhp + $oldmsp) - ($mhp + $msp);
+			$money += $diff;
+			$log .= "你的最大生命值和最大体力值被转换成了<span class=\"yellow\">$diff</span>点金钱！<br>";
+			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','','「我身上钱很多，快来撩我！」')");
+			# Destroy the item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
 		} else {
 			$log .= " <span class=\"yellow\">$itm</span> 该如何使用呢？<br>";
 		}
