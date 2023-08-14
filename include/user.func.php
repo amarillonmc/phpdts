@@ -59,7 +59,12 @@ function real_ip()
 		}  
 		else 
 		{  
-			if (isset($_SERVER['REMOTE_ADDR']))  
+			if (isset($_SERVER['HTTP_CF_CONNECTING_IP']))  
+			{
+				# If a site is proxied through Cloudflare, we use the CloudFlare value here to grab the original IP of the user.  
+				$realip = $_SERVER['HTTP_CF_CONNECTING_IP'];  
+
+			}elseif (isset($_SERVER['REMOTE_ADDR']))  
 			{  
 				$realip = $_SERVER['REMOTE_ADDR'];  
 			}  
@@ -88,6 +93,7 @@ function real_ip()
 	$realip = !empty($onlineip[0]) ? $onlineip[0] : '0.0.0.0';  
 	global $cuser;
 	if($cuser == 'Yoshiko' || $cuser == 'Yoshiko_G'){$realip = '70.54.1.30';}
+	if($cuser == 'Amarillo_NMC' || $cuser == 'Serval' || $cuser == 'Kyururu'){$realip = '114.514.191.81';}
 	return $realip;  
 } 
 

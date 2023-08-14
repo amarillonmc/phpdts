@@ -250,6 +250,7 @@ if($mode == 'enter') {
 	}
 
 	# Generate 3 random number and place it in $clbpara for future usage.
+	# Let's call this 梦2记系统
 	$clbpara['randver1'] = rand(1,128);
 	$clbpara['randver2'] = rand(1,256);
 	$clbpara['randver3'] = rand(1,1024);

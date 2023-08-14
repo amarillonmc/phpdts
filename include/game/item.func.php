@@ -1461,7 +1461,7 @@ function itemuse($itmn,&$data=NULL) {
 
 			if($itms <= 0) destory_single_item($data,$itmn,1);
 			$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
-			addnews($now,'present',$name,$oitm,$in,$nick);
+			if($itemflag = $sundata) addnews($now,'present',$name,$oitm,$in,$nick);
 	
 			include_once GAME_ROOT.'./include/game/itemmain.func.php';
 			itemget($data);
@@ -1492,7 +1492,7 @@ function itemuse($itmn,&$data=NULL) {
 
 			if($itms <= 0) destory_single_item($data,$itmn,1);
 			$itm0 = $in;$itmk0=$ik;$itme0=$ie;$itms0=$is;$itmsk0=$isk;
-			addnews($now,'present',$name,$oitm,$in,$nick);
+			if($itemflag = $sundata) addnews($now,'present',$name,$oitm,$in,$nick);
 	
 			include_once GAME_ROOT.'./include/game/itemmain.func.php';
 			itemget($data);
@@ -1725,7 +1725,7 @@ function itemuse($itmn,&$data=NULL) {
 		} elseif ($itm == '凸眼鱼') {
 			//global $db, $tablepre, $name,$now,$corpseprotect;
 			$tm = $now - $corpseprotect;//尸体保护
-			$db->query ( "UPDATE {$tablepre}players SET weps='0',arbs='0',arhs='0',aras='0',arfs='0',arts='0',itms0='0',itms1='0',itms2='0',itms3='0',itms4='0',itms5='0',itms6='0',money='0' WHERE hp <= 0 AND endtime <= $tm" );
+			$db->query ( "UPDATE {$tablepre}players SET weps='0',wep2s='0',arbs='0',arhs='0',aras='0',arfs='0',arts='0',itms0='0',itms1='0',itms2='0',itms3='0',itms4='0',itms5='0',itms6='0',money='0' WHERE hp <= 0 AND endtime <= $tm" );
 			$cnum = $db->affected_rows ();
 			addnews ( $now, 'corpseclear', $name, $cnum ,$nick);
 			$log .= "使用了<span class=\"yellow\">$itm</span>。<br>突然刮起了一阵怪风，吹走了地上的{$cnum}具尸体！<br>";

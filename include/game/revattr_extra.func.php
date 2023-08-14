@@ -247,7 +247,7 @@ namespace revattr
 					}else{
 						$log .= "<span class=\"neonblue\">“你不该这么做的。”</span><br>";
 					}
-					$rp_up = $pa['rp'] + $dice;
+					$rp_up = $dice;
 				}
 				elseif($phase == 'defend')
 				{
@@ -277,7 +277,7 @@ namespace revattr
 					}else{
 						$log .= "<span class=\"neonblue\">“罪恶感爬上了你的脊梁！”</span><br>";
 					}
-					$rp_up = $pa['rp'] + $dice;
+					$rp_up = $dice;
 				}
 				elseif($phase == 'defend')
 				{

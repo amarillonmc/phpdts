@@ -495,7 +495,26 @@
 	
 	function extract_sacrifice($sp_cost)
 	{	
-		global $log, $sp, $hp;
+		global $log, $sp, $hp, $mhp;
+		if ($hp > $mhp){
+			$hp_reset_dice = rand(0, 99);
+			$hp_difference = $hp - $mhp;
+			if ($hp_reset_dice > 90){
+				$hp = $mhp;
+				$log .= '你体内的<span class="glitchb">数据风暴</span>疯狂卷动，重置了你的生命值！';
+			}elseif($hp_reset_dice > 75){
+				$hp -= round($hp_difference / 2);
+				$log .= '你体内的<span class="glitchb">数据风暴</span>疯狂卷动，消耗了你更多的生命值！';
+			}elseif($hp_reset_dice > 50){
+				$hp -= round($hp_difference / 3);
+				$log .= '你体内的<span class="glitchb">数据风暴</span>疯狂卷动，消耗了你更多的生命值！';
+				
+			}else{
+				$hp -= round($hp_difference / 4);
+				$log .= '你体内的<span class="glitchb">数据风暴</span>疯狂卷动，消耗了你更多的生命值！';
+			}
+		}
+
 		if ($sp + $hp <= $sp_cost)
 		{						
 			$sacrifice_dice = rand(0, 99);
