@@ -747,7 +747,7 @@ input.range{
 .shoprow .leftbox{
 	width:50px;float:left;margin-right:5px;
 }
-.shoprow .leftbox input{width:50px;}
+.shoprow .leftbox input{min-width:50px;}
 .shoprow .rightbox{
 	width:60px;float:right;
 }

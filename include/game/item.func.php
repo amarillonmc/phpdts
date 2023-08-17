@@ -2918,6 +2918,8 @@ function itemuse($itmn,&$data=NULL) {
 			# Destroy the item.
 			//$itm = $itmk = $itmsk = '';
 			//$itme = $itms = 0;
+			# Sign
+			$clbpara['iAmHandsome'] += 1;
 		} elseif($itm == '【我太棒啦！】') {
 			# Joke Item, shred the user's HP and SP, then convert them into health item.
 			$log .= "按下这个按钮后，你突然觉得你很棒，<br>
@@ -2939,6 +2941,8 @@ function itemuse($itmn,&$data=NULL) {
 			# Destroy the item.
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
+			# Sign
+			$clbpara['iAmGreat'] += 1;
 		} elseif($itm == '【我太强啦！】') {
 			# Joke Item, Alerting the position of the user by generate a chatlog and decrease their $mhp by 100.
 			if ($mhp < 100) {
@@ -2956,6 +2960,8 @@ function itemuse($itmn,&$data=NULL) {
 				# Destroy the item.
 				$itm = $itmk = $itmsk = '';
 				$itme = $itms = 0;
+				# Sign
+				$clbpara['iAmStrong'] += 1;
 			}
 		} elseif($itm == '【我太牛啦！】') {
 			# Joke Item, Aleating the position of the user, then turn their $mhp and $msp into money.
@@ -2976,6 +2982,8 @@ function itemuse($itmn,&$data=NULL) {
 			# Destroy the item.
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
+			# Sign
+			$clbpara['iAmRich'] += 1;
 		} else {
 			$log .= " <span class=\"yellow\">$itm</span> 该如何使用呢？<br>";
 		}

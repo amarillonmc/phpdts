@@ -40,6 +40,7 @@ $bgmbook = Array
 	'realcrimzure' => Array(17),
 	'pls33' => Array(21),
 	'introduction' => Array(22),
+	'notYMCA' => Array(25),
 );
 
 # 所有bgm编号清单：
@@ -170,6 +171,11 @@ $bgmlist = Array
 		'url' => 'https://res.dts.gay/BGM/Skaven252-MMC-2023-03_LifeAsAHole.mp3',
 		'type' => 'audio/mpeg',
 	),
+	25 => Array(
+		'name' => 'Turbo - Ikouze Paradise - Eurobeat Version',
+		'url' => 'https://res.dts.gay/BGM/ikouze_paradise_eurobeat.mp3',
+		'type' => 'audio/mpeg',
+	)
 );
 
 ?>

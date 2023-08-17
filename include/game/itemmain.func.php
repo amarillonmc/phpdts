@@ -86,6 +86,23 @@ function calc_trap_damage(&$pa,$pd=NULL,$playerflag=0,$selflag=0)
 		$damage = $pa['hp'];
 		return $damage;
 	}
+	// 普通普通我头四
+	if($pa['itmk0'] == 'TOe'){
+		$log .= "<br>突然从地上窜出了四个大只佬！<br>他们似乎对你做了什么不可描述的事情……<br>
+		总之在他们心满意足地沉回地面之后，你头晕目眩地站了起来。<br>";
+		$pa['inf'] = 'hbafpuie';
+		$damage = 300;
+		return $damage;
+	}
+	// 超级无敌我头四
+	if($pa['itmk0'] == 'TOd')
+	{
+		$log .= "<br>一阵强劲的音乐突然响起，似乎是一首最近的歌，但有着一种老歌的气息……<br>
+		<br><span class=\"minirainbow\">一种很帅，很强，很棒，很牛的力量将你的生命改写成了虚无！</span><br>";
+		$pa['clbpara']['event_bgmbook'] = Array('notYMCA');
+		$damage = $pa['hp'];
+		return $damage;
+	}
 	// 随机数大神的陷阱
 	if($pa['itmk0'] == 'TO8')
 	{ 
@@ -114,7 +131,7 @@ function calc_trap_damage(&$pa,$pd=NULL,$playerflag=0,$selflag=0)
 function check_trap_def_event(&$pa,$damage,$playerflag=0,$selflag=0)
 {
 	# 奇迹雷、神力雷不能迎击
-	if($pa['itmk0'] == 'TOc' || $pa['itmk0'] == 'TO8') return $damage;
+	if($pa['itmk0'] == 'TOc' || $pa['itmk0'] == 'TO8' || $pa['itmk0'] == 'TOd') return $damage;
 	# 检查是否有迎击属性
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
 	if(empty($pa['ex_keys'])) $pa['ex_keys'] = array_merge(\revattr\get_equip_ex_array($pa),\revattr\get_wep_ex_array($pa));

@@ -447,6 +447,29 @@ function itemmix_events(&$data=NULL)
 		啊……？<br>";
 	}
 
+	# If one attempts to mix 我头四, check if they have used all 4 我太XX item, if they do, replace the result with the miracle mine, if not, then it's just a normal mine.
+	if($itm0 =='「我头四」'){
+		# Check if all 4 「我太XX」 have been used.
+		if($clbpara['iAmHandsome'] > 0 && $clbpara['iAmGreat'] > 0 && $clbpara['iAmRich'] > 0 && $clbpara['iAmStrong'] > 0){
+			$log .= "<span class='minirainbow'>很帅，很强，很棒，很牛的你拿起了你刚刚合成的这个名为「我头四」的陷阱。<br>
+			你手上的东西响应着你的灵魂，竟然产生了变化！</span><br>";
+
+			$itm0 = '破则战术「我头四」';
+			$itme0 = 1;
+			$itmk0 = 'TNd';
+			$itmsk0 = 'xX';
+
+			$log .= "但是你的预感告诉你，要再做一个这样的东西，<br><span class='minirainbow'>恐怕需要重新将你之前做过的某些事情做一遍了……</span><br>";
+			# Clear the 4「我太XX」 $clbpara values to prevent abuse of this trap.
+			$clbpara['iAmHandsome'] = 0;
+			$clbpara['iAmGreat'] = 0;
+			$clbpara['iAmRich'] = 0;
+			$clbpara['iAmStrong'] = 0;
+		}else{
+			# Output a hint about the above trap.
+			$log .= "<span class='lime'>你捧着这个刚刚合成出来的陷阱……<br>你有一种预感，它可以在特定条件下变成一个更强的东西，但那条件是什么呢？</span><br>";
+		}
+	}
 	return;
 }
 
