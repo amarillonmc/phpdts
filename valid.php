@@ -130,7 +130,7 @@ if($mode == 'enter') {
 		$itm[3] = '★Monster Energy★';
 	}
 	$itmk[3] = 'HB'; $itme[3] = 70; $itms[3] = 15;
-	$itm[5] = 'GRAND OPENING 「开门大吉」'; $itmk[5] = 'p000'; $itme[5] = 1; $itms[5] = 1;
+	//$itm[5] = 'GRAND OPENING 「开门大吉」'; $itmk[5] = 'p000'; $itme[5] = 1; $itms[5] = 1; # Move this to a title - also in weird fireseed box. 
 
 	if ($wingames <=1){
 	$itm[6] = '银白盒子'; $itmk[6] = 'ps'; $itme[6] = 1; $itms[6] = 1; $itmsk[6] = '';
@@ -251,6 +251,7 @@ if($mode == 'enter') {
 
 	# Generate 3 random number and place it in $clbpara for future usage.
 	# Let's call this 梦2记系统
+	//Oh shoot, it probably should be randvar - but it's too late when I caught that so let's just keep them as-is.
 	$clbpara['randver1'] = rand(1,128);
 	$clbpara['randver2'] = rand(1,256);
 	$clbpara['randver3'] = rand(1,1024);
