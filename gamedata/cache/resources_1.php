@@ -143,6 +143,7 @@ $typeinfo = Array(
 	90=>'各路党派',
 	91=>'各路党派',
 	92=>'种火',
+	93=>'各路党派',
 );
 $killmsginfo = Array(
 	0=>'',
@@ -166,7 +167,8 @@ $killmsginfo = Array(
 	89=>'系统弹出，正在计算补正值……',
 	90=>'你弱爆了！',
 	91=>'你弱爆了！',
-	92=>'怜悯覆唱……让希望的执念……成为焰火……'
+	92=>'怜悯覆唱……让希望的执念……成为焰火……',
+	93=>'你弱爆了！'
 );
 $stateinfo = Array
 (
@@ -296,6 +298,7 @@ $lwinfo = Array(
 	90 => '我觉得我还可以抢救一下……',
 	91 => '我觉得我还可以抢救一下……',
 	92 => '成为……焰火……',
+	93 => '我觉得我还可以抢救一下……',
 );
 $infinfo = Array('b' => '<span class="red">胸</span>', 'h' => '<span class="red">头</span>', 'a' => '<span class="red">腕</span>', 'f' => '<span class="red">足</span>', 'p' => '<span class="purple">毒</span>', 'u' => '<span class="red">烧</span>', 'i' => '<span class="clan">冻</span>', 'e' => '<span class="yellow">麻</span>','w' => '<span class="grey">乱</span>');
 $attinfo = Array('N' => '徒手殴打', 'P' => '殴打','K' => '斩刺', 'G' => '射击', 'C' => '投掷', 'D' => '设置引信伏击', 'F' => '释放灵力攻击', 'J' => '狙击', 'B' => '投射');

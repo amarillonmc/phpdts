@@ -44,6 +44,7 @@ templates/default/lastnews.htm
 bot/lock/
 
 # PSD Material
+img/psd_template/
 *.psd
 
 # =========================

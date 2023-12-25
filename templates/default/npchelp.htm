@@ -49,6 +49,22 @@
 {template npcinfohelp}
 <!--{/loop}-->
 <br>
+此外，也有一些特殊的小兵NPC可以使用通过称号或随机从盒子中刷出的小兵NPC钥匙<span class="yellow">【自律AI呼唤器】</span>刷出：
+<input class="cmdbutton" onclick="showModalDialog($('ty13'))" value="点击这里查看" type="button"><br>
+<dialog id="ty13">
+    <p><span class="lime b">特殊小兵NPC简介</span>：</p>
+    <p></p>
+    <br>
+    <!--{loop $ty13 $vkind $kind}-->
+        {template npcinfohelp}
+    <!--{/loop}-->
+    <input class="cmdbutton" onclick="closeDialog($('ty13'))" value="关闭窗口" type="button">
+    <img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('ty11e'))">
+</dialog>
+<br>
+这些小兵NPC比游戏初始刷出时的小兵NPC要略强，但也就只是略强而已。<br>
+小兵们的主题会在之后的版本更新中增加，但一位玩家每次进场无论如何都只能刷出一种主题的特殊小兵。<br>
+<br>
 
 <p><span class="lime">二重NPC 简介</span>：</p>
 此类NPC对玩家无威胁，但当玩家击杀它们后，它们会变身为<span class="yellow">“第二形态”</span>，此时<span class="yellow">攻击力会变得极强</span>。<br>可别不小心击杀了它们后被第二形态秒杀哦～ 不过，当自己处于劣势时，偷偷击杀这类NPC，并期望对手撞上它们并被它们秒杀，也是不错的翻盘思路哦～<br>

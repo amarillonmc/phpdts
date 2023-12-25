@@ -2874,6 +2874,42 @@ function itemuse($itmn,&$data=NULL) {
 				$itm = $itmk = $itmsk = '';
 				$itme = $itms = 0;
 			}
+		} elseif ($itm == '✦【自律AI呼唤器】') {
+			//Call in 20 type 93 NPCs, 5 each. 
+			//get player's 1st Yume value - different value results in different NPC.
+			//There are 2 sets for now - TODO: Add more set.
+			include_once GAME_ROOT . './include/system.func.php';
+			$log .= '你将这根权杖一般的钥匙狠狠插在了地面上，<br>很快，大批NPC就从空中降落到了战场上！<br>';
+			if ($clbpara['randver1'] < 64){
+				// 1st set
+				addnpc ( 93,0,5);
+				addnpc ( 93,1,5);
+				addnpc ( 93,2,5);
+				addnpc ( 93,3,5);
+			}else{
+				// 2nd set
+				addnpc ( 93,4,5);
+				addnpc ( 93,5,5);
+				addnpc ( 93,6,5);
+				addnpc ( 93,7,5);
+			}
+			//This is considered a troll move - we don't announce it in game newsinfo - however--!
+			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','','「神奇AI们，快过来！」')");
+			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【红暮】','','竟然有人从幻境中叫出了外援！怎么可能！')");
+			
+			//HOWEVER--
+			$log .= '突然你感到全身一寒，<br>你感觉罪恶感爬上了你的脊梁！<br>';
+			$rp += diceroll(1555);
+			$moralcheck = diceroll(6);
+			if ($moralcheck > 4){
+				$log .= '罪恶感让你不禁呕吐起来。<br>你感觉头晕目眩。<br>';
+				$mhp = round($mhp / 1.33);
+				$msp = round($msp / 1.22);
+				$hp = round($hp / 1.33);
+				$sp = round($sp / 1.22);
+			}
+			$itms --;
+			if($itms <= 0) destory_single_item($data,$itmn,1);
 		} elseif ($itm == '✦种火定点移位装置✦') {
 			//global $db, $tablepre, $pls;
 			$result = $db->query("SELECT * FROM {$tablepre}players WHERE type = 92"); //SELECT 全部种火NPC

@@ -57,6 +57,7 @@ $ty10[1]=21;
 $ty11[1]=Array(89,'asub'); 
 $ty11e[1]=Array(89,'esub'); #电掣NPC第二形态情报
 $ty12[1]=24;
+$ty13[1]=Array(93,'asub'); #可召唤小兵
 $ty25a[1] = Array(25,'asub'); #佣兵NPC
 
 if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemtime($writefile) || filemtime($mapitemfile) > filemtime($writefile) || filemtime($synfile) > filemtime($writefile) || filemtime($ovlfile) > filemtime($writefile) || filemtime($presentfile) > filemtime($writefile) || filemtime($boxfile) > filemtime($writefile)){
