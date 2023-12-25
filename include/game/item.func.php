@@ -1075,8 +1075,12 @@ function itemuse($itmn,&$data=NULL) {
 			$log.="你使用了<span class=\"yellow\">{$itm}</span>，但是没有发现陷阱。<br>";
 		}
 	}elseif (strpos ( $itmk, '🎲' ) === 0 ) {
+		//invoke fortune cookie.
+		include_once GAME_ROOT.'./include/game/fortune.func.php';
+
 		if ($itm == '［Ｄ３］') {
 			$log .= '你向天空投出了骰子！<br><br>进行１ｄ３检定！<br>';
+			fortuneCookie1(diceroll($clbpara['randver1']));
 			//D3 - Randomly shuffle the effect and stamina of player's equipment and weapon.
 			//grabbing the effect and stamina of player equipment and weapon
 			//Does not affect "A" equipment
@@ -1130,6 +1134,7 @@ function itemuse($itmn,&$data=NULL) {
 		}
 		}elseif ($itm == '［Ｄ６］') {
 			$log .= '你向天空投出了骰子！<br><br>进行１ｄ６检定！<br>';
+			fortuneCookie1(diceroll($clbpara['randver1']));
 			//D6 - spawn a random item to player's hand.
 			$log .= '骰子骨碌碌地旋转起来，变成了一件【空想道具】！<br>';
 			//Populate an array desinating which kind of item this would turn into.
@@ -1170,6 +1175,7 @@ function itemuse($itmn,&$data=NULL) {
 			}
 		}elseif ($itm == '［Ｄ１０］') {
 			$log .= '你向天空投出了骰子！<br><br>进行１ｄ１０检定！<br>';
+			fortuneCookie1(diceroll($clbpara['randver1']));
 			//D10 - spawn a random item to player's hand - Enhanced D6 with a better item pool.
 			$log .= '骰子骨碌碌地旋转起来，变成了一件【空想道具】！<br>';
 			//Populate an array desinating which kind of item this would turn into.
@@ -1208,6 +1214,7 @@ function itemuse($itmn,&$data=NULL) {
 			}
 		}elseif ($itm == '［Ｄ２０］') {
 			$log .= '你向天空投出了骰子！<br><br>进行１ｄ２０检定！<br><br>';
+			fortuneCookie1(diceroll($clbpara['randver1']));
 			//D20 - Randomly fill player's bag with items from player's location.
 			//Get item from database.
 			$result = $db->query("SELECT * FROM {$tablepre}mapitem WHERE pls = '$pls'");
@@ -1307,6 +1314,7 @@ function itemuse($itmn,&$data=NULL) {
 			}
 		}elseif ($itm == '［Ｄ４０］') {
 			$log .= '你向天空投出了骰子！<br><br>进行１ｄ４０检定！<br><br>';
+			fortuneCookie1(diceroll($clbpara['randver1']));
 			//D40 - Randomly fill player's bag with items from all mapitems. - Enhanced D20
 			//Get item from database.
 			$result = $db->query("SELECT * FROM {$tablepre}mapitem");
@@ -1406,6 +1414,7 @@ function itemuse($itmn,&$data=NULL) {
 			}
 		}elseif ($itm == '［Ｄ１００］') {
 			$log .= '你向天空投出了骰子！<br><br>进行１ｄ１００检定！<br><br>';
+			fortuneCookie1(diceroll($clbpara['randver1']));
 			//D100 - Shuffle the player's mhp, msp, mss, atk, def and all w values.
 			//Firstly, are you the chosen one?
 			$chosenone = 1;
@@ -1459,6 +1468,7 @@ function itemuse($itmn,&$data=NULL) {
 			//D1000 - Does all of the above, based on player's Yume Values.
 			//D3
 			if ($clbpara['randver1'] > 64){
+				fortuneCookie1(diceroll($clbpara['randver1']));
 				$rand_e = array($wepe, $wep2e, $arbe, $arhe, $arae, $arfe);
 				$rand_s = array($weps, $wep2s, $arbs, $arhs, $aras, $arfs);
 				$etotal = round(($wepe + $wep2e + $arbe + $arhe + $arae + $arfe) / 2);
@@ -1500,6 +1510,7 @@ function itemuse($itmn,&$data=NULL) {
 
 			//D20
 			if ($clbpara['randver2'] > 128){
+				fortuneCookie1(diceroll($clbpara['randver1']));
 			//Different from the normal D20, this pulls from entire mapitem table.
 			$result = $db->query("SELECT * FROM {$tablepre}mapitem");
 			$itemnum = $db->num_rows($result);
@@ -1593,6 +1604,7 @@ function itemuse($itmn,&$data=NULL) {
 			
 			//D100
 			if ($clbpara['randver3'] < 1024){
+				fortuneCookie1(diceroll($clbpara['randver1']));
 				//This dice is triple the power of original D100.
 				$chosenone = 3;
 				if ($clbpara['randver1'] == 77 || $clbpara['randver1'] == 111){
