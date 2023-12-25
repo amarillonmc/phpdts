@@ -1076,7 +1076,7 @@ function itemuse($itmn,&$data=NULL) {
 		}
 	}elseif (strpos ( $itmk, '🎲' ) === 0 ) {
 		if ($itm == '［Ｄ３］') {
-			$log .= '你向天空投出了骰子！<br>进行１ｄ３检定！<br>';
+			$log .= '你向天空投出了骰子！<br><br>进行１ｄ３检定！<br>';
 			//D3 - Randomly shuffle the effect and stamina of player's equipment and weapon.
 			//grabbing the effect and stamina of player equipment and weapon
 			//Does not affect "A" equipment
@@ -1129,7 +1129,7 @@ function itemuse($itmn,&$data=NULL) {
 			$itme = $itms = 0;
 		}
 		}elseif ($itm == '［Ｄ６］') {
-			$log .= '你向天空投出了骰子！<br>进行１ｄ６检定！<br>';
+			$log .= '你向天空投出了骰子！<br><br>进行１ｄ６检定！<br>';
 			//D6 - spawn a random item to player's hand.
 			$log .= '骰子骨碌碌地旋转起来，变成了一件【空想道具】！<br>';
 			//Populate an array desinating which kind of item this would turn into.
@@ -1169,7 +1169,7 @@ function itemuse($itmn,&$data=NULL) {
 			$itme = $itms = 0;
 			}
 		}elseif ($itm == '［Ｄ１０］') {
-			$log .= '你向天空投出了骰子！<br>进行１ｄ１０检定！<br>';
+			$log .= '你向天空投出了骰子！<br><br>进行１ｄ１０检定！<br>';
 			//D10 - spawn a random item to player's hand - Enhanced D6 with a better item pool.
 			$log .= '骰子骨碌碌地旋转起来，变成了一件【空想道具】！<br>';
 			//Populate an array desinating which kind of item this would turn into.
@@ -1207,7 +1207,7 @@ function itemuse($itmn,&$data=NULL) {
 			$itme = $itms = 0;
 			}
 		}elseif ($itm == '［Ｄ２０］') {
-			$log .= '你向天空投出了骰子！<br>进行１ｄ２０检定！<br><br>';
+			$log .= '你向天空投出了骰子！<br><br>进行１ｄ２０检定！<br><br>';
 			//D20 - Randomly fill player's bag with items from player's location.
 			//Get item from database.
 			$result = $db->query("SELECT * FROM {$tablepre}mapitem WHERE pls = '$pls'");
@@ -1306,7 +1306,7 @@ function itemuse($itmn,&$data=NULL) {
 				$itmsk0 = '';
 			}
 		}elseif ($itm == '［Ｄ４０］') {
-			$log .= '你向天空投出了骰子！<br>进行１ｄ４０检定！<br><br>';
+			$log .= '你向天空投出了骰子！<br><br>进行１ｄ４０检定！<br><br>';
 			//D40 - Randomly fill player's bag with items from all mapitems. - Enhanced D20
 			//Get item from database.
 			$result = $db->query("SELECT * FROM {$tablepre}mapitem");
@@ -1405,7 +1405,7 @@ function itemuse($itmn,&$data=NULL) {
 				$itmsk0 = '';
 			}
 		}elseif ($itm == '［Ｄ１００］') {
-			$log .= '你向天空投出了骰子！<br>进行１ｄ１００检定！<br><br>';
+			$log .= '你向天空投出了骰子！<br><br>进行１ｄ１００检定！<br><br>';
 			//D100 - Shuffle the player's mhp, msp, mss, atk, def and all w values.
 			//Firstly, are you the chosen one?
 			$chosenone = 1;
@@ -1455,7 +1455,7 @@ function itemuse($itmn,&$data=NULL) {
 			$itme = $itms = 0;
 			}
 		}elseif ($itm == '［Ｄ１０００］') {
-			$log .= '你投出了这个骰子！骰子飞上了天空，变成了三个不同的骰子！这真是太炫酷了！<br>';
+			$log .= '你投出了这个骰子！<br>骰子飞上了天空，变成了三个不同的骰子！这真是太炫酷了！<br>';
 			//D1000 - Does all of the above, based on player's Yume Values.
 			//D3
 			if ($clbpara['randver1'] > 64){
@@ -1644,7 +1644,76 @@ function itemuse($itmn,&$data=NULL) {
 			}
 		}
 	}elseif (strpos ( $itmk, '🥚' ) === 0 ) {
-		
+		//🥚 items does a variety of different things based on its itmsk - may expand in the future.
+		if (strpos ( $itmsk, 'J' ) === 0){
+			//J item turns into a yugioh pack.
+			$log .= '你将这个蛋捧在手里仔细端详着……<br>它突然变成了一包卡牌！<br>';
+			//destroy the item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+			//generate a yugioh pack in player's hand.
+			$itm0 = '游戏王卡包';
+			$itmk0 = 'ygo';
+			$itme0 = 1;
+			$itms0 = 1;
+			$itmsk0 = '';
+		}elseif (strpos ( $itmsk, 's' ) === 0){
+			//s item turns into a yugioh pack.
+			//TODO: May actually implement new yugioh packs for Exceed and Synchro only packs.
+			$log .= '你将这个蛋捧在手里仔细端详着……<br>它突然变成了一包卡牌！<br>';
+			//destroy the item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+			//generate a yugioh pack in player's hand.
+			$itm0 = '游戏王卡包';
+			$itmk0 = 'ygo';
+			$itme0 = 1;
+			$itms0 = 1;
+			$itmsk0 = '';
+		}elseif (strpos ( $itmsk, 'X' ) === 0){
+			//X item turns into a Deathnote.
+			$log .= '你将这个蛋捧在手里仔细端详着……<br>它突然变成了一本黑色的小册子<br>卧槽，这不会是……<br>';
+			//destroy the item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+			//generate a Deathnote in player's hand.
+			$itm0 = '■DeathNote■';
+			$itmk0 = 'Y';
+			$itme0 = 1;
+			$itms0 = 1;
+			$itmsk0 = '';
+		}elseif (strpos ( $itmsk, 'x' ) === 0){
+			//x item turns into a super recovery item.
+			$log .= '你将这个蛋捧在手里仔细端详着……<br>它突然变成了一包卡牌！<br>';
+			//destroy the item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+			//generate the item in player's hand.
+			$itm0 = '奇迹的元素';
+			$itmk0 = 'HB';
+			$itme0 = 65535;
+			$itms0 = 1;
+			$itmsk0 = 'z';
+		}elseif (strpos ( $itmsk, 'v' ) === 0){
+			//v item curses player's current weapon.
+			$log .= '你看了一眼这个蛋，就理解了它的用法。<br>你痛快地……吃掉了它？<br>你感觉到你的武器泛起了一股诅咒的力量……<br>';
+			//destroy the item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+			//Apply curses to player's current holding weapon.
+			$wepsk .='v';
+		}elseif (strpos ( $itmsk, 'V' ) === 0){
+			//X item make player's current weapon soulbind.
+			$log .= '你看了一眼这个蛋，就理解了它的用法。<br>你痛快地……吃掉了它？<br>你感觉到你的武器绑定在了你的身上……<br>';
+			//destroy the item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+			//Apply soulbind to player's current holding weapon.
+			$wepsk .='V';
+		}else{
+			//FUTURE FEAT: We can make so much use of this in the future.
+			$log .= '你似乎听到了一个佻皮的女孩声音：<br><br>“这个代码片段……不妨以后再来探索吧！”<br>';
+		}
 	}elseif (strpos ( $itmk, '🎆' ) === 0 ) {
 		//В ΜΑЛΨ, В ЩΑЁΨ, В ЦΨΨ ОΑЙЙ, В ТИХ ЩДТЖИΜД.
 		//ХЖ ДЖХЖТ, ЖХΨ ЦЩТΑВΜДЩ ТЖΑΡ, ΜΨЩ. ЩДВХΜЦ. ΡЖХΨ.

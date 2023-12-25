@@ -2311,17 +2311,17 @@ $npcdescription = array
 			0 => array
 			(
 				'count' => 1,
-				'description' => '循环使者 妖精幻象-麦基，<span class="yellow">PVE后期送玩家抽取属性的NPC。</span>',
+				'description' => '循环使者 妖精幻象-麦基，<span class="yellow">携带强力的骰子道具［Ｄ１０］，可以为你产生高级空想道具。</span>',
 			),
 			1 => array
 			(
 				'count' => 1,
-				'description' => '循环使者 妖精幻象-拉普尼，<span class="yellow">PVE后期送玩家抽取属性的NPC。</span>',
+				'description' => '循环使者 妖精幻象-拉普尼，<span class="yellow">携带强力的骰子道具［Ｄ４０］，可以从地图上随机获得物品。</span>',
 			),
 			2 => array
 			(
 				'count' => 1,
-				'description' => '循环使者 妖精幻象-斯洛蒂，<span class="yellow">PVE后期送玩家抽取属性的NPC。</span>',
+				'description' => '循环使者 妖精幻象-斯洛蒂，<span class="yellow">携带强力的骰子道具［Ｄ１００］，可以重新投掷你的各色数值。</span>',
 			),			
 		),
 	),	
