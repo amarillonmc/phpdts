@@ -2377,7 +2377,16 @@ function itemuse($itmn,&$data=NULL) {
 			addnews ( $now, 'corpseclear', $name, $cnum ,$nick);
 			$log .= "使用了<span class=\"yellow\">$itm</span>。<br>突然刮起了一阵怪风，吹走了地上的{$cnum}具尸体！<br>";
 			$itms --; $isk = $cnum;
-			
+		} elseif ($itm == '鱼眼凸') {
+			//global $db, $tablepre, $name,$now,$corpseprotect;
+			$tm = $now - $corpseprotect;//尸体保护
+			$db->query ( "UPDATE {$tablepre}players SET pls='$pls' WHERE hp <= 0 AND endtime <= $tm" );
+			$cnum = $db->affected_rows ();
+			addnews ( $now, 'corpsegather', $name, $cnum ,$nick);
+			$log .= "使用了<span class=\"yellow\">$itm</span>。<br>突然刮起了一阵怪风，将遍布全场的{$cnum}具尸体吹到了你所在的地方！<br>";
+			$rp += diceroll(1024);
+			$log .= "<span class=\"lime\">这过于惨无人道了！</span><br>你觉得罪恶感爬上了你的脊梁！<br>";
+			$itms --; $isk = $cnum;	
 		} elseif ($itm == '天候棒') {
 			//global $weather, $wthinfo, $name;
 			if($weather <= 13)
