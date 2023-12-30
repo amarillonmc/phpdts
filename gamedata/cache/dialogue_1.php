@@ -70,9 +70,12 @@ $dialogue_log = Array
 $dialogue_branch = Array
 (
 	'testingDialog' => Array(
-		0 => '选项A',
-		1 => '选项B',
-		2 => '选项C',
+		//0 => '选项A',
+		//1 => '选项B',
+		//2 => '选项C',
+		3 => '选项A',
+		4 => '选项B',
+		5 => '选项C',
 	),
 );
 
