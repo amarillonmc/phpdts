@@ -3258,6 +3258,9 @@ function itemuse($itmn,&$data=NULL) {
 			$pa = fetch_playerdata_by_pid(1);
 			$pd = fetch_playerdata_by_pid(2);
 			\revcombat\rev_combat_prepare($pa,$pd,1);
+		} elseif ($itm == '对话测试器'){
+			$clbpara['dialogue'] = 'testingDialog';
+			$clbpara['noskip_dialogue'] = 1;
 		} elseif ($itm == '事件BGM替换器'){
 			// 这是一个触发事件BGM的案例，只要输入$clbpara['event_bgmbook'] = Array('事件曲集名'); 即可将当前曲集替换为特殊事件BGM
 			// 特殊事件曲集'event_bgmbook'的优先级高于地图曲集'pls_bgmbook'，前者存在时后者不会生效

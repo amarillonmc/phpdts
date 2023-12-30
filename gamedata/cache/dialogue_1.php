@@ -39,6 +39,13 @@ $dialogues = Array
 		4 => '你似乎看到了，听到了，感觉到了一个模糊的场景，<br>但你不知道这是什么。',
 		5 => '大量类似的场景掠过你的脑海，而你已经无力吸收。<br>你浑身疼痛，不禁口吐鲜血，无助地等待着一切结束。',
 	),
+	//TESTING ONLY - DELETE THIS WHEN DEPLOYING
+	'testingDialog' => Array
+	(
+		0 => '这是测试对话第一页',
+		1 => '这是测试对话第二页',
+		2 => '现在给出选择支',
+	),
 );
 
 # 单组对白中哪一页对话会显示头像：
@@ -56,12 +63,17 @@ $dialogue_log = Array
 (
 	'thiphase' => "<span class='lime'>※ 权限重载完成，控制模块已解锁。</span><br>……这又是什么时候的事？<br><br>",
 	'club21entry' => "<span class='yellow'>虽然打开了蛋，但你被其中的<span class='glitchb'>数据风暴</span>狂暴吸入，受到了大量的伤害！</span><br>你屁滚尿流地重新站了起来。<br><br>",
+	'testingDialog' => "<span class='yellow'>测试已结束！</span><br><br>",
 );
 
 # 单组对白结束时提供选择肢：
 $dialogue_branch = Array
 (
-
+	'testingDialog' => Array(
+		0 => '选项A',
+		1 => '选项B',
+		2 => '选项C',
+	),
 );
 
 # 单组对白结束提供特殊结束按钮（非必须、仅在结束对白会触发特殊事件时调用）：
