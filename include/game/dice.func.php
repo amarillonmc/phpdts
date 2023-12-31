@@ -40,7 +40,7 @@ function diceroll($dice){
     }
 
     if($nick == 69){
-        $log .= "你本次骰子的检定结果为：<br><span class=\"red\">$result</span>＼<span class=\"yellow\">$dice</span>！<br>";
+        $log .= "<span class=\"lime\">你本次骰子的检定结果为：</span><span class=\"red\">$result</span>＼<span class=\"yellow\">$dice</span>！<br>";
     }
     //$log .= "【DEBUG】你本次骰子的检定结果为：<br><span class=\"red\">$result</span>＼<span class=\"yellow\">$dice</span>！<br>";
     return $result;

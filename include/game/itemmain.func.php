@@ -109,6 +109,14 @@ function calc_trap_damage(&$pa,$pd=NULL,$playerflag=0,$selflag=0)
 		$damage = $pa['hp'] / 8;
 		return $damage;
 	}
+	// TRUE DAMAGE!
+	if($pa['itmk0'] == 'TOt')
+	{
+		$log .= "<br>可能是因为制作陷阱的人的熟练度过于高强，<br>
+		<span class=\"yellow\">这个陷阱对你造成了等同于其效果的真实伤害！</span><br>";
+		$damage = $pa['itme0'];
+		return $damage;
+	}
 
 	$damage = round(rand(0,$pa['itme0']/2)+($pa['itme0']/2));
 
