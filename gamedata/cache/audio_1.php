@@ -41,6 +41,11 @@ $bgmbook = Array
 	'pls33' => Array(21),
 	'introduction' => Array(22),
 	'notYMCA' => Array(25),
+	'crimsontracks' => Array(26,27,28,29,30,31,32,33,34,35,36,37),
+	'azuretracks' => Array(38,39,40,41,42,43,44),
+	'altazuretracks' => Array(45,46,47,48,49,50,51),
+	'lilatracks' => Array(52,53,54,55,56,57,58,59,60,61,62,63,64),
+	'rimefiretracks' => Array(65,66,67,68,69,70,71,72,73,74),
 );
 
 # 所有bgm编号清单：
@@ -175,7 +180,282 @@ $bgmlist = Array
 		'name' => 'Turbo - Ikouze Paradise - Eurobeat Version',
 		'url' => 'https://res.dts.gay/BGM/ikouze_paradise_eurobeat.mp3',
 		'type' => 'audio/mpeg',
-	)
+	),
+	26 => Array(
+		'name' => 'Hyperreal - 万全之战',
+		'url' => 'https://res.dts.gay/BGM/Tracks/crimsontracks/01%20-%20Battle%20Ready.mp3',
+		'type' => 'audio/mpeg',
+	),
+	27 => Array(
+		'name' => 'Hyperreal - 狂暴之斗',
+		'url' => 'https://res.dts.gay/BGM/Tracks/crimsontracks/01%20-%20Berserker.mp3',
+		'type' => 'audio/mpeg',
+	),
+	28 => Array(
+		'name' => 'Hyperreal - 黑暗之雾',
+		'url' => 'https://res.dts.gay/BGM/Tracks/crimsontracks/02%20-%20Dark%20Matter.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	29 => Array(
+		'name' => 'Hyperreal - 数码之幻',
+		'url' => 'https://res.dts.gay/BGM/Tracks/crimsontracks/02%20-%20Digital%20Paradise.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	30 => Array(
+		'name' => 'Hyperreal - 天际之野',
+		'url' => 'https://res.dts.gay/BGM/Tracks/crimsontracks/02%20-%20Event%20Horizon.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	31 => Array(
+		'name' => 'Hyperreal - 日食之影',
+		'url' => 'https://res.dts.gay/BGM/Tracks/crimsontracks/03%20-%20Eclipse.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	32 => Array(
+		'name' => 'Hyperreal - 重力之握',
+		'url' => 'https://res.dts.gay/BGM/Tracks/crimsontracks/03%20-%20Gravity.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	33 => Array(
+		'name' => 'Hyperreal - 兵队之间',
+		'url' => 'https://res.dts.gay/BGM/Tracks/crimsontracks/03%20-%20Lined%20Up.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	34 => Array(
+		'name' => 'Hyperreal - 邪恶之言',
+		'url' => 'https://res.dts.gay/BGM/Tracks/crimsontracks/04%20-%20Invocation.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	35 => Array(
+		'name' => 'Hyperreal - 平行之线',
+		'url' => 'https://res.dts.gay/BGM/Tracks/crimsontracks/04%20-%20Parallax.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	36 => Array(
+		'name' => 'Hyperreal - 散射之光',
+		'url' => 'https://res.dts.gay/BGM/Tracks/crimsontracks/05%20-%20Radiant.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	37 => Array(
+		'name' => 'Hyperreal - 烈日之风',
+		'url' => 'https://res.dts.gay/BGM/Tracks/crimsontracks/05%20-%20Solar%20Winds.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	38 => Array(
+		'name' => 'Blue Moon feat. Wan Tang',
+		'url' => 'https://res.dts.gay/BGM/Tracks/azuretracks/Blue%20Moon.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	39 => Array(
+		'name' => 'Keep On Dreaming feat. Wan Tang',
+		'url' => 'https://res.dts.gay/BGM/Tracks/azuretracks/KEEP%20ON%20DREAMING.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	40 => Array(
+		'name' => 'Machine Says I Love You feat. Wan Tang',
+		'url' => 'https://res.dts.gay/BGM/Tracks/azuretracks/Machine%20Says%20I%20LOVE%20YOU.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	41 => Array(
+		'name' => 'Metropolis in Rain feat. Wan Tang',
+		'url' => 'https://res.dts.gay/BGM/Tracks/azuretracks/Metropolis%20in%20Rain.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	42 => Array(
+		'name' => 'Never Fade Away feat. Wan Tang',
+		'url' => 'https://res.dts.gay/BGM/Tracks/azuretracks/Never%20Fade%20Away.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	43 => Array(
+		'name' => 'Saturday Carnival feat. Wan Tang',
+		'url' => 'https://res.dts.gay/BGM/Tracks/azuretracks/Saturday%20Carnival.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	44 => Array(
+		'name' => 'Telephone Card of Rain feat. Wan Tang',
+		'url' => 'https://res.dts.gay/BGM/Tracks/azuretracks/Telecard%20of%20Rain.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	45 => Array(
+		'name' => 'Blue Moon',
+		'url' => 'https://res.dts.gay/BGM/Tracks/azuretracks/Blue%20Moon_inst.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	46 => Array(
+		'name' => 'Keep On Dreaming',
+		'url' => 'https://res.dts.gay/BGM/Tracks/azuretracks/KEEP%20ON%20DREAMING_inst.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	47 => Array(
+		'name' => 'Machine Says I Love You',
+		'url' => 'https://res.dts.gay/BGM/Tracks/azuretracks/Machine%20Says%20I%20LOVE%20YOU_inst.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	48 => Array(
+		'name' => 'Metropolis in Rain',
+		'url' => 'https://res.dts.gay/BGM/Tracks/azuretracks/Metropolis%20in%20Rain_inst.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	49 => Array(
+		'name' => 'Never Fade Away',
+		'url' => 'https://res.dts.gay/BGM/Tracks/azuretracks/Never%20Fade%20Away_inst.mp3',
+		'type' => 'audio/mpeg',	
+	),
+	50 => Array(
+		'name' => 'Saturday Carnival',
+		'url' => 'https://res.dts.gay/BGM/Tracks/azuretracks/Saturday%20Carnival_inst.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	51 => Array(
+		'name' => 'Telephone Card of Rain',
+		'url' => 'https://res.dts.gay/BGM/Tracks/azuretracks/Telecard%20of%20Rain_inst.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	52 => Array(
+		'name' => 'AudioCoffee - 早安',
+		'url' => 'https://res.dts.gay/BGM/Tracks/lilatracks/FromDream.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	53 => Array(
+		'name' => 'AudioCoffee - 上学路',
+		'url' => 'https://res.dts.gay/BGM/Tracks/lilatracks/ToSchool.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	54 => Array(
+		'name' => 'AudioCoffee - 第一节课',
+		'url' => 'https://res.dts.gay/BGM/Tracks/lilatracks/1stClass.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	55 => Array(
+		'name' => 'AudioCoffee - 第二节课',
+		'url' => 'https://res.dts.gay/BGM/Tracks/lilatracks/2ndClass.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	56 => Array(
+		'name' => 'AudioCoffee - 第三节课',
+		'url' => 'https://res.dts.gay/BGM/Tracks/lilatracks/3rdClass.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	57 => Array(
+		'name' => 'AudioCoffee - 第四节课',
+		'url' => 'https://res.dts.gay/BGM/Tracks/lilatracks/4thClass.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	58 => Array(
+		'name' => 'AudioCoffee - 中休时间',
+		'url' => 'https://res.dts.gay/BGM/Tracks/lilatracks/NoonRest.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	59 => Array(
+		'name' => 'AudioCoffee - 第五节课',
+		'url' => 'https://res.dts.gay/BGM/Tracks/lilatracks/5thClass.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	60 => Array(
+		'name' => 'AudioCoffee - 第六节课',
+		'url' => 'https://res.dts.gay/BGM/Tracks/lilatracks/6thClass.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	61 => Array(
+		'name' => 'AudioCoffee - 第七节课',
+		'url' => 'https://res.dts.gay/BGM/Tracks/lilatracks/7thClass.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	62 => Array(
+		'name' => 'AudioCoffee - 放学路',
+		'url' => 'https://res.dts.gay/BGM/Tracks/lilatracks/FromSchool.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	63 => Array(
+		'name' => 'AudioCoffee - 亲亲家人',
+		'url' => 'https://res.dts.gay/BGM/Tracks/lilatracks/WithFamily.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	64 => Array(
+		'name' => 'AudioCoffee - 晚安',
+		'url' => 'https://res.dts.gay/BGM/Tracks/lilatracks/ToDream.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	65 => Array(
+		'name' => '荒芳樹 - Another Hunter',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rimefiretracks/music01_Anotherhunter.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	66 => Array(
+		'name' => '荒芳樹 - Castle Infiltration',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rimefiretracks/music02_Castleinfiltration.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	67 => Array(
+		'name' => '荒芳樹 - Flower Funeral',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rimefiretracks/music03_Flowerfuneral.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	68 => Array(
+		'name' => '荒芳樹 - Alchemy Laboratory',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rimefiretracks/music04_Alchemylaboratory.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	69 => Array(
+		'name' => '荒芳樹 - Feast of Evil',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rimefiretracks/music05_Feastofevil.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	70 => Array(
+		'name' => '荒芳樹 - Blast Furnace',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rimefiretracks/music07_Blastfurnace.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	71 => Array(
+		'name' => '荒芳樹 - Defeat of Science',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rimefiretracks/music08_Sciencedefeat.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	72 => Array(
+		'name' => '荒芳樹 - Gear Knight',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rimefiretracks/music09_KnightofGear.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	73 => Array(
+		'name' => '荒芳樹 - Devil Weapon',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rimefiretracks/music10_Devilweapon.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	74 => Array(
+		'name' => '荒芳樹 - Departure',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rimefiretracks/music11_Departure.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	75 => Array(
+		'name' => '',
+		'url' => '',
+		'type' => 'audio/mpeg',		
+	),
+	76 => Array(
+		'name' => '',
+		'url' => '',
+		'type' => 'audio/mpeg',		
+	),
+	77 => Array(
+		'name' => '',
+		'url' => '',
+		'type' => 'audio/mpeg',		
+	),
+	78 => Array(
+		'name' => '',
+		'url' => '',
+		'type' => 'audio/mpeg',		
+	),
+	79 => Array(
+		'name' => '',
+		'url' => '',
+		'type' => 'audio/mpeg',		
+	),
+	80 => Array(
+		'name' => '',
+		'url' => '',
+		'type' => 'audio/mpeg',		
+	),
 );
 
 ?>

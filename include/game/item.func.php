@@ -2667,7 +2667,12 @@ function itemuse($itmn,&$data=NULL) {
 			//global $wp, $wk, $wg, $wc, $wd, $wf, $club, $bid, $att, $def;
 			$log .= '你考虑了一会，<br>把袖子卷了起来，给自己注射了H173。<br>';
 			$deathdice = rand ( 0, 4096 );
-			if ($deathdice == 4096 || $club == 15) {
+			// Shiny Charm
+			if ($art == '★闪耀护符★'){
+				// Reference: https://wiki.52poke.com/wiki/%E7%95%B0%E8%89%B2%E5%AF%B6%E5%8F%AF%E5%A4%A2#%E3%80%8A%E6%9C%B1%EF%BC%8F%E7%B4%AB%E3%80%8B
+				$deathdice += 2731; # 4096 - 1365
+			}
+			if ($deathdice >= 4096 || $club == 15) {
 				$log .= '你突然感觉到一种不可思议的力量贯通全身！<br>';
 				$wp = $wk = $wg = $wc = $wd = $wf = 8010;
 				$att = $def = 13337;
