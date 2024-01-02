@@ -46,6 +46,9 @@ $bgmbook = Array
 	'altazuretracks' => Array(45,46,47,48,49,50,51),
 	'lilatracks' => Array(52,53,54,55,56,57,58,59,60,61,62,63,64),
 	'rimefiretracks' => Array(65,66,67,68,69,70,71,72,73,74),
+	'fleurtracks' => Array(75,76,77,78,79,80,81,82,83),
+	'christracks' => Array(84,85,86,87,88,89,90,91,92,93,94,95,96),
+	'altchristracks' => Array(97,98,99,100,101,102,103,104,105,106,107,108,109)
 );
 
 # 所有bgm编号清单：
@@ -427,35 +430,185 @@ $bgmlist = Array
 		'type' => 'audio/mpeg',		
 	),
 	75 => Array(
-		'name' => '',
-		'url' => '',
+		'name' => '威廉·退尔礼拜堂(Chapelle de Guillaume Tell)',
+		'url' => 'https://res.dts.gay/BGM/Tracks/fleurtracks/01%20-%20%20Chapelle%20de%20Guillaume%20Tell.mp3',
 		'type' => 'audio/mpeg',		
 	),
 	76 => Array(
-		'name' => '',
-		'url' => '',
+		'name' => '华伦城之湖(An lac de Wallenstadt)',
+		'url' => 'https://res.dts.gay/BGM/Tracks/fleurtracks/02%20-%20%20Au%20lac%20de%20Wallenstadt.mp3',
 		'type' => 'audio/mpeg',		
 	),
 	77 => Array(
-		'name' => '',
-		'url' => '',
+		'name' => '田园(Pastorale)',
+		'url' => 'https://res.dts.gay/BGM/Tracks/fleurtracks/03%20-%20%20Pastorale.mp3',
 		'type' => 'audio/mpeg',		
 	),
 	78 => Array(
-		'name' => '',
-		'url' => '',
+		'name' => '泉水边(An bord d’une Source)',
+		'url' => 'https://res.dts.gay/BGM/Tracks/fleurtracks/04%20-%20%20Au%20bord%20d%20une%20source.mp3',
 		'type' => 'audio/mpeg',		
 	),
 	79 => Array(
-		'name' => '',
-		'url' => '',
+		'name' => '狂风暴雨(Orage)',
+		'url' => 'https://res.dts.gay/BGM/Tracks/fleurtracks/05%20-%20%20Orage.mp3',
 		'type' => 'audio/mpeg',		
 	),
 	80 => Array(
+		'name' => '欧伯曼之谷(Valee d’Obermann)',
+		'url' => 'https://res.dts.gay/BGM/Tracks/fleurtracks/06%20-%20%20Vall%20e%20d%20Obermann.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	81 => Array(
+		'name' => '牧歌(Eglogue)',
+		'url' => 'https://res.dts.gay/BGM/Tracks/fleurtracks/07%20-%20%20Eglogue.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	82 => Array(
+		'name' => '思乡病(Le mal du Pays)',
+		'url' => 'https://res.dts.gay/BGM/Tracks/fleurtracks/08%20-%20%20Le%20mal%20du%20pays.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	83 => Array(
+		'name' => '日内瓦之钟(Les cloches de Geneve)',
+		'url' => 'https://res.dts.gay/BGM/Tracks/fleurtracks/09%20-%20%20Les%20cloches%20de%20Gen%20ve.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	84 => Array(
+		'name' => 'Bim-Bam',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/1/01%20Bim-Bam.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	85 => Array(
+		'name' => 'Butterfly',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/1/01%20Schnuffelienchen%20%20%E2%80%93%20Butterfly.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	86 => Array(
+		'name' => 'Haeschenparty - Disco Version',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/1/03%20-%20Haeschenparty_disco.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	87 => Array(
+		'name' => 'Hinned Kell',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/1/03%20Hinned%20Kell.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	88 => Array(
+		'name' => 'Adj Egy Puszika',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/1/05%20Adj%20Egy%20Puszik%C3%A1t.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	89 => Array(
+		'name' => 'Nincs rá szó',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/1/06.%20Snufi%20-%20Nincs%20r%C3%A1%20sz%C3%B3.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	90 => Array(
+		'name' => 'Szélvészkent',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/1/08%20Sz%C3%A9lv%C3%A9szk%C3%A9nt.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	91 => Array(
+		'name' => 'Barátság virág',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/1/08.%20Snufi%20-%20Bar%C3%A1ts%C3%A1g%20vir%C3%A1g.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	92 => Array(
+		'name' => 'Je t aime tellement',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/1/1-Je%20t%20aime%20tellement.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	93 => Array(
+		'name' => 'Ez A Dallam Hozzad Szall',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/1/12%20Ez%20A%20Dallam%20Hozz%C3%A1d%20Sz%C3%A1ll.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	94 => Array(
+		'name' => 'La Chanson Des Bisous',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/1/2-%20La%20Chanson%20Des%20Bisous.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	95 => Array(
+		'name' => 'Je t aime tres fort',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/1/3-%20Je%20t%20aime%20tres%20fort.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	96 => Array(
+		'name' => 'Je veux etre chez toi',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/1/7-J%20veux%20etre%20chez%20toi.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	97 => Array(
+		'name' => 'Piep Piep',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/0/01%20-%20Piep%20Piep.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	98 => Array(
+		'name' => 'Schmetterling',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/0/02%20Schnuffelienchen%20-%20Schmetterling.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	99 => Array(
+		'name' => 'Haeschenparty - Radio Version',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/0/02%20-%20Haeschenparty_radio.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	100 => Array(
+		'name' => 'Nur mit Dir',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/0/03%20-%20Nur%20Mit%20Dir.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	101 => Array(
+		'name' => 'Dumdedidldei',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/0/05%20-%20Dumdedidldei.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	102 => Array(
+		'name' => 'Schnucki Putzi',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/0/06%20Schnucki%20Putzi.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	103 => Array(
+		'name' => 'Bumm Bumm Bumm',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/0/08%20-%20Bumm%20Bumm%20Bumm.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	104 => Array(
+		'name' => 'Wo Bist Du Hingegangen',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/0/08%20Wo%20Bist%20Du%20Hingegangen.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	105 => Array(
+		'name' => 'Hab Dich Gern',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/0/03%20Hab%20Dich%20Gern.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	106 => Array(
+		'name' => 'Ich Hab Dich Lieb',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/0/01%20Ich%20Hab%20Dich%20Lieb.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	107 => Array(
+		'name' => 'Kuschel Song',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/0/02%20Kuschel%20Song.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	108 => Array(
+		'name' => 'Haschenlied',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/0/12%20-%20Haeschenlied.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	109 => Array(
+		'name' => 'Ich will zu Dir',
+		'url' => 'https://res.dts.gay/BGM/Tracks/christracks/0/07%20Ich%20will%20Zu%20Dir.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	110 => Array(
 		'name' => '',
 		'url' => '',
 		'type' => 'audio/mpeg',		
-	),
+	)
 );
 
 ?>

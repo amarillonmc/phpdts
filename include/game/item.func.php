@@ -3407,6 +3407,91 @@ function itemuse($itmn,&$data=NULL) {
 			//销毁物品
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
+		} elseif ($itm == '【歌单】红暮'){
+			$log.="你打开了手上的音乐播放器，里面传出了这样的声音：<br>
+			<span class=\"ltcrimson\">“你的选择很不错，我这里为你准备了一些劲爆的摇滚乐。<br>
+			一定能让你在这场战斗中热血沸腾的。”——红暮<br><br></span>
+			<span class=\"yellow\">你的音乐播放列表被替换了！<br></span>";
+			$clbpara['event_bgmbook'] = $event_bgm['crimsontracks'];
+			$clbpara['BGMBrand'] = 'crimson';
+			//Destroy this item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		} elseif ($itm == '【歌单】蓝凝'){
+			$log.="你打开了手上的音乐播放器，里面传出了这样的声音：<br>
+			<span class=\"ltazure\">“姐姐似乎给你准备了摇滚乐，但我觉得还是我的更好一点。<br>
+			这些歌曲都是上个年代的流行曲风，梦幻般的人声和幻境也更相称吧？<br>
+			欸？你说这不就仅仅是音乐，没有人声么？为什么会这样呢？”——蓝凝<br><br></span>
+			<span class=\"yellow\">你的音乐播放列表被替换了！<br></span>";
+			if ($clbpara['randver1'] < 64){
+				$clbpara['event_bgmbook'] = $event_bgm['altazuretracks'];
+			}else{
+			$clbpara['event_bgmbook'] = $event_bgm['azuretracks'];}
+			$clbpara['BGMBrand'] = 'azure';
+			//Destroy this item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		} elseif ($itm == '【歌单】芙蓉'){
+			$log.="你打开了手上的音乐播放器，里面传出了这样的声音：<br>
+			<span class=\"tmagenta\">“干我们这行的，得时刻保持冷静优雅。<br>
+			所以我给你准备了古典音乐，确切地说，是李斯特的《巡礼之年》第一部。<br>
+			这可是被人称作是李斯特的大成之作的作品，Enjoy~”——芙蓉<br><br></span>
+			<span class=\"ltcrimson\">“……做好身份隔离，芙蓉。”——红暮<br><br></span>
+			<span class=\"yellow\">你的音乐播放列表被替换了！<br></span>";
+			$clbpara['event_bgmbook'] = $event_bgm['fleurtracks'];
+			$clbpara['BGMBrand'] = 'fleur';
+			//Destroy this item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		} elseif ($itm == '【歌单】丁香'){
+			$log.="你打开了手上的音乐播放器，里面传出了这样的声音：<br>
+			<span class=\"clan\">“欸？我也要提交一批歌单吗……？<br>
+			那么我就尽量尝试一下……<br>
+			就这些如何？虽然我觉得这可能不适合这个游戏吧……”——丁香<br><br></span>
+			<span class=\"sienna\">“适合不适合另说，但这起名太差劲了——就地丢弃，请。”——芙蓉<br><br></span>
+			<span class=\"yellow\">你的音乐播放列表被替换了！<br></span>";
+			$clbpara['event_bgmbook'] = $event_bgm['lilatracks'];
+			$clbpara['BGMBrand'] = 'lila';
+			//Destroy this item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		} elseif ($itm == '【歌单】冰炎'){
+			$log.="你打开了手上的音乐播放器，里面传出了这样的声音：<br>
+			<span class=\"orange\">“虚拟幻境我自然是知道的。高速动作PVP对吧？<br>
+			要为这里提供一点音乐……吗。<br>
+			那么就来点听起来很像某驰名游戏系列的配乐的曲子吧！”——冰炎<br><br></span>
+			<span class=\"ltcrimson\">“微妙。”——红暮<br><br></span>
+			<span class=\"yellow\">你的音乐播放列表被替换了！<br></span>";
+			$clbpara['event_bgmbook'] = $event_bgm['rimefiretracks'];
+			$clbpara['BGMBrand'] = 'rimefire';
+			//Destroy this item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		} elseif ($itm == '【歌单】小兔子警报！'){
+			$rp -= 120;
+			$log.="你打开了手上的奇怪物品，里面传出了这样的声音：<br>
+			<span class=\"lime\">“为什么突然会给游戏加入歌单这种东西……？<br>
+			那么为了更好地伪装，我也注入个歌单进来。<br>
+			毕竟我平时码代码就是听这些的。顺路啦。”——？？？？<br><br></span>
+			
+			<span class=\"yellow\">你的音乐播放列表被替换了！<br></span>";
+			if ($clbpara['randver3'] < 1024){
+				$clbpara['event_bgmbook'] = $event_bgm['christracks'];
+			}else{
+				$log.="<span class=\"tmagenta\">“哈，抓到你了。<br>顺便……这个啊……要用我喜欢的语言来唱。”——芙蓉<br></span>";
+			$clbpara['event_bgmbook'] = $event_bgm['altchristracks'];}
+			$clbpara['BGMBrand'] = 'christine';
+			//Destroy this item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		} elseif ($itm == '【歌单】林无月'){
+			$log.="你按下了手中遥控器的按钮。<br>
+			<span class=\"yellow\">你重置了你的音乐播放列表！<br></span>";
+			unset($clbpara['event_bgmbook']);
+			unset($clbpara['BGMBrand']);
+			//Destroy this item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
 		} elseif ($itm == 'NPC战斗测试仪'){
 			include_once GAME_ROOT.'./include/game/revcombat.func.php';
 			$pa = fetch_playerdata_by_pid(1);
