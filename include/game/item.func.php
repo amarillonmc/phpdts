@@ -203,6 +203,14 @@ function itemuse($itmn,&$data=NULL) {
 		$mss+=$itme;
 		$ss+=$itme;
 		$log .= "你使用了<span class=\"red\">$itm</span>，增加了<span class=\"yellow\">$itme</span>点歌魂。<br>";
+		if ($clbpara['BGMBrand'] == 'lila'){
+			$check = diceroll(20);
+			if ($check > 17){
+				$log .= "<span class=\"clan\">突然，一位纯洁的女初中生形象出现在你的脑海中，<br>你觉醒了额外的歌魂！<br></span>";
+				$mss += $check * 2;
+				$ss += $check * 2;
+			}
+		}
 		if ($itms != $nosta) {
 			$itms --;
 			if ($itms <= 0) {
@@ -2253,6 +2261,13 @@ function itemuse($itmn,&$data=NULL) {
 				}
 				$dice = rand ( 0, 100 );
 				if ($dice >= 15) {
+					if ($clbpara['BGMBrand'] == 'crimson'){
+						$check = diceroll(20);
+						if ($check > 17){
+							$log .= "<span class=\"ltcrimson\">你想到了红暮挥舞红杀铁剑的英姿，<br>，手上的刀磨得更快了！<br></span>";
+							$wepe += $check;
+						}
+					}
 					$wepe += $itme;					
 					$log .= "使用了<span class=\"yellow\">$itm</span>，<span class=\"yellow\">$wep</span>的攻击力变成了<span class=\"yellow\">$wepe</span>。<br>";
 					if (strpos ( $wep, '锋利的' ) === false) {
@@ -2294,6 +2309,13 @@ function itemuse($itmn,&$data=NULL) {
 				}
 				$dice = rand ( 0, 100 );
 				if ($dice >= 10) {
+					if ($clbpara['BGMBrand'] == 'crimson'){
+						$check = diceroll(20);
+						if ($check > 17){
+							$log .= "<span class=\"ltcrimson\">你想到了红暮挥舞红杀铁锤的英姿，<br>，手上的钉子打得更快了！<br><span>";
+							$wepe += $check;
+						}
+					}
 					$wepe += $itme;
 					$log .= "使用了<span class=\"yellow\">$itm</span>，<span class=\"yellow\">$wep</span>的攻击力变成了<span class=\"yellow\">$wepe</span>。<br>";
 					if (strpos ( $wep, '钉' ) === false) {
@@ -2333,6 +2355,13 @@ function itemuse($itmn,&$data=NULL) {
 			} elseif(strpos($arbsk,'Z')!==false){
 				$log .= '<span class="yellow">该防具太单薄以至于不能使用针线包。</span><br>你感到一阵蛋疼菊紧，你的蛋疼度增加了<span class="yellow">233</span>点。<br>';
 			}else {
+				if ($clbpara['BGMBrand'] == 'rimefire'){
+					$check = diceroll(20);
+					if ($check > 17){
+						$log .= "<span class=\"orange\">你突然脑海中浮现了一位青年彻夜优化装甲的英姿，<br>，手上的针线打得更快了！<br></span>";
+						$arbe += $check;
+					}
+				}
 				$arbe += (rand ( 0, 2 ) + $itme);
 				$log .= "用<span class=\"yellow\">$itm</span>给防具打了补丁，<span class=\"yellow\">$arb</span>的防御力变成了<span class=\"yellow\">$arbe</span>。<br>";
 				$itms --;
@@ -3408,6 +3437,9 @@ function itemuse($itmn,&$data=NULL) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == '【歌单】红暮'){
+			//Songlists. They change your BGM, but more importantly...
+			//They place a Brand on your character named BGMBrand in $clbpara.
+			//It will have various hidden effects, search for BGMBrand for details.
 			$log.="你打开了手上的音乐播放器，里面传出了这样的声音：<br>
 			<span class=\"ltcrimson\">“你的选择很不错，我这里为你准备了一些劲爆的摇滚乐。<br>
 			一定能让你在这场战斗中热血沸腾的。”——红暮<br><br></span>
