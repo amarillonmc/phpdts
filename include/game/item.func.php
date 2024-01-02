@@ -2358,7 +2358,7 @@ function itemuse($itmn,&$data=NULL) {
 				if ($clbpara['BGMBrand'] == 'rimefire'){
 					$check = diceroll(20);
 					if ($check > 17){
-						$log .= "<span class=\"orange\">你突然脑海中浮现了一位青年彻夜优化装甲的英姿，<br>，手上的针线打得更快了！<br></span>";
+						$log .= "<span class=\"orange\">你突然脑海中浮现了一位青年彻夜优化装甲的英姿，<br>手上的针线打得更快了！<br></span>";
 						$arbe += $check;
 					}
 				}

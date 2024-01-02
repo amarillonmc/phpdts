@@ -12,6 +12,14 @@ $event_bgm = Array
 (
 	'test' => Array('event'),
 	'wth18' => Array('wth18'),
+	'crimsontracks' => Array('crimsontracks'),
+	'azuretracks' => Array('azuretracks'),
+	'altazuretracks' => Array('altazuretracks'),
+	'lilatracks' => Array('lilatracks'),
+	'rimefiretracks' => Array('rimefiretracks'),
+	'fleurtracks' => Array('fleurtracks'),
+	'christracks' => Array('christtracks'),
+	'altchristracks' => Array('altchristracks'),
 );
 
 # 会播放BGM的地图（优先级高——会覆盖默认曲集）
