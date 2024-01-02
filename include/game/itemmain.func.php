@@ -1371,6 +1371,13 @@ function getcorpse($item,&$data=NULL)
 		$log.="你销毁了{$edata['name']}的尸体。<br>但这一切值得吗……？<br>";
 		# 销毁尸体rp结算
 		$rp_up = diceroll($rpup_destory_corpse);
+		if ($clbpara['BGMBrand'] == 'azure'){
+			$check = diceroll(20);
+			if ($check > 15){
+				$log .= "<span class=\"ltazure\">不过你想到了蓝凝的天真烂漫没心没肺，<br>因此没受到销毁尸体的罪恶感影响。<br></span>";
+				$rp_up = 0;
+			}
+		}
 		include_once GAME_ROOT.'./include/state.func.php';
 		rpup_rev($data,$rp_up);
 

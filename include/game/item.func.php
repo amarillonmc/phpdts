@@ -2264,7 +2264,7 @@ function itemuse($itmn,&$data=NULL) {
 					if ($clbpara['BGMBrand'] == 'crimson'){
 						$check = diceroll(20);
 						if ($check > 17){
-							$log .= "<span class=\"ltcrimson\">你想到了红暮挥舞红杀铁剑的英姿，<br>，手上的刀磨得更快了！<br></span>";
+							$log .= "<span class=\"ltcrimson\">你想到了红暮挥舞红杀铁剑的英姿，<br>手上的刀磨得更快了！<br></span>";
 							$wepe += $check;
 						}
 					}
@@ -2312,7 +2312,7 @@ function itemuse($itmn,&$data=NULL) {
 					if ($clbpara['BGMBrand'] == 'crimson'){
 						$check = diceroll(20);
 						if ($check > 17){
-							$log .= "<span class=\"ltcrimson\">你想到了红暮挥舞红杀铁锤的英姿，<br>，手上的钉子打得更快了！<br><span>";
+							$log .= "<span class=\"ltcrimson\">你想到了红暮挥舞红杀铁锤的英姿，<br>手上的钉子打得更快了！<br><span>";
 							$wepe += $check;
 						}
 					}

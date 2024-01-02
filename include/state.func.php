@@ -329,6 +329,16 @@
 			if($pd['name'] == '守卫者 静流' && $pa['final_damage'] >= $pd['mhp']) $pa['clbpara']['achvars']['ach505'] = 1;
 		}
 
+		# Process 百命猫 Kills
+		if($pd['name'] == '百命猫'){
+			$pd['clbpara']['lifedestroyed'] += 1;
+			//make her disappear from map if all life are destroyed.
+			if($pd['clbpara']['lifedestroyed'] > 111){
+				$pd['hp'] = 0;
+				$pd['map'] = 254; # Stay with the corpses, dear kitty.
+			}
+		}
+
 		# 保存击杀种火或小兵的记录
 		if(empty($pa['clbpara']['achvars']['kill_minion']) && ($pd['type'] == 90 || $pd['type'] == 91 || $pd['type'] == 92)) $pa['clbpara']['achvars']['kill_minion'] = 1;
 
@@ -480,6 +490,13 @@
 	{
 		# 杀人rp结算
 		$rpup = $pd['type'] ? 20 : max(80,$pd['rp']);
+		if ($pa['clbpara']['BGMBrand'] == 'azure'){
+			$check = diceroll(20);
+			if ($check > 17){
+				$pa['log'] .= "<span class=\"ltazure\">你想到了蓝凝的天真烂漫及没心没肺，<br>因此没受到杀人的罪恶感影响。<br></span>";
+				$rpup = 0;
+			}
+		}
 		rpup_rev($pa,$rpup);
 		return;
 	}
