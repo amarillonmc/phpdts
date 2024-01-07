@@ -330,7 +330,7 @@
 		}
 
 		# Process 百命猫 Kills
-		if($pd['name'] == '百命猫'){
+		if($pd['name'] == '是TSEROF啦！'){
 			$pd['clbpara']['lifedestroyed'] += 1;
 			//make her disappear from map if all life are destroyed.
 			if($pd['clbpara']['lifedestroyed'] > 111){

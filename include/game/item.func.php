@@ -3500,19 +3500,21 @@ function itemuse($itmn,&$data=NULL) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == '【歌单】小兔子警报！'){
-			$rp -= 120;
+			if ($clbpara['touchedByBunny'] == 0){
+			$rp -= 120;}
 			$log.="你打开了手上的奇怪物品，里面传出了这样的声音：<br>
 			<span class=\"lime\">“为什么突然会给游戏加入歌单这种东西……？<br>
 			那么为了更好地伪装，我也注入个歌单进来。<br>
 			毕竟我平时码代码就是听这些的。顺路啦。”——？？？？<br><br></span>
 			
 			<span class=\"yellow\">你的音乐播放列表被替换了！<br></span>";
-			if ($clbpara['randver3'] < 1024){
+			if ($clbpara['randver3'] < 512){
 				$clbpara['event_bgmbook'] = $event_bgm['christracks'];
 			}else{
 				$log.="<span class=\"tmagenta\">“哈，抓到你了。<br>顺便……这个啊……要用我喜欢的语言来唱。”——芙蓉<br></span>";
 			$clbpara['event_bgmbook'] = $event_bgm['altchristracks'];}
 			$clbpara['BGMBrand'] = 'christine';
+			$clbpara['touchedByBunny'] += 1;
 			//Destroy this item.
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
@@ -3522,6 +3524,41 @@ function itemuse($itmn,&$data=NULL) {
 			unset($clbpara['event_bgmbook']);
 			unset($clbpara['BGMBrand']);
 			//Destroy this item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		} elseif ($itm == '人生重来炮'){
+			//detect if you are actually able to use this.
+			if ($pls > 100){
+				$log.="你点燃了这门炮的引线，然后尝试将头伸进炮筒之中。<br>
+				<span class=\"yellow\">但是大炮突然就这么消失了！这是怎么回事呢？<br></span>";
+				//destroy this item.
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;	
+			}
+			if ($mhp <= 200){
+				$log.="你点燃了这门炮的引线，然后尝试将头伸进炮筒之中。<br>
+				<span class=\"yellow\">但是你体能已经太弱，在成功将头伸进去之前，大炮就在你面前发射了！<br></span>
+				<span class=\"red\">你被炮弹射了一脸，受到了巨大的伤害！<br>";
+				$hp = 1;
+				//destroy this item.
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;				
+			}
+			$log.="你点燃了这门炮的引线，然后迅速将头伸进了炮筒之中！<br>
+			<span class=\"yellow\">只听轰地一声，你被炮弹击出了千米之外，你感觉身体内的什么东西焕然一新了……<br></span>";
+			//Reset... some values...
+			$clbpara['randver1'] = rand(1,128);
+			$clbpara['randver2'] = rand(1,256);
+			$clbpara['randver3'] = rand(1,1024);
+			//process damage
+			$mhp -= 200;
+			$hp = $mhp;
+			$msp -= 200;
+			$sp = $msp;
+			$log.="<span class=\"red\">你受到了相当的伤害，龇牙咧嘴地站了起来。<br></span>";
+			//process area change
+			$pls = rand(1,count($plsinfo)-2);
+			//destroy this item.
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == 'NPC战斗测试仪'){

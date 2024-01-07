@@ -12,6 +12,7 @@ $selfjoke = <<<EOT
 GRAND OPENING 「开门大吉」,p000,1,1,,
 【歌单】丁香,Z,1,1,,
 【歌单】小兔子警报！,Z,1,1,,
+人生重来炮,Z,1,1,,
 EOT;
 
 $jokeonothers = <<<EOT
