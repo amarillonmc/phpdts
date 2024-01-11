@@ -2315,7 +2315,7 @@ $cskills = Array
 		优秀的尸源有概率为武器附加<span class="yellow">冲击</span>与<span class="yellow">精英</span>属性',
 		'vars' => Array(
 			'ragecost' => 100, 
-			'limit' => 2000,
+			'limit' => 117007,
 			'notype' => Array(88,92),//不能用来抡的NPC
 		),
 	),

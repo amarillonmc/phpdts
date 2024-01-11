@@ -681,8 +681,11 @@
 			$log .= "你干脆利落地把<span class='red'>{$edata['name']}</span>从地上拽了起来！然后卯足力气，在空中挥舞了两下。<br>……<br>";
 			$pdata['itm0'] = "{$edata['name']}尸体模样的棍棒";
 			$pdata['itmk0'] = 'WP'; 
+			// Bugfix 240110
 			$pdata['itme0'] = round($edata['msp']); 
+			if ($pdata['itme0'] > 117007){ $pdata['itme0'] = 117007;}
 			$pdata['itms0'] = round($edata['mhp']); 
+			if ($pdata['itms0'] > 117007){ $pdata['itms0'] = 117007;}
 			$pdata['itmsk0'] = '';
 			$dice = diceroll(99);
 			$N_obbs = pow($edata['lvl'],1.3);
