@@ -1413,7 +1413,7 @@ function itemuse($itmn,&$data=NULL) {
 			}
 			//Generate a random number based on player's 1st Yume Value.
 			$dicebreak = diceroll($clbpara['randver1']);
-			if($dicebreak > $clbpara['randver1'] / 3){
+			if($dicebreak > $clbpara['randver1'] / 4){
 				$log .= '骰子落了下来，令人惊奇的是，它竟然没有被摔坏，还可以继续使用！<br>';
 				$itm0 = '［Ｄ４０］';
 				$itmk0 = '🎲';
@@ -1438,20 +1438,20 @@ function itemuse($itmn,&$data=NULL) {
 			//Then, we calculate your new values:
 			$log .= '你突然觉得头晕目眩！<br>';
 			//->mhp and msp
-			$tvalue = $mhp + $msp + $mss;
+			$tvalue = round(($mhp + $msp + $mss) / 2);
 			//Make sure you don't die from this.
 			$hp = $mhp = (diceroll($tvalue) + 1) * $chosenone;
 			$sp = $msp = (diceroll($tvalue) + 1) * $chosenone;
 			$mss = (diceroll($tvalue) + 1) * $chosenone;
-			$ss = $mss / 2;
+			$ss = round($mss / 2);
 			$log .= '你的最大生命，最大体力值与歌魂发生了变化！<br>';
 			//->atk and def
-			$avalue = $att + $def;
+			$avalue = round(($att + $def) / 1.5);
 			$att = (diceroll($avalue) + 1) * $chosenone;
 			$def = (diceroll($avalue) + 1) * $chosenone;
 			$log .= '你的攻击力与防御力发生了变化！<br>';
 			//->w values
-			$wvalue = round(($wp + $wk + $wd + $wc + $wg + $wf) / 2);
+			$wvalue = round(($wp + $wk + $wd + $wc + $wg + $wf) / 4);
 			$wp = (diceroll($wvalue) + 1) * $chosenone;
 			$wk = (diceroll($wvalue) + 1) * $chosenone;
 			$wd = (diceroll($wvalue) + 1) * $chosenone;
@@ -1461,9 +1461,9 @@ function itemuse($itmn,&$data=NULL) {
 			$log .= '你的武器熟练度发生了变化！<br>';
 
 			//Generate a random number based on player's 1st Yume Value.
-			$dicebreak = diceroll($clbpara['randver1']);
-			//check if this value is greater than half of player's 1st Yume Value, if so, we do not destroy the item.
-			if($dicebreak > $clbpara['randver1'] / 3){
+			$dicebreak = diceroll($clbpara['randver2']);
+			//check if this value is greater than player's 1st Yume Value, if so, we do not destroy the item.
+			if($dicebreak > $clbpara['randver1']){
 				$log .= '骰子落了下来，令人惊奇的是，它竟然没有被摔坏，还可以继续使用！<br>';
 			}else{
 			//destroy the dice item.
@@ -1632,7 +1632,7 @@ function itemuse($itmn,&$data=NULL) {
 				$hp = $mhp = (diceroll($tvalue) + 1) * $chosenone;
 				$sp = $msp = (diceroll($tvalue) + 1) * $chosenone;
 				$mss = (diceroll($tvalue) + 1) * $chosenone;
-				$ss = $mss / 2;
+				$ss = round($mss / 2);
 				$log .= '你的最大生命，最大体力值与歌魂发生了变化！<br>';
 				//->atk and def
 				$avalue = $att + $def;
