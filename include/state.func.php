@@ -923,6 +923,13 @@
 		$resttime = $now - $endtime;
 		$endtime = $now;
 
+		//If you are dead, resting won't do you any good!
+		if ($hp <= 0) {
+			$log .= "你的大脑觉得你可能可以抢救一下，但你的心脏却突然掀开胸膛破口大骂：<span class=\"yellow\">“死都死了，治个屁！火化吧！”</span><br>
+			看起来这下治疗也没有什么用处了。<br>";
+			$log .= "你已经死亡，无法治疗。<br>";
+		}
+
 		if ($state == 1 || $state == 3) {
 			$oldsp = $sp;
 			$upsp = calculate_rest_upsp($resttime,$data);

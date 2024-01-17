@@ -20,6 +20,7 @@ $event_bgm = Array
 	'fleurtracks' => Array('fleurtracks'),
 	'christracks' => Array('christtracks'),
 	'altchristracks' => Array('altchristracks'),
+	'rixolamaltracks' => Array('rixolamaltracks'),
 );
 
 # 会播放BGM的地图（优先级高——会覆盖默认曲集）
@@ -56,7 +57,8 @@ $bgmbook = Array
 	'rimefiretracks' => Array(65,66,67,68,69,70,71,72,73,74),
 	'fleurtracks' => Array(75,76,77,78,79,80,81,82,83),
 	'christracks' => Array(84,85,86,87,88,89,90,91,92,93,94,95,96),
-	'altchristracks' => Array(97,98,99,100,101,102,103,104,105,106,107,108,109)
+	'altchristracks' => Array(97,98,99,100,101,102,103,104,105,106,107,108,109),
+	'rixolamaltracks' => Array(110,111,112,113,114,115,116,117,118,119,120,121,122,123)
 );
 
 # 所有bgm编号清单：
@@ -613,10 +615,80 @@ $bgmlist = Array
 		'type' => 'audio/mpeg',		
 	),
 	110 => Array(
+		'name' => 'Turbo - Dragostea Din Tei ~ Eurobeat remix',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rixolamaltracks/Dragostea%20din%20tei%20eurobeat%20remix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	111 => Array(
+		'name' => 'Turbo - Astronomia ~ Eurobeat remix',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rixolamaltracks/Astronomia%20Eurobeat%20Remix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	112 => Array(
+		'name' => 'Turbo - Butterfly ~ Eurobeat remix',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rixolamaltracks/Butter-fly%20Eurobeat%20Remix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	113 => Array(
+		'name' => 'Turbo - Angel of Darkness ~ Eurobeat remix',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rixolamaltracks/Angel%20of%20Darkness%20Eurobeat%20Remix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	114 => Array(
+		'name' => 'Turbo - １　２　３ eurobeat remix',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rixolamaltracks/1%202%203%20eurobeat%20remix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	115 => Array(
+		'name' => 'Turbo - Caramelldansen ~ Eurobeat remix',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rixolamaltracks/Eurobeat%20Remix%20Caramelldansen.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	116 => Array(
+		'name' => 'Turbo - Fukkireta ~ Eurobeat remix',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rixolamaltracks/Fukkireta%20Eurobeat%20Remix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	117 => Array(
+		'name' => 'Turbo - Hampsterdance ~ Eurobeat remix',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rixolamaltracks/Hampsterdance%20Eurobeat%20Remix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	118 => Array(
+		'name' => 'Turbo - Holding Out for a Hero ~ Eurobeat remix',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rixolamaltracks/Holding%20Out%20for%20a%20Hero%20Eurobeat%20Remix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	119 => Array(
+		'name' => 'Turbo - Loli Kami Requiem ~ Eurobeat remix',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rixolamaltracks/loli%20kami%20requiem%20eurobeat%20remix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	120 => Array(
+		'name' => 'Turbo - Revenge ~ Eurobeat remix',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rixolamaltracks/Revenge%20Eurobeat%20Remix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	121 => Array(
+		'name' => 'Turbo - Yi Jian Mei ~ Eurobeat remix',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rixolamaltracks/Xue%20hua%20piao%20piao.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	122 => Array(
+		'name' => 'Turbo - YOU・WA・SHOCK ~ Eurobeat remix',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rixolamaltracks/YOU%E2%80%86WA%E2%80%86SHOCK.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	123 => Array(
+		'name' => 'Turbo - Beloved Tomboyish Girl ~ Eurobeat remix',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rixolamaltracks/Eurobeat%20Remix%20Beloved%20Tomboyish%20Girl.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	124 => Array(
 		'name' => '',
 		'url' => '',
 		'type' => 'audio/mpeg',		
-	)
+	),
 );
 
 ?>

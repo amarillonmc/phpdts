@@ -118,6 +118,15 @@ function calc_trap_damage(&$pa,$pd=NULL,$playerflag=0,$selflag=0)
 		return $damage;
 	}
 
+	// RANDOM DAMAGE!
+	if($pa['itmk0'] == 'TOr')
+	{
+		$log .= "<br>可能是因为制作陷阱的人正在反叛随机数大神，<br>
+		<span class=\"yellow\">你看到天上突然有一颗骰子掉了下来，爆炸在你的头上！</span><br>";		
+		$damage = diceroll($pa['mhp']);
+		return $damage;
+	}
+
 	$damage = round(rand(0,$pa['itme0']/2)+($pa['itme0']/2));
 
 	# 防御姿态可以降低陷阱伤害

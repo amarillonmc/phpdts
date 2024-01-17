@@ -45,6 +45,15 @@ function itemuse($itmn,&$data=NULL) {
 		$mode = 'command';
 		return;
 	}
+
+	//If you are dead, you can't use items!
+	if ($hp <= 0) {
+		$log .= '你的大脑看起来仍旧想挣扎一下，但你的手已经动不了了，挣扎似乎也没有什么意义。<br>';
+		$log .= '你已经死亡，无法使用道具。<br>';
+		$mode = 'command';
+		return;
+	}
+
 	if(strpos ( $itmk, 'W' ) === 0 || strpos ( $itmk, 'D' ) === 0 || strpos ( $itmk, 'A' ) === 0 || strpos ( $itmk, 'ss' ) === 0){
 		
 		if(strpos ( $itmk, 'W' ) === 0) {
@@ -154,6 +163,11 @@ function itemuse($itmn,&$data=NULL) {
 			$sp = $sp > $msp ? $msp : $sp;
 			$oldsp = $sp - $oldsp;*/
 			$addsp = $msp - $sp < $spup ? $msp - $sp : $spup;
+			//ADD: Process Luck Battle Mode random SP/HP gains.
+			if ($clbpara['BGMBrand'] == 'rixolamal'){
+				$addsp = diceroll($itme);
+				$log .= "随机数大神不喜欢给定值，你回复的体力被骰子改动了！<br>";
+			}
 			if($addsp > 0) $sp += $addsp;
 			else $addsp = 0;
 			$log .= "你使用了<span class=\"red\">$itm</span>，恢复了<span class=\"yellow\">$addsp</span>点体力。<br>";
@@ -183,6 +197,10 @@ function itemuse($itmn,&$data=NULL) {
 			$hp = $hp > $mhp ? $mhp : $hp;
 			$oldhp = $hp - $oldhp;*/
 			$addhp = $mhp - $hp < $hpup ? $mhp - $hp : $hpup;
+			if ($clbpara['BGMBrand'] == 'rixolamal'){
+				$addhp = diceroll($itme);
+				$log .= "随机数大神不喜欢给定值，你回复的生命被骰子改动了！<br>";
+			}
 			if($addhp > 0) $hp += $addhp;
 			else $addhp = 0;
 			$log .= "你使用了<span class=\"red\">$itm</span>，恢复了<span class=\"yellow\">$addhp</span>点生命。<br>";
@@ -274,6 +292,10 @@ function itemuse($itmn,&$data=NULL) {
 			//$sp = $sp > $msp ? $msp : $sp;
 			//$oldsp = $sp - $oldsp;
 			$addsp = $msp - $sp < $bpup ? $msp - $sp : $bpup;
+			if ($clbpara['BGMBrand'] == 'rixolamal'){
+				$addsp = diceroll($itme);
+				$log .= "随机数大神不喜欢给定值，你回复的体力被骰子改动了！<br>";
+			}
 			if($addsp > 0) $sp += $addsp;
 			else $addsp = 0;
 			//$oldhp = $hp;
@@ -281,6 +303,10 @@ function itemuse($itmn,&$data=NULL) {
 			//$hp = $hp > $mhp ? $mhp : $hp;
 			//$oldhp = $hp - $oldhp;
 			$addhp = $mhp - $hp < $bpup ? $mhp - $hp : $bpup;
+			if ($clbpara['BGMBrand'] == 'rixolamal'){
+				$addhp = diceroll($itme);
+				$log .= "随机数大神不喜欢给定值，你回复的生命被骰子改动了！<br>";
+			}
 			if($addhp > 0) $hp += $addhp;
 			else $addhp = 0;
 			$log .= "你使用了<span class=\"red\">$itm</span>，恢复了<span class=\"yellow\">$addhp</span>点生命和<span class=\"yellow\">$addsp</span>点体力。<br>";
@@ -372,6 +398,12 @@ function itemuse($itmn,&$data=NULL) {
 		}
 
 		$trapk = str_replace('TN','TO',$itmk);
+
+		if($clbpara['BGMBrand'] == 'rixolamal'){
+			$trapk = str_replace('TO','TOr',$itmk);
+			$log .= "你对随机数大神的反叛让随机数大神将<span class=\"red\">$itm</span>变成了一个随机造成伤害的地雷！<br>";
+		}
+
 		$db->query("INSERT INTO {$tablepre}maptrap (itm, itmk, itme, itms, itmsk, pls) VALUES ('$itm', '$trapk', '$itme', '1', '$pid', '$pls')");
 		$log .= "设置了陷阱<span class=\"red\">$itm</span>。<br>小心，自己也很难发现。<br>";
 		
@@ -3470,6 +3502,13 @@ function itemuse($itmn,&$data=NULL) {
 			//Songlists. They change your BGM, but more importantly...
 			//They place a Brand on your character named BGMBrand in $clbpara.
 			//It will have various hidden effects, search for BGMBrand for details.
+
+			if ($clbpara['BGMBrand'] == 'rixolamal'){
+				$log.="一种神奇的力量阻止了音乐播放器的启动！<br>";
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
+
 			$log.="你打开了手上的音乐播放器，里面传出了这样的声音：<br>
 			<span class=\"ltcrimson\">“你的选择很不错，我这里为你准备了一些劲爆的摇滚乐。<br>
 			一定能让你在这场战斗中热血沸腾的。”——红暮<br><br></span>
@@ -3480,6 +3519,13 @@ function itemuse($itmn,&$data=NULL) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == '【歌单】蓝凝'){
+
+			if ($clbpara['BGMBrand'] == 'rixolamal'){
+				$log.="一种神奇的力量阻止了音乐播放器的启动！<br>";
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
+
 			$log.="你打开了手上的音乐播放器，里面传出了这样的声音：<br>
 			<span class=\"ltazure\">“姐姐似乎给你准备了摇滚乐，但我觉得还是我的更好一点。<br>
 			这些歌曲都是上个年代的流行曲风，梦幻般的人声和幻境也更相称吧？<br>
@@ -3494,6 +3540,13 @@ function itemuse($itmn,&$data=NULL) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == '【歌单】芙蓉'){
+
+			if ($clbpara['BGMBrand'] == 'rixolamal'){
+				$log.="一种神奇的力量阻止了音乐播放器的启动！<br>";
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
+
 			$log.="你打开了手上的音乐播放器，里面传出了这样的声音：<br>
 			<span class=\"tmagenta\">“干我们这行的，得时刻保持冷静优雅。<br>
 			所以我给你准备了古典音乐，确切地说，是李斯特的《巡礼之年》第一部。<br>
@@ -3506,6 +3559,13 @@ function itemuse($itmn,&$data=NULL) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == '【歌单】丁香'){
+
+			if ($clbpara['BGMBrand'] == 'rixolamal'){
+				$log.="一种神奇的力量阻止了音乐播放器的启动！<br>";
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
+
 			$log.="你打开了手上的音乐播放器，里面传出了这样的声音：<br>
 			<span class=\"clan\">“欸？我也要提交一批歌单吗……？<br>
 			那么我就尽量尝试一下……<br>
@@ -3518,6 +3578,13 @@ function itemuse($itmn,&$data=NULL) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == '【歌单】冰炎'){
+
+			if ($clbpara['BGMBrand'] == 'rixolamal'){
+				$log.="一种神奇的力量阻止了音乐播放器的启动！<br>";
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
+
 			$log.="你打开了手上的音乐播放器，里面传出了这样的声音：<br>
 			<span class=\"orange\">“虚拟幻境我自然是知道的。高速动作PVP对吧？<br>
 			要为这里提供一点音乐……吗。<br>
@@ -3529,7 +3596,28 @@ function itemuse($itmn,&$data=NULL) {
 			//Destroy this item.
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
+		} elseif ($itm == '【歌单】瑞克·拉玛尔'){
+			$log.="你打开了手上的音乐播放器，里面传出了这样的声音：<br>
+			<span class=\"orange\">“哦，你是想反叛随机数大神吧！<br>
+			我知道的，摇骰子总是会让人心潮澎湃，那么就让我这位大英雄帮你一把吧！<br>
+			音乐是其次，欢迎来到骰子的反叛世界！”——瑞克·拉玛尔<br><br></span>
+			<span class=\"ltcrimson\">“这……这个不是都市传说么？快去查一查。”——红暮<br><br></span>
+			<span class=\"yellow\">你的音乐播放列表被替换了！<br></span>";
+			$clbpara['event_bgmbook'] = $event_bgm['rixolamaltracks'];
+			$clbpara['BGMBrand'] = 'rixolamal';
+			//Some init...
+			$clbpara['traitorRoll'] = 0;
+			//Destroy this item.
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
 		} elseif ($itm == '【歌单】小兔子警报！'){
+
+			if ($clbpara['BGMBrand'] == 'rixolamal'){
+				$log.="一种神奇的力量阻止了音乐播放器的启动！<br>";
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
+
 			if ($clbpara['touchedByBunny'] == 0){
 			$rp -= 120;}
 			$log.="你打开了手上的奇怪物品，里面传出了这样的声音：<br>
@@ -3549,6 +3637,13 @@ function itemuse($itmn,&$data=NULL) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itm == '【歌单】林无月'){
+
+			if ($clbpara['BGMBrand'] == 'rixolamal'){
+				$log.="一种神奇的力量阻止了你按下按钮！<br>";
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
+
 			$log.="你按下了手中遥控器的按钮。<br>
 			<span class=\"yellow\">你重置了你的音乐播放列表！<br></span>";
 			unset($clbpara['event_bgmbook']);
@@ -3591,6 +3686,40 @@ function itemuse($itmn,&$data=NULL) {
 			//destroy this item.
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
+		} elseif ($itm == '善良之刃'){
+			//fake a death message.
+			$log.="你觉得这个幻境太过危险，真的呆不下去了！<br>
+				<span class=\"yellow\">于是你将这把匕首对着自己，噗叽一声就刺了下去！<br></span>";
+			//it will require 200+ rage.
+			if ($rage <= 200){
+				$log.="匕首的刀刃却被弹开了！<br>
+				从匕首中传来了恶意的嘲笑：<br>
+				<span class=\"yellow\">“桀桀桀，连自裁的决心都没有，你还真是个软蛋！”<br></span>
+				你出离愤怒，一脚将匕首踩碎了。<br>
+				<br>
+				你被整蛊物品嘲讽，非常生气！<br>";
+				$rage = 200;
+				//destroy this item.
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}else{
+				$log.="白刀子进，白刀子出！<br>
+				你被中刀的冲击击飞，落在了地上。<br>
+				好疼。<br>
+				<span class=\"yellow\">等下……白刀子……出？<br></span>
+				你听到了你的死亡报告，但还是毫发无伤地站了起来。<br>
+				想死而不能，这可是太逊了……<br>
+				你不禁叹出一口气。<br>";
+
+				$rage = 0;
+				//add fake death news - Event Death.
+				addnews($now,'death13',$name,0);
+				//add fake death chat.
+				$db->query ( "INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$now','$name','$pls','我觉得我还可以抢救一下……')" );
+				//destroy this item.
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
 		} elseif ($itm == 'NPC战斗测试仪'){
 			include_once GAME_ROOT.'./include/game/revcombat.func.php';
 			$pa = fetch_playerdata_by_pid(1);
