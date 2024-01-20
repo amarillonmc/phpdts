@@ -1,0 +1,1049 @@
+﻿@import 'typed.scss';
+@font-face {
+	font-family: 'FusionPixel10px';
+	src: url('../../img/assets/font/fusion-pixel-10px-proportional-zh_hans.woff2') format('woff2');
+  }
+@font-face {
+	font-family: 'FusionPixel8px';
+	src: url('../../img/assets/font/fusion-pixel-8px-proportional-zh_hans.woff2') format('woff2');
+  }
+@font-face {
+	font-family: 'FusionPixel12px';
+	src: url('../../img/assets/font/fusion-pixel-12px-proportional-zh_hans.woff2') format('woff2');
+  }
+@font-face {
+	font-family: 'Vonwaon16px';
+	src: url('../../img/assets/font/VonwaonBitmap-16px.woff2') format('woff2');
+  }
+  @font-face {
+	font-family: 'Vonwaon12px';
+	src: url('../../img/assets/font/VonwaonBitmap-12px.woff2') format('woff2');
+  }
+body {text-align: center; background-position: 50% 50%; background-image: url("../../img/PB.gif"); background-attachment: fixed; background-repeat: no-repeat; font: 12px Vonwaon16px, Tahoma, Verdana;cursor: crosshair; margin: 0; background-color: #111; color:#ddd;}
+a {font: bold 10pt "FusionPixel10px" serif;text-decoration: none;color: #ddd; cursor: crosshair;line-height:16px}
+a:hover {color: #98fb98;text-decoration:underline}
+table {align:center;border: 0px;}
+tr {font-size: 10pt; margin: 0px;}
+td {font-size: 10pt; margin: 0px;}
+th {font-size: 10pt; margin: 0px;}
+p {line-height:16px;}
+li {font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+input {cursor: crosshair;}
+.b {font-weight:bold;}
+.title {font-family: "FusionPixel12px"; margin: 6px;color: #cceafa; width: 100%;filter:blur(add=1,direction=90,strength=12):glow(strength=5,color=gold); font-weight:900; text-decoration:underline;font-size: 30px;}
+.subtitle {font-family: "FusionPixel12px"; margin: 6px;color: #cceafa; width: 100%;font-size: 24px;font-weight:400;}
+.ach-subtitle {font: bold 24px/32px "FusionPixel12px","黑体";margin: 6px;color: #cceafa; width: 100%;}
+.ach-subdesc {margin: 6px;color: #cceafa;}
+/*.headerlink{}*/
+.small {font-size: 9pt}
+.center-text {text-align: center;}
+.ver a{font:bold 10pt "Viner Hand ITC","隶书" serif;color:#ff0000;}
+.b1 {background-color:rgba(225, 124, 226, 0.6); *BACKGROUND: rgb(98,135,163); *filter:alpha(opacity=60); BORDER: #000 0px none; TEXT-ALIGN: center; COLOR: #fff; border-right: #111 1px solid; border-bottom: #111 1px solid;font:bold 10pt "FusionPixel10px" serif;}
+.b2 {background-color:rgba(225, 124, 226, 0.6); *BACKGROUND: rgb(98,135,163); *filter:alpha(opacity=80); BORDER: #000 0px none; TEXT-ALIGN: center; COLOR: #fff; border-right: #111 1px solid;font:10pt "FusionPixel10px" serif;}
+.b3 {background-color:rgba(17,17,17,0.5); *BACKGROUND:rgb(17,17,17); *filter:alpha(opacity=50); BORDER: #000 0px none; color: #fff; text-align: center; border-right: #111 1px solid;font:10pt "FusionPixel10px" serif;}
+.b4 {BORDER: #000 0px none; color: #fff; text-align: center;font: 10pt "FusionPixel10px" serif;}
+.b5 {BORDER: #000 0px none; color: #fff; text-align: center;font: 10pt "FusionPixel10px" serif;}
+.map {background-color:rgba(17,17,17,0.5); *BACKGROUND:rgb(17,17,17); *filter:alpha(opacity=50);BORDER: #111 1px solid;text-align: center;font: bold 10pt "FusionPixel10px" serif;}
+.map2 {BORDER: #111 1px solid;text-align: center;font: bold 10pt "FusionPixel10px" serif;}
+.maptdred {background-color:rgba(255,0,0,0.25); *BACKGROUND:#f00; *filter:alpha(opacity=25);BORDER: #111 1px solid;text-align: center;font: bold 10pt "FusionPixel10px" serif;}
+.maptdyellow {background-color:rgba(255,255,0,0.25); *BACKGROUND:#ff0; *filter:alpha(opacity=25);BORDER: #111 1px solid;text-align: center;font: bold 10pt "FusionPixel10px" serif;}
+.maptdlime {background-color:rgba(0,255,0,0.2); *BACKGROUND:#0f0; *filter:alpha(opacity=20);BORDER: #111 1px solid;text-align: center;font: bold 10pt "FusionPixel10px" serif;}
+.mapspanred{color:#f00;position:relative;font-size: 9pt;line-height:16px}
+.mapspanlime{color:#0f0;position:relative;font-size: 9pt;line-height:16px}
+.mapspanyellow{color:#ff0;position:relative;font-size: 9pt;line-height:16px}
+.minimapspanclan{color:#00ffff;position:relative;font:bold 7pt "FusionPixel8px";line-height:14px}
+.minimapspanred{color:#f00;position:relative;font:bold 7pt "FusionPixel8px";line-height:14px}
+.minimapspanlime{color:#0f0;position:relative;font:bold 7pt "FusionPixel8px";line-height:14px}
+.minimapspanyellow{color:#ff0;position:relative;font:bold 7pt "FusionPixel8px";line-height:14px}
+
+.b1 span{position:relative;}
+.b2 span{position:relative;}
+.b3 span{position:relative;}
+.b1 div{position:relative;}
+.b2 div{position:relative;}
+.b3 div{position:relative;}
+
+table.admin {
+	border:0;
+	padding:0;
+	BACKGROUND: #000;
+}
+
+table.admin th {	
+	BACKGROUND: #3A4273;
+	color: #FFFFFF;
+	font: bold 10pt "FusionPixel10px" serif;
+	TEXT-ALIGN: center;
+}
+
+table.admin td {
+	BACKGROUND: #E3E3EA;
+	color: #3A4273;
+	font: normal 10pt "FusionPixel10px" serif;
+	TEXT-ALIGN: left;
+}
+
+table.admin td.tdtitle {
+	BACKGROUND: #E3E3EA;
+	color: #3A4273;
+	font: bold 12pt "FusionPixel12px" serif;
+	TEXT-ALIGN: center;
+}
+
+table.dialogue {
+	background-color: rgba(25, 25, 25, 0.5);*filter:alpha(opacity=50);
+	border-color: rgba(196, 196, 196, 0.8);
+}
+
+table.infotable {
+	margin-top: 10px;
+	position:relative;
+	text-align: center;
+	border-radius: 3px; 
+	border:2px solid rgba(225, 124, 226, 0.25);
+}
+table.infotable td,
+table.infotable th {
+	border:1px solid rgba(225, 124, 226, 0.4);
+}
+
+.typewriter {
+	color: #fff;
+	overflow: hidden; /* Ensures the content is not revealed until the animation */
+	border-right: .15em solid orange; /* The typwriter cursor */
+	white-space: nowrap; /* Keeps the content on a single line */
+	margin: 0 auto; /* Gives that scrolling effect as the typing happens */
+	letter-spacing: .15em; /* Adjust as needed */
+	animation: 
+	  typing 3.5s steps(30, end),
+	  blink-caret .5s step-end infinite;
+  }
+  
+  /* The typing effect */
+  @keyframes typing {
+	from { width: 0 }
+	to { width: 100% }
+  }
+  
+  /* The typewriter cursor effect */
+  @keyframes blink-caret {
+	from, to { border-color: transparent }
+	50% { border-color: orange }
+  }
+
+.typewritersong {@include typed("到哪都一样　一样乐观　耐操耐撞","永远都一样　一样天真　敢梦敢想","现在还一样　一样冲动　爱疯爱狂","不能停　不能闲　不能不忙","不管他　不怕你笑我","我生来就这样");}
+
+.clit {color: #feea23; font:18pt "FusionPixel10px" serif; }
+.yellow{color:#ffff00; font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.gold{color:rgb(255,215,0);font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.clan{color: #00ffff;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.blue{color: #0060ff;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.red{color: #ff0000;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.green{color: #008000;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.lime{color: #00ff00;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.purple{color: #ff00ff;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.evergreen{color:#98fb98;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.evergreen2{color:#98fb98;font:18pt "FusionPixel12px" serif;}
+.lightgreen{color:#8AE234;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.magenta{color:#FF1493;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.sienna{color:#EE7942;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.orange{color:#FFA500;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.darkviolet{color:#9400D3;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.darkcyan{color:#008B8B;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.seagreen{color:#4EEE94;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.dmg {color:#ff0000;font: bold 10pt "FusionPixel10px" serif;}
+.grey{color:#999; font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.lightpink{color:rgb(250,180,180);font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.ltcrimson{color:rgb(255,120,150);font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.ltazure{color:rgb(110,210,255);font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.linen{color:rgb(200,192,184);font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.L5{color: #ff0000;font: bold 10pt "FusionPixel10px" serif;line-height:16px;background:url("../../img/backround4.gif") repeat-x;}
+.redseed{color:#ff6599; font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.blueseed{color:#b5d5f7; font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.seedhint{background-image: url("../../img/rbfireseed.png");font: 8pt;-webkit-text-stroke: 0.3px white;}
+.tgrey{color:rgb(185, 185, 185); font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.tlime{color:rgb(74, 227, 74); font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.tclan{color:rgb(30, 150, 255); font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.tmagenta{color:rgb(221, 30, 255); font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.torange{color:rgb(255, 128, 0); font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.glitch1 {
+	font-weight: bold;
+	text-transform: uppercase;
+	position: relative;
+	text-shadow: 0.05em 0 0 #00fffc, -0.03em -0.04em 0 #fc00ff,
+	  0.025em 0.04em 0 #fffc00;
+	animation: glitch1 725ms infinite;
+  }
+.glitchb {
+	color:rgb(30, 150, 255);
+	font-weight: bold;
+	position: relative;
+	text-shadow: 0.05em 0 0 #00fffc, -0.03em -0.04em 0 #fc00ff,
+	  0.025em 0.04em 0 #fffc00;
+	animation: glitch1 725ms infinite;
+  }
+
+  .glitchb span {
+	position: absolute;
+	top: 0;
+	left: 0;
+  }
+  
+  .glitchb span:first-child {
+	animation: glitch1 500ms infinite;
+	clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+	transform: translate(-0.04em, -0.03em);
+	opacity: 0.75;
+  }
+  
+  .glitchb span:last-child {
+	animation: glitch1 375ms infinite;
+	clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+	transform: translate(0.04em, 0.03em);
+	opacity: 0.75;
+  }
+  
+  .glitch1 span {
+	position: absolute;
+	top: 0;
+	left: 0;
+  }
+  
+  .glitch1 span:first-child {
+	animation: glitch1 500ms infinite;
+	clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+	transform: translate(-0.04em, -0.03em);
+	opacity: 0.75;
+  }
+  
+  .glitch1 span:last-child {
+	animation: glitch1 375ms infinite;
+	clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+	transform: translate(0.04em, 0.03em);
+	opacity: 0.75;
+  }
+  
+  @keyframes glitch1 {
+	0% {
+	  text-shadow: 0.05em 0 0 #00fffc, -0.03em -0.04em 0 #fc00ff,
+		0.025em 0.04em 0 #fffc00;
+	}
+	15% {
+	  text-shadow: 0.05em 0 0 #00fffc, -0.03em -0.04em 0 #fc00ff,
+		0.025em 0.04em 0 #fffc00;
+	}
+	16% {
+	  text-shadow: -0.05em -0.025em 0 #00fffc, 0.025em 0.035em 0 #fc00ff,
+		-0.05em -0.05em 0 #fffc00;
+	}
+	49% {
+	  text-shadow: -0.05em -0.025em 0 #00fffc, 0.025em 0.035em 0 #fc00ff,
+		-0.05em -0.05em 0 #fffc00;
+	}
+	50% {
+	  text-shadow: 0.05em 0.035em 0 #00fffc, 0.03em 0 0 #fc00ff,
+		0 -0.04em 0 #fffc00;
+	}
+	99% {
+	  text-shadow: 0.05em 0.035em 0 #00fffc, 0.03em 0 0 #fc00ff,
+		0 -0.04em 0 #fffc00;
+	}
+	100% {
+	  text-shadow: -0.05em 0 0 #00fffc, -0.025em -0.04em 0 #fc00ff,
+		-0.04em -0.025em 0 #fffc00;
+	}
+  }
+
+  @mixin glitchCopy {
+	content: attr(data-text);
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+  }
+  
+  .glitch2 {
+	position: relative;
+	color: #fff;
+	animation: glitch-skew 1s infinite linear alternate-reverse;
+  
+	&::before {
+	  @include glitchCopy;
+	  left: 2px;
+	  text-shadow: -2px 0 #ff00c1;
+	  clip: rect(44px, 450px, 56px, 0);
+	  animation: glitch-anim 5s infinite linear alternate-reverse;
+	}
+  
+	&::after {
+	  @include glitchCopy;
+	  left: -2px;
+	  text-shadow: -2px 0 #ff00c1, 2px 2px #ff00c1;
+	  clip: rect(44px, 450px, 56px, 0);
+	  animation: glitch-anim2 5s infinite linear alternate-reverse;
+	}
+  }
+  
+  @keyframes glitch-anim {
+	$steps: 20;
+	@for $i from 0 to $steps {
+	  #{percentage($i*(1/$steps))} {
+		clip: rect(random(100) + px, 9999px, random(100) + px, 0);
+		transform: skew((random(100) / 100) + deg);
+	  }
+	}
+  }
+  
+  @keyframes glitch-anim2 {
+	$steps: 20;
+	@for $i from 0 to $steps {
+	  #{percentage($i*(1/$steps))} {
+		clip: rect(random(100) + px, 9999px, random(100) + px, 0);
+		transform: skew((random(100) / 100) + deg);
+	  }
+	}
+  }
+  
+  @keyframes glitch-skew {
+	$steps: 10;
+	@for $i from 0 to $steps {
+	  #{percentage($i*(1/$steps))} {
+		transform: skew((random(10) - 5) + deg);
+	  }
+	}
+  }
+
+@keyframes blueflicker {
+	0%, 18%, 22%, 25%, 53%, 57%, 100% {
+	  text-shadow:
+		0 0 4px #fff,
+		0 0 7px #fff,
+		0 0 10px #fff,
+		0 0 15px #00ffff,
+		0 0 22px #00ffff,
+		0 0 35px #00ffff,
+		0 0 40px #0060ff,
+		0 0 50px #0060ff;
+	}
+	20%, 24%, 55% {       
+	  text-shadow: none;
+	}
+  }
+
+  @keyframes redflicker {
+	0%, 18%, 22%, 25%, 53%, 57%, 100% {
+	  text-shadow:
+		0 0 4px #fff,
+		0 0 7px #fff,
+		0 0 10px #fff,
+		0 0 15px #FCE7E7,
+		0 0 22px #FDB5B5,
+		0 0 35px #FF7979,
+		0 0 40px #FF6161,
+		0 0 50px #FF0000;
+	}
+	20%, 24%, 55% {       
+	  text-shadow: none;
+	}
+  }
+
+  @keyframes yellowflicker {
+	0%, 18%, 22%, 25%, 53%, 57%, 100% {
+	  text-shadow:
+		0 0 4px #fff,
+		0 0 7px #fff,
+		0 0 10px #fff,
+		0 0 15px #F8FCDA,
+		0 0 22px #F6FDB5,
+		0 0 35px #F2FF79,
+		0 0 40px #FCFF61,
+		0 0 50px #FFFB00;
+	}
+	20%, 24%, 55% {       
+	  text-shadow: none;
+	}
+  }
+
+  @keyframes orangeflicker {
+	0%, 18%, 22%, 25%, 53%, 57%, 100% {
+	  text-shadow:
+		0 0 4px #fff,
+		0 0 7px #fff,
+		0 0 10px #fff,
+		0 0 15px #FCEEDA,
+		0 0 22px #FDE6B5,
+		0 0 35px #FFC179,
+		0 0 40px #FFAD61,
+		0 0 50px #FF6600;
+	}
+	20%, 24%, 55% {       
+	  text-shadow: none;
+	}
+  }
+
+.spitem
+  {
+	background-image: linear-gradient(
+	  -225deg,
+	  #FFFFFF 0%,
+	  #FFEECD 29%,
+	  #ff1361 67%,
+	  #fff800 100%
+	);
+	background-size: auto auto;
+	background-clip: border-box;
+	background-size: 200% auto;
+	background-clip: text;
+	text-fill-color: transparent;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	animation: textclip 2s linear infinite;
+  }
+  
+  .spitem2
+  {
+	background-image: linear-gradient(
+	  -225deg,
+	  #FFFFFF 0%,
+	  #FDDFA3 29%,
+	  #FFD900 67%,
+	  #fff800 100%
+	);
+	background-size: auto auto;
+	background-clip: border-box;
+	background-size: 200% auto;
+	background-clip: text;
+	text-fill-color: transparent;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	animation: textclip 2s linear infinite;
+  }
+
+  @keyframes textclip {
+	to {
+	  background-position: 200% center;
+	}
+  }
+
+.neonblue{animation: blueflicker 1.5s infinite alternate;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.neonred{animation: redflicker 1.5s infinite alternate;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.neonyellow{animation: yellowflicker 1.5s infinite alternate;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+.neonorange{animation: orangeflicker 1.5s infinite alternate;font: bold 10pt "FusionPixel10px" serif;line-height:16px}
+
+.mtgcolorless {
+	text-shadow: 0px 0px 2px rgba(137, 137, 137, 0.706), 0px 0px 3px #f5f5f586, 0px 0px 4px rgb(255, 255, 255);
+	animation: fadeInOut 2s ease-in-out infinite;
+}
+.mtgred {
+	text-shadow: 0px 0px 2px #af1d1d, 0px 0px 3px #BD4624, 0px 0px 4px red;
+	animation: fadeInOut 2s ease-in-out infinite;
+}
+.mtgblue {
+	text-shadow: 0px 0px 2px #378bc6, 0px 0px 3px #0da0a0, 0px 0px 4px #0a4fd0;
+	animation: fadeInOut 2s ease-in-out infinite;
+}
+.mtggreen {
+	text-shadow: 0px 0px 2px #5bd387, 0px 0px 3px #1bbb1b, 0px 0px 4px #269803;
+	animation: fadeInOut 2s ease-in-out infinite;
+}
+.mtgwhite {
+	text-shadow: 0px 0px 2px #ffffdd, 0px 0px 3px #ededc4, 0px 0px 4px #cfcf9f;
+	animation: fadeInOut 2s ease-in-out infinite;
+}
+.mtgblack {
+	text-shadow: 0px 0px 2px #9015c1, 0px 0px 3px #9242a2, 0px 0px 4px #4a0854;
+	animation: fadeInOut 2s ease-in-out infinite;
+}
+@keyframes fadeInOut {
+	0% {
+		filter: brightness(89%) blur(0.3px);
+	}
+	50% {
+		filter: brightness(122%) blur(0px);
+	}
+	100% {	
+		filter: brightness(89%) blur(0.3px);
+	}
+}
+.sparkle {
+	animation: sparklefade 2s ease-in-out infinite;
+}
+@keyframes sparklefade {
+	0% {
+		filter: sepia(100%) brightness(88%) blur(0.3px);
+	}
+	50% {
+		filter: sepia(100%) brightness(133%) blur(0px);
+	}
+	100% {	
+		filter: sepia(100%) brightness(88%) blur(0.3px);
+	}
+}
+.rainbow {
+	text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;
+	animation: rainbowshimmer 2s ease-in-out infinite;
+}
+@keyframes rainbowshimmer {
+	0% {
+		text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;
+	}
+	20% {
+		text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #00ff00, 0 0 40px #00ff00, 0 0 50px #00ff00, 0 0 60px #00ff00, 0 0 70px #00ff00;
+	}
+	40% {
+		text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #ffff00, 0 0 40px #ffff00, 0 0 50px #ffff00, 0 0 60px #ffff00, 0 0 70px #ffff00;
+	}
+	60% {
+		text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #0000ff, 0 0 40px #0000ff, 0 0 50px #0000ff, 0 0 60px #0000ff, 0 0 70px #0000ff;
+	}
+	80% {
+		text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #ff00ff, 0 0 40px #ff00ff, 0 0 50px #ff00ff, 0 0 60px #ff00ff, 0 0 70px #ff00ff;
+	}
+	100% {
+		text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;
+	}
+}
+.minirainbow {
+	color: rgb(227, 25, 25);
+	animation: minirainbowshimmer 2s linear infinite;
+}
+@keyframes minirainbowshimmer {
+	0% {
+		color:#e67b00;
+	}
+	20% {
+		color: #00ff00;
+	}
+	40% {
+		color:#ffff00;
+	}
+	60% {
+		color: #2dcce1;
+	}
+	80% {
+		color: #ff00ff;
+	}
+	100% {
+		color: rgb(227, 25, 25);
+	}
+}
+
+#main {
+white-space:nowrap;
+vertical-align:middle;
+}
+.battle td{
+text-align: center;
+}
+#chatlist{
+MARGIN: 0px;
+height:120px;
+width:720px;
+word-break:break-all;
+overflow-x:hidden;
+overflow-y:auto;
+position:relative;
+}
+#newslist{
+MARGIN: 0px;
+height:120px;
+width:100%;
+word-break:normal;
+overflow:auto;
+position:relative;
+}
+.newslist ul{
+margin: 0; 
+padding: 2px; 
+padding-left: 20px;
+}
+#sendchat{
+MARGIN: 0px;
+padding:0px;
+border:0px; 
+height:35px;
+width:100%;
+}
+#chatmsg{
+width:65%;
+border-right: #ddc 2px solid;
+border-top: #666 2px solid;
+border-left: #666 2px solid;
+border-bottom: #ddc 2px solid;
+}
+#log{
+	line-height:15px
+}
+.footerline {
+height: 1px;
+background-image: url("../../img/footer_line.gif");
+}
+.clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; } 
+.clearfix {display: inline-table;} /* Hides from IE-mac \*/ * html .clearfix {height: 1%;} .clearfix {display: block;} /* End hide from IE-mac */ 
+
+input.cmdbutton{
+	min-width:80px;height:25px;margin:2;
+}
+
+.auto-style1 {
+	border-width: 0px;
+}
+
+/* tooltip样式 摆脱title了！ */
+span[tooltip] {
+    position: relative;
+}
+span[tooltip]:hover:before {
+    content: attr(tooltip);
+	display: inline-block;
+	font: 8pt "FusionPixel8px" serif; color: rgba(225, 124, 226, 1);
+	padding: 7px; text-align: left; white-space:pre-line;
+	text-shadow:1px 1px 1px rgb(106, 0, 108); text-fill-color: rgb(245, 174, 246); -webkit-text-fill-color: rgb(245, 174, 246);
+	/*background-clip: border-box; background-color: rgba(198, 114, 199, 0.8);*/
+	background-color:rgba(0,0,0,0.8); *BACKGROUND: rgb(0,0,0); *filter:alpha(opacity=70); 
+	border-radius: 3px; border:2px solid rgba(225, 124, 226, 0.4);	
+	transform: translate(25px, 25px);
+    width:max-content; max-width: 175px; position: absolute; z-index: 50;
+}
+span[tooltip2]:hover:before {
+    content: attr(tooltip2);
+	display: inline-block;
+	font: 8pt "FusionPixel8px" serif; color: rgba(225, 124, 226, 1);
+	padding: 7px; text-align: left; white-space:pre-line;
+	text-shadow:1px 1px 1px rgb(106, 0, 108); text-fill-color: rgb(245, 174, 246); -webkit-text-fill-color: rgb(245, 174, 246);
+	/*background-clip: border-box; background-color: rgba(198, 114, 199, 0.8);*/
+	background-color:rgba(0,0,0,0.8); *BACKGROUND: rgb(0,0,0); *filter:alpha(opacity=70); 
+	border-radius: 3px; border:2px solid rgba(225, 124, 226, 0.4);	
+	transform: translate(25px, 25px);
+    width:max-content; max-width: 175px; position: fixed; z-index: 50;
+}
+
+/* 下拉菜单样式 */
+.headerlink{
+	font-family: "FusionPixel10px";
+}
+span.drop{
+	position: relative;
+}
+/*悬浮在drop样式上时触发下拉菜单*/
+span.drop:hover .dropdown-menu{
+	display: block;
+}
+/*下拉菜单样式本体*/
+.dropdown-menu{
+	display: none;
+	font: 10pt "FusionPixel10px" serif; color: rgba(225, 124, 226, 1);
+	text-align: center;
+	text-shadow:1px 1px 1px rgb(106, 0, 108); text-fill-color: rgb(245, 174, 246); -webkit-text-fill-color: rgb(245, 174, 246);
+	background-clip: border-box; 
+	background-color:rgba(0,0,0,0.7); *BACKGROUND: rgb(0,0,0); *filter:alpha(opacity=70); 
+	border-radius: 3px; border:1px solid rgba(225, 124, 226, 0.4);	
+	top:17px; left: -5px;
+	width: 80px; max-width: 80px; position: absolute; z-index:10; 
+}
+/*去除下拉菜单内<ul>标签的样式*/
+.dropdown-menu ul{
+	list-style: none;
+	margin: 0; 
+	padding: 2px; 
+}
+/*改变下拉菜单内<li>标签的样式*/
+.dropdown-menu li{
+	padding: 2px; 
+	list-style: none;
+	align-items: center; 
+	justify-content: center;
+}
+
+/* 在小头像上悬浮显示大头像 */
+.icon{
+	position: relative;
+	
+}
+/*光标移动到样式上时 显示大头像*/
+.icon:hover .icona{
+	display: block;
+	background-color: rgba(83, 63, 90, 0.5);
+	border-radius: 10px;
+}
+/*大头像本体样式*/
+.icona{
+	top:-40px;
+	left:-5px;
+	width: 140px; 
+    max-width: 140px; 
+	padding: 5px;
+    position: absolute;
+	z-index:4;
+	display: none;
+}
+
+/* dialog模态框 */
+dialog:focus {
+	outline: none;
+}
+dialog{
+	position:fixed; left:0px; top:0px;
+	max-width: 80%; max-height: 80%;
+	margin:auto auto; padding: 15px;
+	font:10pt FusionPixel10px serif; color: #fff; text-align: left; overflow-x:hidden; overflow-y:auto;
+	border: 2px solid rgba(119, 119, 119, 0.5); border-radius: 10px;
+	background-color:rgba(17, 17, 17, 0.9); *BACKGROUND:rgb(17,17,17); *filter:alpha(opacity=50);
+	box-shadow: 0px 2px 6px rgb(36, 36, 36);
+	z-index:20;
+}
+dialog.storyboard{
+	border: 0px;
+}
+dialog::backdrop{
+	font: bold 10pt "FusionPixel10px" serif;text-decoration: none;color: #ddd; cursor: crosshair;
+	background-color:rgba(17,17,17,0.5); *BACKGROUND:rgb(17,17,17); *filter:alpha(opacity=50);
+	backdrop-filter: blur(6px);
+}
+dialog.storyboard::backdrop{
+	background-color:rgba(46, 46, 46, 0.8);
+	backdrop-filter: blur(10px);
+}
+.dialog-background {
+	display: flex;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	z-index:-2;
+}
+div.dialog-box
+{
+	background-color:rgba(20,22,24,0.5); *BACKGROUND: rgb(20,22,24); *filter:alpha(opacity=50); 
+	display:Inline-block;overflow-y:auto;
+	text-align:center; vertical-align:middle;
+	margin:5px;	border:1px solid rgba(168, 166, 166, 0.5);border-radius:10px;
+}
+dialog::-webkit-scrollbar,div.dialog-box::-webkit-scrollbar
+{
+	height: 5px;
+	width: 9px;
+}
+dialog::-webkit-scrollbar-thumb
+{
+	background: rgba(119, 119, 119, 0.5);
+	border-radius: 100px;
+	background-clip: padding-box;
+	border: 2px solid rgba(119, 119, 119, 0.5);
+	border-top: none;
+	border-bottom: none;
+	min-height: 10px;
+}
+div.dialog-box::-webkit-scrollbar-thumb 
+{
+	background: rgba(108, 102, 102, 0.5);
+	border-radius: 100px;
+	background-clip: padding-box;
+	border: 2px solid rgba(108, 102, 102, 0.5);
+	border-top: none;
+	border-bottom: none;
+	min-height: 10px;
+}
+
+/* 滑动选择器（半废弃） */
+input.range{
+	margin: 5px;
+	width: 100%;
+	height: 10px;
+	outline:none;
+	border-radius: 50px;
+	box-shadow:0 0 5px 1px rgba(0, 0, 0, 0.5);
+}
+/* 商店道具 */
+.shoprow{
+	width:100%;display:flex;min-height:40px;
+}
+
+.shoprow .leftbox{
+	width:50px;float:left;margin-right:5px;
+}
+.shoprow .leftbox input{min-width:50px;}
+.shoprow .rightbox{
+	width:60px;float:right;
+}
+.shoprow .rightbox input{width:60px;}
+.shoprow .rightbox .inputunit{
+	position:absolute;top:5%;right:25%;color:#aaaaaa;
+}
+/* EmojiIcon */
+.eicon{
+	filter: grayscale(100%) brightness(133%) blur(0px);
+	font-size: 125%;
+	transition: 0.3s;	
+}
+.eicon:hover{
+	filter: grayscale(100%) brightness(166%) blur(0px);
+}
+.eicon:active{
+	background-color: rgba(153, 153, 153, 0.5);
+	border-radius: 5%;
+	box-shadow: 0px 2px 6px #999;
+}
+
+/* 子面板相关 */
+.blurtext{
+	align-self: center;
+	filter: opacity(20%) blur(3px);
+}
+.lockmap {
+	background:url("../../img/lock.png") center;background-color:rgba(17,17,17,0.5);
+	filter:opacity(90%) brightness(75%);BORDER: #111 1px solid;text-align: center;font: bold 10pt "FusionPixel10px" serif;
+	transition: 0.5s;
+}
+.lockmap:hover{
+	filter: opacity(100%) brightness(125%);
+}
+.dangerbutton{
+	padding: 2rem 2rem;
+	border: 0;
+	border-radius: 50%;
+	box-shadow: 0px 0px 40px 0px rgba(255, 0, 0, 0.45);
+	text-align: center;
+	font: bold 10pt "FusionPixel10px";
+	text-shadow:2px 2px 2px #000000;
+	color: rgb(166, 166, 166);
+	background-color: rgba(255, 0, 0, 0.45);
+	letter-spacing: .1rem;
+	transition: 1s;
+}
+.dangerbutton:hover {
+	filter: brightness(130%);
+	box-shadow: 0px 0px 40px 0px red;
+	background-color: rgba(255, 0, 0, 0.75);
+}
+
+/* 技能（移植） */
+table.skilltable{
+	height:100%; width:100%; 
+	border:0;margin:0;border-collapse:collapse;border-spacing:0;
+}
+table.skilltable td{padding:0;}
+td.skilldesc_left{}
+td.skilldesc_right{width:96px;}
+span.skilldesc
+{
+	margin:8px auto;
+	display:block;
+}
+div.skilldesc{margin:8px auto;display:block;}
+div.skill_unacquired
+{
+	position:relative; left:0px; top:0px; 
+	background-color:#ffffff; 
+	height:100%; width:100%; 
+	filter:alpha(opacity=18); -moz-opacity:0.18; opacity:0.18; -khtml-opacity: 0.18;
+}
+div.skill_unacquired_transparent
+{
+	position:relative; left:0px; top:0px; 
+	height:100%; width:100%; 
+}
+div.skill_unacquired_hint
+{
+	position:absolute; left:0px; top:0px; height:100%; width:100%;
+}
+div.skill_unacquired_hint_transparent
+{
+	position:absolute; left:0px; top:0px; height:100%; width:100%;
+	background-color:#000000; 
+	filter:alpha(opacity=0.1); -moz-opacity:0.1; opacity:0.1; -khtml-opacity: 0.1;
+}
+div.skilllearn_desc_container{
+	text-align:center;
+	width:420px;z-index:100;position:fixed;
+	filter:alpha(opacity=95); opacity:0.95; background-color:#000000
+}
+
+/* 成就（移植） */
+div.ach_box
+{
+	background-color:rgba(20,22,24,0.5); *BACKGROUND: rgb(20,22,24); *filter:alpha(opacity=50); 
+	display:Inline-block;
+	width:320px; min-height:106px;text-align:left; vertical-align:middle;
+	margin:5px;	border:1px solid rgba(225, 124, 226, 0.4);	border-radius:7px;
+}
+
+div.ach_box div
+{
+	position:relative;filter:alpha(opacity=100); opacity:1;
+}
+
+div.ach_box img
+{
+	border-radius:5px; margin-right:5px;
+}
+
+div.ach_box .ach_cont
+{
+	text-align:left; vertical-align:middle;
+}
+
+div.ach_box_empty
+{
+	display:Inline-block;
+	width:300px; text-align:left; vertical-align:top;
+	margin:5px;	border:0px;	
+}
+
+span.ach_title{font-weight:bold;font-size:12pt;line-height:14pt;}
+
+/* 剧情分镜（移植） */
+#storyboard_container {
+	background-color:rgba(17,17,17,0.5);
+}
+
+#storyboard_control {
+	position:relative;
+}
+
+#storyboard_control input.cmdbutton{
+	width:120px;height:25px;margin:2;
+}
+
+#shootings_container{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.shootings {
+	text-align:center;
+	display:none;
+}
+
+/* glow_buttons（移植） */
+.glow_buttons {
+	background-color:transparent;
+	width:70px;
+	height:20px;
+	margin:auto;
+	border:1px solid;
+	   -moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	        border-radius: 6px;
+	cursor:pointer;
+	overflow-x:hidden;
+	overflow-y:hidden;
+	white-space:nowrap;
+	text-align:center;
+	line-height:20px;
+}
+
+.glow_buttons.w35{width:35px;}
+.glow_buttons.w115{width:115px;}
+.glow_buttons.w125{width:125px;}
+.glow_buttons.w140{width:140px;}
+.glow_buttons.h15{height:15px;line-height:15px;}
+.glow_buttons.h25{height:25px;line-height:25px;}
+.glow_buttons.h30{height:30px;line-height:30px;}
+.glow_buttons.h50{height:50px;line-height:50px;}
+
+.glow_buttons span{
+	line-height:20px;
+}
+
+.glow_buttons:hover {
+	-webkit-box-shadow: 0 0 12px #fff;
+	        box-shadow: 0 0 12px #fff;
+}
+
+.glow_buttons:active {
+	background-color:rgba(221,221,221,0.5);
+}
+
+.glow_buttons.yellow:hover {
+	-webkit-box-shadow: 0 0 18px #ff0;
+	        box-shadow: 0 0 18px #ff0;
+}
+
+.glow_buttons.yellow:active {
+	background-color:rgba(255,255,0,0.5);
+}
+
+.glow_buttons.red:hover {
+	-webkit-box-shadow: 0 0 18px #f00;
+	        box-shadow: 0 0 18px #f00;
+}
+
+.glow_buttons.red:active {
+	background-color:rgba(255,0,0,0.5);
+}
+
+.glow_buttons.cyan:hover {
+	-webkit-box-shadow: 0 0 18px #0ff;
+	        box-shadow: 0 0 18px #0ff;
+}
+
+.glow_buttons.cyan:active {
+	background-color:rgba(0,255,255,0.5);
+}
+
+.glow_buttons.lime:hover {
+	-webkit-box-shadow: 0 0 18px #0f0;
+	        box-shadow: 0 0 18px #0f0;
+}
+
+.glow_buttons.lime:active {
+	background-color:rgba(0,255,0,0.5);
+}
+
+.glow_buttons.grey:hover {
+	-webkit-box-shadow: 0 0 18px #999;
+	        box-shadow: 0 0 18px #999;
+}
+
+.glow_buttons.grey:active {
+	background-color:rgba(153,153,153,0.5);
+}
+
+.glow_buttons.darkgrey:hover {
+	-webkit-box-shadow: 0 0 18px #666;
+	        box-shadow: 0 0 18px #666;
+}
+
+.glow_buttons.darkgrey:active {
+	background-color:rgba(102,102,102,0.5);
+}
+
+.glow_buttons.evergreen:hover {
+	-webkit-box-shadow: 0 0 18px #98fb98;
+	        box-shadow: 0 0 18px #98fb98;
+}
+
+.glow_buttons.evergreen:active {
+	background-color:rgba(152,251,152,0.5);
+}
+
+.glow_buttons.forbidden{
+	cursor:crosshair;
+}
+
+.glow_buttons.forbidden:hover{
+	-webkit-box-shadow: none;
+	        box-shadow: none;
+}
+
+.glow_buttons.forbidden:active{
+	background-color:transparent;
+}
+
+.glow_buttons:disabled{
+	cursor:crosshair;
+	color:#999;
+	border-color:#999;
+}
+
+.glow_buttons:disabled:hover{
+	-webkit-box-shadow: none;
+	        box-shadow: none;
+}
