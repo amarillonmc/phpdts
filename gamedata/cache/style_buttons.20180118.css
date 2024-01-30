@@ -1,3 +1,23 @@
+@font-face {
+	font-family: 'FusionPixel10px';
+	src: url('../../img/assets/font/fusion-pixel-10px-proportional-zh_hans.woff2') format('woff2');
+  }
+@font-face {
+	font-family: 'FusionPixel8px';
+	src: url('../../img/assets/font/fusion-pixel-8px-proportional-zh_hans.woff2') format('woff2');
+  }
+@font-face {
+	font-family: 'FusionPixel12px';
+	src: url('../../img/assets/font/fusion-pixel-12px-proportional-zh_hans.woff2') format('woff2');
+  }
+@font-face {
+	font-family: 'Vonwaon16px';
+	src: url('../../img/assets/font/VonwaonBitmap-16px.woff2') format('woff2');
+  }
+  @font-face {
+	font-family: 'Vonwaon12px';
+	src: url('../../img/assets/font/VonwaonBitmap-12px.woff2') format('woff2');
+  }
 .b_button {
 	display: inline-block;
 	zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
@@ -8,7 +28,7 @@
 	cursor: pointer;
 	text-align: center;
 	text-decoration: none;
-	font: bold 14px/100% 微软雅黑, Arial, Helvetica, sans-serif;
+	font: bold 14px/100% FusionPixel12px, Arial, Helvetica, sans-serif;
 	padding: .5em 2em .55em;
 	text-shadow: 0 1px 1px rgba(0,0,0,.3);
 	-webkit-border-radius: .5em; 
