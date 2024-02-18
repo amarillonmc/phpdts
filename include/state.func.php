@@ -928,7 +928,10 @@
 			$log .= "你的大脑觉得你可能可以抢救一下，但你的心脏却突然掀开胸膛破口大骂：<span class=\"yellow\">“死都死了，治个屁！火化吧！”</span><br>
 			看起来这下治疗也没有什么用处了。<br>";
 			$log .= "你已经死亡，无法治疗。<br>";
+			return;
 		}
+		
+		if ($state == 1) rest_get_tips($resttime);
 
 		if ($state == 1 || $state == 3) {
 			$oldsp = $sp;
@@ -999,6 +1002,108 @@
 			$mode = 'command';
 		}
 		return;
+	}
+	
+	function rest_get_tips($resttime)
+	{
+		global $db, $tablepre, $plsinfo, $log;
+		
+		//睡眠时，每隔多少秒获得一条提示
+		$rest_get_tip_rate = 30;
+		//睡眠时，一次最多获得多少条提示
+		$rest_get_tip_max = 15;
+		//睡眠时会提示的NPC类别，依次是全息，豆腐，黑幕，真职人，DF，妖精，女主，武神，巫师，歌神，电掣
+		$tip_npctype = array(2,5,6,11,12,13,14,21,24,26,89);
+		//睡眠时会提示的道具名列表
+		$tip_itemnamelist = array('肥料', '中药', '火把', '铁锤', '广域生命探测器', '★阔剑地雷★', '毒物说明书', '☆碧藍怒火☆', '☆白楼剑☆', '☆楼观剑☆', '钻石', '宅男装', '萝莉装', '女仆装', '伪娘装', '电子马克笔', '一个能打的都没有', '德国BOY的键盘', '葱娘の葱', '容嬷嬷的针', '新八的眼镜', '新华里的领带', '新华里的西服', '新华里的手表', '新华里的皮鞋', '新华里的投入', '新华里的震撼', '新华里的乱舞', '新华里的手势', '新华里的呐喊', '新华里的眼神', '新华里的增员', '红色方块', '绿色方块', '蓝色方块', '黄色方块', '金色方块', '银色方块', '水晶方块', '黑色方块', '白色方块', 'X方块', 'Y方块', '妹汁', '《BR大逃杀》', '《防身术图解》', '《剑道社教材》', '《枪械杂志》', '《飞镖投掷法》', '《化学课本》', '《太极拳指南》', '【腕力强化剂】', '【皮肤强化剂】', '【神经强化剂】', '【超级战士药剂】', '【肉体强化剂】', '【线粒体强化剂】', '提示纸条E', '提示纸条I', '提示纸条K', '提示纸条N', '弱点探测器', '【北斗百裂拳】', '【狂暴凶刃】', '【盖特机炮】', '幻符【杀人玩偶】', '【泰迪熊炸弹】', '【西方秋霜玉】', '预言挂坠', '【紫棠花色波纹疾走】', '弱爆了！', '《哲♂学》', '★全图唯一的野生巨大香蕉★', '残存的礼品盒', '残存的结婚喜糖-红', '残存的结婚喜糖-橙', '残存的结婚喜糖-黄', '残存的结婚喜糖-绿', '残存的结婚喜糖-青', '残存的结婚喜糖-蓝', '残存的结婚喜糖-紫', '糖衣炮弹-红', '糖衣炮弹-橙', '糖衣炮弹-黄', '糖衣炮弹-绿', '糖衣炮弹-青', '糖衣炮弹-蓝', '糖衣炮弹-紫', '密封的酒瓶', '音乐录像', '五线乐谱', '葱娘肉包', 'V家蔬菜汁', '破旧录音机', '神奇的八音盒', '魂之结晶', '歌手之魂', '【Alicemagic】', '【Crow Song】', '「奥西里斯之天空龙」-仮', '「欧贝利斯克之巨神兵」-仮', '「太阳神之翼神龙」-仮', '【流星一条】', '杨叔的眼镜', '蓝蓝路的大鞋', '动感超人手表', 'MIKU的内裤', '■DeathNote■', '■魔剑－雷瓦丁■', '★Unlimited Blade Works★', '★Unlimited Code Works★', '《ACFUN大逃杀攻略》', '《北斗神拳》', '《寒蝉鸣泣之时》', '《魔法少女奈叶》', '《网球王子》', '《新机动战记高达W》', '《东方永夜抄》', '【触手的萃取液】', '【圣防护罩-反射之力】', '【金蚕王】', '【我已经天下无敌了！】', '【残机碎片】', '【S2机关】', '【宇航服】', '【楼主头】', '【哥哥鞋】', '受王拳', '★闪光迎击神话★', '鲜红的生血', '《东方幻想乡》', '★I-力场★', '奇怪的按钮', '【主角光环】', '【测试用具】', '驱云弹');
+		
+		$get_tips_count = floor($resttime / $rest_get_tip_rate);
+		if (rand(0,99) < $resttime) $get_tips_count += 1;//奖励骰
+		$get_tips_count = min($get_tips_count, $rest_get_tip_max);
+		if ($get_tips_count > 0)
+		{
+			$tips = array();
+			//高伤雷提示
+			if (rand(0,3) == 0)
+			{
+				$result = $db->query("SELECT * FROM {$tablepre}maptrap WHERE itme>=600");
+				while($traparr = $db->fetch_array($result)){
+					$traps[] = $traparr;
+				}
+				shuffle($traps);
+				$tips[] = "你梦见自己在<span class=\"yellow b\">{$plsinfo[$traps[0]['pls']]}</span>被<span class=\"yellow b\">{$traps[0]['itm']}</span>炸上了天。<br>……<br>";
+				$get_tips_count -= 1;
+			}
+			if ($get_tips_count > 0)
+			{
+				//重要NPC提示
+				$enemytip_count = rand(0, ceil($get_tips_count/2));
+				if ($enemytip_count > 0)
+				{
+					$tip_edata_arr = array();
+					$result = $db->query("SELECT name,type,pls FROM {$tablepre}players WHERE hp>0 AND type>0");
+					while($r = $db->fetch_array($result)){
+						if (in_array((int)$r['type'], $tip_npctype)) $tip_edata_arr[] = $r;
+					}
+					if (count($tip_edata_arr) == 0) $enemytip_count = 0;
+					else
+					{
+						$tip_edata = array_randompick($tip_edata_arr, $enemytip_count);
+						if (isset($tip_edata['name']))
+						{
+							$tips[] = "你梦见<span class=\"red b\">{$tip_edata['name']}</span>在<span class=\"yellow b\">{$plsinfo[$tip_edata['pls']]}</span>游荡。<br>……<br>";
+							$enemytip_count = 1;
+						}
+						else
+						{
+							foreach($tip_edata as $ed) {
+								$tips[] = "你梦见<span class=\"red b\">{$ed['name']}</span>在<span class=\"yellow b\">{$plsinfo[$ed['pls']]}</span>游荡。<br>……<br>";
+							}
+							$enemytip_count = count($tip_edata);
+						}
+					}
+				}
+				//特定道具提示
+				$itemtip_count = $get_tips_count - $enemytip_count;
+				if ($itemtip_count > 0)
+				{
+					$result = $db->query("SELECT itm,pls FROM {$tablepre}mapitem");
+					while($r = $db->fetch_array($result)){
+						if (in_array($r['itm'], $tip_itemnamelist)) $tip_mipool[] = $r;
+					}
+					if (count($tip_mipool) > 0)
+					{
+						$tip_mi = array_randompick($tip_mipool, $itemtip_count);
+						if (isset($tip_mi['itm']))
+						{
+							$tips[] = "你梦见自己在<span class=\"yellow b\">{$plsinfo[$tip_mi['pls']]}</span>捡到了<span class=\"yellow b\">{$tip_mi['itm']}</span>。<br>……<br>";
+						}
+						else
+						{
+							foreach($tip_mi as $mi) {
+								$tips[] = "你梦见自己在<span class=\"yellow b\">{$plsinfo[$mi['pls']]}</span>捡到了<span class=\"yellow b\">{$mi['itm']}</span>。<br>……<br>";
+							}
+						}
+					}
+				}
+			}
+			shuffle($tips);
+			$log .= implode('',$tips);
+		}
+	}
+	
+	function array_randompick($arr, $num=1)
+	{
+		$array_rand = array_rand($arr, $num);
+		if(is_array($array_rand)) {
+			$ret = Array();
+			foreach($array_rand as $v) {
+				$ret[$v] = $arr[$v];
+			}
+		}else{
+			$ret = $arr[$array_rand];
+		}
+		return $ret;
 	}
 
 ?>
