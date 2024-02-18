@@ -1040,6 +1040,17 @@
 				$enemytip_count = rand(0, ceil($get_tips_count/2));
 				if ($enemytip_count > 0)
 				{
+					//小概率梦出一个高级小兵
+					if ($enemytip_count > 1 && rand(0,99) < 30)
+					{
+						$summon_ids = addnpc(93,rand(0,24),1);
+						if (!empty($summon_ids))
+						{
+							$tip_edata = fetch_playerdata_by_pid($summon_ids[0]);
+							$tips[] = "你梦见<span class=\"red b\">{$tip_edata['name']}</span>在<span class=\"yellow b\">{$plsinfo[$tip_edata['pls']]}</span>游荡。<br>……<br>";
+							$enemytip_count -= 1;
+						}
+					}
 					$tip_edata_arr = array();
 					$result = $db->query("SELECT name,type,pls FROM {$tablepre}players WHERE hp>0 AND type>0");
 					while($r = $db->fetch_array($result)){
