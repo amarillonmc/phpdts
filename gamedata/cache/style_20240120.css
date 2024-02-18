@@ -19,7 +19,7 @@
 	font-family: 'Vonwaon12px';
 	src: url('../../img/assets/font/VonwaonBitmap-12px.woff2') format('woff2');
   }
-body {text-align: center; background-position: 50% 50%; background-image: url("../../img/PB.gif"); background-attachment: fixed; background-repeat: no-repeat; font: 12px Vonwaon16px, Tahoma, Verdana;cursor: crosshair; margin: 0; background-color: #111; color:#ddd;}
+body {text-align: center; background-position: 50% 50%; background-image: url("../../img/PB.gif"); background-attachment: fixed; background-repeat: no-repeat; font: 12px FusionPixel12px, Tahoma, Verdana;cursor: crosshair; margin: 0; background-color: #111; color:#ddd;}
 a {font: bold 10pt "FusionPixel10px" serif;text-decoration: none;color: #ddd; cursor: crosshair;line-height:16px}
 a:hover {color: #98fb98;text-decoration:underline}
 table {align:center;border: 0px;}
