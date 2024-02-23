@@ -4145,6 +4145,10 @@ function itemuse($itmn,&$data=NULL) {
 			$itme = $itms = 0;
 			# Sign
 			$clbpara['iAmRich'] += 1;
+		} elseif ($itm == '棱镜八面体'){
+			$log .= "你使用了<span class=\"yellow b\">{$itm}</span>。<br>";
+			$theitem = array('itm' => &$itm, 'itmk' => &$itmk, 'itme' => &$itme,'itms' => &$itms,'itmsk' => &$itmsk);
+			octitem_rotate($theitem, $itmn, 1);
 		} else {
 			$log .= " <span class=\"yellow\">$itm</span> 该如何使用呢？<br>";
 		}
@@ -4189,6 +4193,59 @@ function itemuse($itmn,&$data=NULL) {
 		
 	$mode = 'command';
 	return;
+}
+
+function octitem_rotate(&$theitem, $rotpos, $showlog = 0)
+{
+	global $log;
+	$itm=&$theitem['itm']; $itmk=&$theitem['itmk'];
+	$itme=&$theitem['itme']; $itms=&$theitem['itms']; $itmsk=&$theitem['itmsk'];
+	$oct_colors_words = array('<span class="red">红</span>','<span class="lime">绿</span>','<span class="clan">蓝</span>','<span class="yellow">黄</span>','<span class="gold">金</span>','<span class="linen">银</span>','<span class="mtgblack">黑</span>','<span class="mtgwhite">白</span>');
+	
+	if (strlen($itmsk) != 16)
+	{
+		$oct_seq = range(0, 7);
+		shuffle($oct_seq);
+		$oct_colors = range(0, 7);
+		shuffle($oct_colors);
+	}
+	else
+	{
+		$itmsk_arr = str_split($itmsk);
+		$oct_seq = array_slice($itmsk_arr, 0, 8);
+		$oct_colors = array_slice($itmsk_arr, 8);
+	}
+	
+	//改变选中面和另两个面的颜色
+	$oct_colors[$rotpos] = ($oct_colors[$rotpos] + 1) % 8;
+	$rotpos2 = ($rotpos + 1) % 8;
+	$oct_colors[$rotpos2] = ($oct_colors[$rotpos2] + 1) % 8;
+	$rotpos3 = ($rotpos + 2) % 8;
+	$oct_colors[$rotpos3] = ($oct_colors[$rotpos3] + 1) % 8;
+	$itmsk = implode('', $oct_seq).implode('', $oct_colors);
+	
+	if ($showlog)
+	{
+		$log .= "<br><span class=\"yellow b\">{$itm}</span>八个面的颜色为：<br>";
+		foreach ($oct_seq as $v)
+		{
+			$log .=	$oct_colors_words[$oct_colors[$v]].' ';
+		}
+		//$log .= "测试：真实序列为".implode('', $oct_colors);
+		$log .= "<br>";
+	}
+	
+	//结果检查
+	$oc_count = count(array_unique($oct_colors));
+	if ($oc_count == 1)
+	{
+		if ($showlog)
+		{
+			$log .= "<span class=\"yellow b\">{$itm}</span>的形状发生了变化……<br>";
+		}
+		$itm = '★棱镜八面体模样的彩色糖果★'; $itmk = 'HM';
+		$itme = 88; $itms = 8; $itmsk = 'x';
+	}
 }
 
 ?>

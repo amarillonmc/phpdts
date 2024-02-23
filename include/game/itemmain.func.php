@@ -600,6 +600,15 @@ function itemdrop($item,&$data=NULL) {
 		$mode = 'command';
 		return;
 	}
+	
+	if ((strpos ( $itmk, 'Y' ) === 0 || strpos ( $itmk, 'Z' ) === 0) && ($itm == '棱镜八面体'))
+	{
+		$theitem = array('itm' => &$itm, 'itmk' => &$itmk, 'itme' => &$itme,'itms' => &$itms,'itmsk' => &$itmsk);
+		$log .= "<span class=\"yellow b\">{$itm}</span>似乎发生了变化……<br>";
+		include_once GAME_ROOT . './include/game/item.func.php';
+		octitem_rotate($theitem, 7);
+	}
+	
 	if(strpos($itmsk,'v')!==false)
 	{
 		$log .= "{$itm}在地上化作点点碎片，随风消逝了。<br>";
