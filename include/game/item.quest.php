@@ -148,6 +148,11 @@ function item_quest($itmn, &$data)
 
     // Q4: summon phantom
     if ($qid == 'Q4' && $action == 'summon') {
+        // 检查任务是否激活 / Check if quest is active
+        if (empty($clbpara['quest']['active']['Q4'])) {
+            $log .= '你没有正在进行的昔日重现任务。<br>';
+            return true;
+        }
         list($questcfg,) = quest_get_config();
         $target_pls = !empty($questcfg['Q4']['target_pls']) ? $questcfg['Q4']['target_pls'] : 0;
         if (!empty($target_pls) && $pls != $target_pls) {
@@ -159,6 +164,8 @@ function item_quest($itmn, &$data)
             $clbpara['quest']['active']['Q4']['linked_npc_id'] = $npc_id;
             $clbpara['quest']['active']['Q4']['step'] = 2;
             $clbpara['quest']['active']['Q4']['step_desc'] = '以花束安抚幻影';
+            // 发放花束道具 / Spawn flower item for comfort action
+            quest_spawn_item('q4_flower', $data);
             $log .= '幻影在你眼前浮现。<br>';
         }
         if ($itms != $nosta) $itms--;

@@ -385,7 +385,8 @@ function quest_attack_result_events(&$pa, &$pd, $active)
 	}
 
 	// Q7: 应援值累计
-	if ($qid == 'Q7' && !empty($player['clbpara']['quest']['active']['Q7'])) {
+	// 只在玩家作为攻击者时计数 / Only count when player is the attacker
+	if ($qid == 'Q7' && !empty($player['clbpara']['quest']['active']['Q7']) && $player['pid'] == $pa['pid']) {
 		list($questcfg,) = quest_get_config();
 		$turn_need = !empty($questcfg['Q7']['turn_need']) ? $questcfg['Q7']['turn_need'] : 3;
 		$cheer_need = !empty($questcfg['Q7']['cheer_need']) ? $questcfg['Q7']['cheer_need'] : 600;
@@ -438,6 +439,7 @@ function quest_handle_npc_death(&$pa, &$pd)
 		quest_fail('Q6', $owner, 'hide_npc_killed');
 	} elseif ($qid == 'Q7') {
 		if ($killer_pid == $owner_pid) quest_complete('Q7', $owner);
+		else quest_fail('Q7', $owner, 'idol_killed_by_other');
 	}
 
 	player_save($owner);
