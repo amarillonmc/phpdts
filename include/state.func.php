@@ -313,6 +313,7 @@
 	function check_death_events(&$pa,&$pd,$active)
 	{
 		global $db,$tablepre,$log,$now,$nosta;
+		include_once GAME_ROOT.'./include/game/quest.func.php';
 
 		# 静流下线事件：
 		if($pd['type'] == 15)
@@ -357,6 +358,9 @@
 
 		# 保存击杀种火或小兵的记录
 		if(empty($pa['clbpara']['achvars']['kill_minion']) && ($pd['type'] == 90 || $pd['type'] == 91 || $pd['type'] == 92)) $pa['clbpara']['achvars']['kill_minion'] = 1;
+
+		// QUEST NPC死亡事件 / QUEST NPC death handling
+		quest_handle_npc_death($pa,$pd);
 
 		# 成就504，保存在RF高校用过的武器记录
 		if($pa['pls'] == 2) $pa['clbpara']['achvars']['ach504'][$pa['wep_kind']] = 1;

@@ -676,7 +676,8 @@ namespace revcombat
 		else 
 		{
 			# 执行扣血后的战斗结算阶段事件
-			attack_result_events($pa,$pd,$active);
+			$event_flag = attack_result_events($pa,$pd,$active);
+			if($event_flag < 0) return 0;
 		}
 		return 1;
 	}

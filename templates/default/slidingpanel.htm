@@ -27,60 +27,8 @@
         <div id="misc-tab" class="tab-pane active">
             <div class="section-container">
                 <h4 class="section-title">当前任务</h4>
-                <div class="section-content">
-                    <!-- 任务项目1 -->
-                    <div class="progress-item">
-                        <div class="progress-label">
-                            <span>任务信息</span>
-                        </div>
-                        <div class="quest-item">
-                            这里是任务窗体。该窗体的内容通过读取clbpara中的键值生成。
-                        </div>
-                    </div>
-
-                    <!-- 任务项目2 -->
-                    <div class="progress-item">
-                        <div class="progress-label">
-                            <span>收集材料</span>
-                            <span class="progress-value">3/10</span>
-                        </div>
-                        <div class="quest-item">
-                            前往森林收集木材和药草，并将它们带回营地。
-                        </div>
-                    </div>
-
-                    <!-- 任务项目3 -->
-                    <div class="progress-item">
-                        <div class="progress-label">
-                            <span>探索遗迹</span>
-                            <span class="progress-value">已发现入口</span>
-                        </div>
-                        <div class="quest-item">
-                            探索古老的遗迹，寻找可能的线索和宝藏。
-                        </div>
-                    </div>
-
-                    <!-- 任务项目4 -->
-                    <div class="progress-item">
-                        <div class="progress-label">
-                            <span>消灭威胁</span>
-                            <span class="progress-value">5/15</span>
-                        </div>
-                        <div class="quest-item">
-                            消灭在附近地区活动的怪物，保护居民的安全。
-                        </div>
-                    </div>
-
-                    <!-- 任务项目5 -->
-                    <div class="progress-item">
-                        <div class="progress-label">
-                            <span>长期任务</span>
-                            <span class="progress-value">初步阶段</span>
-                        </div>
-                        <div class="quest-item">
-                            这是一个非常长的任务描述，用于测试文本换行和显示效果。这个任务需要玩家前往多个地点，收集各种物品，并且与多个NPC交流。
-                        </div>
-                    </div>
+                <div id="quest-list" class="section-content">
+                    <div class="quest-item">暂无任务。</div>
                 </div>
             </div>
         </div>
@@ -740,6 +688,9 @@
 
         // 初始更新进度条（仅一次）
         updateChargeProgressBars();
+
+        // 初始更新任务窗体
+        updateQuestPanel();
     });
 
     // 初始化面板
@@ -1171,6 +1122,45 @@
         }
     }
 
+    // 更新任务窗体
+    function updateQuestPanel() {
+        const questList = document.getElementById('quest-list');
+        if (!questList) return;
+
+        if (!clbpara || !clbpara.quest || !clbpara.quest.active) {
+            questList.innerHTML = '<div class="quest-item">暂无任务。</div>';
+            return;
+        }
+
+        const active = clbpara.quest.active;
+        const questIds = Object.keys(active);
+        if (questIds.length === 0) {
+            questList.innerHTML = '<div class="quest-item">暂无任务。</div>';
+            return;
+        }
+
+        let html = '';
+        questIds.forEach(function(qid) {
+            const q = active[qid] || {};
+            const title = q.title || qid;
+            const stepDesc = q.step_desc || '';
+            const progress = (typeof q.progress !== 'undefined') ? q.progress : '';
+            const progressMax = (typeof q.progress_max !== 'undefined') ? q.progress_max : 0;
+            const progressText = (progressMax && progress !== '') ? (progress + '/' + progressMax) : '';
+            const statusText = q.ready_to_claim ? '可交付' : '';
+
+            html += '<div class="progress-item">';
+            html += '  <div class="progress-label">';
+            html += '    <span>' + title + '</span>';
+            html += '    <span class="progress-value">' + (progressText || statusText) + '</span>';
+            html += '  </div>';
+            html += '  <div class="quest-item">' + stepDesc + '</div>';
+            html += '</div>';
+        });
+
+        questList.innerHTML = html;
+    }
+
     // 设置演示值
     function setDemoValues() {
         // Charge1 (0-101)
@@ -1225,6 +1215,9 @@
             updateChargeProgressBars();
             // 更新种火标签页
             updateFireseedTab();
+
+            // 更新任务窗体
+            updateQuestPanel();
 
             console.log('Panel opened');
 
@@ -1296,6 +1289,12 @@
 
                         // 更新种火标签页
                         updateFireseedTab();
+
+                        // 更新任务窗体
+                        updateQuestPanel();
+
+                        // 更新任务窗体
+                        updateQuestPanel();
                     } catch (e) {
                         console.error('Failed to parse clbpara data:', e);
                     }
@@ -1405,6 +1404,7 @@
 
         // 使用当前数据更新显示
         updateChargeProgressBars();
+        updateQuestPanel();
     }
 
     // 显示更新消息

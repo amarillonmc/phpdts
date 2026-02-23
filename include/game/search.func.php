@@ -11,6 +11,7 @@ include_once GAME_ROOT.'./include/game/revbattle.func.php';
 include_once GAME_ROOT.'./include/game/revbattle.calc.php';
 include_once GAME_ROOT.'./include/game/revcombat.func.php';
 include_once GAME_ROOT.'./include/game/revevent.func.php';
+include_once GAME_ROOT.'./include/game/quest.func.php';
 
 function check_can_move($pls,$pgroup,$moveto)
 {
@@ -118,6 +119,10 @@ function move($moveto = 99,&$data=NULL)
 
 	# 更新charge值
 	process_charge_events($data);
+
+	// QUEST周期与分配 / QUEST tick and assignment
+	quest_tick($data);
+	quest_try_assign($data);
 
 	# 如果是种火歌者，处理种火相关逻辑
 	if($club == 22) {

@@ -77,6 +77,7 @@ function itemuse($itmn,&$data=NULL) {
 	include_once GAME_ROOT.'./include/game/item.ending.php';
 	include_once GAME_ROOT.'./include/game/item.special_effect.php';
 	include_once GAME_ROOT.'./include/game/item.npc.php';
+	include_once GAME_ROOT.'./include/game/item.quest.php';
 	include_once GAME_ROOT.'./include/game/item.synthesis.php';
 	include_once GAME_ROOT.'./include/game/item.club_card.php';
 	include_once GAME_ROOT.'./include/game/item.nachster_booster.php';
@@ -180,6 +181,8 @@ function itemuse($itmn,&$data=NULL) {
 		item_special_effect($itmn, $data);
 		// Check if it's an NPC-related item
 		item_npc($itmn, $data);
+		// Check if it's a quest item
+		item_quest($itmn, $data);
 		// Check if it's a synthesis item
 		item_synthesis($itmn, $data);
 		// Check if it's a club card

@@ -118,6 +118,34 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Quest Status -->
+                    <div>
+                        <h4 class="cyber-text-primary text-sm font-bold mb-2">QUESTS</h4>
+                        <div class="space-y-2 text-xs">
+                            <!--{if !empty($clbpara['quest']['active'])}-->
+                            <!--{loop $clbpara['quest']['active'] $qid $qstate}-->
+                            <div class="cyber-card p-2">
+                                <div class="flex justify-between">
+                                    <span class="cyber-text-secondary">$qstate['title']</span>
+                                    <span class="cyber-text-primary">
+                                        <!--{if !empty($qstate['progress_max'])}-->
+                                        $qstate['progress']/$qstate['progress_max']
+                                        <!--{elseif !empty($qstate['ready_to_claim'])}-->
+                                        可交付
+                                        <!--{/if}-->
+                                    </span>
+                                </div>
+                                <div class="cyber-text-secondary text-xs">$qstate['step_desc']</div>
+                            </div>
+                            <!--{/loop}-->
+                            <!--{else}-->
+                            <div class="cyber-card p-2">
+                                <span class="cyber-text-secondary">暂无任务</span>
+                            </div>
+                            <!--{/if}-->
+                        </div>
+                    </div>
                     
                 </div>
             </div>

@@ -11,6 +11,7 @@ namespace revcombat
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
 	include_once GAME_ROOT.'./include/game/revattr.calc.php';
 	include_once GAME_ROOT.'./include/game/revattr_extra.func.php';
+	include_once GAME_ROOT.'./include/game/quest.func.php';
 
 	# 初始化双方的攻击相关参数：
 	# 依以下次序判定：
@@ -67,13 +68,17 @@ namespace revcombat
 		if(!empty($pa['arbs']) && $pa['arb'] == '【智代专用熊装】') \revattr\attr_ach53_check($pa,$pd,$active);
 		if(!empty($pd['arbs']) && $pd['arb'] == '【智代专用熊装】') \revattr\attr_ach53_check($pd,$pa,$active);
 
+		# QUEST战斗前事件 / QUEST combat prepare events
+		$quest_flag = \quest_combat_prepare_events($pa,$pd,$active);
+		if($quest_flag < 0) return $quest_flag;
+
 		return 1;
 	}
 
 	# 进入rev_combat战斗状态后，在判定伤害、反击流程前的喊话事件
 	function combat_prepare_logs(&$pa,&$pd,$active)
 	{
-		global $log;
+		global $log,$now;
 		if(!empty($pa['message']))
 		{
 			$log.="<span class=\"lime\">{$pa['nm']}向{$pd['nm']}喊道：「{$pa['message']}」！</span><br>";
@@ -363,6 +368,10 @@ namespace revcombat
 				}
 			}
 		}
+
+		# QUEST战斗结算事件 / QUEST attack result events
+		$quest_flag = \quest_attack_result_events($pa,$pd,$active);
+		if($quest_flag < 0) return $quest_flag;
 		return;
 	}
 
