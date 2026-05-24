@@ -1,0 +1,155 @@
+QUEST系统实装计划 / QUEST System Implementation Plan
+
+目标 / Goal
+在不指定Ruleset的主房间/默认规则下，正式实装QUEST系统：
+玩家在游荡中满足条件即可接到任务；任务状态保存在clbpara；
+slidingpanel的任务窗体展示任务进度与追踪信息。
+
+一、数据结构 / Data Model
+1) clbpara结构 / clbpara schema
+- clbpara['quest'] 作为任务主容器
+  - active: 当前进行任务（键为QuestID，值为任务状态）
+  - completed: 已完成记录（可存时间戳与次数）
+  - failed: 失败记录（可存原因与时间戳）
+  - cooldown: 任务分配冷却/限频信息
+
+2) 任务状态字段 / Per-quest state fields
+- step: 当前步骤
+- progress: 进度计数/数值
+- flags: 阶段标记（如已召唤、已交付、已触发）
+- linked_npc_id / linked_player_id
+- buff_level / threshold / ban_count等
+- last_update_time
+
+3) 任务物品 itmpara / Quest item itmpara
+- IsQuestItem=1
+- QuestID / QuestStep
+- LinkedNPCID / LinkedPlayerID
+- BuffLevel / Threshold / RequiredValue
+- QuestType / QuestPhase
+
+二、配置文件 / Configuration Files
+1) 新增Quest配置文件（默认规则）
+- gamedata/questcfg_1.php
+  - 任务元数据：标题、描述、颜色、接取条件、步骤、奖励、判定阈值
+  - NPC模板引用与道具模板引用（使用ID而非名称）
+
+2) 新增NPC定义文件（默认规则）
+- gamedata/addnpc_quest_1.php
+  - 各任务NPC模板（敌对/非敌对、掉落、对话等）
+  - 预留占位名称，后续可替换
+
+3) 新增物品定义文件（默认规则）
+- gamedata/questitem_1.php
+  - 任务道具模板（召唤道具、交付道具、判定道具、消耗道具）
+  - 统一写入itmpara关键字段
+
+4) 配置加载机制
+- 增加资源加载入口：当ruleset为空时读取gamedata下的questcfg/addnpc_quest/questitem
+- 统一通过config()或新helper读取，避免硬编码
+
+三、核心逻辑模块 / Core Logic Modules
+1) include/game/quest.func.php
+- quest_try_assign(): 游荡时尝试接任务
+- quest_start(): 初始化任务状态，发放道具
+- quest_update_progress(): 进度更新
+- quest_complete()/quest_fail(): 结算/失败
+- quest_spawn_npc(): 封装addnpc + clbpara初始化
+- quest_spawn_item(): 发放任务道具
+- quest_build_ui_payload(): 给slidingpanel使用的数据格式
+
+2) include/game/item.quest.php
+- quest_item_use(): 解析itmpara并执行任务逻辑
+- QUEST1/2/3/4/5/6/7对应的道具使用分支
+- 统一处理道具消耗/替换
+
+3) 加载入口
+- include/game/item.main.php: 在item_npc之前或之后加入item_quest
+- include/game/search.func.php: 在探索/移动完成后调用quest_try_assign
+- include/state.func.php: 在击杀/死亡事件中检测QUEST相关NPC
+- include/game/revcombat_extra.func.php: 战斗前事件层用于非战斗交互
+
+四、UI显示 / Slidingpanel UI
+1) templates/default/slidingpanel.htm
+- 替换占位内容，改为读取clbpara['quest']并渲染
+- 如果无任务显示“暂无任务”
+- 展示：任务名、步骤、进度、提示文本
+
+2) templates/nouveau/slidingpanel.htm
+- 增加QUEST标签页或STATUS子模块
+- 同样读取clbpara['quest']
+
+五、任务流程落地 / Quest Flow Implementation
+QUEST1 猎杀乱入NPC
+- 接任务 -> 获得召唤道具 -> 使用道具召唤NPC -> 击杀判定成功
+- 通过NPC clbpara标记QuestID/LinkedPlayerID
+- 死亡事件中判定并记录clbpara
+
+QUEST2 保护乱入NPC
+- 接任务 -> 获得召唤道具+守护道具
+- NPC clbpara: LinkedPlayerID, BuffLevel, QuestID
+- 道具使用：玩家损HP，NPC回复LP并提升BuffLevel
+- NPC死亡：失败并记录击杀者ID（gamevars或NPC clbpara）
+- 超过X禁且NPC存活：成功，守护道具变为领赏道具
+
+QUEST3 数值怪
+- 接任务 -> 获得判定道具
+- 使用时检查指定数值（att/def/ss等）达到阈值即完成
+
+QUEST4 昔日重现
+- 接任务 -> 获得照片道具 -> 指定地图使用召唤NPC
+- 战斗前事件层检测到NPC+特定道具：触发对话并移除NPC
+- 完成任务标记，不计击杀
+
+QUEST5 救赎之手
+- 使用药剂召唤敌对NPC
+- 战斗中将HP压到阈值以下
+- 再次使用药剂触发转化事件（非击杀）
+- NPC撤退或掉落“清醒的证明”
+
+QUEST6 躲猫猫
+- 使用侦探眼镜提示地点
+- 遇到NPC时跳过战斗，直接获得糖果
+- 收集3个糖果合成任务物品交付
+
+QUEST7 偶像握手会
+- 歌魂达到标准后才能开启
+- 使用应援棒召唤NPC
+- 战斗界面改为“打Call”模式（限制指令/技能）
+- 坚持X回合或应援值达标即成功
+
+六、兼容性与安全 / Compatibility & Safety
+- 不修改现有规则集配置文件（只新增默认资源）
+- 任务名/NPC名/物品名均为占位，可随时替换
+- 使用clbpara存储，避免DB结构变更
+- 所有任务道具标记IsQuestItem防止被误用
+
+七、文件清单 / File List
+- gamedata/questcfg_1.php
+- gamedata/addnpc_quest_1.php
+- gamedata/questitem_1.php
+- include/game/quest.func.php
+- include/game/item.quest.php
+- include/game/search.func.php（接取钩子）
+- include/game/item.main.php（道具分发）
+- include/state.func.php（NPC死亡判定）
+- include/game/revcombat_extra.func.php（非战斗交互）
+- templates/default/slidingpanel.htm
+- templates/nouveau/slidingpanel.htm
+
+八、验证 / Verification
+- 进入游戏后游荡触发任务
+- slidingpanel显示任务
+- 逐个任务完成/失败逻辑可被clbpara正确记录
+
+------------------------------
+English Summary
++This plan implements a full QUEST system in default (non-ruleset) rooms by:
++- Adding a quest data model in clbpara
++- Creating default quest/NPC/item config files
++- Implementing quest core logic + quest item handlers
++- Hooking assignment into exploration and completion into NPC death events
++- Updating slidingpanel UI to show quest status
++- Implementing quest-specific flow logic for QUEST1-QUEST7
+
+Awaiting review and instructions.

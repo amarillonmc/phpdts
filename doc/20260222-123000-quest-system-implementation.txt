@@ -1,0 +1,48 @@
+QUEST系统实装 / QUEST System Implementation
+
+变更内容 / Changes
+1) 新增默认任务配置、任务NPC与任务物品定义文件。
+   Added default quest config, quest NPC, and quest item definition files.
+
+2) 实装QUEST核心流程：接取、进度、完成/失败、召唤NPC与发放道具。
+   Implemented core quest flow: assign, progress, complete/fail, summon NPCs, and spawn items.
+
+3) 接入探索与战斗流程：探索时尝试分配任务，战斗前/结算事件处理特殊互动，NPC死亡触发判定。
+   Wired into exploration and combat: assign during search, combat prepare/attack result events, NPC death handling.
+
+4) 更新副面板任务窗体（默认与nouveau）为动态显示。
+   Updated sliding panel quest UI (default + nouveau) to render dynamic quest state.
+
+设计考量 / Design Notes
+- 任务名、NPC名、物品名均为占位符，便于复用与替换。
+  Names are placeholders and can be replaced without logic changes.
+- 任务状态统一存储于clbpara，避免DB结构变更。
+  Quest state is stored in clbpara to avoid DB schema changes.
+- 任务物品使用itmpara标记，便于识别与扩展。
+  Quest items use itmpara tags for identification and extension.
+
+影响范围 / Affected Files
+- gamedata/questcfg_1.php
+- gamedata/addnpc_quest_1.php
+- gamedata/questitem_1.php
+- include/resources.func.php
+- include/game/quest.func.php
+- include/game/item.quest.php
+- include/game/item.main.php
+- include/game/search.func.php
+- include/game/revcombat_extra.func.php
+- include/game/revcombat.func.php
+- include/state.func.php
+- templates/default/slidingpanel.htm
+- templates/nouveau/slidingpanel.htm
+
+https://opncd.ai/share/nLHgfNma
+
+
+                                   ▄
+  █▀▀█ █▀▀█ █▀▀█ █▀▀▄ █▀▀▀ █▀▀█ █▀▀█ █▀▀█
+  █  █ █  █ █▀▀▀ █  █ █    █  █ █  █ █▀▀▀
+  ▀▀▀▀ █▀▀▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀
+
+  Session   完善中的QUEST系统实现计划与流程要点
+  Continue  opencode -s ses_377d17d72ffeBsP34VnLHgfNma

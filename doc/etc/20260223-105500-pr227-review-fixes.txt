@@ -1,0 +1,78 @@
+PR #227 Review Comments Fix
+修复PR #227的审查意见
+Date/日期: 2026-02-23
+
+=== Fix #1: Q4 summon missing active quest check ===
+Q4召唤缺少任务激活检查
+
+File: include/game/item.quest.php (line 150)
+文件：include/game/item.quest.php（第150行）
+
+Problem/问题:
+- Q4 summon branch did not check if $clbpara['quest']['active']['Q4'] exists
+- Q4召唤分支没有检查$clbpara['quest']['active']['Q4']是否存在
+- This could allow "phantom" quest state creation without quest_start() initialization
+- 这可能导致在没有quest_start()初始化的情况下"凭空"创建任务状态
+
+Solution/解决方案:
+- Added active quest check at the beginning of Q4 summon handler
+- 在Q4召唤处理的开头添加了任务激活检查
+- Returns with error message if quest is not active
+- 如果任务未激活则返回错误信息
+
+=== Fix #2: Q4 flower item path missing ===
+Q4花束道具获取路径缺失
+
+File: include/game/item.quest.php (line 168)
+文件：include/game/item.quest.php（第168行）
+
+Problem/问题:
+- Q4 completion requires q4_flower (QuestAction=comfort) item
+- Q4完成需要q4_flower（QuestAction=comfort）道具
+- But the quest only gave q4_photo on start, no path to get flower
+- 但任务只在开始时发放q4_photo，没有获得花束的途径
+
+Solution/解决方案:
+- Added quest_spawn_item('q4_flower', $data) when phantom is summoned
+- 在召唤幻影时添加了quest_spawn_item('q4_flower', $data)
+- Similar to how Q5 spawns q5_purifier when summoning
+- 类似于Q5在召唤时发放q5_purifier的方式
+
+=== Fix #3: Q7 cheer turns counting issue ===
+Q7应援回合数计算问题
+
+File: include/game/quest.func.php (line 389)
+文件：include/game/quest.func.php（第389行）
+
+Problem/问题:
+- cheer_turns was incremented on every attack_result_events call
+- 每次attack_result_events调用都会增加cheer_turns
+- Even when player was defender (final_damage on attacker $pa)
+- 即使玩家作为防守方（final_damage在攻击者$pa上）
+- Player could complete quest by just getting hit
+- 玩家可以仅靠被动挨打完成任务
+
+Solution/解决方案:
+- Added condition: $player['pid'] == $pa['pid']
+- 添加了条件：$player['pid'] == $pa['pid']
+- Only count turns when player is the attacker
+- 只在玩家作为攻击者时计算回合
+
+=== Fix #4: Q7 NPC killed by third party ===
+Q7 NPC被第三方击杀
+
+File: include/game/quest.func.php (line 442)
+文件：include/game/quest.func.php（第442行）
+
+Problem/问题:
+- Q7 NPC death handler only called quest_complete() when owner killed it
+- Q7 NPC死亡处理只在拥有者击杀时调用quest_complete()
+- If third party killed the idol, quest remained stuck in active state
+- 如果第三方击杀偶像，任务会卡在active状态
+
+Solution/解决方案:
+- Added else branch: quest_fail('Q7', $owner, 'idol_killed_by_other')
+- 添加了else分支：quest_fail('Q7', $owner, 'idol_killed_by_other')
+- Quest now properly fails if idol is killed by someone else
+- 如果偶像被他人击杀，任务现在会正确失败
+
