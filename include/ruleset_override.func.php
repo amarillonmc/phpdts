@@ -17,11 +17,12 @@ $ruleset_function_overrides = array();
 function get_current_ruleset_id() {
     global $groomid, $db, $gtablepre;
 
-    if (empty($groomid) || $groomid <= 0) {
+    if (!isset($groomid) || !isset($db) || !isset($gtablepre)) {
         return '';
     }
 
-    $result = $db->query("SELECT gruleset FROM {$gtablepre}game WHERE groomid = {$groomid}");
+    $room_id = intval($groomid);
+    $result = $db->query("SELECT gruleset FROM {$gtablepre}game WHERE groomid = {$room_id}");
     if ($db->num_rows($result)) {
         $room_data = $db->fetch_array($result);
         return $room_data['gruleset'];

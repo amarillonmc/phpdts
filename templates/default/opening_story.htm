@@ -1,3 +1,7 @@
+<!--{eval $ruleset_story_id = function_exists('get_current_ruleset_id') ? get_current_ruleset_id() : '';}-->
+<!--{if !empty($ruleset_story_id) && $ruleset_story_id != 'YELLOWKNIFE'}-->
+{template ruleset_opening_story}
+<!--{else}-->
 <!--///////////////////////////////////////////////////-->
 <!--////////////////////  标准模式  ////////////////////-->
 <!--///////////////////////////////////////////////////-->
@@ -143,4 +147,5 @@
 	咦？剧情可能被冴冴吃掉了。<br>
 	这应该是一个BUG，请联系管理员。
 </div>
+<!--{/if}-->
 <!--{/if}-->

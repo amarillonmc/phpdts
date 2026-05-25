@@ -1,0 +1,23 @@
+YELLOWKNIFE RuleSet and RuleSet story/randomness update
+YELLOWKNIFE规则集、RuleSet剧情与随机模式更新
+
+1. Added YELLOWKNIFE as a createable RuleSet.
+   新增可创建的YELLOWKNIFE RuleSet。
+
+2. Copied the current main room cache resources into gamedata/ruleset/YELLOWKNIFE/cache so future story/resource work can diverge from the live main room safely.
+   已将当前大房间的缓存资源复制到gamedata/ruleset/YELLOWKNIFE/cache，便于后续剧情与资源改造独立于当前大房间进行。
+
+3. Copied QUEST plain config files into YELLOWKNIFE and made QUEST loaders prefer RuleSet-local files when available.
+   已将QUEST非缓存配置复制到YELLOWKNIFE，并让QUEST加载器优先读取RuleSet本地文件。
+
+4. Routed opening_story.htm and ending_story.htm through ruleset story_config pages for non-YELLOWKNIFE RuleSets, while YELLOWKNIFE keeps the existing main-room opening and ending story.
+   让非YELLOWKNIFE RuleSet的入场与结局分镜通过story_config读取；YELLOWKNIFE继续沿用现有大房间入场与结局分镜。
+
+5. Added placeholder opening and ending variants for ACBRA_2009, ACDTS_2011, ACDTS_298SP4, and ACDTS_298SP4_AR, including death, no-survivor, last-survivor, lock-release, nuclear, and dissociation endings where applicable.
+   为ACBRA_2009、ACDTS_2011、ACDTS_298SP4、ACDTS_298SP4_AR加入占位入场与多结局文案，覆盖死亡、全灭、最后幸存、锁定解除、核爆、幻境解离等情况。
+
+6. Expanded ACDTS_298SP4_AR so initial NPC placement, added/evolved NPC stats, player move destinations, and synthesized item identity/results participate in all-random behavior.
+   扩展ACDTS_298SP4_AR，使初始NPC位置、追加/进化NPC数值、玩家移动落点、合成物品本体与结果都参与全随机行为。
+
+7. Updated RuleSet lookup to support groomid 0 as well as private rooms when a gruleset is present.
+   更新RuleSet查询逻辑，使存在gruleset时大房间groomid 0也能走RuleSet资源与剧情逻辑。

@@ -1,0 +1,9 @@
+<!--{eval include_once GAME_ROOT.'./gamedata/ruleset/story_config.php';}-->
+<!--{eval $ruleset_story_pages = get_ruleset_story_pages($ruleset_story_id, 'opening', $hp, $state, $winmode);}-->
+<!--{eval $ruleset_story_endpage = count($ruleset_story_pages) - 1;}-->
+<div id="op_sht_endpage" class="shootings">$ruleset_story_endpage</div>
+<!--{loop $ruleset_story_pages $story_page_id $story_page}-->
+<div id="op_sht_$story_page_id" class="shootings">
+	$story_page
+</div>
+<!--{/loop}-->

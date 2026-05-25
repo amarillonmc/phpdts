@@ -128,27 +128,40 @@ function rs_game($mode = 0) {
 					if(!empty($npc['club'])) changeclub($npc['club'],$npc);
 					# NPC自定义技能初始化
 					if(!empty($npc['clubskill']) || !empty($npc['clubskillpara'])) customtclubskill($npc);
+					# RuleSet钩子：随机化NPC数值
+					if(function_exists('ruleset_randomize_npc_stats')) ruleset_randomize_npc_stats($npc);
 
 					# 初始化NPC所在位置
 					global $hidding_typelist,$deepzones;
 
-					# 位置信息为数组时，在两地中择一随机刷新
-					if(is_array($npc['pls'])) $npc['pls'] = $npc['pls'][array_rand($npc['pls'])];
-
-					# 女主不会刷新在危险区域
-					if(in_array($npc['type'],$hidding_typelist))
+					# RuleSet钩子：检查NPC位置是否需要随机化
+					if(function_exists('ruleset_should_randomize_npc') && ruleset_should_randomize_npc($npc['pls']))
 					{
-						do{
-							$rpls=rand(1,$plsnum-1);
-						}while (in_array($rpls,$deepzones));
+						if(function_exists('ruleset_get_random_npc_location'))
+						{
+							$npc['pls'] = ruleset_get_random_npc_location($plsnum);
+						}
 					}
 					else
 					{
-						do{$rpls=rand(1,$plsnum-1);}while ($rpls==34);
-					}
-					if($npc['pls'] == 99)
-					{
-						$npc['pls'] = $rpls;
+						# 位置信息为数组时，在两地中择一随机刷新
+						if(is_array($npc['pls'])) $npc['pls'] = $npc['pls'][array_rand($npc['pls'])];
+
+						# 女主不会刷新在危险区域
+						if(in_array($npc['type'],$hidding_typelist))
+						{
+							do{
+								$rpls=rand(1,$plsnum-1);
+							}while (in_array($rpls,$deepzones));
+						}
+						else
+						{
+							do{$rpls=rand(1,$plsnum-1);}while ($rpls==34);
+						}
+						if($npc['pls'] == 99)
+						{
+							$npc['pls'] = $rpls;
+						}
 					}
 
 					$npc['state'] = 0;
@@ -820,6 +833,8 @@ function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
 					$npc['clbpara'] = is_array($npc['clbpara']) ? array_merge($npc['clbpara'],$anpcdata['clbpara']) : $anpcdata['clbpara'];
 				}
 			}
+			# RuleSet钩子：随机化NPC数值
+			if(function_exists('ruleset_randomize_npc_stats')) ruleset_randomize_npc_stats($npc);
 
 			# 对将要插入数据库的npc数组格式化，现在可以直接在npc配置文件里预设那些后添加的字段了。
 			$npc=player_format_with_db_structure($npc);
@@ -896,6 +911,8 @@ function evonpc($type,$name){
 		}
 	}
 	unset($npc['clubskill']);unset($npc['clubskillpara']);
+	# RuleSet钩子：随机化NPC数值
+	if(function_exists('ruleset_randomize_npc_stats')) ruleset_randomize_npc_stats($npc);
 	# todo:整理下这堆烂摊子
 	$npc['clbpara'] = json_encode($npc['clbpara'],JSON_UNESCAPED_UNICODE);
 	//$npc = player_format_with_db_structure($npc);

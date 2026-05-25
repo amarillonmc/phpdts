@@ -1,3 +1,7 @@
+<!--{eval $ruleset_story_id = function_exists('get_current_ruleset_id') ? get_current_ruleset_id() : '';}-->
+<!--{if !empty($ruleset_story_id) && $ruleset_story_id != 'YELLOWKNIFE'}-->
+{template ruleset_ending_story}
+<!--{else}-->
 <!--///////////////////////////////////////////////////-->
 <!--////////////////////  因故身亡  ////////////////////-->
 <!--///////////////////////////////////////////////////-->
@@ -668,3 +672,4 @@
 	}
 	rs();
 	</script>
+<!--{/if}-->

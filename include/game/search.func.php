@@ -96,6 +96,23 @@ function move($moveto = 99,&$data=NULL)
 		$hpls_flag = false;
 	}
 
+	# RuleSet钩子：随机化移动落点
+	if(!$hpls_flag && function_exists('ruleset_should_randomize_move') && ruleset_should_randomize_move())
+	{
+		if(function_exists('ruleset_get_random_move_destination'))
+		{
+			$random_moveto = ruleset_get_random_move_destination($pls, $plsinfo, $arealist, $areanum, $hack);
+			if($random_moveto != $pls)
+			{
+				if($random_moveto != $moveto)
+				{
+					$log .= "<span class=\"cyan\">【全随机模式】你的移动目标被随机数改写了！</span><br>";
+				}
+				$moveto = $random_moveto;
+			}
+		}
+	}
+
 	# 计算并扣除移动所需SP/HP
 	$flag = calc_move_search_sp_cost($data,'move');
 	if(!$flag) return;

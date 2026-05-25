@@ -146,8 +146,9 @@ function config($file = '', $cfg = 1) {
 
 	// 检查当前房间是否使用RuleSet
 	$ruleset_id = '';
-	if (!empty($groomid) && $groomid > 0) {
-		$result = $db->query("SELECT gruleset FROM {$gtablepre}game WHERE groomid = {$groomid}");
+	if (isset($groomid) && isset($db) && isset($gtablepre)) {
+		$room_id = intval($groomid);
+		$result = $db->query("SELECT gruleset FROM {$gtablepre}game WHERE groomid = {$room_id}");
 		if ($db->num_rows($result)) {
 			$room_data = $db->fetch_array($result);
 			$ruleset_id = $room_data['gruleset'];

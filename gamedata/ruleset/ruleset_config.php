@@ -14,6 +14,40 @@ $ruleset_enabled = true;
 
 // RuleSet配置
 $ruleset_config = Array(
+    'YELLOWKNIFE' => Array(
+        'name' => 'YELLOWKNIFE',
+        'description' => '以当前大房间资源和规则为基准保存的剧情改造用RuleSet。后续可在此基础上独立调整资源层、NPC、物品和配置。',
+        'credits_cost' => 1,
+        'admin_free' => true,
+        'initial_setup' => Array(
+            'hp_limit' => 400,
+            'sp_limit' => 400,
+            'base_exp' => 20,
+            'money' => 20,
+            'initial_items' => Array(),
+            'initial_equipment' => Array(),
+            'clbpara_flags' => Array(
+                'ruleset_version' => 'YELLOWKNIFE',
+                'ruleset_name' => 'YELLOWKNIFE',
+            ),
+        ),
+        'override_modules' => Array(),
+        'title_system' => 2,
+        'club_skills' => 2,
+        'avatar_config' => Array(
+            'use_ruleset_avatars' => false,
+            'avatar_path' => './img/',
+            'male_avatars' => 0,
+            'female_avatars' => 0,
+            'npc_avatars' => Array(),
+            'special_avatars' => Array(),
+        ),
+        'story_config' => Array(
+            'opening_story' => '沿用当前大房间开场剧情。',
+            'ending_story' => '沿用当前大房间结局剧情。',
+        ),
+    ),
+
     'ACBRA_2009' => Array(
         'name' => 'ACBRA 2009版',
         'description' => '重现2009年经典ACBRA版本的游戏体验，包含原版的平衡性设置、道具系统和NPC配置。',

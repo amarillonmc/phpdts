@@ -111,8 +111,9 @@ if($hp <= 0){
 	}
 
 	// 检查是否需要显示RuleSet结束剧情
-	if(!empty($groomid) && $groomid > 0 && empty($clbpara['ruleset_ending_shown'])) {
-		$result = $db->query("SELECT gruleset FROM {$gtablepre}game WHERE groomid = {$groomid}");
+	if(isset($groomid) && empty($clbpara['ruleset_ending_shown'])) {
+		$room_id = intval($groomid);
+		$result = $db->query("SELECT gruleset FROM {$gtablepre}game WHERE groomid = {$room_id}");
 		if ($db->num_rows($result)) {
 			$room_data = $db->fetch_array($result);
 			$ruleset_id = $room_data['gruleset'];
@@ -230,7 +231,8 @@ if(!$just_made_choice && !empty($clbpara['ruleset_opening_story']) && empty($clb
 
 	// 动态添加RuleSet剧情到对话系统
 	include_once GAME_ROOT.'./gamedata/ruleset/story_config.php';
-	$result = $db->query("SELECT gruleset FROM {$gtablepre}game WHERE groomid = {$groomid}");
+	$room_id = intval($groomid);
+	$result = $db->query("SELECT gruleset FROM {$gtablepre}game WHERE groomid = {$room_id}");
 	if ($db->num_rows($result)) {
 		$room_data = $db->fetch_array($result);
 		$ruleset_id = $room_data['gruleset'];

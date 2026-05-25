@@ -68,6 +68,23 @@ function ruleset_itemmix_hook(&$data) {
 
     extract($data, EXTR_REFS);
 
+    // 合成结果本体随机化 / Randomize the actual synthesized item result
+    if(function_exists('get_mixinfo')) {
+        $mixinfo = get_mixinfo();
+        if(!empty($mixinfo)) {
+            $random_mix = $mixinfo[array_rand($mixinfo)];
+            if(!empty($random_mix['result']) && is_array($random_mix['result'])) {
+                $random_result = array_pad($random_mix['result'], 6, '');
+                $itm0 = $random_result[0];
+                $itmk0 = $random_result[1];
+                $itme0 = $random_result[2];
+                $itms0 = $random_result[3];
+                $itmsk0 = $random_result[4];
+                $itmpara0 = $random_result[5];
+            }
+        }
+    }
+
     // 随机化itme和itms (0到原数值的2~7倍)
     if($itme0 > 0) {
         $multiplier = rand(2, 7);
@@ -96,12 +113,15 @@ function ruleset_itemmix_hook(&$data) {
         $itmsk0 = implode('', $selected_attrs);
     }
 
-    $log .= "<span class=\"cyan\">【全随机模式】合成物品属性已随机化！</span><br>";
+    $log .= "<span class=\"cyan\">【全随机模式】合成结果已随机化！</span><br>";
 
     // 将修改后的变量写回$data数组
+    $data['itm0'] = $itm0;
+    $data['itmk0'] = $itmk0;
     $data['itme0'] = $itme0;
     $data['itms0'] = $itms0;
     $data['itmsk0'] = $itmsk0;
+    $data['itmpara0'] = isset($itmpara0) ? $itmpara0 : '';
 }
 
 /**
@@ -121,6 +141,13 @@ function ruleset_should_randomize_npc($npc_pls) {
 }
 
 /**
+ * 检查移动落点是否需要随机化
+ */
+function ruleset_should_randomize_move() {
+    return is_all_random_mode();
+}
+
+/**
  * 获取随机NPC位置
  */
 function ruleset_get_random_npc_location($plsnum) {
@@ -129,6 +156,60 @@ function ruleset_get_random_npc_location($plsnum) {
         $rmap = rand(1, $plsnum-1);
     }
     return $rmap;
+}
+
+/**
+ * 获取随机移动落点
+ */
+function ruleset_get_random_move_destination($current_pls, $plsinfo, $arealist, $areanum, $hack) {
+    $safe_pls = array();
+    $plsnum = sizeof($plsinfo);
+
+    for($i = 1; $i < $plsnum; $i++) {
+        if($i == $current_pls || $i == 34) continue;
+        if(!$hack && array_search($i, $arealist) <= $areanum) continue;
+        $safe_pls[] = $i;
+    }
+
+    if(empty($safe_pls)) {
+        return $current_pls;
+    }
+
+    return $safe_pls[array_rand($safe_pls)];
+}
+
+/**
+ * 随机化NPC数值
+ */
+function ruleset_randomize_npc_stats(&$npc) {
+    if(!is_all_random_mode()) {
+        return;
+    }
+
+    $numeric_fields = array(
+        'mhp', 'hp', 'msp', 'sp', 'att', 'def', 'lvl', 'exp', 'skill',
+        'wp', 'wk', 'wg', 'wc', 'wd', 'wf', 'money', 'rp',
+        'wepe', 'weps', 'arbe', 'arbs', 'arhe', 'arhs', 'arae', 'aras',
+        'arfe', 'arfs', 'arte', 'arts',
+        'itme0', 'itms0', 'itme1', 'itms1', 'itme2', 'itms2', 'itme3', 'itms3',
+        'itme4', 'itms4', 'itme5', 'itms5', 'itme6', 'itms6'
+    );
+
+    foreach($numeric_fields as $field) {
+        if(isset($npc[$field]) && is_numeric($npc[$field])) {
+            $base = max(1, intval($npc[$field]));
+            $npc[$field] = rand(1, max(1, $base * rand(2, 8)));
+        }
+    }
+
+    if(isset($npc['mhp'])) $npc['hp'] = $npc['mhp'];
+    if(isset($npc['msp'])) $npc['sp'] = $npc['msp'];
+    foreach(array('p', 'k', 'g', 'c', 'd', 'f') as $wtype) {
+        $field = 'w' . $wtype;
+        if(empty($npc[$field]) && isset($npc['skill'])) {
+            $npc[$field] = $npc['skill'];
+        }
+    }
 }
 
 ?>

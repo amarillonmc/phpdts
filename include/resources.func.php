@@ -5,6 +5,20 @@ if(!defined('IN_GAME')) {
 }
 # TODO: NO GLOBAL
 
+function get_ruleset_plain_resource_file($filename)
+{
+	if(function_exists('get_current_ruleset_id'))
+	{
+		$ruleset_id = get_current_ruleset_id();
+		if(!empty($ruleset_id))
+		{
+			$ruleset_file = GAME_ROOT.'./gamedata/ruleset/'.$ruleset_id.'/'.$filename;
+			if(file_exists($ruleset_file)) return $ruleset_file;
+		}
+	}
+	return GAME_ROOT.'./gamedata/'.$filename;
+}
+
 # resources_1.php
 function get_equip_list($mode=0)
 {
@@ -73,7 +87,7 @@ function get_addnpcinfo()
 	include config("addnpc",$gamecfg);
 
 	// 追加QUEST NPC定义 / Append QUEST NPC definitions
-	$quest_npc_file = GAME_ROOT.'./gamedata/addnpc_quest_1.php';
+	$quest_npc_file = get_ruleset_plain_resource_file('addnpc_quest_1.php');
 	if (file_exists($quest_npc_file)) {
 		include $quest_npc_file;
 		if (!empty($quest_anpcinfo) && is_array($quest_anpcinfo)) {
@@ -138,7 +152,7 @@ function get_questcfg()
 {
 	$questcfg = array();
 	$questcfg_global = array();
-	$quest_file = GAME_ROOT.'./gamedata/questcfg_1.php';
+	$quest_file = get_ruleset_plain_resource_file('questcfg_1.php');
 	if (file_exists($quest_file)) {
 		include $quest_file;
 	}
@@ -149,7 +163,7 @@ function get_questcfg()
 function get_questiteminfo()
 {
 	$questiteminfo = array();
-	$quest_item_file = GAME_ROOT.'./gamedata/questitem_1.php';
+	$quest_item_file = get_ruleset_plain_resource_file('questitem_1.php');
 	if (file_exists($quest_item_file)) {
 		include $quest_item_file;
 	}
