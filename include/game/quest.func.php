@@ -458,6 +458,84 @@ function quest_find_item_slot($data, $qid, $action)
 	return 0;
 }
 
+// 检查目标是否为当前玩家的指定QUEST NPC / Check linked QUEST NPC
+function quest_is_linked_npc($qid, &$data, &$edata)
+{
+	if (empty($edata['clbpara'])) return false;
+	$edata['clbpara'] = get_clbpara($edata['clbpara']);
+	if (empty($edata['clbpara']['quest_id']) || empty($edata['clbpara']['linked_player_id'])) return false;
+	return $edata['clbpara']['quest_id'] == $qid && $edata['clbpara']['linked_player_id'] == $data['pid'];
+}
+
+// 获取Q7应援战斗显示数据 / Get Q7 cheer battle display data
+function quest_get_q7_battle_state(&$data, &$edata)
+{
+	if (!quest_is_linked_npc('Q7', $data, $edata)) return array();
+	$data['clbpara'] = get_clbpara($data['clbpara']);
+	if (empty($data['clbpara']['quest']['active']['Q7'])) return array();
+
+	list($questcfg,) = quest_get_config();
+	$turn_need = !empty($questcfg['Q7']['turn_need']) ? $questcfg['Q7']['turn_need'] : 3;
+	$cheer_need = !empty($questcfg['Q7']['cheer_need']) ? $questcfg['Q7']['cheer_need'] : 600;
+	$qstate = $data['clbpara']['quest']['active']['Q7'];
+	$cheer_points = !empty($qstate['cheer_points']) ? $qstate['cheer_points'] : 0;
+	$cheer_turns = !empty($qstate['cheer_turns']) ? $qstate['cheer_turns'] : 0;
+	$cheer_gain = max(1, ceil($cheer_need / $turn_need));
+
+	return array(
+		'progress' => $cheer_points,
+		'progress_max' => $cheer_need,
+		'turns' => $cheer_turns,
+		'turn_need' => $turn_need,
+		'turns_left' => max(0, $turn_need - $cheer_turns),
+		'cheer_gain' => $cheer_gain,
+	);
+}
+
+// Q7应援行动 / Q7 cheer action
+function quest_handle_q7_cheer($command, &$data, &$edata)
+{
+	global $log, $mode, $db, $tablepre;
+	if ($command != 'quest_cheer') return 0;
+	if (!quest_is_linked_npc('Q7', $data, $edata)) return 0;
+
+	$data['clbpara'] = get_clbpara($data['clbpara']);
+	quest_init_state($data['clbpara']);
+	if (empty($data['clbpara']['quest']['active']['Q7'])) {
+		$log .= '<span class="yellow">你没有正在进行的握手会任务。</span><br>';
+		$data['action'] = ''; $data['bid'] = 0;
+		$mode = 'command';
+		return 2;
+	}
+
+	list($questcfg,) = quest_get_config();
+	$turn_need = !empty($questcfg['Q7']['turn_need']) ? $questcfg['Q7']['turn_need'] : 3;
+	$cheer_need = !empty($questcfg['Q7']['cheer_need']) ? $questcfg['Q7']['cheer_need'] : 600;
+	$cheer_gain = max(1, ceil($cheer_need / $turn_need));
+	$qstate = &$data['clbpara']['quest']['active']['Q7'];
+	if (empty($qstate['cheer_points'])) $qstate['cheer_points'] = 0;
+	if (empty($qstate['cheer_turns'])) $qstate['cheer_turns'] = 0;
+
+	$qstate['cheer_points'] += $cheer_gain;
+	$qstate['cheer_turns'] += 1;
+	$qstate['progress'] = $qstate['cheer_points'];
+	$qstate['progress_max'] = $cheer_need;
+	$qstate['step_desc'] = '完成应援挑战';
+	$log .= '<span class="lime">你向偶像送出了热烈应援！</span><br>';
+
+	if ($qstate['cheer_points'] >= $cheer_need || $qstate['cheer_turns'] >= $turn_need) {
+		$log .= '<span class="lime">应援成功，握手会圆满结束！</span><br>';
+		quest_complete('Q7', $data, 'cheer_success');
+		$db->query("DELETE FROM {$tablepre}players WHERE pid='{$edata['pid']}'");
+		$data['action'] = ''; $data['bid'] = 0;
+		$mode = 'command';
+		return 2;
+	}
+
+	$mode = 'revcombat';
+	return 1;
+}
+
 // QUEST战斗前事件 / QUEST combat prepare events
 function quest_combat_prepare_events(&$pa, &$pd, $active)
 {

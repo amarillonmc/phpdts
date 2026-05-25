@@ -9,6 +9,7 @@ namespace revbattle
 
 	include_once GAME_ROOT.'./include/game/revbattle.calc.php';
 	include_once GAME_ROOT.'./include/game/revcombat.func.php';
+	include_once GAME_ROOT.'./include/game/quest.func.php';
 
 	# 处理从界面传回的战斗相关指令，包含以下两种情况：
 	# 1.主动遇敌先制发现敌人；
@@ -59,6 +60,26 @@ namespace revbattle
 			$action = 'corpse'; $bid = $edata['pid'];
 			findcorpse($edata);
 			return;
+		}
+		# QUEST专用战斗指令 / QUEST-specific battle command
+		$q7_battle_state = \quest_get_q7_battle_state($data, $edata);
+		if (!empty($q7_battle_state))
+		{
+			if ($command == 'quest_cheer')
+			{
+				$q7_result = \quest_handle_q7_cheer($command, $data, $edata);
+				if ($q7_result)
+				{
+					if ($q7_result == 1) findenemy_rev($edata);
+					return;
+				}
+			}
+			elseif ($command != 'back')
+			{
+				$log .= '<span class="yellow">对方正在等待你的应援，普通攻击并不合适。</span><br>';
+				findenemy_rev($edata);
+				return;
+			}
 		}
 		# 输入切换武器指令时，切换武器
 		if ($command == 'changewep') 
@@ -194,7 +215,10 @@ namespace revbattle
 	{
 		global $db,$tablepre,$log,$mode,$main,$cmd,$battle_title,$attinfo,$skillinfo,$nosta,$cskills;
 		global $fog,$pdata;
-    global $battle_skills;
+		global $battle_skills, $quest_battle_mode, $quest_battle_state;
+
+		$quest_battle_mode = '';
+		$quest_battle_state = array();
 
 		//格式化双方clbpara
 		$edata['clbpara'] = get_clbpara($edata['clbpara']);
@@ -207,6 +231,10 @@ namespace revbattle
 		$log .= init_battle_log($pdata,$edata,$ismeet);
 		//初始化战斗界面
 		init_battle_rev($pdata,$edata,$ismeet);
+
+		// QUEST特殊战斗界面 / QUEST special battle UI
+		$quest_battle_state = \quest_get_q7_battle_state($pdata, $edata);
+		if (!empty($quest_battle_state)) $quest_battle_mode = 'Q7';
 
 		//检查是敌对或中立单位
 		$neut_flag = $edata['pose'] == 7 ? 1 : 0;

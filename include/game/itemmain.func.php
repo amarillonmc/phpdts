@@ -1497,6 +1497,17 @@ function getcorpse($item,&$data=NULL)
 		return;
 	}
 
+	$is_corpse_item = ($item == 'wep' || $item == 'wep2' || strpos($item,'ar') === 0 || strpos($item,'itm') === 0);
+	if($is_corpse_item && !empty($itms0))
+	{
+		$log .= '你的手上已经拿着<span class="yellow">'.$itm0.'</span>，不能再从尸体上拾取其他物品。<br>';
+		$log .= '请先处理手上的物品。<br>';
+		check_add_searchmemory($edata['pid'],'corpse',$edata['name'],$data);
+		$action = ''; $bid = 0;
+		$mode = 'command';
+		return;
+	}
+
 	if($item == 'wep' || $item == 'wep2') {
 		$itm0 = $edata[$item];
 		$itmk0 = $edata[$item.'k'];

@@ -1,0 +1,20 @@
+QUEST corpse pickup and Q7 cheer encounter fixes
+QUEST尸体拾取与Q7应援遇敌修复
+
+1. Corpse pickup protection / 尸体拾取保护
+   When a QUEST reward is already waiting in itm0, corpse item pickup now refuses to overwrite it.
+   当QUEST奖励已经位于itm0捡拾栏时，尸体道具拾取会被拒绝，避免覆盖任务物品。
+
+   The corpse is added back to search memory so the player can return after handling the item in hand.
+   尸体会重新写入视野记忆，玩家处理手上物品后仍可回头拾取尸体物品。
+
+2. Q7 idol handshake encounter / Q7偶像握手会遇敌
+   Linked Q7 NPC encounters now show a dedicated cheer command instead of normal attack commands.
+   绑定当前玩家的Q7 NPC遇敌时，现在显示专用应援指令，而不是普通攻击指令。
+
+   Cheer progress is tracked in the active QUEST state, and completion removes the NPC and grants the QUEST reward through the normal completion path.
+   应援进度写入进行中的QUEST状态，完成后删除NPC，并通过标准QUEST完成流程发放奖励。
+
+3. Template cache / 模板缓存
+   The battle command template cache was regenerated for the default template set.
+   已重新生成默认模板的战斗指令模板缓存。
