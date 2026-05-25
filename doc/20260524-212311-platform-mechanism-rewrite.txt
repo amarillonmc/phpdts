@@ -1,0 +1,27 @@
+# 投射平台机制重写 / Projection platform mechanism rewrite
+
+## 中文
+
+本次重写 `include/game/item.platform.php`，补完下个版本“投射平台”的核心逻辑：
+
+1. 支持 PID 模式：从当前游戏 players 表读取指定 PID 的角色/NPC数据，并投射到玩家身上。
+2. 支持回放模式：从 `itmpara['platformPlayerData']` 或旧式 `PlatformPlayerXxx` 键读取可投射数据。
+3. 支持记录器物品：`IsPlatformRecorder` 物品使用后会把当前玩家的可投射数据写入回放模式平台，并覆盖原物品。
+4. 支持限时投射：设置 `platformTransformTime` 后，移动/探索会按 `rand(1, ceil(randver1 / 10))` 累计稳定度，超过阈值后恢复原始数据。
+5. 支持 `isStatPersistent`：投射期间经验、攻、防及各系熟练度的正增长可在恢复时加回本体。
+6. 为避免登录、战斗目标、队伍、位置和状态判定混乱，投射不会覆盖 `pid/name/pass/type/clbpara/pls/pgroup/team/action/bid/state` 等本体字段。
+
+另在 `item.main.php` 增加记录器路由，在 `search.func.php` 增加移动/探索后的平台计时挂钩；实际业务逻辑仍集中在 `item.platform.php`。
+
+## English
+
+This change rewrites `include/game/item.platform.php` and completes the projection platform mechanics:
+
+1. Adds PID mode, loading source character/NPC data from the current players table by PID.
+2. Adds replay mode, loading projection data from `itmpara['platformPlayerData']` or legacy `PlatformPlayerXxx` keys.
+3. Adds recorder items. An `IsPlatformRecorder` item captures the current player's projectable data into a replay platform and replaces itself.
+4. Adds timed projection. When `platformTransformTime` is set, movement/search actions add `rand(1, ceil(randver1 / 10))` progress and restore the original data after the threshold is exceeded.
+5. Adds `isStatPersistent`, allowing positive growth in exp, attack, defense, and weapon proficiencies to be kept after restoration.
+6. Protects identity and combat-sensitive fields such as `pid/name/pass/type/clbpara/pls/pgroup/team/action/bid/state` from being overwritten.
+
+`item.main.php` now routes recorder items into the platform handler, and `search.func.php` ticks platform duration after movement/search. The actual mechanism remains centralized in `item.platform.php`.

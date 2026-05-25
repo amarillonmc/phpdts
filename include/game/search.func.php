@@ -7,6 +7,7 @@ if(!defined('IN_GAME')) {
 include_once GAME_ROOT.'./include/state.func.php';
 include_once GAME_ROOT.'./include/game/battle.func.php';
 include_once GAME_ROOT.'./include/game/itemmain.func.php';
+include_once GAME_ROOT.'./include/game/item.platform.php';
 include_once GAME_ROOT.'./include/game/revbattle.func.php';
 include_once GAME_ROOT.'./include/game/revbattle.calc.php';
 include_once GAME_ROOT.'./include/game/revcombat.func.php';
@@ -119,6 +120,7 @@ function move($moveto = 99,&$data=NULL)
 
 	# 更新charge值
 	process_charge_events($data);
+	platform_tick($data,'move');
 
 	// QUEST周期与分配 / QUEST tick and assignment
 	quest_tick($data);
@@ -181,6 +183,7 @@ function search(&$data=NULL)
 
 	# 更新charge值
 	process_charge_events($data);
+	platform_tick($data,'search');
 
 	# 如果是种火歌者，处理种火相关逻辑
 	if($club == 22) {

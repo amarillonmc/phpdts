@@ -91,7 +91,10 @@ function itemuse($itmn,&$data=NULL) {
 	}
 
 	// Delegate to specific item type handlers based on item type code
-	if(strpos($itmk, 'W') === 0 || strpos($itmk, 'D') === 0 || strpos($itmk, 'A') === 0 || strpos($itmk, 'ss') === 0) {
+	if(platform_is_recorder_item($itmpara)) {
+		// Projection recorder items are routed here, while their logic stays in item.platform.php.
+		item_platform($itmn, $data);
+	} elseif(strpos($itmk, 'W') === 0 || strpos($itmk, 'D') === 0 || strpos($itmk, 'A') === 0 || strpos($itmk, 'ss') === 0) {
 		// Weapons and equipment
 		item_weapon($itmn, $data);
 	} elseif(strpos($itmk, 'HS') === 0) {
@@ -200,7 +203,7 @@ function itemuse($itmn,&$data=NULL) {
 	}
 
 	//元素大师使用提示纸条的特殊效果：
-	if($club == 20 && strpos($itmk,'Y')===0 && strpos($itm,'提示纸条')!==false)
+	if(strpos($ik,'💝')!==0 && !platform_is_recorder_item($ipara) && $club == 20 && strpos($itmk,'Y')===0 && strpos($itm,'提示纸条')!==false)
 	{
 		$log.="<br>就在你读完内容打算把纸条收起来时，你愕然发现纸条背面竟然还有字！<br><br>";
 		include config('elementmix',$gamecfg);
