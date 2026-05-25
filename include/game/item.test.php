@@ -12,7 +12,7 @@ if (! defined('IN_GAME')) {
  * @param array &$data 玩家数据
  */
 function item_test($itmn, &$data) {
-    global $log, $db, $tablepre, $now, $pid, $event_bgm, $cmd;
+    global $log, $db, $tablepre, $now, $pid, $event_bgm, $cmd, $mode;
     extract($data, EXTR_REFS);
 
     $itm = & ${'itm' . $itmn};
@@ -26,6 +26,12 @@ function item_test($itmn, &$data) {
         $pa = fetch_playerdata_by_pid(1);
         $pd = fetch_playerdata_by_pid(2);
         \revcombat\rev_combat_prepare($pa, $pd, 1);
+    } elseif ($itm == 'QUEST调试终端') {
+        include_once GAME_ROOT.'./include/game/quest.func.php';
+        if (!quest_debug_offer($data)) {
+            $log .= '<span class="yellow">当前没有可用的QUEST。</span><br>';
+            $mode = 'command';
+        }
     } elseif ($itm == '显现战斗测试仪') {
         //Mod the above item, YOU'll enter fight with a player entry matching the item's $itme value.
         include_once GAME_ROOT.'./include/game/revcombat.func.php';
@@ -257,4 +263,3 @@ function item_test($itmn, &$data) {
     }
 
 }
-

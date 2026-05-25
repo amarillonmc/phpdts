@@ -11,8 +11,12 @@ $questcfg_global = array(
     'max_active' => 1,
     // 探索时触发任务的基础概率（百分比）/ Base assign chance per search (percent)
     'assign_obbs' => 15,
+    // 移动/探索累计到此阈值后才尝试弹出QUEST委托 / Move/search steps before trying a QUEST offer
+    'offer_threshold' => 3,
     // 任务触发冷却（秒）/ Assign cooldown in seconds
     'assign_cooldown' => 120,
+    // 拒绝QUEST后跳过的移动/探索次数 / Move/search steps skipped after rejecting a QUEST
+    'reject_cooldown_steps' => 5,
 );
 
 $questcfg = array(

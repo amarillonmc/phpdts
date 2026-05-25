@@ -1,0 +1,33 @@
+<!--{eval $quest_pending = !empty($clbpara['quest']['pending']) ? $clbpara['quest']['pending'] : array();}-->
+<!--{eval $quest_candidates = !empty($quest_pending['candidates']) ? $quest_pending['candidates'] : array();}-->
+<input type="hidden" id="mode" name="mode" value="quest">
+<input type="hidden" id="command" name="command" value="quest_accept">
+
+<!--{if empty($quest_pending) || empty($quest_candidates)}-->
+目前没有可接取的QUEST。<br><br>
+<input type="button" class="cmdbutton" value="返回" onclick="$('mode').value='command';$('command').value='menu';postCmd('gamecmd','command.php');this.disabled=true;">
+<!--{else}-->
+<!--{if $quest_pending['source'] == 'debug'}-->
+QUEST调试终端列出了以下任务：<br><br>
+<!--{loop $quest_candidates $qid $qinfo}-->
+<input type="radio" name="questselect" id="quest_{$qid}" value="{$qid}" <!--{if empty($checked_qid)}--><!--{eval $checked_qid = $qid;}-->checked<!--{/if}-->>
+<a onclick="sl('quest_{$qid}');" href="javascript:void(0);">
+	<span class="yellow">{$qinfo['title']}</span>
+	<!--{if !empty($qinfo['desc'])}--> - {$qinfo['desc']}<!--{/if}-->
+</a><br>
+<!--{/loop}-->
+<br>
+<input type="button" class="cmdbutton" value="接受所选QUEST" onclick="$('command').value='quest_accept';postCmd('gamecmd','command.php');this.disabled=true;">
+<input type="button" class="cmdbutton" value="退出" onclick="$('command').value='quest_cancel';postCmd('gamecmd','command.php');this.disabled=true;">
+<!--{else}-->
+<!--{eval $offer_qid = $quest_pending['qid']; $qinfo = $quest_candidates[$offer_qid];}-->
+你发现了一份QUEST委托：<br><br>
+<span class="yellow">{$qinfo['title']}</span><br>
+<!--{if !empty($qinfo['desc'])}-->{$qinfo['desc']}<br><!--{/if}-->
+<br>
+是否接受？<br>
+<input type="hidden" name="questselect" value="{$offer_qid}">
+<input type="button" class="cmdbutton" value="接受QUEST" onclick="$('command').value='quest_accept';postCmd('gamecmd','command.php');this.disabled=true;">
+<input type="button" class="cmdbutton" value="拒绝" onclick="$('command').value='quest_reject';postCmd('gamecmd','command.php');this.disabled=true;">
+<!--{/if}-->
+<!--{/if}-->

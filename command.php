@@ -709,6 +709,21 @@ if($hp > 0){
 				change_subwep();
 				$mode = 'command';
 			}
+		} elseif($mode == 'quest') {
+			include_once GAME_ROOT.'./include/game/quest.func.php';
+			if($command == 'quest_accept') {
+				$qid = isset($questselect) ? $questselect : '';
+				$accepted = quest_accept_offer($qid, $pdata);
+				$mode = $accepted ? 'command' : 'quest';
+			} elseif($command == 'quest_reject') {
+				quest_reject_offer($pdata, true);
+				$mode = 'command';
+			} elseif($command == 'quest_cancel') {
+				quest_reject_offer($pdata, false);
+				$mode = 'command';
+			} else {
+				if(empty($clbpara['quest']['pending'])) $mode = 'command';
+			}
 		} elseif($mode == 'special') {
 			include_once GAME_ROOT.'./include/game/special.func.php';
 			if(strpos($command,'pose') === 0) {

@@ -122,7 +122,6 @@ function move($moveto = 99,&$data=NULL)
 
 	// QUEST周期与分配 / QUEST tick and assignment
 	quest_tick($data);
-	quest_try_assign($data);
 
 	# 如果是种火歌者，处理种火相关逻辑
 	if($club == 22) {
@@ -136,6 +135,7 @@ function move($moveto = 99,&$data=NULL)
 
 	$enemyrate =  \revbattle\calc_meetman_rate($data);
 	discover($enemyrate,$data);
+	quest_try_assign($data);
 	return;
 }
 
@@ -191,6 +191,9 @@ function search(&$data=NULL)
 
 	$enemyrate = \revbattle\calc_meetman_rate($data);
 	discover($enemyrate,$data);
+	// QUEST周期与分配 / QUEST tick and assignment
+	quest_tick($data);
+	quest_try_assign($data);
 	return;
 
 }

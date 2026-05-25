@@ -1,0 +1,18 @@
+QUEST触发测试入口实装 / QUEST trigger and test entry implementation
+
+本次变更将QUEST分配从“自动开始”改为“先生成接取邀请，再由玩家接受或拒绝”。
+This change turns QUEST assignment from automatic start into an explicit player offer that can be accepted or rejected.
+
+主要调整 / Main changes:
+1. 移动与探索都会累计QUEST触发阈值，达到配置阈值后按概率从gamedata/questcfg_1.php抽取候选任务。
+   Movement and search now both build QUEST offer progress; once the configured threshold is reached, a candidate is rolled from gamedata/questcfg_1.php.
+2. 玩家拒绝普通QUEST邀请后，会进入可配置的移动/探索次数冷却，期间不会收到新的QUEST邀请。
+   Rejecting a normal QUEST offer starts a configurable move/search step cooldown before another offer can appear.
+3. 新增QUEST接取模板，玩家可在通常触发时接受或拒绝，也可在调试入口中从全部可用QUEST里选择。
+   A QUEST offer template was added so normal offers can be accepted or rejected, and the debug entry can choose from all available quests.
+4. 新增调试物品“QUEST调试终端”，使用后列出全部可用QUEST；接受后复用正式的quest_start流程写入clbpara。
+   A debug item named "QUEST调试终端" lists all available QUESTs; accepting one reuses the normal quest_start flow and writes clbpara state.
+
+配置项 / Config keys:
+- questcfg_global['offer_threshold']: 移动/探索累计到多少次后尝试弹出QUEST邀请。
+- questcfg_global['reject_cooldown_steps']: 拒绝QUEST后跳过多少次移动/探索触发检查。

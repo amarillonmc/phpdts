@@ -30,18 +30,179 @@ function quest_get_config()
 	return get_questcfg();
 }
 
-// 探索时尝试分配任务 / Try to assign quest during search
+// 获取任务分配配置值 / Get quest assignment config value
+function quest_get_global_value($questcfg_global, $key, $default)
+{
+	return isset($questcfg_global[$key]) ? intval($questcfg_global[$key]) : $default;
+}
+
+// 检查任务是否可接取 / Check whether a quest can be accepted
+function quest_is_available($qid, $cfg, &$data, $check_requirements = true, $check_obbs = true)
+{
+	extract($data, EXTR_REFS);
+	quest_init_state($clbpara);
+
+	if (!empty($clbpara['quest']['active'][$qid])) return false;
+	if (empty($cfg['repeatable']) && !empty($clbpara['quest']['completed'][$qid])) return false;
+
+	if ($check_requirements && !empty($cfg['assign'])) {
+		$acfg = $cfg['assign'];
+		if (!empty($acfg['min_lvl']) && $lvl < $acfg['min_lvl']) return false;
+		if (!empty($acfg['min_ss']) && $ss < $acfg['min_ss']) return false;
+		if ($check_obbs && !empty($acfg['obbs']) && rand(0, 99) >= $acfg['obbs']) return false;
+	}
+
+	return true;
+}
+
+// 获取可接任务候选 / Get available quest candidates
+function quest_get_available_candidates(&$data, $check_requirements = true, $check_obbs = true)
+{
+	$candidates = array();
+	list($questcfg,) = quest_get_config();
+	if (empty($questcfg)) return $candidates;
+
+	foreach ($questcfg as $qid => $cfg) {
+		if (quest_is_available($qid, $cfg, $data, $check_requirements, $check_obbs)) {
+			$candidates[$qid] = array(
+				'id' => $qid,
+				'title' => !empty($cfg['title']) ? $cfg['title'] : $qid,
+				'tier' => !empty($cfg['tier']) ? $cfg['tier'] : 'normal',
+				'desc' => !empty($cfg['steps'][1]['desc']) ? $cfg['steps'][1]['desc'] : '',
+			);
+		}
+	}
+
+	return $candidates;
+}
+
+// 设置任务接取邀请 / Set quest offer prompt
+function quest_set_offer($candidates, &$data, $source = 'wander')
+{
+	global $now, $mode, $log;
+	if (empty($candidates)) return false;
+	if (!isset($data)) {
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data, EXTR_REFS);
+	quest_init_state($clbpara);
+
+	$qids = array_keys($candidates);
+	$qid = $source == 'debug' ? '' : $qids[array_rand($qids)];
+	$clbpara['quest']['pending'] = array(
+		'source' => $source,
+		'qid' => $qid,
+		'candidates' => $source == 'debug' ? $candidates : array($qid => $candidates[$qid]),
+		'time' => $now,
+	);
+	$mode = 'quest';
+	if ($source == 'debug') {
+		$log .= '<span class="yellow">QUEST调试终端列出了可用任务。</span><br>';
+	} else {
+		$log .= '<span class="yellow">你发现了一份新的QUEST委托。</span><br>';
+	}
+	return true;
+}
+
+// 接受任务邀请 / Accept quest offer
+function quest_accept_offer($qid, &$data)
+{
+	global $log;
+	if (!isset($data)) {
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data, EXTR_REFS);
+	quest_init_state($clbpara);
+
+	if (empty($clbpara['quest']['pending'])) {
+		$log .= '<span class="yellow">没有待处理的QUEST委托。</span><br>';
+		return false;
+	}
+	$pending = $clbpara['quest']['pending'];
+	if (empty($qid) && !empty($pending['qid'])) $qid = $pending['qid'];
+	if (empty($qid) || empty($pending['candidates'][$qid])) {
+		$log .= '<span class="yellow">请选择有效的QUEST。</span><br>';
+		return false;
+	}
+
+	list($questcfg, $questcfg_global) = quest_get_config();
+	$max_active = quest_get_global_value($questcfg_global, 'max_active', 1);
+	if (count($clbpara['quest']['active']) >= $max_active) {
+		$log .= '<span class="yellow">你已经有正在进行的QUEST了。</span><br>';
+		unset($clbpara['quest']['pending']);
+		return false;
+	}
+	if (empty($questcfg[$qid]) || !quest_is_available($qid, $questcfg[$qid], $data, false, false)) {
+		$log .= '<span class="yellow">这份QUEST现在无法接取。</span><br>';
+		unset($clbpara['quest']['pending']);
+		return false;
+	}
+
+	unset($clbpara['quest']['pending']);
+	$clbpara['quest']['cooldown']['assign_steps'] = 0;
+	$clbpara['quest']['cooldown']['reject_steps'] = 0;
+	quest_start($qid, $data);
+	return true;
+}
+
+// 拒绝任务邀请 / Reject quest offer
+function quest_reject_offer(&$data, $apply_cooldown = true)
+{
+	global $now, $log;
+	if (!isset($data)) {
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data, EXTR_REFS);
+	quest_init_state($clbpara);
+	list(, $questcfg_global) = quest_get_config();
+
+	unset($clbpara['quest']['pending']);
+	$clbpara['quest']['cooldown']['assign_steps'] = 0;
+	if ($apply_cooldown) {
+		$reject_steps = quest_get_global_value($questcfg_global, 'reject_cooldown_steps', 5);
+		$reject_time = quest_get_global_value($questcfg_global, 'reject_cooldown', 0);
+		$clbpara['quest']['cooldown']['reject_steps'] = $reject_steps;
+		if ($reject_time > 0) $clbpara['quest']['cooldown']['assign'] = $now + $reject_time;
+		$log .= '<span class="yellow">你拒绝了这份QUEST委托。</span><br>';
+	} else {
+		$log .= '<span class="yellow">你关闭了QUEST选择。</span><br>';
+	}
+}
+
+// 调试入口：列出全部可用任务 / Debug entry: list all available quests
+function quest_debug_offer(&$data)
+{
+	if (!isset($data)) {
+		global $pdata;
+		$data = &$pdata;
+	}
+	extract($data, EXTR_REFS);
+	quest_init_state($clbpara);
+	list(, $questcfg_global) = quest_get_config();
+	$max_active = quest_get_global_value($questcfg_global, 'max_active', 1);
+	if (count($clbpara['quest']['active']) >= $max_active) return false;
+
+	$candidates = quest_get_available_candidates($data, false, false);
+	return quest_set_offer($candidates, $data, 'debug');
+}
+
+// 探索/移动时尝试分配任务 / Try to assign quest during search or movement
 function quest_try_assign(&$data)
 {
-	global $now, $log, $gamestate;
+	global $now, $log, $gamestate, $mode, $cmd;
 	if (!isset($data)) {
 		global $pdata;
 		$data = &$pdata;
 	}
 	// 只对玩家生效 / Players only
 	if (!empty($data['type']) || $data['hp'] <= 0) return;
+	if (!empty($data['pass']) && $data['pass'] == 'bot') return;
 	// 游戏开始后才分配 / Assign only after game start
 	if ($gamestate < 10) return;
+	if (!empty($cmd) || (!empty($mode) && $mode != 'command')) return;
 
 	extract($data, EXTR_REFS);
 	quest_init_state($clbpara);
@@ -55,29 +216,28 @@ function quest_try_assign(&$data)
 		return;
 	}
 
-	$assign_obbs = !empty($questcfg_global['assign_obbs']) ? $questcfg_global['assign_obbs'] : 0;
-	if ($assign_obbs > 0 && rand(0, 99) >= $assign_obbs) return;
+	if (!empty($clbpara['quest']['pending'])) return;
+	if (!empty($itms0)) return;
 
-	$candidates = array();
-	foreach ($questcfg as $qid => $cfg) {
-		// 已在进行 / Already active
-		if (!empty($clbpara['quest']['active'][$qid])) continue;
-		// 非可重复且已完成 / Non-repeatable and completed
-		if (empty($cfg['repeatable']) && !empty($clbpara['quest']['completed'][$qid])) continue;
-		// 触发条件 / Assign conditions
-		if (!empty($cfg['assign'])) {
-			$acfg = $cfg['assign'];
-			if (!empty($acfg['min_lvl']) && $lvl < $acfg['min_lvl']) continue;
-			if (!empty($acfg['min_ss']) && $ss < $acfg['min_ss']) continue;
-			if (!empty($acfg['obbs']) && rand(0, 99) >= $acfg['obbs']) continue;
-		}
-		$candidates[] = $qid;
+	if (!empty($clbpara['quest']['cooldown']['reject_steps'])) {
+		$clbpara['quest']['cooldown']['reject_steps']--;
+		return;
 	}
 
+	$assign_threshold = quest_get_global_value($questcfg_global, 'offer_threshold', 3);
+	if ($assign_threshold > 1) {
+		if (empty($clbpara['quest']['cooldown']['assign_steps'])) $clbpara['quest']['cooldown']['assign_steps'] = 0;
+		$clbpara['quest']['cooldown']['assign_steps']++;
+		if ($clbpara['quest']['cooldown']['assign_steps'] < $assign_threshold) return;
+		$clbpara['quest']['cooldown']['assign_steps'] = 0;
+	}
+
+	$assign_obbs = quest_get_global_value($questcfg_global, 'assign_obbs', 0);
+	if ($assign_obbs > 0 && rand(0, 99) >= $assign_obbs) return;
+
+	$candidates = quest_get_available_candidates($data, true, true);
 	if (empty($candidates)) return;
-	$qid = $candidates[array_rand($candidates)];
-	quest_start($qid, $data);
-	$log .= '<span class="lime">你接到了新的任务。</span><br>';
+	quest_set_offer($candidates, $data, 'wander');
 }
 
 // 任务周期性检查 / Quest periodic tick
