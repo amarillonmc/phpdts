@@ -1,0 +1,13 @@
+QUEST战斗奖励保存修复 / QUEST combat reward save fix
+
+问题 / Problem:
+猎杀类QUEST的NPC死亡事件中，系统会重新从数据库读取任务持有者数据并写入奖励道具。
+但战斗结算稍后会保存当前战斗中的玩家数据副本，导致刚写入的奖励道具被旧副本覆盖。
+In hunt-style QUEST NPC death handling, the owner was reloaded from the database and given the reward item.
+The combat flow then saved the in-memory combat player copy afterward, overwriting the just-granted reward item.
+
+修复 / Fix:
+当击杀者同时也是QUEST持有者时，quest_handle_npc_death()现在直接操作战斗流程中的玩家引用。
+这样quest_complete()发放的奖励道具会保留在同一个即将被战斗结算保存的玩家数据上。
+When the killer is also the QUEST owner, quest_handle_npc_death() now operates directly on the combat player reference.
+This keeps quest_complete() reward items on the same player data that the combat flow will save.

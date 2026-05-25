@@ -596,8 +596,13 @@ function quest_handle_npc_death(&$pa, &$pd)
 	if (empty($pd['clbpara']['quest_id']) || empty($pd['clbpara']['linked_player_id'])) return;
 	$qid = $pd['clbpara']['quest_id'];
 	$owner_pid = $pd['clbpara']['linked_player_id'];
-	$owner = fetch_playerdata_by_pid($owner_pid);
-	if (empty($owner['pid'])) return;
+	$owner_is_combatant = (!empty($pa['pid']) && $pa['pid'] == $owner_pid);
+	if ($owner_is_combatant) {
+		$owner = &$pa;
+	} else {
+		$owner = fetch_playerdata_by_pid($owner_pid);
+		if (empty($owner['pid'])) return;
+	}
 	$owner['clbpara'] = get_clbpara($owner['clbpara']);
 	quest_init_state($owner['clbpara']);
 	if (empty($owner['clbpara']['quest']['active'][$qid])) return;
@@ -620,5 +625,5 @@ function quest_handle_npc_death(&$pa, &$pd)
 		else quest_fail('Q7', $owner, 'idol_killed_by_other');
 	}
 
-	player_save($owner);
+	if (!$owner_is_combatant) player_save($owner);
 }
