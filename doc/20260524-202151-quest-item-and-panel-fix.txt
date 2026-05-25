@@ -1,0 +1,19 @@
+QUEST道具发放与任务窗体修复 / QUEST item grant and panel refresh fix
+
+问题 / Problems:
+1. QUEST开始时虽然写入了clbpara，但初始任务道具通过itemget()处理，可能被自动塞包或清空拾取栏，导致玩家看不到任务触发道具。
+   QUEST start state was written to clbpara, but start items went through itemget(), which could auto-place or clear the pickup slot and make the trigger item invisible.
+2. 默认模板的slidingpanel手动刷新只更新能量值与种火信息，没有刷新QUEST窗体。
+   The default sliding panel manual refresh updated charge/fireseed data but did not refresh the QUEST panel.
+3. AJAX指令返回后侧边栏持有的clbpara数据不会立即同步。
+   After AJAX commands, the side panel's clbpara snapshot was not synchronized immediately.
+
+修复 / Fixes:
+1. quest_spawn_item()现在优先将QUEST道具写入$data['itm0']拾取栏；若拾取栏已被占用，则将道具放到当前位置，避免覆盖丢失。
+   quest_spawn_item() now writes QUEST items into $data['itm0'] first; if occupied, it drops the item at the player's current location to avoid overwriting.
+2. command.php在JSON响应中附带最新clbpara。
+   command.php now returns the latest clbpara in the JSON response.
+3. game20130526.js与game.js收到clbpara后会同步全局数据并刷新QUEST/能量/种火面板。
+   game20130526.js and game.js sync global clbpara data and refresh QUEST/charge/fireseed panels when clbpara is returned.
+4. slidingpanel手动更新成功后会调用updateQuestPanel()。
+   The sliding panel manual update now calls updateQuestPanel() after successful refresh.

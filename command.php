@@ -1058,6 +1058,7 @@ $log .= "<!-- DEBUG: 最终的 log 变量长度: " . strlen($log) . " -->";
 
 $gamedata['innerHTML']['log'] = $log;
 if(isset($error)){$gamedata['innerHTML']['error'] = $error;}
+$gamedata['clbpara'] = $clbpara;
 $gamedata['value']['teamID'] = $teamID;
 if($teamID){
 	$gamedata['innerHTML']['chattype'] = "<select name=\"chattype\" value=\"2\"><option value=\"0\" selected>$chatinfo[0]<option value=\"1\" >$chatinfo[1]</select>";

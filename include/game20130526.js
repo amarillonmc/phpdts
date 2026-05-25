@@ -357,6 +357,19 @@ function showData(sdata){
 				}
 			}
 		}
+		if(shwData['clbpara']) {
+			window.clbpara_data = shwData['clbpara'];
+			window.clbpara = shwData['clbpara'];
+			if(typeof updateQuestPanel === 'function') {
+				updateQuestPanel();
+			}
+			if(typeof updateChargeProgressBars === 'function') {
+				updateChargeProgressBars();
+			}
+			if(typeof updateFireseedTab === 'function') {
+				updateFireseedTab();
+			}
+		}
 		sDd = shwData['display'];
 		for(var id in sDd){
 			if($(id)!=null){

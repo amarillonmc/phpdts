@@ -338,6 +338,21 @@ function showData(sdata){
 				}
 			}
 
+			// 同步clbpara驱动的侧边栏数据
+			if(shwData['clbpara']) {
+				window.clbpara_data = shwData['clbpara'];
+				window.clbpara = shwData['clbpara'];
+				if(typeof updateQuestPanel === 'function') {
+					updateQuestPanel();
+				}
+				if(typeof updateChargeProgressBars === 'function') {
+					updateChargeProgressBars();
+				}
+				if(typeof updateFireseedTab === 'function') {
+					updateFireseedTab();
+				}
+			}
+
 			// 处理 display 属性
 			if(shwData['display']) {
 				sDd = shwData['display'];

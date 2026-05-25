@@ -317,21 +317,39 @@ function quest_start($qid, &$data)
 // 生成任务道具 / Spawn quest item
 function quest_spawn_item($item_key, &$data, $itmpara_override = array())
 {
-	global $itm0, $itmk0, $itme0, $itms0, $itmsk0, $itmpara0;
+	global $db, $tablepre, $log;
 	$questiteminfo = get_questiteminfo();
 	if (empty($questiteminfo[$item_key])) return false;
+	if (!isset($data)) {
+		global $pdata;
+		$data = &$pdata;
+	}
 	$item = $questiteminfo[$item_key];
-	$itm0 = $item['itm'];
-	$itmk0 = $item['itmk'];
-	$itme0 = $item['itme'];
-	$itms0 = $item['itms'];
-	$itmsk0 = $item['itmsk'];
 	$itmpara = $item['itmpara'];
 	if (!empty($itmpara_override)) {
 		$itmpara = array_merge($itmpara, $itmpara_override);
 	}
-	$itmpara0 = json_encode($itmpara, JSON_UNESCAPED_UNICODE);
-	itemget($data);
+	$itmpara = json_encode($itmpara, JSON_UNESCAPED_UNICODE);
+
+	// QUEST道具优先进入拾取栏，避免背包满时任务无法继续 / Put QUEST items into pickup slot first.
+	if (empty($data['itms0'])) {
+		$data['itm0'] = $item['itm'];
+		$data['itmk0'] = $item['itmk'];
+		$data['itme0'] = $item['itme'];
+		$data['itms0'] = $item['itms'];
+		$data['itmsk0'] = $item['itmsk'];
+		$data['itmpara0'] = $itmpara;
+		$log .= '获得了QUEST道具<span class="yellow">'.$item['itm'].'</span>。<br>';
+		return true;
+	}
+
+	// 拾取栏被占用时放到当前位置，防止覆盖丢失 / If pickup slot is occupied, drop it nearby.
+	$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, itmpara, pls) VALUES ('{$item['itm']}', '{$item['itmk']}', '{$item['itme']}', '{$item['itms']}', '{$item['itmsk']}', '{$itmpara}', '{$data['pls']}')");
+	$iid = $db->insert_id();
+	if (function_exists('check_add_searchmemory')) {
+		check_add_searchmemory($iid, 'itm', $item['itm'], $data);
+	}
+	$log .= 'QUEST道具<span class="yellow">'.$item['itm'].'</span>出现在了附近。<br>';
 	return true;
 }
 
