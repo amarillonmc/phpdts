@@ -80,3 +80,99 @@ body.nouveau-ui dialog {
     color: #edf4ef;
     border: 1px solid #7a8f88;
 }
+
+body.nouveau-ui dialog::backdrop {
+    background: rgba(8, 12, 11, .72);
+    backdrop-filter: blur(6px);
+}
+
+body.nouveau-ui dialog.storyboard {
+    border: 1px solid #8ed6c7;
+    background: rgba(15, 20, 19, .96);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .72);
+    overflow: hidden;
+}
+
+body.nouveau-ui dialog.storyboard::backdrop {
+    background: rgba(8, 12, 11, .82);
+    backdrop-filter: blur(10px);
+}
+
+body.nouveau-ui .dialog-background {
+    display: block;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: .16;
+    z-index: -1;
+}
+
+body.nouveau-ui div.dialog-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+    text-align: center;
+    vertical-align: middle;
+    margin: 5px;
+    border: 1px solid rgba(142, 214, 199, .45);
+    background: rgba(10, 15, 14, .72);
+}
+
+body.nouveau-ui #storyboard_control {
+    position: relative;
+    z-index: 2;
+}
+
+body.nouveau-ui #shootings_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.nouveau-ui .shootings {
+    display: none;
+    text-align: center;
+    max-width: 100%;
+}
+
+body.nouveau-ui .shootings img {
+    max-width: 100%;
+    height: auto;
+}
+
+body.nouveau-ui .glow_buttons {
+    display: inline-block;
+    width: 70px;
+    height: 20px;
+    margin: auto;
+    border: 1px solid #8ed6c7;
+    background: rgba(14, 19, 18, .86);
+    color: #edf4ef;
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    line-height: 20px;
+}
+
+body.nouveau-ui .glow_buttons:hover {
+    border-color: #f3d477;
+    color: #fff7ce;
+    box-shadow: 0 0 12px rgba(243, 212, 119, .45);
+}
+
+body.nouveau-ui .glow_buttons:active {
+    background: rgba(243, 212, 119, .18);
+}
+
+body.nouveau-ui .glow_buttons.w35 { width: 35px; }
+body.nouveau-ui .glow_buttons.w115 { width: 115px; }
+body.nouveau-ui .glow_buttons.w125 { width: 125px; }
+body.nouveau-ui .glow_buttons.w140 { width: 140px; }
+body.nouveau-ui .glow_buttons.h15 { height: 15px; line-height: 15px; }
+body.nouveau-ui .glow_buttons.h25 { height: 25px; line-height: 25px; }
+body.nouveau-ui .glow_buttons.h30 { height: 30px; line-height: 30px; }
+body.nouveau-ui .glow_buttons.h50 { height: 50px; line-height: 50px; }

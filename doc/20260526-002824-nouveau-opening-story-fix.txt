@@ -1,0 +1,18 @@
+Nouveau opening story compatibility fix
+Nouveau 开场剧情兼容性修复
+
+Issue / 问题：
+After starting a new game with the Nouveau template, the non-skippable opening story could reappear after every command and feel impossible to close.
+使用 Nouveau 模板开局后，不可跳过的开场剧情可能在每次执行指令后反复弹出，并且看起来无法关闭。
+
+Cause / 原因：
+The rebuilt Nouveau stylesheet did not include the legacy storyboard styles used by opening.htm, especially the hidden state for .shootings pages and visible controls for the storyboard buttons.
+重建后的 Nouveau 样式缺少 opening.htm 依赖的旧分镜样式，尤其是 .shootings 分页隐藏规则和分镜按钮显示规则。
+
+Fix / 修复：
+Added Nouveau-local storyboard/dialog compatibility CSS and restored the legacy id="main" AJAX update anchor in game.htm.
+新增 Nouveau 本地的剧情弹窗兼容样式，并在 game.htm 中恢复旧 AJAX 流程使用的 id="main" 更新锚点。
+
+Scope / 范围：
+Only templates/nouveau files were changed. No gameplay logic, database schema, default template, or gamedata files were modified.
+仅修改 templates/nouveau 文件。未修改玩法逻辑、数据库结构、默认模板或 gamedata 文件。

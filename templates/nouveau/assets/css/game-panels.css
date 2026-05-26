@@ -3,6 +3,10 @@
     min-height: 760px;
 }
 
+.nv-game-shell > #main {
+    display: contents;
+}
+
 .nv-window--status { width: 380px; left: 0; top: 0; }
 .nv-window--avatar { width: 250px; left: 392px; top: 0; }
 .nv-window--map { width: 390px; left: 654px; top: 0; }

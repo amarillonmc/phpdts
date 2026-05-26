@@ -21,6 +21,7 @@
 
 <form method="post" id="gamecmd" name="gamecmd" style="margin:0">
 <div class="nv-game-shell">
+    <div id="main">
     <!--{if $main=='battle'}-->
     <section class="nv-window nv-window--battle" id="nv-battle" data-window-title="Battle Result">
         <div class="nv-window__titlebar">
@@ -48,6 +49,7 @@
     <!--{else}-->
     {template profile}
     <!--{/if}-->
+    </div>
 
     <section class="nv-window nv-window--map" id="nv-map" data-window-title="Map">
         <div class="nv-window__titlebar">
