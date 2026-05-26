@@ -92,6 +92,10 @@
     }
 
     function attachDrag(win) {
+        if (win.getAttribute('data-nv-drag-ready')) {
+            return;
+        }
+        win.setAttribute('data-nv-drag-ready', '1');
         var bar = win.querySelector('.nv-window__titlebar');
         if (!bar) {
             return;
@@ -138,15 +142,85 @@
         bar.addEventListener('pointercancel', endDrag);
     }
 
+    function attachResize(win) {
+        if (!win.hasAttribute('data-window-resizable') || win.getAttribute('data-nv-resize-ready')) {
+            return;
+        }
+        win.setAttribute('data-nv-resize-ready', '1');
+        win.classList.add('is-resizable');
+
+        var handle = win.querySelector('.nv-window__resize');
+        if (!handle) {
+            handle = document.createElement('span');
+            handle.className = 'nv-window__resize';
+            handle.setAttribute('aria-hidden', 'true');
+            win.appendChild(handle);
+        }
+
+        var resize = null;
+        handle.addEventListener('pointerdown', function (event) {
+            if (isMobileLayout()) {
+                return;
+            }
+            activate(win);
+            resize = {
+                pointerId: event.pointerId,
+                x: event.clientX,
+                y: event.clientY,
+                width: win.offsetWidth,
+                height: win.offsetHeight
+            };
+            handle.setPointerCapture(event.pointerId);
+            event.preventDefault();
+        });
+
+        handle.addEventListener('pointermove', function (event) {
+            if (!resize || resize.pointerId !== event.pointerId) {
+                return;
+            }
+            var width = Math.max(260, resize.width + event.clientX - resize.x);
+            var height = Math.max(160, resize.height + event.clientY - resize.y);
+            win.style.width = width + 'px';
+            win.style.height = height + 'px';
+            win.classList.add('is-resized');
+        });
+
+        function endResize(event) {
+            if (!resize || resize.pointerId !== event.pointerId) {
+                return;
+            }
+            state[win.id] = state[win.id] || {};
+            state[win.id].width = win.offsetWidth;
+            state[win.id].height = win.offsetHeight;
+            saveState();
+            resize = null;
+        }
+
+        handle.addEventListener('pointerup', endResize);
+        handle.addEventListener('pointercancel', endResize);
+    }
+
     function hydrateWindow(win, index) {
         var id = windowId(win, index);
         var saved = state[id];
+        if (win.getAttribute('data-nv-window-ready')) {
+            return;
+        }
+        win.setAttribute('data-nv-window-ready', '1');
         if (saved && !isMobileLayout()) {
             if (typeof saved.left === 'number') {
                 win.style.left = saved.left + 'px';
             }
             if (typeof saved.top === 'number') {
                 win.style.top = saved.top + 'px';
+            }
+            if (typeof saved.width === 'number') {
+                win.style.width = saved.width + 'px';
+                win.classList.add('is-resized');
+            }
+            if (typeof saved.height === 'number') {
+                win.style.height = saved.height + 'px';
+                win.classList.add('is-resized');
             }
         }
         if (saved && saved.minimized) {
@@ -166,10 +240,35 @@
         }
 
         attachDrag(win);
+        attachResize(win);
+    }
+
+    function refresh(options) {
+        document.querySelectorAll('.nv-window').forEach(hydrateWindow);
+        if (!options || options.activateFirst !== false) {
+            var first = document.querySelector('.nv-window:not(.is-minimized):not(.is-active)');
+            if (first && !document.querySelector('.nv-window.is-active')) {
+                activate(first);
+            }
+        }
+        updateTaskbar();
     }
 
     function init() {
         loadState();
+        refresh();
+    }
+
+    function forget(id) {
+        if (state[id]) {
+            delete state[id];
+            saveState();
+        }
+    }
+
+    function resetAll() {
+        state = {};
+        saveState();
         document.querySelectorAll('.nv-window').forEach(hydrateWindow);
         var first = document.querySelector('.nv-window:not(.is-minimized)');
         if (first) {
@@ -180,9 +279,12 @@
 
     window.NouveauWindows = {
         init: init,
+        refresh: refresh,
         restore: restore,
         minimize: minimize,
-        updateTaskbar: updateTaskbar
+        updateTaskbar: updateTaskbar,
+        forget: forget,
+        resetAll: resetAll
     };
 
     document.addEventListener('DOMContentLoaded', init);

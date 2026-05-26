@@ -35,7 +35,15 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    function refresh() {
         document.querySelectorAll('img').forEach(attach);
+    }
+
+    window.NouveauImages = {
+        refresh: refresh
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+        refresh();
     });
 })();

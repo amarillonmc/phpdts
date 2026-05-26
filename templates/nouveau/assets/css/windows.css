@@ -76,6 +76,43 @@
     max-height: calc(100vh - 170px);
 }
 
+.nv-window.is-resizable {
+    min-width: 260px;
+    min-height: 160px;
+}
+
+.nv-window.is-resized {
+    display: flex;
+    flex-direction: column;
+}
+
+.nv-window.is-resized .nv-window__body {
+    flex: 1 1 auto;
+    max-height: none;
+    min-height: 0;
+}
+
+.nv-window__resize {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 16px;
+    height: 16px;
+    cursor: nwse-resize;
+    z-index: 3;
+}
+
+.nv-window__resize::after {
+    content: "";
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    width: 8px;
+    height: 8px;
+    border-right: 1px solid var(--nv-yellow);
+    border-bottom: 1px solid var(--nv-yellow);
+}
+
 .nv-taskbar {
     position: fixed;
     left: 0;

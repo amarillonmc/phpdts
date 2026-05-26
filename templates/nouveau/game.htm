@@ -23,21 +23,9 @@
 <div class="nv-game-shell">
     <div id="main">
     <!--{if $main=='battle'}-->
-    <section class="nv-window nv-window--battle" id="nv-battle" data-window-title="Battle Result">
-        <div class="nv-window__titlebar">
-            <span class="nv-window__title">Battle Result / 交战结果</span>
-            <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
-        </div>
-        <div class="nv-window__body">{template battle}</div>
-    </section>
+    {template battle}
     <!--{elseif $main=='battle_rev'}-->
-    <section class="nv-window nv-window--battle" id="nv-battle-rev" data-window-title="Battle">
-        <div class="nv-window__titlebar">
-            <span class="nv-window__title">Battle Window / 遭遇战</span>
-            <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
-        </div>
-        <div class="nv-window__body nv-compat">{template battle_rev}</div>
-    </section>
+    {template battle_rev}
     <!--{elseif $main=='itemmix_tips'}-->
     <section class="nv-window nv-window--battle" id="nv-mix-tips" data-window-title="Item Mix">
         <div class="nv-window__titlebar">
@@ -59,7 +47,7 @@
         <div class="nv-window__body">
             <div class="nv-map-current">
                 <span>Current Node</span>
-                <strong>
+                <strong data-nv-pls>
                     <!--{if !isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup])}-->
                         $hplsinfo[$pgroup][$pls]
                     <!--{else}-->
@@ -110,14 +98,14 @@
         </div>
     </section>
 
-    <section class="nv-window nv-window--log" id="nv-log-window" data-window-title="Log">
+    <section class="nv-window nv-window--log" id="nv-log-window" data-window-title="Log" data-window-resizable="true">
         <div class="nv-window__titlebar">
             <span class="nv-window__title">Signal Log / 行动日志</span>
             <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
         </div>
         <div class="nv-window__body">
             <div class="nv-status-head">
-                <span>
+                <span id="pls" data-nv-pls>
                     <!--{if !isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup])}-->
                     $hplsinfo[$pgroup][$pls]
                     <!--{else}-->

@@ -162,14 +162,11 @@
 }
 
 .nv-log {
-    max-height: 210px;
+    min-height: 180px;
+    max-height: none;
+    height: 100%;
     overflow: auto;
     white-space: normal;
-}
-
-.nv-log:empty::before {
-    content: "No terminal output.";
-    color: var(--nv-dim);
 }
 
 .nv-chat-wrap #chat {

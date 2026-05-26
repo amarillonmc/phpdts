@@ -1,0 +1,34 @@
+Nouveau AJAX window refresh and location sync fix
+Nouveau AJAX 窗口刷新与地点同步修复
+
+Issue / 问题：
+After several commands, dynamically refreshed Status, Avatar, Inventory, and battle windows could lose drag/minimize behavior.
+执行若干指令后，动态刷新的状态、纸娃娃、背包与战斗窗口可能失去拖动和最小化能力。
+
+Cause / 原因：
+The legacy AJAX command flow replaces the innerHTML of #main with freshly rendered templates. Nouveau only initialized window event handlers on the first page load, so replaced windows had markup but no behavior.
+旧 AJAX 指令流程会替换 #main 的 innerHTML。Nouveau 只在页面首次加载时初始化窗口事件，因此被替换后的窗口只有结构，没有行为。
+
+Fix / 修复：
+Nouveau now wraps showData() locally and rehydrates windows, panel bindings, and image fallbacks after each AJAX update. Battle templates can also render as standalone Nouveau windows when returned by command.php.
+Nouveau 现在在本模板内包装 showData()，每次 AJAX 更新后重新绑定窗口、面板和图片 fallback。战斗模板在 command.php 单独返回时也能作为 Nouveau 窗口渲染。
+
+Issue / 问题：
+The location label and desktop background did not update immediately after moving.
+移动后地点标签和桌面背景不会立刻更新。
+
+Fix / 修复：
+Restored the legacy #pls update anchor and added Nouveau data bindings for all visible location labels. The local background updater now targets the Nouveau desktop background layer.
+恢复旧流程使用的 #pls 更新锚点，并为所有可见地点名增加 Nouveau 数据绑定。本地背景更新函数现在会更新 Nouveau 桌面背景层。
+
+Issue / 问题：
+The log window used a placeholder when empty and had no resize affordance for long output.
+日志窗口为空时显示占位文本，且长输出时无法调整大小。
+
+Fix / 修复：
+Removed the empty-log placeholder and added a resizable log window with dimensions persisted in localStorage.
+移除空日志占位文本，并为日志窗口增加可调整大小功能，尺寸保存在 localStorage 中。
+
+Scope / 范围：
+Only Nouveau templates/assets and this documentation file were changed. No core gameplay, default template, SQL, or gamedata files were modified.
+仅修改 Nouveau 模板/资源和本文档。未修改核心玩法、默认模板、SQL 或 gamedata 文件。

@@ -35,6 +35,11 @@
         width: auto !important;
         min-width: 0;
         transform: none !important;
+        height: auto !important;
+    }
+
+    .nv-window__resize {
+        display: none;
     }
 
     .nv-window__titlebar {

@@ -23,8 +23,26 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    function syncLocationFromAjax() {
+        if (!window.shwData || !window.shwData.innerHTML || !window.shwData.innerHTML.pls) {
+            return;
+        }
+        document.querySelectorAll('[data-nv-pls]').forEach(function (node) {
+            node.innerHTML = window.shwData.innerHTML.pls;
+        });
+    }
+
+    function refresh() {
         initMeters();
         labelCommandButtons();
+        syncLocationFromAjax();
+    }
+
+    window.NouveauPanels = {
+        refresh: refresh
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+        refresh();
     });
 })();
