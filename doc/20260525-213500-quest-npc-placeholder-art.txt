@@ -1,0 +1,24 @@
+QUEST测试NPC占位美术素材 / QUEST test NPC placeholder art
+
+本次变更为QUEST测试NPC新增二次元风格占位头像素材，并将NPC配置中的icon字段改为指向这些项目内素材。
+This change adds anime-style placeholder avatar assets for QUEST test NPCs and updates each NPC icon field to point at the new project-local assets.
+
+新增素材目录 / New asset directory:
+- img/quest_npc/
+
+每个NPC包含两张素材：
+Each NPC has two assets:
+- 普通头像：140x80，文件名为quest*_*.jpg。
+  Normal headshot: 140x80, named quest*_*.jpg.
+- 全身像：280x680，文件名追加_a后缀。
+  Full-body portrait: 280x680, using the _a filename suffix.
+
+已更新配置 / Updated configs:
+- gamedata/addnpc_quest_1.php
+- gamedata/ruleset/YELLOWKNIFE/addnpc_quest_1.php
+
+说明 / Notes:
+- Q3目前没有对应召唤NPC，因此本次仅为实际存在于addnpc_quest_1.php中的Q1、Q2、Q4、Q5、Q6、Q7 NPC生成素材。
+- Q3 currently has no summoned NPC definition, so this change only generates assets for the Q1, Q2, Q4, Q5, Q6, and Q7 NPCs that actually exist in addnpc_quest_1.php.
+- 这些素材为测试占位图，保留了与现有avatar_kh头像接近的黑色几何背景与竖版角色立绘构图。
+- These assets are test placeholders and keep a dark geometric background plus vertical character portrait composition close to the existing avatar_kh style.
