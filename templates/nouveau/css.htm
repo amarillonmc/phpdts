@@ -1,414 +1,82 @@
-/* Nouveau Template CSS - Fallback and Additional Styles */
-
-/* Import Tailwind CSS if not loaded via CDN */
-@import url('https://cdn.tailwindcss.com');
-
-/* Import custom cyberpunk styles */
-@import url('templates/nouveau/assets/css/cyberpunk.css');
-
-/* Import fonts */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-
-/* Fallback styles for older browsers */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-}
-
-.grid {
-    display: grid;
-}
-
-.flex {
-    display: flex;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.block {
-    display: block;
-}
-
-.inline-block {
-    display: inline-block;
-}
-
-.relative {
-    position: relative;
-}
-
-.absolute {
-    position: absolute;
-}
-
-.fixed {
-    position: fixed;
-}
-
-.sticky {
-    position: sticky;
-}
-
-.top-0 {
-    top: 0;
-}
-
-.right-0 {
-    right: 0;
-}
-
-.bottom-0 {
-    bottom: 0;
-}
-
-.left-0 {
-    left: 0;
-}
-
-.inset-0 {
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-}
-
-.z-50 {
-    z-index: 50;
-}
-
-.z-40 {
-    z-index: 40;
-}
-
-.z-30 {
-    z-index: 30;
-}
-
-.z-20 {
-    z-index: 20;
-}
-
-.z-10 {
-    z-index: 10;
-}
-
-.w-full {
-    width: 100%;
-}
-
-.h-full {
-    height: 100%;
-}
-
-.min-h-screen {
-    min-height: 100vh;
-}
-
-.p-4 {
-    padding: 1rem;
-}
-
-.p-6 {
-    padding: 1.5rem;
-}
-
-.px-4 {
-    padding-left: 1rem;
-    padding-right: 1rem;
-}
-
-.py-6 {
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
-}
-
-.m-4 {
-    margin: 1rem;
-}
-
-.mb-4 {
-    margin-bottom: 1rem;
-}
-
-.mt-4 {
-    margin-top: 1rem;
-}
-
-.space-x-4 > * + * {
-    margin-left: 1rem;
-}
-
-.space-y-2 > * + * {
-    margin-top: 0.5rem;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.text-left {
-    text-align: left;
-}
-
-.text-right {
-    text-align: right;
-}
-
-.text-xs {
-    font-size: 0.75rem;
-}
-
-.text-sm {
-    font-size: 0.875rem;
-}
-
-.text-lg {
-    font-size: 1.125rem;
-}
-
-.text-xl {
-    font-size: 1.25rem;
-}
-
-.font-bold {
-    font-weight: bold;
-}
-
-.items-center {
-    align-items: center;
-}
-
-.justify-center {
-    justify-content: center;
-}
-
-.justify-between {
-    justify-content: space-between;
-}
-
-.border {
-    border-width: 1px;
-}
-
-.border-t {
-    border-top-width: 1px;
+html, body {
+    min-height: 100%;
 }
 
-.border-b {
-    border-bottom-width: 1px;
+body.nouveau-ui {
+    margin: 0;
+    background: #101315;
+    color: #edf4ef;
+    font: 14px/1.45 "Microsoft YaHei", "SimSun", Arial, sans-serif;
 }
 
-.rounded {
-    border-radius: 0.25rem;
+body.nouveau-ui a {
+    color: #8ed6c7;
+    text-decoration: none;
 }
 
-.bg-black {
-    background-color: #000000;
+body.nouveau-ui a:hover {
+    color: #f3d477;
 }
 
-.bg-opacity-50 {
-    background-color: rgba(0, 0, 0, 0.5);
+body.nouveau-ui table {
+    border-collapse: collapse;
 }
 
-.text-white {
-    color: #ffffff;
+body.nouveau-ui input,
+body.nouveau-ui select,
+body.nouveau-ui button,
+body.nouveau-ui textarea {
+    font: inherit;
 }
 
-.text-gray-400 {
-    color: #9ca3af;
-}
-
-.text-gray-500 {
-    color: #6b7280;
-}
-
-.text-green-400 {
-    color: #4ade80;
-}
-
-.hover\:text-cyber-primary:hover {
-    color: var(--cyber-primary);
-}
-
-.transition-colors {
-    transition-property: color;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
-}
-
-.backdrop-blur-sm {
-    backdrop-filter: blur(4px);
-}
-
-.antialiased {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-/* Responsive utilities */
-@media (min-width: 768px) {
-    .md\:flex {
-        display: flex;
-    }
-    
-    .md\:hidden {
-        display: none;
-    }
-    
-    .md\:block {
-        display: block;
-    }
-    
-    .md\:grid-cols-3 {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
-/* Game-specific styles */
-.game-container {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 1rem;
-    min-height: calc(100vh - 200px);
-}
-
-@media (max-width: 768px) {
-    .game-container {
-        grid-template-columns: 1fr;
-    }
-}
-
-.game-main {
-    background: var(--cyber-bg-card);
-    border: 1px solid var(--cyber-border);
-    border-radius: 8px;
-    padding: 1rem;
-}
-
-.game-sidebar {
-    background: var(--cyber-bg-card);
-    border: 1px solid var(--cyber-border);
-    border-radius: 8px;
-    padding: 1rem;
-}
-
-/* Status bars */
-.status-bar {
-    background: var(--cyber-bg-secondary);
-    border: 1px solid var(--cyber-border);
-    border-radius: 4px;
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.status-bar .label {
-    color: var(--cyber-text-secondary);
-    font-size: 0.75rem;
-    margin-bottom: 0.25rem;
-}
-
-.status-bar .value {
-    color: var(--cyber-primary);
-    font-weight: bold;
-}
-
-/* Item grid */
-.item-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: 0.5rem;
-    padding: 0.5rem;
-    background: var(--cyber-bg-secondary);
-    border: 1px solid var(--cyber-border);
-    border-radius: 4px;
-}
+body.nouveau-ui .red { color: #ff6868; }
+body.nouveau-ui .yellow { color: #f3d477; }
+body.nouveau-ui .lime,
+body.nouveau-ui .clan,
+body.nouveau-ui .evergreen,
+body.nouveau-ui .evergreen2 { color: #89e08c; }
+body.nouveau-ui .grey { color: #8c9692; }
+body.nouveau-ui .dmg { color: #ff6868; font-weight: 700; }
 
-.item-slot {
-    aspect-ratio: 1;
-    background: var(--cyber-bg-primary);
-    border: 1px solid var(--cyber-border);
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+body.nouveau-ui .cmdbutton,
+body.nouveau-ui input[type="button"],
+body.nouveau-ui input[type="submit"],
+body.nouveau-ui button {
+    border: 1px solid #7a8f88;
+    background: linear-gradient(#25302d, #151c1a);
+    color: #f2f7f3;
+    min-height: 28px;
+    padding: 4px 10px;
     cursor: pointer;
-    transition: all 0.3s ease;
 }
 
-.item-slot:hover {
-    border-color: var(--cyber-primary);
-    box-shadow: 0 0 10px var(--cyber-primary)33;
+body.nouveau-ui .cmdbutton:hover,
+body.nouveau-ui input[type="button"]:hover,
+body.nouveau-ui input[type="submit"]:hover,
+body.nouveau-ui button:hover {
+    border-color: #e1c46c;
+    color: #fff7ce;
 }
 
-.item-slot img {
-    max-width: 100%;
-    max-height: 100%;
+body.nouveau-ui .cmdbutton:disabled,
+body.nouveau-ui input:disabled,
+body.nouveau-ui button:disabled {
+    cursor: not-allowed;
+    opacity: .55;
 }
 
-/* Chat styles */
-.chat-container {
-    background: var(--cyber-bg-card);
-    border: 1px solid var(--cyber-border);
-    border-radius: 8px;
-    height: 300px;
-    display: flex;
-    flex-direction: column;
+body.nouveau-ui input[type="text"],
+body.nouveau-ui input[type="password"],
+body.nouveau-ui select,
+body.nouveau-ui textarea {
+    border: 1px solid #53655e;
+    background: #0e1413;
+    color: #edf4ef;
+    padding: 4px 6px;
 }
 
-.chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0.5rem;
-    font-family: var(--cyber-font-mono);
-    font-size: 0.875rem;
-}
-
-.chat-input {
-    border-top: 1px solid var(--cyber-border);
-    padding: 0.5rem;
-    display: flex;
-    gap: 0.5rem;
-}
-
-.chat-input input {
-    flex: 1;
-    background: var(--cyber-bg-secondary);
-    border: 1px solid var(--cyber-border);
-    color: var(--cyber-text-primary);
-    padding: 0.5rem;
-    border-radius: 4px;
-}
-
-/* Animation overrides for better performance */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-
-/* Print styles */
-@media print {
-    .cyber-nav,
-    footer,
-    #theme-selector,
-    #notification-container,
-    #modal-container,
-    #loading-overlay {
-        display: none !important;
-    }
-    
-    body {
-        background: white !important;
-        color: black !important;
-    }
-    
-    .cyber-card {
-        border: 1px solid #ccc !important;
-        background: white !important;
-    }
+body.nouveau-ui dialog {
+    background: #151c1a;
+    color: #edf4ef;
+    border: 1px solid #7a8f88;
 }

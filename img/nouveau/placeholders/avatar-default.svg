@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="160" viewBox="0 0 280 160" role="img" aria-label="avatar placeholder">
+  <rect width="280" height="160" fill="#101315"/>
+  <rect x="14" y="14" width="252" height="132" fill="#17201d" stroke="#8ed6c7"/>
+  <circle cx="86" cy="66" r="28" fill="#26342f" stroke="#f3d477"/>
+  <path d="M42 135 C50 100 122 100 132 135" fill="#26342f" stroke="#8ed6c7"/>
+  <path d="M156 48 H232 M156 75 H248 M156 102 H220" stroke="#5b6b65" stroke-width="8"/>
+  <text x="140" y="148" text-anchor="middle" fill="#edf4ef" font-family="Arial, sans-serif" font-size="12">AVATAR</text>
+</svg>

@@ -1,0 +1,188 @@
+.nv-game-shell {
+    position: relative;
+    min-height: 760px;
+}
+
+.nv-window--status { width: 380px; left: 0; top: 0; }
+.nv-window--avatar { width: 250px; left: 392px; top: 0; }
+.nv-window--map { width: 390px; left: 654px; top: 0; }
+.nv-window--action { width: 390px; left: 1056px; top: 0; }
+.nv-window--inventory { width: 642px; left: 0; top: 282px; }
+.nv-window--log { width: 390px; left: 654px; top: 282px; }
+.nv-window--chat { width: 790px; left: 654px; top: 530px; }
+.nv-window--battle { width: 720px; left: 0; top: 0; }
+
+.nv-status-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.nv-status-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff7ce;
+}
+
+.nv-status-id {
+    color: var(--nv-muted);
+}
+
+.nv-status-meters {
+    display: grid;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.nv-paperdoll {
+    display: grid;
+    gap: 10px;
+    justify-items: center;
+}
+
+.nv-paperdoll__stage {
+    width: 150px;
+    height: 210px;
+    border: 1px solid #42544d;
+    background: #0d1211;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+.nv-paperdoll__stage img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.nv-slot-list,
+.nv-item-list,
+.nv-action-cluster,
+.nv-map-nodes {
+    display: grid;
+    gap: 7px;
+}
+
+.nv-slot,
+.nv-item,
+.nv-map-node,
+.nv-log-line {
+    border: 1px solid #35463f;
+    background: rgba(10, 15, 14, .58);
+    padding: 7px;
+}
+
+.nv-slot {
+    display: grid;
+    grid-template-columns: 80px minmax(0, 1fr) 76px;
+    gap: 8px;
+    align-items: center;
+}
+
+.nv-slot__kind,
+.nv-item__kind {
+    color: var(--nv-dim);
+}
+
+.nv-slot__name,
+.nv-item__name {
+    color: var(--nv-text);
+    overflow-wrap: anywhere;
+}
+
+.nv-slot__stat,
+.nv-item__stat {
+    color: var(--nv-muted);
+    text-align: right;
+}
+
+.nv-inventory-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px;
+}
+
+.nv-section-title {
+    margin: 0 0 7px;
+    color: var(--nv-yellow);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.nv-map-current {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.nv-map-node {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+}
+
+.nv-map-node.is-current {
+    border-color: var(--nv-yellow);
+    background: rgba(243,212,119,.1);
+}
+
+.nv-map-node.is-danger {
+    color: var(--nv-red);
+}
+
+.nv-map-node.is-warning {
+    color: var(--nv-yellow);
+}
+
+.nv-action-cluster .cmdbutton,
+.nv-action-cluster input[type="button"],
+.nv-action-cluster select {
+    margin: 2px;
+}
+
+.nv-command-legacy {
+    line-height: 1.75;
+}
+
+.nv-command-legacy br + br {
+    line-height: 1.2;
+}
+
+.nv-command-legacy input,
+.nv-command-legacy select {
+    max-width: 100%;
+}
+
+.nv-log {
+    max-height: 210px;
+    overflow: auto;
+    white-space: normal;
+}
+
+.nv-log:empty::before {
+    content: "No terminal output.";
+    color: var(--nv-dim);
+}
+
+.nv-chat-wrap #chat {
+    width: 100% !important;
+}
+
+.nv-chat-wrap .chatlist,
+.nv-chat-wrap .newslist {
+    max-height: 170px;
+    overflow: auto;
+}
+
+.nv-chat-wrap input#chatmsg {
+    width: min(360px, 100%);
+}
+
+.nv-battle-result {
+    display: grid;
+    gap: 10px;
+}

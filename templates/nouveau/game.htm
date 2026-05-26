@@ -1,360 +1,147 @@
 {template header}
-
-<!-- Game Background Music -->
-<div id="ingamebgm" class="hidden">
+<div id="notice"></div>
+<div id="ingamebgm" style="display:none">
     <!--{eval $bgm = init_bgm(1)}-->
     $bgm
 </div>
-
-<!-- Notice Container -->
-<div id="notice" class="mb-4"></div>
-
-<script type="text/javascript">
-    var CURSCRIPT = 'game';
-</script>
-
-<!-- Dynamic Background Styles -->
+<script type="text/javascript">var CURSCRIPT = 'game';</script>
 <!--{eval $bgurl = "img/location/".$pls.".jpg";}-->
-<!--{if $horizon}-->
 <style>
-    body::before {
-        filter: hue-rotate(5deg) brightness(0.3);
+    body.nouveau-ui .nouveau-desktop-bg {
+        background-image:
+            linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+            linear-gradient(rgba(16,19,21,.54), rgba(16,19,21,.88)),
+            url("$bgurl"),
+            url("img/nouveau/placeholders/location-default.svg");
+        background-size: 32px 32px, 32px 32px, cover, cover, cover;
+        background-position: 0 0, 0 0, center, center, center;
     }
 </style>
-<!--{/if}-->
 
-<!-- Game Layout Container -->
-<div class="game-container grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-screen">
-    
-    <!-- Main Game Area (Left Column) -->
-    <div class="lg:col-span-2 space-y-6">
-        
-        <!-- Player Profile Section -->
-        <div id="main" class="cyber-card p-6 border border-cyber-primary/30">
-            <!--{if $main=='battle'}-->
-                {template battle}
-            <!--{elseif $main=='battle_rev'}-->
-                {template battle_rev}
-            <!--{elseif $main=='itemmix_tips'}-->
-                {template itemmix_tips}
-            <!--{else}-->
-                {template profile}
-            <!--{/if}-->
+<form method="post" id="gamecmd" name="gamecmd" style="margin:0">
+<div class="nv-game-shell">
+    <!--{if $main=='battle'}-->
+    <section class="nv-window nv-window--battle" id="nv-battle" data-window-title="Battle Result">
+        <div class="nv-window__titlebar">
+            <span class="nv-window__title">Battle Result / 交战结果</span>
+            <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
         </div>
-        
-        <!-- Chat Section -->
-        <div class="cyber-card border border-cyber-primary/30">
-            {template chat}
+        <div class="nv-window__body">{template battle}</div>
+    </section>
+    <!--{elseif $main=='battle_rev'}-->
+    <section class="nv-window nv-window--battle" id="nv-battle-rev" data-window-title="Battle">
+        <div class="nv-window__titlebar">
+            <span class="nv-window__title">Battle Window / 遭遇战</span>
+            <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
         </div>
-        
-    </div>
-    
-    <!-- Right Sidebar -->
-    <div class="space-y-4">
-        
-        <!-- Location Info -->
-        <div class="cyber-card p-4 border border-cyber-primary/30">
-            <div class="text-center">
-                <div class="cyber-terminal mb-2">
-                    <span class="cyber-text-primary">位置:</span>
-                </div>
-                <div class="text-lg font-cyber cyber-text-glow">
+        <div class="nv-window__body nv-compat">{template battle_rev}</div>
+    </section>
+    <!--{elseif $main=='itemmix_tips'}-->
+    <section class="nv-window nv-window--battle" id="nv-mix-tips" data-window-title="Item Mix">
+        <div class="nv-window__titlebar">
+            <span class="nv-window__title">Mix Terminal / 合成索引</span>
+            <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
+        </div>
+        <div class="nv-window__body nv-compat">{template itemmix_tips}</div>
+    </section>
+    <!--{else}-->
+    {template profile}
+    <!--{/if}-->
+
+    <section class="nv-window nv-window--map" id="nv-map" data-window-title="Map">
+        <div class="nv-window__titlebar">
+            <span class="nv-window__title">Tactical Topology / 战术拓扑</span>
+            <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
+        </div>
+        <div class="nv-window__body">
+            <div class="nv-map-current">
+                <span>Current Node</span>
+                <strong>
                     <!--{if !isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup])}-->
-                        <span id="pls">$hplsinfo[$pgroup][$pls]</span>
+                        $hplsinfo[$pgroup][$pls]
                     <!--{else}-->
-                        <span id="pls">$plsinfo[$pls]</span>
+                        $plsinfo[$pls]
                     <!--{/if}-->
-                </div>
-                <div class="text-sm mt-2">
-                    <span class="cyber-text-danger">剩余：<span id="anum">$alivenum</span>人</span>
-                </div>
+                </strong>
             </div>
-        </div>
-        
-        <!-- Game Log -->
-        <div class="cyber-card border border-cyber-primary/30 h-96 flex flex-col">
-            <div class="p-3 border-b border-cyber-primary/20">
-                <h3 class="font-cyber cyber-text-primary">系统日志</h3>
-            </div>
-            <div class="flex-1 overflow-y-auto p-3">
-                <div id="log" class="text-sm font-mono space-y-1">$log</div>
-            </div>
-        </div>
-        
-        <!-- Command Interface -->
-        <div class="cyber-card border border-cyber-primary/30">
-            <div class="p-3 border-b border-cyber-primary/20">
-                <h3 class="font-cyber cyber-text-primary">指令界面</h3>
-            </div>
-            <div class="p-3">
-                <form method="post" id="gamecmd" name="gamecmd" class="space-y-3">
-                    <div id="cmd">
-                        <!--{if $hp <= 0}-->
-                        {template death}
-                        <!--{elseif $state >=1 && $state <= 3}-->
-                        {template rest}
-                        <!--{elseif $itms0}-->
-                        {template itemfind}
-                        <!--{elseif $cmd}-->
-                        $cmd
-                        <!--{else}-->
-                        {template command}
-                        <!--{/if}-->
+            <div class="nv-map-nodes">
+                <!--{if !isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup])}-->
+                    <!--{loop $hplsinfo[$pgroup] $key $value}-->
+                    <div class="nv-map-node <!--{if $pls == $key}-->is-current<!--{/if}-->">
+                        <span>$value</span>
+                        <span>$xyinfo['hidden']</span>
                     </div>
-                </form>
+                    <!--{/loop}-->
+                <!--{else}-->
+                    <!--{loop $plsinfo $key $value}-->
+                    <div class="nv-map-node <!--{if $pls == $key}-->is-current<!--{/if}--> <!--{if array_search($key,$arealist) <= $areanum && !$hack}-->is-danger<!--{elseif array_search($key,$arealist) == $areanum + 1 && !$hack}-->is-warning<!--{/if}-->">
+                        <span>$value</span>
+                        <span>$xyinfo[$key]</span>
+                    </div>
+                    <!--{/loop}-->
+                <!--{/if}-->
             </div>
+            <p class="nv-note">移动仍由行动窗口中的旧移动指令提交，不改变地点移动规则。</p>
         </div>
-        
-        <!-- Quick Actions -->
-        <div class="cyber-card p-3 border border-cyber-primary/30">
-            <h3 class="font-cyber cyber-text-primary mb-3">快速操作</h3>
-            <div class="grid grid-cols-2 gap-2">
-                <button class="cyber-btn cyber-btn-primary text-xs" onclick="refreshGame()">
-                    🔄 刷新
-                </button>
-                <button class="cyber-btn cyber-btn-secondary text-xs" onclick="toggleAutoRefresh()">
-                    ⏱️ 自动
-                </button>
-                <button class="cyber-btn cyber-btn-accent text-xs" onclick="showHelp()">
-                    ❓ 帮助
-                </button>
-                <button class="cyber-btn cyber-btn-warning text-xs" onclick="showMap()">
-                    🗺️ 地图
-                </button>
-            </div>
-        </div>
-        
-    </div>
-    
-</div>
+    </section>
 
-<!-- Hidden Models -->
-<div id="hidden-model" class="hidden">
+    <section class="nv-window nv-window--action" id="nv-action" data-window-title="Actions">
+        <div class="nv-window__titlebar">
+            <span class="nv-window__title">Action Console / 行动控制</span>
+            <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
+        </div>
+        <div class="nv-window__body">
+            <div id="cmd" class="nv-command-legacy">
+                <!--{if $hp <= 0}-->
+                {template death}
+                <!--{elseif $state >=1 && $state <= 3}-->
+                {template rest}
+                <!--{elseif $itms0}-->
+                {template itemfind}
+                <!--{elseif $cmd}-->
+                $cmd
+                <!--{else}-->
+                {template command}
+                <!--{/if}-->
+            </div>
+        </div>
+    </section>
+
+    <section class="nv-window nv-window--log" id="nv-log-window" data-window-title="Log">
+        <div class="nv-window__titlebar">
+            <span class="nv-window__title">Signal Log / 行动日志</span>
+            <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
+        </div>
+        <div class="nv-window__body">
+            <div class="nv-status-head">
+                <span>
+                    <!--{if !isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup])}-->
+                    $hplsinfo[$pgroup][$pls]
+                    <!--{else}-->
+                    $plsinfo[$pls]
+                    <!--{/if}-->
+                </span>
+                <span class="red">剩余：<span id="anum">$alivenum</span>人</span>
+            </div>
+            <div id="log" class="nv-log">$log</div>
+        </div>
+    </section>
+</div>
+</form>
+
+<section class="nv-window nv-window--chat" id="nv-chat-window" data-window-title="Chat">
+    <div class="nv-window__titlebar">
+        <span class="nv-window__title">Comms / 聊天</span>
+        <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
+    </div>
+    <div class="nv-window__body nv-chat-wrap">{template chat}</div>
+</section>
+
+<div id="hidden-model">
     <!--{if !empty($clbpara['noskip_dialogue']) && $clbpara['noskip_dialogue'] == 'opening'}-->
         {template opening}
     <!--{/if}-->
 </div>
-
-<!-- Sliding Panel -->
 {template slidingpanel}
-
-<!-- Game-specific JavaScript -->
-<script>
-// Game interface enhancements
-document.addEventListener('DOMContentLoaded', function() {
-    initGameInterface();
-    setupAutoRefresh();
-    enhanceGameLog();
-});
-
-function initGameInterface() {
-    // Add loading states to buttons
-    const buttons = document.querySelectorAll('#cmd button, #cmd input[type="submit"]');
-    buttons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            if (!this.disabled) {
-                this.classList.add('cyber-pulse');
-                this.disabled = true;
-                setTimeout(() => {
-                    this.classList.remove('cyber-pulse');
-                    this.disabled = false;
-                }, 2000);
-            }
-        });
-    });
-    
-    // Enhance form inputs
-    const inputs = document.querySelectorAll('#cmd input[type="text"], #cmd select, #cmd textarea');
-    inputs.forEach(input => {
-        input.classList.add('cyber-input');
-        
-        // Add focus effects
-        input.addEventListener('focus', function() {
-            this.parentElement.classList.add('focused');
-        });
-        
-        input.addEventListener('blur', function() {
-            this.parentElement.classList.remove('focused');
-        });
-    });
-}
-
-let autoRefreshInterval = null;
-let autoRefreshEnabled = false;
-
-function toggleAutoRefresh() {
-    autoRefreshEnabled = !autoRefreshEnabled;
-    const btn = event.target;
-    
-    if (autoRefreshEnabled) {
-        autoRefreshInterval = setInterval(refreshGame, 5000);
-        btn.textContent = '⏹️ Stop';
-        btn.classList.add('cyber-text-danger');
-        showNotification('Auto-refresh enabled (5s interval)', 'info');
-    } else {
-        clearInterval(autoRefreshInterval);
-        btn.textContent = '⏱️ Auto';
-        btn.classList.remove('cyber-text-danger');
-        showNotification('Auto-refresh disabled', 'info');
-    }
-}
-
-function refreshGame() {
-    showLoading('Refreshing game state...');
-    
-    // Simulate refresh (replace with actual game refresh logic)
-    setTimeout(() => {
-        hideLoading();
-        showNotification('Game refreshed', 'success');
-    }, 1000);
-}
-
-function enhanceGameLog() {
-    const log = document.getElementById('log');
-    if (!log) return;
-    
-    // Auto-scroll to bottom
-    log.scrollTop = log.scrollHeight;
-    
-    // Add timestamp to new log entries
-    const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            if (mutation.type === 'childList') {
-                mutation.addedNodes.forEach(function(node) {
-                    if (node.nodeType === Node.ELEMENT_NODE) {
-                        const timestamp = new Date().toLocaleTimeString('zh-CN', { hour12: false });
-                        const timeSpan = document.createElement('span');
-                        timeSpan.className = 'text-xs cyber-text-secondary';
-                        timeSpan.textContent = `[${timestamp}] `;
-                        node.insertBefore(timeSpan, node.firstChild);
-                    }
-                });
-                log.scrollTop = log.scrollHeight;
-            }
-        });
-    });
-    
-    observer.observe(log, { childList: true, subtree: true });
-}
-
-function showHelp() {
-    showModal('Game Help', `
-        <div class="space-y-4 text-sm">
-            <div>
-                <h4 class="cyber-text-primary font-bold">Keyboard Shortcuts:</h4>
-                <ul class="mt-2 space-y-1 text-xs">
-                    <li>Ctrl+Shift+T - Cycle theme</li>
-                    <li>F11 - Toggle fullscreen</li>
-                    <li>Ctrl+R - Refresh game</li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="cyber-text-primary font-bold">Interface Features:</h4>
-                <ul class="mt-2 space-y-1 text-xs">
-                    <li>Auto-refresh for real-time updates</li>
-                    <li>Multiple color themes</li>
-                    <li>Responsive mobile design</li>
-                    <li>Enhanced visual effects</li>
-                </ul>
-            </div>
-        </div>
-    `);
-}
-
-function showMap() {
-    window.open('map.php', '_blank');
-}
-
-function showNotification(message, type = 'info') {
-    if (window.nouveauTheme) {
-        window.nouveauTheme.showNotification(message, type);
-    }
-}
-
-// Keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-    if (e.ctrlKey && e.key === 'r') {
-        e.preventDefault();
-        refreshGame();
-    }
-});
-
-// Update alive count with animation
-function updateAliveCount(newCount) {
-    const element = document.getElementById('anum');
-    if (element && element.textContent !== newCount.toString()) {
-        element.classList.add('cyber-pulse');
-        element.textContent = newCount;
-        setTimeout(() => element.classList.remove('cyber-pulse'), 1000);
-    }
-}
-
-// Enhanced command submission
-const originalPostCommand = window.postCommand;
-if (originalPostCommand) {
-    window.postCommand = function() {
-        showLoading('Processing command...');
-        const result = originalPostCommand.apply(this, arguments);
-        setTimeout(hideLoading, 1000);
-        return result;
-    };
-}
-</script>
-
-<style>
-/* Game-specific responsive adjustments */
-@media (max-width: 1024px) {
-    .game-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .cyber-card {
-        margin-bottom: 1rem;
-    }
-}
-
-/* Enhanced log styling */
-#log {
-    line-height: 1.4;
-    word-wrap: break-word;
-}
-
-#log > div {
-    padding: 0.25rem 0;
-    border-bottom: 1px solid rgba(0, 255, 255, 0.1);
-}
-
-#log > div:last-child {
-    border-bottom: none;
-}
-
-/* Command interface styling */
-#cmd input[type="text"],
-#cmd select,
-#cmd textarea {
-    width: 100%;
-    margin-bottom: 0.5rem;
-}
-
-#cmd button,
-#cmd input[type="submit"] {
-    margin: 0.25rem;
-}
-
-/* Focus states */
-.focused {
-    box-shadow: 0 0 0 2px var(--cyber-primary);
-}
-
-/* Loading states */
-.cyber-pulse {
-    animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-</style>
-
 {template footer}

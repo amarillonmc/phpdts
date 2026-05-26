@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="map node placeholder">
+  <rect width="96" height="96" fill="#101315"/>
+  <circle cx="48" cy="48" r="30" fill="#1f2a26" stroke="#8ed6c7" stroke-width="3"/>
+  <circle cx="48" cy="48" r="9" fill="#f3d477"/>
+  <path d="M48 8 V26 M48 70 V88 M8 48 H26 M70 48 H88" stroke="#5b6b65" stroke-width="4"/>
+</svg>

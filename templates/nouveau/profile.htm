@@ -1,530 +1,178 @@
-<!-- Player Profile Section -->
-<div class="space-y-6">
-    
-    <!-- Player Header -->
-    <div class="cyber-card p-6 border border-cyber-primary/30">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- Avatar and Status -->
-            <div class="flex flex-col items-center space-y-4">
-                <div class="relative">
-                    <!--{eval $profile_avatar_path = 'img/'.$iconImg;}-->
-                    <!--{if !empty($groomid) && $groomid > 0}-->
-                        <!--{eval $result = $db->query("SELECT gruleset FROM {$gtablepre}game WHERE groomid = {$groomid}");}-->
-                        <!--{if $db->num_rows($result)}-->
-                            <!--{eval $room_data = $db->fetch_array($result);}-->
-                            <!--{eval $ruleset_id = $room_data['gruleset'];}-->
-                            <!--{if !empty($ruleset_id)}-->
-                                <!--{eval include_once GAME_ROOT.'./gamedata/ruleset/ruleset_config.php';}-->
-                                <!--{eval $avatar_type = $gd == 'f' ? 'female' : 'male';}-->
-                                <!--{eval $icon_num = intval(str_replace(array('m_', 'f_', '.gif'), '', $iconImg));}-->
-                                <!--{eval $ruleset_avatar_path = get_ruleset_avatar_path($ruleset_id, $avatar_type, $icon_num);}-->
-                                <!--{if $ruleset_avatar_path && file_exists($ruleset_avatar_path)}-->
-                                    <!--{eval $profile_avatar_path = $ruleset_avatar_path;}-->
-                                <!--{/if}-->
-                            <!--{/if}-->
-                        <!--{/if}-->
-                    <!--{/if}-->
-                    <img src="$profile_avatar_path"
-                         class="w-32 h-20 object-cover border border-cyber-primary/50 rounded cyber-glow"
-                         <!--{if $hp==0}-->style="filter: grayscale(100%) brightness(0.5);"<!--{/if}-->
-                         alt="Player Avatar"
-                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                    <div class="avatar-fallback <!--{if $gd=='f'}-->female<!--{else}-->male<!--{/if}-->" style="display: none;"></div>
-                    
-                    <!-- Status Overlays -->
-                    <div class="absolute inset-0 flex flex-col justify-between p-1">
-                        <!-- Injury Status -->
-                        <!--{if strpos($inf,'h') !== false || strpos($inf,'b') !== false ||strpos($inf,'a') !== false ||strpos($inf,'f') !== false}-->
-                        <img src="img/injured.gif" class="w-full h-4 object-cover" alt="Injured"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
-                        <span class="status-icon-fallback status-injured" style="display: none;"></span>
-                        <!--{/if}-->
-                        
-                        <!-- Status Effects -->
-                        <div class="flex flex-wrap gap-1">
-                            <!--{if strpos($inf,'p') !== false}-->
-                            <span class="inline-block relative">
-                                <img src="img/p.gif" class="w-6 h-4" alt="Poisoned"
-                                     <!--{if $club==16 && CURSCRIPT == 'game' && $mode == 'command'}-->
-                                     onclick="$('mode').value='special';$('command').value='infp';postCmd('gamecmd','command.php');return false;"
-                                     <!--{/if}-->
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
-                                <span class="status-icon-fallback status-poisoned" style="display: none;"
-                                      <!--{if $club==16 && CURSCRIPT == 'game' && $mode == 'command'}-->
-                                      onclick="$('mode').value='special';$('command').value='infp';postCmd('gamecmd','command.php');return false;"
-                                      <!--{/if}-->></span>
-                            </span>
-                            <!--{/if}-->
-                            <!--{if strpos($inf,'u') !== false}-->
-                            <span class="inline-block relative">
-                                <img src="img/u.gif" class="w-6 h-4" alt="Burned"
-                                     <!--{if $club==16 && CURSCRIPT == 'game' && $mode == 'command'}-->
-                                     onclick="$('mode').value='special';$('command').value='infu';postCmd('gamecmd','command.php');return false;"
-                                     <!--{/if}-->
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
-                                <span class="status-icon-fallback status-burned" style="display: none;"
-                                      <!--{if $club==16 && CURSCRIPT == 'game' && $mode == 'command'}-->
-                                      onclick="$('mode').value='special';$('command').value='infu';postCmd('gamecmd','command.php');return false;"
-                                      <!--{/if}-->></span>
-                            </span>
-                            <!--{/if}-->
-                            <!--{if strpos($inf,'i') !== false}-->
-                            <span class="inline-block relative">
-                                <img src="img/i.gif" class="w-6 h-4" alt="Frozen"
-                                     <!--{if $club==16 && CURSCRIPT == 'game' && $mode == 'command'}-->
-                                     onclick="$('mode').value='special';$('command').value='infi';postCmd('gamecmd','command.php');return false;"
-                                     <!--{/if}-->
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
-                                <span class="status-icon-fallback status-frozen" style="display: none;"
-                                      <!--{if $club==16 && CURSCRIPT == 'game' && $mode == 'command'}-->
-                                      onclick="$('mode').value='special';$('command').value='infi';postCmd('gamecmd','command.php');return false;"
-                                      <!--{/if}-->></span>
-                            </span>
-                            <!--{/if}-->
-                            <!--{if strpos($inf,'e') !== false}-->
-                            <span class="inline-block relative">
-                                <img src="img/e.gif" class="w-6 h-4" alt="Paralyzed"
-                                     <!--{if $club==16 && CURSCRIPT == 'game' && $mode == 'command'}-->
-                                     onclick="$('mode').value='special';$('command').value='infe';postCmd('gamecmd','command.php');return false;"
-                                     <!--{/if}-->
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
-                                <span class="status-icon-fallback status-paralyzed" style="display: none;"
-                                      <!--{if $club==16 && CURSCRIPT == 'game' && $mode == 'command'}-->
-                                      onclick="$('mode').value='special';$('command').value='infe';postCmd('gamecmd','command.php');return false;"
-                                      <!--{/if}-->></span>
-                            </span>
-                            <!--{/if}-->
-                            <!--{if strpos($inf,'w') !== false}-->
-                            <span class="inline-block relative">
-                                <img src="img/w.gif" class="w-6 h-4" alt="Confused"
-                                     <!--{if $club==16 && CURSCRIPT == 'game' && $mode == 'command'}-->
-                                     onclick="$('mode').value='special';$('command').value='infw';postCmd('gamecmd','command.php');return false;"
-                                     <!--{/if}-->
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
-                                <span class="status-icon-fallback status-confused" style="display: none;"
-                                      <!--{if $club==16 && CURSCRIPT == 'game' && $mode == 'command'}-->
-                                      onclick="$('mode').value='special';$('command').value='infw';postCmd('gamecmd','command.php');return false;"
-                                      <!--{/if}-->></span>
-                            </span>
-                            <!--{/if}-->
-                        </div>
-                        
-                        <!-- Health Status -->
-                        <div class="text-center">
-                            <!--{if $hp <= 0}-->
-                            <span class="inline-block relative">
-                                <img src="img/dead.gif" class="w-16 h-8 mx-auto" alt="Dead"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
-                                <span class="status-icon-fallback status-dead mx-auto" style="display: none; width: 64px; height: 32px; line-height: 32px; font-size: 20px;"></span>
-                            </span>
-                            <!--{elseif $hp <= $mhp*0.2}-->
-                            <span class="inline-block relative">
-                                <img src="img/danger.gif" class="w-16 h-8 mx-auto" alt="Critical"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
-                                <span class="status-icon-fallback status-danger mx-auto" style="display: none; width: 64px; height: 32px; line-height: 32px; font-size: 20px;"></span>
-                            </span>
-                            <!--{elseif $hp <= $mhp*0.5 || $inf!=''}-->
-                            <span class="inline-block relative">
-                                <img src="img/caution.gif" class="w-16 h-8 mx-auto" alt="Caution"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
-                                <span class="status-icon-fallback status-caution mx-auto" style="display: none; width: 64px; height: 32px; line-height: 32px; font-size: 20px;"></span>
-                            </span>
-                            <!--{elseif !$inf}-->
-                            <span class="inline-block relative">
-                                <img src="img/fine.gif" class="w-16 h-8 mx-auto" alt="Fine"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
-                                <span class="status-icon-fallback status-fine mx-auto" style="display: none; width: 64px; height: 32px; line-height: 32px; font-size: 20px;"></span>
-                            </span>
-                            <!--{/if}-->
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- HP Bar Visual -->
-                <div class="w-full">
-                    $newhpimg
-                </div>
+<!--{eval $nickinfo = titles_get_desc($nick,1);}-->
+<!--{eval $nv_hp_pct = $mhp ? round($hp * 100 / $mhp) : 0;}-->
+<!--{eval $nv_sp_pct = $msp ? round($sp * 100 / $msp) : 0;}-->
+<!--{eval $nv_rage_pct = min(100, $rage);}-->
+<!--{eval $nv_ss_pct = $mss ? round($ss * 100 / $mss) : 0;}-->
+
+<section class="nv-window nv-window--status" id="nv-status" data-window-title="Status">
+    <div class="nv-window__titlebar">
+        <span class="nv-window__title">Status Window / 状态窗口</span>
+        <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
+    </div>
+    <div class="nv-window__body">
+        <div class="nv-status-head">
+            <div>
+                <div class="nv-status-name">{$nickinfo} {$name}<!--{if !empty($clbpara['PlatformName'])}-->（$clbpara['PlatformName']）<!--{/if}--></div>
+                <div class="nv-status-id">{$sexinfo[$gd]}{$sNo}号 · Lv. $lvl · $clubinfo[$club]</div>
             </div>
-            
-            <!-- Basic Info -->
-            <div class="space-y-3">
-                <div class="text-center lg:text-left">
-                    <!--{eval $nickinfo = titles_get_desc($nick,1);}-->
-                    <h2 class="text-xl font-cyber cyber-text-glow cyber-text-primary">
-                        {$nickinfo} {$name}
-                        <!--{if !empty($clbpara['PlatformName'])}-->
-                        <span class="text-sm cyber-text-secondary">（$clbpara['PlatformName']）</span>
-                        <!--{/if}-->
-                    </h2>
-                    <div class="text-sm cyber-text-secondary mt-1">
-                        {$sexinfo[$gd]} #{$sNo} | {lang weather}: $wthinfo[$weather]
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-3 text-sm">
-                    <div class="cyber-card p-2">
-                        <div class="cyber-text-secondary">{lang level}</div>
-                        <div class="cyber-text-primary font-bold">Lv. $lvl</div>
-                    </div>
-                    <div class="cyber-card p-2">
-                        <div class="cyber-text-secondary">{lang exp}</div>
-                        <div class="cyber-text-primary">$exp / $upexp</div>
-                    </div>
-                    <div class="cyber-card p-2">
-                        <div class="cyber-text-secondary">{lang team}</div>
-                        <div class="cyber-text-primary">
-                            <!--{if $teamID && $gamestate < 40 }-->$teamID<!--{else}-->无<!--{/if}-->
-                        </div>
-                    </div>
-                    <div class="cyber-card p-2">
-                        <div class="cyber-text-secondary">{lang club}</div>
-                        <div class="cyber-text-primary">
-                            <!--{if $club!=0}-->
-                                $clubinfo[$club]
-                            <!--{else}-->
-                                <!--{if function_exists('valid_getclublist_t1') && function_exists('valid_getclublist_t2')}-->
-                                    <!--{eval $t1_list = valid_getclublist_t1($udata); $t2_list = valid_getclublist_t2($udata);}-->
-                                    <select id="clubsel" name="clubsel" class="cyber-input text-xs w-full"
-                                            onchange="$('mode').value='special';$('command').value=$('clubsel').value;postCmd('gamecmd','command.php');return false;" 
-                                            <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
-                                        <optgroup label="普通称号">
-                                            <!--{loop $t2_list $key}-->
-                                                <option value="clubsel$key">$clubinfo[$key]</option>
-                                            <!--{/loop}-->
-                                        </optgroup>
-                                        <optgroup label="特殊称号">
-                                            <!--{loop $t1_list $key}-->
-                                                <option value="clubsel$key">$clubinfo[$key]</option>
-                                            <!--{/loop}-->
-                                        </optgroup>
-                                    </select>
-                                <!--{else}-->
-                                    $clubinfo[$club]
-                                <!--{/if}-->
-                            <!--{/if}-->
-                        </div>
-                    </div>
-                </div>
+            <div class="nv-status-id">{lang weather}: $wthinfo[$weather]</div>
+        </div>
+
+        <div class="nv-status-meters">
+            <div class="nv-meter">
+                <div class="nv-meter__label"><span>{lang hp}</span><span><!--{if isset($shield_info)}-->{$shield_info}<!--{/if}-->$hp / $mhp</span></div>
+                <div class="nv-meter__track"><span class="nv-meter__fill nv-meter__fill--hp" data-meter-value="$nv_hp_pct"></span></div>
             </div>
-            
-            <!-- Stats -->
-            <div class="space-y-3">
-                <div class="grid grid-cols-2 gap-2 text-sm">
-                    <!-- Combat Stats -->
-                    <div class="cyber-card p-2">
-                        <div class="cyber-text-secondary">{lang att}</div>
-                        <div class="cyber-text-primary">$atkinfo</div>
-                    </div>
-                    <div class="cyber-card p-2">
-                        <div class="cyber-text-secondary">{lang def}</div>
-                        <div class="cyber-text-primary">$definfo</div>
-                    </div>
-                    
-                    <!-- Resources -->
-                    <div class="cyber-card p-2">
-                        <div class="cyber-text-secondary">{lang money}</div>
-                        <div class="cyber-text-primary">$money {lang moneyunit}</div>
-                    </div>
-                    <div class="cyber-card p-2">
-                        <div class="cyber-text-secondary">{lang skillpoint}</div>
-                        <div class="<!--{if $skillpoint > 0}-->cyber-text-success<!--{else}-->cyber-text-primary<!--{/if}-->">$skillpoint</div>
-                    </div>
-                </div>
-                
-                <!-- Status Bars -->
-                <div class="space-y-2">
-                    <!-- HP -->
-                    <div>
-                        <div class="flex justify-between text-xs cyber-text-secondary mb-1">
-                            <span>{lang hp}</span>
-                            <span>$hp / $mhp</span>
-                        </div>
-                        <div class="cyber-progress">
-                            <div class="cyber-progress-bar <!--{if $hp <= $mhp*0.2}-->bg-red-500<!--{elseif $hp <= $mhp*0.5}-->bg-yellow-500<!--{else}-->bg-green-500<!--{/if}-->" 
-                                 style="width: <!--{eval echo round(($hp/$mhp)*100);}-->%"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- SP -->
-                    <div>
-                        <div class="flex justify-between text-xs cyber-text-secondary mb-1">
-                            <span>{lang sp}</span>
-                            <span>$sp / $msp</span>
-                        </div>
-                        <div class="cyber-progress">
-                            <div class="cyber-progress-bar <!--{if $sp <= $msp*0.2}-->bg-red-500<!--{elseif $sp <= $msp*0.5}-->bg-yellow-500<!--{else}-->bg-blue-500<!--{/if}-->" 
-                                 style="width: <!--{eval echo round(($sp/$msp)*100);}-->%"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- SS -->
-                    <div>
-                        <div class="flex justify-between text-xs cyber-text-secondary mb-1">
-                            <span>{lang ss}</span>
-                            <span>$ss / $mss</span>
-                        </div>
-                        <div class="cyber-progress">
-                            <div class="cyber-progress-bar <!--{if $ss <= $mss*0.2}-->bg-red-500<!--{elseif $ss <= $mss*0.5}-->bg-yellow-500<!--{else}-->bg-purple-500<!--{/if}-->" 
-                                 style="width: <!--{eval echo round(($ss/$mss)*100);}-->%"></div>
-                        </div>
-                    </div>
-                </div>
+            <div class="nv-meter">
+                <div class="nv-meter__label"><span>{lang sp}</span><span>$sp / $msp</span></div>
+                <div class="nv-meter__track"><span class="nv-meter__fill nv-meter__fill--sp" data-meter-value="$nv_sp_pct"></span></div>
+            </div>
+            <div class="nv-meter">
+                <div class="nv-meter__label"><span>{lang rage}</span><span>$rage</span></div>
+                <div class="nv-meter__track"><span class="nv-meter__fill nv-meter__fill--rage" data-meter-value="$nv_rage_pct"></span></div>
+            </div>
+            <div class="nv-meter">
+                <div class="nv-meter__label"><span>{lang ss}</span><span>$ss / $mss</span></div>
+                <div class="nv-meter__track"><span class="nv-meter__fill nv-meter__fill--ss" data-meter-value="$nv_ss_pct"></span></div>
             </div>
         </div>
-    </div>
-    
-    <!-- Combat Settings -->
-    <div class="cyber-card p-4 border border-cyber-primary/30">
-        <h3 class="font-cyber cyber-text-primary mb-4">COMBAT CONFIGURATION</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Pose -->
-            <div>
-                <label class="block text-sm cyber-text-secondary mb-2">{lang pose}</label>
-                <select id="pose" name="pose" class="cyber-input w-full"
-                        onchange="$('mode').value='special';$('command').value=$('pose').value;postCmd('gamecmd','command.php');return false;" 
-                        <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
+
+        <dl class="nv-kv">
+            <dt>{lang exp}</dt><dd>$exp / $upexp</dd>
+            <dt>{lang money}</dt><dd>$money {lang moneyunit}</dd>
+            <dt>{lang killnum}</dt><dd>$killnum</dd>
+            <dt>{lang att}</dt><dd>$atkinfo</dd>
+            <dt>{lang def}</dt><dd>$definfo</dd>
+            <dt>{lang team}</dt><dd><!--{if $teamID && $gamestate < 40 }-->$teamID<!--{else}-->无<!--{/if}--></dd>
+            <dt>{lang inf}</dt>
+            <dd>
+                <!--{if $inf}-->
+                    <!--{loop $infinfo $key $val}-->
+                        <!--{if strpos($inf,$key)!==false}-->$val <!--{/if}-->
+                    <!--{/loop}-->
+                <!--{else}-->
+                    无
+                <!--{/if}-->
+            </dd>
+        </dl>
+
+        <div class="nv-grid nv-grid--two" style="margin-top:10px">
+            <label>{lang pose}<br>
+                <select id="pose" name="pose" onchange="$('mode').value='special';$('command').value=$('pose').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
                     <!--{loop $apose $key}-->
-                        <option value="pose$key"<!--{if $pose == $key}-->selected<!--{/if}-->>$poseinfo[$key]</option>
+                    <option value="pose$key"<!--{if $pose == $key}-->selected<!--{/if}-->>$poseinfo[$key]
                     <!--{/loop}-->
                 </select>
-            </div>
-            
-            <!-- Tactic -->
-            <div>
-                <label class="block text-sm cyber-text-secondary mb-2">{lang tactic}</label>
-                <select id="tactic" name="tactic" class="cyber-input w-full"
-                        onchange="$('mode').value='special';$('command').value=$('tactic').value;postCmd('gamecmd','command.php');return false;" 
-                        <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
+            </label>
+            <label>{lang tactic}<br>
+                <select id="tactic" name="tactic" onchange="$('mode').value='special';$('command').value=$('tactic').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
                     <!--{loop $atac $key}-->
-                        <option value="tac$key"<!--{if $tactic == $key}-->selected<!--{/if}-->>$tacinfo[$key]</option>
+                    <option value="tac$key"<!--{if $tactic == $key}-->selected<!--{/if}-->>$tacinfo[$key]
                     <!--{/loop}-->
                 </select>
-            </div>
-            
-            <!-- Horizon -->
-            <div>
-                <label class="block text-sm cyber-text-secondary mb-2">战术界面</label>
-                <select id="horizon" name="horizon" class="cyber-input w-full"
-                        onchange="$('mode').value='special';$('command').value=$('horizon').value;postCmd('gamecmd','command.php');return false;" 
-                        <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
+            </label>
+            <label>战术界面<br>
+                <select id="horizon" name="horizon" onchange="$('mode').value='special';$('command').value=$('horizon').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
                     <!--{loop $horizoninfo $key $value}-->
-                        <option value="hor$key"<!--{if $horizon == $key}-->selected<!--{/if}-->>$value</option>
+                    <option value="hor$key"<!--{if $horizon == $key}-->selected<!--{/if}-->>$value
                     <!--{/loop}-->
                 </select>
-            </div>
-        </div>
-        
-        <!-- Additional Stats -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
-            <div class="text-center">
-                <div class="cyber-text-secondary">{lang rage}</div>
-                <div class="<!--{if $rage >= 30}-->cyber-text-warning<!--{else}-->cyber-text-primary<!--{/if}-->">$rage</div>
-            </div>
-            <div class="text-center">
-                <div class="cyber-text-secondary">{lang killnum}</div>
-                <div class="cyber-text-primary">$killnum</div>
-            </div>
-            <div class="text-center">
-                <div class="cyber-text-secondary">{lang inf}</div>
-                <div class="cyber-text-primary">
-                    <!--{if $inf}-->
-                        <!--{loop $infinfo $key $val}-->
-                            <!--{if strpos($inf,$key)!==false}-->$val<!--{/if}-->
-                        <!--{/loop}-->
-                    <!--{else}-->无<!--{/if}-->
-                </div>
-            </div>
-            <div class="text-center">
-                <div class="cyber-text-secondary">Game Date</div>
-                <div class="cyber-text-primary">
-                    <!--{if $gamestate == 40 }--><span class="cyber-text-warning">{lang combo}</span><!--{/if}-->
-                    <!--{if $gamestate == 50 }--><span class="cyber-text-danger">{lang duel}</span><!--{/if}-->
-                </div>
-            </div>
+            </label>
+            <!--{if $club==0 && function_exists('valid_getclublist_t1') && function_exists('valid_getclublist_t2')}-->
+            <label>{lang club}<br>
+                <!--{eval $t1_list = valid_getclublist_t1($udata); $t2_list = valid_getclublist_t2($udata);}-->
+                <select id="clubsel" name="clubsel" onchange="$('mode').value='special';$('command').value=$('clubsel').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
+                    <optgroup label="普通称号">
+                        <!--{loop $t2_list $key}--><option value="clubsel$key">$clubinfo[$key]<!--{/loop}-->
+                    </optgroup>
+                    <optgroup label="特殊称号">
+                        <!--{loop $t1_list $key}--><option value="clubsel$key">$clubinfo[$key]<!--{/loop}-->
+                    </optgroup>
+                </select>
+            </label>
+            <!--{/if}-->
         </div>
     </div>
+</section>
 
-    <!-- Equipment and Inventory -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<section class="nv-window nv-window--avatar" id="nv-avatar" data-window-title="Avatar">
+    <div class="nv-window__titlebar">
+        <span class="nv-window__title">Paperdoll / 纸娃娃</span>
+        <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
+    </div>
+    <div class="nv-window__body">
+        <div class="nv-paperdoll">
+            <div class="nv-paperdoll__stage">
+                <img src="img/$iconImg" data-fallback="avatar" alt="$name">
+            </div>
+            <dl class="nv-kv">
+                <dt>编号</dt><dd>{$sexinfo[$gd]}{$sNo}号</dd>
+                <dt>状态</dt><dd><!--{if $hp <= 0}-->死亡<!--{elseif $hp <= $mhp*0.2}-->危险<!--{elseif $inf!=''}-->异常<!--{else}-->稳定<!--{/if}--></dd>
+                <dt>武器</dt><dd><!--{if $weps}-->$wep_words<!--{else}-->$nowep<!--{/if}--></dd>
+                <dt>防具</dt><dd><!--{if $arbs}-->$arb_words<!--{else}-->$noarb<!--{/if}--></dd>
+                <dt>饰品</dt><dd><!--{if $arts}-->$art_words<!--{else}-->$noitm<!--{/if}--></dd>
+            </dl>
+        </div>
+    </div>
+</section>
 
-        <!-- Equipment -->
-        <div class="cyber-card p-4 border border-cyber-primary/30">
-            <h3 class="font-cyber cyber-text-primary mb-4">EQUIPMENT</h3>
-            <div class="space-y-2">
-                <!-- Weapon -->
-                <div class="grid grid-cols-5 gap-2 text-sm border-b border-cyber-primary/20 pb-2">
-                    <div class="cyber-text-secondary"><!--{if $wepk_words}-->$wepk_words<!--{else}-->$mltwk<!--{/if}--></div>
-                    <div class="col-span-2">
-                        <!--{if CURSCRIPT == 'game' && $mode == 'command' && $wepe}-->
-                        <button class="cyber-btn cyber-btn-secondary text-xs mr-2"
-                                onclick="$('mode').value='itemmain';$('command').value='offwep';postCmd('gamecmd','command.php');return false;">卸下</button>
-                        <!--{/if}-->
-                        <span <!--{if CURSCRIPT == 'game' && $mode == 'command' && $wep2e}-->data-tooltip="副武器栏：{$wep2}"<!--{/if}-->>
+<section class="nv-window nv-window--inventory" id="nv-inventory" data-window-title="Inventory">
+    <div class="nv-window__titlebar">
+        <span class="nv-window__title">Inventory / 装备与背包</span>
+        <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
+    </div>
+    <div class="nv-window__body">
+        <div class="nv-inventory-columns">
+            <div>
+                <div class="nv-section-title">Equipment Slots</div>
+                <div class="nv-slot-list">
+                    <div class="nv-slot">
+                        <span class="nv-slot__kind"><!--{if $wepk_words}-->$wepk_words<!--{else}-->$mltwk<!--{/if}--></span>
+                        <span class="nv-slot__name">
+                            <!--{if CURSCRIPT == 'game' && $mode == 'command' && $wepe}--><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offwep';postCmd('gamecmd','command.php');return false;"><!--{/if}-->
                             <!--{if $weps}-->$wep_words<!--{else}-->$nowep<!--{/if}-->
                         </span>
+                        <span class="nv-slot__stat">$wepe / $weps</span>
                     </div>
-                    <div class="cyber-text-accent">$wepsk_words</div>
-                    <div class="text-right">$wepe/$weps</div>
-                </div>
-
-                <!-- Body Armor -->
-                <div class="grid grid-cols-5 gap-2 text-sm border-b border-cyber-primary/20 pb-2">
-                    <div class="<!--{if $arbs}-->cyber-text-secondary<!--{else}-->text-gray-500<!--{/if}-->">$iteminfo['DB']</div>
-                    <div class="col-span-2">
-                        <!--{if CURSCRIPT == 'game' && $mode == 'command' && $arbe}-->
-                        <button class="cyber-btn cyber-btn-secondary text-xs mr-2"
-                                onclick="$('mode').value='itemmain';$('command').value='offarb';postCmd('gamecmd','command.php');return false;">卸下</button>
-                        <!--{/if}-->
-                        <!--{if $arbs}-->$arb_words<!--{else}-->$noarb<!--{/if}-->
+                    <div class="nv-slot">
+                        <span class="nv-slot__kind">$iteminfo['DB']</span>
+                        <span class="nv-slot__name"><!--{if CURSCRIPT == 'game' && $mode == 'command' && $arbe}--><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offarb';postCmd('gamecmd','command.php');return false;"><!--{/if}--><!--{if $arbs}-->$arb_words<!--{else}-->$noarb<!--{/if}--></span>
+                        <span class="nv-slot__stat">$arbe / $arbs</span>
                     </div>
-                    <div class="cyber-text-accent">$arbsk_words</div>
-                    <div class="text-right">$arbe/$arbs</div>
-                </div>
-
-                <!-- Head Armor -->
-                <div class="grid grid-cols-5 gap-2 text-sm border-b border-cyber-primary/20 pb-2">
-                    <div class="<!--{if $arhs}-->cyber-text-secondary<!--{else}-->text-gray-500<!--{/if}-->">$iteminfo['DH']</div>
-                    <div class="col-span-2">
-                        <!--{if CURSCRIPT == 'game' && $mode == 'command' && $arhs}-->
-                        <button class="cyber-btn cyber-btn-secondary text-xs mr-2"
-                                onclick="$('mode').value='itemmain';$('command').value='offarh';postCmd('gamecmd','command.php');return false;">卸下</button>
-                        <!--{/if}-->
-                        <!--{if $arhs}-->$arh_words<!--{else}-->$noitm<!--{/if}-->
+                    <div class="nv-slot">
+                        <span class="nv-slot__kind">$iteminfo['DH']</span>
+                        <span class="nv-slot__name"><!--{if CURSCRIPT == 'game' && $mode == 'command' && $arhs}--><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offarh';postCmd('gamecmd','command.php');return false;"><!--{/if}--><!--{if $arhs}-->$arh_words<!--{else}-->$noitm<!--{/if}--></span>
+                        <span class="nv-slot__stat">$arhe / $arhs</span>
                     </div>
-                    <div class="cyber-text-accent">$arhsk_words</div>
-                    <div class="text-right">$arhe/$arhs</div>
-                </div>
-
-                <!-- Arm Armor -->
-                <div class="grid grid-cols-5 gap-2 text-sm border-b border-cyber-primary/20 pb-2">
-                    <div class="<!--{if $aras}-->cyber-text-secondary<!--{else}-->text-gray-500<!--{/if}-->">$iteminfo['DA']</div>
-                    <div class="col-span-2">
-                        <!--{if CURSCRIPT == 'game' && $mode == 'command' && $aras}-->
-                        <button class="cyber-btn cyber-btn-secondary text-xs mr-2"
-                                onclick="$('mode').value='itemmain';$('command').value='offara';postCmd('gamecmd','command.php');return false;">卸下</button>
-                        <!--{/if}-->
-                        <!--{if $aras}-->$ara_words<!--{else}-->$noitm<!--{/if}-->
+                    <div class="nv-slot">
+                        <span class="nv-slot__kind">$iteminfo['DA']</span>
+                        <span class="nv-slot__name"><!--{if CURSCRIPT == 'game' && $mode == 'command' && $aras}--><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offara';postCmd('gamecmd','command.php');return false;"><!--{/if}--><!--{if $aras}-->$ara_words<!--{else}-->$noitm<!--{/if}--></span>
+                        <span class="nv-slot__stat">$arae / $aras</span>
                     </div>
-                    <div class="cyber-text-accent">$arask_words</div>
-                    <div class="text-right">$arae/$aras</div>
-                </div>
-
-                <!-- Foot Armor -->
-                <div class="grid grid-cols-5 gap-2 text-sm border-b border-cyber-primary/20 pb-2">
-                    <div class="<!--{if $arfs}-->cyber-text-secondary<!--{else}-->text-gray-500<!--{/if}-->">$iteminfo['DF']</div>
-                    <div class="col-span-2">
-                        <!--{if CURSCRIPT == 'game' && $mode == 'command' && $arfs}-->
-                        <button class="cyber-btn cyber-btn-secondary text-xs mr-2"
-                                onclick="$('mode').value='itemmain';$('command').value='offarf';postCmd('gamecmd','command.php');return false;">卸下</button>
-                        <!--{/if}-->
-                        <!--{if $arfs}-->$arf_words<!--{else}-->$noitm<!--{/if}-->
+                    <div class="nv-slot">
+                        <span class="nv-slot__kind">$iteminfo['DF']</span>
+                        <span class="nv-slot__name"><!--{if CURSCRIPT == 'game' && $mode == 'command' && $arfs}--><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offarf';postCmd('gamecmd','command.php');return false;"><!--{/if}--><!--{if $arfs}-->$arf_words<!--{else}-->$noitm<!--{/if}--></span>
+                        <span class="nv-slot__stat">$arfe / $arfs</span>
                     </div>
-                    <div class="cyber-text-accent">$arfsk_words</div>
-                    <div class="text-right">$arfe/$arfs</div>
-                </div>
-
-                <!-- Accessory -->
-                <div class="grid grid-cols-5 gap-2 text-sm">
-                    <div class="<!--{if $arts}-->cyber-text-secondary<!--{else}-->text-gray-500<!--{/if}-->"><!--{if $arts}-->$artk_words<!--{else}-->$iteminfo['A']<!--{/if}--></div>
-                    <div class="col-span-2">
-                        <!--{if CURSCRIPT == 'game' && $mode == 'command' && $arts}-->
-                        <button class="cyber-btn cyber-btn-secondary text-xs mr-2"
-                                onclick="$('mode').value='itemmain';$('command').value='offart';postCmd('gamecmd','command.php');return false;">卸下</button>
-                        <!--{/if}-->
-                        <!--{if $arts}-->$art_words<!--{else}-->$noitm<!--{/if}-->
+                    <div class="nv-slot">
+                        <span class="nv-slot__kind"><!--{if $arts}-->$artk_words<!--{else}-->$iteminfo['A']<!--{/if}--></span>
+                        <span class="nv-slot__name"><!--{if CURSCRIPT == 'game' && $mode == 'command' && $arts}--><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offart';postCmd('gamecmd','command.php');return false;"><!--{/if}--><!--{if $arts}-->$art_words<!--{else}-->$noitm<!--{/if}--></span>
+                        <span class="nv-slot__stat">$arte / $arts</span>
                     </div>
-                    <div class="cyber-text-accent">$artsk_words</div>
-                    <div class="text-right">$arte/$arts</div>
                 </div>
             </div>
-        </div>
-
-        <!-- Inventory -->
-        <div class="cyber-card p-4 border border-cyber-primary/30">
-            <h3 class="font-cyber cyber-text-primary mb-4">INVENTORY</h3>
-            <div class="space-y-2">
-                <!-- Item Slot 1 -->
-                <div class="grid grid-cols-5 gap-2 text-sm border-b border-cyber-primary/20 pb-2">
-                    <div class="<!--{if $itmk1_words}-->cyber-text-secondary<!--{else}-->text-gray-500<!--{/if}-->"><!--{if $itmk1_words}-->$itmk1_words<!--{else}-->{lang pack}1<!--{/if}--></div>
-                    <div class="col-span-2"><!--{if $itms1}-->$itm1_words<!--{else}-->$noitm<!--{/if}--></div>
-                    <div class="cyber-text-accent">$itmsk1_words</div>
-                    <div class="text-right">$itme1/$itms1</div>
+            <div>
+                <div class="nv-section-title">Pack Slots</div>
+                <div class="nv-item-list">
+                    <div class="nv-slot"><span class="nv-item__kind"><!--{if $itmk1_words}-->$itmk1_words<!--{else}-->{lang pack}1<!--{/if}--></span><span class="nv-item__name"><!--{if $itms1}-->$itm1_words<!--{else}-->$noitm<!--{/if}--></span><span class="nv-item__stat">$itme1 / $itms1</span></div>
+                    <div class="nv-slot"><span class="nv-item__kind"><!--{if $itmk2_words}-->$itmk2_words<!--{else}-->{lang pack}2<!--{/if}--></span><span class="nv-item__name"><!--{if $itms2}-->$itm2_words<!--{else}-->$noitm<!--{/if}--></span><span class="nv-item__stat">$itme2 / $itms2</span></div>
+                    <div class="nv-slot"><span class="nv-item__kind"><!--{if $itmk3_words}-->$itmk3_words<!--{else}-->{lang pack}3<!--{/if}--></span><span class="nv-item__name"><!--{if $itms3}-->$itm3_words<!--{else}-->$noitm<!--{/if}--></span><span class="nv-item__stat">$itme3 / $itms3</span></div>
+                    <div class="nv-slot"><span class="nv-item__kind"><!--{if $itmk4_words}-->$itmk4_words<!--{else}-->{lang pack}4<!--{/if}--></span><span class="nv-item__name"><!--{if $itms4}-->$itm4_words<!--{else}-->$noitm<!--{/if}--></span><span class="nv-item__stat">$itme4 / $itms4</span></div>
+                    <div class="nv-slot"><span class="nv-item__kind"><!--{if $itmk5_words}-->$itmk5_words<!--{else}-->{lang pack}5<!--{/if}--></span><span class="nv-item__name"><!--{if $itms5}-->$itm5_words<!--{else}-->$noitm<!--{/if}--></span><span class="nv-item__stat">$itme5 / $itms5</span></div>
+                    <div class="nv-slot"><span class="nv-item__kind"><!--{if $itmk6_words}-->$itmk6_words<!--{else}-->{lang pack}6<!--{/if}--></span><span class="nv-item__name"><!--{if $itms6}-->$itm6_words<!--{else}-->$noitm<!--{/if}--></span><span class="nv-item__stat">$itme6 / $itms6</span></div>
                 </div>
-
-                <!-- Item Slot 2 -->
-                <div class="grid grid-cols-5 gap-2 text-sm border-b border-cyber-primary/20 pb-2">
-                    <div class="<!--{if $itmk2_words}-->cyber-text-secondary<!--{else}-->text-gray-500<!--{/if}-->"><!--{if $itmk2_words}-->$itmk2_words<!--{else}-->{lang pack}2<!--{/if}--></div>
-                    <div class="col-span-2"><!--{if $itms2}-->$itm2_words<!--{else}-->$noitm<!--{/if}--></div>
-                    <div class="cyber-text-accent">$itmsk2_words</div>
-                    <div class="text-right">$itme2/$itms2</div>
-                </div>
-
-                <!-- Item Slot 3 -->
-                <div class="grid grid-cols-5 gap-2 text-sm border-b border-cyber-primary/20 pb-2">
-                    <div class="<!--{if $itmk3_words}-->cyber-text-secondary<!--{else}-->text-gray-500<!--{/if}-->"><!--{if $itmk3_words}-->$itmk3_words<!--{else}-->{lang pack}3<!--{/if}--></div>
-                    <div class="col-span-2"><!--{if $itms3}-->$itm3_words<!--{else}-->$noitm<!--{/if}--></div>
-                    <div class="cyber-text-accent">$itmsk3_words</div>
-                    <div class="text-right">$itme3/$itms3</div>
-                </div>
-
-                <!-- Item Slot 4 -->
-                <div class="grid grid-cols-5 gap-2 text-sm border-b border-cyber-primary/20 pb-2">
-                    <div class="<!--{if $itmk4_words}-->cyber-text-secondary<!--{else}-->text-gray-500<!--{/if}-->"><!--{if $itmk4_words}-->$itmk4_words<!--{else}-->{lang pack}4<!--{/if}--></div>
-                    <div class="col-span-2"><!--{if $itms4}-->$itm4_words<!--{else}-->$noitm<!--{/if}--></div>
-                    <div class="cyber-text-accent">$itmsk4_words</div>
-                    <div class="text-right">$itme4/$itms4</div>
-                </div>
-
-                <!-- Item Slot 5 -->
-                <div class="grid grid-cols-5 gap-2 text-sm border-b border-cyber-primary/20 pb-2">
-                    <div class="<!--{if $itmk5_words}-->cyber-text-secondary<!--{else}-->text-gray-500<!--{/if}-->"><!--{if $itmk5_words}-->$itmk5_words<!--{else}-->{lang pack}5<!--{/if}--></div>
-                    <div class="col-span-2"><!--{if $itms5}-->$itm5_words<!--{else}-->$noitm<!--{/if}--></div>
-                    <div class="cyber-text-accent">$itmsk5_words</div>
-                    <div class="text-right">$itme5/$itms5</div>
-                </div>
-
-                <!-- Item Slot 6 -->
-                <div class="grid grid-cols-5 gap-2 text-sm">
-                    <div class="<!--{if $itmk6_words}-->cyber-text-secondary<!--{else}-->text-gray-500<!--{/if}-->"><!--{if $itmk6_words}-->$itmk6_words<!--{else}-->{lang pack}6<!--{/if}--></div>
-                    <div class="col-span-2"><!--{if $itms6}-->$itm6_words<!--{else}-->$noitm<!--{/if}--></div>
-                    <div class="cyber-text-accent">$itmsk6_words</div>
-                    <div class="text-right">$itme6/$itms6</div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Weapon Skills -->
-    <div class="cyber-card p-4 border border-cyber-primary/30">
-        <h3 class="font-cyber cyber-text-primary mb-4">WEAPON SKILLS</h3>
-        <div class="grid grid-cols-2 md:grid-cols-6 gap-4 text-sm">
-            <div class="text-center">
-                <div class="cyber-text-secondary">{lang wp}{lang skill}</div>
-                <div class="<!--{if $wp >= 100}-->cyber-text-primary<!--{else}-->text-gray-500<!--{/if}-->">$wp</div>
-            </div>
-            <div class="text-center">
-                <div class="cyber-text-secondary">{lang wk}{lang skill}</div>
-                <div class="<!--{if $wk >= 100}-->cyber-text-primary<!--{else}-->text-gray-500<!--{/if}-->">$wk</div>
-            </div>
-            <div class="text-center">
-                <div class="cyber-text-secondary">{lang wg}{lang skill}</div>
-                <div class="<!--{if $wg >= 100}-->cyber-text-primary<!--{else}-->text-gray-500<!--{/if}-->">$wg</div>
-            </div>
-            <div class="text-center">
-                <div class="cyber-text-secondary">{lang wc}{lang skill}</div>
-                <div class="<!--{if $wc >= 100}-->cyber-text-primary<!--{else}-->text-gray-500<!--{/if}-->">$wc</div>
-            </div>
-            <div class="text-center">
-                <div class="cyber-text-secondary">{lang wd}{lang skill}</div>
-                <div class="<!--{if $wd >= 100}-->cyber-text-primary<!--{else}-->text-gray-500<!--{/if}-->">$wd</div>
-            </div>
-            <div class="text-center">
-                <div class="cyber-text-secondary">{lang wf}{lang skill}</div>
-                <div class="<!--{if $wf >= 100}-->cyber-text-primary<!--{else}-->text-gray-500<!--{/if}-->">$wf</div>
+                <p class="nv-note">使用、装备、交换、合成和丢弃仍通过行动窗口中的原按钮执行。</p>
             </div>
         </div>
     </div>
-
-</div>
+</section>

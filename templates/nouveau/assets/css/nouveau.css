@@ -1,0 +1,212 @@
+:root {
+    --nv-bg: #101315;
+    --nv-panel: #171e1c;
+    --nv-panel-2: #202925;
+    --nv-border: #5b6b65;
+    --nv-border-lit: #9fb4aa;
+    --nv-text: #edf4ef;
+    --nv-muted: #a9b8b1;
+    --nv-dim: #79867f;
+    --nv-green: #89e08c;
+    --nv-cyan: #8ed6c7;
+    --nv-yellow: #f3d477;
+    --nv-red: #ff6868;
+    --nv-blue: #8fb8ff;
+    --nv-shadow: rgba(0, 0, 0, .44);
+}
+
+.nouveau-ui {
+    overflow-x: hidden;
+    padding-bottom: 70px;
+}
+
+.nouveau-ui::selection {
+    background: #f3d477;
+    color: #101315;
+}
+
+.nouveau-desktop-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+        radial-gradient(circle at 18% 25%, rgba(142,214,199,.12), transparent 32%),
+        radial-gradient(circle at 78% 12%, rgba(243,212,119,.08), transparent 28%),
+        #101315;
+    background-size: 32px 32px, 32px 32px, auto, auto, auto;
+}
+
+.nouveau-desktop-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,.018), rgba(255,255,255,.018) 1px, transparent 1px, transparent 4px);
+    pointer-events: none;
+}
+
+.nouveau-desktop {
+    width: min(1480px, calc(100vw - 28px));
+    min-height: calc(100vh - 118px);
+    margin: 14px auto 0;
+    position: relative;
+}
+
+.nv-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 7px 14px;
+    border-bottom: 1px solid #30413b;
+    background: rgba(15, 20, 19, .96);
+    box-shadow: 0 3px 20px rgba(0,0,0,.24);
+}
+
+.nv-topbar__brand {
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.nv-topbar__brand a {
+    color: #edf4ef;
+    font-weight: 700;
+}
+
+.nv-topbar__brand span {
+    color: var(--nv-yellow);
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.nv-topbar__links {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.nv-topbar__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    color: var(--nv-muted);
+    white-space: nowrap;
+}
+
+.nv-topbar__links b {
+    color: var(--nv-red);
+    margin-left: 4px;
+}
+
+.nv-footer {
+    width: min(1480px, calc(100vw - 28px));
+    margin: 10px auto 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: var(--nv-dim);
+    font-size: 12px;
+}
+
+.nv-footer #error {
+    color: var(--nv-red);
+}
+
+.nv-page {
+    display: grid;
+    gap: 12px;
+}
+
+.nv-page > .nv-window {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+}
+
+.nv-page--center {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+.nv-compat {
+    overflow: auto;
+}
+
+.nv-compat table {
+    max-width: 100%;
+}
+
+.nv-compat img {
+    max-width: 100%;
+}
+
+.nv-grid {
+    display: grid;
+    gap: 10px;
+}
+
+.nv-grid--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.nv-kv {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 6px 10px;
+    align-items: center;
+}
+
+.nv-kv dt {
+    color: var(--nv-dim);
+}
+
+.nv-kv dd {
+    margin: 0;
+    color: var(--nv-text);
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.nv-meter {
+    display: grid;
+    gap: 4px;
+}
+
+.nv-meter__label {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--nv-muted);
+}
+
+.nv-meter__track {
+    height: 9px;
+    border: 1px solid #3e5049;
+    background: #0b0f0e;
+    overflow: hidden;
+}
+
+.nv-meter__fill {
+    display: block;
+    height: 100%;
+    min-width: 2px;
+    background: linear-gradient(90deg, var(--nv-green), var(--nv-cyan));
+}
+
+.nv-meter__fill--hp { background: linear-gradient(90deg, #ff6868, #f3d477); }
+.nv-meter__fill--sp { background: linear-gradient(90deg, #8fb8ff, #8ed6c7); }
+.nv-meter__fill--rage { background: linear-gradient(90deg, #f3d477, #ff9c64); }
+.nv-meter__fill--ss { background: linear-gradient(90deg, #cc8cff, #8fb8ff); }
+
+.nv-note {
+    color: var(--nv-muted);
+    font-size: 12px;
+}

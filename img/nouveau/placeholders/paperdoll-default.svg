@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="320" viewBox="0 0 220 320" role="img" aria-label="paperdoll placeholder">
+  <rect width="220" height="320" fill="#101315"/>
+  <rect x="16" y="16" width="188" height="288" fill="#151d1a" stroke="#5b6b65"/>
+  <circle cx="110" cy="65" r="28" fill="#24312d" stroke="#8ed6c7"/>
+  <path d="M82 105 H138 L154 190 H66 Z" fill="#202925" stroke="#f3d477"/>
+  <path d="M78 190 L60 286 M142 190 L160 286 M78 122 L42 178 M142 122 L178 178" stroke="#8ed6c7" stroke-width="10" stroke-linecap="round"/>
+  <text x="110" y="296" text-anchor="middle" fill="#edf4ef" font-family="Arial, sans-serif" font-size="14">PAPERDOLL</text>
+</svg>

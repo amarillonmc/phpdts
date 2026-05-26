@@ -1,321 +1,57 @@
-<!DOCTYPE html>
-<html lang="zh-CN" class="h-full">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
 <head>
-    <meta charset="$charset">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="pragma" content="no-cache">
-    <meta http-equiv="expires" content="0">
-    <title>{lang title} - Nouveau Interface</title>
-    
-    <!-- Preload critical resources -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" as="style">
-    <link rel="preload" href="templates/nouveau/assets/css/cyberpunk.css" as="style">
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'cyber': ['Orbitron', 'monospace'],
-                        'mono': ['Courier New', 'Monaco', 'Menlo', 'monospace']
-                    },
-                    colors: {
-                        cyber: {
-                            primary: 'var(--cyber-primary)',
-                            secondary: 'var(--cyber-secondary)',
-                            accent: 'var(--cyber-accent)',
-                            bg: {
-                                primary: 'var(--cyber-bg-primary)',
-                                secondary: 'var(--cyber-bg-secondary)',
-                                tertiary: 'var(--cyber-bg-tertiary)'
-                            }
-                        }
-                    },
-                    animation: {
-                        'scan': 'scan 3s linear infinite',
-                        'glow': 'glow 2s ease-in-out infinite alternate',
-                        'float': 'float 6s ease-in-out infinite'
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <!-- Custom Cyberpunk Styles -->
-    <link rel="stylesheet" href="templates/nouveau/assets/css/cyberpunk.css">
-    
-    <!-- Game Scripts -->
-    <script src="include/javascript/jquery.min.js"></script>
-    <script>jQuery.noConflict();</script>
-    <script src="include/common.js"></script>
-    <script src="include/game20130526.js"></script>
-    <script src="include/json.js"></script>
-    <script src="include/pako.js"></script>
-    
-    <!--{if (CURSCRIPT == 'game')}-->
-    <script src="include/record.js"></script>
-    <!--{/if}-->
-    
-    <!--{if (CURSCRIPT == 'messages')}-->
-    <link rel="stylesheet" href="gamedata/cache/style_buttons.20180118.css">
-    <link rel="stylesheet" href="gamedata/cache/style_messages.20180221.css">
-    <!--{/if}-->
-    
-    <!-- Theme and Main Scripts -->
-    <script src="templates/nouveau/assets/js/theme.js"></script>
-    <script src="templates/nouveau/assets/js/main.js"></script>
-    <script src="templates/nouveau/assets/js/fallback.js"></script>
-    
-    <!-- Analytics -->
-    <script async defer data-website-id="645ba563-c97e-4270-97af-d669335db957" src="https://tracker.dts.gay/umami.js"></script>
-    
-    <!-- Dynamic Background for Game -->
-    <!--{loop $plsinfo $places $info}-->
-        <!--{if (CURSCRIPT == 'game' && isset($sdata) && isset($sdata['pls']) && $sdata['pls']==$places)}-->
-        <!--{eval $bgurl = "img/location/".$places.".jpg"}-->
-        <style>
-            body::before {
-                content: '';
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-image: url("$bgurl");
-                background-size: cover;
-                background-position: center;
-                background-attachment: fixed;
-                opacity: 0.1;
-                z-index: -2;
-            }
-        </style>
-        <!--{/if}-->
-    <!--{/loop}-->
-    
-    <!--{if isset($extrahead)}-->$extrahead<!--{/if}-->
+<meta http-equiv="Content-Type" content="text/html; charset=$charset">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{lang title} :: Nouveau</title>
+<!--{if isset($extrahead)}-->$extrahead<!--{/if}-->
+<style type="text/css" id="css">{template css}</style>
+<link rel="stylesheet" type="text/css" href="templates/nouveau/assets/css/nouveau.css">
+<link rel="stylesheet" type="text/css" href="templates/nouveau/assets/css/windows.css">
+<link rel="stylesheet" type="text/css" href="templates/nouveau/assets/css/game-panels.css">
+<link rel="stylesheet" type="text/css" href="templates/nouveau/assets/css/responsive.css">
+<!--{if (CURSCRIPT == 'messages')}-->
+<link rel="stylesheet" type="text/css" href="gamedata/cache/style_buttons.20180118.css">
+<link rel="stylesheet" type="text/css" href="gamedata/cache/style_messages.20180221.css">
+<!--{/if}-->
+<script type="text/javascript" src="include/javascript/jquery.min.js"></script>
+<script type="text/javascript" id="sourcecode">jQuery.noConflict();</script>
+<script type="text/javascript" src="include/common.js"></script>
+<script type="text/javascript" src="include/game20130526.js"></script>
+<script type="text/javascript" src="include/json.js"></script>
+<script type="text/javascript" src="include/pako.js"></script>
+<!--{if (CURSCRIPT == 'game')}-->
+<script type="text/javascript" src="include/record.js"></script>
+<!--{/if}-->
+<script type="text/javascript" src="templates/nouveau/assets/js/window-manager.js" defer></script>
+<script type="text/javascript" src="templates/nouveau/assets/js/image-fallback.js" defer></script>
+<script type="text/javascript" src="templates/nouveau/assets/js/panel-bindings.js" defer></script>
+<script type="text/javascript" src="templates/nouveau/assets/js/keyboard-shortcuts.js" defer></script>
+<script type="text/javascript" src="templates/nouveau/assets/js/nouveau.js" defer></script>
 </head>
-<body class="min-h-screen bg-cyber-bg-primary text-white font-mono antialiased" 
-      <!--{if CURSCRIPT == 'game' && $hotkeyon}-->onkeyup="hotkey(event);"<!--{/if}-->>
-
-<!-- Navigation Header -->
-<nav class="cyber-nav sticky top-0 z-50 border-b border-cyber-primary/20">
-    <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between h-16">
-            <!-- Logo/Title -->
-            <div class="flex items-center space-x-4">
-                <div class="text-xl font-cyber font-bold cyber-text-glow text-cyber-primary">
-                    {lang title}
-                </div>
-                <div class="hidden md:block text-xs text-gray-400">
-                    NOUVEAU 界面 v2.0
-                </div>
-            </div>
-            
-            <!-- Desktop Navigation -->
-            <div class="hidden md:flex items-center space-x-1">
-                <a href="index.php" class="cyber-nav-link">
-                    <span class="cyber-text-primary">></span> {lang index}
-                </a>
-                
-                <!--{if isset($cuser) && isset($cpass)}-->
-                <a href="messages.php" class="cyber-nav-link relative">
-                    <span class="cyber-text-primary">></span> {lang messages}
-                    <!--{if !empty($new_messages)}-->
-                    <span class="absolute -top-1 -right-1 bg-cyber-primary text-black text-xs px-1 rounded cyber-pulse">NEW</span>
-                    <!--{/if}-->
-                </a>
-                <a href="user_profile.php" class="cyber-nav-link">
-                    <span class="cyber-text-primary">></span> {lang user}
-                </a>
-                <!--{else}-->
-                <a href="register.php" class="cyber-nav-link">
-                    <span class="cyber-text-primary">></span> {lang register}
-                </a>
-                <!--{/if}-->
-                
-                <a href="game.php" class="cyber-nav-link">
-                    <span class="cyber-text-primary">></span> {lang game}
-                </a>
-                <a href="map.php" class="cyber-nav-link">
-                    <span class="cyber-text-primary">></span> {lang map}
-                </a>
-                <a href="news.php" class="cyber-nav-link">
-                    <span class="cyber-text-primary">></span> {lang news}
-                </a>
-                <a href="alive.php" class="cyber-nav-link">
-                    <span class="cyber-text-primary">></span> {lang alive}
-                </a>
-                <a href="winner.php" class="cyber-nav-link">
-                    <span class="cyber-text-primary">></span> {lang winner}
-                </a>
-                <a href="rank.php" class="cyber-nav-link">
-                    <span class="cyber-text-primary">></span> {lang rank}
-                </a>
-                <a href="help.php" class="cyber-nav-link">
-                    <span class="cyber-text-primary">></span> {lang help}
-                </a>
-                
-                <!-- VN World Dropdown -->
-                <div class="relative group">
-                    <button class="cyber-nav-link">
-                        <span class="cyber-text-primary">></span> {lang vnworld} ▼
-                    </button>
-                    <div class="absolute top-full left-0 mt-1 w-48 cyber-card border border-cyber-primary/30 hidden group-hover:block">
-                        <a href="vnworld.php" class="block px-4 py-2 hover:bg-cyber-primary/10">空想梦境</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-cyber-primary/10 text-gray-500">敬请期待</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-cyber-primary/10 text-gray-500">敬请期待</a>
-                    </div>
-                </div>
-                
-                <!--{if (CURSCRIPT == 'game')}-->
-                <a href="javascript:void(0)" onclick="stopRecording()" class="cyber-nav-link">
-                    <span class="cyber-text-primary">></span> 停止录像
-                </a>
-                <!--{/if}-->
-                
-                <a href="record.php" class="cyber-nav-link">
-                    <span class="cyber-text-primary">></span> 回放录像
-                </a>
-                <a href="admin.php" class="cyber-nav-link">
-                    <span class="cyber-text-primary">></span> {lang admin}
-                </a>
-                <a href="https://bbs.brdts.online/" target="_blank" class="cyber-nav-link">
-                    <span class="cyber-text-primary">></span> {lang report}
-                </a>
-                <a href="https://bbs.brdts.online/?thread-2.htm" target="_blank" class="cyber-nav-link">
-                    <span class="cyber-text-primary">></span> {lang donate}
-                </a>
-
-                <!-- Language Switcher -->
-                <div class="relative group">
-                    <button class="cyber-nav-link" id="lang-switcher">
-                        <span class="cyber-text-primary">></span> <span id="current-lang">中文</span> ▼
-                    </button>
-                    <div class="absolute top-full right-0 mt-1 w-32 cyber-card border border-cyber-primary/30 hidden group-hover:block">
-                        <button onclick="switchLanguage('zh')" class="block w-full text-left px-4 py-2 hover:bg-cyber-primary/10">中文</button>
-                        <button onclick="switchLanguage('en')" class="block w-full text-left px-4 py-2 hover:bg-cyber-primary/10">English</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Mobile Menu Button -->
-            <button class="md:hidden cyber-btn cyber-btn-primary" data-mobile-menu-toggle>
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
-        </div>
-        
-        <!-- Mobile Navigation -->
-        <div class="md:hidden hidden" data-mobile-menu>
-            <div class="py-2 space-y-1 border-t border-cyber-primary/20">
-                <a href="index.php" class="block cyber-nav-link">{lang index}</a>
-                <!--{if isset($cuser) && isset($cpass)}-->
-                <a href="messages.php" class="block cyber-nav-link">
-                    {lang messages}
-                    <!--{if !empty($new_messages)}-->
-                    <span class="cyber-text-primary ml-2">NEW!</span>
-                    <!--{/if}-->
-                </a>
-                <a href="user_profile.php" class="block cyber-nav-link">{lang user}</a>
-                <!--{else}-->
-                <a href="register.php" class="block cyber-nav-link">{lang register}</a>
-                <!--{/if}-->
-                <a href="game.php" class="block cyber-nav-link">{lang game}</a>
-                <a href="map.php" class="block cyber-nav-link">{lang map}</a>
-                <a href="news.php" class="block cyber-nav-link">{lang news}</a>
-                <a href="alive.php" class="block cyber-nav-link">{lang alive}</a>
-                <a href="winner.php" class="block cyber-nav-link">{lang winner}</a>
-                <a href="rank.php" class="block cyber-nav-link">{lang rank}</a>
-                <a href="help.php" class="block cyber-nav-link">{lang help}</a>
-                <a href="vnworld.php" class="block cyber-nav-link">空想梦境</a>
-                <!--{if (CURSCRIPT == 'game')}-->
-                <a href="javascript:void(0)" onclick="stopRecording()" class="block cyber-nav-link">停止录像</a>
-                <!--{/if}-->
-                <a href="record.php" class="block cyber-nav-link">回放录像</a>
-                <a href="admin.php" class="block cyber-nav-link">{lang admin}</a>
-                <a href="https://bbs.brdts.online/" target="_blank" class="block cyber-nav-link">{lang report}</a>
-                <a href="https://bbs.brdts.online/?thread-2.htm" target="_blank" class="block cyber-nav-link">{lang donate}</a>
-            </div>
-        </div>
+<body class="nouveau-ui" <!--{if CURSCRIPT == 'game' && $hotkeyon}-->onkeyup="hotkey(event);"<!--{/if}-->>
+<div class="nouveau-desktop-bg" aria-hidden="true"></div>
+<div class="nv-topbar">
+    <div class="nv-topbar__brand"><a href="index.php">{lang title}</a><span>Nouveau Terminal</span></div>
+    <div class="nv-topbar__links">
+        <a href="index.php">{lang index}</a>
+        <!--{if isset($cuser) && isset($cpass)}-->
+        <a href="messages.php">{lang messages}<!--{if !empty($new_messages)}--><b>NEW</b><!--{/if}--></a>
+        <a href="user_profile.php">{lang user}</a>
+        <!--{else}-->
+        <a href="register.php">{lang register}</a>
+        <!--{/if}-->
+        <a href="game.php">{lang game}</a>
+        <a href="map.php">{lang map}</a>
+        <a href="news.php">{lang news}</a>
+        <a href="alive.php">{lang alive}</a>
+        <a href="winner.php">{lang winner}</a>
+        <a href="rank.php">{lang rank}</a>
+        <a href="help.php">{lang help}</a>
+        <a href="record.php">回放录像</a>
+        <!--{if (CURSCRIPT == 'game')}--><a href="javascript:void(0)" onclick="stopRecording()">停止录像</a><!--{/if}-->
     </div>
-</nav>
-
-<!-- Main Content Container -->
-<main class="container mx-auto px-4 py-6 min-h-screen">
-    <!-- Status Bar for Game Pages -->
-    <!--{if (CURSCRIPT == 'game')}-->
-    <div class="mb-4 cyber-card p-3 border border-cyber-primary/30">
-        <div class="flex items-center justify-between text-sm">
-            <div class="flex items-center space-x-4">
-                <span class="cyber-text-primary">状态:</span>
-                <span class="text-green-400">在线</span>
-            </div>
-            <div class="flex items-center space-x-4">
-                <span>界面: NOUVEAU</span>
-                <span class="cyber-text-primary">|</span>
-                <span id="current-time"></span>
-            </div>
-        </div>
-    </div>
-    <!--{/if}-->
-
-<script>
-// Update current time
-function updateTime() {
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false });
-    const timeElement = document.getElementById('current-time');
-    if (timeElement) {
-        timeElement.textContent = timeStr;
-    }
-}
-setInterval(updateTime, 1000);
-updateTime();
-
-// Language switching functionality
-function switchLanguage(lang) {
-    // Set cookie for language preference
-    document.cookie = `nouveau_lang=${lang}; path=/; max-age=31536000`; // 1 year
-
-    // Update current language display
-    const currentLangElement = document.getElementById('current-lang');
-    if (currentLangElement) {
-        currentLangElement.textContent = lang === 'zh' ? '中文' : 'English';
-    }
-
-    // Show notification
-    const message = lang === 'zh' ? '语言已切换为中文' : 'Language switched to English';
-    if (window.nouveauTheme) {
-        window.nouveauTheme.showNotification(message, 'info');
-    }
-
-    // Reload page to apply language changes
-    setTimeout(() => {
-        window.location.reload();
-    }, 1000);
-}
-
-// Initialize language display
-document.addEventListener('DOMContentLoaded', function() {
-    const currentLang = getCookie('nouveau_lang') || 'zh';
-    const currentLangElement = document.getElementById('current-lang');
-    if (currentLangElement) {
-        currentLangElement.textContent = currentLang === 'zh' ? '中文' : 'English';
-    }
-});
-
-// Helper function to get cookie value
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return null;
-}
-</script>
+</div>
+<main class="nouveau-desktop" id="nouveau-desktop">

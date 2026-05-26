@@ -1,0 +1,69 @@
+@media (max-width: 900px), (pointer: coarse) {
+    .nouveau-ui {
+        padding-bottom: 58px;
+    }
+
+    .nouveau-desktop {
+        width: calc(100vw - 14px);
+        margin-top: 7px;
+    }
+
+    .nv-topbar {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .nv-game-shell {
+        min-height: 0;
+        display: grid;
+        gap: 10px;
+    }
+
+    .nv-window,
+    .nv-window--status,
+    .nv-window--avatar,
+    .nv-window--map,
+    .nv-window--action,
+    .nv-window--inventory,
+    .nv-window--log,
+    .nv-window--chat,
+    .nv-window--battle {
+        position: relative !important;
+        left: auto !important;
+        top: auto !important;
+        width: auto !important;
+        min-width: 0;
+        transform: none !important;
+    }
+
+    .nv-window__titlebar {
+        cursor: default;
+    }
+
+    .nv-window__body {
+        max-height: none;
+    }
+
+    .nv-inventory-columns,
+    .nv-grid--two {
+        grid-template-columns: 1fr;
+    }
+
+    .nv-slot {
+        grid-template-columns: 72px minmax(0, 1fr);
+    }
+
+    .nv-slot__stat {
+        grid-column: 1 / -1;
+        text-align: left;
+    }
+
+    .nv-taskbar {
+        height: 48px;
+    }
+
+    .nv-taskbar__status {
+        display: none;
+    }
+}

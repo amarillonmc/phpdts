@@ -1,317 +1,82 @@
 {template header}
+<div class="nv-page nv-page--center">
+    <section class="nv-window" id="nv-index-status" data-window-title="System">
+        <div class="nv-window__titlebar">
+            <span class="nv-window__title">System Board / 系统看板</span>
+            <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
+        </div>
+        <div class="nv-window__body">
+            <dl class="nv-kv">
+                <dt>{lang gameversion}</dt><dd>$gameversion</dd>
+                <dt>{lang now}</dt><dd>{lang gamedate}</dd>
+                <dt>{lang systemmsg}</dt><dd>$systemmsg</dd>
+                <dt>{lang gameinfo}</dt><dd>{lang numinfo}{$gstate[$gamestate]}</dd>
+                <dt>激活人数</dt><dd>$validnum</dd>
+                <dt>生存人数</dt><dd>$alivenum</dd>
+                <dt>死亡总数</dt><dd>$deathnum</dd>
+            </dl>
+            <div style="margin-top:12px">
+                <!--{if $gamestate > 10 }-->
+                本局游戏已经进行 <span id="timing"></span><script type="text/javascript">updateTime($timing,1);</script><br>
+                <!--{if $hplayer}-->当前最高伤害 $hplayer ($hdamage)<br><!--{/if}-->
+                <!--{else}-->
+                <!--{if $starttime > $now}-->
+                下局游戏开始于 <span id="timing"></span><script type="text/javascript">updateTime($timing,0);</script> 后<br>
+                <!--{else}-->
+                下局游戏开始时间 <span id="timing"></span>未定<br>
+                <!--{/if}-->
+                <!--{if $hplayer}-->上局最高伤害 $hplayer ($hdamage)<br><!--{/if}-->
+                <!--{/if}-->
+                <!--{if $groomid}-->
+                <span class="yellow">当前房间：{$groomid} 号</span>
+                <!--{else}-->
+                上局结果：<span id="lastwin">$gwin[$winmode]</span><!--{if $winner}-->，优胜者：<span id="lastwinner">$winner</span><!--{/if}-->
+                <!--{/if}-->
+            </div>
+        </div>
+    </section>
 
-<!-- Hero Section -->
-<div class="relative overflow-hidden">
-    <!-- Background Animation -->
-    <div class="absolute inset-0 cyber-hologram opacity-20"></div>
-    
-    <div class="relative z-10 text-center py-16">
-        <h1 class="text-4xl md:text-6xl font-cyber font-bold cyber-text-glow cyber-text-primary mb-4">
-            PHPDTS
-        </h1>
-        <p class="text-xl md:text-2xl cyber-text-secondary mb-2">
-            虚拟现实大逃杀
-        </p>
-        <p class="text-lg cyber-text-accent mb-8">
-            Nouveau 界面 - 下一代游戏体验
-        </p>
-        
-        <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <!--{if isset($cuser) && isset($cpass)}-->
-            <a href="game.php" class="cyber-btn cyber-btn-primary text-lg px-8 py-3">
-                🎮 进入游戏
-            </a>
-            <a href="user_profile.php" class="cyber-btn cyber-btn-secondary text-lg px-8 py-3">
-                👤 个人资料
-            </a>
+    <section class="nv-window" id="nv-index-entry" data-window-title="Entry">
+        <div class="nv-window__titlebar">
+            <span class="nv-window__title">Entry Gate / 进入游戏</span>
+            <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
+        </div>
+        <div class="nv-window__body">
+            <!--{if $cuser}-->
+            <p>{lang welcome}</p>
+            <form method="post" name="togame" action="game.php">
+                <input type="hidden" name="mode" value="main">
+                <input type="submit" name="enter" value="{lang enter}">
+            </form>
+            <form method="post" name="quitgame" action="game.php" style="margin-top:8px">
+                <input type="hidden" name="mode" value="quit">
+                <input type="submit" name="quit" value="{lang quit}">
+            </form>
             <!--{else}-->
-            <a href="register.php" class="cyber-btn cyber-btn-primary text-lg px-8 py-3">
-                🚀 立即加入
-            </a>
-            <a href="help.php" class="cyber-btn cyber-btn-secondary text-lg px-8 py-3">
-                📖 了解更多
-            </a>
+            <form method="post" name="login" action="login.php">
+                <input type="hidden" name="mode" value="main">
+                <label>{lang username}<br><input type="text" name="username" size="20" maxlength="20" value="$cuser"></label><br>
+                <label>{lang password}<br><input type="password" name="password" size="20" maxlength="20" value="$cpass"></label><br><br>
+                <input type="submit" name="enter" value="{lang login}">
+            </form>
             <!--{/if}-->
+            <p class="nv-note">新手玩家或初次游玩玩家，务必先阅读 <a href="help.php">{lang help}</a>。</p>
         </div>
-    </div>
+    </section>
+
+    <section class="nv-window" id="nv-index-adminmsg" data-window-title="Message">
+        <div class="nv-window__titlebar">
+            <span class="nv-window__title">Admin Message / 站长留言</span>
+            <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
+        </div>
+        <div class="nv-window__body nv-compat">
+            $adminmsg
+            <div style="margin-top:12px">
+                当前房间列表：
+                <input type="button" value="点击查看房间列表" onclick="showModalDialog($('roomlist'));">
+                {template roomlist}
+            </div>
+        </div>
+    </section>
 </div>
-
-<!-- Features Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-12">
-    
-    <!-- Real-time Combat -->
-    <div class="cyber-card p-6 border border-cyber-primary/30 cyber-glow">
-        <div class="text-center">
-            <div class="text-4xl mb-4">⚔️</div>
-            <h3 class="text-xl font-cyber cyber-text-primary mb-3">实时战斗</h3>
-            <p class="cyber-text-secondary text-sm">
-                体验激烈的实时战斗，拥有先进的战斗机制和战略深度。
-            </p>
-        </div>
-    </div>
-
-    <!-- Cyberpunk World -->
-    <div class="cyber-card p-6 border border-cyber-secondary/30 cyber-glow">
-        <div class="text-center">
-            <div class="text-4xl mb-4">🌆</div>
-            <h3 class="text-xl font-cyber cyber-text-secondary mb-3">赛博朋克世界</h3>
-            <p class="cyber-text-secondary text-sm">
-                沉浸在反乌托邦的未来世界中，霓虹闪烁的城市和先进的科技。
-            </p>
-        </div>
-    </div>
-
-    <!-- Social Features -->
-    <div class="cyber-card p-6 border border-cyber-accent/30 cyber-glow">
-        <div class="text-center">
-            <div class="text-4xl mb-4">👥</div>
-            <h3 class="text-xl font-cyber cyber-text-accent mb-3">社交功能</h3>
-            <p class="cyber-text-secondary text-sm">
-                组建团队，加入称号，与玩家在实时聊天系统中互动。
-            </p>
-        </div>
-    </div>
-
-    <!-- Advanced Items -->
-    <div class="cyber-card p-6 border border-cyber-warning/30 cyber-glow">
-        <div class="text-center">
-            <div class="text-4xl mb-4">🔧</div>
-            <h3 class="text-xl font-cyber cyber-text-warning mb-3">高级物品</h3>
-            <p class="cyber-text-secondary text-sm">
-                收集和制作数百种独特的武器、护甲和特殊物品。
-            </p>
-        </div>
-    </div>
-
-    <!-- Skill System -->
-    <div class="cyber-card p-6 border border-cyber-success/30 cyber-glow">
-        <div class="text-center">
-            <div class="text-4xl mb-4">🎯</div>
-            <h3 class="text-xl font-cyber cyber-text-success mb-3">技能系统</h3>
-            <p class="cyber-text-secondary text-sm">
-                掌握各种武器技能，解锁强大的称号能力。
-            </p>
-        </div>
-    </div>
-
-    <!-- Responsive Design -->
-    <div class="cyber-card p-6 border border-cyber-primary/30 cyber-glow">
-        <div class="text-center">
-            <div class="text-4xl mb-4">📱</div>
-            <h3 class="text-xl font-cyber cyber-text-primary mb-3">跨平台支持</h3>
-            <p class="cyber-text-secondary text-sm">
-                在桌面和移动设备上无缝游玩，响应式设计适配所有屏幕。
-            </p>
-        </div>
-    </div>
-    
-</div>
-
-<!-- Game Statistics -->
-<!--{if isset($gameinfo)}-->
-<div class="cyber-card p-6 border border-cyber-primary/30 my-12">
-    <h2 class="text-2xl font-cyber cyber-text-primary text-center mb-6">GAME STATISTICS</h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-        <div>
-            <div class="text-3xl font-cyber cyber-text-primary">$alivenum</div>
-            <div class="cyber-text-secondary">Active Players</div>
-        </div>
-        <div>
-            <div class="text-3xl font-cyber cyber-text-secondary">$gamenum</div>
-            <div class="cyber-text-secondary">Games Played</div>
-        </div>
-        <div>
-            <div class="text-3xl font-cyber cyber-text-accent">$validnum</div>
-            <div class="cyber-text-secondary">Registered Users</div>
-        </div>
-        <div>
-            <div class="text-3xl font-cyber cyber-text-warning">24/7</div>
-            <div class="cyber-text-secondary">Online</div>
-        </div>
-    </div>
-</div>
-<!--{/if}-->
-
-<!-- Latest News -->
-<!--{if isset($newsinfo) && !empty($newsinfo)}-->
-<div class="cyber-card p-6 border border-cyber-primary/30 my-12">
-    <h2 class="text-2xl font-cyber cyber-text-primary mb-6">LATEST NEWS</h2>
-    <div class="space-y-4">
-        <!--{loop $newsinfo $news}-->
-        <div class="border-l-4 border-cyber-primary pl-4 py-2">
-            <div class="cyber-text-primary font-bold">$news['title']</div>
-            <div class="cyber-text-secondary text-sm">$news['date']</div>
-            <div class="cyber-text-secondary mt-2">$news['content']</div>
-        </div>
-        <!--{/loop}-->
-    </div>
-    <div class="text-center mt-6">
-        <a href="news.php" class="cyber-btn cyber-btn-primary">View All News</a>
-    </div>
-</div>
-<!--{/if}-->
-
-<!-- Quick Links -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 my-12">
-    <a href="alive.php" class="cyber-card p-4 border border-cyber-primary/30 text-center hover:border-cyber-primary transition-colors">
-        <div class="text-2xl mb-2">👥</div>
-        <div class="cyber-text-primary">Players Online</div>
-    </a>
-    <a href="winner.php" class="cyber-card p-4 border border-cyber-secondary/30 text-center hover:border-cyber-secondary transition-colors">
-        <div class="text-2xl mb-2">🏆</div>
-        <div class="cyber-text-secondary">Hall of Fame</div>
-    </a>
-    <a href="rank.php" class="cyber-card p-4 border border-cyber-accent/30 text-center hover:border-cyber-accent transition-colors">
-        <div class="text-2xl mb-2">📊</div>
-        <div class="cyber-text-accent">Rankings</div>
-    </a>
-    <a href="help.php" class="cyber-card p-4 border border-cyber-warning/30 text-center hover:border-cyber-warning transition-colors">
-        <div class="text-2xl mb-2">❓</div>
-        <div class="cyber-text-warning">Help Center</div>
-    </a>
-</div>
-
-<!-- System Status -->
-<div class="cyber-card p-4 border border-cyber-primary/30 my-12">
-    <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-4">
-            <div class="w-3 h-3 bg-green-500 rounded-full cyber-pulse"></div>
-            <span class="cyber-text-primary">System Status: Operational</span>
-        </div>
-        <div class="cyber-text-secondary text-sm">
-            Interface: Nouveau v2.0 | Engine: PHPDTS
-        </div>
-    </div>
-</div>
-
-<script>
-// Index page enhancements
-document.addEventListener('DOMContentLoaded', function() {
-    // Animate feature cards on scroll
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-    
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('cyber-fade-in');
-            }
-        });
-    }, observerOptions);
-    
-    // Observe all feature cards
-    document.querySelectorAll('.cyber-card').forEach(card => {
-        observer.observe(card);
-    });
-    
-    // Add hover effects to action buttons
-    document.querySelectorAll('.cyber-btn').forEach(btn => {
-        btn.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-2px) scale(1.05)';
-        });
-        
-        btn.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0) scale(1)';
-        });
-    });
-    
-    // Typing effect for hero text
-    const heroTitle = document.querySelector('h1');
-    if (heroTitle) {
-        const text = heroTitle.textContent;
-        heroTitle.textContent = '';
-        let i = 0;
-        
-        function typeWriter() {
-            if (i < text.length) {
-                heroTitle.textContent += text.charAt(i);
-                i++;
-                setTimeout(typeWriter, 150);
-            }
-        }
-        
-        setTimeout(typeWriter, 500);
-    }
-});
-
-// Particle effect for hero section
-function createParticles() {
-    const hero = document.querySelector('.relative.overflow-hidden');
-    if (!hero) return;
-    
-    for (let i = 0; i < 20; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'absolute w-1 h-1 bg-cyber-primary rounded-full opacity-50';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.top = Math.random() * 100 + '%';
-        particle.style.animation = `float ${3 + Math.random() * 4}s ease-in-out infinite`;
-        particle.style.animationDelay = Math.random() * 2 + 's';
-        hero.appendChild(particle);
-    }
-}
-
-// Initialize particles
-setTimeout(createParticles, 1000);
-</script>
-
-<style>
-/* Index page specific styles */
-@keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(180deg); }
-}
-
-.cyber-hologram {
-    background: linear-gradient(45deg, 
-        transparent 30%, 
-        rgba(0, 255, 255, 0.1) 50%, 
-        transparent 70%);
-    animation: hologram 4s linear infinite;
-}
-
-@keyframes hologram {
-    0%, 100% { 
-        opacity: 0.2; 
-        transform: translateX(-100%);
-    }
-    50% { 
-        opacity: 0.8; 
-        transform: translateX(100%);
-    }
-}
-
-/* Hero section enhancements */
-h1 {
-    text-shadow: 
-        0 0 5px currentColor,
-        0 0 10px currentColor,
-        0 0 15px currentColor;
-}
-
-/* Card hover effects */
-.cyber-card:hover {
-    transform: translateY(-5px);
-    transition: all 0.3s ease;
-}
-
-/* Button transitions */
-.cyber-btn {
-    transition: all 0.3s ease;
-}
-
-/* Mobile optimizations */
-@media (max-width: 768px) {
-    h1 {
-        font-size: 2.5rem;
-    }
-    
-    .cyber-card {
-        margin-bottom: 1rem;
-    }
-}
-</style>
-
 {template footer}
