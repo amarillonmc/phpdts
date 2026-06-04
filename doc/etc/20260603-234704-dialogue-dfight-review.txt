@@ -1,0 +1,150 @@
+PHPDTS dialogue / dfight / addnpc review and repair notes
+PHPDTS 对话系统 / 鏖战机制 / addnpc 检查与修复记录
+
+Time / 时间:
+2026-06-03 23:47:04
+
+Summary / 摘要:
+This note records the review findings for addnpc(), the dialogue choice flow,
+and the PVE chase/dfight loop. The following code change keeps the original
+feature intent: dialogue choices should be selectable and persisted, and dfight
+should keep a player in the intended encounter loop without breaking the
+existing action/bid state machine.
+
+本记录整理 addnpc()、对话选择流程、PVE 追击/鏖战循环的检查结论。
+后续代码修复不改变原设计意图：带选择肢的对白应能被玩家选择并记录，
+鏖战应通过既有 action/bid 状态机把玩家留在接敌流程中，而不是写入
+状态机无法识别的 action 值。
+
+1. addnpc()
+1. addnpc()
+
+- addnpc($type, $sub, $num, $time = 0, $anpcdata = NULL) reads the base NPC
+  template from npc_1.php and summonable NPC data from addnpc_1.php.
+- The merge order is npcinit -> type config -> sub config. Runtime fields such
+  as type, endtime, exp, sNo, hp, sp, state and weapon skills are then filled.
+- Position logic supports fixed locations, random choice from a pls array, and
+  pls == 99 for a random safe location. RuleSet hooks can override random NPC
+  location and randomized stats.
+- club and custom club skills are initialized before $anpcdata is applied.
+- $anpcdata can override scalar player fields. Array values are skipped by
+  default, except clbstatus and clbpara, which have special handling.
+- player_format_with_db_structure() filters the final NPC data to legal players
+  table columns and JSON-encodes array fields.
+- Limitation: $num > 1 does not return created pid values. Only single summons
+  return the pid list.
+- Limitation: extra arguments beyond the five declared parameters are ignored by
+  addnpc(); callers that want a custom location should pass array('pls' => ...)
+  through $anpcdata.
+
+- addnpc($type, $sub, $num, $time = 0, $anpcdata = NULL) 从 npc_1.php 读取
+  基础 NPC 模板，从 addnpc_1.php 读取可召唤 NPC 数据。
+- 合并顺序为 npcinit -> 大类配置 -> 子类配置，之后补全 type、endtime、
+  exp、sNo、hp、sp、state、各系熟练等运行时字段。
+- 位置逻辑支持固定地点、pls 数组随机、pls == 99 的安全区域随机。RuleSet
+  hook 可以接管 NPC 随机位置和数值随机化。
+- 称号和自定义称号技能初始化发生在 $anpcdata 覆盖之前。
+- $anpcdata 可以覆盖标量 player 字段。数组字段默认跳过，只有 clbstatus
+  与 clbpara 有特判。
+- player_format_with_db_structure() 会把最终 NPC 数据过滤为 players 表合法
+  字段，并把数组字段 JSON 化。
+- 限制：$num > 1 时不返回创建出的 pid；只有单体召唤返回 pid 列表。
+- 限制：超过函数声明的额外参数不会被 addnpc 使用；如需指定位置，应通过
+  $anpcdata 传入 array('pls' => ...)。
+
+2. Dialogue choice flow
+2. 对话选择流程
+
+- The front end already renders dialogue branches from $dialogue_branch and
+  submits command = "dialogue_choice <dialogue_id> <choice_index>".
+- command.php already has a dialogue_choice handler that validates the selected
+  branch, writes $clbpara['dialogue_choice'], emits branch-specific dialogue_log
+  when present, and clears dialogue state.
+- Bug: the noskip dialogue guard only allowed end_dialogue, so noskip dialogues
+  with choices were intercepted before the dialogue_choice handler could run.
+- Bug: some code treated $clbpara['noskip_dialogue'] as a dialog DOM id. The
+  documented value 1 means "not skippable", but the actual normal dialog DOM id
+  is "dialogue".
+- Naming mismatch: config defines $dialogue_ending, while the template checks
+  $dialogue_end. This is not repaired here because no active data depends on it,
+  but it remains a cleanup target.
+- Behavior note: the choice result is stored in $clbpara['dialogue_choice'].
+  There is no automatic event callback; game logic must consume that field.
+
+- 前端已经能从 $dialogue_branch 渲染选择肢，并提交 command =
+  "dialogue_choice <dialogue_id> <choice_index>"。
+- command.php 已有 dialogue_choice 处理分支，会校验选择肢、写入
+  $clbpara['dialogue_choice']、优先输出选择专用 dialogue_log，并清除对白状态。
+- 问题：noskip 对话的前置拦截只放行 end_dialogue，因此带选择肢的 noskip
+  对话会在抵达 dialogue_choice 分支前被拦下。
+- 问题：部分代码把 $clbpara['noskip_dialogue'] 当作弹窗 DOM id 使用。文档
+  中的 1 表示“不可跳过”，但普通对话框实际 DOM id 是 "dialogue"。
+- 命名不一致：配置中是 $dialogue_ending，模板检查 $dialogue_end。由于当前
+  未发现实际数据依赖，本次不修，但应作为后续清理目标。
+- 行为说明：选择结果存在 $clbpara['dialogue_choice']。当前没有自动事件回调，
+  需要后续业务逻辑自行读取该字段。
+
+3. PVE chase / dfight
+3. PVE 追击 / 鏖战
+
+- The mechanism is currently disabled by $chase_obbs = 0 and $dfight_obbs = 0.
+- check_can_chase() is intended to keep or enter chase/dfight after a PVE battle
+  when both sides survive.
+- Bug: check_can_chase() wrote action values such as "dfight123",
+  "chase123" and "pchase123". Existing code expects action to be exactly
+  "dfight", "chase" or "pchase" and stores the target pid in bid.
+- Bug: the chase branch used $dfight_obbs instead of $chase_obbs, so the chase
+  probability variable was only acting as an enable flag.
+- Bug: the revcombat gate required both $chase_obbs and $dfight_obbs to be
+  non-zero, preventing chase-only or dfight-only enabling.
+- Bug: escape_from_enemy() cleared local $bid without declaring it global, so the
+  global bid could remain stale after escape.
+
+- 该机制当前由 $chase_obbs = 0 与 $dfight_obbs = 0 关闭。
+- check_can_chase() 的意图是在 PVE 战斗双方存活后，根据条件进入或维持
+  追击/鏖战。
+- 问题：check_can_chase() 写入了 "dfight123"、"chase123"、"pchase123"
+  这样的 action。现有状态机期待 action 精确等于 "dfight"、"chase" 或
+  "pchase"，目标 pid 应保存在 bid。
+- 问题：追击分支使用了 $dfight_obbs，而不是 $chase_obbs，导致 chase_obbs
+  只起到了启用门槛作用。
+- 问题：revcombat 入口要求 $chase_obbs 与 $dfight_obbs 同时非零，无法单独
+  开启追击或鏖战。
+- 问题：escape_from_enemy() 没有 global $bid，却尝试清空 $bid，可能导致
+  逃跑后全局 bid 残留。
+
+Applied repair / 已执行修复:
+
+- command.php now lets dialogue_choice pass the noskip guard, so branch buttons
+  can reach the existing choice handler.
+- command.php and game.php now open the normal dialogue DOM id when
+  $clbpara['dialogue'] exists, instead of treating noskip_dialogue = 1 as a DOM
+  id.
+- templates/default/dialogue.htm now accepts both $dialogue_ending and the older
+  $dialogue_end name for special ending buttons.
+- The dialogue_choice handler no longer performs a raw manual clbpara UPDATE;
+  the normal player_save() path persists the choice with the DB wrapper.
+- revcombat now calls check_can_chase() when either chase or dfight is enabled,
+  instead of requiring both probabilities to be non-zero.
+- check_can_chase() now keeps action values as "dfight", "chase", or "pchase"
+  and writes the target pid to bid.
+- check_can_chase() now uses $chase_obbs for the chase branch.
+- check_can_chase() now skips player-vs-player fights, matching the PVE-only
+  configuration comment.
+- escape_from_enemy() now declares global $bid before clearing it.
+
+- command.php 现在允许 dialogue_choice 穿过 noskip 前置拦截，选择肢按钮可以
+  抵达既有选择处理分支。
+- command.php 与 game.php 在存在 $clbpara['dialogue'] 时统一打开普通对话框
+  DOM id "dialogue"，不再把 noskip_dialogue = 1 当作 DOM id。
+- templates/default/dialogue.htm 现在同时兼容 $dialogue_ending 与旧名
+  $dialogue_end。
+- dialogue_choice 分支不再手写原始 clbpara UPDATE；选择结果由常规
+  player_save() 流程通过数据库封装保存。
+- revcombat 现在在追击或鏖战任一概率开启时调用 check_can_chase()，不再要求
+  两者同时非零。
+- check_can_chase() 现在保持 action 为 "dfight"、"chase"、"pchase"，并把目标
+  pid 写入 bid。
+- check_can_chase() 的追击分支现在使用 $chase_obbs。
+- check_can_chase() 现在跳过玩家对玩家战斗，符合配置中“仅 PVE 触发”的说明。
+- escape_from_enemy() 现在声明 global $bid 后再清理目标 id。

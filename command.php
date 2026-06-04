@@ -110,10 +110,14 @@ if($hp > 0){
 		goto chase_flag;
 	}
 	//执行动作前检查是否有无法跳过且未阅览过的对话框
-	if(!empty($clbpara['noskip_dialogue']) && strpos($command,'end_dialogue')===false)
+	if(!empty($clbpara['noskip_dialogue']) && strpos($command,'end_dialogue')===false && strpos($command,'dialogue_choice')!==0)
 	{
-		$opendialog = $clbpara['noskip_dialogue'];
-		if(!empty($clbpara['dialogue'])) $dialogue_id = $clbpara['dialogue'];
+		if(!empty($clbpara['dialogue'])) {
+			$opendialog = 'dialogue';
+			$dialogue_id = $clbpara['dialogue'];
+		} else {
+			$opendialog = $clbpara['noskip_dialogue'];
+		}
 	}elseif($coldtimeon && $rmcdtime > 0 && (strpos($command,'move')===0 || strpos($command,'search')===0 || (strpos($command,'itm')===0)&&($command != 'itemget') || strpos($sp_cmd,'sp_weapon')===0 || strpos($command,'song')===0)){
 		$log .= '<span class="yellow">冷却时间尚未结束！</span><br>';
 		cd_flag:
@@ -568,22 +572,6 @@ if($hp > 0){
 						// 确保对话框不会重新打开
 						$dialogue_id = null;
 						$opendialog = null;
-
-						// 保存玩家数据，确保选择被记录
-						//$serialized_clbpara = serialize($clbpara);
-						$encoded_clbpara = json_encode($clbpara, JSON_UNESCAPED_UNICODE);
-						//$log .= "<!-- DEBUG: 序列化后的 clbpara 长度: " . strlen($serialized_clbpara) . " -->";
-						//$log .= "<!-- DEBUG: 编码后的 clbpara 长度: " . strlen($encoded_clbpara) . " -->";
-
-						$update_query = "UPDATE {$tablepre}players SET clbpara='" . $encoded_clbpara . "' WHERE pid='$pid'";
-						$update_result = $db->query($update_query);
-
-						if($update_result) {
-							$log .= "<!-- DEBUG: 数据库更新成功 -->";
-
-						} else {
-							$log .= "<!-- DEBUG: 数据库更新失败: " . $db->error() . " -->";
-						}
 
 						// 设置命令模式为命令模式，确保页面能够正确显示选择结果
 						$mode = 'command';

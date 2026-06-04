@@ -334,7 +334,7 @@ namespace revbattle
 	# 战斗中逃跑
 	function escape_from_enemy(&$pa,&$pd)
 	{
-		global $fog,$action,$clbpara,$chase_escape_obbs,$log;
+		global $fog,$action,$bid,$clbpara,$chase_escape_obbs,$log;
 		//include_once GAME_ROOT.'./include/game/dice.func.php';
 		# 在受追击/鏖战状态下逃跑有概率失败
 		if($action == 'pchase' || $action == 'dfight')

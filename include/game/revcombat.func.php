@@ -174,7 +174,7 @@ namespace revcombat
 		}
 
 		# 攻击、反击的战斗结果判断均非0时：检查是否触发追击/鏖战事件
-		if($att_result && (!isset($def_result)||!empty($def_result)) && $chase_obbs && $dfight_obbs)
+		if($att_result && (!isset($def_result)||!empty($def_result)) && ($chase_obbs || $dfight_obbs))
 		{
 			check_can_chase($pa,$pd,$active);
 		}

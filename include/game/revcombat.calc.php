@@ -149,6 +149,7 @@ namespace revcombat
 	function check_can_chase(&$pa,&$pd,$active)
 	{
 		global $chase_obbs,$dfight_obbs,$log;
+		if(!$pa['type'] && !$pd['type']) return;
 		$chase_flag = 0;
 		$dice = diceroll(99);
 		# 进攻方(pa)或防守方(pd)已存在鏖战标记、或防守方(pd)成功反击了进攻方(pa)的攻击，检查是否维持&转入鏖战状态
@@ -157,8 +158,13 @@ namespace revcombat
 			if($dice < $dfight_obbs)
 			{
 				# 满足鏖战条件，检查pa是玩家还是NPC，并赋予对应标记
-				if($active) $pa['action'] = 'dfight'.$pd['pid'];
-				else $pd['action'] = 'dfight'.$pa['pid'];
+				if($active) {
+					$pa['action'] = 'dfight';
+					$pa['bid'] = $pd['pid'];
+				} else {
+					$pd['action'] = 'dfight';
+					$pd['bid'] = $pa['pid'];
+				}
 				$chase_flag = 1;
 				$log.= "<span class='red'>{$pa['nm']}与{$pd['nm']}相互对峙着！</span><br>";
 			}
@@ -170,11 +176,16 @@ namespace revcombat
 		# 进攻方(pa)持有非爆武器，且防守方(pd)未能及时反击，检查是否触发追击
 		if(!$chase_flag && !empty($pa['wep_range']) && isset($pd['cannot_counter']))
 		{
-			if($dice < $dfight_obbs)
+			if($dice < $chase_obbs)
 			{
 				# 满足追击条件，检查pa是玩家还是NPC，并赋予对应标记
-				if($active) $pa['action'] = 'chase'.$pd['pid'];
-				else $pd['action'] = 'pchase'.$pa['pid'];
+				if($active) {
+					$pa['action'] = 'chase';
+					$pa['bid'] = $pd['pid'];
+				} else {
+					$pd['action'] = 'pchase';
+					$pd['bid'] = $pa['pid'];
+				}
 				$chase_flag = 1;
 				$log.= "<span class='red'>但是{$pa['nm']}紧追着{$pd['nm']}不放！</span><br>";
 			}

@@ -251,8 +251,12 @@ if(!$just_made_choice && !empty($clbpara['ruleset_opening_story']) && empty($clb
 }
 elseif(!$just_made_choice && (!empty($clbpara['dialogue']) || !empty($clbpara['noskip_dialogue'])))
 {
-	$opendialog = $clbpara['noskip_dialogue'];
-	if(!empty($clbpara['dialogue'])) $dialogue_id = $clbpara['dialogue'];
+	if(!empty($clbpara['dialogue'])) {
+		$opendialog = 'dialogue';
+		$dialogue_id = $clbpara['dialogue'];
+	} else {
+		$opendialog = $clbpara['noskip_dialogue'];
+	}
 }
 if(isset($opendialog))
 {
