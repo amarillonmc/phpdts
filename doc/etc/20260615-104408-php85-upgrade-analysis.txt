@@ -1,0 +1,398 @@
+PHPDTS PHP 7.4 -> PHP 8.5 升级可行性分析
+PHPDTS PHP 7.4 -> PHP 8.5 Upgrade Feasibility Analysis
+
+生成时间 / Generated: 2026-06-15 10:44:08
+范围 / Scope: 仅分析与存档，未修改任何业务代码。
+
+一、总体结论 / Executive Summary
+
+当前项目从 PHP 7.4 升级到 PHP 8.5，在技术上可行，但不建议直接在生产环境“一步到位”切换。
+
+真正必要的是脱离 PHP 7.4，因为 PHP 7.4 已于 2022-11-28 结束官方支持，继续运行在公网环境中会有长期安全和主机兼容性风险。
+
+但直接把 PHP 8.5 作为所有部署环境的最低要求并不稳妥。项目大多数部署在 Windows Server + IIS + FastCGI，服务器可控，适合分阶段迁移；少部分部署在 CPanel/虚拟主机，PHP 8.5 是否可选取决于主机商，无法保证同步支持。
+
+建议路线：
+1. 先让代码兼容 PHP 8.2/8.3/8.4。
+2. 再在自管 Windows Server 测试环境验证 PHP 8.5。
+3. 最后分批切换生产站点。
+4. CPanel/虚拟主机保持“兼容 PHP 8.x”的策略，不强制要求 PHP 8.5。
+
+English summary:
+Moving away from PHP 7.4 is necessary for security and platform longevity. However, PHP 8.5 should be adopted through a staged compatibility plan rather than a direct production jump, especially because some deployments depend on shared hosting and CPanel availability.
+
+
+二、代码库现状 / Current Codebase Notes
+
+项目是典型老式 PHP 游戏架构：
+- 入口文件位于根目录，例如 game.php、command.php、admin.php、install.php。
+- 核心初始化在 include/common.inc.php。
+- 游戏逻辑主要在 include/game/。
+- 配置和运行缓存位于 gamedata/cache/、gamedata/ruleset/*/cache/、gamedata/templates/。
+- 模板使用自定义 .htm 语法，由 include/template.func.php 编译为 PHP。
+- 数据库层包含 db_mysqli、db_pdo、db_mysql 三套实现。
+
+本地扫描到 367 个 PHP 文件。
+
+当前 config.inc.php 使用 mysqli：
+    $database = 'mysqli';
+    $dbcharset = 'utf8mb4';
+
+但 config.inc.php.sample 仍默认使用 mysql：
+    $database = 'mysql';
+
+这意味着现有站点可能正常，但新安装或历史安装仍有 PHP 8 下立即中断的风险。
+
+
+三、升级必须处理的兼容性问题 / Required Compatibility Changes
+
+1. 移除或禁用 mysql_* 驱动路径
+
+相关文件：
+- include/db_mysql.class.php
+- config.inc.php.sample
+- install.php
+
+include/db_mysql.class.php 仍使用 mysql_connect、mysql_query、mysql_fetch_array、MYSQL_ASSOC 等老扩展接口。该扩展在 PHP 7 就已移除，在 PHP 8.5 下完全不可用。
+
+建议：
+- 明确废弃 $database = 'mysql'。
+- 默认配置改为 mysqli。
+- 安装器检查 mysqli 或 PDO MySQL 扩展。
+- 如果保留 db_mysql.class.php，仅作为历史文件，不允许被实际配置加载。
+
+可能问题：
+- 使用旧 config.inc.php.sample 新装的站点会白屏。
+- 历史部署如果仍配置 mysql，会在 include/common.inc.php 动态 require db_mysql 后立即 fatal。
+
+
+2. 全面处理短 PHP 标签 <?
+
+相关位置：
+- include/db_mysqli_error.inc.php
+- gamedata/cache/*.php
+- gamedata/ruleset/*/cache/*.php
+- include/template.func.php 的模板编译生成逻辑
+
+扫描发现多个运行缓存文件以短标签开头：
+    <? if(!defined('IN_GAME')) exit('Access Denied'); ?>
+
+PHP 官方建议使用完整标签 <?php，因为短标签依赖 short_open_tag 配置。IIS/FastCGI 与 CPanel 环境中 short_open_tag 很可能为 Off。
+
+建议：
+- 生成缓存和规则集缓存时统一输出 <?php。
+- 现有 gamedata/cache 和 gamedata/ruleset/*/cache 中的短标签文件需要转换或重新生成。
+- 部署升级时清理 gamedata/templates/*.tpl.php，让模板在新版本 PHP 下重新编译。
+
+可能问题：
+- 如果 short_open_tag=Off，缓存 PHP 文件会被当作普通文本输出。
+- 配置变量不会定义，后续游戏逻辑产生大量 undefined variable / undefined array key。
+- 页面可能出现源码片段或直接 500。
+
+
+3. 替换旧 JSON 兼容库中的 PHP 8 致命语法
+
+相关文件：
+- include/JSON.php
+- include/global.func.php 中 compatible_json_encode()
+
+include/JSON.php 是旧 PEAR 风格 JSON 库，存在大量花括号字符串下标：
+    $utf16{0}
+    $var{$c}
+    $chrs{$c}
+
+PHP 8.0 已移除这种写法，文件只要被解析就可能 fatal。
+
+当前主路径 compatible_json_encode() 在现代 PHP 会使用原生 json_encode，因此正常情况下未必会加载 JSON.php。但只要旧路径或调试路径直接 include，它仍是升级风险。
+
+建议：
+- 优先完全使用原生 json_encode/json_decode。
+- 如果保留 include/JSON.php，至少将花括号下标改为方括号下标，并处理旧式构造函数和动态属性问题。
+
+可能问题：
+- 某些旧功能、聊天、新闻、API 或调试路径一旦加载该文件，会直接语法错误。
+
+
+4. 修复 preg_replace /e
+
+相关文件：
+- include/weibolog.func.php
+
+发现：
+    preg_replace("/\<(.+?)\>/es", "", $log);
+
+/e 修饰符从 PHP 7 开始已不可用，在 PHP 8.5 下仍不可用。
+
+建议：
+- 用 strip_tags 或 preg_replace_callback 替代。
+- 如果只是去除 HTML 标签，strip_tags 更贴近原意。
+
+可能问题：
+- 触发微博/日志相关功能时产生 warning 或中断。
+- 日志清洗输出可能和旧逻辑略有不同，需要人工比对。
+
+
+5. 固定 MySQLi 错误模式
+
+相关文件：
+- include/db_mysqli.class.php
+
+PHP 8.1 起 MySQLi 默认错误模式与旧版本不同，可能抛出 mysqli_sql_exception。当前项目 DB 层假设 mysqli_query 返回 false 后由 halt() 处理。
+
+建议：
+- 若希望保持原有错误处理机制，应在 DB 初始化时显式设置 mysqli_report(MYSQLI_REPORT_OFF)。
+- 或者完整改造 DB 层为 try/catch，但这会触及更多机制，不建议作为第一阶段。
+
+可能问题：
+- 数据库错误不再走原本 halt/gexit 模板。
+- 安装、建表、多语句执行、游戏内写库失败时表现和旧版不同。
+
+
+6. 增加数组、字符串、数值转换保护
+
+相关文件示例：
+- include/db_mysqli.class.php
+- include/db_pdo.class.php
+- command.php
+- include/game/*.php
+
+PHP 8 对类型更严格，以下写法风险较高：
+- count() / sizeof() 传入非数组。
+- array_values($data)[0] 在空数组上读取。
+- mysqli_real_escape_string() 传入数组或对象。
+- 字符串参与数值运算。
+- 未定义数组键被直接读取。
+
+扫描到的明显热点：
+    include/db_mysqli.class.php: array_values($data)[0]
+    include/db_pdo.class.php: array_values($data)[0]
+    command.php / include/game/*: 大量 count()、动态 clbpara、任务、鱼篓、技能参数读取
+
+建议：
+- 在 DB 层入口对空数组、非数组、非标量值做保护。
+- 对 clbpara、quest、fishing、achvars 等动态结构设置默认空数组。
+- 不改变机制，只补默认值和类型守卫。
+
+可能问题：
+- 原本悄悄跳过的异常数据会在 PHP 8 下变成 warning、TypeError 或白屏。
+- 玩家存档、技能参数、任务数据中存在历史脏数据时，升级后更容易暴露。
+
+
+7. 保留但审计 extract、动态变量、eval
+
+相关文件：
+- include/common.inc.php
+- game.php
+- command.php
+- include/game/revclubskills.func.php
+
+项目大量使用：
+    extract($pdata, EXTR_REFS)
+    ${'itm'.$i}
+    $$key
+    eval("return ($lock);")
+
+这些属于游戏机制和老式架构的一部分，不建议为了升级而重写，否则容易改变战斗、技能、道具和模板行为。
+
+建议：
+- 不做架构性重写。
+- 对输入变量、技能公式、配置公式补默认值和校验。
+- 对 eval 生成的表达式增加失败日志，便于定位问题。
+
+可能问题：
+- 未定义变量在 PHP 8 下更吵。
+- 技能公式中某个变量为空字符串、数组或不存在时，可能产生新 warning 或 TypeError。
+- 修改过度会改变原有机制，不符合“机制不变”的要求。
+
+
+8. 更新安装器、运行检查、文档
+
+相关文件：
+- install.php
+- include/common.inc.php
+- README.md
+
+当前仍有 PHP 4.3 时代的版本检查：
+    version_compare(PHP_VERSION, '4.3.0', '<')
+
+README 中仍写 PHP 7.4/5.6。
+
+建议：
+- 安装器改为检查 PHP 8.x 支持范围。
+- 检查 mysqli、pdo_mysql、mbstring、json、openssl 等扩展。
+- 文档更新为推荐 PHP 8.2+，目标兼容 PHP 8.5。
+
+可能问题：
+- 用户按照旧文档安装，会选择错误 PHP 版本或错误 DB 驱动。
+- CPanel 用户可能找不到 PHP 8.5，应在文档中说明兼容范围。
+
+
+四、升级后可能暴露的问题 / Risks After Migration
+
+1. 白屏或 HTTP 500
+主要来自旧 mysql 驱动、JSON.php 语法错误、模板缓存短标签、MySQLi 异常。
+
+2. 错误日志暴涨
+include/common.inc.php 使用 error_reporting(E_ALL)，PHP 8 会让未定义变量、未定义数组键、类型问题更明显。
+
+3. 模板编译失败
+自定义模板语法允许 {eval ...}，编译后的 PHP 在 PHP 8 下更容易因语法严格性失败。
+
+4. 游戏逻辑边缘行为变化
+字符串数值转换、空字符串比较、数组键不存在、count 非数组等行为可能影响战斗、合成、任务、社团技能。
+
+5. 数据库错误处理变化
+mysqli 抛异常后可能绕过原有 halt/gexit 输出。
+
+6. 部署差异
+Windows Server 自管环境可控；CPanel/虚拟主机环境不保证 PHP 8.5 可用，也不保证 short_open_tag、扩展、文件锁行为一致。
+
+7. Bot CLI 与 Web PHP 版本不一致
+bot/bot_enable.sh 和 bot/bot_enable.bat.sample 通过 php 命令启动。如果 IIS 使用 PHP 8.5，但 CLI 仍是 PHP 7.4，机器人和 Web 逻辑可能不一致。
+
+
+五、部署环境分析 / Deployment Analysis
+
+1. Windows Server + IIS + FastCGI
+
+优点：
+- 服务器可控。
+- 可以 side-by-side 安装 PHP 7.4 与 PHP 8.5。
+- 可以按站点或应用池逐步切换 FastCGI handler。
+- 可以先在测试房间或低流量站点试运行。
+
+需要检查：
+- php-cgi.exe 是否使用正确 PHP 8.5 NTS Windows build。
+- VC 运行库是否匹配。
+- php.ini 的 extension_dir 是否正确。
+- mysqli、pdo_mysql、mbstring、openssl、json 是否启用。
+- date.timezone、upload_tmp_dir、session.save_path、log_errors、display_errors。
+- OPcache 是否启用，且缓存刷新策略适合模板编译。
+- gamedata/、gamedata/templates/、gamedata/cache/、gamedata/process.lock 是否有写权限。
+- Web PHP 与 bot CLI PHP 是否一致。
+
+结论：
+Windows Server 部署适合率先升级，但必须灰度，不宜直接全站替换。
+
+
+2. CPanel / 虚拟主机
+
+主要限制：
+- PHP 8.5 是否可选取决于主机商。
+- MultiPHP/EasyApache 或 CloudLinux Selector 通常会滞后于 PHP 官方发布。
+- 扩展启用权限有限。
+- short_open_tag、OPcache、错误日志路径、文件权限可能不可控。
+
+结论：
+不应把 PHP 8.5 作为所有部署的硬性最低要求。更稳妥的是声明兼容 PHP 8.2+ 或 PHP 8.3+，并持续验证 PHP 8.5。
+
+
+六、升级后的收益 / Benefits
+
+1. 安全收益
+PHP 7.4 已无官方安全更新，升级到受支持版本可减少公开漏洞风险。
+
+2. 平台寿命
+主机商、Windows PHP build、扩展包和运维工具都会逐步放弃 PHP 7.4。
+
+3. 性能收益
+PHP 8 系列整体性能优于 PHP 7.4。对本项目而言，OPcache 的收益比 JIT 更实际。
+
+4. 更早暴露隐藏 bug
+PHP 8 更严格的 warning、TypeError 和异常能帮助发现历史脏数据、未定义变量和错误参数。
+
+5. 现代扩展和系统库
+mysqli/PDO、OpenSSL、JSON、mbstring 等运行环境更现代，长期维护成本更低。
+
+6. 更容易继续开发
+未来如果引入工具、静态分析、Composer 包或现代运维脚本，PHP 8 生态支持明显更好。
+
+
+七、是否必要 / Necessity Assessment
+
+必要：
+- 从安全和长期维护角度，继续停留 PHP 7.4 不合适。
+- 公网游戏、登录、后台管理、数据库写入都让安全支持变得重要。
+- 新部署环境未来越来越难找到 PHP 7.4。
+
+不必要：
+- 不需要立刻把所有生产环境强制切到 PHP 8.5。
+- 不需要为了升级重写游戏机制。
+- 不需要把 extract、动态变量、模板系统一次性推倒重来。
+
+推荐决策：
+- 中期目标：脱离 PHP 7.4。
+- 技术目标：兼容 PHP 8.2/8.3/8.4，并验证 PHP 8.5。
+- 部署策略：Windows IIS 先灰度，CPanel 用户等待主机商支持。
+- 机制原则：只做兼容修复和保护，不改变游戏机制。
+
+
+八、建议的迁移顺序 / Suggested Migration Order
+
+1. 修复阻断性 fatal：
+   - mysql 驱动配置
+   - 短标签
+   - JSON.php 花括号下标
+   - preg_replace /e
+
+2. 固定运行时行为：
+   - MySQLi 错误模式
+   - error_reporting / display_errors / log_errors
+   - 模板缓存重新生成
+
+3. 补类型保护：
+   - DB 层 array_insert/array_update
+   - count/sizeof 热点
+   - clbpara、quest、fishing 等动态数据默认值
+
+4. 做功能回归：
+   - 登录/注册
+   - 开局/进入游戏
+   - 移动/探索
+   - 战斗
+   - 道具使用/合成
+   - 社团技能
+   - 任务/成就
+   - 管理后台
+   - Bot 进程
+
+5. 分环境部署：
+   - 本地或测试 IIS
+   - 低流量 Windows Server
+   - 主生产 Windows Server
+   - CPanel/虚拟主机按支持情况逐步切换
+
+
+九、官方资料 / Official References
+
+- PHP supported versions:
+  https://www.php.net/supported-versions.php
+
+- PHP unsupported branches / end of life:
+  https://www.php.net/eol.php
+
+- PHP 8.0 incompatible changes:
+  https://www.php.net/manual/en/migration80.incompatible.php
+
+- PHP 8.1 incompatible changes:
+  https://www.php.net/manual/en/migration81.incompatible.php
+
+- PHP 8.2 deprecated features:
+  https://www.php.net/manual/en/migration82.deprecated.php
+
+- PHP tags:
+  https://www.php.net/manual/en/language.basic-syntax.phptags.php
+
+- PHP 8.5 migration guide:
+  https://www.php.net/manual/en/migration85.php
+
+
+十、最终建议 / Final Recommendation
+
+PHPDTS 应该升级 PHP 运行环境，但应以“兼容 PHP 8.x”为迁移项目，而不是简单地把版本号从 7.4 改成 8.5。
+
+如果只看自管 Windows Server，升级到 PHP 8.5 是值得做的；如果把 CPanel/虚拟主机也算入部署矩阵，则更合理的公开兼容口径是：
+
+    推荐 PHP 8.2+，持续验证 PHP 8.5；旧 PHP 7.4 仅作为短期过渡，不再作为长期目标。
+
+这样可以获得安全和平台寿命收益，同时最大限度避免改变现有游戏机制。
