@@ -1,0 +1,479 @@
+PHPDTS 中文/英文双语化改造分析归档
+PHPDTS Chinese/English Internationalization Analysis Archive
+
+日期 / Date: 2026-06-15
+范围 / Scope: 仅分析，不涉及代码修改。本分析暂不考虑资源层的完整翻译，但会指出资源层中哪些内容实际承担界面显示职责。
+
+
+一、总体判断 / Overall Assessment
+
+当前代码库不是单纯“模板中存在中文文案”的问题。中文用户可见文本分散在五个主要层面：
+
+1. 模板静态文案
+   现有模板系统已经有 {lang ...} 机制，例如 templates/default/templates.lang.php，但覆盖面有限。
+   当前约有 308 处 {lang}，只分布在 46 个模板文件中；大量模板仍直接写中文。
+
+2. PHP 运行时消息
+   这是最大部分。include 下约有 1953 处 $log .=，玩家实际游玩时看到的大量行动反馈、战斗提示、道具提示、组队提示都在 PHP 中直接拼接。
+   代表位置：
+   - command.php
+   - game.php
+   - include/game/*.php
+   - include/state.func.php
+
+3. 新闻/事件格式化
+   newsinfo 表保存事件码和参数，显示时由 include/news.func.php 中的大段 if/elseif 拼接成中文句子。
+   这一层相对适合本地化，因为数据库中保存的核心数据不是完整句子，而是事件码与参数。
+
+4. 资源/配置数组
+   gamedata/cache/resources_1.php 中包含 $gstate、$week、$clubinfo、$wthinfo、$sexinfo、$hpinfo、$poseinfo、$tacinfo、$_ERROR、$_INFO 等。
+   虽然“资源层”暂不考虑完整翻译，但其中一部分并不是道具/NPC/剧情资源，而是系统界面、状态和错误提示。如果完全不动这一层，英文界面会继续出现大量中文状态和提示。
+
+5. JSON/API/JS 文案
+   api.php 直接返回中文 title，例如“销毁尸体”“返回”等。
+   部分 JavaScript 中也有 alert、textContent、console/error UI 文案。
+   更危险的是，api.php 中存在用中文显示文本做逻辑判断的情况，例如 battle_title === "发现尸体"。这类内容不能直接翻译，否则会改变机制。
+
+
+二、现有模板语言机制问题 / Current Template Language Mechanism Issues
+
+当前模板编译逻辑在 include/template.func.php 中处理：
+
+- parse_template() 读取模板 .htm。
+- include_once language('templates', ...) 加载 templates.lang.php。
+- {lang key} 在编译期直接替换成 $language[key] 的文本。
+- 编译产物写入 gamedata/templates/{templateid}_{file}.tpl.php。
+
+这导致一个关键问题：编译缓存没有语言维度。
+
+如果改成中文/英文双语言包，但仍保持编译期替换，那么中英文用户同时访问时会产生缓存串语言：
+
+- 中文用户触发编译，缓存文件中写入中文。
+- 英文用户访问同一模板 ID 和文件名，直接读取中文缓存。
+- 英文用户触发重新编译后，中文用户又可能读到英文缓存。
+
+因此，双语化时必须至少做到以下二选一：
+
+1. 让模板编译成运行时 t() 调用，而不是编译期直接替换文本。
+2. 在编译缓存文件名中加入语言码，例如 1_zh_cn_game.tpl.php、1_en_us_game.tpl.php。
+
+长期更推荐第 1 种，因为一个模板缓存可以服务多语言，并且语言切换更稳定。
+
+
+三、最有效更改方案 / Recommended Full Solution
+
+目标：在不改变现有游戏机制和系统行为的前提下，建立真正可维护的 i18n 层。
+
+1. 增加统一语言解析
+
+建议解析顺序：
+
+- URL 参数临时覆盖，例如 ?lang=en_us
+- 用户设置
+- cookie
+- 浏览器 Accept-Language
+- 默认 zh_cn
+
+现有用户模板偏好通过 u_templateid 控制，可参考 include/common.inc.php 中的处理方式，但语言偏好不要和模板偏好混在一起。
+
+2. 建立统一翻译函数
+
+建议增加类似：
+
+    t('game.log.cooldown', array('seconds' => $seconds))
+
+翻译 domain 可以拆成：
+
+- ui
+- error
+- game_log
+- news
+- api
+- admin
+- js
+
+不要让翻译文本直接依赖 PHP 变量名。推荐使用稳定占位符：
+
+    {player}
+    {item}
+    {seconds}
+    {place}
+
+3. 改造模板语言机制
+
+最稳方案：让 {lang key} 编译成运行时 t('templates.key')。
+
+次优方案：保留编译期替换，但模板缓存文件名加入语言码。
+
+无论采用哪种，都要确保：
+
+- default 和 nouveau 模板能独立加载语言包。
+- nouveau 目前复用 default 语言包，未来需要自己的 override 或 fallback 机制。
+- 找不到翻译 key 时能明确显示缺失 key，而不是静默空白。
+
+4. 新闻格式化表驱动化
+
+include/news.func.php 当前用大量 if/elseif 拼接中文。建议把事件码映射到翻译 key：
+
+    news.newgame
+    news.newroomgame
+    news.death11
+    news.trap
+    news.itemmix
+
+newsinfo 表当前保存 time、news、a、b、c、d、e，结构上已经适合多语言渲染。
+
+做法：
+
+- 保留数据库结构。
+- 将事件码 news 作为 key。
+- 将 a/b/c/d/e 作为参数。
+- 渲染时按当前语言格式化。
+
+这样旧新闻也能按当前用户语言显示。
+
+5. 运行时日志逐步事件化
+
+当前 log 表保存的是已经渲染好的 HTML 文本：
+
+- include/global.func.php 中 logsave($pid, $time, $log, $type)
+- command.php 和 game.php 再读取 log 字段直接拼接显示
+
+这意味着旧日志无法可靠从中文转换成英文。
+
+推荐长期方案：
+
+- 保留旧 log 字段兼容历史数据。
+- 新增 log_key、log_params 或类似结构化字段。
+- 新生成的日志存 key 和参数。
+- 显示时根据当前语言渲染。
+
+迁移顺序建议：
+
+1. 高频系统日志
+2. 战斗日志
+3. 搜索/移动/物品日志
+4. 技能/称号/特殊系统日志
+
+6. API 返回稳定 code 与本地化 label
+
+api.php 中不应再用中文显示文本作为逻辑判断。
+
+例如：
+
+当前危险模式：
+
+    battle_title === "发现尸体"
+
+建议改成：
+
+    battle_state === "corpse_found"
+
+API 可同时返回：
+
+    "state": "corpse_found",
+    "title": t('battle.state.corpse_found')
+
+这样前端显示可翻译，后端机制不受语言影响。
+
+7. JavaScript 文案字典化
+
+include/game.js、include/game20130526.js、include/dialogue.js、include/record.js 中存在用户可见中文。
+
+建议：
+
+- 服务端输出当前语言码与前端语言包。
+- JS 使用 window.PHPDTS_I18N 或类似对象。
+- alert/textContent/innerHTML 中的固定文案改成 i18n key。
+
+8. 资源层中“界面状态数组”拆分
+
+虽然暂不考虑完整资源层翻译，但以下数组是界面显示核心：
+
+- $gstate
+- $gwin
+- $week
+- $wthinfo
+- $sexinfo
+- $hpinfo
+- $spinfo
+- $rageinfo
+- $poseinfo
+- $tacinfo
+- $_ERROR
+- $_INFO
+
+建议先将它们视为 system_ui resources，而不是道具/NPC资源。否则英文界面仍会大量混中文。
+
+
+四、最小更改方案 / Minimal Change Plan
+
+目标：尽快让游戏可以选择中文/英文界面，同时接受一定程度的中英混杂。
+
+1. 增加语言选择
+
+先用 cookie 或 session 即可，不一定马上改数据库。
+
+2. 拆分模板语言包
+
+例如：
+
+- templates/default/templates.lang.zh_cn.php
+- templates/default/templates.lang.en_us.php
+- templates/nouveau/templates.lang.zh_cn.php
+- templates/nouveau/templates.lang.en_us.php
+
+3. 修改模板缓存
+
+至少把语言码加入编译文件名，例如：
+
+    gamedata/templates/1_zh_cn_game.tpl.php
+    gamedata/templates/1_en_us_game.tpl.php
+
+否则无法稳定支持多语言并发。
+
+4. 扩充 {lang} 覆盖面
+
+先处理：
+
+- header/footer
+- index
+- register/user/profile
+- game/profile/command/chat
+- error pages
+- room list
+- nouveau 模板中明显硬编码的按钮和标题
+
+5. 抽出 $_ERROR 与 $_INFO
+
+登录、注册、权限、房间错误等都依赖 $_ERROR/$_INFO。如果这部分不处理，英文界面会频繁出现中文错误。
+
+6. 高频 $log 包一层 t()
+
+不做完整结构化重构，先处理最常见的玩家动作：
+
+- 移动
+- 搜索
+- 发现敌人/尸体/队友
+- 冷却时间
+- 眩晕/死亡
+- 使用物品
+- 组队
+- 简单战斗结果
+
+7. news.func.php 先模板化
+
+不改 newsinfo 表结构，只把 if/elseif 中的句子换成当前语言模板。
+
+8. JS 最小字典
+
+先处理 alert 和按钮文字：
+
+- “至少要投入1份元素！”
+- “上一页”
+- “下一页”
+- “请先选择一个录像文件”
+- “开始录像”
+- “停止录像”
+- “错误”
+
+最小方案的缺点：
+
+- 历史日志仍是中文。
+- 部分战斗/技能/道具提示仍是中文。
+- 管理后台会混中文。
+- 帮助、成就、长篇剧情仍是中文。
+- 资源数组未处理时，状态、天气、性别、姿态等仍显示中文。
+
+
+五、最可能导致的问题 / Risks
+
+1. 模板缓存串语言
+
+这是最先需要解决的问题。当前编译缓存没有语言维度，直接加英文语言包会导致不同用户互相覆盖缓存。
+
+2. 运行时日志不可逆
+
+log 表保存完整 HTML 文本。已经生成的中文日志无法可靠恢复成英文。只能接受旧日志保持原文，或新增结构化日志。
+
+3. 中文字符串参与机制判断
+
+扫描中发现多处中文既是显示文本，也是机制数据或判断条件，例如：
+
+- “毒药”
+- “拳头”
+- “男生校服”
+- “女生校服”
+- “发现尸体”
+- “发现队友”
+
+这些不能机械翻译。必须先分类：
+
+- 纯显示文案：可以翻译。
+- 机制标识符：不能翻译，只能显示时映射。
+- 兼具显示与机制的数据：需要新增 display name 或 code/name 分离。
+
+4. 英文长度导致布局破坏
+
+默认模板大量使用表格、固定宽度、按钮 value。英文通常比中文长，会撑破布局。
+
+高风险位置：
+
+- 管理后台表格
+- 玩家资料页
+- 战斗页面
+- 背包/装备栏
+- 按钮 value
+
+5. HTML 混在文案里
+
+现有文案中大量包含：
+
+- <span>
+- <br>
+- class
+- tooltip
+
+翻译时容易破坏标签或占位符。推荐把 HTML 从翻译文本中剥离，或者使用受控 placeholder。
+
+6. 英文复数和语序
+
+中文可直接拼接：
+
+- 3秒前
+- 5人
+- 第10回游戏
+
+英文需要处理：
+
+- 1 second ago / 2 seconds ago
+- 1 player / 5 players
+- Game #10
+
+不能只用简单字符串拼接。
+
+7. 数据库字段长度
+
+chat.msg 当前是 char(60)。英文系统聊天可能更长，若系统聊天也本地化，字段长度可能不足。
+
+8. 安全风险
+
+翻译文件如果允许 HTML，需要防止：
+
+- 标签破坏
+- 属性注入
+- 占位符中未转义的用户输入
+
+建议明确区分：
+
+- plain text translation
+- HTML-safe translation
+- trusted rich translation
+
+
+六、如何让人类或 LLM 高效翻译 / Translation Workflow
+
+1. 先抽取，再翻译
+
+每条文案生成记录：
+
+- key
+- 中文原文
+- 所属 domain
+- 文件路径和行号
+- 上下文说明
+- 占位符列表
+- 是否允许 HTML
+
+2. 建术语表
+
+必须统一的术语包括：
+
+- 切糕
+- 战斗力
+- 禁区
+- 连斗
+- 死斗
+- 内定称号
+- 灵力
+- 歌魂
+- 时光重现
+- 参战者
+- 管理员
+- 战场
+
+3. 统一占位符格式
+
+推荐：
+
+    {player}
+    {target}
+    {item}
+    {place}
+    {seconds}
+    {count}
+
+禁止翻译器修改占位符名称。
+
+4. HTML 尽量不交给翻译器
+
+如果必须保留 HTML，翻译前后做检查：
+
+- 标签是否成对
+- class 是否未改
+- 占位符集合是否一致
+- 不允许新增 script/event handler
+
+5. 按 domain 分批翻译
+
+建议顺序：
+
+1. error/ui/api/js
+2. news
+3. game_log
+4. admin
+5. help/achievement/story
+
+不要把战斗日志、后台配置、帮助页、按钮标签混在同一批交给 LLM。
+
+6. 加自动检查
+
+至少包括：
+
+- 英文语言包是否残留中文
+- zh_cn 和 en_us key 是否一致
+- 占位符是否一致
+- 翻译文本中是否意外包含未允许 HTML
+- 模板编译后是否仍有 !missing_key! 或类似缺失标记
+
+
+七、推荐落地顺序 / Suggested Migration Order
+
+1. 语言选择与语言码解析
+2. 模板缓存语言隔离或运行时 t()
+3. 模板语言包拆分和 fallback
+4. $_ERROR / $_INFO 语言化
+5. header/index/user/register/game 基础 UI 语言化
+6. JS alert/textContent 语言化
+7. news.func.php 事件模板化
+8. 高频 $log 文案 t() 化
+9. API code/label 分离
+10. 结构化 log_key/log_params
+11. 帮助、成就、剧情等长文本
+12. 再决定是否全面处理资源层
+
+
+八、结论 / Conclusion
+
+最小方案可以较快实现“可切换中英界面”，但会长期存在混合语言和维护成本。
+
+最有效方案需要建立统一 i18n 机制，尤其要处理：
+
+- 模板缓存语言维度
+- 运行时日志结构化
+- 新闻事件模板化
+- API 稳定 code 与显示 label 分离
+- 机制数据与显示文案分离
+
+最重要的原则是：不要直接把中文字符串批量替换成英文。这个代码库中不少中文字符串同时承担机制标识、数据名称或逻辑判断职责。翻译应发生在显示边界，而不是破坏内部状态和规则。
+
