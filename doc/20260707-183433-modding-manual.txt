@@ -1,0 +1,10 @@
+中文说明：
+新增 doc/modding_260707/ 目录，编写面向 PHPDTS 新手改造者的完整说明书。内容覆盖启动流程、PHPDTS 常见 PHP 写法、资源层改造、移动/搜索/视界/背包/战斗机制、社团技能、头衔成就、任务剧情、结局、隐藏地点、RuleSet、常见改造配方和排错方法。
+
+同时新增“未完成和异常实现观察.md”，单独记录本次梳理中发现的疑似未完成、实现奇怪或容易误用之处，便于后续讨论和修复。
+
+English summary:
+Added a new beginner-oriented PHPDTS modding manual under doc/modding_260707/. The manual covers setup, PHPDTS coding basics, resource editing, gameplay mechanics, clubs/skills/titles/achievements, quests, dialogue, endings, hidden locations, RuleSet usage, common recipes, and troubleshooting.
+
+Also added a separate observation file for incomplete, surprising, or potentially problematic implementations discovered during the documentation pass.
+
