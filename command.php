@@ -103,12 +103,18 @@ if($hp > 0){
 		goto cd_flag;
 	}
 
-	//执行动作前，身上存在追击标记时，直接进入追击判定
-	if(!empty($action) && in_array($action,Array('chase','pchase','dfight','cover')) && $mode !== 'revcombat')
+	// 未定义RuleSet动作钩子时，保持原有追击优先级不变。
+	// Preserve the original chase priority when the active ruleset has no action hook.
+	if(!function_exists('ruleset_command_prepare_hook') && !empty($action) && in_array($action,Array('chase','pchase','dfight','cover')) && $mode !== 'revcombat')
 	{
 		$command = $action;
 		goto chase_flag;
 	}
+
+	$ruleset_command_blocked = false;
+	$ruleset_command_value = isset($command) ? $command : '';
+	if(!empty($action) && in_array($action,Array('chase','pchase','dfight','cover')) && $mode !== 'revcombat') $ruleset_command_value = $action;
+
 	//执行动作前检查是否有无法跳过且未阅览过的对话框
 	if(!empty($clbpara['noskip_dialogue']) && strpos($command,'end_dialogue')===false && strpos($command,'dialogue_choice')!==0)
 	{
@@ -123,6 +129,24 @@ if($hp > 0){
 		cd_flag:
 		$mode = 'command';
 	}else{
+		// RuleSet钩子：只在对话与冷却检查通过后结算动作，追击也不会绕过。
+		// RuleSet hook: settle actions only after dialog/cooldown checks; chase actions cannot bypass it.
+		if(function_exists('ruleset_command_prepare_hook')) {
+			$ruleset_command_blocked = ruleset_command_prepare_hook($pdata, $ruleset_command_value) === false;
+		}
+		if($ruleset_command_blocked) {
+			$mode = 'command';
+			goto ruleset_command_finished;
+		}
+
+		//执行动作前，身上存在追击标记时，直接进入追击判定。
+		// Enter chase resolution directly when a chase marker exists before the action.
+		if(!empty($action) && in_array($action,Array('chase','pchase','dfight','cover')) && $mode !== 'revcombat')
+		{
+			$command = $action;
+			goto chase_flag;
+		}
+
 		//进入指令判断
 		if(!empty($itemindex))
 		{
@@ -961,11 +985,17 @@ if($hp > 0){
 		$endtime = $now;
 		$cmdnum ++;
 	}
+	ruleset_command_finished:
 	//检查是否需要重生成播放器
 	$bgm_player = init_bgm();
 	if(!empty($bgm_player))
 	{
 		$gamedata['innerHTML']['ingamebgm'] = $bgm_player;
+	}
+	// RuleSet钩子：在保存玩家数据与决定弹窗前结算模式事件。
+	// RuleSet hook: settle mode events before saving player data and choosing a dialog.
+	if(function_exists('ruleset_command_end_hook')) {
+		ruleset_command_end_hook($pdata, isset($command) ? $command : '');
 	}
 	//检查执行动作后是否有对话框产生
 	//如果刚刚处理了对话选择，则不显示对话框

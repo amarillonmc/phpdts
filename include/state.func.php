@@ -315,6 +315,10 @@
 		global $db,$tablepre,$log,$now,$nosta;
 		include_once GAME_ROOT.'./include/game/quest.func.php';
 
+		// RuleSet钩子：在NPC特殊死亡副作用生效前记录可回滚状态。
+		// RuleSet hook: capture reversible NPC state before special death side effects are applied.
+		if(function_exists('ruleset_player_kill_hook')) ruleset_player_kill_hook($pa,$pd,$active);
+
 		# 静流下线事件：
 		if($pd['type'] == 15)
 		{

@@ -1,0 +1,23 @@
+莱卡的进击 RuleSet / Laika Advent Ruleset
+===============================================
+
+中文
+----
+
+1. 在 gamedata/ruleset/LAIKAADVENT 内以 YELLOWKNIFE 资源为基础实装三项特殊权能：
+   - 【星辰之代价】：普通 NPC 累计、重要 NPC、重要物品和数值档位会触发征税；拒绝时回滚相关进度，NPC 则复活。
+   - 【哇呼～悖论祝福】：随有效行动随机提供三选一的极端增益，选择后才揭示绑定减益，持续时间内不叠加。
+   - 【宇宙公理之齿轮】：移动 PC 仅警告一次；使用四类剧情物品时启动，对当时队伍共享进度，并按有效行动递增侵蚀。
+2. 平衡参数集中在 gamedata/ruleset/LAIKAADVENT/laika_1.php，便于测试后调整阈值、概率、持续时间、行动预算和齿轮伤害。
+3. 新增模式开场、警告、征税、祝福、齿轮与多结局文案。本测试版不需要新增图片资源，因为莱卡不作为可搜索或可战斗 NPC 出现。
+4. 以最小公共改动新增规则集本地行为加载、道具使用、NPC 死亡以及指令前后钩子；其他 RuleSet 未定义钩子时行为不变。
+5. 新增模式级 PHP 回归脚本，覆盖触发、支付/拒绝、NPC 复活、合成物征税、祝福恢复、齿轮阶段和本地剧情加载。
+
+English
+-------
+
+1. Implemented Astra Pretium, Wafuu~ Paradoxical Blessing, and Cog of Cosmic Axiom inside the LAIKAADVENT ruleset while retaining the copied YELLOWKNIFE resources.
+2. Centralized all playtest tuning in laika_1.php: thresholds, weights, durations, route budgets, and cog attrition.
+3. Added opening, warning, tax, blessing, cog, death, and ending copy. No new image is required for this test version because Laika is deliberately not a searchable or combatable NPC.
+4. Added small generic hooks for ruleset-local behavior loading, item use/acquisition, finalized NPC kills, and pre/post command settlement. Rulesets without these hooks retain their prior behavior.
+5. Added a standalone PHP regression script covering triggers, tax resolution and rollback, NPC revival, crafted key items, blessing expiry, cog stages, registration, and local story loading.

@@ -4,6 +4,10 @@ if(!defined('IN_GAME')) {
     exit('Access Denied');
 }
 
+// 本文件经常在函数体内被 include_once；显式绑定全局作用域，避免配置只落入调用函数的局部变量。
+// This file is often include_once'd inside functions; bind globals explicitly so config remains visible.
+global $ruleset_enabled, $ruleset_config;
+
 /*
  * RuleSet系统（时光重现）配置文件
  * 用于配置旧版本游戏模式的相关设置
@@ -45,6 +49,41 @@ $ruleset_config = Array(
         'story_config' => Array(
             'opening_story' => '沿用当前大房间开场剧情。',
             'ending_story' => '沿用当前大房间结局剧情。',
+        ),
+    ),
+
+    'LAIKAADVENT' => Array(
+        'name' => '莱卡的进击 / Laika Advent',
+        'description' => '以YELLOWKNIFE资源为基础，加入星辰之代价、悖论祝福与宇宙公理之齿轮的剧情压力模式。',
+        'credits_cost' => 1,
+        'admin_free' => true,
+        'initial_setup' => Array(
+            'hp_limit' => 400,
+            'sp_limit' => 400,
+            'base_exp' => 20,
+            'money' => 20,
+            'initial_items' => Array(),
+            'initial_equipment' => Array(),
+            'clbpara_flags' => Array(
+                'ruleset_version' => 'LAIKAADVENT',
+                'ruleset_name' => '莱卡的进击',
+                'dialogue' => 'laika_intro',
+            ),
+        ),
+        'override_modules' => Array('laika_advent'),
+        'title_system' => 2,
+        'club_skills' => 2,
+        'avatar_config' => Array(
+            'use_ruleset_avatars' => false,
+            'avatar_path' => './img/',
+            'male_avatars' => 0,
+            'female_avatars' => 0,
+            'npc_avatars' => Array(),
+            'special_avatars' => Array(),
+        ),
+        'story_config' => Array(
+            'opening_story' => '',
+            'ending_story' => '',
         ),
     ),
 

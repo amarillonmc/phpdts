@@ -126,9 +126,21 @@ $ruleset_stories = Array(
     )
 );
 
+// 按需加载RuleSet目录内的剧情文件，避免把模式专属文案继续堆进中央配置。
+// Lazily load ruleset-local story files instead of growing the central story config.
+function load_ruleset_local_story($ruleset_id) {
+    global $ruleset_stories, $ruleset_story_pages;
+
+    if (empty($ruleset_id) || !preg_match('/^[A-Za-z0-9_]+$/', $ruleset_id)) return;
+    $story_file = GAME_ROOT.'./gamedata/ruleset/'.$ruleset_id.'/story_1.php';
+    if (file_exists($story_file)) include_once $story_file;
+}
+
 // 获取指定RuleSet的剧情配置
 function get_ruleset_story($ruleset_id, $story_type = 'opening') {
     global $ruleset_stories;
+
+    if (!isset($ruleset_stories[$ruleset_id])) load_ruleset_local_story($ruleset_id);
     
     if (isset($ruleset_stories[$ruleset_id]) && isset($ruleset_stories[$ruleset_id][$story_type])) {
         return $ruleset_stories[$ruleset_id][$story_type];
@@ -140,6 +152,8 @@ function get_ruleset_story($ruleset_id, $story_type = 'opening') {
 // 检查RuleSet是否有自定义剧情
 function has_ruleset_story($ruleset_id) {
     global $ruleset_stories;
+
+    if (!isset($ruleset_stories[$ruleset_id])) load_ruleset_local_story($ruleset_id);
     
     return isset($ruleset_stories[$ruleset_id]);
 }
@@ -239,6 +253,8 @@ $ruleset_story_pages = Array(
 
 function get_ruleset_story_pages($ruleset_id, $story_type = 'opening', $hp = 0, $state = 0, $winmode = 0) {
     global $ruleset_story_pages;
+
+    if (!isset($ruleset_story_pages[$ruleset_id])) load_ruleset_local_story($ruleset_id);
 
     if (!isset($ruleset_story_pages[$ruleset_id])) {
         return Array(

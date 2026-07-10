@@ -59,10 +59,19 @@ function init_ruleset_override() {
 function load_ruleset_override_functions() {
     $ruleset_id = get_current_ruleset_id();
 
-    if ($ruleset_id == 'ACDTS_298SP4_AR') {
-        // 加载全随机模式的覆盖函数
-        include_once GAME_ROOT.'./gamedata/ruleset/ACDTS_298SP4_AR/include/ruleset_functions.php';
-        error_log("RuleSet Override: 已加载 $ruleset_id 的覆盖函数");
+    // 规则集可在自身 include/ruleset.func.php 中提供受 function_exists 保护的通用钩子。
+    // A ruleset may expose guarded hooks from its own include/ruleset.func.php.
+    if (!empty($ruleset_id) && preg_match('/^[A-Za-z0-9_]+$/', $ruleset_id)) {
+        $override_files = Array(
+            GAME_ROOT.'./gamedata/ruleset/'.$ruleset_id.'/include/ruleset.func.php',
+            GAME_ROOT.'./gamedata/ruleset/'.$ruleset_id.'/include/ruleset_functions.php', // 兼容旧RuleSet / Legacy fallback
+        );
+        foreach ($override_files as $override_file) {
+            if (!file_exists($override_file)) continue;
+            include_once $override_file;
+            error_log("RuleSet Override: 已加载 $ruleset_id 的覆盖函数");
+            break;
+        }
     }
 }
 

@@ -57,6 +57,21 @@ function itemuse($itmn,&$data=NULL) {
 		return;
 	}
 
+	// RuleSet钩子：在具体道具逻辑执行前记录剧情物品的使用。
+	// RuleSet hook: observe story-item use before the concrete handler runs.
+	if(function_exists('ruleset_itemuse_hook')) {
+		$item_snapshot = Array(
+			'itm' => $i,
+			'itmk' => $ik,
+			'itme' => $ie,
+			'itms' => $is,
+			'itmsk' => $isk,
+			'itmpara' => $ipara,
+		);
+		ruleset_itemuse_hook($data, $itmn, $item_snapshot);
+		extract($data, EXTR_REFS);
+	}
+
 	// Include specific item type handlers
 	include_once GAME_ROOT.'./include/game/item.weapon.php';
 	include_once GAME_ROOT.'./include/game/item.recovery.php';
