@@ -68,8 +68,11 @@ function itemuse($itmn,&$data=NULL) {
 			'itmsk' => $isk,
 			'itmpara' => $ipara,
 		);
-		ruleset_itemuse_hook($data, $itmn, $item_snapshot);
+		// 严格返回true表示道具已由规则集完整处理，不再进入通用分派。
+		// A strict true means the ruleset fully handled the item; skip generic dispatch.
+		$ruleset_item_handled = ruleset_itemuse_hook($data, $itmn, $item_snapshot);
 		extract($data, EXTR_REFS);
+		if($ruleset_item_handled === true) return;
 	}
 
 	// Include specific item type handlers

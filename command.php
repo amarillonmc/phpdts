@@ -10,6 +10,12 @@ require GAME_ROOT.'./include/game.func.php';
 //判断是否进入游戏
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
 
+// RuleSet钩子：在读取玩家行前取得整条指令请求所需的互斥资源。
+// RuleSet hook: acquire request-wide mutual exclusion before reading the player row.
+if(function_exists('ruleset_command_request_begin_hook') && ruleset_command_request_begin_hook() === false) {
+	gexit('RAID状态正忙，请稍后重试。',__file__,__line__);
+}
+
 //$result = $db->query("SELECT * FROM {$tablepre}players WHERE name = '$cuser' AND type = 0");
 $pdata = fetch_playerdata_by_name($cuser);
 
@@ -1015,6 +1021,11 @@ if($hp > 0){
 		$log .= "行动冷却时间：<span id=\"timer\" class=\"yellow\">0.0</span>秒<br>";
 	}
 	player_save($pdata);
+}
+// RuleSet钩子：玩家数据持久化完成后释放指令级资源；死亡页面请求也需要释放。
+// RuleSet hook: release command-scoped resources after persistence, including death-page requests.
+if(function_exists('ruleset_command_post_save_hook')) {
+	ruleset_command_post_save_hook($pdata, isset($command) ? $command : '');
 }
 init_profile();
 if($hp <= 0) {

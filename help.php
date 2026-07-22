@@ -21,6 +21,7 @@ $writefile = GAME_ROOT.TPLDIR.'/mixhelp.htm';
 include config('npc',$gamecfg);
 include config('addnpc',$gamecfg);
 include config('evonpc',$gamecfg);
+$help_ruleset_id = function_exists('get_current_ruleset_id') ? get_current_ruleset_id() : '';
 //for ($i=0; $i<=20; $i++) $p[$i]=$i; //？？？
 for ($i=1; $i<=6; $i++) $itemlst[$i]=$i;
 
@@ -38,6 +39,9 @@ foreach($anpcinfo as $akey => $anpcs)
 	# 之后遍历每个子类addnpc，依次加入
 	foreach($anpcs['sub'] as $aid => $anpc) $npcinfo[$akey]['asub'][$aid] = $anpc;
 }
+# RuleSet可收束帮助页中的兼容子类型，并补充本地说明。
+# A RuleSet may collapse compatibility-only help variants and add local descriptions.
+if(function_exists('ruleset_npc_help_filter_hook')) ruleset_npc_help_filter_hook($npcinfo,$npcdescription);
 $npcinfo = get_npc_helpinfo($npcinfo);
 //print_r($npcinfo[14]['esub']);
 

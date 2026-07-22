@@ -44,7 +44,7 @@ $ach_type = Array
 		'name' => '生涯成就',
 		'desc' => '<font color="olive">这里是记录了你在这个游戏中的积累相关的成就。<br>
 		呜呼——玩家们出发了……<br></font>',
-		'ach' => Array(29,30,53,54,55,208,600,255),
+		'ach' => Array(29,30,53,54,55,208,600,611,255),
 	),
 	'challenge' => Array(
 		'name' => '挑战成就',
@@ -1070,6 +1070,19 @@ $ach_list = Array
 		'c2' => Array(233),
 		'desc' => Array( 
 			'使用一次<span class="sienna">歌唱</span>功能',
+		),
+	),
+	# RAID生涯记录：保存个人曾结算过的最高积分
+	# RAID lifetime record: stores the player's highest settled score.
+	611 => Array(
+		'lvl' => 1,
+		'name' => Array('满载而归'),
+		'request' => '最高RAID积分：[:request:]点',
+		'title' => Array('Lv.3 鸟类学者'),
+		'c1' => Array(100),
+		'c2' => Array(50),
+		'desc' => Array(
+			'完成一次<span class="sienna">RAID积分结算</span>；成就进度记录个人历史最高RAID积分。',
 		),
 	),
 );

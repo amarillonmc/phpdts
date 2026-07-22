@@ -77,8 +77,18 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			unset($name);unset($nick);
 		}
 
+		# RuleSet钩子：在固定新闻分支前允许规则集提供完整HTML片段。
+		# RuleSet hook: allow a ruleset to provide a complete HTML fragment before built-in news formatting.
+		$ruleset_news_html = NULL;
+		if(function_exists('ruleset_format_news_hook'))
+		{
+			$ruleset_news_html = ruleset_format_news_hook($news,$time,$a,$b,$c,$d,$e);
+		}
+
 		//$sec='??';
-		if($news == 'newgame') {
+		if($ruleset_news_html !== NULL) {
+			$newsinfo .= $ruleset_news_html;
+		} elseif($news == 'newgame') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">第{$a}回ACFUN大逃杀开始了</span><br>\n";
 		} elseif($news == 'newroomgame') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"red\">{$b}号房间内，第{$a}回ACFUN大逃杀开始了</span><br>\n";

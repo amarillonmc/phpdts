@@ -1122,43 +1122,126 @@
         }
     }
 
-    // 更新任务窗体
+    // 转义任务数据中的HTML特殊字符 / Escape HTML special characters in task data
+    function escapeTaskHtml(value) {
+        return String(value === null || typeof value === 'undefined' ? '' : value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    // 通过主游戏表单提交RAID任务命令 / Submit a RAID task command through the main game form
+    function submitRaidTaskCommand(command, button) {
+        const form = document.getElementById('gamecmd');
+        if (!form || !command || typeof postCmd !== 'function') return false;
+
+        // 临时字段放在表单末尾，使其覆盖当前界面的mode/command。
+        // Append temporary fields so they override the current view's mode/command.
+        const modeField = document.createElement('input');
+        modeField.type = 'hidden';
+        modeField.name = 'mode';
+        modeField.value = 'command';
+
+        const commandField = document.createElement('input');
+        commandField.type = 'hidden';
+        commandField.name = 'command';
+        commandField.value = command;
+
+        form.appendChild(modeField);
+        form.appendChild(commandField);
+        if (button) button.disabled = true;
+
+        try {
+            postCmd('gamecmd', 'command.php');
+        } finally {
+            form.removeChild(commandField);
+            form.removeChild(modeField);
+        }
+        return true;
+    }
+
+    // 绑定RAID任务按钮 / Bind RAID task action buttons
+    function bindRaidTaskActions(container) {
+        const buttons = container.querySelectorAll('.raid-task-action');
+        Array.prototype.forEach.call(buttons, function(button) {
+            button.addEventListener('click', function() {
+                if (!submitRaidTaskCommand(button.getAttribute('data-raid-command'), button)) {
+                    button.disabled = false;
+                }
+            });
+        });
+    }
+
+    // 更新任务窗体 / Update the task panel
     function updateQuestPanel() {
         const questList = document.getElementById('quest-list');
         if (!questList) return;
 
-        if (!clbpara || !clbpara.quest || !clbpara.quest.active) {
-            questList.innerHTML = '<div class="quest-item">暂无任务。</div>';
-            return;
-        }
-
-        const active = clbpara.quest.active;
-        const questIds = Object.keys(active);
-        if (questIds.length === 0) {
-            questList.innerHTML = '<div class="quest-item">暂无任务。</div>';
-            return;
-        }
-
         let html = '';
-        questIds.forEach(function(qid) {
-            const q = active[qid] || {};
-            const title = q.title || qid;
-            const stepDesc = q.step_desc || '';
-            const progress = (typeof q.progress !== 'undefined') ? q.progress : '';
-            const progressMax = (typeof q.progress_max !== 'undefined') ? q.progress_max : 0;
-            const progressText = (progressMax && progress !== '') ? (progress + '/' + progressMax) : '';
-            const statusText = q.ready_to_claim ? '可交付' : '';
+        let hasTasks = false;
 
-            html += '<div class="progress-item">';
-            html += '  <div class="progress-label">';
-            html += '    <span>' + title + '</span>';
-            html += '    <span class="progress-value">' + (progressText || statusText) + '</span>';
-            html += '  </div>';
-            html += '  <div class="quest-item">' + stepDesc + '</div>';
-            html += '</div>';
-        });
+        // RAID任务优先显示，并可与普通QUEST并列。
+        // Render RAID tasks first while retaining ordinary QUEST entries.
+        if (clbpara && clbpara.raid && clbpara.raid.tasks) {
+            const raidTasks = clbpara.raid.tasks;
+            Object.keys(raidTasks).forEach(function(taskId) {
+                const task = raidTasks[taskId] || {};
+                const title = task.title || taskId;
+                const stepDesc = task.step_desc || '';
+                const progress = (typeof task.progress !== 'undefined') ? task.progress : '';
+                const progressMax = (typeof task.progress_max !== 'undefined') ? task.progress_max : 0;
+                const progressText = (progressMax && progress !== '') ? (progress + '/' + progressMax) : '';
+                const actions = task.actions || [];
+
+                hasTasks = true;
+                html += '<div class="progress-item raid-task-item">';
+                html += '  <div class="progress-label">';
+                html += '    <span>' + escapeTaskHtml(title) + '</span>';
+                html += '    <span class="progress-value">' + escapeTaskHtml(progressText) + '</span>';
+                html += '  </div>';
+                html += '  <div class="quest-item">' + escapeTaskHtml(stepDesc) + '</div>';
+
+                Object.keys(actions).forEach(function(actionId) {
+                    const action = actions[actionId] || {};
+                    if (!action.command) return;
+
+                    const label = action.label || actionId;
+                    const disabled = action.disabled ? ' disabled' : '';
+                    html += '  <button type="button" class="cmdbutton raid-task-action" data-raid-command="' +
+                        escapeTaskHtml(action.command) + '"' + disabled + '>' + escapeTaskHtml(label) + '</button>';
+                });
+                html += '</div>';
+            });
+        }
+
+        if (clbpara && clbpara.quest && clbpara.quest.active) {
+            const active = clbpara.quest.active;
+            Object.keys(active).forEach(function(qid) {
+                const q = active[qid] || {};
+                const title = q.title || qid;
+                const stepDesc = q.step_desc || '';
+                const progress = (typeof q.progress !== 'undefined') ? q.progress : '';
+                const progressMax = (typeof q.progress_max !== 'undefined') ? q.progress_max : 0;
+                const progressText = (progressMax && progress !== '') ? (progress + '/' + progressMax) : '';
+                const statusText = q.ready_to_claim ? '可交付' : '';
+
+                hasTasks = true;
+                html += '<div class="progress-item">';
+                html += '  <div class="progress-label">';
+                html += '    <span>' + escapeTaskHtml(title) + '</span>';
+                html += '    <span class="progress-value">' + escapeTaskHtml(progressText || statusText) + '</span>';
+                html += '  </div>';
+                html += '  <div class="quest-item">' + escapeTaskHtml(stepDesc) + '</div>';
+                html += '</div>';
+            });
+        }
+
+        if (!hasTasks) html = '<div class="quest-item">暂无任务。</div>';
 
         questList.innerHTML = html;
+        bindRaidTaskActions(questList);
     }
 
     // 设置演示值

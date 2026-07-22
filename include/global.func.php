@@ -320,6 +320,13 @@ function save_gameinfo()
 		$alivenum = $db->num_rows($result);
 		$result = $db->query("SELECT pid FROM {$tablepre}players WHERE hp<=0 OR state>=10");
 		$deathnum = $db->num_rows($result);
+		// RuleSet钩子：修正规则集专属单位是否计入全局死亡数。
+		// RuleSet hook: adjust whether mode-specific units count toward the global death total.
+		if(function_exists('ruleset_adjust_deathnum_hook'))
+		{
+			$ruleset_deathnum = ruleset_adjust_deathnum_hook($deathnum);
+			if($ruleset_deathnum !== NULL) $deathnum = max(0,intval($ruleset_deathnum));
+		}
 	}
 	else
 	{

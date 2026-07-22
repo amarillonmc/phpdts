@@ -257,7 +257,18 @@ if(CURSCRIPT !== 'chat')
 		$result = $db->query("SELECT pid FROM {$tablepre}players WHERE hp>0 AND type=0");
 		$alivenum = $db->num_rows($result);
 		save_gameinfo();
-		if($alivenum <= 1) {
+		$should_auto_gameover = $alivenum <= 1;
+		# RuleSet钩子：允许规则集覆盖连斗阶段的自动结局判断。
+		# RuleSet hook: allow rulesets to override combo-stage automatic game over.
+		if(function_exists('ruleset_should_auto_gameover'))
+		{
+			$ruleset_auto_gameover = ruleset_should_auto_gameover($alivenum,'common_combo');
+			if($ruleset_auto_gameover !== NULL) $should_auto_gameover = (bool)$ruleset_auto_gameover;
+		}
+		# 无人存活时始终结束游戏，不允许规则集覆盖。
+		# Always end the game when nobody survives; rulesets cannot override this case.
+		if($alivenum <= 0) $should_auto_gameover = true;
+		if($should_auto_gameover) {
 			//include_once GAME_ROOT.'./include/system.func.php';
 			gameover();
 		}

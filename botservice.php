@@ -5,6 +5,13 @@ require './include/common.inc.php';
 require GAME_ROOT.'./include/game.func.php';
 require config('combatcfg',$gamecfg);
 
+// RuleSet钩子：旧BOT指令从读取gameinfo/玩家行到最终保存共用一把指令锁。
+// RuleSet hook: keep one command lock from the game/player read through the final legacy-bot save.
+if(function_exists('ruleset_command_request_begin_hook') && ruleset_command_request_begin_hook() === false) {
+	echo "ruleset_busy=1\n";
+	exit();
+}
+
 $result = $db->query("SELECT * FROM {$tablepre}players WHERE name = '$cuser' AND type = 0");
 
 echo "botservice_version=0.1\n";
@@ -12,6 +19,7 @@ echo "botservice_version=0.1\n";
 if(!$db->num_rows($result)) 
 { 
 	echo "not_in_game=1\n";
+	if(function_exists('ruleset_command_request_end_hook')) ruleset_command_request_end_hook();
 	exit(); 
 }
 
@@ -19,12 +27,14 @@ $pdata = $db->fetch_array($result);
 if($pdata['pass'] != md5($cpass)) 
 {
 	echo "wrong_passwd=1\n";
+	if(function_exists('ruleset_command_request_end_hook')) ruleset_command_request_end_hook();
 	exit();
 }
 
 if ($gamestate==0)
 {
 	echo "game_ended=1\n";
+	if(function_exists('ruleset_command_request_end_hook')) ruleset_command_request_end_hook();
 	exit();
 }
 
@@ -43,6 +53,7 @@ if($hp > 0){
 else
 {
 	echo "dead=1\n";
+	if(function_exists('ruleset_command_request_end_hook')) ruleset_command_request_end_hook();
 	exit();
 }
 
@@ -321,5 +332,6 @@ echo "weather=$weather\n";
 $endtime = $now;
 
 player_save($pdata);
+if(function_exists('ruleset_command_request_end_hook')) ruleset_command_request_end_hook();
 
 ?>

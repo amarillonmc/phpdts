@@ -155,6 +155,9 @@ function move($moveto = 99,&$data=NULL)
 	$enemyrate =  \revbattle\calc_meetman_rate($data);
 	discover($enemyrate,$data);
 	quest_try_assign($data);
+	# RuleSet钩子：仅在普通移动完整执行成功后登记动作。
+	# RuleSet hook: record an ordinary move only after it completed successfully.
+	if(function_exists('ruleset_move_search_success_hook')) ruleset_move_search_success_hook($data,'move',!empty($moved));
 	return;
 }
 
@@ -214,6 +217,9 @@ function search(&$data=NULL)
 	// QUEST周期与分配 / QUEST tick and assignment
 	quest_tick($data);
 	quest_try_assign($data);
+	# RuleSet钩子：仅在原地探索完整执行成功后登记动作。
+	# RuleSet hook: record an in-place search only after it completed successfully.
+	if(function_exists('ruleset_move_search_success_hook')) ruleset_move_search_success_hook($data,'search',!empty($moved));
 	return;
 
 }
@@ -320,6 +326,10 @@ function pre_move_search_events(&$data,$act)
 	elseif($weather == 13)
 	{
 		$damage = round($mhp/12) + rand(0,20);
+		if(function_exists('ruleset_damage_immunity_hook')) {
+			$ruleset_damage = ruleset_damage_immunity_hook($data, 'weather_hail', $damage);
+			if($ruleset_damage !== NULL) $damage = max(0, intval($ruleset_damage));
+		}
 		$hp -= $damage;
 		$log .= "被<span class=\"blue\">冰雹</span>击中，生命减少了<span class=\"red\">$damage</span>点！<br>";
 		if($hp <= 0 )
@@ -453,6 +463,10 @@ function move_search_events(&$data,$act)
 					$sk_p = get_skillvars('c8_deadheal','exdmgr');
 					$damage = min($mhp-$hp,ceil($damage*($sk_p/100)));
 					$damage *= -1;
+				}
+				if($damage > 0 && function_exists('ruleset_damage_immunity_hook')) {
+					$ruleset_damage = ruleset_damage_immunity_hook($data, 'status_'.$inf_ky, $damage);
+					if($ruleset_damage !== NULL) $damage = max(0, intval($ruleset_damage));
 				}
 				$hp -= $damage;
 				if($damage > 0) $log .= "{$infwords[$inf_ky]}减少了<span class=\"red\">$damage</span>点生命！<br>";
@@ -656,7 +670,15 @@ function discover($schmode = 0,&$data=NULL)
 	if(($event_dice < $event_obbs)||(($art!="Untainted Glory")&&($pls==34)&&($gamestate != 50))){
 		//echo "进入事件判定<br>";
 		include_once GAME_ROOT.'./include/game/event.func.php';
+		$event_hp_before = $hp;
 		$event_flag = event();
+		$event_damage = max(0, intval($event_hp_before) - intval($hp));
+		if($event_damage > 0 && function_exists('ruleset_damage_immunity_hook')) {
+			$ruleset_damage = ruleset_damage_immunity_hook($data, 'event', $event_damage);
+			if($ruleset_damage !== NULL) {
+				$hp = max(0, min(intval($mhp), intval($event_hp_before) - max(0, intval($ruleset_damage))));
+			}
+		}
 		//触发了事件，中止探索推进
 		if($event_flag)
 		{
@@ -737,9 +759,13 @@ function discover($schmode = 0,&$data=NULL)
 			{
 				if($edata['hp'] <= 0)
 				{
+					# RuleSet额外战利品需要先于连斗尸体过滤判定。
+					# RuleSet extra loot must be checked before combo-stage corpse filtering.
+					$ruleset_extra_loot = function_exists('ruleset_corpse_has_extra_loot')
+						&& ruleset_corpse_has_extra_loot($edata,$data);
 					//直接略过无效尸体
-					if($gamestate>=40) continue;
-					$ret = false;
+					if($gamestate>=40 && !$ruleset_extra_loot) continue;
+					$ret = $ruleset_extra_loot ? true : false;
 					# 略过无效尸体的条件是……全身装备/道具存在耐久不为0的部分
 					# 但是空手和内衣又属于特例……这两个部位就只能判断效果不为0了
 					foreach(array('wepe','wep2e','money','arhs','arbe','aras','arfs','arts','itms1','itms2','itms3','itms4','itms5','itms6') as $chkval)
@@ -823,7 +849,9 @@ function discover($schmode = 0,&$data=NULL)
 					//计算玩家对敌人的先攻概率
 					$active_r = \revbattle\calc_active_rate($data,$edata);
 					$bid = $edata['pid'];
-					$active_dice = diceroll(99);
+					$force_player_initiative = function_exists('ruleset_force_player_initiative_hook')
+						? ruleset_force_player_initiative_hook($edata,$data) : NULL;
+					$active_dice = $force_player_initiative ? -1 : diceroll(99);
 					//先制
 					if($active_dice < $active_r)
 					{

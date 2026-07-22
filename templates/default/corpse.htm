@@ -20,6 +20,10 @@
 <!--{if $loot_depot_flag}-->
 <input type="radio" name="command" id="loot_depot" value="loot_depot"><a onclick=sl('loot_depot'); href="javascript:void(0);" >转移安全箱权限</a><br>
 <!--{/if}-->
+<!-- RAID尸体账本领取 / Claim the RAID corpse ledger -->
+<!--{if !empty($w_clbpara['raid']['score']) || !empty($w_clbpara['raid']['stored_items'])}-->
+<input type="radio" name="command" id="raid_claim_corpse" value="raid_claim_corpse"><a onclick=sl('raid_claim_corpse'); href="javascript:void(0);" >接收已收纳物资与积分</a><br>
+<!--{/if}-->
 <input type="radio" name="command" id="back" value="back" <!--{if !$w_money && $club!=20 && !$allow_destory_corpse}-->checked<!--{/if}-->><a onclick=sl('back'); href="javascript:void(0);" >返回</a><br><br>
 <!--{if $w_weps && $w_wepe}-->
 <input type="radio" name="command" id="wep" value="wep"><a onclick=sl('wep'); href="javascript:void(0);" >$w_wep_words/$w_wepk_words/$w_wepe/$w_weps<!--{if $w_wepsk_words}-->/$w_wepsk_words<!--{/if}--></a><br>

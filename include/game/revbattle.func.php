@@ -111,7 +111,11 @@ namespace revbattle
 		{
 			// 迎战视野中的敌人先制率-40
 			$active_r = min(4,calc_active_rate($data,$edata)-40);
-			$active_dice = diceroll(99);
+			// RuleSet钩子：被动容器在视野重遇时也必须由玩家先制。
+			// RuleSet hook: passive containers must also yield initiative on focus re-encounters.
+			$force_player_initiative = function_exists('ruleset_force_player_initiative_hook')
+				? ruleset_force_player_initiative_hook($edata,$data) : NULL;
+			$active_dice = $force_player_initiative ? ($active_r - 1) : diceroll(99);
 			if($active_dice < $active_r){
 				$action = 'enemy'; $bid = $edata['pid'];
 				findenemy_rev($edata);

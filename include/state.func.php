@@ -14,6 +14,13 @@
 			global $pdata;
 			$data = &$pdata;
 		}
+		# RuleSet钩子：可在自然/事件死亡写入新闻与统计前取消死亡。
+		# RuleSet hook: allow natural/event death cancellation before news and counters are written.
+		if(function_exists('ruleset_natural_death_hook'))
+		{
+			$ruleset_death_cancelled = ruleset_natural_death_hook($data,$death,$kname,$ktype,$annex);
+			if($ruleset_death_cancelled === true) return '';
+		}
 		extract($data,EXTR_REFS);
 
 		$bid = 0; $action = '';
@@ -113,6 +120,13 @@
 	{
 		global $log, $now, $db, $gtablepre, $tablepre, $typeinfo, $lwinfo;
 
+		# RuleSet钩子：可在遗言、聊天和死亡新闻生成前取消击杀报告。
+		# RuleSet hook: allow kill cancellation before last words, chat and death news are emitted.
+		if(function_exists('ruleset_pre_kill_cancel_hook') && ruleset_pre_kill_cancel_hook($pa,$pd,$active,$death) === true)
+		{
+			return '';
+		}
+
 		// 登记死法
 		// 传入了数字编号死法
 		if (is_numeric($death)) {
@@ -175,6 +189,15 @@
 	function revive_process(&$pa,&$pd,$active)
 	{
 		global $log,$weather,$now,$gamevars;
+
+		# RuleSet钩子：非NULL返回值直接作为本次复活判定结果。
+		# RuleSet hook: a non-NULL result becomes the revival result for this death.
+		if(function_exists('ruleset_revive_process_hook'))
+		{
+			$ruleset_revival = ruleset_revive_process_hook($pa,$pd,$active);
+			if($ruleset_revival !== NULL) return $ruleset_revival;
+		}
+
 		include_once GAME_ROOT.'./include/game/clubslct.func.php';
 
 		if(empty($pa['nm'])) $pa['nm'] = $active && !$pa['type'] ? '你' : $pa['name'];
@@ -257,6 +280,14 @@
 	function final_kill_events(&$pa,&$pd,$active,$last=0)
 	{
 		global $log,$now,$alivenum,$deathnum,$db,$gtablepre,$tablepre;
+
+		# 为绕过常规revive_process的旧击杀路径提供最后一道RuleSet复原机会。
+		# Give legacy kill paths that bypass revive_process one final RuleSet recovery chance.
+		if(function_exists('ruleset_revive_process_hook'))
+		{
+			$ruleset_revival = ruleset_revive_process_hook($pa,$pd,$active);
+			if($ruleset_revival) return;
+		}
 
 		if(empty($pa['nm'])) $pa['nm'] = $active && !$pa['type'] ? '你' : $pa['name'];
 		if(empty($pd['nm'])) $pd['nm'] = !$active && !$pd['type'] ? '你' : $pd['name'];

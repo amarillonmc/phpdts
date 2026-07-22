@@ -11,6 +11,19 @@ require_once $gameRoot.'include/common.inc.php';
 require_once GAME_ROOT.'./include/game.func.php';
 require_once GAME_ROOT.'./bot/revbot.func.php';
 
+// 每次BOT原子行动复用当前RuleSet的请求级锁；其他模式未定义钩子时维持原行为。
+// Reuse the active RuleSet's request lock per bot action; rulesets without the hooks keep legacy behavior.
+function revbot_ruleset_action_begin()
+{
+	return !function_exists('ruleset_command_request_begin_hook')
+		|| ruleset_command_request_begin_hook() !== false;
+}
+
+function revbot_ruleset_action_end()
+{
+	if(function_exists('ruleset_command_request_end_hook')) ruleset_command_request_end_hook();
+}
+
 $bot_respawn_chance = isset($_GET['respawn_chance']) ? (int)$_GET['respawn_chance'] : 35;
 if($bot_respawn_chance < 0) $bot_respawn_chance = 0;
 if($bot_respawn_chance > 100) $bot_respawn_chance = 100;
@@ -24,6 +37,10 @@ $oneshot = $oneshot ? 1 : 0;
 # 单次执行模式：执行一次初始化或一次行动后立即退出，避免长连接占用游戏锁
 if($oneshot)
 {
+	if(!revbot_ruleset_action_begin()) {
+		echo "ruleset_busy=1\n";
+		exit();
+	}
 	load_gameinfo();
 	echo "oneshot=1
 ";
@@ -32,6 +49,7 @@ if($oneshot)
 	if($gamestate <= 10) {
 		echo "游戏未开始，跳过。
 ";
+		revbot_ruleset_action_end();
 		exit();
 	}
 
@@ -45,6 +63,7 @@ if($oneshot)
 		echo "BOT初始化完成，id：" . ($id) . "
 剩余待初始化bot数量：{$gamevars['botplayer']}
 ";
+		revbot_ruleset_action_end();
 		exit();
 	}
 
@@ -66,15 +85,18 @@ if($oneshot)
 			}
 			save_gameinfo();
 			save_combatinfo();
+			revbot_ruleset_action_end();
 			exit();
 		}
 		echo "BOT：{$id} 行动完成
 ";
+		revbot_ruleset_action_end();
 		exit();
 	}
 
 	echo "当前无可行动BOT。
 ";
+	revbot_ruleset_action_end();
 	exit();
 }
 
@@ -108,13 +130,26 @@ while(true)
 		# 进程锁数量等于当前编号ID时，才会进行初始化
 		if($process_id == $scnums)
 		{
+			if(!revbot_ruleset_action_begin()) {
+				echo "RAID状态正忙，BOT初始化将重试。\n";
+				sleep(1);
+				continue;
+			}
+			// 等锁期间状态可能改变，锁内重读并再次确认。
+			// State may change while waiting; reload and recheck it inside the lock.
+			load_gameinfo();
+			if($gamestate <= 10 || empty($gamevars['botplayer'])) {
+				revbot_ruleset_action_end();
+				continue;
+			}
 			$ids = bot_player_valid(1);
 			$id = $ids[0];
 			//unset($gamevars['botplayer']);
 			$gamevars['botid'][] = $id;
 			$gamevars['botplayer'] --;
 			save_gameinfo();
-			# 解锁
+			# 在sleep/goto前释放RuleSet锁
+			revbot_ruleset_action_end();
 			sleep(1);
 			unlink($dir.$process_id.'.lock');
 			echo "BOT初始化完成，id：" . ($id) . "\n剩余待初始化bot数量：{$gamevars['botplayer']}";
@@ -134,6 +169,11 @@ while(true)
 bot_act_flag:
 while($id)
 {
+	if(!revbot_ruleset_action_begin()) {
+		echo "RAID状态正忙，BOT行动将重试。\n";
+		sleep(1);
+		continue;
+	}
 	load_gameinfo();
 	if ($gamestate > 10) 
 	{
@@ -152,14 +192,17 @@ while($id)
 				}
 				save_gameinfo();
 				save_combatinfo();
+				revbot_ruleset_action_end();
 				ob_end_flush();
 				break;
 			}
+			revbot_ruleset_action_end();
 			echo "\nBOT：{$id} 行动完成\n";
 			ob_end_flush();
 		}
 		else
 		{
+			revbot_ruleset_action_end();
 			echo "BOT：{$id} 不在活动队列，进程退出。\n";
 			ob_end_flush();
 			break;
@@ -168,6 +211,7 @@ while($id)
 	}
 	else 
 	{
+		revbot_ruleset_action_end();
 		goto bot_prepare_flag;
 	}
 }

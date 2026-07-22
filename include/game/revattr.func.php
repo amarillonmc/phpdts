@@ -585,6 +585,14 @@ namespace revattr
 	{
 		global $log,$nosta;
 
+		# RuleSet钩子：允许当前规则集优先提供固定伤害。
+		# RuleSet hook: allow the active ruleset to provide fixed damage first.
+		if(function_exists('ruleset_get_fix_damage_hook'))
+		{
+			$ruleset_fix_damage = ruleset_get_fix_damage_hook($pa,$pd,$active);
+			if($ruleset_fix_damage !== NULL) return $ruleset_fix_damage;
+		}
+
 		# 「指像」效果判定：
 		if(($pa['type'] && !empty($pa['clbpara']['skill']) && in_array('npc_wisp', $pa['clbpara']['skill']) && !$pd['type']) ||
 		   ($pd['type'] && !empty($pd['clbpara']['skill']) && in_array('npc_wisp', $pd['clbpara']['skill']) && !$pa['type']))
@@ -2032,6 +2040,14 @@ namespace revattr
 	{
 		global $log,$plsinfo,$now;
 
+		# RuleSet钩子：规则集机制伤害/免伤优先于通常的最终伤害覆盖。
+		# RuleSet hook: ruleset execution/immunity mechanics precede ordinary final-damage overrides.
+		if(function_exists('ruleset_final_damage_fix_hook'))
+		{
+			$ruleset_final_damage = ruleset_final_damage_fix_hook($pa,$pd,$active,$fin_dmg);
+			if($ruleset_final_damage !== NULL) return $ruleset_final_damage;
+		}
+
 		# 「种火IV」效果判定：
 		if(isset($pd['fireseed4_flag']))
 		{
@@ -2044,6 +2060,7 @@ namespace revattr
 			$fin_dmg = 1;
 			return $fin_dmg;
 		}
+
 		# 「勇谍」效果判定：
 		if(!empty($pd['clbpara']['skill']) && in_array('npc_perfectspy', $pd['clbpara']['skill']) && $pd['hp'] > 200 && ($pd['hp'] - $fin_dmg) < 200)
 		{

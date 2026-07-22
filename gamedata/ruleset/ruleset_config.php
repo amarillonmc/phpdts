@@ -87,6 +87,55 @@ $ruleset_config = Array(
         ),
     ),
 
+    'RAIDCAGEDBIRD' => Array(
+        'name' => 'RAID：暴走笼中鸟',
+        'description' => '异常RAID模式：搜打撤取得个人积分，或与队友收集数据并重新封印暴走笼中鸟。',
+        'credits_cost' => 1,
+        'admin_free' => true,
+        'initial_setup' => Array(
+            'hp_limit' => 400,
+            'sp_limit' => 400,
+            'base_exp' => 20,
+            'money' => 20,
+            'initial_items' => Array(),
+            'initial_equipment' => Array(),
+            'clbpara_flags' => Array(
+                'ruleset_version' => 'RAIDCAGEDBIRD',
+                'ruleset_name' => 'RAID：暴走笼中鸟',
+                'raid_mode' => true,
+            ),
+        ),
+        // 规则逻辑由同名覆写模块承载。 / Ruleset behavior is provided by the matching override module.
+        'override_modules' => Array('raid_caged_bird'),
+        'title_system' => 2,
+        'club_skills' => 2,
+        'avatar_config' => Array(
+            'use_ruleset_avatars' => true,
+            // 不带前导“./”，避免大立绘路径替换把目录点号误写为“a./”。
+            // Omit leading "./" so large-avatar substitution cannot rewrite the directory dot.
+            'avatar_path' => 'gamedata/ruleset/RAIDCAGEDBIRD/img/',
+            'male_avatars' => 0,
+            'female_avatars' => 0,
+            'npc_avatars' => Array(
+                201 => 'n_201.png',
+                202 => 'n_202.png',
+				203 => 'n_203.png',
+            ),
+            'special_avatars' => Array(
+                'raid_boss' => 'n_201.png',
+				'raid_boss_charging' => 'n_203.png',
+                'raid_container' => 'n_202.png',
+				'raid_container_open' => 'n_202.png',
+            ),
+        ),
+		// 非空标记会启用本地story_1.php；正文仍由分镜页输出。
+		// Non-empty markers enable local story_1.php; storyboard pages still provide the copy.
+		'story_config' => Array(
+			'opening_story' => 'RAIDCAGEDBIRD',
+			'ending_story' => 'RAIDCAGEDBIRD',
+		),
+    ),
+
     'ACBRA_2009' => Array(
         'name' => 'ACBRA 2009版',
         'description' => '重现2009年经典ACBRA版本的游戏体验，包含原版的平衡性设置、道具系统和NPC配置。',

@@ -31,6 +31,12 @@ function item_poison($itmn, &$data) {
 		$log .= "<span class='yellow'>「种火IV」使{$name}受到的所有伤害变为0！</span><br>";
 		$damage = 0;
 	}
+	# RuleSet钩子：模式技能可复用种火IV式的非战斗伤害免疫。
+	# RuleSet hook: mode skills may reuse Fireseed-IV-style non-combat immunity.
+	if(function_exists('ruleset_damage_immunity_hook')) {
+		$ruleset_damage = ruleset_damage_immunity_hook($data, 'poison', $damage);
+		if($ruleset_damage !== NULL) $damage = max(0, intval($ruleset_damage));
+	}
 
 	$hp -= $damage;
 	if ($itmsk && is_numeric($itmsk)) {

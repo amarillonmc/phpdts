@@ -3,10 +3,13 @@
 <input type="hidden" id="command" name="command" value="menu">
 <input type="button" class="cmdbutton" value="离开" onclick="$('command').value='menu';postCmd('gamecmd','command.php');this.disabled=true;">
 <br>
+<!--{eval $raid_cagedbird_shop = function_exists('get_current_ruleset_id') && get_current_ruleset_id() === 'RAIDCAGEDBIRD';}-->
 <!--{loop Array(1=>'补给品',2=>'药剂',3=>$iteminfo['WP'],4=>$iteminfo['WK'],5=>$iteminfo['WG'],6=>$iteminfo['WC'],7=>$iteminfo['WD'],8=>$iteminfo['WF'].'材料',9=>'防具',10=>'书籍',11=>'电子装备',20=>'弹药和箭矢',12=>'杂物',17=>'限量福袋',13=>'埃克法轻工特供武器',14=>'林苍月的提示',15=>'Key社纪念品专卖',16=>'NPC解锁钥匙',18=>'上级者向物品') $sid $scmt}-->
+<!--{if !($raid_cagedbird_shop && $sid == 16)}-->
 <!--{if $sid % 2}--><br><!--{/if}-->
 <input type="button" class="cmdbutton" name="$sid" value="{$scmt}" style="
 <!--{if mb_strlen($scmt)>8}-->width:140px;<!--{else}-->width:100px;<!--{/if}--> 
 <!--{if $sid == 17}-->background-image:url(img/backround2.gif) repeat-x<!--{elseif $sid == 13 || $sid == 14 || $sid == 15 || $sid == 16}-->background-image:url(img/backround3.gif) repeat-x<!--{elseif $sid == 18}-->background-image:url(img/backround9.gif) repeat-x<!--{/if}-->" 
 onclick="$('command').value='shop{$sid}';postCmd('gamecmd','command.php');this.disabled=true;">
+<!--{/if}-->
 <!--{/loop}-->

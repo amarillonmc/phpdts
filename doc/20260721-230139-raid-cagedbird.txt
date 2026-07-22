@@ -1,0 +1,23 @@
+RAID：暴走笼中鸟 / RAID: Caged Bird Rampage
+
+中文：
+- 以 YELLOWKNIFE 资源集为基础注册 RAIDCAGEDBIRD 规则集，并新增集中式 raid_1.php 配置。
+- 实装第一个累计十次有效移动/探索的玩家触发首领、全局行动阈值、沿图寻路追击高 RP 玩家、充能与地图消灭事件。
+- 新增可分配的 raid_cagedbird 技能，复用种火 IV 式伤害免疫、取消死亡、回满状态与首领直击机制杀；地图消灭 NPC 不计入 deathnum。
+- 实装 48 个可配置被动容器、可配置普通/特殊宝藏池、物品估值与收纳、一次性遗体账本继承、个人撤离和最高 RAID 积分成就 611。
+- 实装【代码源流】材料转化、共享进度、三件封印部件投送/追踪/重投、随机部署地点、当前存活队伍 PvE 胜利与 (个人积分 + 50000) × 2 奖励。
+- 禁用普通 QUEST、NPC 解锁钥匙、奇怪的按钮及旧结局路径；增加芙蓉开场与专属结局、滑动任务面板、模式帮助与撤离页面文案。
+- 增加暴走笼中鸟、充能形态、容器和成就位图资源，并修正规则集大立绘及 NPC 图鉴资源解析。
+- 为共享路线状态增加覆盖玩家与两套BOT入口的请求级进程锁；遗体账本使用单条双行条件更新同时提交尸体与领取者，避免并发重复结算及中途故障吞分。
+- 添加无数据库规则测试，覆盖配置、寻路、触发、技能、估值、路线 UI、并发防护与资源接线。
+
+English:
+- Registered the RAIDCAGEDBIRD ruleset from the YELLOWKNIFE resource base and added centralized raid_1.php configuration.
+- Implemented the first-player ten-action spawn trigger, global action threshold, graph pursuit biased toward high-RP players, charging, and map-wipe events.
+- Added the assignable raid_cagedbird skill with Fireseed-IV-style immunity, death cancellation/full restoration, and direct-hit execution; NPC wipe victims do not increase deathnum.
+- Implemented configurable passive containers, normal/special treasure pools, item valuation/storage, one-time corpse-ledger inheritance, extraction, and lifetime-best RAID achievement 611.
+- Implemented Code Source conversion, shared PvE progress, three tracked/retransmitted seal parts, randomized deployment targets, living-team victory snapshots, and the (personal score + 50000) x 2 reward.
+- Disabled ordinary QUEST, NPC unlock keys, the Strange Button, and legacy endings; added Furong's opening, dedicated endings, sliding-panel tasks, mode-aware help, and extraction copy.
+- Added bitmap assets for the boss, charging form, containers, and achievement, with corrected large-avatar and NPC-help resolution.
+- Added a request-wide process lock covering player commands and both bot entry points; corpse-ledger claims commit the corpse and finder together in one conditional two-row update, preventing duplicate settlement and mid-request score loss.
+- Added database-free ruleset regression coverage for configuration, routing, spawning, skills, scoring, UI wiring, concurrency guards, and assets.

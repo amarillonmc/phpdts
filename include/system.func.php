@@ -362,6 +362,10 @@ function rs_game($mode = 0) {
 		$db->query($qry);
 
 	}
+
+	# RuleSet钩子：所有请求的回合数据完成初始化后执行。
+	# RuleSet hook: run after all requested round data has been initialized.
+	if(function_exists('ruleset_round_init_hook')) ruleset_round_init_hook($mode);
 }
 
 function rs_sttime() {
@@ -486,12 +490,26 @@ function add_once_area($atime) {
 				}
 			}
 			$alivenum = $db->result($db->query("SELECT COUNT(*) FROM {$tablepre}players WHERE hp>0 AND type=0"), 0);
-			if(($alivenum == 1)&&($gamestate >= 30)) {
+			$should_auto_gameover = $alivenum <= 1;
+			# RuleSet钩子：允许规则集覆盖禁区结算后的自动结局判断。
+			# RuleSet hook: allow rulesets to override automatic game over after area updates.
+			if(function_exists('ruleset_should_auto_gameover'))
+			{
+				$ruleset_auto_gameover = ruleset_should_auto_gameover($alivenum,'add_once_area');
+				if($ruleset_auto_gameover !== NULL) $should_auto_gameover = (bool)$ruleset_auto_gameover;
+			}
+			# 无人存活时始终结束游戏，不允许规则集覆盖。
+			# Always end the game when nobody survives; rulesets cannot override this case.
+			if($alivenum <= 0) $should_auto_gameover = true;
+
+			if($should_auto_gameover && $gamestate >= 30) {
+				if($alivenum <= 0)
+				{
+					gameover($atime,'end1');
+					return $atime;
+				}
 				gameover($atime);
 				return;
-			} elseif(($alivenum <= 0)&&($gamestate >= 30)) {
-				gameover($atime,'end1');
-				return $atime;
 			} else {
 				rs_game(16+32);
 				//$areatime += $areahour*3600;
@@ -596,8 +614,25 @@ function gameover($time = 0, $mode = '', $winname = '') {
 	} else {//最后幸存、锁定解除、核爆全灭，需要记录优胜者资料
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE name='$winner' AND type=0");
 		$pdata = $db->fetch_array($result);
+		// RuleSet可提供已经过滤完成的精确胜者快照。
+		// A RuleSet may provide an exact, already-filtered winner snapshot.
+		$ruleset_team_mates = NULL;
+		if(function_exists('ruleset_get_team_winners_hook'))
+		{
+			$ruleset_team_mates = ruleset_get_team_winners_hook($winmode,$pdata);
+		}
+		if(is_array($ruleset_team_mates))
+		{
+			$team_mates = Array();
+			foreach($ruleset_team_mates as $ruleset_team_name)
+			{
+				$ruleset_team_name = (string)$ruleset_team_name;
+				if($ruleset_team_name !== '' && !in_array($ruleset_team_name,$team_mates,true)) $team_mates[] = $ruleset_team_name;
+			}
+			if(!in_array($pdata['name'],$team_mates,true)) array_unshift($team_mates,$pdata['name']);
+		}
 		//锁定解除、幻境解离结局，检查是否为队伍获胜……
-		if(($winmode == 3 || $winmode == 7) && !empty($pdata['teamID']))
+		elseif(in_array($winmode,Array(3,7)) && !empty($pdata['teamID']))
 		{
 			$team = $pdata['teamID']; $team_mates = Array($pdata['name']); $team_ips = Array($pdata['ip']);
 			$tresult = $db->query("SELECT name,ip FROM {$tablepre}players WHERE teamID='$team' AND type=0");

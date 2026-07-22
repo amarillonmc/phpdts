@@ -28,6 +28,10 @@ function init_playerdata($data=NULL)
 	}
 
 	$clbpara = get_clbpara($clbpara);
+
+	// RuleSet钩子：在玩家资料完成基础初始化后补充模式专属视图状态。
+	// RuleSet hook: append mode-specific view state after basic player initialization.
+	if(function_exists('ruleset_player_init_hook')) ruleset_player_init_hook($data);
 }
 
 function init_profile($data=NULL)

@@ -262,6 +262,13 @@ function trap(&$data=NULL){
 			# 检查陷阱是否被迎击
 			$damage = check_trap_def_event($data,$damage,$playerflag,$selflag);
 		}
+		# RuleSet钩子：模式技能可覆盖陷阱最终伤害。
+		# RuleSet hook: mode skills may override final trap damage.
+		if(function_exists('ruleset_damage_immunity_hook'))
+		{
+			$ruleset_damage = ruleset_damage_immunity_hook($data,'trap',$damage);
+			if($ruleset_damage !== NULL) $damage = max(0,intval($ruleset_damage));
+		}
 
 		if($damage)
 		{
