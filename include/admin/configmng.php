@@ -9,9 +9,10 @@ $display_slave_level = isset($slave_level) ? $slave_level : '';
 $display_master_server_name = isset($master_server_name) ? $master_server_name : '';
 $display_master_dbhost = isset($master_dbhost) ? $master_dbhost : '';
 $display_master_dbuser = isset($master_dbuser) ? $master_dbuser : '';
-$display_master_dbpw = isset($master_dbpw) ? $master_dbpw : '';
+$display_master_dbpw = !empty($master_dbpw) ? '********' : '';
 $display_master_dbname = isset($master_dbname) ? $master_dbname : '';
 $display_master_tablepre = isset($master_tablepre) ? $master_tablepre : '';
+$display_authkey = !empty($authkey) ? '********' : '';
 
 if($command == 'edit') {
 
@@ -70,6 +71,19 @@ list($setsec,$setmin,$sethour,$setday,$setmonth,$setyear,$setwday,$setyday,$seti
 $setmonth++;
 $setyear += 1900;
 $set_time = $setyear.$lang['year'].$setmonth.$lang['month'].$setday.$lang['day'].$sethour.$lang['hour'].$setmin.$lang['min'];
+
+// 转义模板属性值 / Escape values rendered in HTML attributes
+$display_authkey_html = htmlspecialchars($display_authkey, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$bbsurl_html = htmlspecialchars($bbsurl, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$gameurl_html = htmlspecialchars($gameurl, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$homepage_html = htmlspecialchars($homepage, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$display_slave_level_html = htmlspecialchars(strval($display_slave_level), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$display_master_server_name_html = htmlspecialchars($display_master_server_name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$display_master_dbhost_html = htmlspecialchars($display_master_dbhost, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$display_master_dbuser_html = htmlspecialchars($display_master_dbuser, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$display_master_dbpw_html = htmlspecialchars($display_master_dbpw, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$display_master_dbname_html = htmlspecialchars($display_master_dbname, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$display_master_tablepre_html = htmlspecialchars($display_master_tablepre, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
 include template('admin_configmng');
 ?>

@@ -31,7 +31,7 @@
 		<tr>
 			<td>搜索</td>
 			<td colspan="3">
-				<input type="text" name="keyword" value="$keyword" style="width:300px;">
+				<input type="text" name="keyword" value="$keyword_html" style="width:300px;">
 				<input type="submit" name="action" value="list">
 				<span class="yellow">$resultinfo</span>
 			</td>
@@ -61,11 +61,11 @@
 			<!--{/loop}-->
 			<th>操作</th>
 		</tr>
-		<!--{loop $paged_records $idx $row}-->
+		<!--{loop $paged_records_html $idx $row}-->
 		<tr>
 			<td>$row['_idx']</td>
 			<!--{loop $columns $ci $c}-->
-			<td>{eval echo $row[$ci];}</td>
+			<td>$row[$ci]</td>
 			<!--{/loop}-->
 			<td>
 				<button type="submit" name="edit_id" value="$row['_idx']">编辑</button>
@@ -81,7 +81,7 @@
 			<th>子键数量</th>
 			<th>操作</th>
 		</tr>
-		<!--{loop $paged_records $idx $row}-->
+		<!--{loop $paged_records_html $idx $row}-->
 		<tr>
 			<td>$row['_idx']</td>
 			<td>$row['_sub_count']</td>
@@ -108,7 +108,7 @@
 		<!--{loop $columns $i $c}-->
 		<tr>
 			<td>$c</td>
-			<td><input type="text" name="col_$i" style="width:98%;" value="{$edit_record[$i]}"></td>
+			<td><input type="text" name="col_$i" style="width:98%;" value="{$edit_record_html[$i]}"></td>
 		</tr>
 		<!--{/loop}-->
 		<tr>
@@ -125,7 +125,7 @@
 		<tr>
 			<td>JSON配置</td>
 			<td>
-				<textarea name="npc_json" style="width:98%;height:260px;">$edit_record_json</textarea>
+				<textarea name="npc_json" style="width:98%;height:260px;">$edit_record_json_html</textarea>
 			</td>
 		</tr>
 		<tr>

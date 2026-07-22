@@ -4,6 +4,39 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
+// gruleset决定后续应加载哪套配置，因此必须在第一次config()查询之前存在。
+// gruleset selects the configuration set, so it must exist before the first config() lookup.
+function roommng_ensure_ruleset_game_structure()
+{
+	global $db,$gtablepre;
+
+	$result = $db->query("SHOW COLUMNS FROM {$gtablepre}game LIKE 'gruleset'");
+	if($db->num_rows($result)) return;
+
+	// FTP覆盖后的首批请求可能同时发现旧结构；锁内二次确认可避免重复ALTER。
+	// The first requests after an FTP overwrite may all see the old schema; recheck under the lock before ALTER.
+	$structure_lock = @fopen(GAME_ROOT.'./gamedata/process.lock', 'ab');
+	if(!$structure_lock || !flock($structure_lock, LOCK_EX))
+	{
+		if($structure_lock) fclose($structure_lock);
+		gexit('Unable to lock the RuleSet schema migration.', __FILE__, __LINE__);
+	}
+
+	try
+	{
+		$result = $db->query("SHOW COLUMNS FROM {$gtablepre}game LIKE 'gruleset'");
+		if(!$db->num_rows($result))
+		{
+			$db->query("ALTER TABLE {$gtablepre}game ADD gruleset varchar(50) NOT NULL DEFAULT '' AFTER groomid");
+		}
+	}
+	finally
+	{
+		flock($structure_lock, LOCK_UN);
+		fclose($structure_lock);
+	}
+}
+
 function roommng_verify_db_game_structure()
 {
 	global $db,$gtablepre;
@@ -70,104 +103,166 @@ function roommng_verify_db_game_structure()
 	return;
 }
 
+// 串行化建房流程，避免并发请求复用同一房间号或重复扣费。
+// Serialize room creation so concurrent requests cannot reuse a room id or charge twice.
+function roommng_acquire_create_lock()
+{
+	global $plock;
+
+	// common.inc.php 的初始化路径可能已经持有同一把全局锁。
+	// The common.inc.php initialization path may already hold the same global lock.
+	if (isset($plock) && is_resource($plock)) return NULL;
+
+	$lock_handle = @fopen(GAME_ROOT.'./gamedata/process.lock', 'ab');
+	if (!$lock_handle || !flock($lock_handle, LOCK_EX))
+	{
+		if ($lock_handle) fclose($lock_handle);
+		return false;
+	}
+	return $lock_handle;
+}
+
+function roommng_release_create_lock($lock_handle)
+{
+	if (!is_resource($lock_handle)) return;
+	flock($lock_handle, LOCK_UN);
+	fclose($lock_handle);
+}
+
 # 创建一个新房间
 function roommng_create_new_room(&$udata, $ruleset_id = '')
 {
 	global $db,$gtablepre,$now;
 	global $startmin,$max_rooms,$ip_max_rooms,$rerror;
 
-	if(!empty($udata['roomid']))
-	{
-		$rerror = 'alreay_in_room';
-		return;
-	}
-
-	# 检查RuleSet权限和费用
-	if(!empty($ruleset_id))
-	{
-		// 包含配置文件
-		include_once GAME_ROOT.'./gamedata/ruleset/ruleset_config.php';
-
-		// 调试信息：记录权限检查过程
-		$debug_info = array(
-			'ruleset_id' => $ruleset_id,
-			'user_groupid' => $udata['groupid'],
-			'user_credits2' => $udata['credits2'],
-			'ruleset_enabled' => isset($ruleset_enabled) ? $ruleset_enabled : 'undefined',
-			'config_exists' => isset($ruleset_config[$ruleset_id]) ? 'yes' : 'no'
-		);
-
-		if(isset($ruleset_config[$ruleset_id])) {
-			$config = $ruleset_config[$ruleset_id];
-			$debug_info['admin_free'] = $config['admin_free'];
-			$debug_info['credits_cost'] = $config['credits_cost'];
-			$debug_info['admin_check'] = ($config['admin_free'] && $udata['groupid'] >= 2) ? 'pass' : 'fail';
-			$debug_info['credits_check'] = ($udata['credits2'] >= $config['credits_cost']) ? 'pass' : 'fail';
-		}
-
-		// 临时调试：将调试信息写入文件
-		file_put_contents(GAME_ROOT.'./doc/etc/ruleset_debug_'.date('Y-m-d_H-i-s').'.txt',
-			"RuleSet权限检查调试信息:\n" . print_r($debug_info, true));
-
-		if(!can_create_ruleset_room($ruleset_id, $udata))
-		{
-			$rerror = 'ruleset_no_permission';
-			return;
-		}
-
-		# 扣除切糕费用（管理员除外）
-		$config = get_ruleset_config($ruleset_id);
-		if($config && !($config['admin_free'] && $udata['groupid'] >= 2))
-		{
-			if($udata['credits2'] < $config['credits_cost'])
-			{
-				$rerror = 'insufficient_credits';
-				return;
-			}
-			$new_credits = $udata['credits2'] - $config['credits_cost'];
-			$db->query("UPDATE {$gtablepre}users SET credits2='$new_credits' WHERE username='{$udata['username']}'");
-		}
-	}
-
-	# 根据IP判断是否可新建房间
-	$ipresult = $db->query("SELECT roomid FROM {$gtablepre}users WHERE roomid>0 AND ip='{$udata['ip']}'");
-	if($db->num_rows($ipresult) >= $ip_max_rooms)
-	{
-		$rerror = 'room_ip_limit';
-		return;
-	}
-
-	# 统计当前已新建房间数量
-	$result = $db->query("SELECT groomid FROM {$gtablepre}game WHERE groomid>0 ");
-	$now_room_nums = $db->num_rows($result);
-	if($now_room_nums >= $max_rooms)
+	$room_lock = roommng_acquire_create_lock();
+	if ($room_lock === false)
 	{
 		$rerror = 'room_num_limit';
 		return;
 	}
 
-	if($now_room_nums)
+	try
 	{
-		$room_ids = range(1,$max_rooms);
-		while($now_room_ids[] = $db->fetch_array($result)['groomid']){};
-		$new_room_id = array_shift(array_diff($room_ids,$now_room_ids));
+		// 等待锁期间账号状态可能已被另一个请求更新，因此必须在锁内刷新。
+		// Account state may change while waiting for the lock, so refresh it inside the critical section.
+		$username_literal = "X'".bin2hex($udata['username'])."'";
+		$user_result = $db->query("SELECT roomid,credits2,ip,groupid FROM {$gtablepre}users WHERE username=$username_literal");
+		if(!$db->num_rows($user_result))
+		{
+			$rerror = 'login_check';
+			return;
+		}
+		$current_user = $db->fetch_array($user_result);
+		foreach(array('roomid','credits2','ip','groupid') as $user_field) $udata[$user_field] = $current_user[$user_field];
+
+		if(!empty($udata['roomid']))
+		{
+			$rerror = 'alreay_in_room';
+			return;
+		}
+
+		$ruleset_cost = 0;
+		# 检查RuleSet权限和费用
+		if(!empty($ruleset_id))
+		{
+			// 包含配置文件
+			include_once GAME_ROOT.'./gamedata/ruleset/ruleset_config.php';
+
+			// 调试信息：记录权限检查过程
+			$debug_info = array(
+				'ruleset_id' => $ruleset_id,
+				'user_groupid' => $udata['groupid'],
+				'user_credits2' => $udata['credits2'],
+				'ruleset_enabled' => isset($ruleset_enabled) ? $ruleset_enabled : 'undefined',
+				'config_exists' => isset($ruleset_config[$ruleset_id]) ? 'yes' : 'no'
+			);
+
+			if(isset($ruleset_config[$ruleset_id])) {
+				$config = $ruleset_config[$ruleset_id];
+				$debug_info['admin_free'] = $config['admin_free'];
+				$debug_info['credits_cost'] = $config['credits_cost'];
+				$debug_info['admin_check'] = ($config['admin_free'] && $udata['groupid'] >= 2) ? 'pass' : 'fail';
+				$debug_info['credits_check'] = ($udata['credits2'] >= $config['credits_cost']) ? 'pass' : 'fail';
+			}
+
+			// 临时调试：将调试信息写入文件
+			file_put_contents(GAME_ROOT.'./doc/etc/ruleset_debug_'.date('Y-m-d_H-i-s').'.txt',
+				"RuleSet权限检查调试信息:\n" . print_r($debug_info, true));
+
+			if(!can_create_ruleset_room($ruleset_id, $udata))
+			{
+				$rerror = 'ruleset_no_permission';
+				return;
+			}
+
+			$config = get_ruleset_config($ruleset_id);
+			if($config && !($config['admin_free'] && $udata['groupid'] >= 2))
+			{
+				$ruleset_cost = max(0, intval($config['credits_cost']));
+			}
+		}
+
+		# 根据IP判断是否可新建房间
+		$ip_literal = "X'".bin2hex($udata['ip'])."'";
+		$ipresult = $db->query("SELECT roomid FROM {$gtablepre}users WHERE roomid>0 AND ip=$ip_literal");
+		if($db->num_rows($ipresult) >= $ip_max_rooms)
+		{
+			$rerror = 'room_ip_limit';
+			return;
+		}
+
+		# 统计当前已新建房间数量
+		$result = $db->query("SELECT groomid FROM {$gtablepre}game WHERE groomid>0 ");
+		$now_room_nums = $db->num_rows($result);
+		if($now_room_nums >= $max_rooms)
+		{
+			$rerror = 'room_num_limit';
+			return;
+		}
+
+		if($now_room_nums)
+		{
+			$room_ids = range(1,$max_rooms);
+			$now_room_ids = array();
+			while($room_data = $db->fetch_array($result)) $now_room_ids[] = $room_data['groomid'];
+			$available_room_ids = array_diff($room_ids,$now_room_ids);
+			$new_room_id = array_shift($available_room_ids);
+		}
+		else
+		{
+			$new_room_id = 1;
+		}
+
+		# 获取当前游戏回数
+		$result = $db->query("SELECT max(gamenum) AS max_value FROM {$gtablepre}game WHERE groomid>=0 ");
+		$new_gamenum = $db->fetch_array($result)['max_value'];
+
+		# 先成功建立房间，再原子扣费；余额变化时删除新房并返回，不让失败请求吞掉切糕。
+		# Create the room first, then charge atomically; remove it if the balance changed meanwhile.
+		$starttime = $now + $startmin*5;
+		$ruleset_sql = !empty($ruleset_id) ? ",'$ruleset_id'" : ",''";
+		$db->query("INSERT INTO {$gtablepre}game (gamenum,groomid,groomownid,gamestate,starttime,gruleset) VALUES ('$new_gamenum','$new_room_id','{$udata['username']}','0','$starttime'$ruleset_sql)");
+
+		if($ruleset_cost > 0)
+		{
+			$db->query("UPDATE {$gtablepre}users SET credits2=credits2-'$ruleset_cost' WHERE username=$username_literal AND credits2>='$ruleset_cost'");
+			if($db->affected_rows() != 1)
+			{
+				$db->query("DELETE FROM {$gtablepre}game WHERE groomid='$new_room_id'");
+				$rerror = 'insufficient_credits';
+				return;
+			}
+			$udata['credits2'] -= $ruleset_cost;
+		}
+
+		# 加入房间
+		roommng_join_room($new_room_id,$udata);
 	}
-	else
+	finally
 	{
-		$new_room_id = 1;
+		roommng_release_create_lock($room_lock);
 	}
-
-	# 获取当前游戏回数
-	$result = $db->query("SELECT max(gamenum) AS max_value FROM {$gtablepre}game WHERE groomid>=0 ");
-	$new_gamenum = $db->fetch_array($result)['max_value'];
-
-	# 新建并初始化房间状态
-	$starttime = $now + $startmin*5;
-	$ruleset_sql = !empty($ruleset_id) ? ",'$ruleset_id'" : ",''";
-	$db->query("INSERT INTO {$gtablepre}game (gamenum,groomid,groomownid,gamestate,starttime,gruleset) VALUES ('$new_gamenum','$new_room_id','{$udata['username']}','0','$starttime'$ruleset_sql)");
-
-	# 加入房间
-	roommng_join_room($new_room_id,$udata);
 
 	return;
 }

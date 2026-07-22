@@ -1,0 +1,47 @@
+公测服发布前修复 / Public test release-readiness fixes
+时间 / Time: 2026-07-22 18:43:46 America/Toronto
+
+中文说明
+========
+1. RuleSet 数据库引导
+   - 在任何房间读取/修复与第一次 config() 查询前检查并补齐 game.gruleset，并以锁内二次检查避免 FTP 覆盖后的并发迁移竞态。
+   - 已确认 players 表会在各房间新一轮初始化时按 gamedata/sql/players.sql 重建，因此 clbpara 会使用 MEDIUMTEXT；更新应安排在没有旧轮次继续运行时。
+
+2. RuleSet 建房扣费
+   - 建房流程现在持有进程锁，并在锁内刷新账号状态。
+   - IP/房间上限检查通过且房间建立成功后才原子扣除切糕；余额变化时删除刚建立的房间，不再出现失败建房吞掉费用。
+
+3. Q6 躲猫猫任务
+   - 侦探眼镜调整为三次充能，与三颗糖果需求一致。
+   - 同时只保留一个绑定目标；NPC 成功生成后才扣充能，异常消失的替代目标免费。
+   - 旧 NPC 与重复请求不能刷糖或误伤新目标；三颗糖果可真实叠加并完成交付。
+   - 新增 gamedata/tests/quest_q6_test.php 回归测试。
+
+4. 并发状态保护
+   - revbotservice 为所有远程 worker 增加通用行动锁，非 RuleSet 模式也不会并发覆盖 BOT 队列与 gameinfo。
+   - LAIKAADVENT 在读取玩家数据前取得整条指令锁，并在玩家保存后释放，避免团队齿轮进度丢失。
+
+5. 接口与管理页硬化
+   - fireseed_data.php 经确认是 slidingpanel 的正式依赖，现要求 cuser/cpass 完整认证，以 hash_equals() 严格校验并保留合法的玩家密码同步。
+   - 管理配置页不再把真实 authkey 或主库密码写入 DOM。
+   - 配置、资源列表、编辑字段与 NPC JSON 按 HTML 上下文转义。
+
+验证
+====
+- PHP 7.4：全部 482 个受版本控制或本轮新增的 PHP 源文件通过 php -l。
+- Q6、LAIKAADVENT、RAIDCAGEDBIRD 回归测试全部通过。
+- 管理模板编译、恶意属性/textarea 样例渲染与 git diff --check 通过。
+
+English summary
+===============
+1. Bootstrap game.gruleset before any room read/repair or config() lookup, with a locked recheck preventing concurrent first-request ALTER races.
+2. Serialize room creation, refresh account state under the lock, check capacity before charging, and roll back a newly inserted room if an atomic credit charge fails.
+3. Make Q6 completable with three detective-glasses charges, one live linked target, free replacement of missing targets, stale-NPC rejection, and an end-to-end regression test covering candy stacking and turn-in.
+4. Serialize remote revbot workers in every mode and hold a request-wide LAIKAADVENT lock around shared team-cog progress updates.
+5. Keep the production fireseed endpoint but require strict hash_equals()-based player authentication; mask secrets and contextually escape admin configuration/resource output.
+
+Verification
+============
+- All 482 tracked or newly added PHP source files pass PHP 7.4 syntax checks.
+- Q6, LAIKAADVENT, and RAIDCAGEDBIRD regression suites pass.
+- Admin template compilation, hostile attribute/textarea rendering samples, and git diff --check pass.

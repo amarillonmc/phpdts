@@ -583,11 +583,33 @@ function quest_combat_prepare_events(&$pa, &$pd, $active)
 
 	// Q6: 捣蛋鬼直接对话
 	if ($qid == 'Q6') {
+		list($questcfg,) = quest_get_config();
+		$need = !empty($questcfg['Q6']['candy_need']) ? intval($questcfg['Q6']['candy_need']) : 3;
+		$need = max(1, $need);
+		if (empty($player['clbpara']['quest']['active']['Q6'])) {
+			$log .= '<span class="yellow">捣蛋鬼做了个鬼脸，然后溜走了。</span><br>';
+			$db->query("DELETE FROM {$tablepre}players WHERE pid='{$npc['pid']}'");
+			return -1;
+		}
+		$qstate = &$player['clbpara']['quest']['active']['Q6'];
+		$linked_npc = !empty($qstate['linked_npc_id']) ? intval($qstate['linked_npc_id']) : 0;
+		$progress = isset($qstate['progress']) ? intval($qstate['progress']) : 0;
+
+		// 只有当前任务绑定的NPC能够产出糖果，旧NPC与重复请求直接清理。
+		// Only the NPC currently linked to the active quest can award candy.
+		if ($linked_npc !== intval($npc['pid']) || $progress >= $need) {
+			$log .= '<span class="yellow">捣蛋鬼做了个鬼脸，然后溜走了。</span><br>';
+			$db->query("DELETE FROM {$tablepre}players WHERE pid='{$npc['pid']}'");
+			return -1;
+		}
+
 		$log .= '<span class="lime">「被你发现啦！」</span><br>';
 		quest_spawn_item('q6_candy', $player);
-		if (!empty($player['clbpara']['quest']['active']['Q6'])) {
-			$player['clbpara']['quest']['active']['Q6']['progress'] += 1;
-		}
+		$qstate['progress'] = min($need, $progress + 1);
+		$qstate['linked_npc_id'] = 0;
+		unset($qstate['target_pls']);
+		$qstate['step'] = 2;
+		$qstate['step_desc'] = '已收集'.$qstate['progress'].'/'.$need.'颗糖果';
 		// 直接移除NPC，避免进入战斗 / Remove NPC to avoid combat
 		$db->query("DELETE FROM {$tablepre}players WHERE pid='{$npc['pid']}'");
 		return -1;
@@ -697,7 +719,13 @@ function quest_handle_npc_death(&$pa, &$pd)
 	} elseif ($qid == 'Q5') {
 		quest_fail('Q5', $owner, 'purify_target_killed');
 	} elseif ($qid == 'Q6') {
-		quest_fail('Q6', $owner, 'hide_npc_killed');
+		// 旧的躲猫猫NPC不应让新一轮Q6失败。
+		// A stale hide-and-seek NPC must not fail a newer Q6 target.
+		$current_npc = !empty($owner['clbpara']['quest']['active']['Q6']['linked_npc_id'])
+			? intval($owner['clbpara']['quest']['active']['Q6']['linked_npc_id']) : 0;
+		if ($current_npc === intval($pd['pid'])) {
+			quest_fail('Q6', $owner, 'hide_npc_killed');
+		}
 	} elseif ($qid == 'Q7') {
 		if ($killer_pid == $owner_pid) quest_complete('Q7', $owner);
 		else quest_fail('Q7', $owner, 'idol_killed_by_other');

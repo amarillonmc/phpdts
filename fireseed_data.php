@@ -1,32 +1,47 @@
 <?php
 
-if(!defined('IN_GAME')) {
-    define('IN_GAME', true);
-}
-
-include_once './include/common.inc.php';
+define('CURSCRIPT', 'fireseed_data');
+require './include/common.inc.php';
 include_once GAME_ROOT.'./include/game.func.php';
 include_once GAME_ROOT.'./include/game/club22.func.php';
 
-// 检查用户是否登录
-if(empty($cuser)) {
-    echo json_encode(array('error' => 'Not logged in'));
+header('Content-Type: application/json; charset=utf-8');
+
+// 返回接口错误 / Return an API error
+function fireseed_data_error($message, $status_code) {
+    http_response_code($status_code);
+    echo json_encode(array('error' => $message), JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-// 获取玩家数据
+// 验证当前玩家身份 / Authenticate the current player
+if(!is_string($cuser) || !is_string($cpass) || $cuser === '' || $cpass === '') {
+    fireseed_data_error('Not logged in', 401);
+}
+
+// 获取玩家数据 / Get player data
 $pdata = fetch_playerdata_by_name($cuser);
 if(!$pdata) {
-    echo json_encode(array('error' => 'Player data not found'));
-    exit;
+    fireseed_data_error('Player data not found', 404);
+}
+
+// 与 game.php 保持相同的密码同步逻辑 / Match the password synchronization used by game.php
+if(!isset($pdata['pass']) || !is_string($pdata['pass']) || !hash_equals($pdata['pass'], $cpass)) {
+    if(empty($udata) || !isset($udata['password']) || !is_string($udata['password'])
+        || !hash_equals($udata['password'], $cpass)) {
+        fireseed_data_error('Wrong password', 403);
+    }
+    $pid = intval($pdata['pid']);
+    $password = $udata['password'];
+    $db->query("UPDATE {$tablepre}players SET pass='$password' WHERE pid='$pid'");
+    $pdata['pass'] = $password;
 }
 
 // clbpara 已经在 fetch_playerdata_by_name 中通过 check_player_misc_states 处理过了
 
 // 检查是否为枫火歌者
 if($pdata['club'] != 22) {
-    echo json_encode(array('error' => 'Not a Fireseed Singer'));
-    exit;
+    fireseed_data_error('Not a Fireseed Singer', 403);
 }
 
 // 获取种火实时数据
@@ -95,8 +110,7 @@ if(!empty($pdata['clbpara']['fireseed'])) {
     }
 }
 
-// 返回 JSON 数据
-header('Content-Type: application/json; charset=utf-8');
+// 返回 JSON 数据 / Return JSON data
 echo json_encode($fireseed_realtime_data, JSON_UNESCAPED_UNICODE);
 
 ?>

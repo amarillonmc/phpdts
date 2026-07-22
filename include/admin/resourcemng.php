@@ -153,6 +153,26 @@ $total_count = count($filtered);
 $paged_records = array_slice($filtered, $start, $showlimit);
 $resultinfo = '第'.($total_count?($start+1):0).'条-第'.($start+count($paged_records)).'条 / 共'.$total_count.'条';
 
+// 转义模板输出，表单提交时浏览器会还原实体 / Escape template output; browsers decode entities on submit
+// keyword 已经由 common.inc.php 的 gstrfilter() 实体化；禁止重复编码导致搜索框内容漂移。
+// keyword was entity-encoded by common.inc.php::gstrfilter(); prevent a second encoding pass here.
+$keyword_html = htmlspecialchars($keyword, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false);
+$paged_records_html = array();
+foreach($paged_records as $row) {
+	$html_row = $row;
+	if($res_type !== 'npc') {
+		foreach($columns as $ci => $column) {
+			$html_row[$ci] = htmlspecialchars(isset($row[$ci]) ? strval($row[$ci]) : '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+		}
+	}
+	$paged_records_html[] = $html_row;
+}
+$edit_record_html = array();
+foreach($columns as $i => $column) {
+	$edit_record_html[$i] = htmlspecialchars(isset($edit_record[$i]) ? strval($edit_record[$i]) : '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+$edit_record_json_html = htmlspecialchars($edit_record_json, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
 include template('admin_resourcemng');
 
 function resourcemng_get_rulesets($res_type){

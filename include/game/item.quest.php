@@ -8,6 +8,14 @@ if (!defined('IN_GAME')) {
 include_once GAME_ROOT.'./include/game/quest.func.php';
 include_once GAME_ROOT.'./include/game.func.php';
 
+// 消耗Q6侦探眼镜充能 / Consume a Q6 detective-glasses charge
+function quest_q6_consume_clue_charge(&$charges, $nosta, $is_replacement)
+{
+    // 已付费目标异常消失时，替代NPC不再次消耗充能。
+    // A replacement for an abnormally missing paid target costs no extra charge.
+    if (!$is_replacement && $charges != $nosta) $charges--;
+}
+
 function item_quest($itmn, &$data)
 {
     global $log, $now, $db, $tablepre, $nosta, $areanum, $plsinfo;
@@ -213,15 +221,49 @@ function item_quest($itmn, &$data)
             $log .= '你没有正在进行的躲猫猫任务。<br>';
             return true;
         }
-        $plslist = get_safe_plslist();
+
+        list($questcfg,) = quest_get_config();
+        $need = !empty($questcfg['Q6']['candy_need']) ? intval($questcfg['Q6']['candy_need']) : 3;
+        $need = max(1, $need);
+        $qstate = &$clbpara['quest']['active']['Q6'];
+        $progress = isset($qstate['progress']) ? intval($qstate['progress']) : 0;
+        if ($progress >= $need) {
+            $log .= '你已经收集齐了糖果，可以直接交付任务。<br>';
+            return true;
+        }
+
+        // 同一时间只允许一个躲猫猫目标，防止重复使用眼镜刷出多个NPC。
+        // Only one hide-and-seek target may exist at a time to prevent duplicate NPC spawns.
+        $linked_npc = !empty($qstate['linked_npc_id']) ? intval($qstate['linked_npc_id']) : 0;
+        if ($linked_npc && quest_is_npc_alive($linked_npc)) {
+            $target_name = isset($qstate['target_pls'], $plsinfo[$qstate['target_pls']])
+                ? $plsinfo[$qstate['target_pls']] : '某个地方';
+            $log .= '侦探眼镜显示：捣蛋鬼仍然藏在'.$target_name.'。<br>';
+            return true;
+        }
+
+        // 旧绑定目标已不存在时，重新定位属于免费替代，不再消耗充能。
+        // Relocating a missing linked target is a free replacement, not a new charge.
+        $is_replacement = $linked_npc > 0;
+        $plslist = array_values(get_safe_plslist());
+        if (empty($plslist)) {
+            $log .= '侦探眼镜暂时找不到安全的藏身处。<br>';
+            return true;
+        }
         $target_pls = $plslist[array_rand($plslist)];
-        $clbpara['quest']['active']['Q6']['target_pls'] = $target_pls;
         $npc_id = quest_spawn_npc('Q6', $data, 'hide', array(), array('pls' => $target_pls));
         if ($npc_id) {
-            $clbpara['quest']['active']['Q6']['linked_npc_id'] = $npc_id;
+            $qstate['target_pls'] = $target_pls;
+            $qstate['linked_npc_id'] = $npc_id;
+            $qstate['step'] = 1;
+            $qstate['step_desc'] = '寻找第'.($progress + 1).'/'.$need.'个捣蛋鬼';
+            $log .= '侦探眼镜显示：捣蛋鬼藏在'.$plsinfo[$target_pls].'。<br>';
+            // NPC生成失败时不消耗道具，避免任务永久卡住。
+            // Consume a charge only after the NPC was spawned successfully.
+            quest_q6_consume_clue_charge($itms, $nosta, $is_replacement);
+        } else {
+            $log .= '侦探眼镜没有锁定目标，请稍后再试。<br>';
         }
-        $log .= '侦探眼镜显示：捣蛋鬼藏在'.$plsinfo[$target_pls].'。<br>';
-        if ($itms != $nosta) $itms--;
         return true;
     }
 

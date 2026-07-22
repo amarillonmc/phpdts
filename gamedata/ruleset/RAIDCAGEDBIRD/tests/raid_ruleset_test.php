@@ -174,6 +174,12 @@ raid_test_assert($legacy_bot_lock_pos !== false && $legacy_bot_read_pos !== fals
     '旧botservice从读取玩家前到最终保存后持有RAID指令锁');
 
 $revbot_source = file_get_contents(GAME_ROOT.'bot/revbotservice.php');
+$revbot_generic_lock_pos = strpos($revbot_source, 'if (!revbot_acquire_action_lock()) return false;');
+$revbot_ruleset_lock_pos = strpos($revbot_source, "function_exists('ruleset_command_request_begin_hook')");
+$revbot_generic_unlock_pos = strpos($revbot_source, 'revbot_release_action_lock();', $revbot_ruleset_lock_pos);
+raid_test_assert($revbot_generic_lock_pos !== false && $revbot_ruleset_lock_pos !== false
+    && $revbot_generic_unlock_pos !== false && $revbot_generic_lock_pos < $revbot_ruleset_lock_pos,
+    'revbotservice在RuleSet锁外层持有跨worker的通用BOT行动锁');
 $revbot_loop_pos = strpos($revbot_source, 'bot_act_flag:');
 $revbot_loop_source = $revbot_loop_pos === false ? '' : substr($revbot_source, $revbot_loop_pos);
 $revbot_lock_pos = strpos($revbot_loop_source, 'revbot_ruleset_action_begin()');

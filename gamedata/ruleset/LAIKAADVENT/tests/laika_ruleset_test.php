@@ -108,6 +108,21 @@ function laika_test_empty_slots()
 $log = '';
 require_once GAME_ROOT.'gamedata/ruleset/LAIKAADVENT/include/ruleset.func.php';
 
+$request_lock_result = ruleset_command_request_begin_hook();
+laika_test_assert($request_lock_result && laika_command_lock_is_held(), '莱卡请求在读取玩家行前取得共享进度锁');
+ruleset_command_request_end_hook();
+laika_test_assert(!laika_command_lock_is_held(), '莱卡请求结束后释放共享进度锁');
+
+$command_source = file_get_contents(GAME_ROOT.'command.php');
+$request_lock_pos = strpos($command_source, 'ruleset_command_request_begin_hook()');
+$player_read_pos = strpos($command_source, 'fetch_playerdata_by_name($cuser)');
+$player_save_pos = strpos($command_source, 'player_save($pdata)');
+$request_unlock_pos = strpos($command_source, 'ruleset_command_post_save_hook');
+laika_test_assert($request_lock_pos !== false && $player_read_pos !== false
+    && $player_save_pos !== false && $request_unlock_pos !== false
+    && $request_lock_pos < $player_read_pos && $player_save_pos < $request_unlock_pos,
+    '莱卡共享进度锁覆盖玩家读取、团队进度改写和最终保存');
+
 $config = laika_get_config();
 laika_test_assert(isset($config['cog']['trigger_items']['破灭之诗']), '旧解离触发物已配置');
 laika_test_assert($config['tax']['ordinary_npc_threshold'] === 5, '普通NPC税阈值集中可配置');

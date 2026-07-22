@@ -11,17 +11,48 @@ require_once $gameRoot.'include/common.inc.php';
 require_once GAME_ROOT.'./include/game.func.php';
 require_once GAME_ROOT.'./bot/revbot.func.php';
 
-// 每次BOT原子行动复用当前RuleSet的请求级锁；其他模式未定义钩子时维持原行为。
-// Reuse the active RuleSet's request lock per bot action; rulesets without the hooks keep legacy behavior.
+// 所有远程worker先竞争BOT行动锁，避免非RuleSet模式并发覆盖gameinfo与BOT队列。
+// All remote workers first contend on the bot action lock so non-RuleSet modes cannot overwrite shared state.
+function revbot_acquire_action_lock()
+{
+	global $revbot_action_lock_handle;
+	if (is_resource($revbot_action_lock_handle)) return true;
+
+	$handle = @fopen(GAME_ROOT.'./gamedata/revbot_action.lock', 'ab');
+	if (!$handle || !flock($handle, LOCK_EX | LOCK_NB)) {
+		if ($handle) fclose($handle);
+		return false;
+	}
+	$revbot_action_lock_handle = $handle;
+	return true;
+}
+
+function revbot_release_action_lock()
+{
+	global $revbot_action_lock_handle;
+	if (!is_resource($revbot_action_lock_handle)) return;
+	flock($revbot_action_lock_handle, LOCK_UN);
+	fclose($revbot_action_lock_handle);
+	$revbot_action_lock_handle = null;
+}
+
+// 每次BOT原子行动同时复用当前RuleSet的请求级锁。
+// Each atomic bot action also reuses the active RuleSet request lock.
 function revbot_ruleset_action_begin()
 {
-	return !function_exists('ruleset_command_request_begin_hook')
-		|| ruleset_command_request_begin_hook() !== false;
+	if (!revbot_acquire_action_lock()) return false;
+	if (function_exists('ruleset_command_request_begin_hook')
+		&& ruleset_command_request_begin_hook() === false) {
+		revbot_release_action_lock();
+		return false;
+	}
+	return true;
 }
 
 function revbot_ruleset_action_end()
 {
 	if(function_exists('ruleset_command_request_end_hook')) ruleset_command_request_end_hook();
+	revbot_release_action_lock();
 }
 
 $bot_respawn_chance = isset($_GET['respawn_chance']) ? (int)$_GET['respawn_chance'] : 35;

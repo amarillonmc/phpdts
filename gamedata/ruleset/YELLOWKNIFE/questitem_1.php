@@ -126,7 +126,7 @@ $questiteminfo = array(
         'itm' => '侦探眼镜',
         'itmk' => 'YQ',
         'itme' => 1,
-        'itms' => 1,
+        'itms' => 3,
         'itmsk' => '',
         'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q6', 'QuestAction' => 'clue'),
     ),

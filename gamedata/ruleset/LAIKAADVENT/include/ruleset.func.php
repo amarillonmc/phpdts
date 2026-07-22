@@ -29,6 +29,42 @@ function laika_html($value)
     return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
 }
 
+// 在整条玩家指令期间持有全局进程锁，保护团队齿轮的JSON读改写。
+// Hold the global process lock for the whole player command to protect team-cog JSON read/modify/write cycles.
+function laika_acquire_command_lock()
+{
+    global $laika_command_lock_handle;
+    if (is_resource($laika_command_lock_handle)) return true;
+    if (!defined('GAME_ROOT')) return false;
+
+    $handle = @fopen(GAME_ROOT.'./gamedata/process.lock', 'ab');
+    if (!$handle || !flock($handle, LOCK_EX)) {
+        if ($handle) fclose($handle);
+        return false;
+    }
+    $laika_command_lock_handle = $handle;
+
+    // common.inc.php在分派指令前已释放此锁，锁内要重新读取共享游戏状态。
+    // common.inc.php released this lock before dispatch, so refresh shared game state inside it.
+    if (function_exists('load_gameinfo')) load_gameinfo();
+    return true;
+}
+
+function laika_command_lock_is_held()
+{
+    global $laika_command_lock_handle;
+    return is_resource($laika_command_lock_handle);
+}
+
+function laika_release_command_lock()
+{
+    global $laika_command_lock_handle;
+    if (!is_resource($laika_command_lock_handle)) return;
+    flock($laika_command_lock_handle, LOCK_UN);
+    fclose($laika_command_lock_handle);
+    $laika_command_lock_handle = null;
+}
+
 function laika_init_state(&$data)
 {
     $cfg = laika_get_config('blessing');
@@ -361,6 +397,23 @@ function laika_npc_has_external_death_side_effects($npc)
     if (!empty($npc['clbpara']['post']) || !empty($npc['clbpara']['oid']) || !empty($npc['clbpara']['zombieoid'])) return true;
     if (!empty($npc['wep2e']) && !empty($npc['wep2sk']) && in_array('z', get_itmsk_array($npc['wep2sk']))) return true;
     return false;
+}
+
+// 从读取玩家数据前开始锁住整条请求，避免两个队员以同一进度快照执行max+1。
+// Lock the request before player loading so two teammates cannot apply max+1 to the same snapshot.
+function ruleset_command_request_begin_hook()
+{
+    return laika_acquire_command_lock();
+}
+
+function ruleset_command_request_end_hook()
+{
+    laika_release_command_lock();
+}
+
+function ruleset_command_post_save_hook(&$data, $command)
+{
+    ruleset_command_request_end_hook();
 }
 
 // 指令处理前钩子 / Pre-command hook

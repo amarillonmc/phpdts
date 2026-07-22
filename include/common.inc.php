@@ -64,6 +64,10 @@ if(!isset($gtablepre)) {
 	$gtablepre = $tablepre;
 }
 
+// RuleSet字段必须先于房间列表读取和残留房间修复存在，也因此早于第一次config()查询。
+// The RuleSet column must exist before room reads and stale-room repair, and therefore before config() too.
+roommng_ensure_ruleset_game_structure();
+
 ob_start();
 
 $cuser = & ${$gtablepre.'user'};
