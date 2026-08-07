@@ -169,27 +169,6 @@ function roommng_create_new_room(&$udata, $ruleset_id = '')
 			// 包含配置文件
 			include_once GAME_ROOT.'./gamedata/ruleset/ruleset_config.php';
 
-			// 调试信息：记录权限检查过程
-			$debug_info = array(
-				'ruleset_id' => $ruleset_id,
-				'user_groupid' => $udata['groupid'],
-				'user_credits2' => $udata['credits2'],
-				'ruleset_enabled' => isset($ruleset_enabled) ? $ruleset_enabled : 'undefined',
-				'config_exists' => isset($ruleset_config[$ruleset_id]) ? 'yes' : 'no'
-			);
-
-			if(isset($ruleset_config[$ruleset_id])) {
-				$config = $ruleset_config[$ruleset_id];
-				$debug_info['admin_free'] = $config['admin_free'];
-				$debug_info['credits_cost'] = $config['credits_cost'];
-				$debug_info['admin_check'] = ($config['admin_free'] && $udata['groupid'] >= 2) ? 'pass' : 'fail';
-				$debug_info['credits_check'] = ($udata['credits2'] >= $config['credits_cost']) ? 'pass' : 'fail';
-			}
-
-			// 临时调试：将调试信息写入文件
-			file_put_contents(GAME_ROOT.'./doc/etc/ruleset_debug_'.date('Y-m-d_H-i-s').'.txt',
-				"RuleSet权限检查调试信息:\n" . print_r($debug_info, true));
-
 			if(!can_create_ruleset_room($ruleset_id, $udata))
 			{
 				$rerror = 'ruleset_no_permission';
@@ -197,7 +176,7 @@ function roommng_create_new_room(&$udata, $ruleset_id = '')
 			}
 
 			$config = get_ruleset_config($ruleset_id);
-			if($config && !($config['admin_free'] && $udata['groupid'] >= 2))
+			if($config && !(!empty($config['admin_free']) && $udata['groupid'] >= 2))
 			{
 				$ruleset_cost = max(0, intval($config['credits_cost']));
 			}

@@ -6,7 +6,7 @@ if(!defined('IN_GAME')) {
 
 // 本文件经常在函数体内被 include_once；显式绑定全局作用域，避免配置只落入调用函数的局部变量。
 // This file is often include_once'd inside functions; bind globals explicitly so config remains visible.
-global $ruleset_enabled, $ruleset_config;
+global $ruleset_enabled, $ruleset_config, $ruleset_definitions;
 
 /*
  * RuleSet系统（时光重现）配置文件
@@ -428,16 +428,32 @@ $ruleset_config = Array(
 );
 
 
+// 保留独立的完整注册表，避免页面/流程中的单条配置临时变量覆盖它。
+// Keep the canonical registry separate from per-ruleset temporary variables.
+$ruleset_definitions = $ruleset_config;
+
+
+// 校验单个RuleSet配置，防止错误数据进入房间列表或创建流程。
+// Validate one RuleSet entry before it reaches room-list or creation code.
+function ruleset_config_entry_is_valid($config) {
+    return is_array($config)
+        && isset($config['name']) && is_string($config['name'])
+        && isset($config['description']) && is_string($config['description'])
+        && isset($config['credits_cost']) && is_numeric($config['credits_cost'])
+        && array_key_exists('admin_free', $config);
+}
 
 // 获取RuleSet配置的函数
 function get_ruleset_config($ruleset_id = null) {
-    // 直接在函数内部定义配置，避免全局变量作用域问题
-    $local_ruleset_enabled = true;
+    // 使用独立注册表，不能读取可被调用方复用的 $ruleset_config 临时变量。
+    // Use the dedicated registry instead of the caller-reusable $ruleset_config variable.
+    global $ruleset_enabled, $ruleset_definitions;
+    $local_ruleset_enabled = !empty($ruleset_enabled);
 
-    // 尝试使用全局配置，如果不存在则使用本地配置
-    global $ruleset_config;
-    if (isset($ruleset_config) && is_array($ruleset_config)) {
-        $local_ruleset_config = $ruleset_config;
+    // 尝试使用独立的全局注册表，如果不存在则使用本地配置。
+    // Prefer the isolated global registry; use the local fallback only when unavailable.
+    if (isset($ruleset_definitions) && is_array($ruleset_definitions)) {
+        $local_ruleset_config = $ruleset_definitions;
     } else {
         // 如果全局变量不存在，使用本地配置作为fallback
         $local_ruleset_config = Array(
@@ -536,8 +552,20 @@ function get_ruleset_config($ruleset_id = null) {
         return false;
     }
 
+    // 过滤损坏或不完整的条目，避免模板将标量误作配置数组。
+    // Filter malformed entries so templates never treat scalars as configuration arrays.
+    foreach ($local_ruleset_config as $local_ruleset_id => $local_config) {
+        if (!ruleset_config_entry_is_valid($local_config)) {
+            unset($local_ruleset_config[$local_ruleset_id]);
+        }
+    }
+
     if ($ruleset_id === null) {
         return $local_ruleset_config;
+    }
+
+    if (!is_string($ruleset_id) && !is_int($ruleset_id)) {
+        return false;
     }
 
     return isset($local_ruleset_config[$ruleset_id]) ? $local_ruleset_config[$ruleset_id] : false;
@@ -545,72 +573,21 @@ function get_ruleset_config($ruleset_id = null) {
 
 // 检查用户是否可以创建指定RuleSet房间
 function can_create_ruleset_room($ruleset_id, $user_data) {
-    // 使用get_ruleset_config函数获取配置，确保一致性
-    $local_ruleset_enabled = true;
-    $local_ruleset_config = get_ruleset_config();
-
-    // 调试信息：记录函数内部状态
-    $debug_info = array(
-        'function_called' => 'can_create_ruleset_room',
-        'ruleset_id' => $ruleset_id,
-        'user_data_groupid' => isset($user_data['groupid']) ? $user_data['groupid'] : 'undefined',
-        'user_data_credits2' => isset($user_data['credits2']) ? $user_data['credits2'] : 'undefined',
-        'local_ruleset_enabled' => $local_ruleset_enabled,
-        'local_config_exists' => isset($local_ruleset_config[$ruleset_id]) ? 'yes' : 'no',
-        'fix_method' => 'using_local_config'
-    );
-
-    if (!$local_ruleset_enabled || !isset($local_ruleset_config[$ruleset_id])) {
-        $debug_info['early_return'] = 'ruleset_disabled_or_config_missing';
-        $debug_info['enabled_check'] = $local_ruleset_enabled ? 'pass' : 'fail';
-        $debug_info['config_exists_check'] = isset($local_ruleset_config[$ruleset_id]) ? 'pass' : 'fail';
-
-        // 写入调试文件
-        file_put_contents(GAME_ROOT.'./doc/etc/can_create_debug_'.date('Y-m-d_H-i-s').'.txt',
-            "can_create_ruleset_room调试信息:\n" . print_r($debug_info, true));
-
+    $config = get_ruleset_config($ruleset_id);
+    if (!is_array($user_data) || !ruleset_config_entry_is_valid($config)) {
         return false;
     }
 
-    $config = $local_ruleset_config[$ruleset_id];
-    $debug_info['config_admin_free'] = $config['admin_free'];
-    $debug_info['config_credits_cost'] = $config['credits_cost'];
+    $groupid = isset($user_data['groupid']) && is_scalar($user_data['groupid']) ? intval($user_data['groupid']) : 0;
+    $credits2 = isset($user_data['credits2']) && is_scalar($user_data['credits2']) ? intval($user_data['credits2']) : 0;
+    $credits_cost = max(0, intval($config['credits_cost']));
 
-    // 管理员免费 (修改权限要求从>=4改为>=2，允许所有管理员免费创建)
-    if ($config['admin_free'] && $user_data['groupid'] >= 2) {
-        $debug_info['result'] = 'admin_pass';
-        $debug_info['admin_free_check'] = $config['admin_free'] ? 'pass' : 'fail';
-        $debug_info['groupid_check'] = ($user_data['groupid'] >= 2) ? 'pass' : 'fail';
-
-        // 写入调试文件
-        file_put_contents(GAME_ROOT.'./doc/etc/can_create_debug_'.date('Y-m-d_H-i-s').'.txt',
-            "can_create_ruleset_room调试信息:\n" . print_r($debug_info, true));
-
+    // 管理员免费（groupid >= 2）。 / Administrators (groupid >= 2) create for free.
+    if (!empty($config['admin_free']) && $groupid >= 2) {
         return true;
     }
 
-    // 检查切糕数量
-    if ($user_data['credits2'] >= $config['credits_cost']) {
-        $debug_info['result'] = 'credits_pass';
-        $debug_info['credits_check'] = ($user_data['credits2'] >= $config['credits_cost']) ? 'pass' : 'fail';
-
-        // 写入调试文件
-        file_put_contents(GAME_ROOT.'./doc/etc/can_create_debug_'.date('Y-m-d_H-i-s').'.txt',
-            "can_create_ruleset_room调试信息:\n" . print_r($debug_info, true));
-
-        return true;
-    }
-
-    $debug_info['result'] = 'all_checks_failed';
-    $debug_info['admin_free_check'] = $config['admin_free'] ? 'pass' : 'fail';
-    $debug_info['groupid_check'] = ($user_data['groupid'] >= 2) ? 'pass' : 'fail';
-    $debug_info['credits_check'] = ($user_data['credits2'] >= $config['credits_cost']) ? 'pass' : 'fail';
-
-    // 写入调试文件
-    file_put_contents(GAME_ROOT.'./doc/etc/can_create_debug_'.date('Y-m-d_H-i-s').'.txt',
-        "can_create_ruleset_room调试信息:\n" . print_r($debug_info, true));
-
-    return false;
+    return $credits2 >= $credits_cost;
 }
 
 // 获取RuleSet资源文件路径

@@ -1,0 +1,16 @@
+时光重现房间列表配置污染修复 / Fix RuleSet room-list configuration collision
+
+问题 / Problem
+- 当房间列表中已有时光重现房间时，模板会把全局 $ruleset_config 覆盖为单个 RuleSet 配置。
+- 随后同一请求再次取得完整配置时，name、credits_cost 等字段被误作为 RuleSet 条目，导致字符串/整数数组偏移警告和损坏的创建界面。
+- 临时调试代码还会向测试服不存在的 doc/etc 目录写文件，产生额外 Warning。
+
+修复 / Fix
+- 新增独立的 $ruleset_definitions 注册表，get_ruleset_config() 只从该注册表读取完整配置。
+- 对 RuleSet 条目进行形状校验，并让 can_create_ruleset_room() 安全拒绝无效 ID 或损坏配置。
+- 将页面、入场和 API 中单个 RuleSet 的临时变量改为专用名称，避免再次覆盖全局注册表。
+- 移除房间创建权限检查中的临时 file_put_contents 调试写入。
+
+验证 / Verification
+- 使用 C:\Soft\php-7.4.33-nts-Win32-vc15-x64\php.exe 对受影响 PHP 文件执行语法检查。
+- 覆盖“旧模板仍写入 $ruleset_config”的回归场景，确认七个 RuleSet 仍完整可用、无效字段 ID 被拒绝、管理员/普通用户权限正确，且不会生成调试文件。

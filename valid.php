@@ -217,9 +217,9 @@ if($mode == 'enter') {
 	# 应用RuleSet初始化设置
 	if (!empty($ruleset_id)) {
 		include_once GAME_ROOT.'./gamedata/ruleset/ruleset_config.php';
-		$ruleset_config = get_ruleset_config($ruleset_id);
-		if ($ruleset_config && !empty($ruleset_config['initial_setup'])) {
-			$setup = $ruleset_config['initial_setup'];
+		$active_ruleset_config = get_ruleset_config($ruleset_id);
+		if ($active_ruleset_config && !empty($active_ruleset_config['initial_setup'])) {
+			$setup = $active_ruleset_config['initial_setup'];
 
 			# 应用初始属性设置
 			if (isset($setup['hp_limit'])) $mhp = $hp = $setup['hp_limit'];
@@ -256,8 +256,8 @@ if($mode == 'enter') {
 			}
 
 			# 设置开场剧情
-			if (!empty($ruleset_config['story_config']['opening_story'])) {
-				$clbpara['ruleset_opening_story'] = $ruleset_config['story_config']['opening_story'];
+			if (!empty($active_ruleset_config['story_config']['opening_story'])) {
+				$clbpara['ruleset_opening_story'] = $active_ruleset_config['story_config']['opening_story'];
 			}
 		}
 	}

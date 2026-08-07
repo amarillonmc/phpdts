@@ -33,9 +33,9 @@
 				<td class="b3" width="100px">
 					<!--{if !empty($rinfo['gruleset'])}-->
 						<!--{eval include_once GAME_ROOT.'./gamedata/ruleset/ruleset_config.php';}-->
-						<!--{eval $ruleset_config = get_ruleset_config($rinfo['gruleset']);}-->
-						<!--{if $ruleset_config}-->
-							<span class="yellow" title="$ruleset_config[description]">$ruleset_config[name]</span>
+						<!--{eval $room_ruleset_config = get_ruleset_config($rinfo['gruleset']);}-->
+						<!--{if $room_ruleset_config}-->
+							<span class="yellow" title="$room_ruleset_config[description]">$room_ruleset_config[name]</span>
 						<!--{else}-->
 							<span class="red">$rinfo[gruleset]</span>
 						<!--{/if}-->
