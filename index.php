@@ -97,8 +97,8 @@ else
 
       // 添加RuleSet信息
       if (!empty($rinfo['gruleset'])) {
-        $ruleset_config = get_ruleset_config($rinfo['gruleset']);
-        $room['ruleset'] = $ruleset_config ? $ruleset_config['name'] : $rinfo['gruleset'];
+        $room_ruleset_config = get_ruleset_config($rinfo['gruleset']);
+        $room['ruleset'] = $room_ruleset_config ? $room_ruleset_config['name'] : $rinfo['gruleset'];
       } else {
         $room['ruleset'] = '';
       }

@@ -8,9 +8,9 @@
 		<!--{eval $ruleset_id = $room_data['gruleset'];}-->
 		<!--{if !empty($ruleset_id)}-->
 			<!--{eval include_once GAME_ROOT.'./gamedata/ruleset/ruleset_config.php';}-->
-			<!--{eval $ruleset_config = get_ruleset_config($ruleset_id);}-->
-			<!--{if $ruleset_config && isset($ruleset_config['avatar_config']) && $ruleset_config['avatar_config']['use_ruleset_avatars']}-->
-				window.rulesetAvatarPath = '$ruleset_config[avatar_config][avatar_path]';
+			<!--{eval $user_ruleset_config = get_ruleset_config($ruleset_id);}-->
+			<!--{if $user_ruleset_config && isset($user_ruleset_config['avatar_config']) && $user_ruleset_config['avatar_config']['use_ruleset_avatars']}-->
+				window.rulesetAvatarPath = '$user_ruleset_config[avatar_config][avatar_path]';
 			<!--{/if}-->
 		<!--{/if}-->
 	<!--{/if}-->
