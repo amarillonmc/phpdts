@@ -214,6 +214,14 @@ if ($club==0)
 	getclub($name,$c1,$c2,$c3);
 	$clubavl[0]=0; $clubavl[1]=$c1; $clubavl[2]=$c2; $clubavl[3]=$c3;
 }
+// 重新进入游戏页时，恢复规则集持久化的动态对话内容。
+// Rebuild persisted dynamic RuleSet dialogues when the full game page is reloaded.
+if(function_exists('ruleset_game_render_hook')) {
+	// 旧版候选按确定性顺序重建；不在 GET 请求写整行，避免与选择提交竞争。
+	// Rebuild legacy offers deterministically; do not write a full player row during GET and race the choice submission.
+	ruleset_game_render_hook($pdata);
+	extract($pdata,EXTR_REFS);
+}
 // 检查是否有对话需要显示，但如果刚刚处理了对话选择，则不显示
 // 通过检查 $_POST['command'] 是否包含 'dialogue_choice' 来判断
 $just_made_choice = isset($_POST['command']) && strpos($_POST['command'], 'dialogue_choice') === 0;

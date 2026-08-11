@@ -1,0 +1,38 @@
+莱卡祝福与物品发现页死锁修复 / Laika Blessing and Item-Find Deadlock Fix
+=======================================================================
+
+中文
+----
+
+问题并非“提示纸条Q”的专属逻辑。搜索恰好达到莱卡祝福阈值时，后置钩子会把祝福写入
+clbpara，并设置不可跳过对话；但搜索同时发现物品时，响应优先显示 itemfind 页面。旧版
+对话 HTML 只由普通 command 页面提供，前端于是尝试打开不存在的对话框。之后拾取、使用、
+丢弃都会被不可跳过对话拦截，玩家被永久留在“发现物品”页。
+
+本次改动：
+
+1. 将对话渲染提升为游戏页的稳定容器，并让 AJAX 响应把当前对话附加到任意 cmd 页面，
+   因而 itemfind、休息和其他非 command 页面都能显示强制选择。
+   稳定容器位于日志之前，保证整页刷新时的打开弹窗脚本能找到它；前端也会确认容器存在，避免异常页面状态中断界面更新。
+2. 页面重载时由 RuleSet 钩子重新构建持久化的动态对话分支；对话脚本也改为在两套游戏
+   页面头部加载，避免依赖 AJAX 插入的 script 标签。
+3. 修复莱卡配置在函数作用域加载时未发布到全局作用域的问题。祝福候选现在会安全生成；
+   旧存档中的空候选会按确定性顺序自动补齐、重置后续祝福阈值；整页重载不会写入玩家整行，
+   因而不会与随后选择的提交竞争，配置异常时也不会创建不可操作的强制事件。
+4. 服务端只允许提交当前祝福或征税的有效选项；带参数的 end_dialogue、伪造其它对话和无效编号
+   都会重新打开当前选择。整页重载也会修复历史遗留的 pending 但无对话锁状态，保持“出现后必须立即选择”的设计。
+5. 扩展莱卡回归测试，覆盖函数作用域配置、候选持久化、旧状态恢复、页面重载和强制选择。
+
+English
+-------
+
+This was not specific to hint note Q. When a search both reached the Laika blessing threshold and
+found an item, the RuleSet persisted a non-skippable blessing while the response rendered itemfind.
+The old dialog markup only existed in command.htm, so the client attempted to open a missing dialog.
+All item actions were then blocked by the pending dialog, leaving the player trapped.
+
+The fix provides a stable dialog host for full pages and injects the active dialog into every AJAX
+command result, rebuilds dynamic dialogues after reload with deterministic legacy offers so displayed
+choices match resolution without a GET-time player write, loads the dialog script before AJAX updates, repairs the function-scoped
+configuration visibility bug and legacy empty offers, and rejects attempts
+to close a pending blessing or levy without resolving it. Regression coverage now protects these paths.
