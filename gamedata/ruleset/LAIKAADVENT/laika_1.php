@@ -11,6 +11,9 @@ if (!defined('IN_GAME')) {
  * 测试时优先调整本文件；核心事件逻辑位于 include/ruleset.func.php。
  * Tune this file first during playtests. Event logic lives in include/ruleset.func.php.
  */
+// RuleSet 加载器会在函数作用域内载入本文件；显式写入全局配置供事件函数读取。
+// The RuleSet loader includes this file from a function scope, so publish the configuration globally for event hooks.
+global $laika_mode_config;
 $laika_mode_config = Array(
     'version' => 1,
 
