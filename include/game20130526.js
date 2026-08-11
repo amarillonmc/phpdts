@@ -412,7 +412,10 @@ function showData(sdata){
 	if($('open-dialog'))
 	{
 		dialogid = $('open-dialog').innerHTML;
-		showModalDialog($(dialogid));
+		var dialogElement = $(dialogid);
+		// 对话容器可能因页面切换而暂不存在；避免一次 UI 异常中断后续更新。
+		// A dialog host can be absent during a page transition; do not let that interrupt later UI updates.
+		if(dialogElement && dialogElement.showModal) showModalDialog(dialogElement);
 	}
 }
 

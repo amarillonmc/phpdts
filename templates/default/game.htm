@@ -1,4 +1,9 @@
 {template header}
+<div id="dialogue-container">
+	<!--{if isset($dialogue_id)}-->
+		{template dialogue}
+	<!--{/if}-->
+</div>
 <div id="notice"></div>
 <div id="ingamebgm" style="display:none">
 	<!--{eval $bgm = init_bgm(1)}-->

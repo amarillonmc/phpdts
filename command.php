@@ -1005,7 +1005,10 @@ if($hp > 0){
 	}
 	//检查执行动作后是否有对话框产生
 	//如果刚刚处理了对话选择，则不显示对话框
-	$just_made_choice = strpos($command, 'dialogue_choice') === 0;
+	// 仅当选择确实清除了对话状态时才不重开弹窗；无效/被拦截的选择必须回到当前对话。
+	// Suppress reopening only after a choice actually cleared dialog state; invalid or blocked choices must return to it.
+	$just_made_choice = strpos($command, 'dialogue_choice') === 0
+		&& empty($clbpara['dialogue']) && empty($clbpara['noskip_dialogue']);
 
 	if(!$just_made_choice && !empty($clbpara['dialogue']))
 	{
@@ -1069,6 +1072,18 @@ if($hp <= 0) {
 	//$gamedata['innerHTML']['cmd'] = $cmd;
 	//$gamedata['cmd'] .= '<br><br><input type="button" id="submit" onClick="postCommand();return false;" value="提交">';
 }
+
+// 对话框不能只依赖 command.htm：物品发现、休息等界面同样可能触发强制对话。
+// Do not rely on command.htm alone: item-find, rest, and other screens can also trigger a mandatory dialogue.
+if (isset($dialogue_id) && isset($gamedata['innerHTML']['cmd'])
+	&& strpos($gamedata['innerHTML']['cmd'], 'id="dialogue"') === false) {
+	ob_clean();
+	include template('dialogue');
+	$gamedata['innerHTML']['cmd'] .= ob_get_contents();
+}
+// 初始整页使用稳定容器；AJAX 响应改在 cmd 内重建，并清除旧容器内容避免重复 ID。
+// Full pages use a stable host; AJAX rebuilds inside cmd and clears the old host to avoid duplicate IDs.
+$gamedata['innerHTML']['dialogue-container'] = '';
 
 //存在 $opendialog 时 尝试打开id为 $opendialog 值的悬浮窗口
 if(isset($opendialog)){$log.="<span style=\"display:none\" id=\"open-dialog\">{$opendialog}</span>";}

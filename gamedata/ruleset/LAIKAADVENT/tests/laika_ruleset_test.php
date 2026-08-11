@@ -130,9 +130,39 @@ laika_test_assert($request_lock_pos !== false && $player_read_pos !== false
     && $request_lock_pos < $player_read_pos && $player_save_pos < $request_unlock_pos,
     '莱卡共享进度锁覆盖玩家读取、团队进度改写和最终保存');
 
+$default_game_template = file_get_contents(GAME_ROOT.'templates/default/game.htm');
+$nouveau_game_template = file_get_contents(GAME_ROOT.'templates/nouveau/game.htm');
+$default_header_template = file_get_contents(GAME_ROOT.'templates/default/header.htm');
+$nouveau_header_template = file_get_contents(GAME_ROOT.'templates/nouveau/header.htm');
+$game_client_source = file_get_contents(GAME_ROOT.'include/game20130526.js');
+$itemfind_render_pos = strpos($command_source, "include template('itemfind');");
+$dialogue_render_pos = $itemfind_render_pos === false ? false
+    : strpos($command_source, "include template('dialogue');", $itemfind_render_pos);
+$default_dialogue_host_pos = strpos($default_game_template, 'id="dialogue-container"');
+$default_log_pos = strpos($default_game_template, 'id="log"');
+$nouveau_dialogue_host_pos = strpos($nouveau_game_template, 'id="dialogue-container"');
+$nouveau_log_pos = strpos($nouveau_game_template, 'id="log"');
+laika_test_assert(strpos($command_source, "['dialogue-container']") !== false
+    && $itemfind_render_pos !== false && $dialogue_render_pos !== false
+    && $itemfind_render_pos < $dialogue_render_pos
+    && $default_dialogue_host_pos !== false && $default_log_pos !== false
+    && $default_dialogue_host_pos < $default_log_pos
+    && $nouveau_dialogue_host_pos !== false && $nouveau_log_pos !== false
+    && $nouveau_dialogue_host_pos < $nouveau_log_pos
+    && strpos($default_header_template, 'include/dialogue.js') !== false
+    && strpos($nouveau_header_template, 'include/dialogue.js') !== false
+    && strpos($game_client_source, 'dialogElement && dialogElement.showModal') !== false,
+    '物品发现等非命令界面会在对话脚本已加载的前提下获得强制对话容器');
+
 $config = laika_get_config();
 laika_test_assert(!empty($config['blessing']['pool']) && intval($config['blessing']['offer_count']) === 3,
     '函数作用域加载后祝福配置仍可被全局事件逻辑读取');
+$parsed_choice = -1;
+laika_test_assert(laika_parse_dialogue_choice('dialogue_choice laika_blessing 0', 'laika_blessing', $parsed_choice)
+    && $parsed_choice === 0
+    && !laika_parse_dialogue_choice('dialogue_choice laika_blessing 00', 'laika_blessing', $parsed_choice)
+    && !laika_parse_dialogue_choice('dialogue_choice laika_blessing invalid', 'laika_blessing', $parsed_choice),
+    '莱卡对话选项只接受规范的数字编号');
 laika_test_assert(isset($config['cog']['trigger_items']['破灭之诗']), '旧解离触发物已配置');
 laika_test_assert($config['tax']['ordinary_npc_threshold'] === 5, '普通NPC税阈值集中可配置');
 
@@ -201,13 +231,70 @@ $repaired_blessing_player['clbpara']['laika']['pending'] = Array(
     'offers' => Array(),
     'duration' => 0,
 );
-laika_install_dynamic_dialogue($repaired_blessing_player);
-laika_test_assert(count($repaired_blessing_player['clbpara']['laika']['pending']['offers']) === $expected_offer_count
-    && intval($repaired_blessing_player['clbpara']['laika']['pending']['duration']) > 0,
-    '历史空祝福事件会被修复为可选择的候选列表');
+$repaired_blessing_player['clbpara']['laika']['actions'] = 50;
+$repaired_blessing_player['clbpara']['laika']['next_blessing'] = 50;
+$repaired_blessing_changed = laika_install_dynamic_dialogue($repaired_blessing_player);
+laika_test_assert($repaired_blessing_changed === true
+    && count($repaired_blessing_player['clbpara']['laika']['pending']['offers']) === $expected_offer_count
+    && intval($repaired_blessing_player['clbpara']['laika']['pending']['duration']) > 0
+    && intval($repaired_blessing_player['clbpara']['laika']['next_blessing']) > 50,
+    '历史空祝福事件会被重建为可选择且可重复复现的候选列表');
 laika_test_assert(count($dialogue_branch['laika_blessing']) === $expected_offer_count
     && !empty($dialogue_branch['laika_blessing'][0]),
     '修复后的历史祝福事件会渲染可点击选项');
+$replayed_blessing_player = laika_test_player();
+laika_init_state($replayed_blessing_player);
+$replayed_blessing_player['clbpara']['laika']['pending'] = Array(
+    'type' => 'blessing',
+    'offers' => Array(),
+    'duration' => 0,
+);
+$replayed_blessing_player['clbpara']['laika']['actions'] = 50;
+$replayed_blessing_player['clbpara']['laika']['next_blessing'] = 50;
+laika_install_dynamic_dialogue($replayed_blessing_player);
+laika_test_assert($replayed_blessing_player['clbpara']['laika']['pending']['offers']
+        === $repaired_blessing_player['clbpara']['laika']['pending']['offers']
+    && $replayed_blessing_player['clbpara']['laika']['pending']['duration']
+        === $repaired_blessing_player['clbpara']['laika']['pending']['duration'],
+    '历史空候选在刷新页面与随后提交之间会重建为同一组选项');
+
+$locked_blessing_player = laika_test_player();
+laika_init_state($locked_blessing_player);
+$locked_blessing_player['clbpara']['laika']['pending'] = Array(
+    'type' => 'blessing',
+    'offers' => Array($offer),
+    'duration' => 2,
+);
+laika_set_dialogue($locked_blessing_player, 'laika_blessing', true);
+$blocked_end_dialogue = ruleset_command_prepare_hook($locked_blessing_player, 'end_dialogue');
+laika_test_assert($blocked_end_dialogue === false
+    && $locked_blessing_player['clbpara']['dialogue'] === 'laika_blessing'
+    && !empty($locked_blessing_player['clbpara']['noskip_dialogue']),
+    '待选祝福不能通过 end_dialogue 暂存或关闭');
+$blocked_end_dialogue_with_arg = ruleset_command_prepare_hook($locked_blessing_player, 'end_dialogue ignore');
+$blocked_other_dialogue = ruleset_command_prepare_hook($locked_blessing_player, 'dialogue_choice testingDialog 0');
+$blocked_invalid_blessing = ruleset_command_prepare_hook($locked_blessing_player, 'dialogue_choice laika_blessing 99');
+$allowed_blessing = ruleset_command_prepare_hook($locked_blessing_player, 'dialogue_choice laika_blessing 0');
+laika_test_assert($blocked_end_dialogue_with_arg === false && $blocked_other_dialogue === false
+    && $blocked_invalid_blessing === false && $allowed_blessing === true,
+    '待选祝福只能提交当前事件中的有效选项，不能用伪造对话绕过');
+
+$reload_blessing_player = laika_test_player();
+laika_init_state($reload_blessing_player);
+$reload_blessing_player['clbpara']['laika']['pending'] = Array(
+    'type' => 'blessing',
+    'offers' => Array($offer),
+    'duration' => 2,
+);
+$dialogues = Array();
+$dialogue_branch = Array();
+$dialogue_log = Array();
+$reload_blessing_changed = ruleset_game_render_hook($reload_blessing_player);
+laika_test_assert($reload_blessing_changed === true
+    && $reload_blessing_player['clbpara']['dialogue'] === 'laika_blessing'
+    && !empty($reload_blessing_player['clbpara']['noskip_dialogue'])
+    && isset($dialogues['laika_blessing']) && isset($dialogue_branch['laika_blessing'][0]),
+    '重载游戏页会恢复待选祝福的动态对话内容和强制选择状态');
 
 $item_player = laika_test_player();
 laika_init_state($item_player);
