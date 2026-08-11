@@ -106,7 +106,14 @@ function laika_test_empty_slots()
 }
 
 $log = '';
-require_once GAME_ROOT.'gamedata/ruleset/LAIKAADVENT/include/ruleset.func.php';
+// 模拟 RuleSet 加载器在函数内部载入行为文件，以覆盖配置作用域。
+// Mirror the RuleSet loader's function-scoped include so configuration scope is covered by this test.
+function laika_test_load_ruleset_functions()
+{
+    require_once GAME_ROOT.'gamedata/ruleset/LAIKAADVENT/include/ruleset.func.php';
+}
+
+laika_test_load_ruleset_functions();
 
 $request_lock_result = ruleset_command_request_begin_hook();
 laika_test_assert($request_lock_result && laika_command_lock_is_held(), '莱卡请求在读取玩家行前取得共享进度锁');
@@ -124,6 +131,8 @@ laika_test_assert($request_lock_pos !== false && $player_read_pos !== false
     '莱卡共享进度锁覆盖玩家读取、团队进度改写和最终保存');
 
 $config = laika_get_config();
+laika_test_assert(!empty($config['blessing']['pool']) && intval($config['blessing']['offer_count']) === 3,
+    '函数作用域加载后祝福配置仍可被全局事件逻辑读取');
 laika_test_assert(isset($config['cog']['trigger_items']['破灭之诗']), '旧解离触发物已配置');
 laika_test_assert($config['tax']['ordinary_npc_threshold'] === 5, '普通NPC税阈值集中可配置');
 
@@ -169,6 +178,36 @@ laika_test_assert($blessing_player['att'] === 200 && $blessing_player['def'] ===
 laika_tick_blessing($blessing_player);
 laika_tick_blessing($blessing_player);
 laika_test_assert($blessing_player['att'] === 100 && $blessing_player['def'] === 100, '悖论祝福到期后精确撤销数值变化');
+
+$dialogues = Array();
+$dialogue_branch = Array();
+$dialogue_log = Array();
+$blessing_offer_player = laika_test_player();
+laika_init_state($blessing_offer_player);
+$blessing_offer_player['clbpara']['laika']['next_blessing'] = 0;
+laika_maybe_offer_blessing($blessing_offer_player);
+$expected_offer_count = min(intval($config['blessing']['offer_count']), count($config['blessing']['pool']));
+laika_test_assert(count($blessing_offer_player['clbpara']['laika']['pending']['offers']) === $expected_offer_count,
+    '祝福事件会持久化完整的可选祝福列表');
+laika_test_assert(isset($dialogue_branch['laika_blessing'])
+    && count($dialogue_branch['laika_blessing']) === $expected_offer_count
+    && !empty($dialogue_branch['laika_blessing'][0]),
+    '祝福选择页会渲染每个可选祝福');
+
+$repaired_blessing_player = laika_test_player();
+laika_init_state($repaired_blessing_player);
+$repaired_blessing_player['clbpara']['laika']['pending'] = Array(
+    'type' => 'blessing',
+    'offers' => Array(),
+    'duration' => 0,
+);
+laika_install_dynamic_dialogue($repaired_blessing_player);
+laika_test_assert(count($repaired_blessing_player['clbpara']['laika']['pending']['offers']) === $expected_offer_count
+    && intval($repaired_blessing_player['clbpara']['laika']['pending']['duration']) > 0,
+    '历史空祝福事件会被修复为可选择的候选列表');
+laika_test_assert(count($dialogue_branch['laika_blessing']) === $expected_offer_count
+    && !empty($dialogue_branch['laika_blessing'][0]),
+    '修复后的历史祝福事件会渲染可点击选项');
 
 $item_player = laika_test_player();
 laika_init_state($item_player);

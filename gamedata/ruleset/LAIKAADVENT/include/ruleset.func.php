@@ -18,8 +18,11 @@ function laika_get_config($section = '')
 {
     global $laika_mode_config;
 
-    if ($section !== '' && isset($laika_mode_config[$section])) {
-        return $laika_mode_config[$section];
+    if (empty($laika_mode_config) || !is_array($laika_mode_config)) return Array();
+    if ($section !== '') {
+        return isset($laika_mode_config[$section]) && is_array($laika_mode_config[$section])
+            ? $laika_mode_config[$section]
+            : Array();
     }
     return $laika_mode_config;
 }
@@ -83,10 +86,9 @@ function laika_init_state(&$data)
     if (empty($state['thresholds']) || !is_array($state['thresholds'])) $state['thresholds'] = Array();
     if (empty($state['tax_conditions']) || !is_array($state['tax_conditions'])) $state['tax_conditions'] = Array();
     if (!isset($state['next_blessing'])) {
-        $state['next_blessing'] = rand(
-            intval($cfg['first_offer_min_actions']),
-            intval($cfg['first_offer_max_actions'])
-        );
+        $min_actions = max(1, intval(isset($cfg['first_offer_min_actions']) ? $cfg['first_offer_min_actions'] : 1));
+        $max_actions = max($min_actions, intval(isset($cfg['first_offer_max_actions']) ? $cfg['first_offer_max_actions'] : $min_actions));
+        $state['next_blessing'] = rand($min_actions, $max_actions);
     }
     if (empty($state['progress_snapshot']) || !is_array($state['progress_snapshot'])) {
         $state['progress_snapshot'] = laika_collect_progress_snapshot($data);
@@ -146,6 +148,65 @@ function laika_clear_dialogue(&$data)
     unset($data['clbpara']['noskip_dialogue']);
 }
 
+// 生成本次祝福的候选项；配置错误时返回空数组而不创建不可操作的事件。
+// Build the offers for one blessing event; return an empty array on invalid configuration instead of creating an unusable event.
+function laika_generate_blessing_offers()
+{
+    $cfg = laika_get_config('blessing');
+    $pool = !empty($cfg['pool']) && is_array($cfg['pool']) ? $cfg['pool'] : Array();
+    $pool_keys = array_keys($pool);
+    shuffle($pool_keys);
+    $offer_count = min(max(0, intval(isset($cfg['offer_count']) ? $cfg['offer_count'] : 0)), count($pool_keys));
+    $offers = Array();
+
+    for ($i = 0; $i < $offer_count; $i++) {
+        $offer_id = $pool_keys[$i];
+        if (empty($pool[$offer_id]) || !is_array($pool[$offer_id])) continue;
+        $offer = $pool[$offer_id];
+        $offer['id'] = $offer_id;
+        $offers[] = $offer;
+    }
+    return $offers;
+}
+
+// 获取祝福持续回合；至少保留一回合，避免受损旧状态立即失效。
+// Get the blessing duration; keep at least one action so repaired legacy state cannot expire immediately.
+function laika_generate_blessing_duration()
+{
+    $cfg = laika_get_config('blessing');
+    $min_actions = max(1, intval(isset($cfg['duration_min_actions']) ? $cfg['duration_min_actions'] : 1));
+    $max_actions = max($min_actions, intval(isset($cfg['duration_max_actions']) ? $cfg['duration_max_actions'] : $min_actions));
+    return rand($min_actions, $max_actions);
+}
+
+// 修复旧版本留下的空祝福候选，避免玩家被卡在没有按钮的选择页。
+// Repair empty legacy blessing offers so a player cannot be trapped on a choice page without buttons.
+function laika_restore_pending_blessing(&$data)
+{
+    global $log;
+
+    if (empty($data['clbpara']['laika']['pending']['type'])
+        || $data['clbpara']['laika']['pending']['type'] != 'blessing') return false;
+
+    $pending = &$data['clbpara']['laika']['pending'];
+    if (empty($pending['offers']) || !is_array($pending['offers'])) {
+        $pending['offers'] = laika_generate_blessing_offers();
+        if (empty($pending['offers'])) {
+            unset($data['clbpara']['laika']['pending']);
+            if (!empty($data['clbpara']['dialogue']) && $data['clbpara']['dialogue'] == 'laika_blessing') {
+                laika_clear_dialogue($data);
+            }
+            $log .= '<span class="red">莱卡的祝福配置无效，本次选择已取消。</span><br>';
+            return false;
+        }
+        $log .= '<span class="yellow">莱卡重新整理了本次祝福选项。</span><br>';
+    }
+    if (empty($pending['duration']) || intval($pending['duration']) < 1) {
+        $pending['duration'] = laika_generate_blessing_duration();
+    }
+    return true;
+}
+
 function laika_install_dynamic_dialogue(&$data)
 {
     global $dialogues, $dialogue_branch, $dialogue_log;
@@ -165,7 +226,8 @@ function laika_install_dynamic_dialogue(&$data)
         $dialogue_log['laika_tax'] = '';
     }
 
-    if (!empty($state['pending']['type']) && $state['pending']['type'] == 'blessing') {
+    if (!empty($state['pending']['type']) && $state['pending']['type'] == 'blessing'
+        && laika_restore_pending_blessing($data)) {
         $pending = $state['pending'];
         $dialogues['laika_blessing'] = Array(
             '<span class="lime b">“哇呼～”</span><br><br>只有这一声感叹还残留着少女般的轻盈。紧接着，三道彼此矛盾的星光落到你面前。',
@@ -1074,19 +1136,17 @@ function laika_maybe_offer_blessing(&$data)
 
     $state = &$data['clbpara']['laika'];
     if (!empty($state['blessing']) || intval($state['actions']) < intval($state['next_blessing'])) return false;
-    $cfg = laika_get_config('blessing');
-    $pool_keys = array_keys($cfg['pool']);
-    shuffle($pool_keys);
-    $offer_count = min(intval($cfg['offer_count']), count($pool_keys));
-    $duration = rand(intval($cfg['duration_min_actions']), intval($cfg['duration_max_actions']));
-    $offers = Array();
-    for ($i = 0; $i < $offer_count; $i++) {
-        $offer = $cfg['pool'][$pool_keys[$i]];
-        $offer['id'] = $pool_keys[$i];
-        $offers[] = $offer;
+    $offers = laika_generate_blessing_offers();
+    if (empty($offers)) {
+        $log .= '<span class="red">莱卡的祝福配置无效，未生成选择事件。</span><br>';
+        return false;
     }
+    $duration = laika_generate_blessing_duration();
+    $cfg = laika_get_config('blessing');
+    $min_actions = max(1, intval(isset($cfg['offer_min_actions']) ? $cfg['offer_min_actions'] : 1));
+    $max_actions = max($min_actions, intval(isset($cfg['offer_max_actions']) ? $cfg['offer_max_actions'] : $min_actions));
     $state['pending'] = Array('type' => 'blessing', 'offers' => $offers, 'duration' => $duration);
-    $state['next_blessing'] = intval($state['actions']) + rand(intval($cfg['offer_min_actions']), intval($cfg['offer_max_actions']));
+    $state['next_blessing'] = intval($state['actions']) + rand($min_actions, $max_actions);
     laika_set_dialogue($data, 'laika_blessing', true);
     $log .= '<span class="lime b">“哇呼～请选择一个祝福吧。”</span><br>';
     laika_install_dynamic_dialogue($data);
@@ -1098,6 +1158,7 @@ function laika_resolve_blessing(&$data, $choice)
     global $log;
 
     if (empty($data['clbpara']['laika']['pending']['type']) || $data['clbpara']['laika']['pending']['type'] != 'blessing') return false;
+    if (!laika_restore_pending_blessing($data)) return false;
     $pending = $data['clbpara']['laika']['pending'];
     if (!isset($pending['offers'][$choice])) return false;
     $offer = $pending['offers'][$choice];
