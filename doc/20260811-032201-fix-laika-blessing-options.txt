@@ -1,0 +1,18 @@
+莱卡祝福选择页修复 / Laika Blessing Choice Page Fix
+====================================================
+
+中文
+----
+
+1. 修复莱卡模式配置的作用域：规则集行为文件由函数内加载时，`laika_1.php` 中的 `$laika_mode_config` 曾只存在于该函数的局部作用域；事件逻辑随后从全局作用域读取配置，祝福池因此为空。
+2. 现在配置文件显式绑定全局变量。祝福触发时会生成并持久化三项候选，动态对话分支也会得到对应按钮，不再出现只有“请选择：”的空选择页；已受影响的空候选事件会在下次处理时自动重建。
+3. 将 `dialogue.js` 改为在两套游戏页面头部加载，而非随 AJAX 注入的对话 HTML 加载。这样翻页与选择提交函数在动态打开的对话中也始终可用。
+4. 扩展莱卡回归测试：以与实际加载器相同的函数作用域加载规则集，并验证祝福配置、候选生成和动态分支渲染。
+
+English
+-------
+
+1. Fixed the Laika configuration scope. When the RuleSet behavior file was included from a loader function, `$laika_mode_config` was local to that function while event hooks later read a global variable, leaving the blessing pool empty.
+2. The configuration now explicitly binds the global variable. Blessing triggers persist three offers and populate the matching dynamic dialogue buttons instead of rendering an empty choice page; already-persisted empty offer lists are rebuilt when processed.
+3. Moved `dialogue.js` to each game page header rather than an AJAX-inserted dialogue fragment, so page navigation and choice submission are always available.
+4. Extended the Laika regression test to load the RuleSet in the same function scope as production and to verify blessing configuration, offer creation, and dynamic choice rendering.
