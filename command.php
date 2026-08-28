@@ -1115,6 +1115,11 @@ if($teamID){
 //writeover('a.txt',$w);
 ob_clean();
 $jgamedata = compatible_json_encode($gamedata);
+// 玩家状态已保存后，编码失败也必须给客户端一条可处理的响应，避免强制对话停在禁用状态。
+// After player data is saved, even an encoding failure must return a processable response so mandatory dialogues do not remain disabled.
+if($jgamedata === false || $jgamedata === NULL || $jgamedata === '') {
+	$jgamedata = '{"url":"game.php"}';
+}
 //$json = new Services_JSON();
 //$jgamedata = $json->encode($gamedata);
 //if(!strstr($_SERVER['HTTP_REFERER'], 'php')) {

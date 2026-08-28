@@ -135,6 +135,9 @@ $nouveau_game_template = file_get_contents(GAME_ROOT.'templates/nouveau/game.htm
 $default_header_template = file_get_contents(GAME_ROOT.'templates/default/header.htm');
 $nouveau_header_template = file_get_contents(GAME_ROOT.'templates/nouveau/header.htm');
 $game_client_source = file_get_contents(GAME_ROOT.'include/game20130526.js');
+$dialogue_client_source = file_get_contents(GAME_ROOT.'include/dialogue.js');
+$common_client_source = file_get_contents(GAME_ROOT.'include/common.js');
+$corpse_template = file_get_contents(GAME_ROOT.'templates/default/corpse.htm');
 $itemfind_render_pos = strpos($command_source, "include template('itemfind');");
 $dialogue_render_pos = $itemfind_render_pos === false ? false
     : strpos($command_source, "include template('dialogue');", $itemfind_render_pos);
@@ -153,6 +156,15 @@ laika_test_assert(strpos($command_source, "['dialogue-container']") !== false
     && strpos($nouveau_header_template, 'include/dialogue.js') !== false
     && strpos($game_client_source, 'dialogElement && dialogElement.showModal') !== false,
     '物品发现等非命令界面会在对话脚本已加载的前提下获得强制对话容器');
+laika_test_assert(strpos($corpse_template, 'id="command"') === false
+    && strpos($corpse_template, 'name="command"') !== false
+    && strpos($dialogue_client_source, "data: {mode: 'command', command: commandValue}") !== false
+    && strpos($game_client_source, 'function postCmd(formName,sendto,options)') !== false
+    && strpos($game_client_source, 'getRequestBody(formElement, requestOptions.data)') !== false
+    && strpos($common_client_source, 'function getRequestBody(oForm, overrides)') !== false
+    && strpos($command_source, '$jgamedata === false') !== false
+    && strpos($command_source, '{"url":"game.php"}') !== false,
+    '尸体等临时页面触发祝福时会覆写同名模式和指令，并在异常响应后恢复游戏页');
 
 $config = laika_get_config();
 laika_test_assert(!empty($config['blessing']['pool']) && intval($config['blessing']['offer_count']) === 3,
@@ -183,6 +195,10 @@ laika_test_assert(!laika_is_effective_action('move', laika_test_player()), '同�
 $moveto = 1;
 laika_test_assert(!laika_is_effective_action('menu', Array('clbpara' => Array())), '打开菜单不会计入有效行动');
 laika_test_assert(!laika_is_effective_action('itm6', laika_test_player()), '空物品栏的使用指令不会计入有效行动');
+$mode = 'corpse';
+laika_test_assert(laika_is_effective_action('money', laika_test_player()),
+    '尸体页面的有效操作可能恰好触发莱卡祝福，必须支持从临时指令页提交选择');
+$mode = 'command';
 
 $player = laika_test_player();
 laika_init_state($player);

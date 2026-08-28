@@ -107,102 +107,79 @@ function changePages(mode, cPages) {
     }
 }
 
-// 处理对话选择
+// 处理对话选择；不要假定当前临时指令页拥有 #command 或 #mode。
+// Handle a dialogue choice without assuming the current transient command page has #command or #mode.
 function handleDialogueChoice(dialogueId, choiceIndex) {
-    // 添加非常明显的控制台日志
-    console.log('%c对话选择调试信息', 'background: red; color: white; font-size: 20px;');
-    console.log('%c对话 ID = ' + dialogueId + ', 选择索引 = ' + choiceIndex, 'background: red; color: white; font-size: 20px;');
+    var commandValue = 'dialogue_choice ' + dialogueId + ' ' + choiceIndex;
+    var gameForm = document.forms['gamecmd'];
+    var dialogueElement = document.getElementById('dialogue');
+    var choiceButtons = document.querySelectorAll('#dialogue input.cmdbutton');
 
-    console.log('handleDialogueChoice called with dialogueId=' + dialogueId + ', choiceIndex=' + choiceIndex);
-
-    try {
-        // 禁用所有选择按钮，防止重复点击
-        var choiceButtons = document.querySelectorAll('#dialogue input.cmdbutton');
-        if (choiceButtons && choiceButtons.length > 0) {
-            for(var i = 0; i < choiceButtons.length; i++) {
-                choiceButtons[i].disabled = true;
-            }
-            console.log('All choice buttons disabled');
-        } else {
-            console.warn('No choice buttons found to disable');
-        }
-
-        // 设置命令值
-        var commandInput = document.getElementById('command');
-        if(commandInput) {
-            commandInput.value = 'dialogue_choice ' + dialogueId + ' ' + choiceIndex;
-            console.log('Command set to: ' + commandInput.value);
-        } else {
-            console.error('Command input not found!');
-            return false;
-        }
-
-        // 关闭对话框
-        var dialogueElement = document.getElementById('dialogue');
-        if(dialogueElement) {
-            try {
-                // 在关闭对话框前添加一个“处理中”的提示
-                var processingDiv = document.createElement('div');
-                processingDiv.innerHTML = '<span style="color: yellow; font-weight: bold;">正在处理选择...</span>';
-                processingDiv.style.textAlign = 'center';
-                processingDiv.style.padding = '10px';
-                dialogueElement.appendChild(processingDiv);
-
-                // 延迟关闭对话框，给用户一个反馈
-                setTimeout(function() {
-                    try {
-                        dialogueElement.close();
-                        console.log('Dialogue closed');
-                    } catch (closeError) {
-                        console.error('Error closing dialogue:', closeError);
-                    }
-
-                    // 在关闭对话框后再提交命令
-                    setTimeout(function() {
-                        console.log('Submitting command...');
-                        try {
-                            postCmd('gamecmd', 'command.php');
-                            console.log('Command submitted');
-                        } catch (postError) {
-                            console.error('Error posting command:', postError);
-                            // 如果提交命令出错，尝试直接提交表单
-                            try {
-                                document.getElementById('gamecmd').submit();
-                                console.log('Form submitted directly');
-                            } catch (submitError) {
-                                console.error('Error submitting form:', submitError);
-                            }
-                        }
-                    }, 100);
-                }, 500);
-            } catch (processError) {
-                console.error('Error processing dialogue:', processError);
-                // 如果处理对话框出错，直接提交命令
-                postCmd('gamecmd', 'command.php');
-            }
-        } else {
-            console.error('Dialogue element not found!');
-            // 如果没有找到对话框，也要提交命令
-            setTimeout(function() {
-                console.log('Submitting command anyway...');
-                postCmd('gamecmd', 'command.php');
-            }, 100);
-        }
-    } catch (error) {
-        console.error('Error in handleDialogueChoice:', error);
-        // 如果出现任何错误，尝试直接提交命令
-        try {
-            var commandInput = document.getElementById('command');
-            if(commandInput) {
-                commandInput.value = 'dialogue_choice ' + dialogueId + ' ' + choiceIndex;
-            }
-            postCmd('gamecmd', 'command.php');
-        } catch (finalError) {
-            console.error('Final error attempt failed:', finalError);
-        }
+    if(!gameForm) {
+        console.error('Game command form not found.');
+        return false;
     }
 
-    console.log('Dialogue choice submitted: dialogue_choice ' + dialogueId + ' ' + choiceIndex);
+    for(var i = 0; i < choiceButtons.length; i++) {
+        choiceButtons[i].disabled = true;
+    }
+
+    var processingDiv = document.getElementById('dialogue-choice-processing');
+    if(!processingDiv && dialogueElement) {
+        processingDiv = document.createElement('div');
+        processingDiv.id = 'dialogue-choice-processing';
+        processingDiv.style.textAlign = 'center';
+        processingDiv.style.padding = '10px';
+        dialogueElement.appendChild(processingDiv);
+    }
+    if(processingDiv) {
+        processingDiv.innerHTML = '<span style="color: yellow; font-weight: bold;">正在处理选择...</span>';
+    }
+
+    var requestCompleted = false;
+    var recoveryTimer = null;
+    function recoverChoice(error) {
+        if(requestCompleted) return;
+        requestCompleted = true;
+        if(recoveryTimer) window.clearTimeout(recoveryTimer);
+        if(processingDiv) {
+            processingDiv.innerHTML = '<span style="color: yellow; font-weight: bold;">请求未完成，正在重新载入游戏页...</span>';
+        }
+        window.setTimeout(function() {
+            window.location.reload();
+        }, 250);
+        if(error && error.message) console.error('Dialogue choice request failed:', error.message);
+    }
+    function finishChoice() {
+        if(requestCompleted) return;
+        requestCompleted = true;
+        if(recoveryTimer) window.clearTimeout(recoveryTimer);
+    }
+
+    // 即使尸体、战果等页面存在同名 radio，也只提交此处指定的强制选择。
+    // Submit only this mandatory choice even when corpse/result pages contain same-named radio controls.
+    recoveryTimer = window.setTimeout(function() {
+        if(!requestCompleted && document.getElementById('dialogue') === dialogueElement) {
+            recoverChoice({message: '指令请求超时。'});
+        }
+    }, 15000);
+
+    try {
+        var requestStarted = postCmd('gamecmd', 'command.php', {
+            data: {mode: 'command', command: commandValue},
+            // 选择按钮已在本函数中锁定，不能让通用的 50ms 节流静默吞掉强制选择。
+            // Buttons are already locked here, so the generic 50ms throttle must not silently drop this choice.
+            bypassDelay: true,
+            timeout: 15000,
+            onSuccess: finishChoice,
+            onError: recoverChoice
+        });
+        if(requestStarted === false && !requestCompleted) {
+            recoverChoice({message: '指令未能开始发送。'});
+        }
+    } catch(error) {
+        recoverChoice(error);
+    }
 
     return false;
 }

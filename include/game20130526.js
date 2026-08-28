@@ -298,31 +298,94 @@ function sl(id) {
 //	$('alivelist').innerHTML = alive;
 //}
 var lastRun = 0; var delay = 50;
-function postCmd(formName,sendto){
-	var oXmlHttp = zXmlHttp.createRequest();
-	var sBody = getRequestBody(document.forms[formName]);
-	oXmlHttp.open("post", sendto, true);
-	oXmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-	const now = Date.now();
-	if (lastRun && now - lastRun < delay) {
-		//console.log('上次响应时间：' + lastRun + ' ' + delay + '毫秒内无法重复执行。' + '当前时间刻：' + now);
-		return;
+// 可选请求参数保持旧的两参数调用兼容；强制对话可安全覆盖临时页面的 mode/command。
+// Optional request settings preserve legacy calls while mandatory dialogues can safely override mode/command.
+function postCmd(formName,sendto,options){
+	var requestOptions = options || {};
+	var requestFinished = false;
+	function finishSuccess() {
+		if(requestFinished) return;
+		requestFinished = true;
+		if(typeof requestOptions.onSuccess == 'function') requestOptions.onSuccess();
 	}
-	lastRun = now;
-	//console.log('执行了一次指令，当前时间：' + now);
-	oXmlHttp.onreadystatechange = function () {
-		if (oXmlHttp.readyState == 4) {
-			if (oXmlHttp.status == 200) {
-				if (oXmlHttp.responseText!='')
-				{
-					showData(oXmlHttp.responseText);
-				}
-			} else {
-				showNotice(oXmlHttp.statusText);
-			}
+	function finishError(kind, message) {
+		if(requestFinished) return;
+		requestFinished = true;
+		if(typeof requestOptions.onError == 'function') {
+			requestOptions.onError({kind: kind, message: message});
+		} else if(typeof showNotice == 'function') {
+			showNotice(message);
 		}
 	}
-	oXmlHttp.send(sBody);
+
+	var formElement = document.forms[formName];
+	if(!formElement) {
+		finishError('form', '找不到指令表单。');
+		return false;
+	}
+
+	var now = Date.now();
+	if(!requestOptions.bypassDelay && lastRun && now - lastRun < delay) {
+		finishError('throttled', '指令提交过快，请稍后重试。');
+		return false;
+	}
+
+	var oXmlHttp;
+	var sBody;
+	try {
+		oXmlHttp = zXmlHttp.createRequest();
+		sBody = getRequestBody(formElement, requestOptions.data);
+		oXmlHttp.open("post", sendto, true);
+		oXmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		if(requestOptions.timeout && requestOptions.timeout > 0) {
+			// 老旧 XMLHttpRequest 实现可能不支持 timeout；仍允许请求继续并由对话层后备计时恢复。
+			// Older XMLHttpRequest implementations may not support timeout; let the dialogue fallback timer recover instead.
+			try {
+				oXmlHttp.timeout = requestOptions.timeout;
+			} catch(timeoutError) {}
+		}
+	} catch(requestError) {
+		finishError('setup', '无法建立指令请求：' + requestError.message);
+		return false;
+	}
+
+	lastRun = now;
+	oXmlHttp.onreadystatechange = function () {
+		if (oXmlHttp.readyState != 4) return;
+		if (oXmlHttp.status == 200) {
+			if (oXmlHttp.responseText != '') {
+				try {
+					if(showData(oXmlHttp.responseText) === false) {
+						finishError('response', '服务器返回了无效的指令结果。');
+					} else {
+						finishSuccess();
+					}
+				} catch(responseError) {
+					finishError('parse', '无法处理服务器响应：' + responseError.message);
+				}
+			} else {
+				finishError('empty', '服务器没有返回指令结果。');
+			}
+		} else {
+			finishError('http', oXmlHttp.statusText || ('请求失败（HTTP ' + oXmlHttp.status + '）。'));
+		}
+	};
+	oXmlHttp.onerror = function () {
+		finishError('network', '网络请求失败。');
+	};
+	oXmlHttp.onabort = function () {
+		finishError('abort', '指令请求已中断。');
+	};
+	oXmlHttp.ontimeout = function () {
+		finishError('timeout', '指令请求超时。');
+	};
+	try {
+		oXmlHttp.send(sBody);
+	} catch(sendError) {
+		finishError('send', '无法发送指令请求：' + sendError.message);
+		return false;
+	}
+	return true;
 }
 
 // 更新背景图片函数
@@ -337,11 +400,14 @@ function showData(sdata){
 	shwData = sdata.parseJSON();
 	if(shwData['url']) {
 		window.location.href = shwData['url'];
+		return true;
 	}else if(!shwData['innerHTML']) {
-		$('error').innerHTML=sdata;
+		if($('error')) $('error').innerHTML=sdata;
+		else if(typeof showNotice == 'function') showNotice('服务器返回了无效响应。');
 			//window.location.href = 'index.php';
+		return false;
 	}else{
-		sDv = shwData['value'];
+		sDv = shwData['value'] || {};
 		for(var id in sDv){
 			if($(id)!=null){
 				$(id).value = sDv[id];
@@ -350,7 +416,7 @@ function showData(sdata){
 		sDi = shwData['innerHTML'];
 		for(var id in sDi){
 			if($(id)!=null){
-				if(sDi['id'] !== ''){
+				if(sDi[id] !== ''){
 					$(id).innerHTML = sDi[id];
 				}else{
 					$(id).innerHTML = '';
@@ -370,7 +436,7 @@ function showData(sdata){
 				updateFireseedTab();
 			}
 		}
-		sDd = shwData['display'];
+		sDd = shwData['display'] || {};
 		for(var id in sDd){
 			if($(id)!=null){
 
@@ -417,6 +483,7 @@ function showData(sdata){
 		// A dialog host can be absent during a page transition; do not let that interrupt later UI updates.
 		if(dialogElement && dialogElement.showModal) showModalDialog(dialogElement);
 	}
+	return true;
 }
 
 var refchat = null;

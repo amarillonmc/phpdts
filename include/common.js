@@ -42,16 +42,26 @@ zXmlHttp.createRequest=function(){
 };
 zXmlHttp.isSupported=function(){return zXml.useXmlHttp||zXml.useActiveX;};
 
-//form转字符串
-function getRequestBody(oForm) {
+//form转字符串；可选覆盖指定字段，避免临时页面中同名控件覆盖强制指令。
+// Serialize a form; optional overrides replace all controls with the same name for mandatory commands.
+function getRequestBody(oForm, overrides) {
 	var aParams = new Array();
 	var n = oForm.elements.length;
+	var hasOverrides = overrides && typeof overrides == 'object';
     for (var i=0 ; i < n ; i++) {
-		if((oForm.elements[i].type == 'radio')&&(!oForm.elements[i].checked)){continue;}
-		var sParam = encodeURIComponent(oForm.elements[i].name);
-		sParam += "=" + encodeURIComponent(oForm.elements[i].value);
+		var formElement = oForm.elements[i];
+		if((formElement.type == 'radio')&&(!formElement.checked)){continue;}
+		if(hasOverrides && Object.prototype.hasOwnProperty.call(overrides, formElement.name)){continue;}
+		var sParam = encodeURIComponent(formElement.name);
+		sParam += "=" + encodeURIComponent(formElement.value);
 		aParams.push(sParam);
-    } 
+    }
+	if(hasOverrides) {
+		for(var overrideName in overrides) {
+			if(!Object.prototype.hasOwnProperty.call(overrides, overrideName)){continue;}
+			aParams.push(encodeURIComponent(overrideName) + "=" + encodeURIComponent(overrides[overrideName]));
+		}
+	}
     return aParams.join("&"); 
 }
 

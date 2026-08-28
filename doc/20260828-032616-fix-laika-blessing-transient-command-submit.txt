@@ -1,0 +1,45 @@
+莱卡祝福临时指令页提交修复 / Laika Blessing Transient Command Submission Fix
+==========================================================================
+
+中文
+----
+
+莱卡模式把尸体、战斗等操作计为有效行动。若该操作正好达到祝福阈值，后端会在其
+AJAX 响应中附加不可跳过的祝福对话。尸体页等临时指令页没有普通 command.htm 中的
+`#command` 隐藏字段，并且会包含多个同名的 `command` 单选框。
+
+旧的对话脚本会先禁用全部祝福按钮，再查找 `#command`。在尸体页找不到该字段时，
+函数会直接返回，实际请求从未发出，因此画面永久停在灰色、不可点击的选择框；刷新
+页面后换回普通指令页才会恢复。
+
+本次改动：
+
+1. 强制对话提交不再读取或修改当前页面的 `#mode` / `#command`。请求序列化层会排除
+   临时页面中所有同名控件，并唯一追加 `mode=command` 和规范的 `dialogue_choice` 指令。
+2. `postCmd()` 保持原有两参数调用兼容，同时为强制选择增加请求结果、网络错误、HTTP
+   错误、空响应和超时处理。请求失败或响应无法处理时自动重载游戏页，避免在服务端已
+   保存或未保存的未知状态下允许重复提交。
+3. 服务端 JSON 编码失败时返回游戏页地址，确保已保存后的客户端始终能恢复。
+4. 为三份联动脚本添加同一版本号，避免浏览器混用新旧 `postCmd()` / 序列化接口。
+5. 扩展 LAIKAADVENT 回归测试，覆盖尸体页的同名命令条件、强制覆写路径、异常响应兜底
+   以及尸体操作会触发祝福阈值的事实。
+
+本修复仅处理“选择祝福后按钮变灰且卡住”的提交链路。祝福自身的数值副作用（例如选择
+生命后出现攻击降低）仍由祝福配置决定，属于独立的平衡与配置议题，未在此改动中调整。
+
+English
+-------
+
+Laika counts corpse, combat, and related actions as effective actions. If one reaches a blessing
+threshold, the server appends a non-skippable dialogue to that temporary AJAX command page. Corpse
+pages lack the normal `#command` hidden field and contain several same-named `command` radio inputs.
+
+The former client disabled every choice button and then returned without sending anything when
+`#command` was missing. The player therefore remained in a disabled dialog until a full reload
+restored the regular command page.
+
+Mandatory choices now submit explicit, deduplicated `mode=command` and `dialogue_choice` values,
+receive response/error/timeout recovery, and reload safely if their state cannot be confirmed. The
+server provides a usable reload response if JSON encoding fails after saving. Coordinated asset
+versions prevent old and new request helpers from being mixed, and regression coverage protects the
+transient-page path. Balance effects of individual blessings are intentionally out of scope.
