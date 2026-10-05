@@ -53,7 +53,7 @@ function check_can_move($pls,$pgroup,$moveto)
 function move($moveto = 99,&$data=NULL)
 {
 	global $log,$weather,$plsinfo,$hplsinfo,$arealist,$areanum,$hack,$areainfo,$gamestate,$gamecfg;
-	global $actlog;
+	global $actlog,$club23_contacts;
 
 	if(!isset($data))
 	{
@@ -116,6 +116,7 @@ function move($moveto = 99,&$data=NULL)
 	# 计算并扣除移动所需SP/HP
 	$flag = calc_move_search_sp_cost($data,'move');
 	if(!$flag) return;
+	unset($club23_contacts[$data['pid']]);
 
 	# 预移动、探索阶段事件结算
 	$moved = pre_move_search_events($data,'move');
@@ -155,6 +156,7 @@ function move($moveto = 99,&$data=NULL)
 	$enemyrate =  \revbattle\calc_meetman_rate($data);
 	discover($enemyrate,$data);
 	quest_try_assign($data);
+	club23_move_search($data);
 	# RuleSet钩子：仅在普通移动完整执行成功后登记动作。
 	# RuleSet hook: record an ordinary move only after it completed successfully.
 	if(function_exists('ruleset_move_search_success_hook')) ruleset_move_search_success_hook($data,'move',!empty($moved));
@@ -164,7 +166,7 @@ function move($moveto = 99,&$data=NULL)
 function search(&$data=NULL)
 {
 	global $log,$weather,$arealist,$areanum,$hack,$plsinfo,$hplsinfo,$gamestate;
-	global $actlog;
+	global $actlog,$club23_contacts;
 
 	if(!isset($data))
 	{
@@ -190,6 +192,7 @@ function search(&$data=NULL)
 	# 计算并扣除移动所需SP/HP
 	$flag = calc_move_search_sp_cost($data,'search');
 	if(!$flag) return;
+	unset($club23_contacts[$data['pid']]);
 
 	# 预移动、探索阶段事件结算
 	$moved = pre_move_search_events($data,'search');
@@ -217,6 +220,7 @@ function search(&$data=NULL)
 	// QUEST周期与分配 / QUEST tick and assignment
 	quest_tick($data);
 	quest_try_assign($data);
+	club23_move_search($data);
 	# RuleSet钩子：仅在原地探索完整执行成功后登记动作。
 	# RuleSet hook: record an in-place search only after it completed successfully.
 	if(function_exists('ruleset_move_search_success_hook')) ruleset_move_search_success_hook($data,'search',!empty($moved));

@@ -286,6 +286,9 @@ if(CURSCRIPT !== 'chat')
 	include_once GAME_ROOT.'./include/messages.func.php';
 	$new_messages = message_check_new($cuser);
 	
-	fclose($plock); 
+	// 游戏指令及页面还会读取、保存玩家。保留初始化锁至请求结束，避免受击的
+	// subliminal/技能次数被并发探索或旧页面数据覆盖；进程退出自动释放。
+	// RAID/LAIKA 的请求钩子会自行取得同一把锁，沿用其原有释放与重取流程。
+	if(CURSCRIPT !== 'game' || function_exists('ruleset_command_request_begin_hook')) fclose($plock);
 }
 ?>

@@ -41,17 +41,30 @@ function revbot_release_action_lock()
 function revbot_ruleset_action_begin()
 {
 	if (!revbot_acquire_action_lock()) return false;
-	if (function_exists('ruleset_command_request_begin_hook')
-		&& ruleset_command_request_begin_hook() === false) {
-		revbot_release_action_lock();
-		return false;
+	if (function_exists('ruleset_command_request_begin_hook')) {
+		// RAID/LAIKA 已在此钩子中持有 process.lock，不能重复取得同一把锁。
+		if(ruleset_command_request_begin_hook() === false) {
+			revbot_release_action_lock();
+			return false;
+		}
+	} else {
+		global $plock;
+		// 普通规则与 YELLOWKNIFE 也保护整次 BOT 读写，避免覆盖玩家新收到的 S。
+		$plock = @fopen(GAME_ROOT.'./gamedata/process.lock','ab');
+		if(!$plock || !flock($plock,LOCK_EX | LOCK_NB)) {
+			if($plock) fclose($plock);
+			revbot_release_action_lock();
+			return false;
+		}
 	}
 	return true;
 }
 
 function revbot_ruleset_action_end()
 {
+	global $plock;
 	if(function_exists('ruleset_command_request_end_hook')) ruleset_command_request_end_hook();
+	if(is_resource($plock)) fclose($plock);
 	revbot_release_action_lock();
 }
 

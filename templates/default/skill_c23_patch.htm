@@ -1,0 +1,16 @@
+<!--{eval $skid = 'c23_patch'; $cskill = $cskills[$skid];}-->
+<tr>
+    <td class="b1" width="40"><span>{$cskill['name']}</span></td>
+    <td class="b3">
+        <!--{eval $cdesc = parse_skilldesc($skid,$uidata);}-->
+        <span class="skilldesc">{$cdesc}</span>
+        <!--{if empty($no_skill_input)}-->
+        <br>
+        <select name="c23_patch_mode" id="c23_patch_mode">
+            <option value="weapon">补缀当前记忆</option>
+            <option value="health">补缀自身形体</option>
+        </select>
+        <input type="button" value="补缀" onclick="$('mode').value='revskpts';$('command').value='upgskill_c23_patch';postCmd('gamecmd','command.php');this.disabled=true;">
+        <!--{/if}-->
+    </td>
+</tr>

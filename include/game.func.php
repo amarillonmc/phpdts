@@ -4,6 +4,8 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
+include_once GAME_ROOT.'./include/game/club23.func.php';
+
 function init_playerdata($data=NULL)
 {
 	global $baseexp,$weather,$fog,$log,$upexp,$lvlupexp,$iconImg,$iconImgB;

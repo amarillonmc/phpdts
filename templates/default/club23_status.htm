@@ -1,0 +1,11 @@
+<!--{if !empty($clbpara['subliminal']) && $hp > 0}-->
+<!--{eval $c23_view_cfg = club23_config();}-->
+<div class="purple" style="padding:6px" role="status">
+    <strong class="<!--{if $clbpara['subliminal'] >= $c23_view_cfg['distortion_threshold']}-->glitchb<!--{/if}-->">记忆侵入：{$clbpara['subliminal']}</strong>
+    <!--{if !empty($clbpara['subliminal_afterimage_until']) && $clbpara['subliminal_afterimage_until'] > $now}-->
+    <!--{eval $c23_view_left = $clbpara['subliminal_afterimage_until']-$now;}-->
+    <span>／残像还将停留{$c23_view_left}秒</span>
+    <!--{/if}-->
+    <br><span>移动与探索能使它消退。带着它与任何持有「剥落的记忆」的玩家交战，都可能使形体崩散。</span>
+</div>
+<!--{/if}-->

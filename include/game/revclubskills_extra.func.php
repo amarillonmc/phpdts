@@ -19,6 +19,13 @@
 		}
 		extract($data,EXTR_REFS);
 
+		if($event == 'club23_skill')
+		{
+			include_once GAME_ROOT.'./include/game/club23.func.php';
+			global $c23_patch_mode;
+			return club23_skill($sk,$data,isset($c23_patch_mode) ? $c23_patch_mode : '');
+		}
+
 		# 事件：激活技能
 		if($event == 'active_news')
 		{

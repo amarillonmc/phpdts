@@ -12,6 +12,7 @@ namespace revcombat
 	include_once GAME_ROOT.'./include/game/revattr.func.php';
 	include_once GAME_ROOT.'./include/game/revattr.calc.php';
 	include_once GAME_ROOT.'./include/game/revattr_extra.func.php';
+	include_once GAME_ROOT.'./include/game/club23.func.php';
 
 	# 战斗准备流程：
 	# pa、pd分别代表先制发现者与被先制发现者；
@@ -93,6 +94,28 @@ namespace revcombat
 
 		# 正式进入rev_combat战斗状态后，在判定伤害、反击流程前的遇敌log
 		combat_prepare_logs($pa,$pd,$active);
+
+		// 交战前的 S 独立结算，反击/连击不追加掷骰，之后新增的 S 留到下次交战。
+		$pa['club23_landed'] = $pd['club23_landed'] = false;
+		$pa['club23_memory_hit'] = $pd['club23_memory_hit'] = false;
+		$att_result = 1;
+		$def_dmg = 0;
+		$att_dmg = \club23_death_damage($pa,$pd);
+		if($att_dmg > 0)
+		{
+			$pd['hp'] = 0;
+			checkdmg($pa['name'],$pd['name'],$att_dmg);
+			$att_result = rev_combat_result($pa,$pd,$active);
+			goto combat_damage_finished;
+		}
+		$def_dmg = \club23_death_damage($pd,$pa);
+		if($def_dmg > 0)
+		{
+			$pa['hp'] = 0;
+			checkdmg($pd['name'],$pa['name'],$def_dmg);
+			$def_result = rev_combat_result($pd,$pa,1-$active);
+			goto combat_damage_finished;
+		}
 	
 		# 打击流程
 		# 这里的第一个参数指的是进攻方(造成伤害的一方)；第二个参数指的是防守方(承受伤害的一方)。active已经没用了。
@@ -173,6 +196,9 @@ namespace revcombat
 			$def_result = rev_combat_result($pd,$pa,1-$active);
 		}
 
+		\club23_vacancy($pa,$pd);
+
+		combat_damage_finished:
 		# 攻击、反击的战斗结果判断均非0时：检查是否触发追击/鏖战事件
 		if($att_result && (!isset($def_result)||!empty($def_result)) && ($chase_obbs || $dfight_obbs))
 		{
@@ -390,6 +416,8 @@ namespace revcombat
 		$flag = \revattr\hitrate_prepare_events($pa,$pd,$active);
 		if($flag < 0) return $flag;
 
+		if(\club23_is_memory($pa)) return \club23_memory_attack($pa,$pd,$active);
+
 		# 计算武器基础命中率 保存在$pa['hitrate']内
 		$pa['hitrate'] = \revattr\get_hitrate_rev($pa,$pd,$active);
 		# 计算命中次数 保存在$pa['hitrate_times']内
@@ -405,6 +433,7 @@ namespace revcombat
 		# 命中次数大于0时 执行伤害判断
 		if ($pa['hitrate_times'] > 0) 
 		{
+			$pa['club23_landed'] = true;
 			//检查是否存在造成不受其他因素影响的固定伤害（例：混沌伤害、直死）
 			$fix_dmg = \revattr\get_fix_damage($pa,$pd,$active);
 			if(isset($fix_dmg))
@@ -556,6 +585,10 @@ namespace revcombat
 					$log .= "</span>。</span><br>";
 				}
 			}
+			// 称号代价与旧痕同样覆盖常规固定伤害；记忆攻击已在上方独立返回。
+			$c23_damage = \club23_adjust_damage($pa,$pd,$damage);
+			if($c23_damage != $damage) $log .= "<span class=\"yellow\">修正后的总伤害：{$c23_damage}。</span><br>";
+			$damage = $c23_damage;
 			//将造成的最终伤害登记在$pa['final_damage']内
 			$pa['final_damage'] = $damage;
 			//将伤害发送至进行状况

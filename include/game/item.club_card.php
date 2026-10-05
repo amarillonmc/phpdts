@@ -22,6 +22,21 @@ function item_club_card($itmn, &$data) {
     $itmsk = & ${'itmsk' . $itmn};
     
     if ($itmk == 'ZB') { // 社团卡
+        if ($itme == 23) {
+            // 主动选择的特殊称号；已有称号或本规则集未开放时保留道具。
+            global $club_skillslist;
+            if ($club || $hp <= 0 || $type || empty($club_skillslist[23])) {
+                $log .= '只有尚未选择称号的参战者，才能打开无主的补缀匣。<br>';
+                return;
+            }
+            changeclub(23, $data);
+            $clbpara['dialogue'] = 'club23entry';
+            $log .= '<span class="purple">你将那段没有来历的往事留在了自己身上。</span><br>获得称号<span class="yellow">崩坏心核</span>。<br>打开技能界面的「黑岚」，可以领取第一件剥落的记忆。<br>';
+            $itm = $itmk = $itmsk = '';
+            $itme = $itms = 0;
+            ${'itmpara'.$itmn} = '';
+            return;
+        }
         if ($club) {
             $log .= "你已经是有身份的人了！不能再使用称号卡。<br>";
             $db->query("INSERT INTO {$tablepre}shopitem (kind,num,price,area,item,itmk,itme,itms,itmsk) VALUES ('18','1','20','0','$itm','$itmk','$itme','$itms','$itmsk')");

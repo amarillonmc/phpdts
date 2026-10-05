@@ -2464,4 +2464,5 @@ $cskills = Array
 
 
 
+require config('club23skills',1);
 ?>
