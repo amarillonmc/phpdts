@@ -204,6 +204,9 @@ if(CURSCRIPT !== 'chat')
 			$ginfochange = true;
 		}
 	}
+	// 模式自行推进固定时序时，保留准备／开局流程，跳过公共禁区和连斗。
+	$ruleset_owns_round_clock = function_exists('ruleset_round_clock_hook') && ruleset_round_clock_hook() === true;
+	if (!$ruleset_owns_round_clock) {
 	//判定增加禁区
 	if (($gamestate > 10)&&($now > $areatime)) {
 		//include_once GAME_ROOT.'./include/system.func.php';
@@ -278,6 +281,7 @@ if(CURSCRIPT !== 'chat')
 		}
 	}
 	
+	}
 	if($ginfochange || $lostfocus){
 		save_gameinfo();
 	}

@@ -8,6 +8,10 @@ if(is_dir($gameRoot)) {
 }
 
 require_once $gameRoot.'include/common.inc.php';
+if(function_exists('ruleset_legacy_bot_allowed_hook') && ruleset_legacy_bot_allowed_hook() === false) {
+	echo "ruleset_unsupported=1\n";
+	exit();
+}
 require_once GAME_ROOT.'./include/game.func.php';
 require_once GAME_ROOT.'./bot/revbot.func.php';
 

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 176" role="img" aria-labelledby="title">
+<title id="title">设伏工兵</title>
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0b1720"/><stop offset="1" stop-color="#1d303a"/></linearGradient></defs>
+<rect x="1" y="1" width="154" height="174" rx="12" fill="url(#bg)" stroke="#3b515d" stroke-width="2"/>
+<path d="M14 26h128M14 146h128M23 12v152m110-152v152" stroke="#30454e" stroke-width="1"/>
+<path d="M33 153l6-29 22-12h34l22 12 6 29" fill="#4b626b" stroke="#90a4a9" stroke-width="2"/>
+<path d="M47 50l31-11 31 11 9 44-18 25H56L38 94z" fill="#526d77" stroke="#a7b8ba" stroke-width="2"/>
+<path d="M59 54l-5 37 8 18m35-55 6 38-10 17" fill="none" stroke="#344b55" stroke-width="6"/>
+<path d="M35 57h86v14H35z" fill="#e5c66d"/><path d="M44 76h68v14H44z" fill="#172a31"/><path d="M50 81h19m19 0h19" stroke="#e5c66d" stroke-width="4"/><path d="M22 129l14-15 10 9-14 15m102-9-14-15-10 9 14 15" stroke="#e5c66d" stroke-width="4"/>
+<path d="M67 131h22v12H67z" fill="#182b34" stroke="#e5c66d" stroke-width="2"/>
+<circle cx="78" cy="137" r="3" fill="#e5c66d"/>
+<path d="M13 16h15m100 0h15m-130 144h15m100 0h15" stroke="#e5c66d" stroke-width="3"/>
+</svg>

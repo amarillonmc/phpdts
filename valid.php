@@ -15,6 +15,7 @@ if(!$udata) { gexit($_ERROR['login_check'],__file__,__line__); }
 $wingames = $udata['wingames'];
 if($udata['password'] != $cpass) { gexit($_ERROR['wrong_pw'], __file__, __line__); }
 if($udata['groupid'] <= 0) { gexit($_ERROR['user_ban'], __file__, __line__); }
+if(function_exists('ruleset_valid_page_hook') && ruleset_valid_page_hook()) exit;
 
 if($gamestate >= 30 && $udata['groupid'] < 6 && $cuser != $gamefounder) {
 	gexit($_ERROR['valid_stop'],__file__,__line__);

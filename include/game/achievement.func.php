@@ -738,7 +738,7 @@ function check_mixitem_achievement_rev($nn,$item)
 function check_end_achievement_rev($w,$m,$data=NULL)
 {
 	global $now,$validtime,$starttime,$gamecfg,$name,$db,$gtablepre;
-	
+	$c1 = $c2 = 0;
 
 	$done = 0;
 	$atotal = Array();

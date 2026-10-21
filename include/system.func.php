@@ -71,7 +71,7 @@ function rs_game($mode = 0) {
 	if ($mode & 8) {
 		//echo " - NPC初始化 - ";
 		$db->query("DELETE FROM {$tablepre}players WHERE type>0 ");
-		include_once config('npc',$gamecfg);
+		include config('npc',$gamecfg);
 		include_once GAME_ROOT."./include/game/clubslct.func.php";
 		//$typenum = sizeof($typeinfo);
 		$plsnum = sizeof($plsinfo);
@@ -359,7 +359,7 @@ function rs_game($mode = 0) {
 		if(!empty($qry)){
 			$qry = "INSERT INTO {$tablepre}shopitem (kind,num,price,area,item,itmk,itme,itms,itmsk,itmpara) VALUES ".substr($qry, 0, -1);
 		}
-		$db->query($qry);
+		if($qry !== '') $db->query($qry);
 
 	}
 
@@ -665,6 +665,7 @@ function gameover($time = 0, $mode = '', $winname = '') {
 		$pdata['hdmg'] = $hdamage;
 		$pdata['hdp'] = $hplayer;
 		$pdata['teamMate'] = !empty($team_mates) && count($team_mates)>1 ? implode("+",$team_mates) : '';
+		if(!isset($pdata['killnum2'])) $pdata['killnum2'] = 0;
 		//$pdata['teamIcon'] = !empty($team_mates) ? 1 : 0;
 		$db->query("INSERT INTO {$gtablepre}winners (gid,nick,name,pass,type,endtime,gd,sNo,icon,club,hp,mhp,sp,msp,ss,mss,att,def,pls,lvl,`exp`,money,bid,inf,rage,pose,tactic,killnum,killnum2,state,wp,wk,wg,wc,wd,wf,teamID,teamPass,teamMate,teamIcon,wep,wepk,wepe,weps,arb,arbk,arbe,arbs,arh,arhk,arhe,arhs,ara,arak,arae,aras,arf,arfk,arfe,arfs,art,artk,arte,arts,itm0,itmk0,itme0,itms0,itm1,itmk1,itme1,itms1,itm2,itmk2,itme2,itms2,itm3,itmk3,itme3,itms3,itm4,itmk4,itme4,itms4,itm5,itmk5,itme5,itms5,itm6,itmk6,itme6,itms6,motto,wmode,vnum,gtime,gstime,getime,hdmg,hdp,hkill,hkp,wepsk,arbsk,arhsk,arask,arfsk,artsk,itmsk0,itmsk1,itmsk2,itmsk3,itmsk4,itmsk5,itmsk6) VALUES ('".$gamenum."','".$pdata['nick']."','".$pdata['name']."','".$pdata['pass']."','".$pdata['type']."','".$pdata['endtime']."','".$pdata['gd']."','".$pdata['sNo']."','".$pdata['icon']."','".$pdata['club']."','".$pdata['hp']."','".$pdata['mhp']."','".$pdata['sp']."','".$pdata['msp']."','".$pdata['ss']."','".$pdata['mss']."','".$pdata['att']."','".$pdata['def']."','".$pdata['pls']."','".$pdata['lvl']."','".$pdata['exp']."','".$pdata['money']."','".$pdata['bid']."','".$pdata['inf']."','".$pdata['rage']."','".$pdata['pose']."','".$pdata['tactic']."','".$pdata['killnum']."','".$pdata['killnum2']."','".$pdata['state']."','".$pdata['wp']."','".$pdata['wk']."','".$pdata['wg']."','".$pdata['wc']."','".$pdata['wd']."','".$pdata['wf']."','".$pdata['teamID']."','".$pdata['teamPass']."','".$pdata['teamMate']."','".$pdata['teamIcon']."','".$pdata['wep']."','".$pdata['wepk']."','".$pdata['wepe']."','".$pdata['weps']."','".$pdata['arb']."','".$pdata['arbk']."','".$pdata['arbe']."','".$pdata['arbs']."','".$pdata['arh']."','".$pdata['arhk']."','".$pdata['arhe']."','".$pdata['arhs']."','".$pdata['ara']."','".$pdata['arak']."','".$pdata['arae']."','".$pdata['aras']."','".$pdata['arf']."','".$pdata['arfk']."','".$pdata['arfe']."','".$pdata['arfs']."','".$pdata['art']."','".$pdata['artk']."','".$pdata['arte']."','".$pdata['arts']."','".$pdata['itm0']."','".$pdata['itmk0']."','".$pdata['itme0']."','".$pdata['itms0']."','".$pdata['itm1']."','".$pdata['itmk1']."','".$pdata['itme1']."','".$pdata['itms1']."','".$pdata['itm2']."','".$pdata['itmk2']."','".$pdata['itme2']."','".$pdata['itms2']."','".$pdata['itm3']."','".$pdata['itmk3']."','".$pdata['itme3']."','".$pdata['itms3']."','".$pdata['itm4']."','".$pdata['itmk4']."','".$pdata['itme4']."','".$pdata['itms4']."','".$pdata['itm5']."','".$pdata['itmk5']."','".$pdata['itme5']."','".$pdata['itms5']."','".$pdata['itm6']."','".$pdata['itmk6']."','".$pdata['itme6']."','".$pdata['itms6']."','".$pdata['motto']."','".$pdata['wmode']."','".$pdata['vnum']."','".$pdata['gtime']."','".$pdata['gstime']."','".$pdata['getime']."','".$pdata['hdmg']."','".$pdata['hdp']."','".$pdata['hkill']."','".$pdata['hkp']."','".$pdata['wepsk']."','".$pdata['arbsk']."','".$pdata['arhsk']."','".$pdata['arask']."','".$pdata['arfsk']."','".$pdata['artsk']."','".$pdata['itmsk0']."','".$pdata['itmsk1']."','".$pdata['itmsk2']."','".$pdata['itmsk3']."','".$pdata['itmsk4']."','".$pdata['itmsk5']."','".$pdata['itmsk6']."')");
 	}
@@ -673,7 +674,9 @@ function gameover($time = 0, $mode = '', $winname = '') {
 	if(!empty($pdata))
 	{
 		include_once GAME_ROOT.'./include/game/achievement.func.php';
-		check_end_achievement_rev($winner,$winmode,$pdata);
+		if(!function_exists('ruleset_end_achievement_hook') || ruleset_end_achievement_hook($winner,$winmode,$pdata) !== true) {
+			check_end_achievement_rev($winner,$winmode,$pdata);
+		}
 	}
 
 	rs_sttime();//重置游戏开始时间和当前游戏状态
@@ -991,6 +994,8 @@ function antiAFK($timelimit = 0){
 
 function set_credits(){
 	global $db,$gtablepre,$tablepre,$winmode,$gamenum,$winner,$pdata,$gamblingon;
+	// 双控模式按实际账户结算，避免将第二角色当作独立用户。
+	if(function_exists('ruleset_set_credits_hook') && ruleset_set_credits_hook() === true) return;
 	$clist = $creditlist = $updatelist = Array();
 	$result = $db->query("SELECT * FROM {$gtablepre}users RIGHT JOIN {$tablepre}players ON {$tablepre}players.name={$gtablepre}users.username WHERE {$tablepre}players.type='0'");
 	while($data = $db->fetch_array($result)){

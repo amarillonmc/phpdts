@@ -5,10 +5,11 @@ define('CURSCRIPT', 'game');
 require './include/common.inc.php';
 //$t_s=getmicrotime();
 //require_once GAME_ROOT.'./include/JSON.php';
-require GAME_ROOT.'./include/game.func.php';
+require_once GAME_ROOT.'./include/game.func.php';
 
 //判断是否进入游戏
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
+if(function_exists('ruleset_command_page_hook') && ruleset_command_page_hook()) exit;
 
 // RuleSet钩子：在读取玩家行前取得整条指令请求所需的互斥资源。
 // RuleSet hook: acquire request-wide mutual exclusion before reading the player row.

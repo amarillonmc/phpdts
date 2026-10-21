@@ -2,7 +2,11 @@
 
 define('CURSCRIPT', 'botservice');
 require './include/common.inc.php';
-require GAME_ROOT.'./include/game.func.php';
+if(function_exists('ruleset_legacy_bot_allowed_hook') && ruleset_legacy_bot_allowed_hook() === false) {
+	echo "ruleset_unsupported=1\n";
+	exit();
+}
+require_once GAME_ROOT.'./include/game.func.php';
 require config('combatcfg',$gamecfg);
 
 // RuleSet钩子：旧BOT指令从读取gameinfo/玩家行到最终保存共用一把指令锁。

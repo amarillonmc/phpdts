@@ -18,6 +18,18 @@ $ruleset_enabled = true;
 
 // RuleSet配置
 $ruleset_config = Array(
+    'ANOTHER' => Array(
+        'name' => 'AN:OTHER',
+        'description' => '误入湾城复制地图的快节奏生存局。七树天赋、单控／双控、队伍幸存与异常脱出；预计40～60分钟，65分钟截止。',
+        'credits_cost' => 1,
+        'admin_free' => true,
+        'initial_setup' => Array('hp_limit' => 400, 'sp_limit' => 400, 'base_exp' => 9, 'money' => 300),
+        'override_modules' => Array(),
+        'title_system' => 0,
+        'club_skills' => 0,
+        'avatar_config' => Array('use_ruleset_avatars' => false, 'avatar_path' => './img/', 'male_avatars' => 0, 'female_avatars' => 0, 'npc_avatars' => Array(), 'special_avatars' => Array()),
+        'story_config' => Array('opening_story' => '', 'ending_story' => ''),
+    ),
     'YELLOWKNIFE' => Array(
         'name' => 'YELLOWKNIFE',
         'description' => '以当前大房间资源和规则为基准保存的剧情改造用RuleSet。后续可在此基础上独立调整资源层、NPC、物品和配置。',

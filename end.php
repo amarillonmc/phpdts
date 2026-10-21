@@ -3,8 +3,9 @@
 define('CURSCRIPT', 'end');
 
 require './include/common.inc.php';
-require './include/game.func.php';
+require_once './include/game.func.php';
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); } 
+if(function_exists('ruleset_ending_page_hook') && ruleset_ending_page_hook()) exit;
 $result = $db->query("SELECT * FROM {$tablepre}players WHERE name = '$cuser' AND type = 0");
 if(!$db->num_rows($result)) { header("Location: index.php");exit(); }
 

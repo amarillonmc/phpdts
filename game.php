@@ -2,10 +2,11 @@
 
 define('CURSCRIPT', 'game');
 require './include/common.inc.php';
-require GAME_ROOT.'./include/game.func.php';
+require_once GAME_ROOT.'./include/game.func.php';
 
 
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
+if(function_exists('ruleset_game_page_hook') && ruleset_game_page_hook()) exit;
 if(isset($mode) && $mode == 'quit') {
 
 	gsetcookie('user','');
