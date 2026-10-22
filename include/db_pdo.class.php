@@ -71,8 +71,10 @@ class dbstuff {
                 $this->halt('MySQL Query Error', $sql);
             }
 
-            return $this->stmt;
+            return $this->result ? $this->stmt : false;
         } catch (PDOException $e) {
+            // 与 mysql/mysqli 的 SILENT 一致，让付费投稿可以在保存失败时退回扣款。
+            if ($type === 'SILENT') return false;
             $this->halt($e->getMessage(), $sql);
         }
     }

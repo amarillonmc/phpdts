@@ -48,6 +48,11 @@
 						<td>$lang['vnmixlist_comment']</td>
 						<td>$admin_cmd_list['vnmixlist']</td>
 					</tr>
+					<tr height="45px">
+						<td><input type="submit" value="幻想世界审核" onclick="$('command').value='vncreation'" <!--{if $mygroup < $admin_cmd_list['vncreation']}-->disabled="true"<!--{/if}-->></td>
+						<td>审核定制NPC、掉落物品，设置每局NPC投放数。</td>
+						<td>$admin_cmd_list['vncreation']</td>
+					</tr>
 					
 				</table>
 			</td>
@@ -106,4 +111,4 @@
 		</tr>
 	</table>
 
-</form> 
+</form>

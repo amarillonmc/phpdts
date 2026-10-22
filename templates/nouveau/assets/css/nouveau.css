@@ -105,6 +105,23 @@
     margin-left: 4px;
 }
 
+.nv-vnworld-menu {
+    flex: 0 0 auto;
+    color: var(--nv-muted);
+}
+
+.nv-vnworld-menu summary {
+    cursor: pointer;
+    line-height: 26px;
+    white-space: nowrap;
+}
+
+.nv-vnworld-menu > div {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 8px;
+}
+
 .nv-footer {
     width: min(1480px, calc(100vw - 28px));
     margin: 10px auto 0;

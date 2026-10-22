@@ -1,0 +1,31 @@
+<div style="text-align:left;max-width:1100px;margin:auto">
+<h2>幻想世界 · NPC / 物品审核</h2>
+<p class="yellow">{echo vncreation_html($vmessage)}</p>
+<!--{if !$vcfg['enabled']}--><p class="yellow">当前大房间规则集使用独立的角色和物品系统，暂不投放此类投稿。审核记录仍会保留。</p><!--{else}-->
+<form method="post" action="admin.php?mode=vncreation&amp;kind={$vkind}&amp;status={$vfilter}">
+<input type="hidden" name="vaction" value="count"><input type="hidden" name="token" value="{$vcounttoken}">
+<label>每局大房间随机投放 NPC 数量 <input type="number" name="npc_count" min="0" max="100" value="{$vcfg['npc_count']}"></label>
+<button type="submit">保存配置</button>
+<p>0 表示暂停投放；只抽取已采纳投稿，同一局不重复抽取。池不足时全部投放。物品在每局开局按各自数量投放一次。</p>
+</form>
+<!--{/if}-->
+<p><a href="admin.php?mode=vncreation&amp;kind=npc">幻影造物（NPC）</a> · <a href="admin.php?mode=vncreation&amp;kind=item">万象投影（物品）</a></p>
+<p><!--{loop $vstatus $vs $vlabel}--><a href="admin.php?mode=vncreation&amp;kind={$vkind}&amp;status={$vs}">{$vlabel}</a> <!--{/loop}--></p>
+<p>当前：<!--{if $vkind === 'npc'}-->NPC<!--{else}-->物品<!--{/if}--> / {$vstatus[$vfilter]}。作者编辑或重掷后须重新审核；已采纳的投稿可退回或改为未采纳，停止后续投放。</p>
+<!--{loop $vlist $vrow}-->
+<fieldset style="margin:16px 0"><legend>#{$vrow['id']} · {echo vncreation_html($vrow['creator'])} · 累计消耗 {$vrow['spent']} 切糕</legend>
+<!--{loop $vrow['lines'] $vline}--><p>{echo vncreation_html($vline)}</p><!--{/loop}-->
+<form method="post" action="admin.php?mode=vncreation&amp;kind={$vkind}&amp;status={$vfilter}&amp;page={$vpage}">
+<input type="hidden" name="vaction" value="review"><input type="hidden" name="id" value="{$vrow['id']}"><input type="hidden" name="token" value="{$vrow['token']}">
+<label>审核状态 <select name="status">
+<!--{loop $vstatus $vs $vlabel}--><option value="{$vs}" <!--{if $vrow['status'] == $vs}-->selected<!--{/if}-->>{$vlabel}</option><!--{/loop}-->
+</select></label>
+<!--{eval $vnote = vncreation_html($vrow['note']);}-->
+<label>说明 <input name="note" maxlength="255" style="width:50%" value="{$vnote}"></label>
+<button type="submit">保存审核</button>
+</form>
+</fieldset>
+<!--{/loop}-->
+<!--{if !$vlist}--><p>此分类暂无投稿。</p><!--{/if}-->
+<p><!--{if $vpage > 0}--><a href="admin.php?mode=vncreation&amp;kind={$vkind}&amp;status={$vfilter}&amp;page={$vprevpage}">上一页</a><!--{/if}--> <!--{if $vnext}--><a href="admin.php?mode=vncreation&amp;kind={$vkind}&amp;status={$vfilter}&amp;page={$vnextpage}">下一页</a><!--{/if}--></p>
+</div>

@@ -12,6 +12,7 @@ function an_native_file($relative,$contents) {
     file_put_contents($path,$contents); $copied[]=$path;
 }
 foreach(array('include/game.func.php','include/game/club23.func.php','include/game/itemmain.func.php',
+	'include/vnworld/vncreation.func.php',
     'include/game/achievement.func.php','include/game/clubslct.func.php','include/game/depot.func.php','include/news.func.php',
     'gamedata/cache/resources_1.php','gamedata/cache/gamecfg_1.php','gamedata/cache/combatcfg_1.php',
     'gamedata/ruleset/ruleset_config.php','gamedata/ruleset/ANOTHER/include/ruleset.func.php',
@@ -19,6 +20,7 @@ foreach(array('include/game.func.php','include/game/club23.func.php','include/ga
     an_native_file($file,'<?php require_once '.var_export($source.$file,true).';');
 }
 an_native_file('gamedata/ruleset/ANOTHER/cache/npc_1.php','<?php require '.var_export($source.'gamedata/ruleset/ANOTHER/cache/npc_1.php',true).';');
+foreach(array('gamedata/cache/vncreation_1.php','gamedata/ruleset/ANOTHER/cache/vncreation_1.php') as $file) an_native_file($file,file_get_contents($source.$file));
 an_native_file('gamedata/cache/achievement_1.php','<?php require '.var_export($source.'gamedata/cache/achievement_1.php',true).';');
 foreach(array('gamedata/sql/reset.sql','gamedata/sql/players.sql','gamedata/sql/shopitem.sql',
     'gamedata/ruleset/ANOTHER/cache/mapitem_1.php','gamedata/ruleset/ANOTHER/cache/shopitem_1.php') as $file) an_native_file($file,file_get_contents($source.$file));

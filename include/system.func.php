@@ -173,6 +173,10 @@ function rs_game($mode = 0) {
 				}
 			}
 		}
+		if((int)$groomid === 0) {
+			include_once GAME_ROOT.'./include/vnworld/vncreation.func.php';
+			vncreation_spawn('npc');
+		}
 		/*if(!empty($npcqry)){
 			$npcqry = "INSERT INTO {$tablepre}players (name,pass,type,endtime,gd,sNo,icon,club,rp,hp,mhp,sp,msp,att,def,pls,lvl,`exp`,money,bid,inf,rage,pose,tactic,killnum,state,wp,wk,wg,wc,wd,wf,teamID,teamPass,wep,wepk,wepe,weps,arb,arbk,arbe,arbs,arh,arhk,arhe,arhs,ara,arak,arae,aras,arf,arfk,arfe,arfs,art,artk,arte,arts,itm0,itmk0,itme0,itms0,itm1,itmk1,itme1,itms1,itm2,itmk2,itme2,itms2,itm3,itmk3,itme3,itms3,itm4,itmk4,itme4,itms4,itm5,itmk5,itme5,itms5,itm6,itmk6,itme6,itms6,wepsk,arbsk,arhsk,arask,arfsk,artsk,itmsk0,itmsk1,itmsk2,itmsk3,itmsk4,itmsk5,itmsk6,skills) VALUES ".substr($npcqry, 0, -1);
 			$db->query($npcqry);
@@ -274,6 +278,10 @@ function rs_game($mode = 0) {
 		if(!empty($tqry)){
 			$tqry = "INSERT INTO {$tablepre}maptrap (itm,itmk,itme,itms,itmsk,pls,itmpara) VALUES ".substr($tqry, 0, -1);
 			$db->query($tqry);
+		}
+		if((int)$groomid === 0 && !$areanum) {
+			include_once GAME_ROOT.'./include/vnworld/vncreation.func.php';
+			vncreation_spawn('item');
 		}
 //		for($imap = 0;$imap<$plsnum;$imap++){
 //			if(!empty($iqry[$imap])){

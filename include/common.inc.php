@@ -135,6 +135,12 @@ $tablepre = !empty($groomid) ? $tablepre.'s'.$groomid.'_' : $tablepre;
 
 // 现在$groomid已经设置，可以正确加载RuleSet资源文件
 require config('resources',$gamecfg);
+// 幻想世界定制NPC独立使用95号，避免触发已有剧情NPC的专属行为。
+if((int)$groomid === 0) {
+	$typeinfo[95] = '幻影造物';
+	$killmsginfo[95] = '这也是幻想的一种可能。';
+	$lwinfo[95] = '下次再在梦中相见吧。';
+}
 require config('gamecfg',$gamecfg);
 require config('combatcfg',$gamecfg);
 require config('clubskills',$gamecfg);
