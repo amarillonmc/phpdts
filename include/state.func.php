@@ -424,7 +424,7 @@
 		{
 			// ……我为什么不把这个装备名数组放进resources里……用了一万遍了
 			// 哈哈，放了！
-			if(!empty($pd[$equip.'s']) && strpos($pd[$equip.'sk'],'v')!==false)
+			if(!empty($pd[$equip.'s']) && (strpos($pd[$equip.'sk'],'v')!==false || fcg_phantom($pd[$equip.'para'] ?? '')))
 			{
 				$log .= "伴随着{$pd['nm']}的死亡，<span class=\"yellow\">{$pd[$equip]}</span>化作灰烬消散了。<br>";
 				include_once GAME_ROOT.'./include/game/itemmain.func.php';
@@ -433,7 +433,7 @@
 		}
 		for($i=0;$i<=6;$i++)
 		{
-			if(!empty($pd['itms'.$i]) && strpos($pd['itmsk'.$i],'v')!==false)
+			if(!empty($pd['itms'.$i]) && (strpos($pd['itmsk'.$i],'v')!==false || fcg_phantom($pd['itmpara'.$i] ?? '')))
 			{
 				$log .= "伴随着{$pd['nm']}的死亡，<span class=\"yellow\">{$pd['itm'.$i]}</span>化作灰烬消散了。<br>";
 				include_once GAME_ROOT.'./include/game/itemmain.func.php';

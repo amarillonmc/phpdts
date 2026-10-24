@@ -6,7 +6,7 @@ require './include/common.inc.php';
 //require './include/user.func.php';
 
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
-if($gamestate < 20) { gexit($_ERROR['no_start'],__file__,__line__); }
+if($gamestate < 20 && $gruleset !== 'FCG') { gexit($_ERROR['no_start'],__file__,__line__); }
 //if($gamestate >= 30) { gexit($_ERROR['valid_stop'],__file__,__line__); }
 
 //$result = $db->query("SELECT * FROM {$gtablepre}users WHERE username='$cuser'");
@@ -296,9 +296,9 @@ if($mode == 'enter') {
 	{
 		foreach($nickarr as $nkey => $nvue)
 		{
-			if($nkey == 'clbpara' && !empty($$nkey))
+			if($nkey == 'clbpara')
 			{
-				$$nkey = array_merge($$nkey,$nvue);
+				$$nkey = array_merge(get_clbpara($$nkey ?? ''),$nvue);
 			}
 			else 
 			{
@@ -337,6 +337,7 @@ if($mode == 'enter') {
 
 	# 初始化称号技能
 	if($ndata['club']) updateskill($ndata);
+	fcg_skills_initialize($ndata,$udata);
 
 	$ndata = player_format_with_db_structure($ndata);
 	if(!empty($ndata)) $db->array_insert("{$tablepre}players", $ndata);

@@ -54,6 +54,7 @@ namespace revbattle
 		# 社团技能对躲避率的修正
 		$hide_r = calc_clbskill_hide_rate($pa,$pd,$hide_r); 
 		
+		if(($pd['clbpara']['fcg_stealth_until'] ?? 0)>($GLOBALS['now'] ?? 0)) $hide_r+=30;
 		return $hide_r;
 	}
 
@@ -92,6 +93,8 @@ namespace revbattle
 		$active_r = calc_clbskill_active_rate($pa,$pd,$active_r);
 		# 社团技能对先攻率的修正（定值）
 		$active_r = calc_clbskill_active_rate_fix($pa,$pd,$active_r);
+		if(\fcg_attuned($pa,'Y')) $active_r+=8;
+		if(\fcg_attuned($pd,'Y')) $active_r-=8;
 
 		# 计算先攻率上下限：
 		$active_r = max(min($active_r,96),4);

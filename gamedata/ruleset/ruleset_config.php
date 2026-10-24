@@ -18,6 +18,15 @@ $ruleset_enabled = true;
 
 // RuleSet配置
 $ruleset_config = Array(
+	'FCG' => Array(
+		'name' => 'FCG：种火收集游戏',
+		'description' => '与17位小种火进行五色计时卡牌战，收集外界的记忆碎片。免费对战，卡册跨房间保留。',
+		'credits_cost' => 0, 'admin_free' => true,
+		'initial_setup' => Array(), 'override_modules' => Array(),
+		'title_system' => 0, 'club_skills' => 0,
+		'avatar_config' => Array('use_ruleset_avatars'=>false),
+		'story_config' => Array('opening_story'=>'','ending_story'=>''),
+	),
     'ANOTHER' => Array(
         'name' => 'AN:OTHER',
         'description' => '误入湾城复制地图的快节奏生存局。七树天赋、单控／双控、队伍幸存与异常脱出；预计40～60分钟，65分钟截止。',

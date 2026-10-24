@@ -86,7 +86,7 @@
 			$log.="<span class='red'>你尝试着把诅咒道具扔进安全箱，但安全箱又立刻将它吐了出来！</span><br>";
 			return;
 		}
-		if(strpos(${'itmsk'.$i},'v')!==false)
+		if(strpos(${'itmsk'.$i},'v')!==false || fcg_phantom(${'itmpara'.$i}))
 		{
 			$log.="<span class='red'>你尝试着把灵魂绑定的道具扔进安全箱，但安全箱又立刻将它吐了出来！</span><br>";
 			return;

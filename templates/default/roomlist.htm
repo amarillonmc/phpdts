@@ -9,7 +9,8 @@
 	<input type="button" value="创建普通房间" onclick="$('roomact').value='create';postCmd('roomact','index.php');" >
 	<!--{eval include_once GAME_ROOT.'./gamedata/ruleset/ruleset_config.php';}-->
 	<!--{if get_ruleset_config()}-->
-		<input type="button" value="创建时光重现房间" onclick="showRulesetDialog();" >
+		<input type="button" value="创建异色房间" onclick="showRulesetDialog('special');" >
+		<input type="button" value="创建时光重现房间" onclick="showRulesetDialog('history');" >
 	<!--{/if}-->
 <!--{/if}-->
 	<br>
@@ -86,8 +87,8 @@
 <!-- RuleSet选择对话框 -->
 <dialog id="rulesetDialog" style="max-width: 600px; max-height: 70%; text-align: left;">
 	<div style="padding: 20px;">
-		<h3 class="yellow">选择时光重现版本</h3>
-		<p class="evergreen">时光重现系统允许你体验游戏的经典旧版本。每个版本都有独特的玩法和特色。</p>
+		<h3 class="yellow" id="rulesetDialogTitle">选择游戏模式</h3>
+		<p class="evergreen" id="rulesetDialogDescription">选择一个模式创建房间。</p>
 
 		<!--{eval include_once GAME_ROOT.'./gamedata/ruleset/ruleset_config.php';}-->
 		<!--{eval $available_rulesets = get_ruleset_config();}-->
@@ -95,7 +96,7 @@
 			<div style="margin: 15px 0;">
 				<!--{loop $available_rulesets $ruleset_id $config}-->
 					<!--{eval $can_create = can_create_ruleset_room($ruleset_id, $udata);}-->
-					<div style="border: 1px solid #666; margin: 10px 0; padding: 15px; background: rgba(0,0,0,0.3);">
+					<div data-ruleset-group="<!--{if in_array($ruleset_id,array('FCG','LAIKAADVENT','RAIDCAGEDBIRD','ANOTHER'))}-->special<!--{else}-->history<!--{/if}-->" style="border: 1px solid #666; margin: 10px 0; padding: 15px; background: rgba(0,0,0,0.3);">
 						<h4 class="<!--{if $can_create}-->lime<!--{else}-->grey<!--{/if}-->">$config[name]</h4>
 						<p class="evergreen2">$config[description]</p>
 						<div style="margin-top: 10px;">
@@ -132,13 +133,19 @@
 </dialog>
 
 <script type="text/javascript">
-function showRulesetDialog() {
+function showRulesetDialog(group) {
+	group = group || 'history';
+	$('rulesetDialogTitle').textContent = group === 'special' ? '选择异色模式' : '选择时光重现版本';
+	$('rulesetDialogDescription').textContent = group === 'special' ? '不同于常规大逃杀的故事与玩法。' : '体验游戏的经典版本与其他规则集。';
+	document.querySelectorAll('#rulesetDialog [data-ruleset-group]').forEach(function(node) { node.style.display = node.getAttribute('data-ruleset-group').trim() === group ? '' : 'none'; });
 	closeDialog($('roomlist'));
 	showModalDialog($('rulesetDialog'));
 }
 
 function createRulesetRoom(rulesetId) {
 	$('roomact').value = 'create_ruleset';
+	var oldRulesetInput = document.forms['roomact'].querySelector('input[name="ruleset"]');
+	if(oldRulesetInput) oldRulesetInput.remove();
 	// 创建隐藏的input来传递ruleset参数
 	var rulesetInput = document.createElement('input');
 	rulesetInput.type = 'hidden';

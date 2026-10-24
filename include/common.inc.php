@@ -58,6 +58,7 @@ require GAME_ROOT.'./include/roommng.func.php';
 require GAME_ROOT.'./include/game/revclubskills.func.php';
 require GAME_ROOT.'./include/game/dice.func.php';
 require GAME_ROOT.'./include/game/titles.func.php';
+require_once GAME_ROOT.'./include/game/fcg_skills.func.php';
 
 // $gtablepre 已在数据库连接时设置，这里不再重新赋值
 if(!isset($gtablepre)) {
@@ -148,10 +149,19 @@ require config('dialogue',$gamecfg);
 require config('audio',$gamecfg);
 require config('tooltip',$gamecfg);
 require config('titles',$gamecfg);
+// 共用商城须能识别全部种火纪念品；是否发放入场技能仍由 RuleSet 的头衔开关决定。
+if(!isset($titles_list[9101])) require GAME_ROOT.'./gamedata/cache/fcg_titles.php';
+if(!isset($cskills['tl_fcg_attune'])) require GAME_ROOT.'./gamedata/cache/fcgskills_1.php';
 
 // 初始化RuleSet覆盖系统
 include_once GAME_ROOT.'./include/ruleset_override.func.php';
 init_ruleset_override();
+// 旧模式与 AN:OTHER 的关闭设置不因共用商城登记而重新启用种火能力。
+if($current_ruleset_config && ($current_ruleset_config['title_system'] ?? 2)<2) {
+	foreach(array(9101,9102,9103,9104,9105,9106) as $fcg_disabled_title) unset($title_valid[$fcg_disabled_title]);
+	foreach(array('attune','thorns','evade','chain','imprint','mimic') as $fcg_disabled_skill) unset($cskills['tl_fcg_'.$fcg_disabled_skill]);
+	unset($fcg_disabled_title,$fcg_disabled_skill);
+}
 
 // 加载RuleSet覆盖函数
 load_ruleset_override_functions();

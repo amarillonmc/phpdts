@@ -73,6 +73,7 @@ function calc_trap_escape_rate(&$pa,$playerflag=0,$selflag=0)
 		$sk_lvl = get_skilllvl('c5_caution',$pa);
 		$escrate *= 1+(get_skillvars('c5_caution','evgain',$sk_lvl)/100);
 	}
+	if(fcg_attuned($pa,'Y')) $escrate+=15;
 	return min($escrate,$max_escrate);
 }
 
@@ -560,6 +561,7 @@ function itemdrop($item,&$data=NULL) {
 		$data = &$pdata;
 	}
 	extract($data,EXTR_REFS);
+	if(preg_match('/^itm([0-6])$/',(string)$item,$fcg_slot) && fcg_phantom($data['itmpara'.$fcg_slot[1]] ?? '')) { $log.='幻影器物无法离开你的记忆，不能丢弃。<br>'; $mode='command'; return; }
 
 	if(strpos($item,'itm')===false)
 	{
@@ -804,6 +806,7 @@ function itemmerge($itn1,$itn2){
 	$its2 = & ${'itms'.$itn2};
 	$itsk2 = & ${'itmsk'.$itn2};
 	$itpara2 = & ${'itmpara'.$itn2};
+	if(fcg_phantom($itpara1) || fcg_phantom($itpara2)) { $log.='幻影器物不能合并。<br>'; $mode='command'; return; }
 
 	if((empty($its1) && $its1 !== $nosta) || (empty($its2) && $its2 !== $nosta)) {
 		$log .= '请选择正确的物品进行合并！';
@@ -1505,6 +1508,8 @@ function getcorpse($item,&$data=NULL)
 	}
 
 	$is_corpse_item = ($item == 'wep' || $item == 'wep2' || strpos($item,'ar') === 0 || strpos($item,'itm') === 0);
+	$fcg_corpse_para = strpos($item,'itm')===0 ? ($edata['itmpara'.substr($item,3,1)] ?? '') : ($edata[$item.'para'] ?? '');
+	if($is_corpse_item && fcg_phantom($fcg_corpse_para)) { $log.='幻影器物已随原主的记忆消散，无法拾取。<br>'; $mode='command'; return; }
 	if($is_corpse_item && !empty($itms0))
 	{
 		$log .= '你的手上已经拿着<span class="yellow">'.$itm0.'</span>，不能再从尸体上拾取其他物品。<br>';
@@ -1839,6 +1844,7 @@ function check_item_edit_event($pa,&$pd,$event)
 function weapon_loss(&$pa,$hurtvalue,$force_imp=0,$check_sk=0)
 {
 	global $log,$wepimprate,$nosta;
+	if(!$force_imp && $hurtvalue>0 && !empty($pa['fcg_battle']) && fcg_attuned($pa,'W')) $hurtvalue=floor($hurtvalue/2)+(($hurtvalue%2 && mt_rand(0,1)) ? 1:0);
 
 	//小开不算开 以后再做弹药相关吧
 	if($pa['pass'] == 'bot' && ($pa['wep_kind'] == 'G' || $pa['wep_kind'] == 'J')) $hurtvalue = 0;
@@ -1945,6 +1951,7 @@ function weapon_loss(&$pa,$hurtvalue,$force_imp=0,$check_sk=0)
 function armor_hurt(&$pa,$which,$hurtvalue,$check_sk=0)
 {
 	global $log,$nosta;
+	if($hurtvalue>0 && !empty($pa['fcg_battle']) && fcg_attuned($pa,'W')) $hurtvalue=floor($hurtvalue/2)+(($hurtvalue%2 && mt_rand(0,1)) ? 1:0);
 
 	if(!empty($pa[$which.'s']) && !empty($hurtvalue))
 	{

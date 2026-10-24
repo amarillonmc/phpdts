@@ -2,7 +2,7 @@
 <script type="text/javascript">
 // 设置RuleSet头像路径
 <!--{if !empty($groomid) && $groomid > 0}-->
-	<!--{eval $result = $db->query("SELECT gruleset FROM {$gtablepre}game WHERE groomid = {$groomid}");}-->
+	<!--{eval $result = $db->query('SELECT gruleset FROM '.$gtablepre.'game WHERE groomid = '.(int)$groomid);}-->
 	<!--{if $db->num_rows($result)}-->
 		<!--{eval $room_data = $db->fetch_array($result);}-->
 		<!--{eval $ruleset_id = $room_data['gruleset'];}-->

@@ -1,0 +1,32 @@
+<!--{if fcg_skill_has($pdata,'attune') || fcg_skill_has($pdata,'thorns') || fcg_skill_has($pdata,'evade') || fcg_skill_has($pdata,'chain') || fcg_skill_has($pdata,'imprint') || fcg_skill_has($pdata,'mimic')}-->
+<!--{eval $fc = $pdata['clbpara']; $fcg_nonce_value = (int)($fc['fcg_nonce'] ?? 0); $fcg_colors = array('W'=>'⚪ 白·器物','R'=>'🔴 红·冲动','Y'=>'🟡 黄·机关','G'=>'🟢 绿·生机','B'=>'🔵 蓝·秘仪'); $fcg_names = array('W'=>'⚪ 器物·折叠铁','R'=>'🔴 招式·弹开的射线','Y'=>'🟡 事件·十三号钻头','G'=>'🟢 生机·黄金秋刀鱼','B'=>'🔵 秘仪·镜面同名者');}-->
+<div style="margin:14px 0;padding:14px;border:1px solid #8c7047;background:#151c2b;text-align:left;border-radius:8px">
+<b class="yellow">种火的记忆</b><br><small>切换、用牌与拓印只可在没有遭遇的场外操作。</small>
+<input type="hidden" name="fcg_nonce" value="{$fcg_nonce_value}">
+<!--{if fcg_skill_has($pdata,'attune')}-->
+<p>共鸣火苗：{$fcg_colors[$fc['fcg_color']]}　能量 {$fc['fcg_charge']} / 10<br>
+<!--{loop $fcg_colors $color $label}-->
+<input type="button" value="{$label}" onclick="$('mode').value='command';$('command').value='fcg_color_{$color}';postCmd('gamecmd','command.php');this.disabled=true;">
+<!--{/loop}--></p>
+<!--{/if}-->
+<!--{if fcg_skill_has($pdata,'thorns')}--><p>苦味剂 {$fc['fcg_thorns_charges']} / 2　补充进度 {$fc['fcg_thorns_steps']} / 45</p><!--{/if}-->
+<!--{if fcg_skill_has($pdata,'evade')}--><p>哑弹：<!--{if !empty($fc['fcg_evade_ready'])}-->待命<!--{else}-->充能 {$fc['fcg_evade_gauge']} / 30<!--{/if}--></p><!--{/if}-->
+<!--{if fcg_skill_has($pdata,'chain')}-->
+<p>记忆手牌（抽牌进度 {$fc['fcg_draw_steps']} / 15）<br>
+<!--{loop $fc['fcg_hand'] $i $card}-->
+{$fcg_names[$card['color']]}<!--{if $card['quality']>1}--> ✦优质<!--{/if}-->
+<input type="button" value="使用" onclick="$('mode').value='command';$('command').value='fcg_card_{$i}';postCmd('gamecmd','command.php');this.disabled=true;"><br>
+<!--{/loop}-->
+<input type="button" value="<!--{if !empty($fc['fcg_ready'])}-->已装填 · 点击取消<!--{else}-->装填全部手牌<!--{/if}-->" onclick="$('mode').value='command';$('command').value='fcg_ready';postCmd('gamecmd','command.php');this.disabled=true;"></p>
+<!--{/if}-->
+<!--{if fcg_skill_has($pdata,'imprint')}-->
+<p>拓印权限 {$fc['fcg_imprint_uses']} / 2　覆唱充能 {$fc['fcg_echo_charge']} / 1（{$fc['fcg_imprint_steps']} / 35步）<br>
+<!--{loop array(1,2,3,4,5,6) $i}-->
+<input type="button" value="拓印背包{$i}" onclick="$('mode').value='command';$('command').value='fcg_copy_{$i}';postCmd('gamecmd','command.php');this.disabled=true;">
+<!--{/loop}--><br>
+<!--{if !empty($fc['fcg_last_hit_dmg'])}-->记录伤害 {$fc['fcg_last_hit_dmg']['damage']}。<!--{/if}-->
+<input type="button" value="<!--{if !empty($fc['fcg_echo_ready'])}-->覆唱已装填<!--{else}-->装填覆唱（优先消耗充能）<!--{/if}-->" onclick="$('mode').value='command';$('command').value='fcg_echo';postCmd('gamecmd','command.php');this.disabled=true;"></p>
+<!--{/if}-->
+<!--{if fcg_skill_has($pdata,'mimic')}--><p>拟态种火：<!--{if $fc['fcg_mimic']=='active'}-->驻场协战<!--{else}-->重构中 {$fc['fcg_mimic_steps']} / 40<!--{/if}-->　成长 {$fc['fcg_growth']} / 100</p><!--{/if}-->
+</div>
+<!--{/if}-->

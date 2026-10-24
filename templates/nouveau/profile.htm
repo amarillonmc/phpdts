@@ -1,4 +1,4 @@
-<!--{eval $nickinfo = titles_get_desc($nick,1);}-->
+<!--{eval $nickinfo = titles_get_desc($nick,1); $fcg_name_class = in_array((int)$nick,array(9111,9112,9113)) ? 'fcg-title fcg-title-'.(int)$nick : '';}-->
 <!--{eval $nv_hp_pct = $mhp ? round($hp * 100 / $mhp) : 0;}-->
 <!--{eval $nv_sp_pct = $msp ? round($sp * 100 / $msp) : 0;}-->
 <!--{eval $nv_rage_pct = min(100, $rage);}-->
@@ -13,7 +13,7 @@
         {template club23_status}
         <div class="nv-status-head">
             <div>
-                <div class="nv-status-name">{$nickinfo} {$name}<!--{if !empty($clbpara['PlatformName'])}-->（$clbpara['PlatformName']）<!--{/if}--></div>
+                <div class="nv-status-name {$fcg_name_class}">{$nickinfo} {$name}<!--{if !empty($clbpara['PlatformName'])}-->（$clbpara['PlatformName']）<!--{/if}--></div>
                 <div class="nv-status-id">{$sexinfo[$gd]}{$sNo}号 · Lv. $lvl · $clubinfo[$club]</div>
             </div>
             <div class="nv-status-id">{lang weather}: $wthinfo[$weather]</div>

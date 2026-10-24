@@ -329,6 +329,7 @@
 			$data = &$pdata;
 		}
 		extract($data,EXTR_REFS);
+		if(isset($iid) && \fcg_phantom($data['itmpara'.$iid] ?? '')) { $log.='幻影器物不能分解为元素。<br>'; $mode='command'; return; }
 		if($club != 20)
 		{
 			$log .= "你的手突然掐住了你的头左右摇摆！<br><span class='yellow'>“你还想要干什么，啊？你还想要干什么！！”</span><br>看来你的手和脑子之间起了一点小摩擦。<br><br>";

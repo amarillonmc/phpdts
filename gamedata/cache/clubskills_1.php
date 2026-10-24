@@ -2465,4 +2465,5 @@ $cskills = Array
 
 
 require config('club23skills',1);
+require config('fcgskills',1);
 ?>

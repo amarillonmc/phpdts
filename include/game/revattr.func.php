@@ -818,6 +818,7 @@ namespace revattr
 		}
 		# 计算攻击力修正
 		$base_att = get_base_att_modifier($pa,$pd,$active,$base_att,$tooltip);
+		if(!empty($pa['fcg_battle'])) $base_att=max($pa['fcg_battle']['floor'],round($base_att*$pa['fcg_battle']['att']));
 		return $base_att;
 	}
 
@@ -961,6 +962,8 @@ namespace revattr
 		}
 		# 计算防御力修正
 		$total_def = get_base_def_modifier($pa,$pd,$active,$total_def,$tooltip);
+		if(!empty($pd['fcg_battle'])) $total_def=round($total_def*$pd['fcg_battle']['def']);
+		if(!empty($pa['fcg_battle']['pierce'])) $total_def=round($total_def*(1-$pa['fcg_battle']['pierce']));
 		return $total_def;
 	}
 
@@ -1831,6 +1834,7 @@ namespace revattr
 	{
 		global $log;
 		$ex_dmg_p = Array();
+		if(\fcg_attuned($pd,'B')) $ex_dmg_p[]=.8;
 		# 「咆哮」判定：
 		if(isset($pa['bskill_c4_roar']))
 		{
@@ -1872,6 +1876,13 @@ namespace revattr
 	{
 		global $log;
 		$fin_dmg_p = Array();
+		if(empty($pa['fcg_packet'])) {
+			if(\fcg_attuned($pa,'R')) $fin_dmg_p[]=1.12;
+			if(!empty($pa['is_counter']) && !empty($pa['fcg_battle']['crit'])) {
+				$fin_dmg_p[]=2; $pa['fcg_critical']=1;
+				\fcg_skill_log($pa,'哑弹倒戈：反击暴击！');
+			}
+		}
 
 		# 「种火I」效果判定：
 		if(isset($pd['skill_fireseed1']))
@@ -1905,7 +1916,7 @@ namespace revattr
 		}
 
 		# 「强袭」效果判定：
-		if(isset($pa['bskill_c2_raiding']))
+		if(empty($pa['fcg_packet']) && isset($pa['bskill_c2_raiding']))
 		{
 			$sk_p = get_skillvars('c2_raiding','findmgr');
 			if($sk_p)
@@ -1916,7 +1927,7 @@ namespace revattr
 			}
 		}
 		# 「歼灭」效果判定：
-		if(isset($pa['skill_buff_annihil']))
+		if(empty($pa['fcg_packet']) && isset($pa['skill_buff_annihil']))
 		{
 			# 「歼灭」有两段效果，一段为概率触发，一段为固定触发，所以只在概率触发的位置判定概率。
 			$sk_dice = diceroll(99);
@@ -1927,13 +1938,14 @@ namespace revattr
 				if($sk_p)
 				{
 					$p = $sk_p / 100;
+					$pa['fcg_critical'] = 1;
 					$log.= "<span class='red'>暴击！</span><span class='lime'>「歼灭」使{$pa['nm']}造成的最终伤害提高了{$sk_p}%！</span><br>";
 					$fin_dmg_p[] = $p;
 				}
 			}
 		}
 		#「破甲」效果判定：
-		if(isset($pa['skill_c4_break']) && !empty($pd['inf_hurt']))
+		if(empty($pa['fcg_packet']) && isset($pa['skill_c4_break']) && !empty($pd['inf_hurt']))
 		{
 			$sk_lvl = get_skilllvl('c4_break',$pa);
 			//获取伤害加成
@@ -1949,7 +1961,7 @@ namespace revattr
 			}
 		}
 		# 「心火」效果判定：
-		if(isset($pa['bskill_c9_heartfire']))
+		if(empty($pa['fcg_packet']) && isset($pa['bskill_c9_heartfire']))
 		{
 			$sk_p = get_skillvars('c9_heartfire','findmgr');
 			if($sk_p)
@@ -1959,7 +1971,7 @@ namespace revattr
 			}
 		}
 		# 「底力」效果判定：
-		if(isset($pa['skill_c12_enmity']))
+		if(empty($pa['fcg_packet']) && isset($pa['skill_c12_enmity']))
 		{
 			$sk_lvl = get_skilllvl('c12_enmity',$pa);
 			$sk_p = round(get_skillvars('c12_enmity','findmgr',$sk_lvl) * calc_enmity_losshpr($pa,$pd));
@@ -2097,7 +2109,7 @@ namespace revattr
 		}
 
 		# 「闷棍」技能效果：
-		if(isset($pa['bskill_c1_bjack']))
+		if(empty($pa['fcg_packet']) && isset($pa['bskill_c1_bjack']))
 		{
 			if($pd['sp'] < $pd['msp'])
 			{
@@ -2111,7 +2123,7 @@ namespace revattr
 			}
 		}
 		# 「解牛」技能效果：
-		if(isset($pa['bskill_c2_butcher']))
+		if(empty($pa['fcg_packet']) && isset($pa['bskill_c2_butcher']))
 		{
 			$sk_dmg = get_skillvars('c2_butcher','fixdmg') + $pa['lvl'];
 			$log.='<span class="yellow">「解牛」附加了'.$sk_dmg.'点伤害！</span><br>';
@@ -2137,7 +2149,7 @@ namespace revattr
 			}
 		}
 		# 「爆血」技能效果：
-		if(isset($pa['bskill_c21_blaster']))
+		if(empty($pa['fcg_packet']) && isset($pa['bskill_c21_blaster']))
 		{
 			$dmgrate = get_skillvars('c21_blaster','dmgrate');
 			$esum = 0;
@@ -2259,7 +2271,7 @@ namespace revattr
 		}
 
 		# 「祛障」效果判定：
-		if(isset($pa['bskill_c19_redeem']))
+		if(empty($pa['fcg_packet']) && isset($pa['bskill_c19_redeem']))
 		{
 			# rp低于对方时，附加白字伤害
 			if($pd['rp'] > $pa['rp'])
@@ -2278,7 +2290,7 @@ namespace revattr
 		}
 
 		# 「狂怒」效果判定：
-		if(isset($pa['bskill_c12_rage']))
+		if(empty($pa['fcg_packet']) && isset($pa['bskill_c12_rage']))
 		{
 			$sk_dmg = round($pa['mhp']*0.25);
 			$pa['hp'] -= $sk_dmg;
@@ -2292,7 +2304,7 @@ namespace revattr
 		}
 
 		# 「闪电」无色伤害效果判定：
-		if(isset($pa['bskill_c20_lighting_white_dmg']))
+		if(empty($pa['fcg_packet']) && isset($pa['bskill_c20_lighting_white_dmg']))
 		{
 			global $elements_info;
 			$fin_dmg += $pa['bskill_c20_lighting_white_dmg'];

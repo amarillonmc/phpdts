@@ -32,10 +32,12 @@ function club23_skill($skill,&$data,$patch_mode='')
 			return 0;
 		}
 		// 转化后只保留效果与有限耐久，原武器的属性和专用参数随外壳一起剥落。
+		$fcg_bound = fcg_phantom($data['weppara']);
 		$data['wep'] = '剥落的记忆';
 		$data['wepk'] = 'WFq';
 		if($data['weps'] === $nosta) $data['weps'] = $cfg['memory_durability'];
 		$data['wepsk'] = $data['weppara'] = '';
+		if($fcg_bound) { $data['wep']='★幻影·剥落的记忆'; $data['wepsk']='v'; $data['weppara']=array('fcg_phantom'=>1); }
 		$log .= '<span class="purple">你揭开了物件表面的一角。熟悉的形状剥落下来，里面留着一段没有来历的往事。</span><br>武器变成了<span class="yellow">剥落的记忆</span>。<br>';
 		return 1;
 	}

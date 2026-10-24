@@ -10,6 +10,7 @@ require GAME_ROOT.'./include/admin/admin.lang.php';
 $admin_cmd_list = Array(
 	'configmng' => 9,
 	'systemmng' => 7,
+	'shopmng' => 7,
 	'gamecfgmng' => 7,
 	'gmlist' => 9,
 	'urlist' => 6,

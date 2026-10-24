@@ -13,6 +13,7 @@ namespace revcombat
 	include_once GAME_ROOT.'./include/game/revattr.calc.php';
 	include_once GAME_ROOT.'./include/game/revattr_extra.func.php';
 	include_once GAME_ROOT.'./include/game/club23.func.php';
+	include_once GAME_ROOT.'./include/game/fcg_skills.func.php';
 
 	# 战斗准备流程：
 	# pa、pd分别代表先制发现者与被先制发现者；
@@ -94,6 +95,8 @@ namespace revcombat
 
 		# 正式进入rev_combat战斗状态后，在判定伤害、反击流程前的遇敌log
 		combat_prepare_logs($pa,$pd,$active);
+		\fcg_battle_begin($pa); \fcg_battle_begin($pd);
+		if(!\fcg_battle_opening($pa,$pd,$active,true) || !\fcg_battle_opening($pd,$pa,1-$active,false)) goto battle_finish_flag;
 
 		// 交战前的 S 独立结算，反击/连击不追加掷骰，之后新增的 S 留到下次交战。
 		$pa['club23_landed'] = $pd['club23_landed'] = false;
@@ -140,6 +143,7 @@ namespace revcombat
 			$att_result = rev_combat_result($pa,$pd,$active);
 		} 
 
+		if($att_result && !\fcg_battle_after_attack($pa,$pd,max(0,$att_dmg),$active)) $att_result=0;
 		# 检查是否循环打击流程：一些特殊技能可能需要此效果
 		if(!empty($att_result))
 		{
@@ -196,6 +200,7 @@ namespace revcombat
 			$def_result = rev_combat_result($pd,$pa,1-$active);
 		}
 
+		if(!empty($counter_flag) && (!isset($def_result) || $def_result) && !\fcg_battle_after_attack($pd,$pa,max(0,$def_dmg),1-$active)) $def_result=0;
 		\club23_vacancy($pa,$pd);
 
 		combat_damage_finished:
@@ -238,6 +243,7 @@ namespace revcombat
 
 		# 战斗准备事件中触发了跳过战斗标记，直接goto跳转到这个位置。
 		battle_finish_flag:
+		\fcg_battle_end($pa,$pd); \fcg_battle_end($pd,$pa);
 
 		#更新action标记
 		if ($active) 
@@ -367,6 +373,7 @@ namespace revcombat
 		global $now,$nosta,$log,$infobbs,$infinfo,$attinfo,$skillinfo,$wepimprate,$specialrate;
 		global $db,$tablepre;
 		
+		unset($pa['fcg_critical']);
 		# 获取属性
 		$pa['ex_equip_keys'] = $pa['ex_wep_keys'] = Array();
 		$pa['ex_equip_keys'] = \revattr\get_equip_ex_array($pa); //获取pa防具上的所有属性
@@ -416,7 +423,12 @@ namespace revcombat
 		$flag = \revattr\hitrate_prepare_events($pa,$pd,$active);
 		if($flag < 0) return $flag;
 
-		if(\club23_is_memory($pa)) return \club23_memory_attack($pa,$pd,$active);
+		if(\club23_is_memory($pa)) {
+			$damage=\club23_memory_attack($pa,$pd,$active);
+			$damage=\fcg_defend_damage($pa,$pd,$damage);
+			$pa['final_damage']=$damage;
+			return $damage;
+		}
 
 		# 计算武器基础命中率 保存在$pa['hitrate']内
 		$pa['hitrate'] = \revattr\get_hitrate_rev($pa,$pd,$active);
@@ -588,7 +600,7 @@ namespace revcombat
 			// 称号代价与旧痕同样覆盖常规固定伤害；记忆攻击已在上方独立返回。
 			$c23_damage = \club23_adjust_damage($pa,$pd,$damage);
 			if($c23_damage != $damage) $log .= "<span class=\"yellow\">修正后的总伤害：{$c23_damage}。</span><br>";
-			$damage = $c23_damage;
+			$damage = \fcg_defend_damage($pa,$pd,$c23_damage);
 			//将造成的最终伤害登记在$pa['final_damage']内
 			$pa['final_damage'] = $damage;
 			//将伤害发送至进行状况
@@ -647,6 +659,7 @@ namespace revcombat
 	function rev_combat_result(&$pa,&$pd,$active)
 	{
 		global $log,$now;
+		if(\fcg_mimic_guard($pd)) { unset($pd['gg_flag']); return 1; }
 		# 死者(受伤者)pd血量低于0时 结算击杀/复活事件
 		if($pd['hp']<= 0)
 		{

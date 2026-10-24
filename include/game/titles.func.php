@@ -86,6 +86,7 @@ function titles_get_desc($tkey,$mode=0)
 {
 	global $db,$gtablepre,$gamecfg;
 	include config("titles",$gamecfg);
+	if(!isset($titles_list[9101])) include GAME_ROOT.'./gamedata/cache/fcg_titles.php';
 
 	# 兼容旧显示方式
 	if($mode && !is_numeric($tkey)) $tkey = array_search($tkey,$titles_list);

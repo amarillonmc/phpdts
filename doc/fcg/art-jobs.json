@@ -1,0 +1,1218 @@
+[
+  {
+    "id": 0,
+    "name": "器物锚点",
+    "path": "img/fcg/cards/000.png",
+    "refs": [],
+    "prompt": "A weathered metal supply crate and weapon rack standing on a quiet urban street corner inside a virtual grid, soft white and silver glow, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 1,
+    "name": "器物共鸣桩",
+    "path": "img/fcg/cards/001.png",
+    "refs": [],
+    "prompt": "A towering silver metallic resonance spire anchored into a glowing white geometric grid floor, levitating weapon silhouettes around it, intense white energy aura, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 2,
+    "name": "拾荒所得",
+    "path": "img/fcg/cards/002.png",
+    "refs": [],
+    "prompt": "An open wooden drawer in an abandoned room revealing coins, spare batteries, and small metal parts glinting in white light, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 3,
+    "name": "满载行囊",
+    "path": "img/fcg/cards/003.png",
+    "refs": [],
+    "prompt": "A heavy tactical backpack bursting open with gleaming gear, ammo magazines, and silver ingots radiating bright white energy particles, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 4,
+    "name": "战意火花",
+    "path": "img/fcg/cards/004.png",
+    "refs": [],
+    "prompt": "Two steel blades clashing in close-up, sending a bright shower of crimson and orange sparks into the dark air, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 5,
+    "name": "杀伐熔炉",
+    "path": "img/fcg/cards/005.png",
+    "refs": [],
+    "prompt": "A roaring virtual furnace of swirling crimson flames and molten steel, radiating intense heat waves and battle aura, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 6,
+    "name": "先手突袭",
+    "path": "img/fcg/cards/006.png",
+    "refs": [],
+    "prompt": "First-person dynamic motion blur of dashing around a concrete corridor corner with a bright red muzzle flash, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 7,
+    "name": "雷霆怒火",
+    "path": "img/fcg/cards/007.png",
+    "refs": [],
+    "prompt": "A ferocious storm of red shockwaves and fiery slash arcs tearing through a shattered concrete arena, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 8,
+    "name": "信号基站",
+    "path": "img/fcg/cards/008.png",
+    "refs": [],
+    "prompt": "A compact radio relay antenna mounted beside a rooftop water tank at dusk, blinking with yellow indicator lights, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 9,
+    "name": "全频段监听塔",
+    "path": "img/fcg/cards/009.png",
+    "refs": [],
+    "prompt": "A massive cyberpunk communication tower on a high peak, projecting golden holographic radar rings and data streams across the night sky, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 10,
+    "name": "紧急预案",
+    "path": "img/fcg/cards/010.png",
+    "refs": [],
+    "prompt": "A gloved hand pulling a hidden micro-chip and folded map from inside a sleeve under a yellow streetlamp, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 11,
+    "name": "神算妙计",
+    "path": "img/fcg/cards/011.png",
+    "refs": [],
+    "prompt": "Floating golden holographic chess pieces and tactical blueprints aligning perfectly in mid-air with bright yellow light trails, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 12,
+    "name": "生机脉搏",
+    "path": "img/fcg/cards/012.png",
+    "refs": [],
+    "prompt": "A glowing green heartbeat waveform pulsing steadily on a futuristic wrist monitor screen, soft emerald light, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 13,
+    "name": "不息温床",
+    "path": "img/fcg/cards/013.png",
+    "refs": [],
+    "prompt": "Lush bioluminescent green vines and glowing white flowers blooming vigorously out of cracked concrete and rusted steel in a virtual ruin, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 14,
+    "name": "深呼吸",
+    "path": "img/fcg/cards/014.png",
+    "refs": [],
+    "prompt": "Warm green sunlight filtering through a cracked window onto a quiet resting spot with a canteen of water, peaceful atmosphere, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 15,
+    "name": "战地急救",
+    "path": "img/fcg/cards/015.png",
+    "refs": [],
+    "prompt": "A glowing green medical kit open on the ground with floating emerald healing motes and a shimmering vitality injector, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 16,
+    "name": "灵子视界",
+    "path": "img/fcg/cards/016.png",
+    "refs": [],
+    "prompt": "Translucent glowing blue spirit particles floating gently over an ordinary city street at night, seen through a mystic lens effect, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 17,
+    "name": "深层视界回路",
+    "path": "img/fcg/cards/017.png",
+    "refs": [],
+    "prompt": "The city street peeling away into a breathtaking deep-sea matrix of glowing cyan and sapphire circuit streams and spirit conduits, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 18,
+    "name": "灵感一闪",
+    "path": "img/fcg/cards/018.png",
+    "refs": [],
+    "prompt": "A single brilliant sapphire spark igniting inside a dark crystalline prism, casting blue light rays, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 19,
+    "name": "超常顿悟",
+    "path": "img/fcg/cards/019.png",
+    "refs": [],
+    "prompt": "A cosmic mandala of blue geometric light rings and floating crystal shards shattering outward in a flash of enlightenment, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 20,
+    "name": "五色棱镜",
+    "path": "img/fcg/cards/020.png",
+    "refs": [],
+    "prompt": "A floating crystal prism splitting a beam of white light into five distinct glowing streams (white, red, yellow, green, blue), anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 21,
+    "name": "万象数据中枢",
+    "path": "img/fcg/cards/021.png",
+    "refs": [],
+    "prompt": "A grand floating crystalline core surrounded by five orbiting elemental rings of white, red, yellow, green, and blue fire sparks, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 22,
+    "name": "冗余算力溢出",
+    "path": "img/fcg/cards/022.png",
+    "refs": [],
+    "prompt": "A server rack in a virtual void sparking with five-colored electric arcs and dominant blue energy wisps, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 23,
+    "name": "幻境全面超频",
+    "path": "img/fcg/cards/023.png",
+    "refs": [],
+    "prompt": "A massive surge of five-colored lightning and dominant sapphire energy bursting from a cracking virtual sky dome, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 24,
+    "name": "搬运视频的职人",
+    "path": "img/fcg/cards/024.png",
+    "refs": [],
+    "prompt": "A comical low-level virtual grunt silhouette wearing a simple cardboard-like visor and carrying a stack of video tapes and a brick, white aura, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 25,
+    "name": "百战老兵NPC",
+    "path": "img/fcg/cards/025.png",
+    "refs": [],
+    "prompt": "The same virtual grunt now clad in mismatched high-tier glowing power armor and wielding a massive gleaming greatsword, intimidating aura, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 26,
+    "name": "生锈的水果刀",
+    "path": "img/fcg/cards/026.png",
+    "refs": [],
+    "prompt": "A small rusty kitchen paring knife lying next to a half-peeled apple on a wooden table, soft silver light, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 27,
+    "name": "削铁如泥的名刃",
+    "path": "img/fcg/cards/027.png",
+    "refs": [],
+    "prompt": "A masterwork katana resting beside whetstones, its mirror-polished edge gleaming with a razor-sharp silver-white light arc, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 28,
+    "name": "◆永火的护身符",
+    "path": "img/fcg/cards/028.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\种火-蓝.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\蓝凝.png"
+    ],
+    "prompt": "A glowing pale-blue and white crystalline fireseed charm shaped like a tiny bear hood emblem resting on snow, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 29,
+    "name": "高调妹妹的冰晶发饰",
+    "path": "img/fcg/cards/029.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\种火-蓝.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\蓝凝.png"
+    ],
+    "prompt": "An ornate frost-crystal hair ornament floating amidst a swirling barrier of diamond-hard ice shields and gentle snow, reflecting a proud young girl's silhouette in the ice, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 30,
+    "name": "弹幕积木职人",
+    "path": "img/fcg/cards/030.png",
+    "refs": [],
+    "prompt": "A quirky virtual minion hurling glowing red pixel-block projectiles like building blocks, dynamic red motion lines, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 31,
+    "name": "红杀精锐打手",
+    "path": "img/fcg/cards/031.png",
+    "refs": [],
+    "prompt": "A sharp-dressed street enforcer in a black coat with crimson lining, lunging forward with twin combat daggers leaving red slash trails, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 32,
+    "name": "土制燃烧瓶",
+    "path": "img/fcg/cards/032.png",
+    "refs": [],
+    "prompt": "A glass bottle Molotov cocktail with a burning cloth wick flying through the air, trailing bright orange-red flames, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 33,
+    "name": "合成三神器之威",
+    "path": "img/fcg/cards/033.png",
+    "refs": [],
+    "prompt": "Three legendary glowing weapons (a blazing blade, a plasma cannon, and a golden talisman) converging in a massive crimson explosion, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 34,
+    "name": "◆残火的断刃",
+    "path": "img/fcg/cards/034.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\种火-紫.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\紅暮3f.png"
+    ],
+    "prompt": "A scorched broken greatsword fragment glowing with stubborn crimson-violet embers embedded in cracked stone, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 35,
+    "name": "绝不觉醒的无神论者",
+    "path": "img/fcg/cards/035.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\种火-紫.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\紅暮3f.png"
+    ],
+    "prompt": "A massive jet-propelled crimson heavy iron greatsword cleaving straight through a glowing supernatural chessboard in a shower of red sparks, wielded by unyielding mortal hands, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 36,
+    "name": "野生阔剑地雷",
+    "path": "img/fcg/cards/036.png",
+    "refs": [],
+    "prompt": "A green curved directional anti-personnel mine half-hidden in tall grass with a blinking yellow sensor light, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 37,
+    "name": "连环荆棘雷区",
+    "path": "img/fcg/cards/037.png",
+    "refs": [],
+    "prompt": "A dense deadly labyrinth of tripwires and thorny directional mines glowing with warning yellow lasers in a dark alley, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 38,
+    "name": "移动PC终端",
+    "path": "img/fcg/cards/038.png",
+    "refs": [],
+    "prompt": "A rugged ruggedized laptop open on a concrete crate, displaying a yellow progress bar and map grid, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 39,
+    "name": "权限全开的黑客机",
+    "path": "img/fcg/cards/039.png",
+    "refs": [],
+    "prompt": "A multi-screen holographic hacking deck projecting cascading golden code waterfalls and unlocking red security padlocks in mid-air, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 40,
+    "name": "◆埋火的算盘",
+    "path": "img/fcg/cards/040.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\种火-白.png"
+    ],
+    "prompt": "An antique brass abacus fused with glowing yellow microchip circuits, resting on a velvet cloth, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 41,
+    "name": "金龙高塔的算法女神",
+    "path": "img/fcg/cards/041.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\种火-白.png"
+    ],
+    "prompt": "A vast floor-to-ceiling glass office at the top of a skyscraper overlooking a neon bay city at night, golden mathematical equations and data streams reflecting in the glass, solitary and precise mood, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 42,
+    "name": "饥肠辘辘的凸眼鱼",
+    "path": "img/fcg/cards/042.png",
+    "refs": [],
+    "prompt": "A bizarre, comical yet eerie bug-eyed fish creature flopping out of dark water with a wide hungry mouth, glowing green aura, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 43,
+    "name": "吞尸灭迹的变异鱼",
+    "path": "img/fcg/cards/043.png",
+    "refs": [],
+    "prompt": "A giant mutated abyssal bug-eyedleviathan fish surrounded by swirling green bio-energy and dissolved equipment fragments, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 44,
+    "name": "滚烫的秋刀鱼",
+    "path": "img/fcg/cards/044.png",
+    "refs": [],
+    "prompt": "A freshly grilled pacific saury fish on a plate with lemon and rising steam, warm green vitality sparkles, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 45,
+    "name": "发光的黄金秋刀鱼",
+    "path": "img/fcg/cards/045.png",
+    "refs": [],
+    "prompt": "A legendary grilled pacific saury fish radiating blinding golden and emerald divine light beams like a holy relic, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 46,
+    "name": "◆篝火的扩音器",
+    "path": "img/fcg/cards/046.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\种火-白.png"
+    ],
+    "prompt": "A vintage megaphone wrapped in warm green and orange fireseed ribbons, emitting visible glowing musical notes, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 47,
+    "name": "模因工厂的狂想家",
+    "path": "img/fcg/cards/047.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\种火-白.png"
+    ],
+    "prompt": "A surreal industrial factory smokestack silhouetted against the sky, launching glowing green and violet soundwave bombs that bloom into contagious musical runes across a city, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 48,
+    "name": "除错大师的测试桩",
+    "path": "img/fcg/cards/048.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\种火-白.png"
+    ],
+    "prompt": "A motionless dummy-like chibi Fireseed figure made of blue wireframe and wood grain, taking hits without flinching, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 49,
+    "name": "不会倒下的异常种火",
+    "path": "img/fcg/cards/049.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\种火-白.png"
+    ],
+    "prompt": "A glowing cyan glitching Fireseed figure standing completely unharmed inside a crater of bullets and lasers, surrounded by floating blue diagnostic hex codes, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 50,
+    "name": "刺耳的禁区警报",
+    "path": "img/fcg/cards/050.png",
+    "refs": [],
+    "prompt": "A rusted siren horn on a utility pole blaring with pulsing blue and red shockwaves under a darkening sky, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 51,
+    "name": "不可抗拒的视界坍缩",
+    "path": "img/fcg/cards/051.png",
+    "refs": [],
+    "prompt": "The virtual sky and buildings shattering like blue glass tiles into a freezing dark void, a giant holographic countdown clock dissolving in the sky, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 52,
+    "name": "◆焰火的万花筒",
+    "path": "img/fcg/cards/052.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\大种火.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\MD.png"
+    ],
+    "prompt": "A crystal kaleidoscope held by small glowing hands, showing the reflection of five children holding hands in a sunlit yard, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 53,
+    "name": "化作群火的第五人",
+    "path": "img/fcg/cards/053.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\大种火.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\MD.png"
+    ],
+    "prompt": "A poignant scene of a girl's silhouette dissolving into thousands of glowing blue and golden fireflies that sink into a silver-white sea, awakening five tiny hooded Fireseed spirits holding lanterns, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 54,
+    "name": "森林的看板娘",
+    "path": "img/fcg/cards/054.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\林铃子.png"
+    ],
+    "prompt": "A cheerful cardboard cutout and hologram of a lively forest elf mascot girl waving energetically on a stage, bright green sparkles, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 55,
+    "name": "失控的声线投影",
+    "path": "img/fcg/cards/055.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\林铃子.png"
+    ],
+    "prompt": "The same forest elf hologram glitching eerily in a dark room with hollow glowing cyan eyes, soundwaves distorting around a silent microphone, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 56,
+    "name": "涂满荧光笔的台本",
+    "path": "img/fcg/cards/056.png",
+    "refs": [],
+    "prompt": "A neatly bound voice-acting script book covered in colorful highlighter notes and cute sticky tabs next to a warm cup of honey water, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 57,
+    "name": "夹带杂音的试音带",
+    "path": "img/fcg/cards/057.png",
+    "refs": [],
+    "prompt": "An audio cassette tape unspooling glowing green and blue magnetic ribbon that forms the shape of a spinning metallic drill bit in the shadow, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 58,
+    "name": "匿名粉丝的花篮",
+    "path": "img/fcg/cards/058.png",
+    "refs": [],
+    "prompt": "A lavish bouquet of pale blue roses left in a dim studio hallway, a shadow lurking around the corner, chilly atmosphere, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 59,
+    "name": "门缝下的内测终端",
+    "path": "img/fcg/cards/059.png",
+    "refs": [],
+    "prompt": "A sleek black VR terminal device pushed halfway under a front door at night, its standby indicator glowing ominous red and blue in the dark foyer, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 60,
+    "name": "废案活动纪念章",
+    "path": "img/fcg/cards/060.png",
+    "refs": [],
+    "prompt": "An enamel commemorative badge featuring a cute fairy and a spiral emblem lying inside a dusty \"CANCELLED\" archive box, blue tint, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 61,
+    "name": "止步十三的钻头",
+    "path": "img/fcg/cards/061.png",
+    "refs": [],
+    "prompt": "A colossal spectral drill frozen midway through piercing the glowing blue crust of a virtual abyss, a massive golden-white heartbeat pulse radiating from the dark depths below, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 62,
+    "name": "大排档的跑堂伙计",
+    "path": "img/fcg/cards/062.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Blasty.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Dante.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Akane.png"
+    ],
+    "prompt": "Three lively anime animal-eared youths (a spirited goose girl with gauntlets, a tall stoic black-dog boy, and a calm akita-dog girl) serving steaming dishes in a warm bustling night-market diner, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 63,
+    "name": "不退的轮转前卫",
+    "path": "img/fcg/cards/063.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Blasty.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Dante.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Akane.png"
+    ],
+    "prompt": "The same three animal-eared guardians standing in an unbreakable triangle formation in an underground training hall, glowing red-gold protective barrier, pure determination without malice, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 64,
+    "name": "后厨的默契传菜",
+    "path": "img/fcg/cards/064.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Holly.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Sandy.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Albert.png"
+    ],
+    "prompt": "A snow-rabbit girl, a silver-fox girl with three distinct fluffy tails, and a small hamster boy with goggles passing kitchen ingredients in a lively blur of yellow motion, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 65,
+    "name": "废土集市的哨音",
+    "path": "img/fcg/cards/065.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Holly.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Sandy.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Albert.png"
+    ],
+    "prompt": "The hooded snow-rabbit scout and silver-fox girl exchanging silent hand signals atop a ruined concrete overpass in an ash-covered wasteland, dodging searchlights, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 66,
+    "name": "挂在腰间的旧药瓶",
+    "path": "img/fcg/cards/066.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\善德\\1.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\恶德\\1.png"
+    ],
+    "prompt": "An old amber glass medicine vial tied with a braided cord hanging at a girl's waist, glowing with a protective green aura, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 67,
+    "name": "无人敢碰的苦味剂",
+    "path": "img/fcg/cards/067.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\善德\\1.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\恶德\\1.png"
+    ],
+    "prompt": "A dark emerald karma-seal erupting in seven sharp thorny vines that lash back at a shadowy attacker's blade, shattering the attacker's weapon, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 68,
+    "name": "打翻的七彩烧瓶",
+    "path": "img/fcg/cards/068.png",
+    "refs": [],
+    "prompt": "A startled white goose flapping its wings in a ruined lab, knocking over a large glass flask spilling shimmering rainbow-colored liquid across the floor, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 69,
+    "name": "地底涌出的修补液",
+    "path": "img/fcg/cards/069.png",
+    "refs": [],
+    "prompt": "Deep beneath a scorched wasteland, an underground spring of luminescent rainbow liquid rising up to touch wild animals (a dog, a rabbit, a fox), transforming their silhouettes into warm human-like figures, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 70,
+    "name": "树荫下的校医助教",
+    "path": "img/fcg/cards/070.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\芙蓉.jpg"
+    ],
+    "prompt": "A gentle young woman in a light cardigan standing under dappled tree shade, smiling warmly while offering a band-aid and a teacup, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 71,
+    "name": "影子里的掌门人",
+    "path": "img/fcg/cards/071.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\芙蓉.jpg"
+    ],
+    "prompt": "The same gentle woman standing in the shadow behind a grand crimson throne, her own shadow extending across the floor morphing into a lethal assassin's cloak and gleaming wire, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 72,
+    "name": "未完结的武侠手稿",
+    "path": "img/fcg/cards/072.png",
+    "refs": [],
+    "prompt": "A neat stack of romance martial-arts manuscript pages with a fountain pen and plum blossom petals on a desk, soft white light, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 73,
+    "name": "绝不留档的隐秘讲义",
+    "path": "img/fcg/cards/073.png",
+    "refs": [],
+    "prompt": "The manuscript pages flipping over in the wind to reveal cold anatomical pressure-point diagrams and concealed silver needles glinting in the dark, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 74,
+    "name": "安神助眠的草药包",
+    "path": "img/fcg/cards/074.png",
+    "refs": [],
+    "prompt": "Embroidered linen sachets filled with dried soothing herbs and lavender on a wooden tray, warm green glow, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 75,
+    "name": "精确到秒的致死量",
+    "path": "img/fcg/cards/075.png",
+    "refs": [],
+    "prompt": "A precision brass apothecary scale in a dim room, a gloved fingertip adding a single crystalline green-violet drop that turns a teacup pitch-dark, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 76,
+    "name": "长辈遗落的旧怀表",
+    "path": "img/fcg/cards/076.png",
+    "refs": [],
+    "prompt": "An antique silver pocket watch with a deep dent in its casing and cracked glass, hands frozen at dusk, resting on an old silk handkerchief, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 77,
+    "name": "不合常理的殉职报告",
+    "path": "img/fcg/cards/077.png",
+    "refs": [],
+    "prompt": "Aclassified paper file stamped \"ACCIDENT\" lying amidst falling steel girders and jammed pistol shells in a rain-soaked ruin, two fading shadows collapsing back-to-back in the distance, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 78,
+    "name": "游乐场的抓娃娃机",
+    "path": "img/fcg/cards/078.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\ga-77.png"
+    ],
+    "prompt": "A bright arcade claw machine filled with plush toys and weapons, a shiny silver mechanical claw descending, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 79,
+    "name": "跨界攫取的巨爪",
+    "path": "img/fcg/cards/079.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\ga-77.png"
+    ],
+    "prompt": "A colossal gleaming silver-gold mechanical claw tearing out of a dimensional rift in the sky, effortlessly picking up an armored vehicle like a toy, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 80,
+    "name": "任意揉捏的橡皮泥",
+    "path": "img/fcg/cards/080.png",
+    "refs": [],
+    "prompt": "Colorful modeling clay being twisted into miniature sword and shield shapes on a workbench, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 81,
+    "name": "违背物理的折叠铁",
+    "path": "img/fcg/cards/081.png",
+    "refs": [],
+    "prompt": "A thick solid steel I-beam being effortlessly twisted and folded like soft origami paper into a gleaming halberd by glowing white-gloved hands, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 82,
+    "name": "代购跑腿的购物单",
+    "path": "img/fcg/cards/082.png",
+    "refs": [],
+    "prompt": "A long paper shopping receipt covered in doodles of snacks and limited-edition games, pinned with yellow coins, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 83,
+    "name": "编号七十七的差遣",
+    "path": "img/fcg/cards/083.png",
+    "refs": [],
+    "prompt": "A holographic mission pad displaying a glowing red dimensional coordinate outside the world map, surrounded by swirling yellow portal sparks, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 84,
+    "name": "贴错标签的矿泉水",
+    "path": "img/fcg/cards/084.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\林仙凤 copy.png"
+    ],
+    "prompt": "An ordinary clear plastic water bottle with a crooked crooked label sitting on a cluttered desk, the water inside refracting a subtle mysterious rainbow sheen, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 85,
+    "name": "某处汲来的长生泉",
+    "path": "img/fcg/cards/085.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\林仙凤 copy.png"
+    ],
+    "prompt": "The plastic bottle glowing like a sacred chalice on a commander's desk, projecting a faint ethereal vision of a distant ruined earth and a rainbow underground river, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 86,
+    "name": "黄金秋刀鱼号机兵",
+    "path": "img/fcg/cards/086.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\SANMA_TK.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Hyper\\0.png"
+    ],
+    "prompt": "A flashy mecha-armored figure wielding a giant glowing golden saury fish like a cannon and floating funnels, playful anime style, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 87,
+    "name": "抹杀使徒的铁壳",
+    "path": "img/fcg/cards/087.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\SANMA_TK.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Hyper\\0.png"
+    ],
+    "prompt": "The high-tech combat avatar firing a barrage of red-and-blue laser beams through a dark digital matrix, cockpit visor glowing sharply as it hunts rogue code, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 88,
+    "name": "全息沙盘建筑模组",
+    "path": "img/fcg/cards/088.png",
+    "refs": [],
+    "prompt": "A glowing blue holographic tabletop sandbox projecting miniature wireframe skyscrapers and bridges, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 89,
+    "name": "一念成城的造景台",
+    "path": "img/fcg/cards/089.png",
+    "refs": [],
+    "prompt": "A girl's outstretched hand weaving an entire upside-down neon metropolis of glowing blue crystal towers across the sky dome above an island, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 90,
+    "name": "炫目的舞台追光灯",
+    "path": "img/fcg/cards/090.png",
+    "refs": [],
+    "prompt": "Intense crimson and magenta spotlights crisscrossing a dark stage, kicking up glowing dust motes, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 91,
+    "name": "被善意弹开的射线",
+    "path": "img/fcg/cards/091.png",
+    "refs": [],
+    "prompt": "A volley of homing pink-red fairy energy lasers curving harmlessly away and scattering into harmless sparkles upon hitting a warm golden shield of dinner plates and smiling animal ears, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 92,
+    "name": "后台的异常报错单",
+    "path": "img/fcg/cards/092.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Hyper\\0.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\笼中鸟.png"
+    ],
+    "prompt": "A translucent blue system console window displaying a spiking red anomaly graph in the dark, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 93,
+    "name": "不属于此处的恶意",
+    "path": "img/fcg/cards/093.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Hyper\\0.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\笼中鸟.png"
+    ],
+    "prompt": "In a dark virtual sky, a chained winged girl silhouette absorbing swirling black malice while an observer steps back into a blue teleport beam, a glowing yellow SQL paper talisman floating in the foreground, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 94,
+    "name": "都市传说的蒙面侠",
+    "path": "img/fcg/cards/094.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Ricolamal.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\亞瑪麗歐fixw (2).png"
+    ],
+    "prompt": "A mysterious masked vigilante hero standing on a nocturnal city rooftop surrounded by a flock of glowing white spirit birds, newspaper clippings fluttering, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 95,
+    "name": "第三十六只协和客机",
+    "path": "img/fcg/cards/095.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Ricolamal.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\亞瑪麗歐fixw (2).png"
+    ],
+    "prompt": "Thirty-five glowing translucent spirit birds swirling inside a vast underground hall as a colossal glowing white-and-blue supersonic Concorde jet materializes from spirit light above them, breathtaking scale, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 96,
+    "name": "港区车间的热茶杯",
+    "path": "img/fcg/cards/096.png",
+    "refs": [],
+    "prompt": "A steaming porcelain teacup on a workbench in a cozy harbor machine shop, warm sunlight and gentle white fairy motes, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 97,
+    "name": "光束薙刀与止咳药",
+    "path": "img/fcg/cards/097.png",
+    "refs": [],
+    "prompt": "Beside a small bottle of cough medicine on a workbench, a sleek futuristic naginata polearm ignites with a brilliant emerald-white plasma blade, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 98,
+    "name": "月光下的萤火虫群",
+    "path": "img/fcg/cards/098.png",
+    "refs": [],
+    "prompt": "A swarm of gentle glowing white-blue fairy fireflies lighting up a dark stone staircase under the moon, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 99,
+    "name": "洞悉纯度与烈度的白光",
+    "path": "img/fcg/cards/099.png",
+    "refs": [],
+    "prompt": "A close-up of serene emerald-tinted eyes reflecting two intertwined spectral light waves—one pure crystal-white ribbon and one intense blazing sapphire-gold wave, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 100,
+    "name": "没有署名的双人合照",
+    "path": "img/fcg/cards/100.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\亞瑪麗歐fixw (2).png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\黑衣少女.png"
+    ],
+    "prompt": "An old faded photograph tucked inside a book showing a gentle green-haired girl smiling softly, blue nostalgic lighting, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 101,
+    "name": "镜面两侧的同名者",
+    "path": "img/fcg/cards/101.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\亞瑪麗歐fixw (2).png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\黑衣少女.png"
+    ],
+    "prompt": "A symmetrical mirror composition: on the left, a gentle girl in white/emerald light surrounded by spirit birds; on the right reflection, an identical-faced girl in pitch-black commander attire holding a silver cube, a golden balance scale between them, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 102,
+    "name": "啃食装备的走地羊",
+    "path": "img/fcg/cards/102.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\走地羊.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\魔法蜂.png"
+    ],
+    "prompt": "A shy-looking anime sheep-horned girl NPC throwing a devastatingly heavy punch that shatters a metal shield into pieces, yellow lightning mark, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 103,
+    "name": "无视护甲的蜂与羊",
+    "path": "img/fcg/cards/103.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\走地羊.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\魔法蜂.png"
+    ],
+    "prompt": "The sheep-horned girl shattering heavy armor alongside a tiny glowing fairy-bee firing piercing golden-blue stingers, question-mark lightning insignia, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 104,
+    "name": "星纹直播魔女帽",
+    "path": "img/fcg/cards/104.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\克里斯汀.png"
+    ],
+    "prompt": "A starry purple-and-blue witch hat and a prop magic wand resting in front of a livestream ring light and microphone, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 105,
+    "name": "九百条报错的奇迹工程",
+    "path": "img/fcg/cards/105.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\克里斯汀.png"
+    ],
+    "prompt": "The starry witch hat floating amidst a chaotic tornado of glowing yellow warning pop-up windows and blue code lines that magically weave together into a working spell circle, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 106,
+    "name": "脱口而出的打油诗",
+    "path": "img/fcg/cards/106.png",
+    "refs": [],
+    "prompt": "Playful golden musical notes and rhyming verse ribbons swirling out of a teacup in a cozy cafe, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 107,
+    "name": "一碰即碎的天选之躯",
+    "path": "img/fcg/cards/107.png",
+    "refs": [],
+    "prompt": "A delicate glass figurine of a witch girl surrounded by a dazzling golden spotlight and four-leaf clovers, deflecting incoming dark arrows with sheer luck, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 108,
+    "name": "悬赏灵感的委托函",
+    "path": "img/fcg/cards/108.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\克里斯汀.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\罗白梦.png"
+    ],
+    "prompt": "A whimsical mailbox overflowing with wax-sealed mystery letters and urban legend sketches under blue starlight, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 109,
+    "name": "童话背后的提线人",
+    "path": "img/fcg/cards/109.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\克里斯汀.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\罗白梦.png"
+    ],
+    "prompt": "On a brightly lit stage, a young witch waves her wand while behind the velvet curtain in the dim backstage, a calm high-school detective girl adjusts puppet strings connected to three glowing NPC shells, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 110,
+    "name": "戴脚镣的折翼鸟",
+    "path": "img/fcg/cards/110.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\笼中鸟.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\电子狐.png"
+    ],
+    "prompt": "A winged girl with feathered hair accessory bound in heavy iron chains and a large iron ball at her ankles (matching ref 笼中鸟.png), looking up with a fragile expression in a blue virtual cage, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 111,
+    "name": "吞噬报应的笼中鸟",
+    "path": "img/fcg/cards/111.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\笼中鸟.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\电子狐.png"
+    ],
+    "prompt": "The winged girl breaking her iron chains as massive dark-blue and crimson wings unfurl, absorbing swirling dark karma orbs, flanked by the silhouettes of a cyber-fox and a spectral nine-lives cat, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 112,
+    "name": "话剧社的百变衣箱",
+    "path": "img/fcg/cards/112.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\丁香.jpg"
+    ],
+    "prompt": "A large vintage stage trunk open in a drama club room, overflowing with colorful theatrical costumes, masks, and prop swords, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 113,
+    "name": "绝不能受伤的挡箭牌",
+    "path": "img/fcg/cards/113.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\丁香.jpg"
+    ],
+    "prompt": "A lilac-flowered badge pinned to a schoolgirl's cape, while looming directly behind her in the shadows are the giant blazing silhouettes of a heavy crimson iron sword and a lethal assassin's needle ready to strike anyone who touches her, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 114,
+    "name": "天台上的三号党争",
+    "path": "img/fcg/cards/114.png",
+    "refs": [],
+    "prompt": "A laptop resting on a school rooftop bench under a breezy sky, three different chat windows arguing on the screen while a single pair of hands types seamlessly, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 115,
+    "name": "第四个自取的假名",
+    "path": "img/fcg/cards/115.png",
+    "refs": [],
+    "prompt": "Four school name-tags and exam papers with deliberately average scores scattering in the rooftop wind, revealing a glowing golden question-mark-lightning emblem on the laptop screen, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 116,
+    "name": "顶楼锁死的仓库门",
+    "path": "img/fcg/cards/116.png",
+    "refs": [],
+    "prompt": "Two heavy wooden doors at the top of a sunlit orphanage stairwell, padlocked with rusty chains, a faint green server LED light leaking from under the door crack, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 117,
+    "name": "十三人的基因拼图",
+    "path": "img/fcg/cards/117.png",
+    "refs": [],
+    "prompt": "Inside the dark attic room, rows of towering humming server racks project a giant glowing green double-helix DNA hologram composed of thirteen distinct martial and psychic silhouettes converging into a single child's silhouette, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 118,
+    "name": "讨价还价的白神",
+    "path": "img/fcg/cards/118.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\罗白梦.png"
+    ],
+    "prompt": "A high-school girl NPC wearing a cute white fox-like mask waving her hands in a humorous bargaining gesture, surrounded by floating shields, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 119,
+    "name": "双层伪装的书中虫",
+    "path": "img/fcg/cards/119.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\罗白梦.png"
+    ],
+    "prompt": "A nested holographic Matryoshka-like projection: an outer shell of a glowing bookworm, a middle shell of the masked high-school girl, and a sharp-eyed detective inside analyzing data, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 120,
+    "name": "便利店的廉价记事本",
+    "path": "img/fcg/cards/120.png",
+    "refs": [],
+    "prompt": "A cheap 5-yuan spiral-bound notepad lying next to a glass of lemon water and cafe receipts on a wooden table, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 121,
+    "name": "事先对好答案的剧本",
+    "path": "img/fcg/cards/121.png",
+    "refs": [],
+    "prompt": "Two identical open notebooks side by side under a desk lamp—one written in neat logical diagrams, the other annotated with a witch's rhyming cues—connected by red deduction strings, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 122,
+    "name": "「我只是运气好啦」",
+    "path": "img/fcg/cards/122.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\罗白梦.png"
+    ],
+    "prompt": "A girl's hand scratching her cheek sheepishly while holding a \"Try Again\" bottle cap under a sudden raincloud, yellow wry smile motif, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 123,
+    "name": "拿智商硬撑的烂骰子",
+    "path": "img/fcg/cards/123.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\罗白梦.png"
+    ],
+    "prompt": "Several dice on a table all rolling terrible 1s, yet a complex web of golden geometric calculation lines bounces off every \"1\" to guide a chess knight to checkmate, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 124,
+    "name": "从不署名的新闻线报",
+    "path": "img/fcg/cards/124.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\罗白梦.png"
+    ],
+    "prompt": "An unlabelled manila dossier folder slipped into a police station drop-box in the rain, streetlights reflecting on wet pavement, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 125,
+    "name": "无人知晓的谢幕席",
+    "path": "img/fcg/cards/125.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\罗白梦.png"
+    ],
+    "prompt": "An empty wooden chair on a dark theater balcony overlooking a distant sunlit orphanage, a single white detective mask and a notebook left on the seat as ash-grey embers drift upward, poignant mood, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 126,
+    "name": "凭空蒸发的押运车",
+    "path": "img/fcg/cards/126.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\OMICRON.png"
+    ],
+    "prompt": "A security camera view of a highway tunnel where an armored bank truck is dissolving halfway into golden-blue static pixels, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 127,
+    "name": "跨维度的扒手",
+    "path": "img/fcg/cards/127.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\OMICRON.png"
+    ],
+    "prompt": "A surreal dimensional zipper opening in mid-air inside a locked vault, ghostly blue-and-yellow hands reaching out from the fourth dimension to lift gold bars and data cores without breaking the seals, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 128,
+    "name": "查无此人的假护照",
+    "path": "img/fcg/cards/128.png",
+    "refs": [],
+    "prompt": "Official passports and military ID cards with glowing holographic watermarks and red seals spread on a dark table, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 129,
+    "name": "从平行世界偷来的履历",
+    "path": "img/fcg/cards/129.png",
+    "refs": [],
+    "prompt": "Translucent spectral threads pulling real diplomas, family photos, and official stamps out of shattered parallel-world mirrors to assemble a single flawless identity file, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 130,
+    "name": "不翼而飞的证物袋",
+    "path": "img/fcg/cards/130.png",
+    "refs": [],
+    "prompt": "A sealed plastic evidence bag on a courtroom table vanishing into a swirl of blue ghostly mist, leaving an empty outline, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 131,
+    "name": "连记忆一并顺走",
+    "path": "img/fcg/cards/131.png",
+    "refs": [],
+    "prompt": "An open safe that is completely empty while glowing blue memory ribbons are siphoned out of a silhouette's head into a dimensional rift, leaving a blank expression, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 132,
+    "name": "填不满的陈列柜",
+    "path": "img/fcg/cards/132.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\OMICRON.png"
+    ],
+    "prompt": "A vast underground gallery of glass display cases overflowing with stolen jewels, weapons, and artifacts, yet the center of the room is a cold dark pit, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 133,
+    "name": "第五柱的空洞之匣",
+    "path": "img/fcg/cards/133.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\OMICRON.png"
+    ],
+    "prompt": "A colossal floating Pandora-like chest in dimensional space sucking in weapons, crowns, and clock gears, while its open core reveals a haunting, bottomless hollow void, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 134,
+    "name": "连开十把的轮盘赌台",
+    "path": "img/fcg/cards/134.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\DIAMOND.png"
+    ],
+    "prompt": "A luxury casino roulette wheel spinning with a glowing blue-gold ball landing on zero, surrounded by floating probability percentages, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 135,
+    "name": "必然坍塌的命运多米诺",
+    "path": "img/fcg/cards/135.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\DIAMOND.png"
+    ],
+    "prompt": "A giant line of glowing blue crystal dominoes toppling in chain reaction—each domino showing a miniature disaster (a loosening bolt, a locking door, a falling steel beam), anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 136,
+    "name": "两面皆正的幸运币",
+    "path": "img/fcg/cards/136.png",
+    "refs": [],
+    "prompt": "A gleaming gold coin flipping in mid-air with both sides showing the same victorious emblem, trailed by yellow sparks, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 137,
+    "name": "卡在枪膛里的哑弹",
+    "path": "img/fcg/cards/137.png",
+    "refs": [],
+    "prompt": "Extreme close-up of a high-caliber pistol chamber jamming mid-fire with a deformed brass cartridge and a glowing golden fate-sigil locking the firing pin, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 138,
+    "name": "擦肩而过的坠物",
+    "path": "img/fcg/cards/138.png",
+    "refs": [],
+    "prompt": "A heavy stone planter crashing onto wet asphalt inches away from a shadowy footprint, blue shockwave lines, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 139,
+    "name": "无法靠努力规避的死局",
+    "path": "img/fcg/cards/139.png",
+    "refs": [],
+    "prompt": "Massive overhead steel roof trusses snapping simultaneously under a eerie glowing blue diamond constellation in the sky, trapping a warrior below with nowhere to dodge, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 140,
+    "name": "永不落空的黑桃A",
+    "path": "img/fcg/cards/140.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\DIAMOND.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\林天星-2.png"
+    ],
+    "prompt": "An Ace of Spades playing card pinned dead-center on a dartboard, glowing with arrogant blue-gold fate threads, a deep crack splitting the board, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 141,
+    "name": "宿命死敌的狂暴正面",
+    "path": "img/fcg/cards/141.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\DIAMOND.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\林天星-2.png"
+    ],
+    "prompt": "A storm of glowing blue fate-dice and playing cards being violently shattered into dust by a colossal golden-purple overclocked greatsword smash from the opposite side, epic clash of fate vs brute force, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 142,
+    "name": "异乡投效的旧部",
+    "path": "img/fcg/cards/142.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\黑岩\\刀おじさん1.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\黑衣少女.png"
+    ],
+    "prompt": "Ruthless armed mercenaries in scarred dark-red combat gear emerging from a dark alley, glowing red eyes and cold steel blades, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 143,
+    "name": "毁灭故土的私兵团",
+    "path": "img/fcg/cards/143.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\黑岩\\刀おじさん1.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\黑衣少女.png"
+    ],
+    "prompt": "A legion of psychic-awakened warlords kneeling before a dark shadow, behind them a shattered nuclear mushroom-cloud wasteland portal, stepping into a pristine modern city, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 144,
+    "name": "无懈可击的公文批条",
+    "path": "img/fcg/cards/144.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Nonce.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\OMICRON.png"
+    ],
+    "prompt": "A crisp military authorization document stamped with gleaming red seals on a mahogany desk, cold white light, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 145,
+    "name": "三方拼凑的虚假皮囊",
+    "path": "img/fcg/cards/145.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\Nonce.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\OMICRON.png"
+    ],
+    "prompt": "A hollow mannequin dressed in an elite school/executive uniform being assembled by three distinct forces: self-replicating silver mechanical tendrils, a corrupt military officer's hand with bribes, and a dimensional thief's shadow, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 146,
+    "name": "不可拒绝的交易书",
+    "path": "img/fcg/cards/146.png",
+    "refs": [],
+    "prompt": "A black-bound contract resting on a glass table in a dark room, a single crimson fountain pen laid across it, oppressive atmosphere, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 147,
+    "name": "用平行好结局换来的灭口",
+    "path": "img/fcg/cards/147.png",
+    "refs": [],
+    "prompt": "A split vision in a dark room: in the foreground, a silver-white cube is handed over as a researcher girl fades into glowing fireflies; in a floating golden window above, a parallel-world boy smiles happily with his four childhood friends in warm sunlight, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 148,
+    "name": "光滑无痕的银白盒",
+    "path": "img/fcg/cards/148.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\黑衣少女.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\亞瑪麗歐fixw (2).png"
+    ],
+    "prompt": "A completely seamless, mirror-smooth silver-white metallic cube resting untouched amidst a roaring furnace and shattered drill bits, cold blue-white glow, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  },
+  {
+    "id": 149,
+    "name": "按兵不动的天平另一端",
+    "path": "img/fcg/cards/149.png",
+    "refs": [
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\黑衣少女.png",
+      "D:\\Github\\dts-creative-consultation\\knowledge\\98-人设图\\亞瑪麗歐fixw (2).png"
+    ],
+    "prompt": "The girl in black holding the glowing silver-white cube that projects the entire holographic island of the Battle Royale, gazing coldly across a dark chessboard where a single white-emerald queen piece stands unyielding on the opposite side, anime digital illustration, no text. anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark."
+  }
+]

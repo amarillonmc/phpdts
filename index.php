@@ -59,7 +59,11 @@ if(!empty($roomact))
 	unset($roomact);
 	roommng_flag:
 	if(!empty($rerror) && isset($_ERROR[$rerror])) $rindex['innerHTML']['roomerror'] = $_ERROR[$rerror];
-	else $rindex['url'] = 'index.php';
+	else {
+		$rindex['url'] = 'index.php';
+		$fcg_room=$db->fetch_array($db->query("SELECT g.gruleset FROM {$gtablepre}users u JOIN {$gtablepre}game g ON g.groomid=u.roomid WHERE u.uid=".(int)$udata['uid']));
+		if(($fcg_room['gruleset'] ?? '')==='FCG') $rindex['url']='fcg.php';
+	}
 	ob_clean();
 	echo compatible_json_encode($rindex);
 	ob_end_flush();	
@@ -81,6 +85,7 @@ else
             'id' => $ruleset_id,
             'name' => $config['name'],
             'description' => $config['description'],
+            'category' => in_array($ruleset_id,array('FCG','LAIKAADVENT','RAIDCAGEDBIRD','ANOTHER'),true) ? 'special' : 'history',
             'cost' => $config['credits_cost'],
             'admin_free' => $config['admin_free'] && $udata['groupid'] >= 2
           );

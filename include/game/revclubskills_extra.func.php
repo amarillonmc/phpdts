@@ -734,6 +734,7 @@
 	function skill_tl_pickpocket_act($itmn)
 	{
 		global $log,$pdata,$cskills,$db,$tablepre;
+		if(fcg_phantom($pdata['itmpara'.$itmn] ?? '')) { $log.='幻影器物不能赠送或留在尸体上。<br>'; return; }
 		$lock = check_skill_unlock('tl_pickpocket',$pdata);
 	
 		$id = (end($pdata['clbpara']['smeo']))[0];

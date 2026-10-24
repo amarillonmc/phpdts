@@ -50,6 +50,7 @@ namespace revcombat
 
 		# 计算社团技能对反击率的修正
 		$counter = calc_clbskill_counter_rate($pd,$pa,$active,$counter);
+		if(!empty($pd['clbpara']['fcg_counter_debuff'])) { $counter*=.5; unset($pd['clbpara']['fcg_counter_debuff']); }
 
 		//echo "{$pd['nm']}对{$pa['nm']}的反击率是{$counter}%<br>";
 		return $counter;

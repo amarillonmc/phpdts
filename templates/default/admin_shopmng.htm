@@ -1,0 +1,33 @@
+<h2>切糕商城管理</h2>
+<p><!--{eval echo fcg_html($shop_message);}--></p>
+<p>价格单位为切糕；每日／终身限购的 0 表示不限。非能量卡超过 7 张自动转为余烬印花。</p>
+<p>卡包每包含 1 张卡；按下方选项配置卡池。头衔可从列表选择，也可输入 ID。</p>
+<datalist id="shop-title-list"><!--{loop $titles_list $key $label}--><option value="$key"><!--{eval echo fcg_html($label);}--></option><!--{/loop}--></datalist>
+<!--{loop $shop_groups $shop_group $shop_group_items}-->
+<h3>{$shop_group_names[$shop_group]}</h3>
+<!--{loop $shop_group_items $shop_item}-->
+<details style="margin:12px 0;border:1px solid #666;padding:12px" <!--{if !$shop_item['item_id']}-->open<!--{/if}-->>
+<summary><!--{if $shop_item['item_id']}-->#{$shop_item['item_id']} <!--{eval echo fcg_html($shop_item['name']);}--> · {$shop_item['price_credits2']} 切糕 · <!--{if $shop_item['enabled']}-->上架<!--{else}-->下架<!--{/if}--><!--{else}-->新增商品<!--{/if}--></summary>
+<form method="post" action="admin.php">
+<input type="hidden" name="mode" value="shopmng"><input type="hidden" name="shop_save" value="1">
+<input type="hidden" name="item_id" value="{$shop_item['item_id']}"><input type="hidden" name="token" value="{$shop_item['token']}">
+<p><label>名称 <input name="name" maxlength="60" required value="<!--{eval echo fcg_html($shop_item['name']);}-->"></label>
+<label>柜台 <select name="category"><!--{loop $shop_categories $key $label}--><option value="$key" <!--{if $key===$shop_item['category']}-->selected<!--{/if}-->>$label</option><!--{/loop}--></select></label>
+<label>发货 <select name="reward_type" onchange="var t=this.value;this.form.querySelectorAll('[data-reward]').forEach(function(e){e.hidden=e.getAttribute('data-reward').trim()!==t;});"><!--{loop $shop_types $key $label}--><option value="$key" <!--{if $key===$shop_item['reward_type']}-->selected<!--{/if}-->>$label</option><!--{/loop}--></select></label></p>
+<p><label>说明 <textarea name="description" rows="3" cols="70"><!--{eval echo fcg_html($shop_item['description']);}--></textarea></label></p>
+<p data-reward="fcg_pack" <!--{if $shop_item['reward_type']!=='fcg_pack'}-->hidden<!--{/if}-->>
+<label>颜色 <select name="pack_color"><!--{loop $shop_colors $key $label}--><option value="$key" <!--{if $key===$shop_item['pack_color']}-->selected<!--{/if}-->>$label</option><!--{/loop}--></select></label>
+<label>已升级 <select name="pack_upgraded"><!--{loop $shop_filters $key $label}--><option value="$key" <!--{if $key===$shop_item['pack_upgraded']}-->selected<!--{/if}-->>$label</option><!--{/loop}--></select></label>
+<label>稀有 <select name="pack_rare"><!--{loop $shop_filters $key $label}--><option value="$key" <!--{if $key===$shop_item['pack_rare']}-->selected<!--{/if}-->>$label</option><!--{/loop}--></select></label></p>
+<p data-reward="title" <!--{if $shop_item['reward_type']!=='title'}-->hidden<!--{/if}-->><label>头衔 ID <input name="title_id" list="shop-title-list" type="number" min="0" value="{$shop_item['title_id']}"></label></p>
+<p data-reward="custom" <!--{if $shop_item['reward_type']!=='custom'}-->hidden<!--{/if}-->><label>扩展发货内容（JSON） <textarea name="reward_payload" rows="2" cols="70"><!--{eval echo fcg_html($shop_item['reward_payload']);}--></textarea></label></p>
+<p><label>售价 <input name="price_credits2" type="number" min="0" max="8388607" required value="{$shop_item['price_credits2']}"></label>
+<label>每日限购 <input name="daily_limit" type="number" min="0" required value="{$shop_item['daily_limit']}"></label>
+<label>终身限购 <input name="total_limit" type="number" min="0" required value="{$shop_item['total_limit']}"></label>
+<label>排序 <input name="sort_order" type="number" required value="{$shop_item['sort_order']}"></label>
+<label><input type="checkbox" name="enabled" value="1" <!--{if $shop_item['enabled']}-->checked<!--{/if}-->>上架</label></p>
+<button type="submit"><!--{if $shop_item['item_id']}-->保存商品<!--{else}-->添加商品<!--{/if}--></button>
+</form></details>
+<!--{/loop}-->
+<!--{/loop}-->
+<details><summary>可售头衔 ID 对照</summary><!--{loop $titles_list $key $label}--><span style="display:inline-block;margin:6px">$key · <!--{eval echo fcg_html($label);}--></span><!--{/loop}--></details>

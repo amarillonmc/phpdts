@@ -409,4 +409,5 @@ if(!defined('IN_GAME')) exit('Access Denied');
     ),
   );
 
+require GAME_ROOT.'./gamedata/cache/fcg_titles.php';
 ?>

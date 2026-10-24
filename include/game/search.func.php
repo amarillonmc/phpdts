@@ -454,6 +454,7 @@ function move_search_events(&$data,$act)
 		//移动后丢失探索视野
 		lost_searchmemory('all',$data);
 	}
+	fcg_skills_on_action($data);
 
 	if($inf)
 	{

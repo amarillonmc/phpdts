@@ -180,6 +180,7 @@ function senditem()
 		$itms = & ${'itms'.$itmn};
 		$itmsk = & ${'itmsk'.$itmn};
 		$itmpara = & ${'itmpara'.$itmn};
+		if(fcg_phantom($itmpara)) { $log.='幻影器物不能赠送。<br>'; $mode='command'; return; }
 
 		# 诅咒道具不能赠予，不准祸水东引！
 		if(in_array('V',get_itmsk_array($itmsk)))

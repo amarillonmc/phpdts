@@ -155,6 +155,7 @@ if($hp > 0){
 		}
 
 		//进入指令判断
+		$fcg_action_blocked = !empty($action);
 		if(!empty($itemindex))
 		{
 			$opendialog = 'itemmix_tips';
@@ -184,6 +185,8 @@ if($hp > 0){
 				include_once GAME_ROOT.'./include/game/search.func.php';
 				move($moveto);
 				if($coldtimeon){$cmdcdtime=$movecoldtime;}
+			} elseif(strpos($command,'fcg_') === 0) {
+				fcg_skill_command($pdata,$command,$_POST,$fcg_action_blocked);
 			} elseif($command == 'search') {
 				include_once GAME_ROOT.'./include/game/search.func.php';
 				search();

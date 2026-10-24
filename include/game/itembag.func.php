@@ -114,7 +114,7 @@ function item_encase($ilist){
 		$itms = &${'itms'.$i};
 		$itmsk = &${'itmsk'.$i};
 		$itmpara = &${'itmpara'.$i};
-		if(strpos($itmsk,'V')!==false || strpos($itmsk,'v')!==false){
+		if(strpos($itmsk,'V')!==false || strpos($itmsk,'v')!==false || fcg_phantom($itmpara)){
 			$log.="诅咒和灵魂绑定的装备无法存放在背包内。<br>";
 		}elseif(round(sizeof($git_list)+1+$itmnum) > $itmnumlimit){
 			$log.="背包已满，无法继续放入道具。<br>";

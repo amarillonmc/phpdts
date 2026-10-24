@@ -240,6 +240,7 @@ function init_inf_states(&$pa,$pd,$ismeet=0)
 		return;
 	}
 	$pa['nameinfo'] = $pa['name'];
+	if(in_array((int)($pa['nick'] ?? 0),array(9111,9112,9113),true)) $pa['nameinfo']='<span class="fcg-title fcg-title-'.(int)$pa['nick'].'">'.htmlspecialchars($pa['name'],ENT_QUOTES,'UTF-8').'</span>';
 	$pa['lvlinfo'] = 'Lv. '.$pa['lvl'];
 	$pa['poseinfo'] = "<span tooltip=\"{$posetips[$pa['pose']]}\">".$poseinfo[$pa['pose']]."</span>";
 	$pa['tacinfo'] = "<span tooltip=\"{$tactips[$pa['tactic']]}\">".$tacinfo[$pa['tactic']]."</span>";

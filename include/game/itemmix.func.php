@@ -335,6 +335,7 @@ function check_valid_overlay_material($itm, $itmsk, $star)
 }
 function itemmix_name_proc($n){
 	$n = trim($n);
+	if(strpos($n,'★幻影·')===0) $n=substr($n,strlen('★幻影·'));
 	$itmname_ignore = Array('/锋利的/si','/电气/si','/毒性/si','/-改/si');
 	foreach(Array($itmname_ignore) as $value){
 		$n = preg_replace($value,'',$n);
@@ -354,7 +355,9 @@ function itemmix_proc($mlist, $minfo, $itmstr, &$data=NULL)
 	}
 	extract($data,EXTR_REFS);
 
+	$fcg_material=false;
 	foreach($mlist as $val){
+		if(fcg_phantom(${'itmpara'.$val})) $fcg_material=true;
 		itemreduce('itm'.$val);
 	}
 	$itm0 = $minfo['result'][0];
@@ -388,6 +391,12 @@ function itemmix_proc($mlist, $minfo, $itmstr, &$data=NULL)
 	//检查成就
 	include_once GAME_ROOT.'./include/game/achievement.func.php';
 	check_mixitem_achievement_rev($name,$itm0);
+	// 幻影材料可以正常使用，产物继承绑定，不能通过合成转交给其他玩家。
+	if($fcg_material) {
+		$itm0='★幻影·'.$itm0;
+		$itmpara0=get_itmpara($itmpara0); $itmpara0['fcg_phantom']=1;
+		if(strpos($itmsk0,'v')===false) $itmsk0.='v';
+	}
 
 	itemget($data);
 }

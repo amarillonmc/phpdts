@@ -3,6 +3,8 @@
 
 $lang = array
 (
+	'shopmng' => '切糕商城管理',
+	'shopmng_comment' => '管理露比与斯诺商城的FCG卡包、头衔及其他扩展商品',
 	'gamename' => '生存游戏 BRA',
 	'succeed' => '成功',
 	'fail' => '失败',
