@@ -1,0 +1,17 @@
+AN:OTHER 新闻入口 HTTP 500 修复
+2026-10-24
+
+问题与修改
+AN:OTHER 对局进行时，common.inc.php 调用模式计时钩子，提前载入 game.func.php。
+news.php 随后再次 require 同一文件，触发 Cannot redeclare init_playerdata() 并导致 HTTP 500。
+将 news.php 的该次加载改为 require_once，沿用游戏页已有处理。
+
+验证
+在现有 native_smoke_test.php 增加真实 news.php 入口回归：临时 common 桩执行模式计时钩子，再检查全部新闻请求返回的 JSON 与 AN:OTHER 开局文案。
+夹具直接复制 game.func.php，避免原先包装文件中的 require_once 掩盖重复声明问题。
+修复前该用例复现相同 fatal error；修复后 PHP 7.4.33 下 26 项原生集成检查通过。
+news.php 和回归脚本的语法检查、git diff --check 通过。
+
+验证范围
+使用临时目录及假数据库，尚未进行真实数据库站点和浏览器联调。
+排查中还发现 help.php、rank.php 使用同类非幂等加载写法，属于旁支问题，本次未修改。

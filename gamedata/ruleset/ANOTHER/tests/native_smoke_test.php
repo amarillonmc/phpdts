@@ -11,7 +11,7 @@ function an_native_file($relative,$contents) {
     $path=$temp.$relative; if(!is_dir(dirname($path))) mkdir(dirname($path),0777,true);
     file_put_contents($path,$contents); $copied[]=$path;
 }
-foreach(array('include/game.func.php','include/game/club23.func.php','include/game/itemmain.func.php',
+foreach(array('include/game/club23.func.php','include/game/itemmain.func.php',
 	'include/vnworld/vncreation.func.php',
     'include/game/achievement.func.php','include/game/clubslct.func.php','include/game/depot.func.php','include/news.func.php',
     'gamedata/cache/resources_1.php','gamedata/cache/gamecfg_1.php','gamedata/cache/combatcfg_1.php',
@@ -19,6 +19,8 @@ foreach(array('include/game.func.php','include/game/club23.func.php','include/ga
     'gamedata/ruleset/ANOTHER/cache/resources_1.php','gamedata/ruleset/ANOTHER/cache/gamecfg_1.php','gamedata/ruleset/ANOTHER/cache/npc_1.php') as $file) {
     an_native_file($file,'<?php require_once '.var_export($source.$file,true).';');
 }
+// 保留真实函数声明，避免包装层的require_once掩盖页面入口重复加载。
+an_native_file('include/game.func.php',file_get_contents($source.'include/game.func.php'));
 an_native_file('gamedata/ruleset/ANOTHER/cache/npc_1.php','<?php require '.var_export($source.'gamedata/ruleset/ANOTHER/cache/npc_1.php',true).';');
 foreach(array('gamedata/cache/vncreation_1.php','gamedata/ruleset/ANOTHER/cache/vncreation_1.php') as $file) an_native_file($file,file_get_contents($source.$file));
 an_native_file('gamedata/cache/achievement_1.php','<?php require '.var_export($source.'gamedata/cache/achievement_1.php',true).';');
@@ -105,7 +107,7 @@ function an_native_check($ok,$message) {global $checks; $checks++; if(!$ok) thro
 $oldcwd=getcwd(); chdir($temp);
 try {
     require_once $source.'include/global.func.php';
-    require_once $source.'include/game.func.php';
+    require_once $temp.'include/game.func.php';
     require_once $source.'include/system.func.php';
     require_once $source.'include/news.func.php';
     require_once $source.'include/resources.func.php';
@@ -139,6 +141,13 @@ try {
     rs_game(63);
     $npcs=count($db->tables['bra_players']); $ground=count($db->tables['bra_mapitem']);
     an_native_check($npcs>0 && $ground>0 && count($db->tables['bra_maptrap'])>0,'原生rs_game完整重置并投放模式世界');
+    // common桩执行真实模式时钟，随后继续真实news.php入口的加载及JSON响应。
+    an_native_file('include/common.inc.php','<?php ob_start(); ruleset_round_clock_hook();');
+    addnews($now,'newgame',$gamenum);
+    $newsmode='all';
+    ob_start(); require $source.'news.php'; $news_response=json_decode(ob_get_clean(),true);
+    an_native_check(isset($news_response['innerHTML']['newsinfo']) && strpos($news_response['innerHTML']['newsinfo'],'AN:OTHER 开始')!==false,'模式时钟载入game.func后新闻入口正常返回JSON和本局新闻');
+    unset($newsmode,$news_response);
     $players=another_read_players(); $npc=reset($players);
     an_native_check(is_array($npc['weppara']) && $npc['weppara']['another']['uid']!=='' && $npc['clbpara']['another']['npc_role']!=='','真实格式化后NPC武器与角色标记保留');
     $p=another_empty_player(); $p['name']='Native'; $p['clbpara']['another']['owner']='Native';
