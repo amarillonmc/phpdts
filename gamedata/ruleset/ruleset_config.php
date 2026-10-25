@@ -20,7 +20,7 @@ $ruleset_enabled = true;
 $ruleset_config = Array(
 	'FCG' => Array(
 		'name' => 'FCG：种火收集游戏',
-		'description' => '与17位小种火进行五色计时卡牌战，收集外界的记忆碎片。免费对战，卡册跨房间保留。',
+		'description' => '与21位小种火进行五色计时卡牌战，也可与同房间牌手或游荡残影切磋。免费对战，永久卡册跨房间保留。',
 		'credits_cost' => 0, 'admin_free' => true,
 		'initial_setup' => Array(), 'override_modules' => Array(),
 		'title_system' => 0, 'club_skills' => 0,

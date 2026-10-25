@@ -17,7 +17,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_gen(W, 1)",
     "flavor": "固定在虚拟地图街角的物资刷新箱，无论被搬空多少次都会在下一局如约重现。",
     "unlimited": true,
-    "art": "img/fcg/cards/000.png"
+    "art": "img/fcg/cards/000.png",
+    "series": "vol1"
   },
   {
     "id": 1,
@@ -34,7 +35,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_gen(W, 1)",
     "flavor": "深入幻境网格的金属信标，连空气中的铁锈味都在向它汇聚。",
     "unlimited": true,
-    "art": "img/fcg/cards/001.png"
+    "art": "img/fcg/cards/001.png",
+    "series": "vol1"
   },
   {
     "id": 2,
@@ -51,7 +53,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(W, 4)",
     "flavor": "在废旧抽屉里顺手「摸一下」翻出来的零钱、绷带与备用电池。",
     "unlimited": true,
-    "art": "img/fcg/cards/002.png"
+    "art": "img/fcg/cards/002.png",
+    "series": "vol1"
   },
   {
     "id": 3,
@@ -68,7 +71,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(W, 5)",
     "flavor": "塞得拉链都快崩开的战术背包，足够支撑接下来一整场恶战。",
     "unlimited": true,
-    "art": "img/fcg/cards/003.png"
+    "art": "img/fcg/cards/003.png",
+    "series": "vol1"
   },
   {
     "id": 4,
@@ -85,7 +89,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_gen(R, 1)",
     "flavor": "刀锋与枪管擦碰瞬间迸出的第一粒火星。",
     "unlimited": true,
-    "art": "img/fcg/cards/004.png"
+    "art": "img/fcg/cards/004.png",
+    "series": "vol1"
   },
   {
     "id": 5,
@@ -102,7 +107,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_gen(R, 1)",
     "flavor": "血管里沸腾的轰鸣声已经盖过了理智，只剩下把眼前一切烧穿的冲动。",
     "unlimited": true,
-    "art": "img/fcg/cards/005.png"
+    "art": "img/fcg/cards/005.png",
+    "series": "vol1"
   },
   {
     "id": 6,
@@ -119,7 +125,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(R, 4)",
     "flavor": "转过走廊拐角撞见人影的刹那，身体比大脑更快扣下了扳机。",
     "unlimited": true,
-    "art": "img/fcg/cards/006.png"
+    "art": "img/fcg/cards/006.png",
+    "series": "vol1"
   },
   {
     "id": 7,
@@ -136,7 +143,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(R, 5)",
     "flavor": "狂暴的连环攻势如同暴风雨般倾泻而下，连喘息的空隙都不留给对手。",
     "unlimited": true,
-    "art": "img/fcg/cards/007.png"
+    "art": "img/fcg/cards/007.png",
+    "series": "vol1"
   },
   {
     "id": 8,
@@ -153,7 +161,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_gen(Y, 1)",
     "flavor": "架设在楼顶水塔旁的小型中继天线，指示灯一闪一闪。",
     "unlimited": true,
-    "art": "img/fcg/cards/008.png"
+    "art": "img/fcg/cards/008.png",
+    "series": "vol1"
   },
   {
     "id": 9,
@@ -170,7 +179,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_gen(Y, 1)",
     "flavor": "覆盖整座岛屿的金色信号网，每一条加密通讯都在它的耳边低语。",
     "unlimited": true,
-    "art": "img/fcg/cards/009.png"
+    "art": "img/fcg/cards/009.png",
+    "series": "vol1"
   },
   {
     "id": 10,
@@ -187,7 +197,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(Y, 4)",
     "flavor": "藏在袖口里的备用钥匙与地图，专治各种突发状况。",
     "unlimited": true,
-    "art": "img/fcg/cards/010.png"
+    "art": "img/fcg/cards/010.png",
+    "series": "vol1"
   },
   {
     "id": 11,
@@ -204,7 +215,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(Y, 5)",
     "flavor": "早在踏入房间之前，三步之后的退路与反制手段就已经全部就位。",
     "unlimited": true,
-    "art": "img/fcg/cards/011.png"
+    "art": "img/fcg/cards/011.png",
+    "series": "vol1"
   },
   {
     "id": 12,
@@ -221,7 +233,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_gen(G, 1)",
     "flavor": "手腕终端上跳动的绿色心电折线，证明这具身体还在运转。",
     "unlimited": true,
-    "art": "img/fcg/cards/012.png"
+    "art": "img/fcg/cards/012.png",
+    "series": "vol1"
   },
   {
     "id": 13,
@@ -238,7 +251,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_gen(G, 1)",
     "flavor": "即使在最残酷的荒原中心，藤蔓与新芽依然顺着钢筋的裂缝向上生长。",
     "unlimited": true,
-    "art": "img/fcg/cards/013.png"
+    "art": "img/fcg/cards/013.png",
+    "series": "vol1"
   },
   {
     "id": 14,
@@ -255,7 +269,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(G, 4)",
     "flavor": "靠在断墙后面闭上眼，把肺里的硝烟味吐出去。",
     "unlimited": true,
-    "art": "img/fcg/cards/014.png"
+    "art": "img/fcg/cards/014.png",
+    "series": "vol1"
   },
   {
     "id": 15,
@@ -272,7 +287,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(G, 5)",
     "flavor": "熟练地扎紧止血带、推入药剂，疼痛退去的瞬间力量重新回到指尖。",
     "unlimited": true,
-    "art": "img/fcg/cards/015.png"
+    "art": "img/fcg/cards/015.png",
+    "series": "vol1"
   },
   {
     "id": 16,
@@ -289,7 +305,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_gen(B, 1)",
     "flavor": "调整焦距后才能看见的、漂浮在幻境空气中的幽蓝色发光微粒。",
     "unlimited": true,
-    "art": "img/fcg/cards/016.png"
+    "art": "img/fcg/cards/016.png",
+    "series": "vol1"
   },
   {
     "id": 17,
@@ -306,7 +323,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_gen(B, 1)",
     "flavor": "剥开虚假的贴图表面，整座世界奔涌的底层数据流在眼前一览无余。",
     "unlimited": true,
-    "art": "img/fcg/cards/017.png"
+    "art": "img/fcg/cards/017.png",
+    "series": "vol1"
   },
   {
     "id": 18,
@@ -323,7 +341,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(B, 4)",
     "flavor": "脑海中毫无征兆划过的一道蓝色电光。",
     "unlimited": true,
-    "art": "img/fcg/cards/018.png"
+    "art": "img/fcg/cards/018.png",
+    "series": "vol1"
   },
   {
     "id": 19,
@@ -340,7 +359,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(B, 5)",
     "flavor": "原本杂乱无章的线索在刹那间严丝合缝，常理的边界随之洞开。",
     "unlimited": true,
-    "art": "img/fcg/cards/019.png"
+    "art": "img/fcg/cards/019.png",
+    "series": "vol1"
   },
   {
     "id": 20,
@@ -357,7 +377,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_gen(ALL, 1)",
     "flavor": "将无色的幻境算力折射为五种认知光谱的玻璃棱镜。",
     "unlimited": true,
-    "art": "img/fcg/cards/020.png"
+    "art": "img/fcg/cards/020.png",
+    "series": "vol1"
   },
   {
     "id": 21,
@@ -374,7 +395,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_gen(ALL, 1)",
     "flavor": "小种火们围坐的记忆中枢，源源不断地将外界的一切拆解、分类、重铸。",
     "unlimited": true,
-    "art": "img/fcg/cards/021.png"
+    "art": "img/fcg/cards/021.png",
+    "series": "vol1"
   },
   {
     "id": 22,
@@ -391,7 +413,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(ALL, 1); add_energy(B, 1)",
     "flavor": "服务器在瞬间涌入过多指令时溅出的五彩电弧。",
     "unlimited": true,
-    "art": "img/fcg/cards/022.png"
+    "art": "img/fcg/cards/022.png",
+    "series": "vol1"
   },
   {
     "id": 23,
@@ -408,7 +431,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(ALL, 1); add_energy(B, 2)",
     "flavor": "限制器被短暂冲开，整座虚拟空间都在高频震颤中喷涌出多余的能量。",
     "unlimited": true,
-    "art": "img/fcg/cards/023.png"
+    "art": "img/fcg/cards/023.png",
+    "series": "vol1"
   },
   {
     "id": 24,
@@ -425,7 +449,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lure",
     "flavor": "无威胁的小兵，也是数目最多的NPC。碰见了就上去给他一击吧。",
     "unlimited": false,
-    "art": "img/fcg/cards/024.png"
+    "art": "img/fcg/cards/024.png",
+    "series": "vol1"
   },
   {
     "id": 25,
@@ -442,7 +467,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lure",
     "flavor": "不知道被哪位缺德玩家塞了一身神装的野生小兵，现在轮到路人抱头鼠窜了。",
     "unlimited": false,
-    "art": "img/fcg/cards/025.png"
+    "art": "img/fcg/cards/025.png",
+    "series": "vol1"
   },
   {
     "id": 26,
@@ -459,7 +485,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_atk(self, 3)",
     "flavor": "随手在厨房摸出来的钝刀，大概只能用来削苹果。",
     "unlimited": false,
-    "art": "img/fcg/cards/026.png"
+    "art": "img/fcg/cards/026.png",
+    "series": "vol1"
   },
   {
     "id": 27,
@@ -476,7 +503,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_atk(self, 5); turn_bonus_dmg(6)",
     "flavor": "经过无数块磨刀石日夜打磨后，刀刃上已经亮起了令人生畏的寒芒。",
     "unlimited": false,
-    "art": "img/fcg/cards/027.png"
+    "art": "img/fcg/cards/027.png",
+    "series": "vol1"
   },
   {
     "id": 28,
@@ -493,7 +521,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_def(self, 5); gain_monster_def(self, 6)",
     "flavor": "✦怜悯的永火掉落在地的发光碎片，握在手里能让人莫名安心。",
     "unlimited": false,
-    "art": "img/fcg/cards/028.png"
+    "art": "img/fcg/cards/028.png",
+    "series": "vol1"
   },
   {
     "id": 29,
@@ -510,7 +539,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_def(self, 7); gain_monster_def(self, 8); gain_hp(self, 10)",
     "flavor": "“『我可比姐姐强得多了！』记忆深处的小女孩总是叉着腰大声炫耀，可当她屏住呼吸、将漫天水汽凝结成冰盾时，眼底藏着的却是对那个人毫无保留的维护。”",
     "unlimited": false,
-    "art": "img/fcg/cards/029.png"
+    "art": "img/fcg/cards/029.png",
+    "series": "vol1"
   },
   {
     "id": 30,
@@ -527,7 +557,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "kill_monsters",
     "flavor": "把弹幕当积木摆的整活小兵，虽然脆皮但砸起人来还挺疼。",
     "unlimited": false,
-    "art": "img/fcg/cards/030.png"
+    "art": "img/fcg/cards/030.png",
+    "series": "vol1"
   },
   {
     "id": 31,
@@ -544,7 +575,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "kill_monsters",
     "flavor": "穿着标志性红黑制服的街头武装分子，出手又快又狠。",
     "unlimited": false,
-    "art": "img/fcg/cards/031.png"
+    "art": "img/fcg/cards/031.png",
+    "series": "vol1"
   },
   {
     "id": 32,
@@ -561,7 +593,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lose_hp(enemy, 12)",
     "flavor": "塞着破布条的玻璃酒瓶，扔出去能炸开一团火苗。",
     "unlimited": false,
-    "art": "img/fcg/cards/032.png"
+    "art": "img/fcg/cards/032.png",
+    "series": "vol1"
   },
   {
     "id": 33,
@@ -578,7 +611,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lose_hp(enemy, 18); lose_monster_hp(enemy, 4)",
     "flavor": "无数老手梦寐以求的经典合成配方，一发入魂的暴烈美学。",
     "unlimited": false,
-    "art": "img/fcg/cards/033.png"
+    "art": "img/fcg/cards/033.png",
+    "series": "vol1"
   },
   {
     "id": 34,
@@ -595,7 +629,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_atk(self, 6); turn_bonus_dmg(12)",
     "flavor": "✦执念的残火紧握不放的滚烫碎片，散发着不肯服输的战意。",
     "unlimited": false,
-    "art": "img/fcg/cards/034.png"
+    "art": "img/fcg/cards/034.png",
+    "series": "vol1"
   },
   {
     "id": 35,
@@ -612,7 +647,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_atk(self, 8); turn_bonus_dmg(16); sunder_enemy(4)",
     "flavor": "“周围的伙伴一个个得到了神明般的奇迹之力，唯有那个挥舞重剑的女孩自始至终只是一介凡人——但那又如何？凡人的铁剑，照样能劈开神仙的棋盘。”",
     "unlimited": false,
-    "art": "img/fcg/cards/035.png"
+    "art": "img/fcg/cards/035.png",
+    "series": "vol1"
   },
   {
     "id": 36,
@@ -629,7 +665,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lure; rebirth_dmg_enemy(12)",
     "flavor": "不知道谁埋在草丛里的缺德地雷，正面印着「此面向敌」。",
     "unlimited": false,
-    "art": "img/fcg/cards/036.png"
+    "art": "img/fcg/cards/036.png",
+    "series": "vol1"
   },
   {
     "id": 37,
@@ -646,7 +683,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lure; rebirth_dmg_enemy(16); sunder(3)",
     "flavor": "一步一雷的死亡迷宫，哪怕是顶尖的谍报教头，下班路上一个走神也会被炸成碎片。",
     "unlimited": false,
-    "art": "img/fcg/cards/037.png"
+    "art": "img/fcg/cards/037.png",
+    "series": "vol1"
   },
   {
     "id": 38,
@@ -663,7 +701,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "draw(2)",
     "flavor": "电量永远不够用的便携笔记本电脑，用来尝试解除禁区锁定。",
     "unlimited": false,
-    "art": "img/fcg/cards/038.png"
+    "art": "img/fcg/cards/038.png",
+    "series": "vol1"
   },
   {
     "id": 39,
@@ -680,7 +719,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "draw(2); steal_energy(2)",
     "flavor": "屏幕上的代码如瀑布般滚落，连整座岛屿的警报系统都在指尖乖乖听话。",
     "unlimited": false,
-    "art": "img/fcg/cards/039.png"
+    "art": "img/fcg/cards/039.png",
+    "series": "vol1"
   },
   {
     "id": 40,
@@ -697,7 +737,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "draw(2); gain_atk(self, 3); gain_def(self, 3)",
     "flavor": "✦爱恋的埋火抱在怀里的精致零件，刻着复杂的逻辑回路。",
     "unlimited": false,
-    "art": "img/fcg/cards/040.png"
+    "art": "img/fcg/cards/040.png",
+    "series": "vol1"
   },
   {
     "id": 41,
@@ -714,7 +755,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "draw(3); gain_atk(self, 4); gain_def(self, 5); add_gen(Y, 1)",
     "flavor": "“孩童时期的玩伴早已散落天涯。如今坐在通讯社顶楼的少女不再抬头看星星，她只相信每一行冰冷精确的算法——那是她唯一能替故友守住的秩序。”",
     "unlimited": false,
-    "art": "img/fcg/cards/041.png"
+    "art": "img/fcg/cards/041.png",
+    "series": "vol1"
   },
   {
     "id": 42,
@@ -731,7 +773,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "on_summon_gain_hp(8)",
     "flavor": "长着一对大凸眼的古怪鱼类，据说能把地上的尸体吃得干干净净。",
     "unlimited": false,
-    "art": "img/fcg/cards/042.png"
+    "art": "img/fcg/cards/042.png",
+    "series": "vol1"
   },
   {
     "id": 43,
@@ -748,7 +791,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "on_summon_gain_hp(14); growth(1,1,0)",
     "flavor": "一口气吞下了二十具残骸的恐怖怪物，连骨头渣子都没给后来者留下。",
     "unlimited": false,
-    "art": "img/fcg/cards/043.png"
+    "art": "img/fcg/cards/043.png",
+    "series": "vol1"
   },
   {
     "id": 44,
@@ -765,7 +809,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_hp(self, 16); add_regen(self, 1)",
     "flavor": "大逃杀片场最经典的烤鱼补给，吃一口精神百倍。",
     "unlimited": false,
-    "art": "img/fcg/cards/044.png"
+    "art": "img/fcg/cards/044.png",
+    "series": "vol1"
   },
   {
     "id": 45,
@@ -782,7 +827,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_hp(self, 24); add_regen(self, 2)",
     "flavor": "闪烁着不科学金光的传说食材，至于里面有没有被人偷偷下毒，那就只有天知道了。",
     "unlimited": false,
-    "art": "img/fcg/cards/045.png"
+    "art": "img/fcg/cards/045.png",
+    "series": "vol1"
   },
   {
     "id": 46,
@@ -799,7 +845,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_regen(self, 3); add_poison(enemy, 2)",
     "flavor": "✦覆唱的篝火用来一遍遍哼唱旋律的旧喇叭。",
     "unlimited": false,
-    "art": "img/fcg/cards/046.png"
+    "art": "img/fcg/cards/046.png",
+    "series": "vol1"
   },
   {
     "id": 47,
@@ -816,7 +863,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_regen(self, 4); add_poison(enemy, 4); gain_hp(self, 8)",
     "flavor": "“语言会传染，歌谣会扎根。当年在院子里一起疯跑的野孩子，长大后建起了一座把『念头』当成炸弹投向全世界的工厂——因为只有不会被遗忘的歌，才能对抗死亡。”",
     "unlimited": false,
-    "art": "img/fcg/cards/047.png"
+    "art": "img/fcg/cards/047.png",
+    "series": "vol1"
   },
   {
     "id": 48,
@@ -833,7 +881,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lure; gen(B, 1)",
     "flavor": "站在原地一动不动、似乎只是特别抗揍的木桩型种火。",
     "unlimited": false,
-    "art": "img/fcg/cards/048.png"
+    "art": "img/fcg/cards/048.png",
+    "series": "vol1"
   },
   {
     "id": 49,
@@ -850,7 +899,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lure; gen(B, 2)",
     "flavor": "无论倾泻多少火力都只是闪过一串乱码，它正安静地记录着每一个攻击者的数据。",
     "unlimited": false,
-    "art": "img/fcg/cards/049.png"
+    "art": "img/fcg/cards/049.png",
+    "series": "vol1"
   },
   {
     "id": 50,
@@ -867,7 +917,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "freeze_enemy_monster(3); sunder_enemy(3)",
     "flavor": "每隔一段时间就会响彻全岛的催命广播，不跑就是死。",
     "unlimited": false,
-    "art": "img/fcg/cards/050.png"
+    "art": "img/fcg/cards/050.png",
+    "series": "vol1"
   },
   {
     "id": 51,
@@ -884,7 +935,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "freeze_enemy_monster(4); sunder_enemy(5); lose_hp(enemy, 6)",
     "flavor": "天空的贴图正在一片片剥落，没有安全区，也没有逃生口，倒计时从一开始就是写死的。",
     "unlimited": false,
-    "art": "img/fcg/cards/051.png"
+    "art": "img/fcg/cards/051.png",
+    "series": "vol1"
   },
   {
     "id": 52,
@@ -901,7 +953,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "scale_by(active_colors_count): gain_atk/def(2*N), gain_hp(5*N)",
     "flavor": "✦希望的焰火捧在手心的透明棱镜，里面映着五个小手拉小手的模糊剪影。",
     "unlimited": false,
-    "art": "img/fcg/cards/052.png"
+    "art": "img/fcg/cards/052.png",
+    "series": "vol1"
   },
   {
     "id": 53,
@@ -918,7 +971,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "scale_by(active_colors_count): gain_atk/def(3*N), gain_hp(6*N), draw(2)",
     "flavor": "“当黑衣的死神叩响房门时，她来不及向昔日的四个玩伴道别，只能把自己连同童年的旧梦一起敲碎，撒进这座银白盒子的海底——于是，孩子们提着灯火醒来了。”",
     "unlimited": false,
-    "art": "img/fcg/cards/053.png"
+    "art": "img/fcg/cards/053.png",
+    "series": "vol1"
   },
   {
     "id": 54,
@@ -935,7 +989,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gen(B, 1)",
     "flavor": "人气作品《重生之地》里活泼张扬的森林精灵角色宣传立牌。",
     "unlimited": false,
-    "art": "img/fcg/cards/054.png"
+    "art": "img/fcg/cards/054.png",
+    "series": "vol1"
   },
   {
     "id": 55,
@@ -952,7 +1007,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gen(B, 2); poison_enemy(1)",
     "flavor": "明明配音演员早已闭上嘴，全息投影却还在用空洞的童音机械地重复着同一句台词。",
     "unlimited": false,
-    "art": "img/fcg/cards/055.png"
+    "art": "img/fcg/cards/055.png",
+    "series": "vol1"
   },
   {
     "id": 56,
@@ -969,7 +1025,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_hp(self, 10); add_regen(self, 2)",
     "flavor": "初二少女认真标注了换气符号与重音的配音练习册。",
     "unlimited": false,
-    "art": "img/fcg/cards/056.png"
+    "art": "img/fcg/cards/056.png",
+    "series": "vol1"
   },
   {
     "id": 57,
@@ -986,7 +1043,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_hp(self, 14); add_regen(self, 3); draw(1)",
     "flavor": "录音带末尾多出了一段刺耳的电流刮擦声，听起来像是什么重物正在凿穿铁板。",
     "unlimited": false,
-    "art": "img/fcg/cards/057.png"
+    "art": "img/fcg/cards/057.png",
+    "series": "vol1"
   },
   {
     "id": 58,
@@ -1003,7 +1061,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "freeze_enemy_monster(2); weaken_enemy(2, 4)",
     "flavor": "送到录音棚门口的无署名应援花束，卡片上写着越界的关心。",
     "unlimited": false,
-    "art": "img/fcg/cards/058.png"
+    "art": "img/fcg/cards/058.png",
+    "series": "vol1"
   },
   {
     "id": 59,
@@ -1020,7 +1079,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "freeze_enemy_monster(3); steal_stat(atk, 3); gain_def(self, 3)",
     "flavor": "病房外徘徊的脚步声消失后，塞进家门缝隙的黑色机器正在黑暗中亮起待机红灯。",
     "unlimited": false,
-    "art": "img/fcg/cards/059.png"
+    "art": "img/fcg/cards/059.png",
+    "series": "vol1"
   },
   {
     "id": 60,
@@ -1037,7 +1097,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "mystery_upgraded_zero_cost(1); pierce_enemy(6)",
     "flavor": "印着「幻界叫唤」字样的内部测试徽章，活动在开办前便已匆匆取消。",
     "unlimited": false,
-    "art": "img/fcg/cards/060.png"
+    "art": "img/fcg/cards/060.png",
+    "series": "vol1"
   },
   {
     "id": 61,
@@ -1054,7 +1115,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "mystery_upgraded_zero_cost(1); pierce_enemy(10); add_gen(B, 1)",
     "flavor": "“向下、再向下……在抵达百分之十三的深度时，挖掘者听见了地层深处传来的心跳，于是手里的钻头永远停在了那里。”",
     "unlimited": false,
-    "art": "img/fcg/cards/061.png"
+    "art": "img/fcg/cards/061.png",
+    "series": "vol1"
   },
   {
     "id": 62,
@@ -1071,7 +1133,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lure; growth(1, 1, 0)",
     "flavor": "穿着逼真兽耳玩偶服在夜市大排档里端盘子切肉的热心店员。",
     "unlimited": false,
-    "art": "img/fcg/cards/062.png"
+    "art": "img/fcg/cards/062.png",
+    "series": "vol1"
   },
   {
     "id": 63,
@@ -1088,7 +1151,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lure; growth(2, 2, 1)",
     "flavor": "当不速之客掀翻餐桌时，鹅、黑犬与秋田犬默契地呈品字形挡在同伴身前——没有半分杀意，却像一面无法撼动的叹息之墙。",
     "unlimited": false,
-    "art": "img/fcg/cards/063.png"
+    "art": "img/fcg/cards/063.png",
+    "series": "vol1"
   },
   {
     "id": 64,
@@ -1105,7 +1169,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(R,2); add_energy(G,2); gain_def(self, 2)",
     "flavor": "雪兔、银狐、仓鼠与狍子在后厨与厅面之间眼花缭乱却零失误的配菜传递。",
     "unlimited": false,
-    "art": "img/fcg/cards/064.png"
+    "art": "img/fcg/cards/064.png",
+    "series": "vol1"
   },
   {
     "id": 65,
@@ -1122,7 +1187,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(R,3); add_energy(G,3); gain_def(self, 3); set_evade(self, 1)",
     "flavor": "在寸草不生的灰烬荒原上，正是靠着这套无声的手势与哨音，弱小的生灵才一次次避开了猎食者的巡逻网。",
     "unlimited": false,
-    "art": "img/fcg/cards/065.png"
+    "art": "img/fcg/cards/065.png",
+    "series": "vol1"
   },
   {
     "id": 66,
@@ -1139,7 +1205,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_hp(self, 10); set_thorns(self, ratio=1.5, cap=15)",
     "flavor": "双胞胎姐妹随身携带的防身药瓶，贴着早已磨花的手写标签。",
     "unlimited": false,
-    "art": "img/fcg/cards/066.png"
+    "art": "img/fcg/cards/066.png",
+    "series": "vol1"
   },
   {
     "id": 67,
@@ -1156,7 +1223,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_hp(self, 14); set_thorns(self, ratio=3.0, cap=28)",
     "flavor": "“造药的长辈在下班路上化作了碎片，但留下的规矩还在生效——凡怀抱恶念挥刀者，必先在自己胸口尝到七倍的痛楚。”",
     "unlimited": false,
-    "art": "img/fcg/cards/067.png"
+    "art": "img/fcg/cards/067.png",
+    "series": "vol1"
   },
   {
     "id": 68,
@@ -1173,7 +1241,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "buff_or_summon_guardian(atk=6, def=6, hp=12, growth=2)",
     "flavor": "实验室角落里被受惊的大鹅一翅膀扇翻的容器，洒出的液体在地上映出彩虹般的光泽。",
     "unlimited": false,
-    "art": "img/fcg/cards/068.png"
+    "art": "img/fcg/cards/068.png",
+    "series": "vol1"
   },
   {
     "id": 69,
@@ -1190,7 +1259,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "buff_or_summon_guardian(atk=9, def=8, hp=16, growth=3); add_regen(self, 3)",
     "flavor": "“当地面上的人类把一切烧成焦土后，世界从深不见底的地下水脉里泌出了一滴虹彩——既然旧的主人已经坏掉了，那就把「人」的模样教给鸟兽吧。”",
     "unlimited": false,
-    "art": "img/fcg/cards/069.png"
+    "art": "img/fcg/cards/069.png",
+    "series": "vol1"
   },
   {
     "id": 70,
@@ -1207,7 +1277,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "pierce(3); poison_enemy(1)",
     "flavor": "总是温和微笑着递上创可贴与热茶的年轻女子，存在感淡得像午后的树荫。",
     "unlimited": false,
-    "art": "img/fcg/cards/070.png"
+    "art": "img/fcg/cards/070.png",
+    "series": "vol1"
   },
   {
     "id": 71,
@@ -1224,7 +1295,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "pierce(5); poison_enemy(2)",
     "flavor": "当红日高悬于台前号令群雄时，所有的脏活、灭口与擦拭血迹，都由她脚下那片从不开口的影子独自完成。",
     "unlimited": false,
-    "art": "img/fcg/cards/071.png"
+    "art": "img/fcg/cards/071.png",
+    "series": "vol1"
   },
   {
     "id": 72,
@@ -1241,7 +1313,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_atk(self, 4); turn_bonus_dmg(5)",
     "flavor": "连载于女性向文学网站的畅销古风小说草稿，字里行间全是柔情蜜意。",
     "unlimited": false,
-    "art": "img/fcg/cards/072.png"
+    "art": "img/fcg/cards/072.png",
+    "series": "vol1"
   },
   {
     "id": 73,
@@ -1258,7 +1331,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_atk(self, 5); pierce_enemy(8)",
     "flavor": "抽掉封面与夹页后，背面的字迹陡然变得冷硬——上面记载着十七种在闹市中让人无声心脏骤停的手法。",
     "unlimited": false,
-    "art": "img/fcg/cards/073.png"
+    "art": "img/fcg/cards/073.png",
+    "series": "vol1"
   },
   {
     "id": 74,
@@ -1275,7 +1349,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_poison(enemy, 3)",
     "flavor": "散发着淡淡苦香的中药囊，据说对缓解考前焦虑有奇效。",
     "unlimited": false,
-    "art": "img/fcg/cards/074.png"
+    "art": "img/fcg/cards/074.png",
+    "series": "vol1"
   },
   {
     "id": 75,
@@ -1292,7 +1367,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_poison(enemy, 4); invert_or_burst_poison(enemy, 8)",
     "flavor": "治病与杀人的区别，从来不在于草药的品种，而在于持秤之人的指尖往上多拨了零点一克。",
     "unlimited": false,
-    "art": "img/fcg/cards/075.png"
+    "art": "img/fcg/cards/075.png",
+    "series": "vol1"
   },
   {
     "id": 76,
@@ -1309,7 +1385,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "weaken_enemy(6, 8); sunder_enemy(6)",
     "flavor": "停留在二十年前某一天傍晚的怀表，表壳上有一道被重物砸出的深凹。",
     "unlimited": false,
-    "art": "img/fcg/cards/076.png"
+    "art": "img/fcg/cards/076.png",
+    "series": "vol1"
   },
   {
     "id": 77,
@@ -1326,7 +1403,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "weaken_enemy(9, 12); sunder_enemy(9); freeze_enemy_monster(2)",
     "flavor": "“枪膛不会同时卡死，钢梁不会恰好砸中咽喉。但档案上只写着『死于意外』——她至今不知道，那天在废墟另一头力竭倒下的死敌，也留了一个孩子在世上。”",
     "unlimited": false,
-    "art": "img/fcg/cards/077.png"
+    "art": "img/fcg/cards/077.png",
+    "series": "vol1"
   },
   {
     "id": 78,
@@ -1343,7 +1421,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "on_summon_steal_stat(def, 4)",
     "flavor": "商业街电玩城里永远差一点就能夹中大奖的机械臂。",
     "unlimited": false,
-    "art": "img/fcg/cards/078.png"
+    "art": "img/fcg/cards/078.png",
+    "series": "vol1"
   },
   {
     "id": 79,
@@ -1360,7 +1439,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "on_summon_steal_stat(def, 6); on_summon_steal_stat(atk, 3)",
     "flavor": "机械爪穿过虚空的裂缝直探而下，不管是一辆装甲车还是一栋钟楼，在它眼里都只是换个角度就能捏扁的玩具。",
     "unlimited": false,
-    "art": "img/fcg/cards/079.png"
+    "art": "img/fcg/cards/079.png",
+    "series": "vol1"
   },
   {
     "id": 80,
@@ -1377,7 +1457,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_atk(self, 3); gain_def(self, 3)",
     "flavor": "小孩子手里随便搓圆捏扁的彩色软泥。",
     "unlimited": false,
-    "art": "img/fcg/cards/080.png"
+    "art": "img/fcg/cards/080.png",
+    "series": "vol1"
   },
   {
     "id": 81,
@@ -1394,7 +1475,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_atk(self, 5); gain_def(self, 5)",
     "flavor": "明明是坚硬冰冷的合金钢板，在那双手里却像热黄油一样被拧成了完全不同的兵器形状。",
     "unlimited": false,
-    "art": "img/fcg/cards/081.png"
+    "art": "img/fcg/cards/081.png",
+    "series": "vol1"
   },
   {
     "id": 82,
@@ -1411,7 +1493,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(W, 3); add_energy(Y, 3); draw(1)",
     "flavor": "写满了奇葩零食与限量版周边的跑腿清单，跑腿费相当丰厚。",
     "unlimited": false,
-    "art": "img/fcg/cards/082.png"
+    "art": "img/fcg/cards/082.png",
+    "series": "vol1"
   },
   {
     "id": 83,
@@ -1428,7 +1511,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(W, 4); add_energy(Y, 4); draw(2)",
     "flavor": "清单最底下用红笔画着一个根本不在本地地图上的坐标，备注只有一句话：「快去快回，别让人看见。」",
     "unlimited": false,
-    "art": "img/fcg/cards/083.png"
+    "art": "img/fcg/cards/083.png",
+    "series": "vol1"
   },
   {
     "id": 84,
@@ -1445,7 +1529,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_hp(self, 20); add_energy(ALL, 2); add_regen(self, 2)",
     "flavor": "装在普通塑料瓶里的清亮液体，摇晃时却会在阳光下折射出极其微弱的七彩光晕。",
     "unlimited": false,
-    "art": "img/fcg/cards/084.png"
+    "art": "img/fcg/cards/084.png",
+    "series": "vol1"
   },
   {
     "id": 85,
@@ -1462,7 +1547,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_hp(self, 28); add_energy(ALL, 3); add_regen(self, 3)",
     "flavor": "“『这没准是长生不老泉哟。』下达命令的大人物嘻嘻哈哈地随手把它搁在桌角。跑腿的人并不知道，这瓶来自遥远地底的水里，装着一整个垂死世界的自救本能。”",
     "unlimited": false,
-    "art": "img/fcg/cards/085.png"
+    "art": "img/fcg/cards/085.png",
+    "series": "vol1"
   },
   {
     "id": 86,
@@ -1479,7 +1565,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "kill_monsters",
     "flavor": "扛着滑稽黄金秋刀鱼与浮游炮的重装模型，看起来像某个老玩家的中二签名档。",
     "unlimited": false,
-    "art": "img/fcg/cards/086.png"
+    "art": "img/fcg/cards/086.png",
+    "series": "vol1"
   },
   {
     "id": 87,
@@ -1496,7 +1583,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "kill_monsters; pierce(3)",
     "flavor": "滑稽的涂装只是潜入虚拟深海的潜水服，驾驶舱里的视线正冷冷锁定着每一簇不该出现在这里的野生代码。",
     "unlimited": false,
-    "art": "img/fcg/cards/087.png"
+    "art": "img/fcg/cards/087.png",
+    "series": "vol1"
   },
   {
     "id": 88,
@@ -1513,7 +1601,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_gen(B, 1); add_gen(R, 1); gain_def(self, 3)",
     "flavor": "只要输入参数就能在屏幕上自动搭出街道与摩天楼的虚拟建模软件。",
     "unlimited": false,
-    "art": "img/fcg/cards/088.png"
+    "art": "img/fcg/cards/088.png",
+    "series": "vol1"
   },
   {
     "id": 89,
@@ -1530,7 +1619,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_gen(B, 1); add_gen(R, 1); gain_def(self, 5); gain_monster_def(self, 5)",
     "flavor": "对真正的造景师而言，这片幻境的砖瓦与天空未免粗糙得可笑——只要她愿意，随时能在这座孤岛上空再盖一座城。",
     "unlimited": false,
-    "art": "img/fcg/cards/089.png"
+    "art": "img/fcg/cards/089.png",
+    "series": "vol1"
   },
   {
     "id": 90,
@@ -1547,7 +1637,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lose_hp(enemy, 14)",
     "flavor": "穿透夜空的强力聚光灯束，照得人睁不开眼。",
     "unlimited": false,
-    "art": "img/fcg/cards/090.png"
+    "art": "img/fcg/cards/090.png",
+    "series": "vol1"
   },
   {
     "id": 91,
@@ -1564,7 +1655,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lose_hp(enemy, 16); scale_by(enemy_atk): lose_hp(enemy, N)",
     "flavor": "“专司锁定恶意与杀气的仙灵射线，却在地下三层的餐馆里彻底失了准头——因为挡在前面的那群家伙，脑子里竟然真的只有『保护同伴』与『今晚吃什么』。”",
     "unlimited": false,
-    "art": "img/fcg/cards/091.png"
+    "art": "img/fcg/cards/091.png",
+    "series": "vol1"
   },
   {
     "id": 92,
@@ -1581,7 +1673,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "cleanse_flip_self; draw(2)",
     "flavor": "服务器日志里一条不起眼的数值溢出警告，通常会被管理员随手忽略。",
     "unlimited": false,
-    "art": "img/fcg/cards/092.png"
+    "art": "img/fcg/cards/092.png",
+    "series": "vol1"
   },
   {
     "id": 93,
@@ -1598,7 +1691,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "cleanse_flip_self; steal_stat(atk, 4); draw(3)",
     "flavor": "“那只戴着脚镣的鸟每一次振翅，都在吞食整座幻境的怨恨。观察者优雅地退后半步，拨通了跨界电话——靠蛮力已经不够了，得叫那位写符的道士回来。”",
     "unlimited": false,
-    "art": "img/fcg/cards/093.png"
+    "art": "img/fcg/cards/093.png",
+    "series": "vol1"
   },
   {
     "id": 94,
@@ -1615,7 +1709,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "kill_monsters; on_summon_dmg_enemy(8)",
     "flavor": "湾城晚报角落里刊载的神秘义警「瑞克·拉玛尔」，据说总在驱散黑帮后乘着鸟群消失。",
     "unlimited": false,
-    "art": "img/fcg/cards/094.png"
+    "art": "img/fcg/cards/094.png",
+    "series": "vol1"
   },
   {
     "id": 95,
@@ -1632,7 +1727,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "kill_monsters; on_summon_dmg_enemy(14)",
     "flavor": "“三十五种灵力飞鸟已经足够遮蔽地下室的穹顶；而当她叹了口气，放出那第三十六只庞然大物时——没人规定超音速客机不能算作『鸟类』。”",
     "unlimited": false,
-    "art": "img/fcg/cards/095.png"
+    "art": "img/fcg/cards/095.png",
+    "series": "vol1"
   },
   {
     "id": 96,
@@ -1649,7 +1745,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_def(self, 5); gain_hp(self, 10)",
     "flavor": "老旧机修车间里永远温着的红茶，无论多慌乱的人坐下来喝一口，都会忍不住把心事全盘托出。",
     "unlimited": false,
-    "art": "img/fcg/cards/096.png"
+    "art": "img/fcg/cards/096.png",
+    "series": "vol1"
   },
   {
     "id": 97,
@@ -1666,7 +1763,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_def(self, 6); gain_atk(self, 4); gain_hp(self, 12)",
     "flavor": "温柔的倾听者从不抱怨自己破败的肺腑与倒霉透顶的气运，只会在孩子们退后时，默默拧亮手里的光束长柄刀。",
     "unlimited": false,
-    "art": "img/fcg/cards/097.png"
+    "art": "img/fcg/cards/097.png",
+    "series": "vol1"
   },
   {
     "id": 98,
@@ -1683,7 +1781,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "freeze_enemy_monster(2); gain_def(self, 4)",
     "flavor": "围绕在指尖飞舞的柔和白萤，像是在为迷路者照亮脚下的台阶。",
     "unlimited": false,
-    "art": "img/fcg/cards/098.png"
+    "art": "img/fcg/cards/098.png",
+    "series": "vol1"
   },
   {
     "id": 99,
@@ -1700,7 +1799,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "freeze_enemy_monster(3); scale_by(enemy_max_stat): gain_atk_def(self)",
     "flavor": "“在这双眼睛里，世间一切超凡既无善恶也无贵贱，只化作两道交织的荧光——一道名为能走多远的『纯度』，一道名为能烧多旺的『烈度』。”",
     "unlimited": false,
-    "art": "img/fcg/cards/099.png"
+    "art": "img/fcg/cards/099.png",
+    "series": "vol1"
   },
   {
     "id": 100,
@@ -1717,7 +1817,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "mirror_balance_stats; add_energy(ALL, 2)",
     "flavor": "夹在旧书页里的模糊照片，照片上的绿发少女有着令人过目难忘的温和眉眼。",
     "unlimited": false,
-    "art": "img/fcg/cards/100.png"
+    "art": "img/fcg/cards/100.png",
+    "series": "vol1"
   },
   {
     "id": 101,
@@ -1734,7 +1835,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "mirror_balance_stats; add_energy(ALL, 3); gain_hp(self, 15)",
     "flavor": "“同样的名字，同样的容貌，同样被命运诅咒的底色。一个在光明处用病弱的肩膀扛起所有人的信任，一个在阴影里用冰冷的算盘丈量世界的存亡——正因太了解彼此，天平才迟迟没有倾斜。”",
     "unlimited": false,
-    "art": "img/fcg/cards/101.png"
+    "art": "img/fcg/cards/101.png",
+    "series": "vol1"
   },
   {
     "id": 102,
@@ -1751,7 +1853,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "sunder(3)",
     "flavor": "幻境里突然冒出来的害羞少女型 NPC，嘴上道着歉，拳头却一击打碎了路人的防具。",
     "unlimited": false,
-    "art": "img/fcg/cards/102.png"
+    "art": "img/fcg/cards/102.png",
+    "series": "vol1"
   },
   {
     "id": 103,
@@ -1768,7 +1871,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "sunder(4); pierce(3)",
     "flavor": "“拳头很硬的羊负责敲碎乌龟壳，细小的蜜蜂负责把毒刺扎进肉里——别问为什么逻辑这么怪，毕竟写代码的魔女小姐今年才十三岁。”",
     "unlimited": false,
-    "art": "img/fcg/cards/103.png"
+    "art": "img/fcg/cards/103.png",
+    "series": "vol1"
   },
   {
     "id": 104,
@@ -1785,7 +1889,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(B, 3); add_energy(Y, 3); mystery_upgraded_zero_cost(1)",
     "flavor": "人气推理小说解说主播在镜头前佩戴的华丽尖顶帽与玩具法杖。",
     "unlimited": false,
-    "art": "img/fcg/cards/104.png"
+    "art": "img/fcg/cards/104.png",
+    "series": "vol1"
   },
   {
     "id": 105,
@@ -1802,7 +1907,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "add_energy(B, 4); add_energy(Y, 4); mystery_upgraded_zero_cost(1)",
     "flavor": "“编译器弹出了四百二十六条警告与五百条提示，每一行都在尖叫着即将崩溃——但只要按下运行键，它偏偏就能完美跑起来。”",
     "unlimited": false,
-    "art": "img/fcg/cards/105.png"
+    "art": "img/fcg/cards/105.png",
+    "series": "vol1"
   },
   {
     "id": 106,
@@ -1819,7 +1925,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "set_evade(self, 1); add_energy(Y, 3)",
     "flavor": "无论是直播间谢榜还是咖啡馆拌嘴，少女总能不假思索地押上一段俏皮的韵脚。",
     "unlimited": false,
-    "art": "img/fcg/cards/106.png"
+    "art": "img/fcg/cards/106.png",
+    "series": "vol1"
   },
   {
     "id": 107,
@@ -1836,7 +1943,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "set_evade(self, 1); add_energy(Y, 4); draw(1)",
     "flavor": "“跑两步就会喘促、吹阵冷风就会病倒的玻璃身躯，上天却偏偏把所有的聚光灯与荒唐的好运都塞进了她的口袋里。”",
     "unlimited": false,
-    "art": "img/fcg/cards/107.png"
+    "art": "img/fcg/cards/107.png",
+    "series": "vol1"
   },
   {
     "id": 108,
@@ -1853,7 +1961,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "code_fu_search(zero_cost=true)",
     "flavor": "推理网红向粉丝征集离奇案件素材的公开信箱，塞满了真假参半的都市怪谈。",
     "unlimited": false,
-    "art": "img/fcg/cards/108.png"
+    "art": "img/fcg/cards/108.png",
+    "series": "vol1"
   },
   {
     "id": 109,
@@ -1870,7 +1979,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "code_fu_search(zero_cost=true); gain_atk(self, 3); gain_def(self, 3)",
     "flavor": "“魔女在台前摇晃法杖、把血淋淋的真相编成押韵的睡前故事；却没人注意是谁在散场后替她收拾烂摊子，又是谁借着她缝出的躯壳潜入了深海。”",
     "unlimited": false,
-    "art": "img/fcg/cards/109.png"
+    "art": "img/fcg/cards/109.png",
+    "series": "vol1"
   },
   {
     "id": 110,
@@ -1887,7 +1997,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "growth(2, 1, 1)",
     "flavor": "拖着沉重铁球与锁链在幻境里徘徊的翼人少女，似乎只要用血肉替她砸开枷锁就能释放她。",
     "unlimited": false,
-    "art": "img/fcg/cards/110.png"
+    "art": "img/fcg/cards/110.png",
+    "series": "vol1"
   },
   {
     "id": 111,
@@ -1904,7 +2015,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "growth(3, 2, 1); rebirth_once",
     "flavor": "“狐狸复制刀剑，黑猫死而复生，而最深处那只挂着问号闪电徽记的鸟儿，正一口口吞下整个世界投向她的恶意与杀戮，直到翅膀黑得遮天蔽日。”",
     "unlimited": false,
-    "art": "img/fcg/cards/111.png"
+    "art": "img/fcg/cards/111.png",
+    "series": "vol1"
   },
   {
     "id": 112,
@@ -1921,7 +2033,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_def(self, 5); gain_monster_hp(self, 4)",
     "flavor": "初二演剧部部长随身拖着的大号道具箱，里面塞满了随时能换装登台的华丽戏服。",
     "unlimited": false,
-    "art": "img/fcg/cards/112.png"
+    "art": "img/fcg/cards/112.png",
+    "series": "vol1"
   },
   {
     "id": 113,
@@ -1938,7 +2051,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_def(self, 6); set_thorns(self, ratio=2.0, cap=20)",
     "flavor": "“她以为那个花名是跻身大人世界的入场券；却不知道在棋手眼里，她最重要的价值就是『万一受了点擦伤，大人物们便有了名正言顺掀桌子的借口』。”",
     "unlimited": false,
-    "art": "img/fcg/cards/113.png"
+    "art": "img/fcg/cards/113.png",
+    "series": "vol1"
   },
   {
     "id": 114,
@@ -1955,7 +2069,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "mirror_last_spell",
     "flavor": "在私人小论坛「踏雪」里吵得不可开交的三个匿名账号，仔细看发帖时间却总能无缝衔接。",
     "unlimited": false,
-    "art": "img/fcg/cards/114.png"
+    "art": "img/fcg/cards/114.png",
+    "series": "vol1"
   },
   {
     "id": 115,
@@ -1972,7 +2087,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "mirror_last_spell; add_energy(Y, 2); add_energy(G, 2)",
     "flavor": "“试卷上的分数永远精准控制在刚好不惹人注目的名次，连户籍与学籍上的称呼也只是她随手给自己取的第四个代号——真正的她只活在合上电脑后的天台风里。”",
     "unlimited": false,
-    "art": "img/fcg/cards/115.png"
+    "art": "img/fcg/cards/115.png",
+    "series": "vol1"
   },
   {
     "id": 116,
@@ -1989,7 +2105,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_atk(self, 5); gain_def(self, 5); add_regen(self, 2); add_gen(ALL, 1)",
     "flavor": "郊区孤儿院顶层那两间挂着生锈铁锁、对外宣称堆满旧账本的「文件仓库」。",
     "unlimited": false,
-    "art": "img/fcg/cards/116.png"
+    "art": "img/fcg/cards/116.png",
+    "series": "vol1"
   },
   {
     "id": 117,
@@ -2006,7 +2123,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_atk(self, 7); gain_def(self, 7); add_regen(self, 3); add_gen(ALL, 1)",
     "flavor": "“老院长把基地烧成白地，却把轰鸣的机柜锁进了阁楼。当小女孩用两个月自学的代码撬开数据库时，她终于看清了自己血管里流淌的东西——那是十三位早已被命运抹杀的亡魂，拼凑出的唯一遗产。”",
     "unlimited": false,
-    "art": "img/fcg/cards/117.png"
+    "art": "img/fcg/cards/117.png",
+    "series": "vol1"
   },
   {
     "id": 118,
@@ -2023,7 +2141,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lure; steal_energy(1)",
     "flavor": "在幻境里顶着「高中生·白神」名字乱入的害羞少女 NPC，被打了还会认真和你商量能不能轻一点。",
     "unlimited": false,
-    "art": "img/fcg/cards/118.png"
+    "art": "img/fcg/cards/118.png",
+    "series": "vol1"
   },
   {
     "id": 119,
@@ -2040,7 +2159,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lure; steal_energy(2)",
     "flavor": "“第一层伪装是人畜无害的书虫，第二层伪装是满嘴跑火车的神秘高中生——可惜侦探小姐算尽了人心，头一回进游戏测试时还是被路过的莽夫一刀秒了。”",
     "unlimited": false,
-    "art": "img/fcg/cards/119.png"
+    "art": "img/fcg/cards/119.png",
+    "series": "vol1"
   },
   {
     "id": 120,
@@ -2057,7 +2177,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "draw(2); add_energy(W, 2)",
     "flavor": "写满潦草字迹的五元钱线圈本，夹着几张咖啡馆的结账单。",
     "unlimited": false,
-    "art": "img/fcg/cards/120.png"
+    "art": "img/fcg/cards/120.png",
+    "series": "vol1"
   },
   {
     "id": 121,
@@ -2074,7 +2195,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "draw(2); add_energy(W, 3); add_energy(Y, 2)",
     "flavor": "“在委托人眼里，那是名侦探与大网红心有灵犀的现场推理秀；只有藏在幕后的女孩知道，那两页纸上的每一个标点符号，都是她们头天晚上就已经对好词的台本。”",
     "unlimited": false,
-    "art": "img/fcg/cards/121.png"
+    "art": "img/fcg/cards/121.png",
+    "series": "vol1"
   },
   {
     "id": 122,
@@ -2091,7 +2213,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "cleanse_flip_self; gain_def(self, 4)",
     "flavor": "每当案件水落石出时，不愿出风头的高中生侦探总是挠着头把功劳推给虚无缥缈的巧合。",
     "unlimited": false,
-    "art": "img/fcg/cards/122.png"
+    "art": "img/fcg/cards/122.png",
+    "series": "vol1"
   },
   {
     "id": 123,
@@ -2108,7 +2231,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "cleanse_flip_self; gain_def(self, 6); draw(1)",
     "flavor": "“出门必逢暴雨、买饮料必中谢谢惠顾——被幸运女神彻底拉黑的倒霉蛋，之所以看起来像个福星，只是因为她在落子前已经把所有倒霉的死胡同全都算完了。”",
     "unlimited": false,
-    "art": "img/fcg/cards/123.png"
+    "art": "img/fcg/cards/123.png",
+    "series": "vol1"
   },
   {
     "id": 124,
@@ -2125,7 +2249,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lose_hp(self, 8); freeze_enemy_monster(4); steal_energy(4); gain_atk_def(self, 5, 5)",
     "flavor": "塞进报社与警局信箱的无名卷宗，破获了无数大案，侦探排行榜上却永远查不到她的真名。",
     "unlimited": false,
-    "art": "img/fcg/cards/124.png"
+    "art": "img/fcg/cards/124.png",
+    "series": "vol1"
   },
   {
     "id": 125,
@@ -2142,7 +2267,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "lose_hp(self, 6); freeze_enemy_monster(5); steal_energy(6); gain_atk_def(self, 7, 7)",
     "flavor": "“怕被人记恨寻仇也好，习惯把聚光灯让给年幼的搭档也罢——当真正的风暴压向那座孤儿院时，最清醒的聪明人，往往会第一个独自走上回不来的断头台。”",
     "unlimited": false,
-    "art": "img/fcg/cards/125.png"
+    "art": "img/fcg/cards/125.png",
+    "series": "vol1"
   },
   {
     "id": 126,
@@ -2159,7 +2285,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "steal_energy(2)",
     "flavor": "监控录像里驶入隧道后便再也没有出来的装甲运钞车，连一粒螺丝钉都没留下。",
     "unlimited": false,
-    "art": "img/fcg/cards/126.png"
+    "art": "img/fcg/cards/126.png",
+    "series": "vol1"
   },
   {
     "id": 127,
@@ -2176,7 +2303,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "steal_energy(3)",
     "flavor": "锁芯完好无损，封条未曾撕裂，因为窃贼根本没有经过这个世界的门——手是从纬度的夹缝里直接伸进来的。",
     "unlimited": false,
-    "art": "img/fcg/cards/127.png"
+    "art": "img/fcg/cards/127.png",
+    "series": "vol1"
   },
   {
     "id": 128,
@@ -2193,7 +2321,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "steal_stat(def, 4)",
     "flavor": "钢印、防伪水印与档案编号一应俱全的官方证件，哪怕放进内网核验也挑不出半点毛病。",
     "unlimited": false,
-    "art": "img/fcg/cards/128.png"
+    "art": "img/fcg/cards/128.png",
+    "series": "vol1"
   },
   {
     "id": 129,
@@ -2210,7 +2339,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "steal_stat(def, 5); steal_stat(gen_max, 1)",
     "flavor": "“要在阳光下捏造一个大活人，光篡改电脑是不够的——你得去别的时空把那些真正存在过的纸张、信物与死人的名讳，一件件搬过来填进坑里。”",
     "unlimited": false,
-    "art": "img/fcg/cards/129.png"
+    "art": "img/fcg/cards/129.png",
+    "series": "vol1"
   },
   {
     "id": 130,
@@ -2227,7 +2357,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "steal_energy(3); weaken_enemy(3, 3)",
     "flavor": "铁证如山的物证在开庭前一秒化为乌有，只留下面面相觑的检察官。",
     "unlimited": false,
-    "art": "img/fcg/cards/130.png"
+    "art": "img/fcg/cards/130.png",
+    "series": "vol1"
   },
   {
     "id": 131,
@@ -2244,7 +2375,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "steal_energy(4); steal_stat(atk, 4)",
     "flavor": "最顶级的盗窃从不留下失窃的痕迹——当保险箱里的东西消失时，连失主脑海中『我曾拥有过它』的念头，也已经被擦得干干净净。",
     "unlimited": false,
-    "art": "img/fcg/cards/131.png"
+    "art": "img/fcg/cards/131.png",
+    "series": "vol1"
   },
   {
     "id": 132,
@@ -2261,7 +2393,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "kill_monster_absorb_hp; steal_energy(3)",
     "flavor": "堆满奇珍异宝却依然显得空旷的地下室，主人似乎对偷来的任何东西都只有三秒钟的兴趣。",
     "unlimited": false,
-    "art": "img/fcg/cards/132.png"
+    "art": "img/fcg/cards/132.png",
+    "series": "vol1"
   },
   {
     "id": 133,
@@ -2278,7 +2411,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "kill_monster_absorb_hp; steal_energy(5); gain_atk(self, 4)",
     "flavor": "“军火、机密、他人的命运乃至整个世界的遗物……它不知疲倦地把万物往怀里塞，只是因为剥开那层由赃物堆砌的外壳后，里面什么也没有。”",
     "unlimited": false,
-    "art": "img/fcg/cards/133.png"
+    "art": "img/fcg/cards/133.png",
+    "series": "vol1"
   },
   {
     "id": 134,
@@ -2295,7 +2429,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "poison_enemy(2); sunder(2)",
     "flavor": "赌场里围满看客的轮盘，滚珠已经连续十次落在了同一个不可能的数字上。",
     "unlimited": false,
-    "art": "img/fcg/cards/134.png"
+    "art": "img/fcg/cards/134.png",
+    "series": "vol1"
   },
   {
     "id": 135,
@@ -2312,7 +2447,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "poison_enemy(3); sunder(3); pierce(2)",
     "flavor": "蝴蝶扇动翅膀，螺丝松脱半圈，消防门恰好锁死——在凡人眼里那是百年不遇的惨烈巧合，在她眼里只是随手拨了一下第一块骨牌。",
     "unlimited": false,
-    "art": "img/fcg/cards/135.png"
+    "art": "img/fcg/cards/135.png",
+    "series": "vol1"
   },
   {
     "id": 136,
@@ -2329,7 +2465,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "set_evade(self, 1); weaken_enemy(3, 5)",
     "flavor": "老千在指尖翻飞的镀金硬币，无论怎么抛向空中，落下来永远是赢家的那一面。",
     "unlimited": false,
-    "art": "img/fcg/cards/136.png"
+    "art": "img/fcg/cards/136.png",
+    "series": "vol1"
   },
   {
     "id": 137,
@@ -2346,7 +2483,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "set_evade(self, 2); weaken_enemy(4, 6)",
     "flavor": "“哪怕是百发百中的神枪手、保养得近乎完美的特种枪械，只要站在她对面，扣下扳机的那一刻听见的也只会是一声清脆而绝望的空响。”",
     "unlimited": false,
-    "art": "img/fcg/cards/137.png"
+    "art": "img/fcg/cards/137.png",
+    "series": "vol1"
   },
   {
     "id": 138,
@@ -2363,7 +2501,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "scale_by(enemy_energy_sum): pierce_enemy(min(18, N/2)); freeze_enemy_monster(1)",
     "flavor": "从高楼窗台莫名滑落的花盆，分毫不差地砸碎了路人刚刚抬起脚的地面。",
     "unlimited": false,
-    "art": "img/fcg/cards/138.png"
+    "art": "img/fcg/cards/138.png",
+    "series": "vol1"
   },
   {
     "id": 139,
@@ -2380,7 +2519,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "scale_by(enemy_energy_sum): pierce_enemy(min(24, N*2/3)); freeze_enemy_monster(2)",
     "flavor": "“智谋可以破局，武艺可以挡刀；可当整座大楼的承重梁本身决定在这一秒折断时，人类的能动性便成了笑话。”",
     "unlimited": false,
-    "art": "img/fcg/cards/139.png"
+    "art": "img/fcg/cards/139.png",
+    "series": "vol1"
   },
   {
     "id": 140,
@@ -2397,7 +2537,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "invert_enemy_regen; add_poison(enemy, 3)",
     "flavor": "钉在飞镖盘正中心的纸牌，牌面上却被某种重物硬生生砸出了一道焦黑的裂痕。",
     "unlimited": false,
-    "art": "img/fcg/cards/140.png"
+    "art": "img/fcg/cards/140.png",
+    "series": "vol1"
   },
   {
     "id": 141,
@@ -2414,7 +2555,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "invert_enemy_regen; add_poison(enemy, 4); clean_self_poison_to_enemy",
     "flavor": "“二十年前她只用指尖拨弄了一下概率，就让两大组织在意外中同归于尽；直到她撞上那个连因果与算计都懒得管、只靠纯粹蛮力把骰子砸成齑粉的金发疯子。”",
     "unlimited": false,
-    "art": "img/fcg/cards/141.png"
+    "art": "img/fcg/cards/141.png",
+    "series": "vol1"
   },
   {
     "id": 142,
@@ -2431,7 +2573,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gen(R, -1); kill_monsters",
     "flavor": "行事作风与本地黑帮截然不同、出手狠辣毫不留情的神秘武装分子。",
     "unlimited": false,
-    "art": "img/fcg/cards/142.png"
+    "art": "img/fcg/cards/142.png",
+    "series": "vol1"
   },
   {
     "id": 143,
@@ -2448,7 +2591,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gen(R, -1); kill_monsters; sunder(4)",
     "flavor": "“他们曾凭着赐予的盒子在自己的世界里觉醒为超人，直到把故乡烧成核战后的辐射废土——如今他们甘愿跪在黑衣统帅脚下，只为了『换一个还没坏掉的世界继续霍霍』。”",
     "unlimited": false,
-    "art": "img/fcg/cards/143.png"
+    "art": "img/fcg/cards/143.png",
+    "series": "vol1"
   },
   {
     "id": 144,
@@ -2465,7 +2609,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_atk(self, 4); gain_def(self, 5)",
     "flavor": "盖着军方与市政厅双重红章的通行文件，连最挑剔的审查官都只能低头放行。",
     "unlimited": false,
-    "art": "img/fcg/cards/144.png"
+    "art": "img/fcg/cards/144.png",
+    "series": "vol1"
   },
   {
     "id": 145,
@@ -2482,7 +2627,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "gain_atk(self, 6); gain_def(self, 7); clean_self_poison",
     "flavor": "“自我复制的机械篡改了户籍，死刑犯舅舅打通了官场，跨维度的窃贼搬来了信物——其实稍微动脑子的人都不信这套鬼话，但开口质疑的人都已经闭嘴了。”",
     "unlimited": false,
-    "art": "img/fcg/cards/145.png"
+    "art": "img/fcg/cards/145.png",
+    "series": "vol1"
   },
   {
     "id": 146,
@@ -2499,7 +2645,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "kill_enemy_monster; lose_hp(enemy, 10); add_energy(enemy_random, 2)",
     "flavor": "摆在谈判桌上的契约，每一条都在精准拿捏着签署者最无法割舍的软肋。",
     "unlimited": false,
-    "art": "img/fcg/cards/146.png"
+    "art": "img/fcg/cards/146.png",
+    "series": "vol1"
   },
   {
     "id": 147,
@@ -2516,7 +2663,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "kill_enemy_monster; steal_monster_atk_to_self; lose_hp(enemy, 14)",
     "flavor": "“『把你解析出的东西交出来，然后安静地死去；作为交换，我会去另一个世界，给那个叫林枫的孩子一个完美无缺的好结局。』——这是魔鬼最仁慈也最残酷的守信。”",
     "unlimited": false,
-    "art": "img/fcg/cards/147.png"
+    "art": "img/fcg/cards/147.png",
+    "series": "vol1"
   },
   {
     "id": 148,
@@ -2533,7 +2681,8 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "scale_by(total_gen_both): lose_hp(enemy, N); add_energy(ALL, 2)",
     "flavor": "无论是高温熔炉还是钻地炸药都无法在上面留下一丝划痕的神秘银白色金属方盒。",
     "unlimited": false,
-    "art": "img/fcg/cards/148.png"
+    "art": "img/fcg/cards/148.png",
+    "series": "vol1"
   },
   {
     "id": 149,
@@ -2550,7 +2699,1448 @@ return json_decode(<<<'FCG_CARDS'
     "ops": "scale_by(total_gen_both): lose_hp(enemy, N + 8); add_energy(ALL, 3)",
     "flavor": "“她用这只无法解析的盒子搭起了整座杀戮幻境，用力量与狡诈编织着名为『正史』的网。她从不打没有十成把握的仗——只要车间里那位和她顶着同一张脸的军长还没倒下，她便可以永远冷冷地等下去。”",
     "unlimited": false,
-    "art": "img/fcg/cards/149.png"
+    "art": "img/fcg/cards/149.png",
+    "series": "vol1"
+  },
+  {
+    "id": 150,
+    "pair": 76,
+    "name": "◆背负巨剑的铁城",
+    "color": "W",
+    "type": "monster",
+    "rare": true,
+    "upgraded": false,
+    "cost": 7,
+    "atk": 6,
+    "def": 7,
+    "hp": 9,
+    "ops": "lure; disarm_attack(3)",
+    "flavor": "身后背着沉重巨剑、却只凭一对铁拳迎敌的高大佣兵教头。",
+    "unlimited": false,
+    "art": "img/fcg/cards/150.png",
+    "series": "vol2"
+  },
+  {
+    "id": 151,
+    "pair": 76,
+    "name": "活体攻城锤·Rook",
+    "color": "W",
+    "type": "monster",
+    "rare": true,
+    "upgraded": true,
+    "cost": 7,
+    "atk": 8,
+    "def": 9,
+    "hp": 11,
+    "ops": "lure; disarm_attack(5); sunder(2)",
+    "flavor": "“没人见过他拔出背后的那把剑。因为任何敢于站在战车正前方的对手，早在第一记重拳轰落的瞬间就已经被锁死了全身的关节。”",
+    "unlimited": false,
+    "art": "img/fcg/cards/151.png",
+    "series": "vol2"
+  },
+  {
+    "id": 152,
+    "pair": 77,
+    "name": "钨钢指虎",
+    "color": "R",
+    "type": "spell",
+    "rare": false,
+    "upgraded": false,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "gain_atk_def(self, 3, 2); disarm_enemy(4)",
+    "flavor": "切开防弹钢板如同切豆腐的重型指虎。",
+    "unlimited": false,
+    "art": "img/fcg/cards/152.png",
+    "series": "vol2"
+  },
+  {
+    "id": 153,
+    "pair": 77,
+    "name": "擒抱锁技·千斤坠",
+    "color": "R",
+    "type": "spell",
+    "rare": false,
+    "upgraded": true,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "gain_atk_def(self, 4, 3); disarm_enemy(7); sunder_enemy(3)",
+    "flavor": "一旦被那双铁臂箍住肩膀，原本蓄势待发的杀招便只能化作一声闷哼。",
+    "unlimited": false,
+    "art": "img/fcg/cards/153.png",
+    "series": "vol2"
+  },
+  {
+    "id": 154,
+    "pair": 78,
+    "name": "◆光环加身的灵翼",
+    "color": "W",
+    "type": "monster",
+    "rare": true,
+    "upgraded": false,
+    "cost": 7,
+    "atk": 9,
+    "def": 2,
+    "hp": 6,
+    "ops": "pierce(4); headshot(40, 6)",
+    "flavor": "头顶悬浮着奇异光环饰物、怀抱十字长柄狙击枪的冷淡金发青年。",
+    "unlimited": false,
+    "art": "img/fcg/cards/154.png",
+    "series": "vol2"
+  },
+  {
+    "id": 155,
+    "pair": 78,
+    "name": "千里穿杨·Bishop",
+    "color": "W",
+    "type": "monster",
+    "rare": true,
+    "upgraded": true,
+    "cost": 7,
+    "atk": 11,
+    "def": 3,
+    "hp": 7,
+    "ops": "pierce(6); headshot(45, 9)",
+    "flavor": "“象不过河，狙击手也绝不越过自己的阵线。但他射出的每一发特种弹，都会像展开的天使羽翼一样绕过所有掩体，精准钉入猎物的眉心。”",
+    "unlimited": false,
+    "art": "img/fcg/cards/155.png",
+    "series": "vol2"
+  },
+  {
+    "id": 156,
+    "pair": 79,
+    "name": "长柄改造狙击枪",
+    "color": "W",
+    "type": "spell",
+    "rare": false,
+    "upgraded": false,
+    "cost": 4,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "pierce_enemy(9); resonance(W, draw(1))",
+    "flavor": "枪管与瞄具经过无数次私人魔改的精密步枪。",
+    "unlimited": false,
+    "art": "img/fcg/cards/156.png",
+    "series": "vol2"
+  },
+  {
+    "id": 157,
+    "pair": 79,
+    "name": "四式特种弹仓",
+    "color": "W",
+    "type": "spell",
+    "rare": false,
+    "upgraded": true,
+    "cost": 4,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "pierce_enemy(13); resonance(W, draw(1)); gain_atk(self, 2)",
+    "flavor": "穿甲、爆裂、燃烧、标准——针对你的护甲材质，他永远有最合适的那一颗子弹。",
+    "unlimited": false,
+    "art": "img/fcg/cards/157.png",
+    "series": "vol2"
+  },
+  {
+    "id": 158,
+    "pair": 80,
+    "name": "◆执弓推演的破石",
+    "color": "G",
+    "type": "monster",
+    "rare": true,
+    "upgraded": false,
+    "cost": 6,
+    "atk": 7,
+    "def": 4,
+    "hp": 7,
+    "ops": "sunder(3); mark_vuln_on_hit(4)",
+    "flavor": "穿着学究服、一边战斗一边推眼镜记笔记的前考古研究员。",
+    "unlimited": false,
+    "art": "img/fcg/cards/158.png",
+    "series": "vol2"
+  },
+  {
+    "id": 159,
+    "pair": 80,
+    "name": "万坚俱碎·Knight",
+    "color": "G",
+    "type": "monster",
+    "rare": true,
+    "upgraded": true,
+    "cost": 6,
+    "atk": 9,
+    "def": 5,
+    "hp": 8,
+    "ops": "sunder(4); mark_vuln_on_hit(6); pierce(3)",
+    "flavor": "“在他眼里，对手的招式与千年古墓的封门石没什么两样——只要顺着纹理找到那处唯一的受力死穴，再坚固的乌龟壳也能一箭射成齑粉。”",
+    "unlimited": false,
+    "art": "img/fcg/cards/159.png",
+    "series": "vol2"
+  },
+  {
+    "id": 160,
+    "pair": 81,
+    "name": "走私学者的放大镜",
+    "color": "Y",
+    "type": "spell",
+    "rare": false,
+    "upgraded": false,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "vuln_enemy(6); draw(1)",
+    "flavor": "原本用来鉴定出土青铜器裂纹的光学镜片。",
+    "unlimited": false,
+    "art": "img/fcg/cards/160.png",
+    "series": "vol2"
+  },
+  {
+    "id": 161,
+    "pair": 81,
+    "name": "战场实验室的死穴报告",
+    "color": "Y",
+    "type": "spell",
+    "rare": false,
+    "upgraded": true,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "vuln_enemy(9); sunder_enemy(3); draw(1)",
+    "flavor": "「目标防御逻辑已解析完毕——好了，实验进入收尾阶段。」",
+    "unlimited": false,
+    "art": "img/fcg/cards/161.png",
+    "series": "vol2"
+  },
+  {
+    "id": 162,
+    "pair": 82,
+    "name": "◆舞台爆破师·银锤",
+    "color": "R",
+    "type": "monster",
+    "rare": true,
+    "upgraded": false,
+    "cost": 5,
+    "atk": 5,
+    "def": 3,
+    "hp": 6,
+    "ops": "rebirth_dmg_enemy(8); promote(4, 3, 4, 5)",
+    "flavor": "将炸药当成舞台艺术、伴随着狂笑按动起爆器的爆破专家。",
+    "unlimited": false,
+    "art": "img/fcg/cards/162.png",
+    "series": "vol2"
+  },
+  {
+    "id": 163,
+    "pair": 82,
+    "name": "谢幕演出·过河之兵",
+    "color": "R",
+    "type": "monster",
+    "rare": true,
+    "upgraded": true,
+    "cost": 5,
+    "atk": 7,
+    "def": 4,
+    "hp": 7,
+    "ops": "rebirth_dmg_enemy(12); promote(6, 4, 6, 8)",
+    "flavor": "“小兵一旦越过楚河汉界，便不再懂得什么叫后退。当整座街区都被她埋满返场彩蛋时，真正的谢幕烟花才刚刚点燃引信！”",
+    "unlimited": false,
+    "art": "img/fcg/cards/163.png",
+    "series": "vol2"
+  },
+  {
+    "id": 164,
+    "pair": 83,
+    "name": "定时起爆玩偶",
+    "color": "R",
+    "type": "monster",
+    "rare": false,
+    "upgraded": false,
+    "cost": 1,
+    "atk": 2,
+    "def": 0,
+    "hp": 1,
+    "ops": "lure; ephemeral; rebirth_dmg_enemy(9)",
+    "flavor": "塞满高能炸药的发条布偶，摇摇晃晃地朝敌人脸上撞过去。",
+    "unlimited": false,
+    "art": "img/fcg/cards/164.png",
+    "series": "vol2"
+  },
+  {
+    "id": 165,
+    "pair": 83,
+    "name": "压轴烟花·安可曲",
+    "color": "R",
+    "type": "monster",
+    "rare": false,
+    "upgraded": true,
+    "cost": 1,
+    "atk": 3,
+    "def": 0,
+    "hp": 1,
+    "ops": "lure; ephemeral; rebirth_dmg_enemy(13); sunder(2)",
+    "flavor": "压轴演出的字典里从来没有「哑弹」这两个字！",
+    "unlimited": false,
+    "art": "img/fcg/cards/165.png",
+    "series": "vol2"
+  },
+  {
+    "id": 166,
+    "pair": 84,
+    "name": "◆提裙行礼的电反",
+    "color": "Y",
+    "type": "monster",
+    "rare": true,
+    "upgraded": false,
+    "cost": 6,
+    "atk": 4,
+    "def": 5,
+    "hp": 8,
+    "ops": "aura_spell_zap(3); gen(Y, 1)",
+    "flavor": "姿态优雅地提裙致意、手握电磁手杖的前国际信息安全顾问。",
+    "unlimited": false,
+    "art": "img/fcg/cards/166.png",
+    "series": "vol2"
+  },
+  {
+    "id": 167,
+    "pair": 84,
+    "name": "九宫电磁王座·King",
+    "color": "Y",
+    "type": "monster",
+    "rare": true,
+    "upgraded": true,
+    "cost": 6,
+    "atk": 5,
+    "def": 7,
+    "hp": 10,
+    "ops": "aura_spell_zap(5); gen(Y, 2)",
+    "flavor": "“王不出九宫，却能号令全盘。只要那两只慢吞吞的蒸汽羊还在街角漫步，你的瞄准镜里就永远只有一片雪花，而她的电弧却能顺着每一条指令劈下来。”",
+    "unlimited": false,
+    "art": "img/fcg/cards/167.png",
+    "series": "vol2"
+  },
+  {
+    "id": 168,
+    "pair": 85,
+    "name": "发条蒸汽羊",
+    "color": "Y",
+    "type": "monster",
+    "rare": false,
+    "upgraded": false,
+    "cost": 3,
+    "atk": 2,
+    "def": 4,
+    "hp": 5,
+    "ops": "escort; lure; gen(Y, 1)",
+    "flavor": "毛茸茸的机械绵羊，肚子里藏着大功率信号干扰器。",
+    "unlimited": false,
+    "art": "img/fcg/cards/168.png",
+    "series": "vol2"
+  },
+  {
+    "id": 169,
+    "pair": 85,
+    "name": "双生移动中继站",
+    "color": "Y",
+    "type": "monster",
+    "rare": false,
+    "upgraded": true,
+    "cost": 3,
+    "atk": 3,
+    "def": 6,
+    "hp": 7,
+    "ops": "escort; lure; gen(Y, 2); on_summon_gain_hp(5)",
+    "flavor": "既可以单独顶在前面挨揍，也能直接挂载在主力教头身边当移动发电站。",
+    "unlimited": false,
+    "art": "img/fcg/cards/169.png",
+    "series": "vol2"
+  },
+  {
+    "id": 170,
+    "pair": 86,
+    "name": "◆提灯巡游的三步",
+    "color": "B",
+    "type": "monster",
+    "rare": true,
+    "upgraded": false,
+    "cost": 6,
+    "atk": 8,
+    "def": 2,
+    "hp": 5,
+    "ops": "stealth; combo_attack_bonus(3, 8)",
+    "flavor": "提着古董风灯、在夜色中悄无声息闪烁换位的娇小哥特少女。",
+    "unlimited": false,
+    "art": "img/fcg/cards/170.png",
+    "series": "vol2"
+  },
+  {
+    "id": 171,
+    "pair": 86,
+    "name": "灯火未摇·Queen",
+    "color": "B",
+    "type": "monster",
+    "rare": true,
+    "upgraded": true,
+    "cost": 6,
+    "atk": 10,
+    "def": 3,
+    "hp": 6,
+    "ops": "stealth; combo_attack_bonus(3, 12); pierce(4)",
+    "flavor": "“一步踏入盲区，两步掠过咽喉，三步收刀归鞘——直到对手软倒在地，她指尖提着的那盏古董灯火甚至没有晃动分毫。”",
+    "unlimited": false,
+    "art": "img/fcg/cards/171.png",
+    "series": "vol2"
+  },
+  {
+    "id": 172,
+    "pair": 87,
+    "name": "残影短匕",
+    "color": "R",
+    "type": "spell",
+    "rare": false,
+    "upgraded": false,
+    "cost": 2,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "lose_hp(enemy, 7); combo_2_pierce(7)",
+    "flavor": "借着灯影掩护从诡异角度刺出的快刀。",
+    "unlimited": false,
+    "art": "img/fcg/cards/172.png",
+    "series": "vol2"
+  },
+  {
+    "id": 173,
+    "pair": 87,
+    "name": "三步之内的死线",
+    "color": "R",
+    "type": "spell",
+    "rare": false,
+    "upgraded": true,
+    "cost": 2,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "lose_hp(enemy, 9); combo_2_pierce(10); combo_3_draw(1)",
+    "flavor": "第一招只是虚晃，第三招才是真正的绝杀！",
+    "unlimited": false,
+    "art": "img/fcg/cards/173.png",
+    "series": "vol2"
+  },
+  {
+    "id": 174,
+    "pair": 88,
+    "name": "◆摇铃狐女·白凰",
+    "color": "B",
+    "type": "monster",
+    "rare": true,
+    "upgraded": false,
+    "cost": 7,
+    "atk": 6,
+    "def": 5,
+    "hp": 8,
+    "ops": "on_summon_barrier(8); aura_artillery",
+    "flavor": "头生一对洁白狐耳、手持符咒法杖的神秘少女，来历成谜。",
+    "unlimited": false,
+    "art": "img/fcg/cards/174.png",
+    "series": "vol2"
+  },
+  {
+    "id": 175,
+    "pair": 88,
+    "name": "隔山轰鸣之炮·PAO",
+    "color": "B",
+    "type": "monster",
+    "rare": true,
+    "upgraded": true,
+    "cost": 7,
+    "atk": 8,
+    "def": 7,
+    "hp": 10,
+    "ops": "on_summon_barrier(14); aura_artillery; pierce(4)",
+    "flavor": "“炮打隔子。只要身前还立着那层撕不碎的数据符纸与幻象，她的灵力弹幕就能越过千军万马，直接轰碎敌将的本阵。”",
+    "unlimited": false,
+    "art": "img/fcg/cards/175.png",
+    "series": "vol2"
+  },
+  {
+    "id": 176,
+    "pair": 89,
+    "name": "朱砂护身符纸",
+    "color": "B",
+    "type": "spell",
+    "rare": false,
+    "upgraded": false,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "gain_barrier(self, 8); gain_def(self, 2)",
+    "flavor": "画满玄奥纹路的护符，能像数据护盾一样凭空吞掉袭来的刀剑。",
+    "unlimited": false,
+    "art": "img/fcg/cards/176.png",
+    "series": "vol2"
+  },
+  {
+    "id": 177,
+    "pair": 89,
+    "name": "三尾狐火幻象阵",
+    "color": "B",
+    "type": "spell",
+    "rare": false,
+    "upgraded": true,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "gain_barrier(self, 12); gain_def(self, 4); draw(1)",
+    "flavor": "符纸燃尽的青烟化作真假难辨的狐火幻象，让人未见其影先失斗志。",
+    "unlimited": false,
+    "art": "img/fcg/cards/177.png",
+    "series": "vol2"
+  },
+  {
+    "id": 178,
+    "pair": 90,
+    "name": "◆暗巷孤儿·绯刹",
+    "color": "G",
+    "type": "monster",
+    "rare": true,
+    "upgraded": false,
+    "cost": 6,
+    "atk": 10,
+    "def": 1,
+    "hp": 5,
+    "ops": "stealth; poison_enemy(3); aura_venom(1)",
+    "flavor": "深红长发、腰缀小恶魔尾饰的暗杀专家，习惯藏在猎物的视野死角。",
+    "unlimited": false,
+    "art": "img/fcg/cards/178.png",
+    "series": "vol2"
+  },
+  {
+    "id": 179,
+    "pair": 90,
+    "name": "赤色闪电·SHI",
+    "color": "G",
+    "type": "monster",
+    "rare": true,
+    "upgraded": true,
+    "cost": 6,
+    "atk": 12,
+    "def": 2,
+    "hp": 6,
+    "ops": "stealth; poison_enemy(4); aura_venom(2)",
+    "flavor": "“士守九宫斜行。你明知她就藏在这条巷子的阴影里，却连一片衣角都搜不到——想要逼她现形，唯一的办法就是先用自己的身体挨上她淬毒的一刀。”",
+    "unlimited": false,
+    "art": "img/fcg/cards/179.png",
+    "series": "vol2"
+  },
+  {
+    "id": 180,
+    "pair": 91,
+    "name": "涂毒袖珍匕",
+    "color": "G",
+    "type": "spell",
+    "rare": false,
+    "upgraded": false,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "pierce_enemy(6); add_poison(enemy, 2); resonance(G, burst_poison(1))",
+    "flavor": "刃口泛着幽绿光泽的贴身短刀，擦破一点油皮就能让人浑身发麻。",
+    "unlimited": false,
+    "art": "img/fcg/cards/180.png",
+    "series": "vol2"
+  },
+  {
+    "id": 181,
+    "pair": 91,
+    "name": "见血封喉的现形斩",
+    "color": "G",
+    "type": "spell",
+    "rare": false,
+    "upgraded": true,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "pierce_enemy(8); add_poison(enemy, 3); resonance(G, burst_poison(2))",
+    "flavor": "刀光亮起的刹那，潜伏已久的毒素瞬间顺着血脉全面爆发！",
+    "unlimited": false,
+    "art": "img/fcg/cards/181.png",
+    "series": "vol2"
+  },
+  {
+    "id": 182,
+    "pair": 92,
+    "name": "◆G.D.S 扫地大妈",
+    "color": "W",
+    "type": "monster",
+    "rare": true,
+    "upgraded": false,
+    "cost": 5,
+    "atk": 2,
+    "def": 6,
+    "hp": 10,
+    "ops": "lure; enrage_atk(3)",
+    "flavor": "金龙通讯社走廊里慢悠悠拖地的保洁阿姨，嘴里总是念叨着「借过借过，别踩脏了」。",
+    "unlimited": false,
+    "art": "img/fcg/cards/182.png",
+    "series": "vol2"
+  },
+  {
+    "id": 183,
+    "pair": 92,
+    "name": "深藏不露的隐退宗师",
+    "color": "W",
+    "type": "monster",
+    "rare": true,
+    "upgraded": true,
+    "cost": 5,
+    "atk": 3,
+    "def": 8,
+    "hp": 12,
+    "ops": "lure; enrage_atk(5)",
+    "flavor": "“直到某天一伙不长眼的跳槽杀手踩脏了她刚拖完的大理石地面——人们才惊恐地发现，那把普通竹扫帚挥出的劲风，竟然比教头的重拳还要恐怖。”",
+    "unlimited": false,
+    "art": "img/fcg/cards/183.png",
+    "series": "vol2"
+  },
+  {
+    "id": 184,
+    "pair": 93,
+    "name": "G.D.S 门卫保安",
+    "color": "W",
+    "type": "monster",
+    "rare": false,
+    "upgraded": false,
+    "cost": 3,
+    "atk": 3,
+    "def": 5,
+    "hp": 5,
+    "ops": "escort; lure",
+    "flavor": "在通讯社一楼大厅登记访客姓名的保安大叔，看起来人畜无害。",
+    "unlimited": false,
+    "art": "img/fcg/cards/184.png",
+    "series": "vol2"
+  },
+  {
+    "id": 185,
+    "pair": 93,
+    "name": "防暴盾牌突击队",
+    "color": "W",
+    "type": "monster",
+    "rare": false,
+    "upgraded": true,
+    "cost": 3,
+    "atk": 4,
+    "def": 7,
+    "hp": 6,
+    "ops": "escort; lure; on_summon_gain_def(3)",
+    "flavor": "一声哨响后从旋转门后整齐列队冲出的重装防暴小队——这真的只是一家普通传媒公司吗？",
+    "unlimited": false,
+    "art": "img/fcg/cards/185.png",
+    "series": "vol2"
+  },
+  {
+    "id": 186,
+    "pair": 94,
+    "name": "G.D.S 项目经理的排期表",
+    "color": "Y",
+    "type": "spell",
+    "rare": false,
+    "upgraded": false,
+    "cost": 2,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "draw(2); combo_2_add_energy(Y, 3)",
+    "flavor": "塞满甘特图与死线红框的进度表，看了就让人血压升高。",
+    "unlimited": false,
+    "art": "img/fcg/cards/186.png",
+    "series": "vol2"
+  },
+  {
+    "id": 187,
+    "pair": 94,
+    "name": "凌晨三点的夺命连环催",
+    "color": "Y",
+    "type": "spell",
+    "rare": false,
+    "upgraded": true,
+    "cost": 1,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "draw(2); combo_2_add_energy(ALL, 2)",
+    "flavor": "「这个需求很简单，怎么实现我不管，明天早上八点前必须上线！」",
+    "unlimited": false,
+    "art": "img/fcg/cards/187.png",
+    "series": "vol2"
+  },
+  {
+    "id": 188,
+    "pair": 95,
+    "name": "G.D.S 摸鱼网管",
+    "color": "Y",
+    "type": "monster",
+    "rare": false,
+    "upgraded": false,
+    "cost": 4,
+    "atk": 4,
+    "def": 3,
+    "hp": 5,
+    "ops": "on_summon_steal_stat(energy, 3)",
+    "flavor": "躲在机房角落边吹空调边打牌的网管，掌握着全公司的带宽命脉。",
+    "unlimited": false,
+    "art": "img/fcg/cards/188.png",
+    "series": "vol2"
+  },
+  {
+    "id": 189,
+    "pair": 95,
+    "name": "拔掉网线的机房霸主",
+    "color": "Y",
+    "type": "monster",
+    "rare": false,
+    "upgraded": true,
+    "cost": 4,
+    "atk": 6,
+    "def": 4,
+    "hp": 6,
+    "ops": "on_summon_steal_stat(energy, 4); steal_energy(1)",
+    "flavor": "再厉害的黑客入侵，也顶不住网管顺手把交换机的主网线一把拔掉。",
+    "unlimited": false,
+    "art": "img/fcg/cards/189.png",
+    "series": "vol2"
+  },
+  {
+    "id": 190,
+    "pair": 96,
+    "name": "G.D.S 女秘书的咖啡",
+    "color": "B",
+    "type": "spell",
+    "rare": false,
+    "upgraded": false,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "gain_hp(self, 12); clean_self_poison; resonance(W, gain_def(self, 4))",
+    "flavor": "总裁办秘书泡好的特浓黑咖啡，能瞬间驱散一整天的疲惫。",
+    "unlimited": false,
+    "art": "img/fcg/cards/190.png",
+    "series": "vol2"
+  },
+  {
+    "id": 191,
+    "pair": 96,
+    "name": "「总裁怎么是女生？」",
+    "color": "B",
+    "type": "spell",
+    "rare": false,
+    "upgraded": true,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "gain_hp(self, 16); clean_self_poison; resonance(W, gain_atk_def(self, 4, 4))",
+    "flavor": "新入职的小秘书推开董事长办公室大门的那一刻，世界观迎来了某种微妙的重组。",
+    "unlimited": false,
+    "art": "img/fcg/cards/191.png",
+    "series": "vol2"
+  },
+  {
+    "id": 192,
+    "pair": 97,
+    "name": "「领导让我当法人」",
+    "color": "R",
+    "type": "spell",
+    "rare": false,
+    "upgraded": false,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "set_thorns(self, ratio=1.5, cap=14); turn_bonus_dmg(6)",
+    "flavor": "「小伙子我看好你，来，在这份变更协议上签个字！」",
+    "unlimited": false,
+    "art": "img/fcg/cards/192.png",
+    "series": "vol2"
+  },
+  {
+    "id": 193,
+    "pair": 97,
+    "name": "背锅侠的绝地反扑",
+    "color": "R",
+    "type": "spell",
+    "rare": false,
+    "upgraded": true,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "set_thorns(self, ratio=2.0, cap=20); turn_bonus_dmg(10)",
+    "flavor": "既然黑锅已经焊死在背上了，那就干脆抡起这口大铁锅把对面全拍扁吧！",
+    "unlimited": false,
+    "art": "img/fcg/cards/193.png",
+    "series": "vol2"
+  },
+  {
+    "id": 194,
+    "pair": 98,
+    "name": "◆红杀特工F",
+    "color": "B",
+    "type": "monster",
+    "rare": true,
+    "upgraded": false,
+    "cost": 6,
+    "atk": 5,
+    "def": 4,
+    "hp": 7,
+    "ops": "rebirth_once; gen(ALL, 1)",
+    "flavor": "档案上写着普通外勤特工，出手时却总是冒出根本不科学的光影特效。",
+    "unlimited": false,
+    "art": "img/fcg/cards/194.png",
+    "series": "vol2"
+  },
+  {
+    "id": 195,
+    "pair": 98,
+    "name": "误入片场的异界幻想种",
+    "color": "B",
+    "type": "monster",
+    "rare": true,
+    "upgraded": true,
+    "cost": 6,
+    "atk": 7,
+    "def": 5,
+    "hp": 9,
+    "ops": "rebirth_once; gen(ALL, 1); growth(2, 1, 0)",
+    "flavor": "“其实红杀是个崇尚现代军械与武技的组织，里面并没有超能力者——至于这个跟白凰一样顶着奇异耳朵的特工到底是哪儿来的，大概只有天知道了。”",
+    "unlimited": false,
+    "art": "img/fcg/cards/195.png",
+    "series": "vol2"
+  },
+  {
+    "id": 196,
+    "pair": 99,
+    "name": "隐居城外的老药农",
+    "color": "G",
+    "type": "monster",
+    "rare": false,
+    "upgraded": false,
+    "cost": 5,
+    "atk": 4,
+    "def": 6,
+    "hp": 7,
+    "ops": "lure; on_summon_gain_hp(10)",
+    "flavor": "在湾城郊外守着药圃、笑眯眯卖中草药的慈祥老爷子。",
+    "unlimited": false,
+    "art": "img/fcg/cards/196.png",
+    "series": "vol2"
+  },
+  {
+    "id": 197,
+    "pair": 99,
+    "name": "前代将军·飞龙与翼虎盾",
+    "color": "G",
+    "type": "monster",
+    "rare": false,
+    "upgraded": true,
+    "cost": 5,
+    "atk": 6,
+    "def": 8,
+    "hp": 9,
+    "ops": "lure; on_summon_gain_hp(14); on_summon_gain_def(4)",
+    "flavor": "昔日叱咤风云的前代红杀将军，与老友翼虎留下的那面无敌重盾——那是撑起如今这两位年轻当家的长辈脊梁。",
+    "unlimited": false,
+    "art": "img/fcg/cards/197.png",
+    "series": "vol2"
+  },
+  {
+    "id": 198,
+    "pair": 100,
+    "name": "◆篝火挑战者",
+    "color": "G",
+    "type": "monster",
+    "rare": true,
+    "upgraded": false,
+    "cost": 5,
+    "atk": 2,
+    "def": 5,
+    "hp": 12,
+    "ops": "lure; aura_burn_monster_heal",
+    "flavor": "来自早已消亡的远古篝火时代的旅人，习惯把捡到的一切都添进火堆里取暖。",
+    "unlimited": false,
+    "art": "img/fcg/cards/198.png",
+    "series": "vol2"
+  },
+  {
+    "id": 199,
+    "pair": 100,
+    "name": "不灭薪火的传火人",
+    "color": "G",
+    "type": "monster",
+    "rare": true,
+    "upgraded": true,
+    "cost": 5,
+    "atk": 3,
+    "def": 6,
+    "hp": 15,
+    "ops": "lure; aura_burn_monster_heal; add_regen(self, 2)",
+    "flavor": "“当这簇篝火在牌桌中央燃起时，手牌里那些上不了场的同伴便不再是累赘——将它们投入火中化作薪柴，滚烫的生命与力量便会悉数回到你的身上。”",
+    "unlimited": false,
+    "art": "img/fcg/cards/199.png",
+    "series": "vol2"
+  },
+  {
+    "id": 200,
+    "pair": 101,
+    "name": "踩雷探路小号",
+    "color": "Y",
+    "type": "monster",
+    "rare": false,
+    "upgraded": false,
+    "cost": 1,
+    "atk": 0,
+    "def": 0,
+    "hp": 1,
+    "ops": "lure; ephemeral; rebirth_dmg_enemy(6); clean_self_poison_on_death",
+    "flavor": "大老远被派去高危地点「摸一下」试试有没有地雷的倒霉替身。",
+    "unlimited": false,
+    "art": "img/fcg/cards/200.png",
+    "series": "vol2"
+  },
+  {
+    "id": 201,
+    "pair": 101,
+    "name": "混沌人肉探雷车",
+    "color": "Y",
+    "type": "monster",
+    "rare": false,
+    "upgraded": true,
+    "cost": 1,
+    "atk": 1,
+    "def": 0,
+    "hp": 1,
+    "ops": "lure; ephemeral; rebirth_dmg_enemy(10); clean_self_poison_on_death",
+    "flavor": "只要我跑得够快、炸得够响，再精密的连环雷区也只能听个响！",
+    "unlimited": false,
+    "art": "img/fcg/cards/201.png",
+    "series": "vol2"
+  },
+  {
+    "id": 202,
+    "pair": 102,
+    "name": "◆锁血挑战者",
+    "color": "R",
+    "type": "spell",
+    "rare": true,
+    "upgraded": false,
+    "cost": 5,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "endure_lethal; desperate_draw(30, 2)",
+    "flavor": "哪怕生命值只剩下风中残烛的最后一滴，也绝不按下认输键的偏执牌手。",
+    "unlimited": false,
+    "art": "img/fcg/cards/202.png",
+    "series": "vol2"
+  },
+  {
+    "id": 203,
+    "pair": 102,
+    "name": "神抽回应的决斗盘",
+    "color": "R",
+    "type": "spell",
+    "rare": true,
+    "upgraded": true,
+    "cost": 4,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "endure_lethal; desperate_draw(40, 3); turn_bonus_dmg(8)",
+    "flavor": "“只要生命值还没归零，所谓的绝境就只是反杀前摇！相信你的卡组吧——在这最后一回合抽上来的，必定是能逆转一切的那张卡！”",
+    "unlimited": false,
+    "art": "img/fcg/cards/203.png",
+    "series": "vol2"
+  },
+  {
+    "id": 204,
+    "pair": 103,
+    "name": "清脆的藤甲兵",
+    "color": "W",
+    "type": "monster",
+    "rare": false,
+    "upgraded": false,
+    "cost": 3,
+    "atk": 3,
+    "def": 9,
+    "hp": 8,
+    "ops": "lure; weak_to_red",
+    "flavor": "刀枪不入、普通弓箭与拳脚打上去只掉一点皮毛的超模重甲步兵。",
+    "unlimited": false,
+    "art": "img/fcg/cards/204.png",
+    "series": "vol2"
+  },
+  {
+    "id": 205,
+    "pair": 103,
+    "name": "浸油铁壁的藤甲重卫",
+    "color": "W",
+    "type": "monster",
+    "rare": false,
+    "upgraded": true,
+    "cost": 3,
+    "atk": 4,
+    "def": 12,
+    "hp": 10,
+    "ops": "lure; weak_to_red",
+    "flavor": "唯一的缺点是——千万、千万别让对面掏出任何带红色火苗的牌！",
+    "unlimited": false,
+    "art": "img/fcg/cards/205.png",
+    "series": "vol2"
+  },
+  {
+    "id": 206,
+    "pair": 104,
+    "name": "警告而非报错的野指针",
+    "color": "B",
+    "type": "spell",
+    "rare": false,
+    "upgraded": false,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "shuffle_stats; draw(1)",
+    "flavor": "「那只是 Warning 又不是 Error，别管它，能跑就行！」",
+    "unlimited": false,
+    "art": "img/fcg/cards/206.png",
+    "series": "vol2"
+  },
+  {
+    "id": 207,
+    "pair": 104,
+    "name": "重构坍塌的屎山 2.0",
+    "color": "B",
+    "type": "spell",
+    "rare": false,
+    "upgraded": true,
+    "cost": 2,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "shuffle_stats; draw(2); add_energy(B, 2)",
+    "flavor": "试图整理祖传代码的手刚刚删掉一行注释，整座幻境的攻防数值便随着轰然倒塌的架构一起乱成了一锅粥。",
+    "unlimited": false,
+    "art": "img/fcg/cards/207.png",
+    "series": "vol2"
+  },
+  {
+    "id": 208,
+    "pair": 105,
+    "name": "草丛里埋伏的G",
+    "color": "Y",
+    "type": "monster",
+    "rare": false,
+    "upgraded": false,
+    "cost": 3,
+    "atk": 2,
+    "def": 3,
+    "hp": 5,
+    "ops": "aura_bug_draw(2)",
+    "flavor": "缩在厨房与代码缝隙里的黑影，当你看见一只的时候，暗处已经藏了一百只。",
+    "unlimited": false,
+    "art": "img/fcg/cards/208.png",
+    "series": "vol2"
+  },
+  {
+    "id": 209,
+    "pair": 105,
+    "name": "增殖的黑色蟑螂群",
+    "color": "Y",
+    "type": "monster",
+    "rare": false,
+    "upgraded": true,
+    "cost": 3,
+    "atk": 3,
+    "def": 4,
+    "hp": 6,
+    "ops": "aura_bug_draw(0)",
+    "flavor": "对面每试图多做一个动作、多甩出一张牌，你手里的资源就会跟着翻倍增殖！",
+    "unlimited": false,
+    "art": "img/fcg/cards/209.png",
+    "series": "vol2"
+  },
+  {
+    "id": 210,
+    "pair": 106,
+    "name": "走进酒馆的试雪汉",
+    "color": "B",
+    "type": "spell",
+    "rare": false,
+    "upgraded": false,
+    "cost": 4,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "pierce_enemy(1); freeze_enemy_monster(5); add_poison(enemy, 2)",
+    "flavor": "程序员走进酒吧，点了 1 份炒饭、999 份炒饭、与 -1 份炒饭。",
+    "unlimited": false,
+    "art": "img/fcg/cards/210.png",
+    "series": "vol2"
+  },
+  {
+    "id": 211,
+    "pair": 106,
+    "name": "勇闯天涯的雪崩测试",
+    "color": "B",
+    "type": "spell",
+    "rare": false,
+    "upgraded": true,
+    "cost": 4,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "pierce_enemy(1); freeze_enemy_monster(9); add_poison(enemy, 3); lose_hp(enemy, 9)",
+    "flavor": "当真正的顾客走进来问厕所在哪儿时，整间酒吧在暴风雪中彻底崩塌了——雪崩时，没有一片雪花是不勇闯天涯的！",
+    "unlimited": false,
+    "art": "img/fcg/cards/211.png",
+    "series": "vol2"
+  },
+  {
+    "id": 212,
+    "pair": 107,
+    "name": "◆你竟敢用我的魔法",
+    "color": "R",
+    "type": "spell",
+    "rare": true,
+    "upgraded": false,
+    "cost": 6,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "mirror_last_spell; scale_by(enemy_atk): lose_hp(enemy, N)",
+    "flavor": "严厉的导师黑着脸挥动魔杖，将偷学来的咒语连本带利拍回徒弟脸上。",
+    "unlimited": false,
+    "art": "img/fcg/cards/212.png",
+    "series": "vol2"
+  },
+  {
+    "id": 213,
+    "pair": 107,
+    "name": "倒果为因的回旋镖",
+    "color": "R",
+    "type": "spell",
+    "rare": true,
+    "upgraded": true,
+    "cost": 5,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "mirror_last_spell; scale_by(enemy_atk): lose_hp(enemy, N); steal_stat(atk, 3)",
+    "flavor": "“当初大声嘲笑别人的话有多狠，如今这支跨越时空飞回来的回旋镖扎在自己脑门上就有多疼。”",
+    "unlimited": false,
+    "art": "img/fcg/cards/213.png",
+    "series": "vol2"
+  },
+  {
+    "id": 214,
+    "pair": 108,
+    "name": "什么都吃的求生专家",
+    "color": "G",
+    "type": "monster",
+    "rare": false,
+    "upgraded": false,
+    "cost": 4,
+    "atk": 5,
+    "def": 3,
+    "hp": 6,
+    "ops": "on_summon_eat_poison(3)",
+    "flavor": "捏着奇形怪状的毒虫面不改色塞进嘴里：「去掉头就可以吃了，蛋白质是牛肉的六倍！」",
+    "unlimited": false,
+    "art": "img/fcg/cards/214.png",
+    "series": "vol2"
+  },
+  {
+    "id": 215,
+    "pair": 108,
+    "name": "食物链顶端的男人",
+    "color": "G",
+    "type": "monster",
+    "rare": false,
+    "upgraded": true,
+    "cost": 4,
+    "atk": 7,
+    "def": 4,
+    "hp": 8,
+    "ops": "on_summon_eat_poison(5); growth(1, 1, 0)",
+    "flavor": "剧毒？负回血？那不就是嘎嘣脆、鸡肉味的免费大补丸吗！",
+    "unlimited": false,
+    "art": "img/fcg/cards/215.png",
+    "series": "vol2"
+  },
+  {
+    "id": 216,
+    "pair": 109,
+    "name": "特工端来的热鸡汤",
+    "color": "G",
+    "type": "spell",
+    "rare": false,
+    "upgraded": false,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "gain_hp(enemy, 4); add_poison(enemy, 4)",
+    "flavor": "「鸡汤来咯——！」炊事员满脸堆笑端上桌的鲜美炖汤，闻起来香得让人流口水。",
+    "unlimited": false,
+    "art": "img/fcg/cards/216.png",
+    "series": "vol2"
+  },
+  {
+    "id": 217,
+    "pair": 109,
+    "name": "「这鸡汤里怎么有手雷！」",
+    "color": "G",
+    "type": "spell",
+    "rare": false,
+    "upgraded": true,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "gain_hp(enemy, 2); add_poison(enemy, 5); pierce_enemy(8)",
+    "flavor": "「这喝汤，多是一件美事啊……等等，碗底怎么还有一颗拉了环的手榴弹？！」",
+    "unlimited": false,
+    "art": "img/fcg/cards/217.png",
+    "series": "vol2"
+  },
+  {
+    "id": 218,
+    "pair": 110,
+    "name": "建立分叉的章鱼猫",
+    "color": "W",
+    "type": "monster",
+    "rare": false,
+    "upgraded": false,
+    "cost": 4,
+    "atk": 3,
+    "def": 3,
+    "hp": 4,
+    "ops": "escort; clone_monster_stats(0.5)",
+    "flavor": "扒在代码仓库窗口上的小章鱼猫，顺手把隔壁的帮手数据 Fork 了一份。",
+    "unlimited": false,
+    "art": "img/fcg/cards/218.png",
+    "series": "vol2"
+  },
+  {
+    "id": 219,
+    "pair": 110,
+    "name": "强制合并的拉取请球",
+    "color": "W",
+    "type": "monster",
+    "rare": false,
+    "upgraded": true,
+    "cost": 4,
+    "atk": 5,
+    "def": 5,
+    "hp": 6,
+    "ops": "escort; clone_monster_stats(1.0)",
+    "flavor": "不管有没有冲突，先 Force Push 合并到主分支再说——现在你的帮手面板直接翻倍了！",
+    "unlimited": false,
+    "art": "img/fcg/cards/219.png",
+    "series": "vol2"
+  },
+  {
+    "id": 220,
+    "pair": 111,
+    "name": "疯狂星期四的炸鸡桶",
+    "color": "Y",
+    "type": "spell",
+    "rare": false,
+    "upgraded": false,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "steal_energy(3); gain_hp(self, 10)",
+    "flavor": "史诗般悲壮的豪门恩怨故事读到最后一行，突然图穷匕见露出了那句熟悉的乞讨。",
+    "unlimited": false,
+    "art": "img/fcg/cards/220.png",
+    "series": "vol2"
+  },
+  {
+    "id": 221,
+    "pair": 111,
+    "name": "「V我50」的神秘契约",
+    "color": "Y",
+    "type": "spell",
+    "rare": false,
+    "upgraded": true,
+    "cost": 3,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "steal_energy(5); gain_hp(self, 15)",
+    "flavor": "从对手口袋里顺走 5 点能量，再给自己啃上 15 点热乎乎的生命值——今天正是疯狂星期四！",
+    "unlimited": false,
+    "art": "img/fcg/cards/221.png",
+    "series": "vol2"
+  },
+  {
+    "id": 222,
+    "pair": 112,
+    "name": "天生神力的常威",
+    "color": "R",
+    "type": "monster",
+    "rare": false,
+    "upgraded": false,
+    "cost": 5,
+    "atk": 7,
+    "def": 1,
+    "hp": 6,
+    "ops": "pierce(3); growth(2, 0, 0)",
+    "flavor": "「大人冤枉啊，我一进门就看见他在打来福，我根本不会武功！」",
+    "unlimited": false,
+    "art": "img/fcg/cards/222.png",
+    "series": "vol2"
+  },
+  {
+    "id": 223,
+    "pair": 112,
+    "name": "不会武功的狂暴宗师",
+    "color": "R",
+    "type": "monster",
+    "rare": false,
+    "upgraded": true,
+    "cost": 5,
+    "atk": 9,
+    "def": 2,
+    "hp": 7,
+    "ops": "pierce(5); growth(3, 1, 0)",
+    "flavor": "嘴上喊着不会武功，手底下每一拳都震得护甲寸寸崩裂，而且越打力气越大！",
+    "unlimited": false,
+    "art": "img/fcg/cards/223.png",
+    "series": "vol2"
+  },
+  {
+    "id": 224,
+    "pair": 113,
+    "name": "摸金校尉的罗盘",
+    "color": "W",
+    "type": "spell",
+    "rare": false,
+    "upgraded": false,
+    "cost": 4,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "sunder_enemy(5); steal_stat(def, 3)",
+    "flavor": "寻龙分金看缠山，一重缠是一重关——专门盯着对面最厚的护甲下铲子。",
+    "unlimited": false,
+    "art": "img/fcg/cards/224.png",
+    "series": "vol2"
+  },
+  {
+    "id": 225,
+    "pair": 113,
+    "name": "鬼吹灯的卸岭铁撬",
+    "color": "W",
+    "type": "spell",
+    "rare": false,
+    "upgraded": true,
+    "cost": 4,
+    "atk": 0,
+    "def": 0,
+    "hp": 0,
+    "ops": "sunder_enemy(7); steal_stat(def, 5)",
+    "flavor": "管你堆了多少层王八壳，一铁撬下去全变成这边的收藏品！",
+    "unlimited": false,
+    "art": "img/fcg/cards/225.png",
+    "series": "vol2"
+  },
+  {
+    "id": 226,
+    "pair": 114,
+    "name": "◆背负四神的亚空神选",
+    "color": "G",
+    "type": "monster",
+    "rare": true,
+    "upgraded": false,
+    "cost": 6,
+    "atk": 10,
+    "def": 6,
+    "hp": 9,
+    "ops": "kill_monsters; on_summon_chaos_blessing(2)",
+    "flavor": "身上同时挂着红、蓝、绿、紫四枚邪神印记的倒霉蛋，浑身流淌着失控的暴走力量。",
+    "unlimited": false,
+    "art": "img/fcg/cards/226.png",
+    "series": "vol2"
+  },
+  {
+    "id": 227,
+    "pair": 114,
+    "name": "「这福气给你要不要啊」",
+    "color": "G",
+    "type": "monster",
+    "rare": true,
+    "upgraded": true,
+    "cost": 6,
+    "atk": 13,
+    "def": 8,
+    "hp": 11,
+    "ops": "kill_monsters; on_summon_chaos_blessing(3); pierce(4)",
+    "flavor": "“四尊亚空间大神排着队伺候我一个人，这福气还小吗？来来来，别客气，这满身的毒与狂暴我也分你一半！”",
+    "unlimited": false,
+    "art": "img/fcg/cards/227.png",
+    "series": "vol2"
+  },
+  {
+    "id": 228,
+    "pair": 115,
+    "name": "◆端坐屏前的低维生物",
+    "color": "B",
+    "type": "monster",
+    "rare": true,
+    "upgraded": false,
+    "cost": 8,
+    "atk": 8,
+    "def": 4,
+    "hp": 8,
+    "ops": "on_summon_flatten_def(2); aura_spell_zap(2)",
+    "flavor": "把漫天神明与大段规则文字统统压扁成简短关键词与小卡片的神秘存在。",
+    "unlimited": false,
+    "art": "img/fcg/cards/228.png",
+    "series": "vol2"
+  },
+  {
+    "id": 229,
+    "pair": 115,
+    "name": "二向箔的降维打击",
+    "color": "B",
+    "type": "monster",
+    "rare": true,
+    "upgraded": true,
+    "cost": 8,
+    "atk": 10,
+    "def": 6,
+    "hp": 10,
+    "ops": "on_summon_flatten_def(2); aura_spell_zap(4); pierce(4)",
+    "flavor": "“一张晶莹剔透的小纸片飘向牌桌对岸。无论对面垒起了多高的三维防御壁垒，在跌落进二维平面的那一刻，所有的防御数字都将被公平地压平为『2』。”",
+    "unlimited": false,
+    "art": "img/fcg/cards/229.png",
+    "series": "vol2"
   }
 ]
 FCG_CARDS

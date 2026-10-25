@@ -19,7 +19,7 @@ try {
 		$total=vncreation_int($_POST['total_limit'] ?? '',0,1000000);
 		$sort=vncreation_int($_POST['sort_order'] ?? '',-1000000,1000000);
 		if($type==='fcg_pack') {
-			$payload=array('count'=>1,'color'=>$_POST['pack_color'] ?? 'all');
+			$payload=array('count'=>1,'color'=>$_POST['pack_color'] ?? 'all','series'=>$_POST['pack_series'] ?? 'all');
 			foreach(array('upgraded','rare') as $filter) {
 				$value=$_POST['pack_'.$filter] ?? 'all';
 				if(!in_array($value,array('all','yes','no'),true)) throw new InvalidArgumentException('卡池筛选无效。');
@@ -54,6 +54,7 @@ $shop_items[0]=array('item_id'=>0,'category'=>'fcg_pack','name'=>'','description
 $shop_categories=array('fcg_pack'=>'种火卡包铺','title'=>'头衔','special'=>'其他奇物');
 $shop_types=array('fcg_pack'=>'单卡补充包','title'=>'头衔','custom'=>'扩展商品（尚未接发货逻辑）');
 $shop_colors=array('all'=>'全部颜色','W'=>'白','R'=>'红','Y'=>'黄','G'=>'绿','B'=>'蓝');
+$shop_series=array('all'=>'全部系列','vol1'=>'Vol.1 · 种火初啼','vol2'=>'Vol.2 · 红杀演武');
 $shop_filters=array('all'=>'不限','yes'=>'是','no'=>'否');
 $shop_group_names=$shop_categories+array('new'=>'新增商品');
 $shop_groups=array_fill_keys(array_keys($shop_group_names),array());
@@ -62,6 +63,7 @@ foreach($shop_items as $shop_item) {
 	$payload=json_decode($shop_item['reward_payload'],true) ?: array();
 	$shop_item['title_id']=$payload['title'] ?? 0;
 	$shop_item['pack_color']=$payload['color'] ?? 'all';
+	$shop_item['pack_series']=$payload['series'] ?? 'all';
 	if(!empty($payload['rare_only'])) $payload['rare']=true;
 	foreach(array('upgraded','rare') as $filter) $shop_item['pack_'.$filter]=isset($payload[$filter]) ? ($payload[$filter]?'yes':'no') : 'all';
 	$shop_groups[$shop_item['item_id']?$shop_item['category']:'new'][]=$shop_item;

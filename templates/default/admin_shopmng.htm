@@ -16,6 +16,7 @@
 <label>发货 <select name="reward_type" onchange="var t=this.value;this.form.querySelectorAll('[data-reward]').forEach(function(e){e.hidden=e.getAttribute('data-reward').trim()!==t;});"><!--{loop $shop_types $key $label}--><option value="$key" <!--{if $key===$shop_item['reward_type']}-->selected<!--{/if}-->>$label</option><!--{/loop}--></select></label></p>
 <p><label>说明 <textarea name="description" rows="3" cols="70"><!--{eval echo fcg_html($shop_item['description']);}--></textarea></label></p>
 <p data-reward="fcg_pack" <!--{if $shop_item['reward_type']!=='fcg_pack'}-->hidden<!--{/if}-->>
+<label>所属系列 <select name="pack_series"><!--{loop $shop_series $key $label}--><option value="$key" <!--{if $key===$shop_item['pack_series']}-->selected<!--{/if}-->>$label</option><!--{/loop}--></select></label>
 <label>颜色 <select name="pack_color"><!--{loop $shop_colors $key $label}--><option value="$key" <!--{if $key===$shop_item['pack_color']}-->selected<!--{/if}-->>$label</option><!--{/loop}--></select></label>
 <label>已升级 <select name="pack_upgraded"><!--{loop $shop_filters $key $label}--><option value="$key" <!--{if $key===$shop_item['pack_upgraded']}-->selected<!--{/if}-->>$label</option><!--{/loop}--></select></label>
 <label>稀有 <select name="pack_rare"><!--{loop $shop_filters $key $label}--><option value="$key" <!--{if $key===$shop_item['pack_rare']}-->selected<!--{/if}-->>$label</option><!--{/loop}--></select></label></p>

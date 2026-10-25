@@ -1,6 +1,7 @@
 <?php
 if(!defined('IN_GAME')) exit('Access Denied');
 require_once GAME_ROOT.'./include/fcg/engine.php';
+require_once GAME_ROOT.'./include/fcg/social.php';
 
 function fcg_sql($s) { return "X'".bin2hex((string)$s)."'"; }
 function fcg_html($s) { return htmlspecialchars((string)$s,ENT_QUOTES,'UTF-8'); }
@@ -11,14 +12,12 @@ function fcg_ensure_storage()
 	global $db,$gtablepre;
 	static $ready=false;
 	if($ready) return;
+	$storage_lock=roommng_acquire_create_lock();
+	if($storage_lock===false) throw new RuntimeException('暂时无法准备卡册，请稍后重试。');
+	try {
 	$result=$db->query("SHOW COLUMNS FROM {$gtablepre}users LIKE 'fcgdata'");
 	if(!$db->num_rows($result)) {
-		$lock=roommng_acquire_create_lock();
-		if($lock===false) throw new RuntimeException('暂时无法准备卡册，请稍后重试。');
-		try {
-			$result=$db->query("SHOW COLUMNS FROM {$gtablepre}users LIKE 'fcgdata'");
-			if(!$db->num_rows($result)) $db->query("ALTER TABLE {$gtablepre}users ADD fcgdata MEDIUMTEXT NULL");
-		} finally { roommng_release_create_lock($lock); }
+		$db->query("ALTER TABLE {$gtablepre}users ADD fcgdata MEDIUMTEXT NULL");
 	}
 	// Collection, active match, pack counters and cut-giao balance live on the SAME account row.
 	// A single conditional UPDATE can commit both debit and delivery even on existing MyISAM installs.
@@ -36,7 +35,9 @@ function fcg_ensure_storage()
 		$db->query("INSERT IGNORE INTO {$gtablepre}shop_items (item_id,category,name,description,price_credits2,reward_type,reward_payload,daily_limit,total_limit,sort_order) VALUES (".
 			(int)$id.','.fcg_sql($category).','.fcg_sql($name).','.fcg_sql($description).','.(int)$price.','.fcg_sql($type).','.fcg_sql(fcg_json($payload)).','.(int)$daily.','.(int)$total.','.(int)$id.')');
 	}
+	fcg_ensure_social_storage();
 	$ready=true;
+	} finally { roommng_release_create_lock($storage_lock); }
 }
 
 function fcg_new_account()
@@ -51,7 +52,7 @@ function fcg_load_account($raw)
 	if($raw===null || $raw==='') return fcg_new_account();
 	$data=json_decode($raw,true);
 	if(!is_array($data) || !isset($data['collection'],$data['deck'],$data['rev'])) throw new RuntimeException('卡册读取失败，请联系管理员；原有收藏已保留。');
-	return $data;
+	return $data+array('pvp_wins'=>0,'temp_cards'=>array(),'live_match'=>null,'live_settled'=>null,'pvp_daily'=>array());
 }
 
 function fcg_add_card(&$data, $id)
@@ -59,18 +60,20 @@ function fcg_add_card(&$data, $id)
 	$c=fcg_cards()[$id]; $owned=$data['collection'][$id] ?? 0;
 	if(!$c['unlimited'] && $owned>=7) { $data['embers']++; return array('card'=>$id,'overflow'=>true); }
 	$data['collection'][$id]=$owned+1;
-	return array('card'=>$id,'overflow'=>false);
+	return array('card'=>$id,'overflow'=>false,'new'=>$owned===0);
 }
 
 function fcg_pack_pool($filter)
 {
-	if(!is_array($filter) || array_diff(array_keys($filter),array('upgraded','rare','rare_only','color','count'))) throw new InvalidArgumentException('卡包筛选条件无效。');
+	if(!is_array($filter) || array_diff(array_keys($filter),array('upgraded','rare','rare_only','color','count','series'))) throw new InvalidArgumentException('卡包筛选条件无效。');
+	if(isset($filter['series']) && !in_array($filter['series'],array('all','vol1','vol2'),true)) throw new InvalidArgumentException('卡包系列无效。');
 	if(isset($filter['rare_only'])) $filter['rare']=$filter['rare_only'] ? true : ($filter['rare'] ?? null);
 	foreach(array('upgraded','rare') as $key) if(isset($filter[$key]) && !is_bool($filter[$key])) throw new InvalidArgumentException('卡包稀有度及升级条件须为布尔值。');
 	if(isset($filter['color']) && $filter['color']!=='all' && !in_array($filter['color'],fcg_colors(),true)) throw new InvalidArgumentException('卡包颜色无效。');
 	if(isset($filter['count']) && $filter['count']!==1) throw new InvalidArgumentException('目前每个补充包固定包含一张卡。');
 	$pool=array();
 	foreach(fcg_cards() as $c) {
+		if(isset($filter['series']) && $filter['series']!=='all' && $c['series']!==$filter['series']) continue;
 		if(isset($filter['upgraded']) && $c['upgraded']!==$filter['upgraded']) continue;
 		if(isset($filter['rare']) && $c['rare']!==$filter['rare']) continue;
 		if(isset($filter['color']) && $filter['color']!=='all' && $c['color']!==$filter['color']) continue;
@@ -95,40 +98,52 @@ function fcg_award_title(&$user, $title)
 	$user['nicksrev']=fcg_json($n);
 }
 
-function fcg_settle(&$data, &$user)
+function fcg_settle(&$data, &$user, $now = 0, $room_key = '')
 {
 	$m=&$data['match'];
 	if($m && $m['result']!==null && !$m['rewarded']) {
 		$m['rewarded']=true; $data['played']++;
 		if($m['result']==='win') {
+			if(!empty($m['pvp'])) {
+				$data['last_reward']=$m['reward']=fcg_pvp_reward($data,$user,$m['opponent_uid'],$m['drop_pool'],$now,$room_key);
+			} else {
 			$data['wins'][$m['opponent']]=($data['wins'][$m['opponent']] ?? 0)+1;
 			$drop=$m['drop_pool'][random_int(0,count($m['drop_pool'])-1)];
 			$data['last_reward']=$m['reward']=fcg_add_card($data,$drop);
 			fcg_log($m,'种火从本局使用的牌堆里送给你「'.fcg_cards()[$drop]['name'].'」。');
+			}
 		}
 	}
-	if(count($data['wins'])>=17 || count($data['collection'])>=150) fcg_award_title($user,9106);
+	if(count(array_filter(array_intersect_key($data['wins'],array_flip(range(0,16)))))>=17 || count(array_filter($data['collection']))>=150) fcg_award_title($user,9106);
 }
 
-function fcg_buy(&$data, &$user, $item, $now)
+function fcg_buy(&$data, &$user, $item, $now, $count = 1)
 {
 	global $titles_list;
 	if(!$item || !$item['enabled']) throw new InvalidArgumentException('商品已经下架。');
 	$id=(int)$item['item_id']; $price=(int)$item['price_credits2'];
-	if($price<0 || $price>$user['credits2']) throw new InvalidArgumentException('切糕不足。');
 	$today=date('Y-m-d',$now); $counts=$data['purchases'][$id] ?? array('day'=>$today,'daily'=>0,'total'=>0);
 	if($counts['day']!==$today) { $counts['day']=$today; $counts['daily']=0; }
-	if(($item['daily_limit'] && $counts['daily'] >= $item['daily_limit']) || ($item['total_limit'] && $counts['total'] >= $item['total_limit'])) throw new InvalidArgumentException('已达到这件商品的限购次数。');
+	$remaining=min($item['daily_limit'] ? max(0,$item['daily_limit']-$counts['daily']) : PHP_INT_MAX,$item['total_limit'] ? max(0,$item['total_limit']-$counts['total']) : PHP_INT_MAX);
+	if($count==='remaining' && $price===0 && $item['reward_type']==='fcg_pack' && $item['daily_limit']>0) $count=min($remaining,1000000);
+	elseif(!is_int($count) || !in_array($count,array(1,5,10),true)) throw new InvalidArgumentException('请选择单抽、五连或十连。');
+	if($count<1 || $count>$remaining) throw new InvalidArgumentException('已达到这件商品的限购次数。');
+	if($count>1 && $item['reward_type']!=='fcg_pack') throw new InvalidArgumentException('这件商品只支持单次领取。');
+	$total_price=(int)round($price*$count*($count===10 ? 0.8 : ($count===5 ? 0.9 : 1)));
+	if($price<0 || $total_price>$user['credits2']) throw new InvalidArgumentException('切糕不足。');
 	$payload=json_decode($item['reward_payload'],true);
 	if($item['reward_type']==='fcg_pack') {
-		$pool=fcg_pack_pool($payload); $data['last_reward']=fcg_add_card($data,$pool[random_int(0,count($pool)-1)]);
+		$pool=fcg_pack_pool($payload); $rewards=array();
+		for($i=0;$i<$count;$i++) $rewards[]=fcg_add_card($data,$pool[random_int(0,count($pool)-1)]);
+		$data['last_reward']=array('cards'=>$rewards,'total_cost'=>$total_price);
+		if($count===1) $data['last_reward']+=$rewards[0];
 	} elseif($item['reward_type']==='title') {
 		$title=$payload['title'] ?? null;
 		if(!is_int($title) || !isset($titles_list[$title])) throw new InvalidArgumentException('商品配置的头衔不存在。');
 		if(fcg_title_owned($user,$title)) throw new InvalidArgumentException('已经拥有这个头衔，无需再次购买。');
 		fcg_award_title($user,$title); $data['last_reward']=array('title'=>$title);
 	} else throw new InvalidArgumentException('这件商品暂不支持领取，未扣除切糕。');
-	$user['credits2']-=$price; $counts['daily']++; $counts['total']++; $data['purchases'][$id]=$counts;
+	$user['credits2']-=$total_price; $counts['daily']+=$count; $counts['total']+=$count; $data['purchases'][$id]=$counts;
 }
 
 function fcg_catalog($all=false)
@@ -158,13 +173,13 @@ function fcg_action(&$data, &$user, $input, $now, $in_room)
 	if(!is_string($action)) throw new InvalidArgumentException('操作无效。');
 	switch($action) {
 		case 'tutorial': $data['tutorial']=true; break;
-		case 'deck': $data['deck']=fcg_validate_deck($input['deck'] ?? null,$data['collection']); break;
+		case 'deck': $data['deck']=fcg_validate_deck($input['deck'] ?? null,fcg_collection($data)); $data['temp_expired']=false; break;
 		case 'start':
 			if(!$in_room) throw new InvalidArgumentException('请先在房间列表创建或加入 FCG 异色房间。');
 			if($data['match'] && $data['match']['result']===null) throw new InvalidArgumentException('请先完成当前牌局。');
 			$id=$input['opponent'] ?? null;
 			if(!is_int($id)) throw new InvalidArgumentException('请选择牌手。');
-			fcg_validate_deck($data['deck'],$data['collection']);
+			fcg_validate_deck($data['deck'],fcg_collection($data)); $data['live_match']=null;
 			$data['match']=fcg_new_match($data['deck'],$id,$now); $data['last_reward']=null; break;
 		case 'play': case 'discard': case 'destroy': case 'surrender':
 			if(!$in_room) throw new InvalidArgumentException('已离开 FCG 房间，请重新加入后继续。');
@@ -182,7 +197,7 @@ function fcg_action(&$data, &$user, $input, $now, $in_room)
 			$catalog=fcg_catalog(); $id=$input['item'] ?? null;
 			if(!is_int($id)) throw new InvalidArgumentException('请选择商品。');
 			if(!isset($catalog[$id]) || ($input['price'] ?? null)!==(int)$catalog[$id]['price_credits2']) throw new InvalidArgumentException('商品价格已变化，请刷新商店后再购买。');
-			fcg_buy($data,$user,$catalog[$id] ?? null,$now); break;
+			fcg_buy($data,$user,$catalog[$id] ?? null,$now,$input['count'] ?? 1); break;
 		case 'embers':
 			$kind=$input['kind'] ?? ''; $cost=$kind==='upgraded' ? 20 : ($kind==='rare' ? 50 : 0);
 			if(!$cost || $data['embers']<$cost) throw new InvalidArgumentException('余烬印花不足。');
@@ -194,16 +209,26 @@ function fcg_action(&$data, &$user, $input, $now, $in_room)
 
 function fcg_request($input, $now)
 {
+	$lock=roommng_acquire_create_lock();
+	if($lock===false) throw new RuntimeException('牌桌忙碌，请稍后重试。');
+	try { return fcg_request_locked($input,$now); }
+	finally { roommng_release_create_lock($lock); }
+}
+
+function fcg_request_locked($input, $now)
+{
 	global $db,$gtablepre,$cuser,$cpass;
 	$action=$input['action'] ?? 'status';
 	for($attempt=0;$attempt<3;$attempt++) {
-		$result=$db->query("SELECT uid,username,password,credits2,nicksrev,roomid,fcgdata,groupid FROM {$gtablepre}users WHERE username=".fcg_sql($cuser));
+		$result=$db->query("SELECT uid,username,password,credits2,nicksrev,nick,roomid,fcgdata,groupid FROM {$gtablepre}users WHERE username=".fcg_sql($cuser));
 		$old=$db->fetch_array($result);
 		if(!$old || !hash_equals((string)$old['password'],(string)$cpass)) throw new InvalidArgumentException('登录状态已失效，请重新登录。');
 		if((int)$old['groupid']<=0) throw new InvalidArgumentException('此账号暂时无法使用牌桌与商店。');
 		$user=$old; $data=fcg_load_account($old['fcgdata']); $previous=fcg_json($data);
-		$room=$db->fetch_array($db->query("SELECT gruleset FROM {$gtablepre}game WHERE groomid=".(int)$user['roomid']));
+		$room=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}game WHERE groomid=".(int)$user['roomid']));
 		$in_room=$room && $room['gruleset']==='FCG';
+		$room_key=$in_room ? fcg_room_key($room) : '';
+		fcg_expire_temp($data,$user,$now,$room_key);
 		$duplicate=false;
 		if($action!=='status') {
 			$token=$input['token'] ?? '';
@@ -211,18 +236,24 @@ function fcg_request($input, $now)
 			$duplicate=in_array($token,$data['recent'],true);
 			if(!$duplicate && (!isset($input['rev']) || $input['rev']!==$data['rev'])) throw new InvalidArgumentException('另一页面已更新卡册，已刷新状态，请重新操作。');
 		}
+		$social=fcg_social_load($data,$user,$room,$now);
 		if($data['match'] && $data['match']['result']===null) fcg_advance($data['match'],$now);
-		fcg_settle($data,$user);
+		$won=$data['match'] && $data['match']['result']==='win' && !$data['match']['rewarded'];
+		fcg_settle($data,$user,$now,$room_key);
 		if(!$duplicate) {
-			fcg_action($data,$user,$input,$now,$in_room);
+			if(!fcg_social_action($social,$data,$user,$input,$room,$now)) fcg_action($data,$user,$input,$now,$in_room);
 			if($action!=='status') { $data['recent'][]=$token; $data['recent']=array_slice($data['recent'],-20); }
 		}
-		fcg_settle($data,$user);
+		fcg_settle($data,$user,$now,$room_key);
+		fcg_social_settle($social,$data,$user,$room,$now);
 		if($old['fcgdata']===null || $old['fcgdata']==='' || fcg_json($data)!==$previous || $user['nicksrev']!==$old['nicksrev']) {
 			$data['rev']++;
 			if(!fcg_account_save($old,$user,$data)) continue;
 		}
-		return fcg_public_state($data,$user,$in_room,$now);
+		fcg_social_save($social,$data,$user,$room,$now);
+		if((!$duplicate && $action==='deck') || ($won && (isset($data['match']['opponent_uid']) || (fcg_opponents()[$data['match']['opponent']]['level'] ?? 0)>=4))) fcg_publish_mirror($data,$user,$room_key,$now);
+		$state=fcg_public_state($data,$user,$in_room,$now);
+		return fcg_social_public($state,$social,$data,$user,$room,$now);
 	}
 	throw new RuntimeException('卡册正在被另一请求更新，未重复扣费，请稍后再试。');
 }
@@ -238,8 +269,8 @@ function fcg_public_state($data, $user, $in_room, $now)
 		unset($m['drop_pool'],$m['ai_at']);
 	}
 	$n=json_decode($user['nicksrev'] ?? '',true);
-	return array('rev'=>$data['rev'],'collection'=>(object)$data['collection'],'deck'=>$data['deck'],
+	return array('rev'=>$data['rev'],'collection'=>(object)$data['collection'],'available'=>(object)fcg_collection($data),'temp_cards'=>(object)($data['temp_cards']['cards'] ?? array()),'deck'=>$data['deck'],
 		'tutorial'=>$data['tutorial'],'embers'=>$data['embers'],'wins'=>(object)$data['wins'],'played'=>$data['played'],
 		'match'=>$m,'last_reward'=>$data['last_reward'],'purchases'=>(object)$data['purchases'],
-		'credits'=>(int)$user['credits2'],'titles'=>$n['nicks'] ?? array(),'in_room'=>(bool)$in_room,'now'=>$now);
+		'credits'=>(int)$user['credits2'],'titles'=>$n['nicks'] ?? array(),'in_room'=>(bool)$in_room,'now'=>$now,'pvp_wins'=>$data['pvp_wins'] ?? 0,'temp_expired'=>$data['temp_expired'] ?? false);
 }

@@ -17,7 +17,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 		if(strlen($raw)>32768) throw new InvalidArgumentException('请求内容过长。');
 		$input=json_decode($raw,true);
 		if(!is_array($input) || !isset($input['csrf']) || !is_string($input['csrf']) || !hash_equals($fcg_csrf,$input['csrf'])) throw new InvalidArgumentException('页面校验已失效，请刷新。');
-		if(!array_key_exists('fcgdata',$udata)) fcg_ensure_storage();
+		fcg_ensure_storage();
 		echo fcg_json(array('state'=>fcg_request($input,$now)));
 	} catch(InvalidArgumentException $e) { http_response_code(409); echo fcg_json(array('error'=>$e->getMessage())); }
 	catch(Throwable $e) { error_log('FCG: '.$e->getMessage()); http_response_code(503); echo fcg_json(array('error'=>'卡册暂时无法保存，请稍后重试。')); }

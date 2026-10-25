@@ -12,13 +12,15 @@ function roommng_acquire_create_lock() { return fopen('php://temp','r+'); }
 function roommng_release_create_lock($lock) { fclose($lock); }
 function dbcheck($ok,$message) { if(!$ok) throw new RuntimeException($message); }
 function dbaction($state,$action,$more=array()) { return array_merge(array('action'=>$action,'rev'=>$state['rev'],'token'=>bin2hex(random_bytes(16))),$more); }
+function dbuser($uid,$input,$now=2000) { global $cuser; $cuser=$uid===1?'fcg-test':'fcg-peer'.$uid; return fcg_request($input,$now); }
+function dbreject($uid,$input,$message,$now=2000) { try { dbuser($uid,$input,$now); } catch(InvalidArgumentException $e) { return; } throw new RuntimeException($message); }
 $gtablepre='fcgtest_'.bin2hex(random_bytes(6)).'_'; $created=array();
 $cuser='fcg-test'; $cpass='local-test-password-hash'; $titles_list=array(9101=>'五色余烬',9106=>'具现的暗影');
 try {
-    $db->query("CREATE TABLE {$gtablepre}users (uid INT PRIMARY KEY,username VARCHAR(60),password VARCHAR(64),credits2 INT,nicksrev TEXT,roomid INT,groupid INT) ENGINE=MyISAM DEFAULT CHARSET=utf8"); $created[]=$gtablepre.'users';
-    $db->query("CREATE TABLE {$gtablepre}game (groomid INT PRIMARY KEY,gruleset VARCHAR(50)) ENGINE=MyISAM DEFAULT CHARSET=utf8"); $created[]=$gtablepre.'game';
-    fcg_ensure_storage(); $created[]=$gtablepre.'shop_items';
-    $db->query("INSERT INTO {$gtablepre}game VALUES (0,''),(1,'FCG')");
+    $db->query("CREATE TABLE {$gtablepre}users (uid INT PRIMARY KEY,username VARCHAR(60),password VARCHAR(64),credits2 INT,nicksrev TEXT,nick INT DEFAULT 0,roomid INT,groupid INT) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4"); $created[]=$gtablepre.'users';
+    $db->query("CREATE TABLE {$gtablepre}game (groomid INT PRIMARY KEY,gruleset VARCHAR(50),gamenum INT DEFAULT 1,starttime INT DEFAULT 1000,gamevars TEXT) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4"); $created[]=$gtablepre.'game';
+    $created[]=$gtablepre.'shop_items'; $created[]=$gtablepre.'fcg_matches'; $created[]=$gtablepre.'fcg_mirrors'; fcg_ensure_storage();
+    $db->query("INSERT INTO {$gtablepre}game (groomid,gruleset,gamevars) VALUES (0,'','{}'),(1,'FCG','{}')");
     $db->query("INSERT INTO {$gtablepre}users (uid,username,password,credits2,nicksrev,roomid,groupid) VALUES (1,".fcg_sql($cuser).','.fcg_sql($cpass).",1000,'{\"nicks\":[0]}',0,1)");
     $s=fcg_request(array('action'=>'status'),1000);
     dbcheck(count($s['deck'])>=25 && $s['rev']===1,'first visit initializes durable collection');
@@ -50,5 +52,63 @@ try {
     dbcheck($s['match']['result']==='win' && $s['played']===2 && $s['wins']->{0}===1,'timer victory settles through real database request');
     $s=fcg_request(array('action'=>'status'),1020);
     dbcheck($s['played']===2 && $s['last_reward']===$reward && array_sum((array)$s['collection'])===$before+1,'victory reward survives reload without duplication');
-    echo "FCG database: migration, purchases, quota, price changes, title delivery, room gate, match settlement and competing writes passed on MyISAM.\n";
+    // Fresh batch from a real persisted catalog; replay must not debit or grant twice.
+    $input=dbaction($s,'buy',array('item'=>40,'price'=>10,'count'=>10));$s=dbuser(1,$input,1020);
+    dbcheck($s['credits']===400 && count($s['last_reward']['cards'])===10,'batch charges discounted total');$batch=$s['last_reward'];
+    $s=dbuser(1,$input,1020);dbcheck($s['credits']===400 && $s['last_reward']===$batch,'batch replay is idempotent');
+    // Main room 0 is also a valid FCG room. Two real account rows share one match row.
+    $db->query("UPDATE {$gtablepre}game SET gruleset='FCG' WHERE groomid=0");$db->query("UPDATE {$gtablepre}users SET roomid=0 WHERE uid=1");
+    $peer=fcg_new_account();$peer['collection'][151]=1;$peer['deck'][]=151;
+    foreach(array(2,3) as $uid) $db->query("INSERT INTO {$gtablepre}users (uid,username,password,credits2,nicksrev,roomid,groupid,fcgdata) VALUES ($uid,".fcg_sql('fcg-peer'.$uid).','.fcg_sql($cpass).",1000,'',".($uid===2?0:1).",1,".fcg_sql(fcg_json($peer)).')');
+    $s=dbuser(1,array('action'=>'status'));$b=dbuser(2,array('action'=>'status'));$x=dbuser(3,array('action'=>'status'));
+    $s=dbuser(1,dbaction($s,'deck',array('deck'=>$s['deck'])));$b=dbuser(2,dbaction($b,'deck',array('deck'=>$b['deck'])));$s=dbuser(1,array('action'=>'status'));
+    dbcheck(count($s['mirrors'])===1 && $s['mirrors'][0]['uid']===2 && !isset($s['mirrors'][0]['deck']),'mirror public state excludes self and hidden deck');
+    $s=dbuser(1,dbaction($s,'mirror',array('uid'=>2)));dbcheck($s['match']['pvp'] && $s['match']['sides'][0]['hp']===100 && $s['match']['sides'][1]['hp']===100,'mirror uses PvP HP');
+    $s=dbuser(1,dbaction($s,'surrender',array('match'=>$s['match']['id'])));
+    dbreject(1,dbaction($s,'invite',array('uid'=>3)),'cross-room invitation accepted');
+    $s=dbuser(1,dbaction($s,'invite',array('uid'=>2)));$b=dbuser(2,array('action'=>'status'));dbcheck($b['invite']['from']===1,'invite delivered by heartbeat');
+    $b=dbuser(2,dbaction($b,'decline',array('uid'=>1)));dbcheck(!$b['invite'],'decline removes invite');
+    $s=dbuser(1,dbaction($s,'invite',array('uid'=>2)));$b=dbuser(2,array('action'=>'status'));$accept=dbaction($b,'accept',array('uid'=>1));$b=dbuser(2,$accept);$matchid=$b['match']['id'];
+    $b=dbuser(2,$accept);$s=dbuser(1,array('action'=>'status'));
+    dbcheck($s['match']['id']===$matchid && $b['match']['names'][0]==='fcg-peer2' && $s['match']['names'][0]==='fcg-test','shared match and reversed names');
+    dbcheck(!isset($b['match']['sides'][1]['hand'],$b['match']['decks'],$b['match']['recent']) && count($b['match']['sides'][0]['hand'])===3,'peer secrets hidden after perspective reversal');
+    dbcheck($db->num_rows($db->query("SELECT id FROM {$gtablepre}fcg_matches"))===1,'accept replay creates no second match');
+    dbreject(1,dbaction($s,'start',array('opponent'=>0)),'live player escaped into solo game');
+    dbreject(3,dbaction($x,'surrender',array('match'=>$matchid)),'third party controlled a duel');
+    $room=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}game WHERE groomid=0"));
+    $row=$db->fetch_array($db->query("SELECT data FROM {$gtablepre}fcg_matches WHERE id=".fcg_sql($matchid)));$m=json_decode($row['data'],true);
+    $m['sides'][1]['hand']=array(4,4,4,4,4,4);$m['sides'][1]['energy']['R']=99;fcg_live_write($m,$room,2000);$b=dbuser(2,array('action'=>'status'));
+    $play=dbaction($b,'play',array('match'=>$matchid,'slot'=>0,'card'=>4,'turn'=>1));$b=dbuser(2,$play);$b=dbuser(2,$play);$s=dbuser(1,array('action'=>'status'));
+    dbcheck($b['match']['sides'][0]['gen']['R']===2 && $s['match']['sides'][1]['gen']['R']===2 && count($b['match']['sides'][0]['hand'])===5,'B plays only B hand and duplicate play does not repeat');
+    for($i=0;$i<5;$i++)$b=dbuser(2,dbaction($b,'play',array('match'=>$matchid,'slot'=>0,'card'=>4,'turn'=>1)));
+    dbcheck($b['match']['deadline']===2014,'real database duel caps extension at four seconds');
+    $b=dbuser(2,dbaction($b,'sticker',array('match'=>$matchid,'sticker'=>1)));$s=dbuser(1,array('action'=>'status'));dbcheck($s['match']['stickers'][1]['id']===1,'sticker follows sender perspective');
+    $permanent=(array)$s['collection'];$b=dbuser(2,dbaction($b,'surrender',array('match'=>$matchid)));$s=dbuser(1,array('action'=>'status'));$embers=$s['embers'];$pvp=$s['pvp_wins'];$reward=$s['match']['reward'];
+    dbcheck($s['match']['result']==='win' && $b['match']['result']==='loss' && $reward['temp_card']===151 && (array)$s['collection']===$permanent,'live win grants temporary actual-deck rare, no permanent card');
+    $s=dbuser(1,array('action'=>'status'));dbcheck($s['embers']===$embers && $s['pvp_wins']===$pvp,'live reward survives reload exactly once');
+    $s=dbuser(1,dbaction($s,'buy',array('item'=>40,'price'=>10)));dbcheck($s['match']['reward']===$reward,'shopping does not overwrite live result');
+    // Same-second new matches must supersede the finished match; same opponent cannot farm embers.
+    for($i=0;$i<2;$i++) {
+        $s=dbuser(1,dbaction($s,'invite',array('uid'=>2)));$b=dbuser(2,array('action'=>'status'));$b=dbuser(2,dbaction($b,'accept',array('uid'=>1)));$s=dbuser(1,array('action'=>'status'));
+        dbcheck($s['match']['id']===$b['match']['id'] && !$s['match']['result'],'new live match selected ahead of old result');
+        $b=dbuser(2,dbaction($b,'surrender',array('match'=>$b['match']['id'])));$s=dbuser(1,array('action'=>'status'));
+    }
+    dbcheck($s['embers']===$embers && $s['pvp_wins']===$pvp+2 && count($s['reports'])===1,'repeat opponent only yields record and third-win room report');
+    $deck=array_merge($s['deck'],array_fill(0,($s['collection']->{151} ?? 0)+1,151));$s=dbuser(1,dbaction($s,'deck',array('deck'=>$deck)));dbcheck(in_array(151,$s['deck'],true),'borrowed card saved to deck');
+    $s=dbuser(1,array('action'=>'status'),88400);dbcheck(!isset($s['temp_cards']->{151}) && (array_count_values($s['deck'])[151] ?? 0)===($s['collection']->{151} ?? 0),'next-day reload expires only borrowed deck cards');
+    $count=$db->fetch_array($db->query("SELECT COUNT(*) AS n FROM {$gtablepre}shop_items WHERE reward_type='fcg_pack' AND reward_payload LIKE '%vol2%'"));dbcheck((int)$count['n']===3,'exactly three Vol2 seed packs');
+    // Publishing is bounded even after many active accounts.
+    $user=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=2"));$data=fcg_load_account($user['fcgdata']);
+    for($i=10;$i<35;$i++) { $user['uid']=$i;fcg_publish_mirror($data,$user,'0:1:1000',90000+$i); }
+    $count=$db->fetch_array($db->query("SELECT COUNT(*) AS n FROM {$gtablepre}fcg_mirrors"));dbcheck((int)$count['n']===20,'mirror retention is bounded');
+    // Upgrade a previously configured catalog without changing an administrator's pack.
+    $db->query("DROP TABLE {$gtablepre}fcg_mirrors");
+    $db->query("DELETE FROM {$gtablepre}shop_items WHERE item_id IN (41,42)");
+    $db->query("UPDATE {$gtablepre}shop_items SET price_credits2=17,name='custom pack' WHERE item_id=40");
+    $db->query("UPDATE {$gtablepre}shop_items SET name=".fcg_sql('“共犯”')." WHERE item_id=24");
+    fcg_ensure_social_storage();fcg_ensure_social_storage();$catalog=fcg_catalog();
+    $count=$db->fetch_array($db->query("SELECT COUNT(*) AS n FROM {$gtablepre}shop_items WHERE reward_payload LIKE '%vol2%'"));
+    dbcheck((int)$count['n']===3 && (int)$catalog[40]['price_credits2']===17 && $catalog[40]['name']==='custom pack','upgrade fills missing packs once and preserves customization');
+    dbcheck($catalog[24]['name']==='阿卡夏的共犯','upgrade renames the original title seed');
+    echo "FCG database: migration, atomic batches, quotas, price changes, titles, room 0, mirrors, invitations, shared duel, privacy, replay, rewards, temporary cards and competing writes passed on MyISAM.\n";
 } finally { foreach(array_reverse($created) as $table) $db->query('DROP TABLE `'.$table.'`','SILENT'); }
