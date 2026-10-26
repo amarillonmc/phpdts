@@ -46,7 +46,7 @@ CREATE TABLE bra_mapitem (
   itms char(10) not null default '0',
   itmsk char(40) not null default '',
   itmpara text not null,
-  pls tinyint unsigned not null default '0',
+  pls int unsigned not null default '0',
   
   PRIMARY KEY  (iid)
 ) ENGINE=MyISAM;
@@ -65,7 +65,7 @@ CREATE TABLE bra_maptrap (
   itms char(10) not null default '0',
   itmsk char(40) not null default '',
   itmpara text not null,
-  pls tinyint unsigned not null default '0',
+  pls int unsigned not null default '0',
   
   PRIMARY KEY  (tid)
 ) ENGINE=MyISAM;

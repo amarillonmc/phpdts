@@ -22,6 +22,10 @@ namespace revcombat
 	function rev_combat_prepare(&$pa,&$pd,$active,$wep_kind='',$log_print=1) 
 	{
 		global $db,$tablepre,$log,$mode,$main,$cmd,$battle_title;
+		if(function_exists('ruleset_combat_allowed_hook') && !ruleset_combat_allowed_hook($pa,$pd)) {
+			$log .= '这个目标现在无法交战。<br>';
+			return;
+		}
 		# Temp - Fix Replay XHR Exploit
 		$pa['action'] = $pd['action'] = '';
 
@@ -292,6 +296,7 @@ namespace revcombat
 				$pa['clbpara']['coveratk'] = $pa['coveratk_flag'];
 			}
 		}
+		if(function_exists('ruleset_battle_finish_hook')) ruleset_battle_finish_hook($pa,$pd);
 		# 保存双方状态
 		if ($active)
 		{
@@ -667,6 +672,10 @@ namespace revcombat
 	function rev_combat_result(&$pa,&$pd,$active)
 	{
 		global $log,$now;
+		if(function_exists('ruleset_combat_result_hook')) {
+			$result = ruleset_combat_result_hook($pa,$pd,$active);
+			if($result !== NULL) return $result;
+		}
 		if(\fcg_mimic_guard($pd)) { unset($pd['gg_flag']); return 1; }
 		# 死者(受伤者)pd血量低于0时 结算击杀/复活事件
 		if($pd['hp']<= 0)

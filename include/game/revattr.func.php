@@ -486,6 +486,7 @@ namespace revattr
 		//天气修正
 		if($weather == 12) $hitrate += 20;
 		//属性修正
+		if(function_exists('ruleset_attribute_value_hook')) $hitrate=ruleset_attribute_value_hook($pa,'hit',$hitrate);
 		return $hitrate;
 	}
 
@@ -819,6 +820,7 @@ namespace revattr
 		# 计算攻击力修正
 		$base_att = get_base_att_modifier($pa,$pd,$active,$base_att,$tooltip);
 		if(!empty($pa['fcg_battle'])) $base_att=max($pa['fcg_battle']['floor'],round($base_att*$pa['fcg_battle']['att']));
+		if(function_exists('ruleset_attribute_value_hook')) $base_att=ruleset_attribute_value_hook($pa,'att',$base_att);
 		return $base_att;
 	}
 
@@ -964,6 +966,7 @@ namespace revattr
 		$total_def = get_base_def_modifier($pa,$pd,$active,$total_def,$tooltip);
 		if(!empty($pd['fcg_battle'])) $total_def=round($total_def*$pd['fcg_battle']['def']);
 		if(!empty($pa['fcg_battle']['pierce'])) $total_def=round($total_def*(1-$pa['fcg_battle']['pierce']));
+		if(function_exists('ruleset_attribute_value_hook')) $total_def=ruleset_attribute_value_hook($pd,'def',$total_def);
 		return $total_def;
 	}
 

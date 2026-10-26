@@ -4,6 +4,11 @@ if(!defined('IN_GAME')) exit('Access Denied');
 # 成就大类列表：
 $ach_type = Array
 (
+	'elevator' => Array(
+		'name' => '电梯行程',
+		'desc' => '门开时探索，门关时同行。这里记录 ELEVATOR 行程中留下的足迹。',
+		'ach' => Array(620,621,622,623,624,625,626,627,628,629),
+	),
 	'daily' => Array(
 		'name' => '每日挑战',
 		'desc' => '<font color="olive">这里是用来为日常游玩调味的佐餐成就。<br>
@@ -87,6 +92,16 @@ $hidden_ach_type = Array
 # 成就登记列表：
 $ach_list = Array
 (
+	620 => Array('lvl'=>1,'name'=>Array('电梯首乘'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(10),'desc'=>Array('完成第一次电梯行程结算。')),
+	621 => Array('lvl'=>1,'name'=>Array('阁楼来信'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(20),'desc'=>Array('首次在 +7 阁楼层下车。')),
+	622 => Array('lvl'=>1,'name'=>Array('留灯的人'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(20),'desc'=>Array('首次到达 −8 灰色会客厅。')),
+	623 => Array('lvl'=>1,'name'=>Array('再走一程'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(30),'desc'=>Array('首次选择并进入无尽行程。')),
+	624 => Array('lvl'=>1,'name'=>Array('十五层之外'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(50),'desc'=>Array('单局有效探索深度达到15层。')),
+	625 => Array('lvl'=>1,'name'=>Array('旧梦的三个问题'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(77),'desc'=>Array('答对大种火的三个问题。')),
+	626 => Array('lvl'=>1,'name'=>Array('把口哨接成一句话'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(30),'desc'=>Array('在一局内收集三句不同的种火语片段。')),
+	627 => Array('lvl'=>1,'name'=>Array('门又开了'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(100),'desc'=>Array('累计搭乘电梯100次。')),
+	628 => Array('lvl'=>1,'name'=>Array('猫之友'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(30),'desc'=>Array('累计进行10次猫粮交换。')),
+	629 => Array('lvl'=>1,'name'=>Array('拒绝离开'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(50),'desc'=>Array('在大种火层选择并进入下行无尽。')),
 	/*'example' => Array(
 		//成就完成时所处阶段（必填）
 		'lvl' => 3, 

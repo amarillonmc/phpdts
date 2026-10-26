@@ -1,0 +1,1292 @@
+{
+    "1001": {
+        "name": "轻轨月票（已过期）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 1,
+        "map": 101,
+        "copies": 1,
+        "unique": false
+    },
+    "1002": {
+        "name": "遗落在座位上的手机",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 1,
+        "map": 101,
+        "copies": 1,
+        "unique": false
+    },
+    "1003": {
+        "name": "半价的奶茶",
+        "kind": "HB",
+        "effect": 50,
+        "quantity": "1",
+        "pool": 1,
+        "map": 102,
+        "copies": 1,
+        "unique": false
+    },
+    "1004": {
+        "name": "炸鸡便当",
+        "kind": "HH",
+        "effect": 80,
+        "quantity": "2",
+        "pool": 1,
+        "map": 102,
+        "copies": 1,
+        "unique": false
+    },
+    "1005": {
+        "name": "金龙通讯社记者证",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 1,
+        "map": 103,
+        "copies": 1,
+        "unique": true
+    },
+    "1006": {
+        "name": "头版照片（背面有字）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 1,
+        "map": 103,
+        "copies": 1,
+        "unique": true
+    },
+    "1007": {
+        "name": "折叠伞",
+        "kind": "WP",
+        "effect": 20,
+        "quantity": "8",
+        "pool": 1,
+        "map": 104,
+        "copies": 1,
+        "unique": false
+    },
+    "1008": {
+        "name": "湖边的漂流瓶",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 1,
+        "map": 104,
+        "copies": 1,
+        "unique": true
+    },
+    "1009": {
+        "name": "猫粮罐头",
+        "kind": "HH",
+        "effect": 30,
+        "quantity": "3",
+        "pool": 1,
+        "map": 105,
+        "copies": 1,
+        "unique": false
+    },
+    "1010": {
+        "name": "猫老大墨镜",
+        "kind": "DA",
+        "effect": 10,
+        "quantity": "10",
+        "pool": 1,
+        "map": 105,
+        "copies": 1,
+        "unique": false
+    },
+    "1011": {
+        "name": "湿地芦苇笛",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 1,
+        "map": 106,
+        "copies": 1,
+        "unique": false
+    },
+    "1012": {
+        "name": "急救绷带",
+        "kind": "HH",
+        "effect": 60,
+        "quantity": "5",
+        "pool": 1,
+        "map": 106,
+        "copies": 1,
+        "unique": false
+    },
+    "1013": {
+        "name": "撬棍",
+        "kind": "WP",
+        "effect": 35,
+        "quantity": "15",
+        "pool": 1,
+        "map": 107,
+        "copies": 1,
+        "unique": false
+    },
+    "1014": {
+        "name": "生锈的螺栓",
+        "kind": "WC",
+        "effect": 8,
+        "quantity": "20",
+        "pool": 1,
+        "map": 107,
+        "copies": 1,
+        "unique": false
+    },
+    "1015": {
+        "name": "过期学生卡",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 1,
+        "map": 108,
+        "copies": 1,
+        "unique": false
+    },
+    "1016": {
+        "name": "自动贩卖机饮料",
+        "kind": "HS",
+        "effect": 40,
+        "quantity": "3",
+        "pool": 1,
+        "map": 108,
+        "copies": 1,
+        "unique": false
+    },
+    "2001": {
+        "name": "电掣徽章碎片",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 2,
+        "map": 201,
+        "copies": 1,
+        "unique": false
+    },
+    "2002": {
+        "name": "烧焦的钥匙卡",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 2,
+        "map": 201,
+        "copies": 1,
+        "unique": false
+    },
+    "2003": {
+        "name": "半烧毁的档案",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 2,
+        "map": 202,
+        "copies": 1,
+        "unique": false
+    },
+    "2004": {
+        "name": "完整档案文件夹",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 2,
+        "map": 202,
+        "copies": 1,
+        "unique": false
+    },
+    "2005": {
+        "name": "备用硬盘",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 2,
+        "map": 203,
+        "copies": 1,
+        "unique": false
+    },
+    "2006": {
+        "name": "儿童画（蜡笔画）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 2,
+        "map": 203,
+        "copies": 1,
+        "unique": true
+    },
+    "2007": {
+        "name": "断裂的安全锁芯",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 2,
+        "map": 204,
+        "copies": 1,
+        "unique": false
+    },
+    "2008": {
+        "name": "工兵铲",
+        "kind": "WP",
+        "effect": 40,
+        "quantity": "12",
+        "pool": 2,
+        "map": 204,
+        "copies": 1,
+        "unique": false
+    },
+    "2009": {
+        "name": "「给孙女」的信",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 2,
+        "map": 205,
+        "copies": 1,
+        "unique": true
+    },
+    "2010": {
+        "name": "太师椅的铜把手",
+        "kind": "WC",
+        "effect": 25,
+        "quantity": "3",
+        "pool": 2,
+        "map": 205,
+        "copies": 1,
+        "unique": false
+    },
+    "2011": {
+        "name": "训练用匕首",
+        "kind": "WK",
+        "effect": 30,
+        "quantity": "10",
+        "pool": 2,
+        "map": 206,
+        "copies": 1,
+        "unique": false
+    },
+    "2012": {
+        "name": "弹孔里的弹壳",
+        "kind": "GB",
+        "effect": 1,
+        "quantity": "5",
+        "pool": 2,
+        "map": 206,
+        "copies": 1,
+        "unique": false
+    },
+    "2013": {
+        "name": "冷冻试剂瓶",
+        "kind": "HS",
+        "effect": 100,
+        "quantity": "1",
+        "pool": 2,
+        "map": 207,
+        "copies": 1,
+        "unique": false
+    },
+    "2014": {
+        "name": "实验室白大褂",
+        "kind": "DB",
+        "effect": 10,
+        "quantity": "8",
+        "pool": 2,
+        "map": 207,
+        "copies": 1,
+        "unique": false
+    },
+    "2015": {
+        "name": "帆布袋（未拆封）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 2,
+        "map": 208,
+        "copies": 1,
+        "unique": false
+    },
+    "2016": {
+        "name": "厢式货车的后视镜",
+        "kind": "DA",
+        "effect": 5,
+        "quantity": "5",
+        "pool": 2,
+        "map": 208,
+        "copies": 1,
+        "unique": false
+    },
+    "3001": {
+        "name": "冷掉的咖啡",
+        "kind": "HS",
+        "effect": 20,
+        "quantity": "1",
+        "pool": 3,
+        "map": 301,
+        "copies": 1,
+        "unique": false
+    },
+    "3002": {
+        "name": "夹在书中的照片",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 3,
+        "map": 301,
+        "copies": 1,
+        "unique": true
+    },
+    "3003": {
+        "name": "未完成的论文草稿",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 3,
+        "map": 302,
+        "copies": 1,
+        "unique": false
+    },
+    "3004": {
+        "name": "磨砂玻璃上的指印",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 3,
+        "map": 302,
+        "copies": 1,
+        "unique": false
+    },
+    "3005": {
+        "name": "「M.D.」书架的旧书",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 3,
+        "map": 303,
+        "copies": 1,
+        "unique": true
+    },
+    "3006": {
+        "name": "理论物理学入门（批注版）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 3,
+        "map": 303,
+        "copies": 1,
+        "unique": false
+    },
+    "3007": {
+        "name": "杯垫下的纸条",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 3,
+        "map": 304,
+        "copies": 1,
+        "unique": true
+    },
+    "3008": {
+        "name": "未喝完的半杯咖啡",
+        "kind": "HB",
+        "effect": 20,
+        "quantity": "1",
+        "pool": 3,
+        "map": 304,
+        "copies": 1,
+        "unique": false
+    },
+    "3009": {
+        "name": "空罐装咖啡",
+        "kind": "WC",
+        "effect": 5,
+        "quantity": "10",
+        "pool": 3,
+        "map": 305,
+        "copies": 1,
+        "unique": false
+    },
+    "3010": {
+        "name": "旋转银白盒屏保程序",
+        "kind": "X",
+        "effect": 120,
+        "quantity": "1",
+        "pool": 3,
+        "map": 305,
+        "copies": 1,
+        "unique": false
+    },
+    "3011": {
+        "name": "没有名字的毕业证书",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 3,
+        "map": 306,
+        "copies": 1,
+        "unique": false
+    },
+    "3012": {
+        "name": "话筒（似乎还能用）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 3,
+        "map": 306,
+        "copies": 1,
+        "unique": false
+    },
+    "3013": {
+        "name": "刻着名字的长椅木片",
+        "kind": "WP",
+        "effect": 15,
+        "quantity": "3",
+        "pool": 3,
+        "map": 307,
+        "copies": 1,
+        "unique": false
+    },
+    "3014": {
+        "name": "樱花标本",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 3,
+        "map": 307,
+        "copies": 1,
+        "unique": false
+    },
+    "3015": {
+        "name": "陌生U盘",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 3,
+        "map": 308,
+        "copies": 1,
+        "unique": true
+    },
+    "3016": {
+        "name": "服务器备份磁带",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 3,
+        "map": 308,
+        "copies": 1,
+        "unique": false
+    },
+    "4001": {
+        "name": "无线电零件",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 4,
+        "map": 401,
+        "copies": 1,
+        "unique": false
+    },
+    "4002": {
+        "name": "军用匕首",
+        "kind": "WK",
+        "effect": 35,
+        "quantity": "8",
+        "pool": 4,
+        "map": 401,
+        "copies": 1,
+        "unique": false
+    },
+    "4003": {
+        "name": "善德牌罐头汤",
+        "kind": "HH",
+        "effect": 100,
+        "quantity": "2",
+        "pool": 4,
+        "map": 402,
+        "copies": 1,
+        "unique": false
+    },
+    "4004": {
+        "name": "恶德牌辣椒酱",
+        "kind": "HS",
+        "effect": 10,
+        "quantity": "1",
+        "pool": 4,
+        "map": 402,
+        "copies": 1,
+        "unique": false
+    },
+    "4005": {
+        "name": "玻璃化沙子（可作磨料）",
+        "kind": "WC",
+        "effect": 8,
+        "quantity": "30",
+        "pool": 4,
+        "map": 403,
+        "copies": 1,
+        "unique": false
+    },
+    "4006": {
+        "name": "不同口径的弹壳",
+        "kind": "GBr",
+        "effect": 1,
+        "quantity": "10",
+        "pool": 4,
+        "map": 403,
+        "copies": 1,
+        "unique": false
+    },
+    "4007": {
+        "name": "旧红杀臂章",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 4,
+        "map": 404,
+        "copies": 1,
+        "unique": false
+    },
+    "4008": {
+        "name": "带血迹的命令书",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 4,
+        "map": 404,
+        "copies": 1,
+        "unique": true
+    },
+    "4009": {
+        "name": "排列整齐的罐头",
+        "kind": "HH",
+        "effect": 50,
+        "quantity": "3",
+        "pool": 4,
+        "map": 405,
+        "copies": 1,
+        "unique": false
+    },
+    "4010": {
+        "name": "「留一份给后面的人」纸条",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 4,
+        "map": 405,
+        "copies": 1,
+        "unique": true
+    },
+    "4011": {
+        "name": "撬棍（已用过）",
+        "kind": "WP",
+        "effect": 30,
+        "quantity": "8",
+        "pool": 4,
+        "map": 406,
+        "copies": 1,
+        "unique": false
+    },
+    "4012": {
+        "name": "粉笔",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 4,
+        "map": 406,
+        "copies": 1,
+        "unique": false
+    },
+    "4013": {
+        "name": "银白盒表面脱落的金属片",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 4,
+        "map": 407,
+        "copies": 1,
+        "unique": false
+    },
+    "4014": {
+        "name": "防辐射服",
+        "kind": "DB",
+        "effect": 40,
+        "quantity": "30",
+        "pool": 4,
+        "map": 407,
+        "copies": 1,
+        "unique": false
+    },
+    "4015": {
+        "name": "褪色的帐篷布",
+        "kind": "DB",
+        "effect": 15,
+        "quantity": "10",
+        "pool": 4,
+        "map": 408,
+        "copies": 1,
+        "unique": false
+    },
+    "4016": {
+        "name": "加拿大鹅的飞羽",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 4,
+        "map": 408,
+        "copies": 1,
+        "unique": false
+    },
+    "5001": {
+        "name": "猫毛球",
+        "kind": "WC",
+        "effect": 1,
+        "quantity": "50",
+        "pool": 5,
+        "map": 501,
+        "copies": 1,
+        "unique": false
+    },
+    "5002": {
+        "name": "猫老大亲自签名的墨镜",
+        "kind": "DA",
+        "effect": 50,
+        "quantity": "5",
+        "pool": 5,
+        "map": 501,
+        "copies": 1,
+        "unique": false
+    },
+    "5003": {
+        "name": "反重力陀螺",
+        "kind": "WC",
+        "effect": 30,
+        "quantity": "1",
+        "pool": 5,
+        "map": 502,
+        "copies": 1,
+        "unique": false
+    },
+    "5004": {
+        "name": "倒写的教科书",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 5,
+        "map": 502,
+        "copies": 1,
+        "unique": false
+    },
+    "5005": {
+        "name": "微型水龙头（可作投掷）",
+        "kind": "WC",
+        "effect": 15,
+        "quantity": "3",
+        "pool": 5,
+        "map": 503,
+        "copies": 1,
+        "unique": false
+    },
+    "5006": {
+        "name": "永远滴水的矿泉水瓶",
+        "kind": "HS",
+        "effect": 50,
+        "quantity": "∞",
+        "pool": 5,
+        "map": 503,
+        "copies": 1,
+        "unique": false
+    },
+    "5007": {
+        "name": "种火语密码手册",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 5,
+        "map": 504,
+        "copies": 1,
+        "unique": true
+    },
+    "5008": {
+        "name": "掉落的扬声器盒子",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 5,
+        "map": 504,
+        "copies": 1,
+        "unique": false
+    },
+    "5009": {
+        "name": "递归按钮",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 5,
+        "map": 505,
+        "copies": 1,
+        "unique": false
+    },
+    "5010": {
+        "name": "「你在第几层」T恤",
+        "kind": "DB",
+        "effect": 5,
+        "quantity": "5",
+        "pool": 5,
+        "map": 505,
+        "copies": 1,
+        "unique": false
+    },
+    "5011": {
+        "name": "罐装「希望」",
+        "kind": "HS",
+        "effect": 200,
+        "quantity": "1",
+        "pool": 5,
+        "map": 506,
+        "copies": 1,
+        "unique": false
+    },
+    "5012": {
+        "name": "瓶装「后悔」",
+        "kind": "PS",
+        "effect": 200,
+        "quantity": "1",
+        "pool": 5,
+        "map": 506,
+        "copies": 1,
+        "unique": false
+    },
+    "5013": {
+        "name": "袋装「未定义」",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 5,
+        "map": 507,
+        "copies": 1,
+        "unique": false
+    },
+    "5014": {
+        "name": "无限走廊的画框碎片",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 5,
+        "map": 507,
+        "copies": 1,
+        "unique": false
+    },
+    "5015": {
+        "name": "回音捕捉器",
+        "kind": "DA",
+        "effect": 20,
+        "quantity": "3",
+        "pool": 5,
+        "map": 508,
+        "copies": 1,
+        "unique": false
+    },
+    "5016": {
+        "name": "未来聊天记录（打印版）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 5,
+        "map": 508,
+        "copies": 1,
+        "unique": false
+    },
+    "5017": {
+        "name": "2034年的某条消息",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 5,
+        "map": 508,
+        "copies": 1,
+        "unique": true
+    },
+    "6001": {
+        "name": "纯白立方体",
+        "kind": "WC",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 6,
+        "map": 601,
+        "copies": 1,
+        "unique": false
+    },
+    "6002": {
+        "name": "那个小黑点（其实是一颗珠子）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 6,
+        "map": 601,
+        "copies": 1,
+        "unique": false
+    },
+    "6003": {
+        "name": "浮岛边缘的石块",
+        "kind": "WC",
+        "effect": 5,
+        "quantity": "5",
+        "pool": 6,
+        "map": 602,
+        "copies": 1,
+        "unique": false
+    },
+    "6004": {
+        "name": "木箱（未知内容）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 6,
+        "map": 602,
+        "copies": 1,
+        "unique": false
+    },
+    "6005": {
+        "name": "镜中倒影掉落的泪珠",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 6,
+        "map": 603,
+        "copies": 1,
+        "unique": false
+    },
+    "6006": {
+        "name": "打碎的镜子碎片",
+        "kind": "WK",
+        "effect": 10,
+        "quantity": "5",
+        "pool": 6,
+        "map": 603,
+        "copies": 1,
+        "unique": false
+    },
+    "6007": {
+        "name": "锁着的门的钥匙",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 6,
+        "map": 604,
+        "copies": 1,
+        "unique": false
+    },
+    "6008": {
+        "name": "走廊尽头的门把手",
+        "kind": "WP",
+        "effect": 15,
+        "quantity": "3",
+        "pool": 6,
+        "map": 604,
+        "copies": 1,
+        "unique": false
+    },
+    "6009": {
+        "name": "数据节点提取物",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 6,
+        "map": 605,
+        "copies": 1,
+        "unique": false
+    },
+    "6010": {
+        "name": "网格核心晶体",
+        "kind": "HS",
+        "effect": 150,
+        "quantity": "1",
+        "pool": 6,
+        "map": 605,
+        "copies": 1,
+        "unique": false
+    },
+    "6011": {
+        "name": "无来源的影子碎片",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 6,
+        "map": 606,
+        "copies": 1,
+        "unique": false
+    },
+    "6012": {
+        "name": "影子中的发光物",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 6,
+        "map": 606,
+        "copies": 1,
+        "unique": false
+    },
+    "6013": {
+        "name": "灰色记忆体",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 6,
+        "map": 607,
+        "copies": 1,
+        "unique": false
+    },
+    "6014": {
+        "name": "「请勿久留」的便签（谁写的？）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 6,
+        "map": 607,
+        "copies": 1,
+        "unique": false
+    },
+    "6015": {
+        "name": "完美回声的碎片",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 6,
+        "map": 608,
+        "copies": 1,
+        "unique": false
+    },
+    "6016": {
+        "name": "穹顶大厅的声学透镜",
+        "kind": "DA",
+        "effect": 15,
+        "quantity": "3",
+        "pool": 6,
+        "map": 608,
+        "copies": 1,
+        "unique": false
+    },
+    "7001": {
+        "name": "应援棒（高亮模式）",
+        "kind": "WP",
+        "effect": 25,
+        "quantity": "10",
+        "pool": 7,
+        "map": 701,
+        "copies": 1,
+        "unique": false
+    },
+    "7002": {
+        "name": "签名应援棒",
+        "kind": "WP",
+        "effect": 60,
+        "quantity": "5",
+        "pool": 7,
+        "map": 701,
+        "copies": 1,
+        "unique": false
+    },
+    "7003": {
+        "name": "经典场面的纪念票根",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 7,
+        "map": 702,
+        "copies": 1,
+        "unique": false
+    },
+    "7004": {
+        "name": "「我也在场」徽章",
+        "kind": "DA",
+        "effect": 30,
+        "quantity": "1",
+        "pool": 7,
+        "map": 702,
+        "copies": 1,
+        "unique": false
+    },
+    "7005": {
+        "name": "消失的论坛帖子（打印版）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 7,
+        "map": 703,
+        "copies": 1,
+        "unique": false
+    },
+    "7006": {
+        "name": "仍在更新的讨论串URL",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 7,
+        "map": 703,
+        "copies": 1,
+        "unique": false
+    },
+    "7007": {
+        "name": "「不要点.txt」的内容",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 7,
+        "map": 704,
+        "copies": 1,
+        "unique": false
+    },
+    "7008": {
+        "name": "林氏软件终端模拟器",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 7,
+        "map": 704,
+        "copies": 1,
+        "unique": false
+    },
+    "7009": {
+        "name": "未完成模式的设定稿",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 7,
+        "map": 705,
+        "copies": 1,
+        "unique": false
+    },
+    "7010": {
+        "name": "发光的文件夹（未读消息）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 7,
+        "map": 705,
+        "copies": 1,
+        "unique": false
+    },
+    "7011": {
+        "name": "玩家手册（修订第∞版）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 7,
+        "map": 706,
+        "copies": 1,
+        "unique": false
+    },
+    "7012": {
+        "name": "前台工作人员的便当盒",
+        "kind": "HH",
+        "effect": 120,
+        "quantity": "1",
+        "pool": 7,
+        "map": 706,
+        "copies": 1,
+        "unique": false
+    },
+    "7013": {
+        "name": "无名的玻璃珠",
+        "kind": "WC",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 7,
+        "map": 707,
+        "copies": 1,
+        "unique": false
+    },
+    "7014": {
+        "name": "刻着名字的念珠",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 7,
+        "map": 707,
+        "copies": 1,
+        "unique": true
+    },
+    "7015": {
+        "name": "能量饮料（半罐）",
+        "kind": "HS",
+        "effect": 30,
+        "quantity": "1",
+        "pool": 7,
+        "map": 708,
+        "copies": 1,
+        "unique": false
+    },
+    "7016": {
+        "name": "「0 viewers」的截图",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 7,
+        "map": 708,
+        "copies": 1,
+        "unique": false
+    },
+    "8001": {
+        "name": "NULL物品（可能什么也没有）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 8,
+        "map": 801,
+        "copies": 1,
+        "unique": false
+    },
+    "8002": {
+        "name": "灰色数据碎片",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 8,
+        "map": 801,
+        "copies": 1,
+        "unique": false
+    },
+    "8003": {
+        "name": "SQL错误日志（可读）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 8,
+        "map": 802,
+        "copies": 1,
+        "unique": false
+    },
+    "8004": {
+        "name": "巨型「WHERE」子句的碎片",
+        "kind": "WC",
+        "effect": 30,
+        "quantity": "1",
+        "pool": 8,
+        "map": 802,
+        "copies": 1,
+        "unique": false
+    },
+    "8005": {
+        "name": "被抹脸的照片",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 8,
+        "map": 803,
+        "copies": 1,
+        "unique": true
+    },
+    "8006": {
+        "name": "像素化的空间边缘样本",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 8,
+        "map": 803,
+        "copies": 1,
+        "unique": false
+    },
+    "8007": {
+        "name": "裂缝中取出的银白色光石",
+        "kind": "HS",
+        "effect": 200,
+        "quantity": "1",
+        "pool": 8,
+        "map": 804,
+        "copies": 1,
+        "unique": false
+    },
+    "8008": {
+        "name": "「不要看」的警告标签",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 8,
+        "map": 804,
+        "copies": 1,
+        "unique": false
+    },
+    "8009": {
+        "name": "钻探地图（被红笔圈掉）",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 8,
+        "map": 805,
+        "copies": 1,
+        "unique": false
+    },
+    "8010": {
+        "name": "黑衣少女遗留的设备",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 8,
+        "map": 805,
+        "copies": 1,
+        "unique": false
+    },
+    "8011": {
+        "name": "未完成的道具模型",
+        "kind": "WC",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 8,
+        "map": 806,
+        "copies": 1,
+        "unique": false
+    },
+    "8012": {
+        "name": "半个NPC的碎片",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 8,
+        "map": 806,
+        "copies": 1,
+        "unique": false
+    },
+    "8013": {
+        "name": "错误NPC的零件",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 8,
+        "map": 807,
+        "copies": 1,
+        "unique": false
+    },
+    "8014": {
+        "name": "「undefined」姓名牌",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 8,
+        "map": 807,
+        "copies": 1,
+        "unique": false
+    },
+    "8015": {
+        "name": "「封印。——岁星」的文件夹",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 8,
+        "map": 808,
+        "copies": 1,
+        "unique": true
+    },
+    "8016": {
+        "name": "五柱标记拓片",
+        "kind": "X",
+        "effect": 1,
+        "quantity": "1",
+        "pool": 8,
+        "map": 808,
+        "copies": 1,
+        "unique": true
+    }
+}

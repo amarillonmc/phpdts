@@ -410,4 +410,12 @@ if(!defined('IN_GAME')) exit('Access Denied');
   );
 
 require GAME_ROOT.'./gamedata/cache/fcg_titles.php';
+$titles_list += Array(9201=>'电梯常客',9202=>'帧间行者',9203=>'温柔的见证者',9204=>'深渊来客',9205=>'阁楼居民');
+$title_desc += Array(
+    9201=>Array('class'=>'tclan','title'=>'完成10局电梯行程。纯荣誉，无入场加成。'),
+    9202=>Array('class'=>'tlime','title'=>'到达电梯的±7层。纯荣誉，无入场加成。'),
+    9203=>Array('class'=>'tclan','title'=>'答对大种火三问。纯荣誉，无入场加成。'),
+    9204=>Array('class'=>'tmagenta','title'=>'下行无尽有效探索10层。纯荣誉，无入场加成。'),
+    9205=>Array('class'=>'tmagenta','title'=>'上行无尽有效探索5层。纯荣誉，无入场加成。')
+);
 ?>

@@ -63,6 +63,10 @@ function move($moveto = 99,&$data=NULL)
 	extract($data,EXTR_REFS);
 
 	$plsnum = sizeof($plsinfo);
+	if(function_exists('ruleset_move_allowed_hook') && !ruleset_move_allowed_hook($data,$moveto)) {
+		$log .= '现在无法前往这个地点。<br>';
+		return;
+	}
 
 	if($pls == $moveto)
 	{
@@ -754,6 +758,7 @@ function discover($schmode = 0,&$data=NULL)
 		{
 			$db->data_seek($result, $enum);
 			$edata = $db->fetch_array($result);
+			if(function_exists('ruleset_encounter_allowed_hook') && !ruleset_encounter_allowed_hook($data,$edata)) continue;
 			$eid = $edata['pid'];
 			# 使用fetch_playerdata_by_pid重新获取敌人数据，以应用各种在载入玩家数据时进行的判定
 			$edata = fetch_playerdata_by_pid($eid);

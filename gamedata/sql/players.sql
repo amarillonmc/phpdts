@@ -38,7 +38,7 @@ CREATE TABLE bra_players (
   att int(10) unsigned NOT NULL DEFAULT '0',
   def int(10) unsigned NOT NULL DEFAULT '0',
   pgroup tinyint unsigned NOT NULL DEFAULT '0',
-  pls tinyint unsigned NOT NULL default '0',
+  pls int unsigned NOT NULL default '0',
   lvl tinyint unsigned NOT NULL default '0',
   `exp` smallint unsigned NOT NULL default '0',
   money int(10) unsigned NOT NULL DEFAULT '0',

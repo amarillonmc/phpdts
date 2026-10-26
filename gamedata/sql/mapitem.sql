@@ -12,7 +12,7 @@ CREATE TABLE bra_mapitem (
   itms char(5) not null default '0',
   itmsk char(5) not null default '',
   itmpara text not null,
-  pls tinyint unsigned not null default '0',
+  pls int unsigned not null default '0',
   
   PRIMARY KEY  (iid)
 ) ENGINE=MyISAM;

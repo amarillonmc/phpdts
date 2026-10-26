@@ -119,6 +119,14 @@ if(isset($udata) && $udata && isset($udata['u_templateid'])) {
 
 $groomid = isset($udata['roomid']) ? $udata['roomid'] : 0;
 
+// 电梯时钟只允许CLI显式指定已经存在的ELEVATOR房间。
+if(PHP_SAPI === 'cli' && CURSCRIPT === 'elevator_tick') {
+	$groomid = ELEVATOR_TICK_ROOM;
+	$elevator_tick_room = $db->query("SELECT gruleset FROM {$gtablepre}game WHERE groomid=".(int)$groomid);
+	$elevator_tick_room = $db->fetch_array($elevator_tick_room);
+	if(!$elevator_tick_room || $elevator_tick_room['gruleset'] !== 'ELEVATOR') exit("Not an ELEVATOR room.\n");
+}
+
 if(!empty($groomid))
 {
 	$result = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid='$groomid'");

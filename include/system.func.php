@@ -610,14 +610,14 @@ function gameover($time = 0, $mode = '', $winname = '') {
 	if($winmode == 4){//无人参加；不需要记录任何资料
 		$getime = $time;
 		$db->query("INSERT INTO {$gtablepre}winners (gid,wmode,vnum,getime) VALUES ('$gamenum','$winmode','$validnum','$getime')");
-	}	elseif(($winmode == 0)||($winmode == 1)||($winmode == 6)){//程序故障、全部死亡、GM中止，不需要记录优胜者资料
+	}	elseif(($winmode == 0)||($winmode == 1)||($winmode == 6)||($winmode == 8 && $winner === '')){//无个人优胜者的整局归档
 		$gstime = $starttime;
 		$getime = $time;
 		$gtime = $time - $starttime;
 		$result = $db->query("SELECT name,killnum FROM {$tablepre}players WHERE type=0 order by killnum desc, lvl desc limit 1");
 		$hk = $db->fetch_array($result);
-		$hkill = $hk['killnum'];
-		$hkp = $hk['name'];
+		$hkill = $hk['killnum'] ?? 0;
+		$hkp = $hk['name'] ?? '';
 		$db->query("INSERT INTO {$gtablepre}winners (gid,wmode,vnum,gtime,gstime,getime,hdmg,hdp,hkill,hkp) VALUES ('$gamenum','$winmode','$validnum','$gtime','$gstime','$getime','$hdamage','$hplayer','$hkill','$hkp')");
 	} else {//最后幸存、锁定解除、核爆全灭，需要记录优胜者资料
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE name='$winner' AND type=0");

@@ -18,6 +18,15 @@ $ruleset_enabled = true;
 
 // RuleSet配置
 $ruleset_config = Array(
+	'ELEVATOR' => Array(
+		'name' => 'ELEVATOR：帧间电梯',
+		'description' => '1—8 人共乘一部电梯，探索湾城、记忆、阁楼与钻探深处。无 PVP；可在节点个人脱出，也可选择双向无尽。',
+		'credits_cost' => 1, 'admin_free' => true,
+		'initial_setup' => Array('hp_limit'=>400, 'sp_limit'=>400, 'money'=>300),
+		'override_modules' => Array(), 'title_system' => 0, 'club_skills' => 2,
+		'avatar_config' => Array('use_ruleset_avatars'=>false),
+		'story_config' => Array('opening_story'=>'', 'ending_story'=>''),
+	),
 	'FCG' => Array(
 		'name' => 'FCG：种火收集游戏',
 		'description' => '与21位小种火进行五色计时卡牌战，也可与同房间牌手或游荡残影切磋。免费对战，永久卡册跨房间保留。',
