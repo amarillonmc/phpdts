@@ -3,6 +3,7 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
+include_once GAME_ROOT.'./include/game/aievent_minion.func.php';
 
 
 function use_func_item($usemode,$item)
@@ -49,6 +50,7 @@ function poison($itmn = 0) {
 	elseif($art == '毒物说明书'){$itmk = substr_replace($itmk,'1',2,1);};
 	if($art == '妖精的羽翼') {$itmk = substr_replace($itmk,'H',0,1);$log .= "一种神秘的力量净化了毒药，你的毒药变成了解毒剂！";}
 	$itmsk = $pid;
+	if(strpos($itmk,'P') === 0) ai93_trigger(3);
 	if($art == '妖精的羽翼') {$log .= "使用了 <span class=\"red\">$poison</span> ，<span class=\"yellow\">{${'itm'.$itmn}}</span> 被净化了！<br>";}
 	else {$log .= "使用了 <span class=\"red\">$poison</span> ，<span class=\"yellow\">{${'itm'.$itmn}}</span> 被下毒了！<br>";}
 	$poisons--;
@@ -62,7 +64,7 @@ function poison($itmn = 0) {
 	return;
 }
 
-function wthchange($itm,$itmsk,$wlog=1){
+function wthchange($itm,$itmsk,$wlog=1,$data=NULL){
 	global $now,$log,$weather,$wthinfo,$name,$nick,$clbpara;
 	$weathertd = $weather;
 	if($weather >= 14 && $weather <= 18){
@@ -103,6 +105,7 @@ function wthchange($itm,$itmsk,$wlog=1){
 			$hp = 9;
 		} else {
 			include_once GAME_ROOT . './include/system.func.php';
+			ai93_trigger(1,$data,true);
 			save_gameinfo ();
 			addnews ( $now, 'wthchange', $name, $weather, $itm , $nick);
 			if($wlog) $log .= "你使用了<span class=\"yellow\">{$itm}</span>。<br />天气突然转变成了<span class=\"red\">$wthinfo[$weather]</span>！<br />";
@@ -609,6 +612,7 @@ function qianghua($itmn = 0) {
 	 $itmsk = '';
 	 $log .="<span class=\"yellow\">『一道神圣的闪光照耀在你的眼睛上，当你恢复视力时，发现你的装备变成了{$itm}』</span><br>";
 	}			
+	ai93_trigger(2);
 	$baoshis--;
 	if($baoshis <= 0){
 		$log .= "<span class=\"red\">$baoshi</span> 用光了。<br>";

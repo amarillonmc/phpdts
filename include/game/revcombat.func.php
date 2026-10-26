@@ -142,6 +142,10 @@ namespace revcombat
 			//判断是否触发击杀或复活：1-继续战斗；0-中止战斗
 			$att_result = rev_combat_result($pa,$pd,$active);
 		} 
+		elseif(\ai93_hitrun($pa,$pd)) {
+			// 落空/零伤害也已经交手一回合；仅补被检体事件，不触发其他命中效果。
+			$att_result = 0;
+		}
 
 		if($att_result && !\fcg_battle_after_attack($pa,$pd,max(0,$att_dmg),$active)) $att_result=0;
 		# 检查是否循环打击流程：一些特殊技能可能需要此效果

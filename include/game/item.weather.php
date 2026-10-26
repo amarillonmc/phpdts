@@ -16,7 +16,7 @@ function item_weather($itmn, &$data) {
 	$itmsk = & ${'itmsk' . $itmn};
 	
 	include_once GAME_ROOT . './include/game/item2.func.php';
-	wthchange($itm, $itmsk);
+	wthchange($itm, $itmsk, 1, $data);
 	if ($itms != $nosta) {
 		$itms--;
 		if ($itms <= 0) {

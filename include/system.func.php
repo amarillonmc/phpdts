@@ -793,6 +793,11 @@ function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
 	}*/
 	$npcinit = get_npcinit();
 	$anpcinfo = get_addnpcinfo();
+	$ai93_pls = array();
+	if($type == 93 && is_int($sub) && $sub >= 0 && $sub < 25) {
+		include_once GAME_ROOT.'./include/game/aievent_minion.func.php';
+		if(ai93_enabled()) $ai93_pls = ai93_safe_plslist();
+	}
 	$anpc_namelist = Array();
 	$anpc = array_merge($npcinit,$anpcinfo[$type]);
 	$anpc = array_merge($anpc,$anpc['sub'][$sub]);
@@ -851,6 +856,9 @@ function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
 					//$npc['pls'] = rand(1,$plsnum-1);
 				}
 			}
+
+			// 高级小兵自然入场及呼唤器召唤时，逐只选择安全地点。
+			if($ai93_pls) $npc['pls'] = $ai93_pls[array_rand($ai93_pls)];
 
 			# NPC称号技能初始化
 			if(!empty($npc['club'])) changeclub($npc['club'],$npc);

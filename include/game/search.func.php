@@ -662,7 +662,7 @@ function discover($schmode = 0,&$data=NULL)
 
 	include_once GAME_ROOT. './include/game/aievent.func.php';//AI事件
 	$aidata = false;//用于判断天然呆AI（冴冴这样的）是否已经来到你身后并且很生气
-	aievent(20);//触发AI事件的概率
+	aievent(20,$data);//触发AI事件的概率
 	if(is_array($aidata))
 	{
 		//触发了AI追击事件

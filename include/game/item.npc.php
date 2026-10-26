@@ -67,7 +67,7 @@ function item_npc($itmn, &$data) {
         addnpc(4, 0, 1);
         include_once GAME_ROOT . './include/game/item2.func.php';
         $log .= '世界响应着这旋律，产生了异变……<br>';
-        wthchange($itm, $itmsk);
+        wthchange($itm, $itmsk, 1, $data);
         addnews($now, 'thiphase', $name, $nick);
         $hack = 1;
         $gamevars['apis'] = $gamevars['api'] = 3;
@@ -200,6 +200,11 @@ function item_npc($itmn, &$data) {
             addnpc(93, 24, 6);
         }
         addnews($now, 'key4', $name, $nick);
+        if(ai93_enabled()) {
+            $ai93 = &ai93_state();
+            $ai93['caller_pid'] = intval($pid);
+            save_gameinfo();
+        }
         $itms--;
         if ($itms <= 0) {
             $log .= "<span class=\"red\">$itm</span>用光了。<br>";

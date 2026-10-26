@@ -5,6 +5,7 @@ if (! defined ( 'IN_GAME' )) {
 }
 
 include_once GAME_ROOT.'./include/game/clubslct.func.php';
+include_once GAME_ROOT.'./include/game/aievent_minion.func.php';
 
 // Main item use function that delegates to specific item type handlers
 function itemuse($itmn,&$data=NULL) {
@@ -148,15 +149,19 @@ function itemuse($itmn,&$data=NULL) {
 	} elseif(strpos($itmk, 'R') === 0) {
 		// Radar (old)
 		item_radar_old($itmn, $data);
+		if($ie > 0) ai93_trigger(2,$data);
 	} elseif(strpos($itmk, 'C') === 0) {
 		// Cure/Medicine
 		item_cure($itmn, $data);
+		ai93_trigger(4,$data);
 	} elseif(strpos($itmk, 'V') === 0) {
 		// Skill books
 		item_skillbook($itmn, $data);
+		ai93_trigger(4,$data);
 	} elseif(strpos($itmk, 'M') === 0) {
 		// Enhancement
 		item_enhance($itmn, $data);
+		ai93_trigger(2,$data);
 	} elseif(strpos($itmk, 'EW') === 0) {
 		// Weather control
 		item_weather($itmn, $data);
@@ -166,18 +171,22 @@ function itemuse($itmn,&$data=NULL) {
 	} elseif(strpos($itmk, 'ER') === 0) {
 		// Radar (new)
 		item_radar_new($itmn, $data);
+		if($ie > 0) ai93_trigger(2,$data);
 	} elseif(strpos($itmk, 'B') === 0) {
 		// Battery
 		item_battery($itmn, $data);
 	} elseif(strpos($itmk, 'p') === 0) {
 		// Gift boxes
 		item_giftbox($itmn, $data);
+		ai93_trigger(1,$data);
 	} elseif(strpos($itmk, 'ygo') === 0) {
 		// YGO boxes
 		item_ygo_box($itmn, $data);
+		ai93_trigger(1,$data);
 	} elseif(strpos($itmk, 'fy') === 0) {
 		// FY boxes
 		item_fy_box($itmn, $data);
+		ai93_trigger(1,$data);
 	} elseif(strpos($itmk, 'f99') === 0) {
 		// Debug boxes
 		item_debug_box($itmn, $data);
@@ -195,7 +204,9 @@ function itemuse($itmn,&$data=NULL) {
 		// Check if it's a tool item
 		item_tool($itmn, $data);
 		// Check if it's a weapon modification item
+		$ai93_mod_itm = $itm; $ai93_mod_uses = $itms;
 		item_weapon_mod($itmn, $data);
+		if($itm != $ai93_mod_itm || $itms != $ai93_mod_uses) ai93_trigger(2,$data);
 		// Check if it's an ending item
 		item_ending($itmn, $data);
 		// Check if it's a special effect item

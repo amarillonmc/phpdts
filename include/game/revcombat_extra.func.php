@@ -372,6 +372,7 @@ namespace revcombat
 		# QUEST战斗结算事件 / QUEST attack result events
 		$quest_flag = \quest_attack_result_events($pa,$pd,$active);
 		if($quest_flag < 0) return $quest_flag;
+		if(\ai93_hitrun($pa,$pd)) return -1;
 		return;
 	}
 

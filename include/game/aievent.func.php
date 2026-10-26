@@ -3,7 +3,9 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
-function aievent($rate){
+include_once GAME_ROOT.'./include/game/aievent_minion.func.php';
+
+function aievent($rate,&$data=NULL){
 	global $log,$now,$plsinfo,$db,$tablepre,$gamevars,$validnum,$chatlimit;
 	global $validtime,$killnum;
 	
@@ -277,5 +279,10 @@ function aievent($rate){
 			}	
 		}
 	}
+	if($data === NULL) {
+		global $pdata;
+		$data = &$pdata;
+	}
+	if($data) aievent_minion($rate,$data);
 }
 ?>

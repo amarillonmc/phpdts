@@ -31,7 +31,14 @@ function item_trap($itmn, &$data) {
 		$log .= "你对随机数大神的反叛让随机数大神将<span class=\"red\">$itm</span>变成了一个随机造成伤害的地雷！<br>";
 	}
 
-	$db->query("INSERT INTO {$tablepre}maptrap (itm, itmk, itme, itms, itmsk, pls) VALUES ('$itm', '$trapk', '$itme', '1', '$pid', '$pls')");
+	// 回收的AI异常雷保留异常，归属改为本次设置者；其他陷阱沿用原行为。
+	$trappara = get_itmpara($data['itmpara'.$itmn]);
+	if(ai93_enabled() && isset($trappara['ai93_inf']) && in_array($trappara['ai93_inf'],array('i','u','e','p','w'))) {
+		$db->array_insert($tablepre.'maptrap',array('itm'=>$itm,'itmk'=>$trapk,'itme'=>$itme,'itms'=>1,'itmsk'=>$pid,'pls'=>$pls,'itmpara'=>json_encode($trappara,JSON_UNESCAPED_UNICODE)));
+	} else {
+		$db->query("INSERT INTO {$tablepre}maptrap (itm, itmk, itme, itms, itmsk, pls) VALUES ('$itm', '$trapk', '$itme', '1', '$pid', '$pls')");
+	}
+	ai93_trigger(3,$data);
 	$log .= "设置了陷阱<span class=\"red\">$itm</span>。<br>小心，自己也很难发现。<br>";
 	
 	if($club == 5){$exp += 2;$wd+=2;}

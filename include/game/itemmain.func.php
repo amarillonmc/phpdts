@@ -12,6 +12,7 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
+include_once GAME_ROOT.'./include/game/aievent_minion.func.php';
 
 
 # 计算发现陷阱后的“触发率”
@@ -243,6 +244,7 @@ function trap(&$data=NULL){
 	if($dice >= $escrate)
 	{
 		$bid = $itmsk0;
+		ai93_trigger(3,$data);
 
 		# 「种火IV」效果判定：
 		if(!empty($data['clbpara']['skill']) && in_array('fireseed4', $data['clbpara']['skill']))
@@ -284,6 +286,14 @@ function trap(&$data=NULL){
 			$log .= "糟糕，你触发了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>！<br>";
 			if(!empty($data['skilllog'])) $log.= $data['skilllog'];
 			$log .= "受到<span class=\"dmg\">$damage</span>点伤害！<br>";
+			$trappara = get_itmpara($itmpara0);
+			if(ai93_enabled() && isset($trappara['ai93_inf']) && in_array($trappara['ai93_inf'],array('i','u','e','p','w'))) {
+				include_once GAME_ROOT.'./include/game/revattr.func.php';
+				if(\revattr\get_inf_rev($data,$trappara['ai93_inf'])) {
+					global $exdmginf;
+					$log .= '<span class="yellow">陷阱中弥漫的诡异物质使你'.$exdmginf[$trappara['ai93_inf']].'了！</span><br>';
+				}
+			}
 
 			# 踩雷rp结算
 			$rp_up = -1 * $rp / 2;
@@ -377,7 +387,7 @@ function trap(&$data=NULL){
 			// include_once GAME_ROOT.'./include/game/achievement.func.php';
 			// check_trap_fail_achievement($achievement,$selflag,$itm0,$itme0);
 		}
-		$itm0 = $itmk0 = $itmsk0 = '';
+		$itm0 = $itmk0 = $itmsk0 = $itmpara0 = '';
 		$itme0 = $itms0 = 0;
 		return;
 	}
@@ -425,7 +435,7 @@ function trap(&$data=NULL){
 			{
 				$log .= "你触发了{$trperfix}陷阱<span class=\"yellow\">$itm0</span>，不过你成功地回避了陷阱。<br>";
 			}
-			$itm0 = $itmk0 = $itmsk0 = '';
+			$itm0 = $itmk0 = $itmsk0 = $itmpara0 = '';
 			$itme0 = $itms0 = 0;
 			$mode = 'command';
 			return;
