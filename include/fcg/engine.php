@@ -1,5 +1,6 @@
 <?php
 if(!defined('IN_GAME')) exit('Access Denied');
+require_once GAME_ROOT.'./include/fcg/adaptive.php';
 
 function fcg_cards()
 {
@@ -9,6 +10,19 @@ function fcg_cards()
 }
 
 function fcg_colors() { return array('W','R','Y','G','B'); }
+
+function fcg_npc_decks()
+{
+	static $decks;
+	if($decks===null) {
+		$decks=array(); $counts=require GAME_ROOT.'./gamedata/ruleset/FCG/npc_decks.php';
+		foreach($counts as $kind=>$group) foreach($group as $key=>$list) {
+			$decks[$kind][$key]=array();
+			foreach($list as $id=>$n) $decks[$kind][$key]=array_merge($decks[$kind][$key],array_fill(0,$n,$id));
+		}
+	}
+	return $decks;
+}
 
 function fcg_starter_deck()
 {
@@ -80,18 +94,55 @@ function fcg_opponents()
 		}
 		$opponents[17+$i]=array('id'=>17+$i,'name'=>'✦'.$name,'level'=>$level,'hp'=>$hp,'deck'=>$deck,'portrait'=>'img/fcg/fireseeds/'.(13+$i).'.png');
 	}
+	foreach(range(5,20) as $id) {
+		$opponents[$id]['has_hard']=true;
+		$opponents[$id]['hard_hp']=$opponents[$id]['hp']+25;
+		$opponents[$id]['hard_level']=$opponents[$id]['level']+2;
+	}
+	$opponents[21]=array('id'=>21,'name'=>'✦推演的炉火','level'=>7,'hp'=>120,
+		'deck'=>fcg_npc_decks()['adaptive']['W'],'portrait'=>'img/fcg/fireseeds/17.png','adaptive'=>true);
 	return $opponents;
 }
 
-function fcg_new_match($deck, $opponent, $now)
+function fcg_hard_drop_pool($opponent)
+{
+	$cards=fcg_cards(); $pool=array();
+	$signature=array_filter(array_unique(fcg_opponents()[$opponent]['deck']),function($id)use($cards){return !$cards[$id]['unlimited'];});
+	foreach($signature as $id) {
+		$pool[]=$id;
+		if($cards[$id]['upgraded']) $pool[]=$id;
+	}
+	foreach(array_diff(array_unique(fcg_npc_decks()['hard'][$opponent]),$signature) as $id) {
+		if(!$cards[$id]['unlimited'] && ($cards[$id]['upgraded'] || $cards[$id]['rare'])) $pool[]=$id;
+	}
+	return $pool;
+}
+
+function fcg_new_match($deck, $opponent, $now, $hard = false, $evo = null)
 {
 	$all = fcg_opponents();
-	if(!isset($all[$opponent])) throw new InvalidArgumentException('找不到这位牌手。');
+	if(!is_int($opponent) || !isset($all[$opponent])) throw new InvalidArgumentException('找不到这位牌手。');
+	if(!is_bool($hard)) throw new InvalidArgumentException('请选择有效的挑战难度。');
 	$o = $all[$opponent];
-	return array('id'=>bin2hex(random_bytes(12)),'opponent'=>$opponent,'turn'=>1,'deadline'=>$now+10,
-		'ai_at'=>$now+2,'sides'=>array(fcg_side($deck),fcg_side($o['deck'],$o['hp'])),
-		'drop_pool'=>$o['deck'],'last_spell'=>null,'result'=>null,'rewarded'=>false,'stickers'=>array(1=>array('id'=>1,'at'=>$now)),
+	if($hard && empty($o['has_hard'])) throw new InvalidArgumentException('这位牌手没有认真模式。');
+	if($hard) { $o['deck']=fcg_npc_decks()['hard'][$opponent]; $o['hp']=$o['hard_hp']; }
+	if($opponent===21) {
+		$evo=$evo ?? fcg_evo_initial_state(); $color=fcg_colors()[random_int(0,4)];
+		$o['deck']=$evo['decks'][$color];
+	}
+	$m=array('id'=>bin2hex(random_bytes(12)),'opponent'=>$opponent,'hard'=>$hard,'turn'=>1,'deadline'=>$now+10,
+		'ai_at'=>$now+($hard?1:2),'sides'=>array(fcg_side($deck),fcg_side($o['deck'],$o['hp'])),
+		'drop_pool'=>$hard ? fcg_hard_drop_pool($opponent) : $o['deck'],'last_spell'=>null,'result'=>null,'rewarded'=>false,'stickers'=>array(1=>array('id'=>1,'at'=>$now)),
 		'log'=>array('小种火把牌堆推到了你的面前。'));
+	if($hard) fcg_log($m,'种火认真起来了：使用 32 张精选构筑，生命增加 25，出牌更快。');
+	if($opponent===21) {
+		$m['ai_color']=$color; $m['ai_gen']=$evo['gen'][$color]; $m['ai_change']=$evo['deck_stats'][$color]['last_change'];
+		$m['telemetry']=array_fill(0,2,array('played'=>array(),'solo_played'=>array(),'seen_turns'=>array(),'stalled_turns'=>array(),'seen_this_turn'=>array(),'turns'=>0,'energy_starved'=>0,'hand_starved'=>0));
+		foreach(array(0,1) as $side) fcg_evo_observe_hand($m,$side);
+		$label=array('W'=>'白','R'=>'红','Y'=>'黄','G'=>'绿','B'=>'蓝')[$color];
+		fcg_log($m,'推演的炉火选用了'.$label.'色构筑，第 '.$m['ai_gen'].' 世代。'.$m['ai_change']);
+	}
+	return $m;
 }
 
 function fcg_log(&$m, $line)
@@ -328,7 +379,15 @@ function fcg_play(&$m, $side, $slot)
 	$card=fcg_cards()[$a['hand'][$slot]]; $cost=!empty($a['free'][$slot]) ? 0 : $card['cost'];
 	if($a['energy'][$card['color']]<$cost) throw new InvalidArgumentException('对应颜色的能量不足。');
 	if($card['type']==='monster' && !fcg_can_summon($a,$card)) throw new InvalidArgumentException('驻场位置已被占据，可以先解散帮手。');
+	fcg_evo_observe_hand($m,$side);
 	$a['energy'][$card['color']]-=$cost; fcg_remove_hand($a,$slot);
+	if(isset($m['telemetry'][$side])) {
+		$t=&$m['telemetry'][$side]; $id=$card['id'];
+		$t['played'][$id]=($t['played'][$id] ?? 0)+1;
+		// 异色余韵实际触发的出牌仍计数，但不把其混色胜率当作单色构筑的证据。
+		if(!fcg_evo_cross_resonance($card,$a['last_color'] ?? null)) $t['solo_played'][$id]=($t['solo_played'][$id] ?? 0)+1;
+		unset($t);
+	}
 	$a['played_this_turn']=($a['played_this_turn'] ?? 0)+1;
 	$bug=fcg_aura($b,'aura_bug_draw',null);
 	if(!$card['unlimited'] && $bug!==null) { if($bug==0) fcg_draw($b); else fcg_energy($b,'Y',$bug); }
@@ -341,6 +400,7 @@ function fcg_play(&$m, $side, $slot)
 		if(strpos($card['ops'],'mirror_last_spell')===false) $m['last_spell']=$card['id'];
 	}
 	$a['last_color']=$card['color']; $m['last_card']=$card['id'];
+	foreach(array(0,1) as $i) fcg_evo_observe_hand($m,$i);
 	if($side===1 && empty($m['live']) && $card['rare'] && $m['ai_at']-($m['stickers'][1]['at'] ?? 0)>=3) $m['stickers'][1]=array('id'=>22,'at'=>$m['ai_at']);
 	if(empty($m['live']) || ($m['extension'] ?? 0)<4) { $m['deadline']++; $m['extension']=($m['extension'] ?? 0)+1; }
 	fcg_log($m,fcg_side_name($m,$side).'打出了「'.$card['name'].'」。'); fcg_finish($m);
@@ -377,6 +437,7 @@ function fcg_packet(&$attacker, &$defender, $damage, $pierce, $hunt, $color = nu
 
 function fcg_turn(&$m)
 {
+	fcg_evo_end_turn($m);
 	// Snapshot offense before either side is hit; a simultaneous lethal attack still resolves.
 	$before=$m['sides']; $damage=array(0,0);
 	foreach(array(0,1) as $i) {
@@ -436,6 +497,7 @@ function fcg_turn(&$m)
 	if($m['result']!==null) return;
 	$m['turn']++; $m['deadline']+=5; $m['extension']=0;
 	foreach($m['sides'] as &$s) { foreach(fcg_colors() as $c) fcg_energy($s,$c,$s['gen'][$c]); fcg_draw($s); } unset($s);
+	if(isset($m['telemetry'])) foreach(array(0,1) as $i) { $m['telemetry'][$i]['seen_this_turn']=array(); fcg_evo_observe_hand($m,$i); }
 }
 
 function fcg_ai(&$m, $side = 1)
@@ -457,7 +519,7 @@ function fcg_ai(&$m, $side = 1)
 	elseif(count($s['hand'])===6) {
 		// Do not remain permanently blocked behind a full hand of unaffordable/duplicate units.
 		$worst=0; foreach($s['hand'] as $slot=>$id) if($cards[$id]['cost']>$cards[$s['hand'][$worst]]['cost']) $worst=$slot;
-		fcg_remove_hand($m['sides'][$side],$worst); $m['sides'][$side]['regen']--;
+		fcg_evo_observe_hand($m,$side); fcg_remove_hand($m['sides'][$side],$worst); $m['sides'][$side]['regen']--;
 		fcg_log($m,fcg_side_name($m,$side).'弃掉了一张手牌。');
 	}
 }
@@ -467,7 +529,7 @@ function fcg_advance(&$m, $now)
 	// Both AI decisions and turn boundaries use the persisted clock, independent of polling frequency.
 	$steps=0;
 	while($m['result']===null && min($m['deadline'],$m['ai_at'])<=$now && $steps++<1200) {
-		if($m['ai_at']<$m['deadline']) { $at=$m['ai_at']; fcg_ai($m); $m['ai_at']=$at+2; }
+		if($m['ai_at']<$m['deadline']) { $at=$m['ai_at']; fcg_ai($m); $m['ai_at']=$at+(!empty($m['hard'])?1:2); }
 		else { $at=$m['deadline']; fcg_turn($m); }
 		if($m['result']!==null) $m['stickers'][1]=array('id'=>$m['result']==='loss'?28:12,'at'=>$at);
 	}

@@ -1,0 +1,13 @@
+✦推演的炉火：立绘生成记录
+
+工具：内置 image_gen（imagegen 技能），不透明背景。
+成品：img/fcg/fireseeds/17.png，451×451 PNG。
+原图：1254×1254，使用 tools/prepare_fcg_art.ps1 沿用已有资源制作方式缩放。
+用途：FCG 对手 #21 的独立立绘；无文字、五色浮空卡牌、思考中的小种火学者。
+
+最终提示词：
+Use case: stylized-concept
+Asset type: square portrait illustration for a Chinese fantasy card game's NPC roster, matching polished cute chibi anime fire-spirit portraits on very dark backgrounds.
+Primary request: create a new unique NPC called the contemplative evolving hearth, a gentle gender-neutral little flame scholar who learns five colors of card magic. Do not put any text in the image.
+Subject: a small full-body chibi magical scholar, luminous warm ivory hair shaped subtly like a flame, bright observant eyes, charcoal and ivory layered cloak with fine brass trim, holding a small open grimoire shaped like a fan of game cards. A small warm hearth ember glows at their chest. Exactly five clearly distinguished floating blank magical cards orbit the character, glowing white, red, yellow, green, blue respectively. Fine circular arcane trajectories suggest contemplation and recombining strategies.
+Composition: single centered character, head and body entirely visible within square frame, strong silhouette readable as a small game avatar, slightly larger head, feet near lower center, simple dark midnight backdrop. Detailed elegant clean linework and soft painterly anime shading. Warm restrained firelight with multicolor card reflections, charming and thoughtful, no weapons, no text, no letters, no logos, no watermark, no UI border. Opaque background.

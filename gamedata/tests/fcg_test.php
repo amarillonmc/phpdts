@@ -169,4 +169,118 @@ fcg_expire_temp($data,$user,86500,$key);fcg_test(empty($data['temp_cards']) && c
 fcg_pvp_reward($data,$user,2,array(151),86500,$key);fcg_test($data['embers']===8,'daily reward resets');fcg_expire_temp($data,$user,86501,'0:2:200');fcg_test(empty($data['temp_cards']),'new room instance expires borrowed card');
 $data['pvp_wins']=9;fcg_pvp_reward($data,$user,2,array(151),86500,$key);fcg_test(fcg_title_owned($user,9121),'ten wins cosmetic title');$data['pvp_wins']=49;fcg_pvp_reward($data,$user,2,array(151),86500,$key);fcg_test(fcg_title_owned($user,9122),'fifty wins cosmetic title');
 $data=fcg_new_account();$user['nicksrev']='';foreach(range(4,20) as $i)$data['wins'][$i]=1;fcg_settle($data,$user);fcg_test(!fcg_title_owned($user,9106),'new opponents do not substitute for initial seventeen');foreach(range(0,16) as $i)$data['wins'][$i]=1;fcg_settle($data,$user);fcg_test(fcg_title_owned($user,9106),'old seventeen achievement unchanged');
+// Phase 3: HARD is a server-validated variant; normal decks and rewards remain available.
+$opponents=fcg_opponents(); $npc_decks=fcg_npc_decks();
+fcg_test(count($opponents)===22 && count($npc_decks['hard'])===16,'22 opponents and exactly 16 hard decks');
+foreach(range(5,20) as $id) {
+	$o=$opponents[$id]; $hard=fcg_new_match(fcg_starter_deck(),$id,100,true); $normal=fcg_new_match(fcg_starter_deck(),$id,100);
+	fcg_test(count($npc_decks['hard'][$id])===32,'hard has 32 cards '.$id);
+	fcg_validate_deck($npc_decks['hard'][$id],array_fill(0,230,100));
+	$actual=array_merge($hard['sides'][1]['hand'],$hard['sides'][1]['deck']); sort($actual); $expected=$npc_decks['hard'][$id]; sort($expected);
+	fcg_test($actual===$expected && $hard['sides'][1]['hp']===$o['hp']+25 && $o['hard_level']===$o['level']+2,'hard deck and stats '.$id);
+	fcg_test($normal['drop_pool']===$o['deck'] && $normal['sides'][1]['hp']===$o['hp'],'normal unchanged '.$id);
+	$signature=array_filter(array_unique($o['deck']),function($cid)use($cards){return !$cards[$cid]['unlimited'];});
+	$drops=array_count_values($hard['drop_pool']);
+	foreach($drops as $cid=>$n) fcg_test(!$cards[$cid]['unlimited'] && (in_array($cid,$signature,true) || (in_array($cid,$npc_decks['hard'][$id],true) && ($cards[$cid]['upgraded'] || $cards[$cid]['rare']))),'hard drop eligibility '.$id.':'.$cid);
+	foreach($signature as $cid) fcg_test($drops[$cid]===($cards[$cid]['upgraded']?2:1),'signature weight '.$id.':'.$cid);
+	$old_rate=count(array_filter($o['deck'],function($cid)use($signature){return in_array($cid,$signature,true);}))/count($o['deck']);
+	$new_rate=array_sum(array_intersect_key($drops,array_flip($signature)))/count($hard['drop_pool']);
+	fcg_test($new_rate>=$old_rate,'signature drops not diluted '.$id);
+	fcg_advance($hard,100000); fcg_test($hard['result']!==null,'hard match terminates '.$id);
+}
+foreach(array(0,4,21,22) as $id) fcg_test_throws(function()use($id){fcg_new_match(fcg_starter_deck(),$id,100,true);},'unsupported hard opponent '.$id);
+fcg_test_throws(function(){fcg_new_match(fcg_starter_deck(),5,100,'1');},'hard must be boolean');
+$data=fcg_new_account(); $user=array('nicksrev'=>'','credits2'=>0);
+fcg_test_throws(function()use(&$data,&$user){fcg_action($data,$user,array('action'=>'start','opponent'=>5,'hard'=>true),100,false);},'hard requires FCG room');
+fcg_action($data,$user,array('action'=>'start','opponent'=>5,'hard'=>true),100,true);
+fcg_test($data['match']['hard'],'request selects hard');
+$data['match']['result']='win'; fcg_settle($data,$user); $once=$data; fcg_settle($data,$user);
+fcg_test($data===$once && $data['hard_wins'][5]===1 && $data['wins'][5]===1 && $data['played']===1,'hard reward and wins exactly once');
+$reloaded=fcg_load_account(fcg_json($data)); fcg_settle($reloaded,$user); fcg_test($reloaded['hard_wins'][5]===1,'hard win survives reload');
+fcg_test(isset(fcg_public_state($data,$user,true,100)['hard_wins']->{5}),'hard wins public');
+unset($data['hard_wins']); fcg_test(fcg_load_account(fcg_json($data))['hard_wins']===array(),'old accounts default hard record');
+foreach(array(false,true) as $hard) {
+	$m=fcg_new_match(fcg_starter_deck(),5,100,$hard); $m['sides'][1]['hand']=array(1,1,1,1); $m['sides'][1]['deck']=array();
+	fcg_advance($m,103); fcg_test($m['sides'][1]['gen']['W']===($hard?4:2),'AI cadence '.($hard?'hard':'normal'));
+}
+
+function fcg_test_evo_deck($deck,$color) {
+	global $cards;
+	fcg_test(count($deck)===32,'adaptive size '.$color); $tiers=array_fill(0,4,0);
+	foreach(array_count_values($deck) as $id=>$n) {
+		fcg_test(isset($cards[$id]) && $cards[$id]['color']===$color,'adaptive same color '.$color.':'.$id);
+		fcg_test($cards[$id]['unlimited'] || $n<=($cards[$id]['rare']?2:4),'adaptive copy cap '.$id);
+		$tiers[fcg_evo_tier($cards[$id])]+=$n;
+	}
+	fcg_test($tiers[0]>=9 && $tiers[0]<=12 && $tiers[1]>=10 && $tiers[1]<=12 && $tiers[2]>=6 && $tiers[2]<=8 && $tiers[3]>=2 && $tiers[3]<=4,'adaptive curve '.$color);
+	return $tiers;
+}
+function fcg_test_evo_match($hand=array()) {
+	$m=fcg_new_match(fcg_starter_deck(),21,100); $m['ai_color']='W';
+	foreach(array(0,1) as $side) { $m['sides'][$side]=fcg_side(array()); $m['sides'][$side]['hp']=200; $m['sides'][$side]['hand']=$side?array():$hand; }
+	foreach($m['telemetry'] as &$t) { foreach($t as &$v) $v=is_array($v)?array():0; unset($v); } unset($t);
+	return $m;
+}
+$evo=fcg_evo_initial_state();
+foreach(fcg_colors() as $color) fcg_test(fcg_test_evo_deck($evo['decks'][$color],$color)===array(10,12,6,4),'cold curve '.$color);
+$m=fcg_new_match(fcg_starter_deck(),21,100,false,$evo); $chosen=$m['ai_color'];
+$actual=array_merge($m['sides'][1]['hand'],$m['sides'][1]['deck']);sort($actual);$expected=$evo['decks'][$chosen];sort($expected);
+fcg_test($actual===$expected && $m['sides'][1]['hp']===120 && $m['ai_gen']===1 && count($m['telemetry'])===2,'adaptive opening takes chosen generation');
+fcg_test(strpos(implode('',$m['log']),'初始平衡构筑')!==false,'opening explains last changes');
+$data=fcg_new_account();$data['match']=$m;$public=fcg_public_state($data,$user,true,100);
+fcg_test(!isset($public['match']['telemetry'],$public['match']['sides'][1]['hand'],$public['match']['drop_pool']),'telemetry does not expose enemy hand');
+
+$m=fcg_test_evo_match(array(33,33));fcg_turn($m);
+fcg_test($m['telemetry'][0]['stalled_turns'][33]===1 && $m['telemetry'][0]['energy_starved']===1 && $m['telemetry'][0]['hand_starved']===0,'duplicates count as one stalled card-turn');
+fcg_test($m['telemetry'][0]['seen_turns'][33]===2 && $m['telemetry'][1]['hand_starved']===1,'new turn observes retained hand and empty opponent');
+$m=fcg_test_evo_match(array(95));$m['sides'][0]['free'][0]=true;fcg_turn($m);
+fcg_test($m['telemetry'][0]['energy_starved']===0 && $m['telemetry'][0]['hand_starved']===1,'free search card not energy starved');
+$m=fcg_test_evo_match(array(24));$m['sides'][0]['energy']['W']=99;fcg_summon($m,0,$cards[24]);fcg_turn($m);
+fcg_test($m['telemetry'][0]['energy_starved']===0,'occupied monster slot not misreported as energy shortage');
+$m=fcg_test_evo_match(array(33));fcg_test_throws(function()use(&$m){fcg_play($m,0,0);},'failed play not telemetry');
+fcg_test(empty($m['telemetry'][0]['played']),'rejected play count zero');
+$m['sides'][0]['energy']['R']=99;fcg_play($m,0,0);
+fcg_test($m['telemetry'][0]['played'][33]===1 && $m['telemetry'][0]['seen_turns'][33]===1,'successful play seen once');
+$m['sides'][0]['hand']=array(33);fcg_play($m,0,0);
+fcg_test($m['telemetry'][0]['played'][33]===2 && $m['telemetry'][0]['seen_turns'][33]===1,'multiple plays one card-turn');
+$m['turn']=3;$m['result']='win';$evo=fcg_evo_initial_state();fcg_evo_record_and_optimize($evo,$m);
+fcg_test($evo['card_stats'][33]['plr_plays']===2 && $evo['card_stats'][33]['plr_played_games']===1 && $evo['card_stats'][33]['plr_played_wins']===1 && $evo['deck_stats']['W']['matches']===1,'red player card learned during white NPC match');
+$m['turn']=2;$before=$evo;fcg_test(!fcg_evo_record_and_optimize($evo,$m) && $evo===$before,'short surrender ignored');
+$m['turn']=3;$m['result']=null;fcg_test(!fcg_evo_record_and_optimize($evo,$m),'unfinished match ignored');
+$m['result']='draw';fcg_evo_record_and_optimize($evo,$m);fcg_test($evo['card_stats'][33]['plr_played_games']===2 && $evo['card_stats'][33]['plr_played_wins']===1,'draw is sample without win credit');
+
+$m=fcg_test_evo_match(array(1,191));$m['sides'][0]['energy']['B']=99;fcg_play($m,0,0);fcg_play($m,0,0);$m['turn']=3;$m['result']='win';$evo=fcg_evo_initial_state();fcg_evo_record_and_optimize($evo,$m);
+fcg_test($evo['card_stats'][191]['plr_plays']===1 && empty($evo['card_stats'][191]['plr_played_games']),'triggered off-color resonance excluded from mono win evidence');
+$without=$cards[191];$without['ops']='gain_hp(self, 16); clean_self_poison';fcg_test(fcg_card_prior_score($without)===fcg_card_prior_score($cards[191]),'off-color resonance omitted from prior');
+$evo=fcg_evo_initial_state();$evo['card_stats'][33]=array('npc_played_games'=>8,'npc_played_wins'=>6,'plr_played_games'=>8,'plr_played_wins'=>5,'npc_seen'=>10,'npc_stalled'=>2,'plr_seen'=>4,'plr_stalled'=>2);
+$expected=0.6*70+0.25*60+0.15*fcg_card_prior_score($cards[33])-3/12*35;
+fcg_test(abs(fcg_evo_card_score($evo,33)-$expected)<0.00001,'smoothed 60/25/15 score and stall penalty');
+$evo=fcg_evo_initial_state();$evo['card_stats'][24]=array('npc_played_games'=>100,'npc_played_wins'=>0,'npc_seen'=>100,'npc_stalled'=>100);
+fcg_evolve_npc_deck($evo,'W');fcg_test(array_count_values($evo['decks']['W'])[24]===1,'two worst non-energy copies replaced in their fee band');
+fcg_test(fcg_test_evo_deck($evo['decks']['W'],'W')===array(10,12,6,4),'slot replacement preserves curve');
+$evo=fcg_evo_initial_state();$before=fcg_evo_card_score($evo,33);$evo['card_stats'][33]=array('plr_played_games'=>20,'plr_played_wins'=>20);
+fcg_test(fcg_evo_card_score($evo,33)>$before,'player wins increase candidate score for its own color');
+
+$evo=fcg_evo_initial_state();$m=fcg_test_evo_match(array(1));fcg_play($m,0,0);$m['turn']=3;$m['result']='loss';
+for($i=0;$i<11;$i++) fcg_evo_record_and_optimize($evo,$m);
+fcg_test($evo['gen']['W']===1 && $evo['deck_stats']['W']['matches']===11,'no early generation');
+fcg_evo_record_and_optimize($evo,$m);
+fcg_test($evo['gen']['W']===2 && $evo['deck_stats']['W']['matches']===0 && $evo['deck_stats']['W']['total_matches']===12 && abs($evo['card_stats'][1]['plr_plays']-10.2)<0.00001,'twelfth match advances and decays');
+fcg_test($evo['gen']['R']===1 && $evo['decks']['R']===$npc_decks['adaptive']['R'],'other color not evolved');
+
+foreach(fcg_colors() as $color) {
+	$evo=fcg_evo_initial_state();
+	// Repeated shortage and empty-hand generations must keep curve and copy limits bounded.
+	foreach(array(true,true,true,false,false,false,false) as $starved) {
+		$evo['deck_stats'][$color]['total_turns']=100;
+		$evo['deck_stats'][$color]['energy_starved']=$starved?30:0;
+		$evo['deck_stats'][$color]['hand_starved']=$starved?0:50;
+		$before=$evo['decks'][$color];fcg_evolve_npc_deck($evo,$color);$tiers=fcg_test_evo_deck($evo['decks'][$color],$color);
+		fcg_test(count(array_diff_assoc($before,$evo['decks'][$color]))<=3,'at most one curve change plus two replacements');
+	}
+	fcg_test($tiers[0]===9,'redundant energy lower bound '.$color);
+}
+$data=fcg_new_account();$data['match']=$m;$context=array('raw'=>'','state'=>fcg_evo_initial_state());fcg_settle($data,$user,100,'',$context);$once=$context;
+fcg_settle($data,$user,100,'',$context);fcg_test($context===$once,'settlement learns exactly once in memory');
+
 echo 'FCG: '.$checks." checks passed.\n";

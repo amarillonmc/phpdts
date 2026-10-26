@@ -104,10 +104,17 @@
     let html=(!state.in_room?'<div class="fcg-note">卡册和商店随时开放。开始对战前，请在 <a href="index.php">大厅房间列表</a> 的「创建异色房间」中选择 FCG，或加入已有 FCG 房间。</div>':'');
     if(playing) html+='<div class="fcg-note">牌局仍在进行中。<button data-tab="battle">回到牌桌</button></div>';
     if(state.in_room) html+='<h2>同房间的牌手</h2><div class="fcg-online">'+(state.online.length?state.online.map(p=>'<span>'+esc(p.name)+' <button data-action="invite" data-uid="'+p.uid+'" '+(playing||p.busy?'disabled':'')+'>'+(p.busy?'对局中':'发起切磋')+'</button></span>').join(''):'等待其他牌手落座。')+'</div>';
-    html+='<div class="fcg-section-head"><h2>陪练的小家伙们</h2><span class="fcg-muted">赢过 '+Object.keys(state.wins).length+' / '+boot.opponents.length+' 位</span></div><p class="fcg-muted">对战免费。胜利会随机获得种火本局牌组中的一张卡；失败与平局不扣除卡片。</p>';
-    for(const [lo,hi,title] of [[0,5,'初次相逢 · Lv.1–2'],[5,11,'外面的回声'],[11,17,'更深处的记忆'],[17,21,'演武场的锋芒 · Vol.2']]) {
+    html+='<div class="fcg-section-head"><h2>陪练的小家伙们</h2><span class="fcg-muted">赢过 '+Object.keys(state.wins).length+' / '+boot.opponents.length+' 位</span></div><p class="fcg-muted">对战免费。普通挑战获胜可获得对手本局牌组中的一张卡；认真模式赠送角色代表卡或精选升级／稀有卡，升级代表卡更易获得，不掉落基础能量卡。失败与平局不扣除卡片。</p>';
+    for(const [lo,hi,title] of [[0,5,'初次相逢 · Lv.1–2'],[5,11,'外面的回声'],[11,17,'更深处的记忆'],[17,21,'演武场的锋芒 · Vol.2'],[21,22,'推演不息']]) {
       html+='<div class="fcg-section-head"><h3>'+title+'</h3></div><div class="fcg-opponents">';
-      for(const o of boot.opponents.slice(lo,hi)) html+='<article class="fcg-opponent">'+(state.wins[o.id]?'<span class="fcg-won">已胜 '+state.wins[o.id]+' 次</span>':'')+'<img src="'+esc(o.portrait)+'" alt="'+esc(o.name)+'"><div><h3>'+esc(o.name)+'</h3><span class="fcg-muted">Lv.'+o.level+' · '+o.hp+' 生命</span></div><button data-action="start" data-opponent="'+o.id+'" '+(!state.in_room||playing?'disabled':'')+'>坐下来打一局</button></article>';
+      for(const o of boot.opponents.slice(lo,hi)) {
+        const disabled=!state.in_room||playing?'disabled':'', hardWins=(state.hard_wins||{})[o.id]||0;
+        html+='<article class="fcg-opponent'+(o.adaptive?' fcg-adaptive':'')+'">'+(state.wins[o.id]?'<span class="fcg-won">已胜 '+state.wins[o.id]+' 次</span>':'')+'<img src="'+esc(o.portrait)+'" alt="'+esc(o.name)+'"><div><h3>'+esc(o.name)+'</h3><span class="fcg-muted">Lv.'+o.level+' · '+o.hp+' 生命</span></div>';
+        if(o.adaptive) html+='<p class="fcg-opponent-note">从五套单色构筑中随机选用一套。每色打满 12 局有效对局后，学习双方的用牌表现、调整构筑。开局可查看颜色、世代和上轮换牌。</p>';
+        html+='<button data-action="start" data-opponent="'+o.id+'" '+disabled+'>'+(o.adaptive?'与炉火一同推演':'坐下来打一局')+'</button>';
+        if(o.has_hard) html+='<button class="fcg-hard" data-action="start" data-hard="1" data-opponent="'+o.id+'" '+disabled+'>🔥 认真模式 (HARD)<small>Lv.'+o.hard_level+' · '+o.hard_hp+' 生命 · 已胜 '+hardWins+' 次</small></button>';
+        html+='</article>';
+      }
       html+='</div>';
     }
     html+='<h2>游荡的牌手残影</h2><p>切磋胜场 '+num(state.pvp_wins)+' · 每日前 3 位不同对手各赠 2 枚余烬；获胜可借用对手一张记忆至本房间结束或次日。永久卡册不受影响。</p><div class="fcg-opponents">'+state.mirrors.map(p=>'<article class="fcg-opponent fcg-mirror"><div><h3>✦'+esc(p.name)+'的残影</h3><p>'+esc(boot.titles[p.nick]||p.nick||'')+' · 构筑 '+p.count+' 张</p></div><button data-action="mirror" data-uid="'+p.uid+'" '+(!state.in_room||playing?'disabled':'')+'>挑战残影</button></article>').join('')+'</div><p class="fcg-footer-note">击败全部 17 位初代牌手，或拥有至少 150 张图鉴，可获得「具现的暗影」。'+(state.titles.includes(9106)?'你已获得这一头衔。':'')+'</p>'; return html;
@@ -134,6 +141,8 @@
       html+='<button data-tab="lobby">再找一位牌手</button></div>';
     }
     const stickers=m.stickers||{};
+    if(m.hard) html+='<p class="fcg-challenge-label">🔥 认真模式 (HARD)</p>';
+    if(m.ai_color) html+='<div class="fcg-note"><strong>'+colors[m.ai_color][0]+'色推演 · 第 '+esc(m.ai_gen)+' 世代</strong><p>'+esc(m.ai_change)+'</p></div>';
     html+='<div class="fcg-match-status"><strong>第 '+num(m.turn)+' 回合</strong><div class="fcg-timer"><i id="fcg-timer-bar"></i></div><span id="fcg-seconds">—</span></div><div class="fcg-duel">'+side(m.sides[0],m.names?m.names[0]:'你的牌桌',false,stickers[0])+side(m.sides[1],m.names?m.names[1]:boot.opponents[m.opponent].name,true,stickers[1])+'</div>';
     if(!m.result) html+='<div class="fcg-hand">'+m.sides[0].hand.map((id,i)=>card(id,'hand',i)).join('')+'</div><div class="fcg-stats"><button data-action="destroy" '+(!m.sides[0].monster?'disabled':'')+'>解散帮手</button><button data-action="surrender">认输</button><div class="fcg-sticker-control"><button data-action="sticker-menu" aria-expanded="false">😊 表情</button><div id="fcg-sticker-menu" hidden>'+Object.keys(boot.stickers).map(id=>'<button data-action="sticker" data-sticker="'+id+'" title="'+esc(boot.stickers[id])+'"><img src="img/fcg/stickers/'+String(id).padStart(2,'0')+'.png" alt="'+esc(boot.stickers[id])+'"></button>').join('')+'</div></div><span>双方同时行动 · 出牌续 1 秒'+(m.live?'（每回合最多续 4 秒）':'')+'</span></div>';
     if(m.last_card!==undefined)html+='<button class="fcg-last-card" data-inspect="'+m.last_card+'" data-action="detail" data-card="'+m.last_card+'">上一张：'+esc(boot.cards[m.last_card].name)+'</button>';
@@ -263,7 +272,7 @@
     if(a==='restore-deck') {draft=state.deck.slice();dirty=false;notice('已还原上次保存的卡组。');renderDeckGrid();return;}
     if(a==='reset-filters') {filter={color:'all',rarity:'all',series:'all',keyword:'all',search:'',owned:false,inDeck:false};render();return;}
     if(a==='save-deck') {await send('deck',{deck:draft});return;}
-    if(a==='start') {await send('start',{opponent:Number(el.dataset.opponent)});return;}
+    if(a==='start') {await send('start',{opponent:Number(el.dataset.opponent),hard:el.dataset.hard==='1'});return;}
     if(a==='play'||a==='discard') {await send(a,{slot,card:id,turn:Number(el.dataset.turn)});return;}
     if(a==='destroy') {await send(a);return;}
     if(a==='surrender') {modal('<h2>收起这一局的牌？</h2><p>认输不会失去收藏，本局不会获得胜利卡片。</p><button data-action="surrender-confirm">确认认输</button>');return;}

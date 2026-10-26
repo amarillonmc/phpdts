@@ -97,10 +97,70 @@ try {
     $deck=array_merge($s['deck'],array_fill(0,($s['collection']->{151} ?? 0)+1,151));$s=dbuser(1,dbaction($s,'deck',array('deck'=>$deck)));dbcheck(in_array(151,$s['deck'],true),'borrowed card saved to deck');
     $s=dbuser(1,array('action'=>'status'),88400);dbcheck(!isset($s['temp_cards']->{151}) && (array_count_values($s['deck'])[151] ?? 0)===($s['collection']->{151} ?? 0),'next-day reload expires only borrowed deck cards');
     $count=$db->fetch_array($db->query("SELECT COUNT(*) AS n FROM {$gtablepre}shop_items WHERE reward_type='fcg_pack' AND reward_payload LIKE '%vol2%'"));dbcheck((int)$count['n']===3,'exactly three Vol2 seed packs');
-    // Publishing is bounded even after many active accounts.
+    // HARD request, persisted reward and replay use the normal account path.
+    $s=dbuser(1,array('action'=>'status'),90000);
+    dbreject(1,dbaction($s,'start',array('opponent'=>0,'hard'=>true)),'tutorial accepted hard',90000);
+    dbreject(1,dbaction($s,'start',array('opponent'=>5,'hard'=>'1')),'non-boolean hard accepted',90000);
+    $start=dbaction($s,'start',array('opponent'=>5,'hard'=>true));$s=dbuser(1,$start,90000);
+    dbcheck($s['match']['hard'] && $s['match']['sides'][1]['hp']===115,'hard request uses upgraded opponent');
+    $row=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=1"));$data=fcg_load_account($row['fcgdata']);
+    $data['match']['sides'][0]['atk']=200;$data['match']['ai_at']=PHP_INT_MAX;
+    $db->query("UPDATE {$gtablepre}users SET fcgdata=".fcg_sql(fcg_json($data)).' WHERE uid=1');
+    $s=dbuser(1,array('action'=>'status'),90010);$reward=$s['last_reward'];$hard_wins=$s['hard_wins']->{5};
+    dbcheck($s['match']['result']==='win' && $hard_wins===1 && !fcg_cards()[$reward['card']]['unlimited'],'hard reward excludes unlimited energy');
+    $s=dbuser(1,$start,90010);$s=dbuser(1,array('action'=>'status'),90010);
+    dbcheck($s['hard_wins']->{5}===$hard_wins && $s['last_reward']===$reward,'hard start replay and refresh do not repeat reward');
+
+    $s=dbuser(1,dbaction($s,'start',array('opponent'=>21)),90020);
+    $evo=fcg_evo_load(90020);dbcheck(count($evo['state']['decks'])===5 && !isset($s['match']['telemetry']),'adaptive row initialized and telemetry private');
+    $s=dbuser(1,dbaction($s,'surrender',array('match'=>$s['match']['id'])),90020);
+    dbcheck(fcg_evo_load(90020)['raw']===$evo['raw'],'first-turn surrender not learned');
+    $row=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=1"));$data=fcg_load_account($row['fcgdata']);
+    $data['match']=fcg_new_match($data['deck'],21,90020,false,$evo['state']);$m=&$data['match'];
+    $m['ai_color']='W';$m['sides'][1]=fcg_side($evo['state']['decks']['W'],120);
+    $m['sides'][0]['hand']=array(1,33);$m['sides'][0]['energy']['R']=99;fcg_play($m,0,0);fcg_play($m,0,0);
+    $m['turn']=3;$m['result']='win';unset($m);
+    $db->query("UPDATE {$gtablepre}users SET fcgdata=".fcg_sql(fcg_json($data)).' WHERE uid=1');
+    $s=dbuser(1,array('action'=>'status'),90020);$learned=fcg_evo_load(90020);$reward=$s['last_reward'];
+    dbcheck($learned['state']['deck_stats']['W']['matches']===1 && $learned['state']['card_stats'][33]['plr_played_wins']===1,'successful multi-table settlement learns player card');
+    $s=dbuser(1,array('action'=>'status'),90020);
+    dbcheck(fcg_evo_load(90020)['raw']===$learned['raw'] && $s['last_reward']===$reward,'reload repeats neither learning nor reward');
+
+    // A rejected account/global compare must change NEITHER table, even on MyISAM.
+    $old=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=1"));$data=fcg_load_account($old['fcgdata']);
+    $data['match']['id']=bin2hex(random_bytes(12));$data['match']['result']='loss';$data['match']['rewarded']=false;
+    $db->query("UPDATE {$gtablepre}users SET fcgdata=".fcg_sql(fcg_json($data)).' WHERE uid=1');
+    $old=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=1"));$user=$old;$pending=fcg_load_account($old['fcgdata']);$context=null;
+    fcg_settle($pending,$user,90020,'',$context);$pending['rev']++;
+    $data['rev']++;$db->query("UPDATE {$gtablepre}users SET fcgdata=".fcg_sql(fcg_json($data)).' WHERE uid=1');
+    dbcheck(!fcg_account_save($old,$user,$pending,$context,90020) && fcg_evo_load(90020)['raw']===$learned['raw'],'stale account cannot partly learn');
+    $old=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=1"));$user=$old;$pending=fcg_load_account($old['fcgdata']);$context=null;
+    fcg_settle($pending,$user,90020,'',$context);$pending['rev']++;
+    $external=$learned['state'];$external['gen']['G']++;
+    $db->query("UPDATE {$gtablepre}fcg_mirrors SET data=".fcg_sql(fcg_json($external)).' WHERE uid=0');
+    dbcheck(!fcg_account_save($old,$user,$pending,$context,90020),'stale shared state rejected');
+    $row=$db->fetch_array($db->query("SELECT fcgdata FROM {$gtablepre}users WHERE uid=1"));dbcheck($row['fcgdata']===$old['fcgdata'],'stale shared state cannot partly mark reward');
+    $pending=fcg_load_account($old['fcgdata']);$context=null;fcg_settle($pending,$user,90020,'',$context);$pending['rev']++;
+    dbcheck(fcg_account_save($old,$user,$pending,$context,90020),'retry commits both rows');
+    $learned=fcg_evo_load(90020);dbcheck($learned['state']['deck_stats']['W']['matches']===2 && $learned['state']['gen']['G']===2,'retry preserves intervening shared update and learns once');
+    dbcheck(!fcg_account_save($old,$user,$pending,$context,90020) && fcg_evo_load(90020)['raw']===$learned['raw'],'replaying same combined save changes neither row');
+
+    // Finish the twelfth sample and immediately open the next match in the same request.
+    $state=$learned['state'];$state['deck_stats']['W']['matches']=11;
+    $db->query("UPDATE {$gtablepre}fcg_mirrors SET data=".fcg_sql(fcg_json($state)).' WHERE uid=0');
+    $s=dbuser(1,array('action'=>'status'),90020);$old=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=1"));$data=fcg_load_account($old['fcgdata']);
+    $data['match']['rewarded']=false;$db->query("UPDATE {$gtablepre}users SET fcgdata=".fcg_sql(fcg_json($data)).' WHERE uid=1');
+    $s=dbuser(1,dbaction($s,'start',array('opponent'=>21)),90020);$learned=fcg_evo_load(90020);$color=$s['match']['ai_color'];
+    dbcheck($learned['state']['gen']['W']===2 && $learned['state']['deck_stats']['W']['matches']===0 && $s['match']['ai_gen']===$learned['state']['gen'][$color],'new match uses pending evolution committed by same request');
+    $s=dbuser(1,dbaction($s,'surrender',array('match'=>$s['match']['id'])),90020);
+
+    // Publishing is bounded even after many active accounts; reserved row is never a mirror.
     $user=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=2"));$data=fcg_load_account($user['fcgdata']);
     for($i=10;$i<35;$i++) { $user['uid']=$i;fcg_publish_mirror($data,$user,'0:1:1000',90000+$i); }
-    $count=$db->fetch_array($db->query("SELECT COUNT(*) AS n FROM {$gtablepre}fcg_mirrors"));dbcheck((int)$count['n']===20,'mirror retention is bounded');
+    $count=$db->fetch_array($db->query("SELECT COUNT(*) AS n FROM {$gtablepre}fcg_mirrors WHERE uid>0"));dbcheck((int)$count['n']===20,'mirror retention is bounded');
+    dbcheck(fcg_evo_load(90100)['raw']===$learned['raw'],'mirror cleanup preserves adaptive row');
+    $db->query("INSERT INTO {$gtablepre}users (uid,username,roomid,groupid) VALUES (0,'reserved-test',0,1)");
+    dbcheck(!isset(fcg_mirrors(1,90100)[0]),'reserved state excluded from mirror listing');
     // Upgrade a previously configured catalog without changing an administrator's pack.
     $db->query("DROP TABLE {$gtablepre}fcg_mirrors");
     $db->query("DELETE FROM {$gtablepre}shop_items WHERE item_id IN (41,42)");
@@ -110,5 +170,5 @@ try {
     $count=$db->fetch_array($db->query("SELECT COUNT(*) AS n FROM {$gtablepre}shop_items WHERE reward_payload LIKE '%vol2%'"));
     dbcheck((int)$count['n']===3 && (int)$catalog[40]['price_credits2']===17 && $catalog[40]['name']==='custom pack','upgrade fills missing packs once and preserves customization');
     dbcheck($catalog[24]['name']==='阿卡夏的共犯','upgrade renames the original title seed');
-    echo "FCG database: migration, atomic batches, quotas, price changes, titles, room 0, mirrors, invitations, shared duel, privacy, replay, rewards, temporary cards and competing writes passed on MyISAM.\n";
+    echo "FCG database: migration, purchases, PvP, HARD, adaptive learning/evolution, privacy, replay, atomic account/shared writes and mirror retention passed on MyISAM.\n";
 } finally { foreach(array_reverse($created) as $table) $db->query('DROP TABLE `'.$table.'`','SILENT'); }

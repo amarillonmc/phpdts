@@ -44,7 +44,7 @@ function fcg_new_account()
 {
 	$deck=fcg_starter_deck();
 	return array('rev'=>0,'collection'=>array_count_values($deck),'deck'=>$deck,'tutorial'=>false,
-		'embers'=>0,'wins'=>array(),'played'=>0,'match'=>null,'purchases'=>array(),'recent'=>array(),'last_reward'=>null);
+		'embers'=>0,'wins'=>array(),'hard_wins'=>array(),'played'=>0,'match'=>null,'purchases'=>array(),'recent'=>array(),'last_reward'=>null);
 }
 
 function fcg_load_account($raw)
@@ -52,7 +52,21 @@ function fcg_load_account($raw)
 	if($raw===null || $raw==='') return fcg_new_account();
 	$data=json_decode($raw,true);
 	if(!is_array($data) || !isset($data['collection'],$data['deck'],$data['rev'])) throw new RuntimeException('卡册读取失败，请联系管理员；原有收藏已保留。');
-	return $data+array('pvp_wins'=>0,'temp_cards'=>array(),'live_match'=>null,'live_settled'=>null,'pvp_daily'=>array());
+	return $data+array('hard_wins'=>array(),'pvp_wins'=>0,'temp_cards'=>array(),'live_match'=>null,'live_settled'=>null,'pvp_daily'=>array());
+}
+
+function fcg_evo_load($now)
+{
+	global $db,$gtablepre;
+	$row=$db->fetch_array($db->query("SELECT data FROM {$gtablepre}fcg_mirrors WHERE uid=0"));
+	if(!$row) {
+		$raw=fcg_json(fcg_evo_initial_state());
+		$db->query("INSERT IGNORE INTO {$gtablepre}fcg_mirrors (uid,updated,data) VALUES (0,".(int)$now.','.fcg_sql($raw).')');
+		$row=$db->fetch_array($db->query("SELECT data FROM {$gtablepre}fcg_mirrors WHERE uid=0"));
+	}
+	$state=$row ? json_decode($row['data'],true) : null;
+	if(!is_array($state) || !isset($state['decks'],$state['gen'],$state['deck_stats'],$state['card_stats'])) throw new RuntimeException('推演构筑读取失败，原记录已保留。');
+	return array('raw'=>$row['data'],'state'=>$state);
 }
 
 function fcg_add_card(&$data, $id)
@@ -98,19 +112,24 @@ function fcg_award_title(&$user, $title)
 	$user['nicksrev']=fcg_json($n);
 }
 
-function fcg_settle(&$data, &$user, $now = 0, $room_key = '')
+function fcg_settle(&$data, &$user, $now = 0, $room_key = '', &$evolution = null)
 {
 	$m=&$data['match'];
 	if($m && $m['result']!==null && !$m['rewarded']) {
+		if($m['opponent']===21 && empty($m['pvp']) && $m['turn']>=3 && isset($m['telemetry'])) {
+			if($evolution===null) $evolution=fcg_evo_load($now);
+			fcg_evo_record_and_optimize($evolution['state'],$m);
+		}
 		$m['rewarded']=true; $data['played']++;
 		if($m['result']==='win') {
 			if(!empty($m['pvp'])) {
 				$data['last_reward']=$m['reward']=fcg_pvp_reward($data,$user,$m['opponent_uid'],$m['drop_pool'],$now,$room_key);
 			} else {
 			$data['wins'][$m['opponent']]=($data['wins'][$m['opponent']] ?? 0)+1;
+			if(!empty($m['hard'])) $data['hard_wins'][$m['opponent']]=($data['hard_wins'][$m['opponent']] ?? 0)+1;
 			$drop=$m['drop_pool'][random_int(0,count($m['drop_pool'])-1)];
 			$data['last_reward']=$m['reward']=fcg_add_card($data,$drop);
-			fcg_log($m,'种火从本局使用的牌堆里送给你「'.fcg_cards()[$drop]['name'].'」。');
+			fcg_log($m,(!empty($m['hard'])?'种火从珍藏的代表卡与认真构筑中':'种火从本局使用的牌堆里').'送给你「'.fcg_cards()[$drop]['name'].'」。');
 			}
 		}
 	}
@@ -154,19 +173,26 @@ function fcg_catalog($all=false)
 	return $list;
 }
 
-function fcg_account_save($old, $user, $data)
+function fcg_account_save($old, $user, $data, $evolution = null, $now = 0)
 {
 	global $db,$gtablepre;
 	// Compare the exact state read by this request; stale tabs cannot spend/reward twice.
 	$uid=(int)$old['uid']; $debit=(int)$old['credits2']-(int)$user['credits2'];
 	$changed_title=($old['nicksrev'] ?? '')!==($user['nicksrev'] ?? '');
-	$where='uid='.$uid.' AND COALESCE(fcgdata,\'\')='.fcg_sql($old['fcgdata'] ?? '').' AND credits2>='.$debit;
-	$set='fcgdata='.fcg_sql(fcg_json($data)).',credits2=credits2-'.$debit;
-	if($changed_title) { $where.=' AND COALESCE(nicksrev,\'\')='.fcg_sql($old['nicksrev'] ?? ''); $set.=',nicksrev='.fcg_sql($user['nicksrev']); }
-	return $db->query("UPDATE {$gtablepre}users SET $set WHERE $where",'SILENT') && $db->affected_rows()===1;
+	$where='u.uid='.$uid.' AND COALESCE(u.fcgdata,\'\')='.fcg_sql($old['fcgdata'] ?? '').' AND u.credits2>='.$debit;
+	$set='u.fcgdata='.fcg_sql(fcg_json($data)).',u.credits2=u.credits2-'.$debit;
+	if($changed_title) { $where.=' AND COALESCE(u.nicksrev,\'\')='.fcg_sql($old['nicksrev'] ?? ''); $set.=',u.nicksrev='.fcg_sql($user['nicksrev']); }
+	$tables="{$gtablepre}users u";
+	if($evolution!==null) {
+		// 同一条件 UPDATE 提交已领奖标记与共享学习记录，避免账户重试重复学习（含 MyISAM）。
+		$tables.=" JOIN {$gtablepre}fcg_mirrors e ON e.uid=0";
+		$where.=' AND e.data='.fcg_sql($evolution['raw']);
+		$set.=',e.data='.fcg_sql(fcg_json($evolution['state'])).',e.updated='.(int)$now;
+	}
+	return $db->query("UPDATE $tables SET $set WHERE $where",'SILENT') && $db->affected_rows()===($evolution===null?1:2);
 }
 
-function fcg_action(&$data, &$user, $input, $now, $in_room)
+function fcg_action(&$data, &$user, $input, $now, $in_room, $evo_state = null)
 {
 	$action=$input['action'] ?? 'status';
 	if($action==='status') return;
@@ -179,8 +205,11 @@ function fcg_action(&$data, &$user, $input, $now, $in_room)
 			if($data['match'] && $data['match']['result']===null) throw new InvalidArgumentException('请先完成当前牌局。');
 			$id=$input['opponent'] ?? null;
 			if(!is_int($id)) throw new InvalidArgumentException('请选择牌手。');
+			$hard=$input['hard'] ?? false;
+			if(!is_bool($hard)) throw new InvalidArgumentException('请选择有效的挑战难度。');
 			fcg_validate_deck($data['deck'],fcg_collection($data)); $data['live_match']=null;
-			$data['match']=fcg_new_match($data['deck'],$id,$now); $data['last_reward']=null; break;
+			$evo=$id===21 ? ($evo_state ?? fcg_evo_load($now)['state']) : null;
+			$data['match']=fcg_new_match($data['deck'],$id,$now,$hard,$evo); $data['last_reward']=null; break;
 		case 'play': case 'discard': case 'destroy': case 'surrender':
 			if(!$in_room) throw new InvalidArgumentException('已离开 FCG 房间，请重新加入后继续。');
 			$m=&$data['match'];
@@ -189,7 +218,7 @@ function fcg_action(&$data, &$user, $input, $now, $in_room)
 			elseif($action==='discard') {
 				$slot=$input['slot'] ?? null;
 				if(!is_int($slot) || !isset($m['sides'][0]['hand'][$slot])) throw new InvalidArgumentException('请选择一张手牌。');
-				fcg_remove_hand($m['sides'][0],$slot); $m['sides'][0]['regen']--; fcg_log($m,'你弃掉一张牌，回合回血降低了 1 点。');
+				fcg_evo_observe_hand($m,0); fcg_remove_hand($m['sides'][0],$slot); $m['sides'][0]['regen']--; fcg_log($m,'你弃掉一张牌，回合回血降低了 1 点。');
 			} elseif($action==='destroy') { $m['sides'][0]['monster']=null; fcg_log($m,'你解散了驻场帮手。'); }
 			else { $m['result']='loss'; fcg_log($m,'你向小种火认输了。'); }
 			break;
@@ -224,7 +253,7 @@ function fcg_request_locked($input, $now)
 		$old=$db->fetch_array($result);
 		if(!$old || !hash_equals((string)$old['password'],(string)$cpass)) throw new InvalidArgumentException('登录状态已失效，请重新登录。');
 		if((int)$old['groupid']<=0) throw new InvalidArgumentException('此账号暂时无法使用牌桌与商店。');
-		$user=$old; $data=fcg_load_account($old['fcgdata']); $previous=fcg_json($data);
+		$user=$old; $data=fcg_load_account($old['fcgdata']); $previous=fcg_json($data); $evolution=null;
 		$room=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}game WHERE groomid=".(int)$user['roomid']));
 		$in_room=$room && $room['gruleset']==='FCG';
 		$room_key=$in_room ? fcg_room_key($room) : '';
@@ -239,16 +268,16 @@ function fcg_request_locked($input, $now)
 		$social=fcg_social_load($data,$user,$room,$now);
 		if($data['match'] && $data['match']['result']===null) fcg_advance($data['match'],$now);
 		$won=$data['match'] && $data['match']['result']==='win' && !$data['match']['rewarded'];
-		fcg_settle($data,$user,$now,$room_key);
+		fcg_settle($data,$user,$now,$room_key,$evolution);
 		if(!$duplicate) {
-			if(!fcg_social_action($social,$data,$user,$input,$room,$now)) fcg_action($data,$user,$input,$now,$in_room);
+			if(!fcg_social_action($social,$data,$user,$input,$room,$now)) fcg_action($data,$user,$input,$now,$in_room,$evolution['state'] ?? null);
 			if($action!=='status') { $data['recent'][]=$token; $data['recent']=array_slice($data['recent'],-20); }
 		}
-		fcg_settle($data,$user,$now,$room_key);
+		fcg_settle($data,$user,$now,$room_key,$evolution);
 		fcg_social_settle($social,$data,$user,$room,$now);
 		if($old['fcgdata']===null || $old['fcgdata']==='' || fcg_json($data)!==$previous || $user['nicksrev']!==$old['nicksrev']) {
 			$data['rev']++;
-			if(!fcg_account_save($old,$user,$data)) continue;
+			if(!fcg_account_save($old,$user,$data,$evolution,$now)) continue;
 		}
 		fcg_social_save($social,$data,$user,$room,$now);
 		if((!$duplicate && $action==='deck') || ($won && (isset($data['match']['opponent_uid']) || (fcg_opponents()[$data['match']['opponent']]['level'] ?? 0)>=4))) fcg_publish_mirror($data,$user,$room_key,$now);
@@ -266,11 +295,11 @@ function fcg_public_state($data, $user, $in_room, $now)
 			$s['deck_count']=count($s['deck']); unset($s['deck']);
 			if($i===1) { $s['hand_count']=count($s['hand']); unset($s['hand'],$s['free']); }
 		} unset($s);
-		unset($m['drop_pool'],$m['ai_at']);
+		unset($m['drop_pool'],$m['ai_at'],$m['telemetry']);
 	}
 	$n=json_decode($user['nicksrev'] ?? '',true);
 	return array('rev'=>$data['rev'],'collection'=>(object)$data['collection'],'available'=>(object)fcg_collection($data),'temp_cards'=>(object)($data['temp_cards']['cards'] ?? array()),'deck'=>$data['deck'],
-		'tutorial'=>$data['tutorial'],'embers'=>$data['embers'],'wins'=>(object)$data['wins'],'played'=>$data['played'],
+		'tutorial'=>$data['tutorial'],'embers'=>$data['embers'],'wins'=>(object)$data['wins'],'hard_wins'=>(object)($data['hard_wins'] ?? array()),'played'=>$data['played'],
 		'match'=>$m,'last_reward'=>$data['last_reward'],'purchases'=>(object)$data['purchases'],
 		'credits'=>(int)$user['credits2'],'titles'=>$n['nicks'] ?? array(),'in_room'=>(bool)$in_room,'now'=>$now,'pvp_wins'=>$data['pvp_wins'] ?? 0,'temp_expired'=>$data['temp_expired'] ?? false);
 }

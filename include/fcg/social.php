@@ -81,15 +81,15 @@ function fcg_publish_mirror($data, $user, $room_key, $now)
 	$mirror=array('uid'=>(int)$user['uid'],'name'=>$user['username'],'nick'=>$user['nick'],'deck'=>$data['deck']);
 	if($borrowed) $mirror['scope']=array('key'=>$room_key,'day'=>date('Y-m-d',$now));
 	$db->query("REPLACE INTO {$gtablepre}fcg_mirrors (uid,updated,data) VALUES (".(int)$user['uid'].','.(int)$now.','.fcg_sql(fcg_json($mirror)).')');
-	$result=$db->query("SELECT uid FROM {$gtablepre}fcg_mirrors ORDER BY updated DESC,uid DESC LIMIT 20,1000");
+	$result=$db->query("SELECT uid FROM {$gtablepre}fcg_mirrors WHERE uid>0 ORDER BY updated DESC,uid DESC LIMIT 20,1000");
 	$remove=array(); while($row=$db->fetch_array($result)) $remove[]=(int)$row['uid'];
-	if($remove) $db->query("DELETE FROM {$gtablepre}fcg_mirrors WHERE uid IN (".implode(',',$remove).')');
+	if($remove) $db->query("DELETE FROM {$gtablepre}fcg_mirrors WHERE uid>0 AND uid IN (".implode(',',$remove).')');
 }
 
 function fcg_mirrors($uid, $now)
 {
 	global $db,$gtablepre;
-	$result=$db->query("SELECT m.data,g.groomid,g.gamenum,g.starttime,g.gruleset FROM {$gtablepre}fcg_mirrors m JOIN {$gtablepre}users u ON u.uid=m.uid LEFT JOIN {$gtablepre}game g ON g.groomid=u.roomid WHERE m.uid<>".(int)$uid.' AND u.groupid>0 ORDER BY m.updated DESC LIMIT 20');
+	$result=$db->query("SELECT m.data,g.groomid,g.gamenum,g.starttime,g.gruleset FROM {$gtablepre}fcg_mirrors m JOIN {$gtablepre}users u ON u.uid=m.uid LEFT JOIN {$gtablepre}game g ON g.groomid=u.roomid WHERE m.uid>0 AND m.uid<>".(int)$uid.' AND u.groupid>0 ORDER BY m.updated DESC LIMIT 20');
 	$out=array();
 	while($row=$db->fetch_array($result)) {
 		$m=json_decode($row['data'],true); if(!$m) continue;
