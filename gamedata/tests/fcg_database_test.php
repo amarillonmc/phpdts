@@ -12,6 +12,7 @@ function roommng_acquire_create_lock() { return fopen('php://temp','r+'); }
 function roommng_release_create_lock($lock) { fclose($lock); }
 function dbcheck($ok,$message) { if(!$ok) throw new RuntimeException($message); }
 function dbaction($state,$action,$more=array()) { return array_merge(array('action'=>$action,'rev'=>$state['rev'],'token'=>bin2hex(random_bytes(16))),$more); }
+function dbdraft($state,$action,$more=array()) { return dbaction($state,$action,array_merge(array('run'=>$state['run']['id'] ?? null,'layer'=>$state['run']['layer'] ?? null),$more)); }
 function dbuser($uid,$input,$now=2000) { global $cuser; $cuser=$uid===1?'fcg-test':'fcg-peer'.$uid; return fcg_request($input,$now); }
 function dbreject($uid,$input,$message,$now=2000) { try { dbuser($uid,$input,$now); } catch(InvalidArgumentException $e) { return; } throw new RuntimeException($message); }
 $gtablepre='fcgtest_'.bin2hex(random_bytes(6)).'_'; $created=array();
@@ -154,6 +155,58 @@ try {
     dbcheck($learned['state']['gen']['W']===2 && $learned['state']['deck_stats']['W']['matches']===0 && $s['match']['ai_gen']===$learned['state']['gen'][$color],'new match uses pending evolution committed by same request');
     $s=dbuser(1,dbaction($s,'surrender',array('match'=>$s['match']['id'])),90020);
 
+    // Expedition entry, every selection and final reward persist in the account's existing CAS write.
+    $db->query("UPDATE {$gtablepre}users SET credits2=2000 WHERE uid=1");$s=dbuser(1,array('action'=>'status'),100000);
+    $collection=(array)$s['collection'];$deck=$s['deck'];$wins=(array)$s['wins'];$hard_wins=(array)$s['hard_wins'];$embers=$s['embers'];
+    $enter=dbdraft($s,'draft_enter');$s=dbuser(1,$enter,100000);$runid=$s['run']['id'];
+    dbcheck($s['credits']===1500 && count($s['run']['pack'])===5 && !isset($s['run']['seed']),'entry debited with run, only first remainder public');
+    $s=dbuser(1,$enter,100000);dbcheck($s['credits']===1500 && $s['run']['id']===$runid,'entry replay cannot charge or reroll');
+    dbreject(1,dbdraft($s,'draft_enter'),'new token cannot open overlapping run',100000);
+    dbreject(1,dbaction($s,'start',array('opponent'=>21)),'normal duel cannot replace run',100000);
+    dbreject(1,dbaction($s,'mirror',array('uid'=>2)),'mirror cannot replace run',100000);
+    $peer=dbuser(2,array('action'=>'status'),100000);
+    dbreject(2,dbaction($peer,'invite',array('uid'=>1)),'cannot invite a player drafting',100000);
+    for($i=0;$i<24;$i++) {
+        $pick=dbdraft($s,'draft_pick',array('pick'=>$i,'slot'=>0,'card'=>$s['run']['pack'][0]));$s=dbuser(1,$pick,100000);
+        if($i===0) {
+            $after=$s['run'];$s=dbuser(1,$pick,100000);dbcheck($s['run']===$after,'same selection replay does not advance pack');
+            $stale=$pick;$stale['token']=bin2hex(random_bytes(16));$stale['rev']=$s['rev'];dbreject(1,$stale,'stale pack index rejected with current account revision',100000);
+        }
+        $s=dbuser(1,array('action'=>'status'),100000);dbcheck(count($s['run']['picks'])===$i+1,'selection survives reload '.$i);
+    }
+    dbcheck(count($s['run']['deck'])===32 && (array)$s['collection']===$collection && $s['deck']===$deck,'phantom draft deck persists separately');
+    $s=dbuser(1,dbdraft($s,'draft_node',array('choice'=>'supply')),100000);$s=dbuser(1,dbdraft($s,'draft_battle'),100000);$first=$s['match']['opponent'];
+    $old=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=1"));$data=fcg_load_account($old['fcgdata']);
+    $data['match']['sides'][0]['hp']=55;$data['match']['sides'][0]['atk']=200;$data['match']['ai_at']=PHP_INT_MAX;
+    $db->query("UPDATE {$gtablepre}users SET fcgdata=".fcg_sql(fcg_json($data)).' WHERE uid=1');
+    $s=dbuser(1,array('action'=>'status'),100010);$reinforce=$s['run'];
+    dbcheck($s['run']['wins']===1 && $s['run']['hp']==55 && $s['run']['node']['type']==='reinforce','real timer victory persists HP and reinforcement');
+    dbcheck((array)$s['collection']===$collection && (array)$s['wins']===$wins && (array)$s['hard_wins']===$hard_wins && $s['embers']===$embers,'layer victory does not leak normal reward');
+    $s=dbuser(1,array('action'=>'status'),100010);dbcheck($s['run']===$reinforce,'refresh cannot reroll reinforcement or add win');
+    $s=dbuser(1,dbdraft($s,'draft_node',array('choice'=>'reinforce','slot'=>0,'card'=>$s['run']['node']['opts'][0])),100010);
+    $s=dbuser(1,dbdraft($s,'draft_node',array('choice'=>'supply')),100010);$s=dbuser(1,dbdraft($s,'draft_battle'),100010);
+    dbcheck($s['match']['sides'][0]['hp']==79 && $s['match']['opponent']!==$first && $s['match']['sides'][1]['hp']===95,'second layer inherits health, scales HP and uses another opponent');
+    $s=dbuser(1,dbaction($s,'surrender',array('match'=>$s['match']['id'])),100010);
+    dbcheck($s['run']['stage']==='over' && $s['run']['wins']===1,'surrender persists completed expedition');
+    $reward_input=dbdraft($s,'draft_reward');$s=dbuser(1,$reward_input,100010);$reward=$s['last_reward'];$total=$s['embers'];$earned=(array)$s['collection'];
+    dbcheck($s['run']===null && $s['match']===null && count($reward['cards'])===1 && !fcg_cards()[$reward['cards'][0]['card']]['unlimited'],'final reward goes to collection and clears run');
+    dbcheck($total===$embers+1+($reward['cards'][0]['overflow']?1:0),'final stamp and overflow persist together');
+    $s=dbuser(1,$reward_input,100010);$s=dbuser(1,array('action'=>'status'),100010);
+    dbcheck($s['last_reward']===$reward && $s['embers']===$total && (array)$s['collection']===$earned && $s['credits']===1500,'claim replay and reload preserve single reward');
+    dbreject(1,dbdraft($s,'draft_reward',array('run'=>$runid)),'new claim token cannot grant again',100010);
+
+    $s=dbuser(1,dbdraft($s,'draft_enter'),100020);$db->query("UPDATE {$gtablepre}users SET roomid=99 WHERE uid=1");
+    $s=dbuser(1,dbdraft($s,'draft_abandon'),100020);$s=dbuser(1,dbdraft($s,'draft_reward'),100020);
+    dbcheck($s['credits']===1000 && !$s['in_room'] && !$s['last_reward']['cards'] && $s['embers']===$total+1 && (array)$s['collection']===$earned,'zero-win abandonment outside room gives one stamp only');
+    $db->query("UPDATE {$gtablepre}users SET roomid=0 WHERE uid=1");
+    $old=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=1"));$user=$old;$data=fcg_load_account($old['fcgdata']);
+    fcg_action($data,$user,array('action'=>'draft_enter'),100030,true);$data['rev']++;
+    $db->query("UPDATE {$gtablepre}users SET credits2=499 WHERE uid=1");
+    dbcheck(!fcg_account_save($old,$user,$data),'concurrent spend rejects entry');
+    $row=$db->fetch_array($db->query("SELECT fcgdata,credits2 FROM {$gtablepre}users WHERE uid=1"));
+    dbcheck($row['fcgdata']===$old['fcgdata'] && (int)$row['credits2']===499,'rejected entry cannot leave unpaid run or partial debit');
+    $db->query("UPDATE {$gtablepre}users SET credits2=1000 WHERE uid=1");
+
     // Publishing is bounded even after many active accounts; reserved row is never a mirror.
     $user=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=2"));$data=fcg_load_account($user['fcgdata']);
     for($i=10;$i<35;$i++) { $user['uid']=$i;fcg_publish_mirror($data,$user,'0:1:1000',90000+$i); }
@@ -170,5 +223,5 @@ try {
     $count=$db->fetch_array($db->query("SELECT COUNT(*) AS n FROM {$gtablepre}shop_items WHERE reward_payload LIKE '%vol2%'"));
     dbcheck((int)$count['n']===3 && (int)$catalog[40]['price_credits2']===17 && $catalog[40]['name']==='custom pack','upgrade fills missing packs once and preserves customization');
     dbcheck($catalog[24]['name']==='阿卡夏的共犯','upgrade renames the original title seed');
-    echo "FCG database: migration, purchases, PvP, HARD, adaptive learning/evolution, privacy, replay, atomic account/shared writes and mirror retention passed on MyISAM.\n";
+    echo "FCG database: migration, purchases, PvP, HARD, adaptive learning, draft expedition, privacy, replay, atomic account/shared writes and mirror retention passed on MyISAM.\n";
 } finally { foreach(array_reverse($created) as $table) $db->query('DROP TABLE `'.$table.'`','SILENT'); }

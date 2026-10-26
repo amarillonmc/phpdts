@@ -283,4 +283,129 @@ foreach(fcg_colors() as $color) {
 $data=fcg_new_account();$data['match']=$m;$context=array('raw'=>'','state'=>fcg_evo_initial_state());fcg_settle($data,$user,100,'',$context);$once=$context;
 fcg_settle($data,$user,100,'',$context);fcg_test($context===$once,'settlement learns exactly once in memory');
 
+// Draft expedition: phantom cards, deterministic five-seat passing and account-owned progress.
+function fcg_test_draft_action(&$data,&$user,$action,$more=array(),$in_room=true) {
+	fcg_action($data,$user,array_merge(array('action'=>$action,'run'=>$data['run']['id'] ?? null,'layer'=>$data['run']['layer'] ?? null),$more),100,$in_room);
+}
+function fcg_test_finish_draft(&$data,&$user) {
+	while($data['run']['stage']==='draft') {
+		$pack=fcg_draft_pack($data['run']);
+		fcg_test_draft_action($data,$user,'draft_pick',array('slot'=>0,'card'=>$pack[0],'pick'=>count($data['run']['picks'])));
+	}
+}
+$data=fcg_new_account();$user=array('uid'=>1,'nicksrev'=>'','credits2'=>499);$before=$data;
+fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_enter');},'entry requires 500 credits');
+fcg_test($data===$before && $user['credits2']===499,'failed entry leaves account untouched');
+$user['credits2']=1000;
+fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_enter',array(),false);},'entry requires room');
+$data['match']=fcg_test_match();
+fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_enter');},'entry requires finished match');
+$data['match']=null;fcg_test_draft_action($data,$user,'draft_enter');$data['run']['seed']=4729;
+fcg_test($user['credits2']===500 && $data['run']['hp']===80 && $data['run']['stage']==='draft','entry starts at 80 HP and charges once');
+fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_enter');},'second entry rejected');
+fcg_test_throws(function()use(&$data,&$user){fcg_action($data,$user,array('action'=>'start','opponent'=>5),100,true);},'normal match cannot replace expedition');
+$social=array('match'=>null);$room=array('gruleset'=>'FCG');
+foreach(array('mirror','invite','accept') as $action) fcg_test_throws(function()use(&$social,&$data,&$user,$room,$action){fcg_social_action($social,$data,$user,array('action'=>$action),$room,100);},'social cannot replace run '.$action);
+$permanent=$data['collection'];$ordinary_deck=$data['deck'];$initial=$data;
+mt_srand(4729,MT_RAND_MT19937);$packs=fcg_draft_deal();mt_srand(4729,MT_RAND_MT19937);fcg_test($packs===fcg_draft_deal(),'seeded 24-pack generation replays');mt_srand();
+fcg_test(count($packs)===24,'three circles of eight packs');
+foreach($packs as $pack) {
+	fcg_test(count($pack)===5 && !$cards[$pack[0]]['unlimited'],'five cards including weighted slot');
+	foreach(array_slice($pack,1) as $id) fcg_test(!$cards[$id]['unlimited'] && !$cards[$id]['upgraded'],'four unupgraded non-energy slots');
+}
+$lengths=array(5,1,2,3,4,5,1,2,5,4,3,2,1,5,4,3,5,1,2,3,4,5,1,2);
+for($n=0;$n<24;$n++) {
+	$public=fcg_public_state($data,$user,true,100)['run'];$pack=$public['pack'];
+	fcg_test(!isset($public['seed'],$public['packs']) && count($pack)===$lengths[$n],'only current remainder exposed, alternating pass '.$n);
+	$loaded=fcg_load_account(fcg_json($data));fcg_test(fcg_draft_pack($loaded['run'])===$pack,'reloaded bot circle is stable '.$n);
+	$slot=$n%count($pack);$input=array('slot'=>$slot,'card'=>$pack[$slot],'pick'=>$n);
+	if($n===0) {
+		foreach(array(array('slot'=>5),array('slot'=>'0'),array('card'=>-1),array('pick'=>1),array('run'=>'stale')) as $bad) fcg_test_throws(function()use(&$data,&$user,$input,$bad){fcg_test_draft_action($data,$user,'draft_pick',array_merge($input,$bad));},'bad draft choice rejected');
+		fcg_test_throws(function()use(&$data,&$user,$input){fcg_test_draft_action($data,$user,'draft_pick',$input,false);},'selection requires room');
+	}
+	fcg_test_draft_action($data,$user,'draft_pick',$input);
+	fcg_test_throws(function()use(&$data,&$user,$input){fcg_test_draft_action($data,$user,'draft_pick',$input);},'same pack cannot be picked twice');
+}
+fcg_test(count($data['run']['deck'])===32 && count($data['run']['picks'])===24 && $data['run']['stage']==='node','24 selections plus eight energy form first camp');
+fcg_test($data['collection']===$permanent && $data['deck']===$ordinary_deck,'draft does not alter collection or regular deck');
+$camp=$data;
+foreach(array(array(array_fill(0,24,24),array('W'=>8)),array(array_merge(array_fill(0,18,30),array_fill(0,6,42)),array('R'=>4,'G'=>4)),array(array_merge(array_fill(0,12,30),array_fill(0,8,42),array_fill(0,4,48)),array('R'=>3,'G'=>3,'B'=>2))) as $case) {
+	$base=fcg_draft_energy($case[0]);$colors=array();
+	foreach($base as $id) {fcg_test($cards[$id]['unlimited'],'allocated energy is unlimited');$c=$cards[$id]['color'];$colors[$c]=($colors[$c] ?? 0)+1;}
+	fcg_test(count($base)===8 && $colors===$case[1],'eight energy follow mono/dual/three-color split');
+}
+fcg_test(array_count_values(fcg_draft_energy(array_fill(0,24,24)))===array(1=>2,3=>2,0=>4),'mono gets upgraded pairs and ordinary generator filler');
+
+// Every camp option is checked by the server, including protected energy and upgraded targets.
+$data=$camp;$data['run']['deck']=array_merge(array_fill(0,24,24),array_fill(0,8,1));
+fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'supply','layer'=>0));},'old layer choice rejected');
+foreach(array('upgrade','remove') as $choice) fcg_test_throws(function()use(&$data,&$user,$choice){fcg_test_draft_action($data,$user,'draft_node',array('choice'=>$choice,'slot'=>24,'card'=>1));},'energy cannot be modified '.$choice);
+fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'upgrade','slot'=>0,'card'=>24));
+fcg_test($data['run']['deck'][0]===25 && $data['run']['stage']==='battle' && $data['collection']===$permanent,'upgrade changes phantom card only');
+$data['run']['stage']='node';$data['run']['node']=array('type'=>'camp');
+fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'upgrade','slot'=>0,'card'=>25));},'already upgraded target rejected');
+fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'remove','slot'=>0,'card'=>25));
+fcg_test(count($data['run']['deck'])===31 && !in_array(25,$data['run']['deck'],true),'removal changes one phantom copy');
+$data=$camp;$data['run']['hp']=53;fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'supply'));
+fcg_test($data['run']['hp']===77,'supply heals 30 percent of maximum');
+fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_battle',array('layer'=>0));},'old battle confirmation rejected');
+fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'rest'));},'camp used only once');
+fcg_test_draft_action($data,$user,'draft_battle');$first=$data['match']['opponent'];
+fcg_test($first<=4 && $data['match']['sides'][0]['hp']===77 && $data['match']['sides'][1]['hp']===$opponents[$first]['hp'],'first layer starts with inherited HP');
+fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_battle');},'cannot restart active layer');
+$m=&$data['match'];$heal=$cards[26];$heal['ops']='gain_hp(self,100)';fcg_effect($m,0,$heal);
+fcg_test($m['sides'][0]['hp']===80,'expedition healing capped at run maximum');
+$m['sides'][0]['regen']=50;fcg_turn($m);fcg_test($m['sides'][0]['hp']===80,'expedition regeneration capped');
+$m['sides'][0]['hp']=27;$m['sides'][0]['atk']=30;$m['result']='win';unset($m);
+$before_collection=$data['collection'];$before_wins=$data['wins'];$before_embers=$data['embers'];fcg_settle($data,$user);$settled=$data;fcg_settle($data,$user);
+fcg_test($data===$settled && $data['run']['wins']===1 && $data['run']['hp']===27 && $data['run']['node']['type']==='reinforce','layer settles once, carries remaining HP');
+fcg_test($data['collection']===$before_collection && $data['wins']===$before_wins && $data['embers']===$before_embers && !$data['hard_wins'] && !fcg_title_owned($user,9106),'layer does not grant normal drops, records or title');
+fcg_test(count($data['run']['node']['opts'])===3 && count(array_unique($data['run']['node']['opts']))===3 && !array_diff($data['run']['node']['opts'],$data['match']['drop_pool']),'three distinct reinforcements from actual opponent deck');
+fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'supply'));},'cannot skip reinforcement');
+fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'reinforce','slot'=>0,'card'=>$data['run']['node']['opts'][0]));
+fcg_test($data['run']['layer']===2 && count($data['run']['deck'])===33,'reinforcement appended before next camp');
+fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'rest'));
+fcg_test($data['run']['hp']===39 && $data['embers']===$before_embers+1,'small rest heals 15 percent and one stamp');
+fcg_test_draft_action($data,$user,'draft_battle');$second=$data['match']['opponent'];
+fcg_test($second<=4 && $second!==$first && $data['match']['sides'][1]['hp']===$opponents[$second]['hp']+15 && $data['match']['sides'][0]['atk']===0,'next layer scales opponent HP, avoids repeat and resets combat stats');
+$data['match']['sides'][0]['hp']=0;fcg_finish($data['match']);fcg_settle($data,$user);
+fcg_test($data['run']['stage']==='over' && $data['run']['wins']===1 && $data['run']['hp']===0,'HP zero immediately ends run');
+
+// Fifth victory still grants its phantom choice before final reward is drawn.
+$data=$camp;
+for($layer=1;$layer<=5;$layer++) {
+	fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'supply'));fcg_test_draft_action($data,$user,'draft_battle');$opp=$data['match']['opponent'];
+	$range=$layer<=2?range(0,4):($layer===3?range(5,10):($layer===4?range(11,16):range(17,20)));
+	fcg_test(in_array($opp,$range,true) && $data['match']['sides'][1]['hp']===$opponents[$opp]['hp']+15*($layer-1),'layer opponent band and HP '.$layer);
+	$data['match']['result']='win';$data['match']['sides'][0]['hp']=40;fcg_settle($data,$user);
+	fcg_test($data['run']['stage']==='node' && $data['run']['wins']===$layer,'victory offers choice including fifth layer');
+	fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'reinforce','slot'=>0,'card'=>$data['run']['node']['opts'][0]));
+}
+fcg_test($data['run']['stage']==='over' && $data['run']['ending']==='win' && count($data['run']['deck'])===37,'all five reinforcement cards included in final deck');
+foreach(array(0=>0,1=>1,2=>1,3=>2,4=>2,5=>3) as $wins=>$amount) {
+	$data=$camp;$data['run']['stage']='over';$data['run']['wins']=$wins;$data['run']['deck']=array(0,1,20,21,22,23,24,24,25,26,151);
+	$before=$data['collection'];$embers=$data['embers'];fcg_test_draft_action($data,$user,'draft_reward',array(),false);$reward=$data['last_reward'];$once=$data;
+	fcg_test($data['run']===null && $data['match']===null && count($reward['cards'])===$amount && $reward['embers']===max(1,$wins),'wins map to final reward '.$wins);
+	$ids=array_column($reward['cards'],'card');fcg_test(count($ids)===count(array_unique($ids)) && !array_diff($ids,array(24,25,26,151)),'final pool deduplicated and excludes all unlimited');
+	fcg_test($data['embers']-$embers===max(1,$wins)+count(array_filter($reward['cards'],function($r){return $r['overflow'];})),'final stamps and overflow use existing rules');
+	if(!$wins) fcg_test($data['collection']===$before,'zero wins means no permanent card');
+	fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_reward');},'reward cannot be claimed twice');fcg_test($data===$once,'rejected repeat leaves receipt intact');
+}
+$data=$camp;$data['run']['stage']='over';$data['run']['wins']=5;$data['run']['deck']=array(24,25,26);foreach(array(24,25,26) as $id)$data['collection'][$id]=7;
+fcg_test_draft_action($data,$user,'draft_reward');fcg_test($data['embers']===8 && $data['collection'][24]===7,'three full-stack rewards become three extra stamps');
+foreach(array('draft','node','battle') as $stage) {
+	$data=$stage==='draft'?$initial:$camp;
+	if($stage==='battle') {fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'supply'));fcg_test_draft_action($data,$user,'draft_battle');}
+	fcg_test_draft_action($data,$user,'draft_abandon',array(),false);$abandoned=$data;
+	fcg_test($data['run']['stage']==='over' && $data['run']['ending']==='abandoned','can abandon outside room during '.$stage);
+	fcg_settle($data,$user);fcg_test($data===$abandoned,'abandoned battle does not settle again');
+	fcg_test_draft_action($data,$user,'draft_reward',array(),false);fcg_test($data['embers']===1 && !$data['last_reward']['cards'],'zero-win abandonment gives exactly one stamp');
+}
+$data=$camp;fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'supply'));fcg_test_draft_action($data,$user,'draft_battle');
+fcg_test_draft_action($data,$user,'surrender',array('match'=>$data['match']['id']));fcg_settle($data,$user);
+fcg_test($data['run']['stage']==='over' && $data['run']['hp']===0,'ordinary surrender ends whole expedition');
+$normal=fcg_test_match();fcg_effect($normal,0,$heal);fcg_test($normal['sides'][0]['hp']==180,'ordinary healing keeps existing 200 cap');
+$data=$camp;$user['nicksrev']='';fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'supply'));fcg_test_draft_action($data,$user,'draft_battle');
+$data['collection']=array_fill(0,150,1);fcg_settle($data,$user);fcg_test(fcg_title_owned($user,9106),'permanent collection title still checked during expedition');
+
 echo 'FCG: '.$checks." checks passed.\n";

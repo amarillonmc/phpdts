@@ -130,7 +130,7 @@ function fcg_social_load(&$data, $user, $room, $now)
 	$vars+=array('fcg_online'=>array(),'fcg_invites'=>array(),'fcg_reports'=>array());
 	foreach($vars['fcg_online'] as $id=>$p) if($p['at']<$now-30) unset($vars['fcg_online'][$id]);
 	foreach($vars['fcg_invites'] as $id=>$p) if($p['expires']<$now) unset($vars['fcg_invites'][$id]);
-	$vars['fcg_online'][$uid]=array('uid'=>$uid,'name'=>$user['username'],'at'=>$now,'busy'=>$data['match'] && $data['match']['result']===null);
+	$vars['fcg_online'][$uid]=array('uid'=>$uid,'name'=>$user['username'],'at'=>$now,'busy'=>!empty($data['run']) || ($data['match'] && $data['match']['result']===null));
 	$social['vars']=$vars;
 	$result=$db->query("SELECT data FROM {$gtablepre}fcg_matches WHERE roomkey=".fcg_sql(fcg_room_key($room))." AND (p0=$uid OR p1=$uid) ORDER BY updated DESC,id DESC LIMIT 20");
 	$fallback=null;
@@ -159,7 +159,9 @@ function fcg_social_action(&$social, &$data, &$user, $input, $room, $now)
 	$in_room=$room && $room['gruleset']==='FCG';
 	$active=$m && $m['result']===null;
 	if($action==='accept' && $m && in_array($input['token'] ?? '',$m['recent'][$uid] ?? array(),true)) { $data['match']=null; return true; }
-	if($active && in_array($action,array('start','mirror','invite','accept'),true)) throw new InvalidArgumentException('请先完成当前切磋。');
+	if($active && in_array($action,array('start','mirror','invite','accept','draft_enter'),true)) throw new InvalidArgumentException('请先完成当前切磋。');
+	if($action==='draft_enter' && $m && !$active && ($data['live_settled'] ?? '')!==$m['id']) throw new InvalidArgumentException('请先刷新牌桌，收好上一场切磋的奖励，再开始远征。');
+	if(!empty($data['run']) && in_array($action,array('start','mirror','invite','accept'),true)) throw new InvalidArgumentException('请先完成并领取当前远征的奖励。');
 	if(in_array($action,array('invite','accept','decline','mirror','sticker'),true) && !$in_room) throw new InvalidArgumentException('请先加入 FCG 房间。');
 	if(in_array($action,array('invite','accept','mirror'),true) && $data['match'] && $data['match']['result']===null) throw new InvalidArgumentException('请先完成当前牌局。');
 	if(in_array($action,array('invite','accept','decline'),true)) {
@@ -172,7 +174,7 @@ function fcg_social_action(&$social, &$data, &$user, $input, $room, $now)
 		$peer=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=$target AND groupid>0 AND roomid=".(int)$user['roomid']));
 		if(!$peer || ($social['vars']['fcg_online'][$target]['at'] ?? 0)<$now-30) throw new InvalidArgumentException('对方已离开牌桌。');
 		$peer_data=fcg_load_account($peer['fcgdata']); fcg_expire_temp($peer_data,$peer,$now,fcg_room_key($room));
-		if(($peer_data['match'] && $peer_data['match']['result']===null) || !empty($social['vars']['fcg_online'][$target]['busy'])) throw new InvalidArgumentException('对方正在对局中。');
+		if(!empty($peer_data['run']) || ($peer_data['match'] && $peer_data['match']['result']===null) || !empty($social['vars']['fcg_online'][$target]['busy'])) throw new InvalidArgumentException('对方正在对局或远征中。');
 		fcg_validate_deck($data['deck'],fcg_collection($data)); fcg_validate_deck($peer_data['deck'],fcg_collection($peer_data));
 		if($action==='invite') {
 			foreach($social['vars']['fcg_invites'] as $invite) if($invite['from']===$uid) throw new InvalidArgumentException('邀请已发出，请等待回应。');
@@ -203,7 +205,7 @@ function fcg_social_action(&$social, &$data, &$user, $input, $room, $now)
 		$solo['log']=array('游荡的牌手残影展开了拓印的卡组。'); $data['live_match']=null; $m=null; $data['last_reward']=null;
 		return true;
 	}
-	if($action==='start' && !$active) { $m=null; return false; }
+	if(in_array($action,array('start','draft_enter'),true) && !$active) { $m=null; return false; }
 	if($m && in_array($action,array('play','discard','destroy','surrender','sticker'),true)) {
 		if(($input['match'] ?? '')!==$m['id']) throw new InvalidArgumentException('牌局已切换，请刷新牌桌。');
 		if(in_array($input['token'],$m['recent'][$uid] ?? array(),true)) return true;
@@ -261,6 +263,7 @@ function fcg_social_save(&$social, $data, $user, $room, $now)
 {
 	global $db,$gtablepre;
 	if(!$room || $room['gruleset']!=='FCG') return;
+	$social['vars']['fcg_online'][(int)$user['uid']]['busy']=!empty($data['run']) || ($data['match'] && $data['match']['result']===null) || ($social['match'] && $social['match']['result']===null);
 	if($social['match'] && ($data['live_settled'] ?? '')===$social['match']['id']) {
 		$social['match']['ack'][(int)$user['uid']]=true; fcg_live_write($social['match'],$room,$now);
 	}

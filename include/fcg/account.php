@@ -2,6 +2,7 @@
 if(!defined('IN_GAME')) exit('Access Denied');
 require_once GAME_ROOT.'./include/fcg/engine.php';
 require_once GAME_ROOT.'./include/fcg/social.php';
+require_once GAME_ROOT.'./include/fcg/draft.php';
 
 function fcg_sql($s) { return "X'".bin2hex((string)$s)."'"; }
 function fcg_html($s) { return htmlspecialchars((string)$s,ENT_QUOTES,'UTF-8'); }
@@ -44,7 +45,7 @@ function fcg_new_account()
 {
 	$deck=fcg_starter_deck();
 	return array('rev'=>0,'collection'=>array_count_values($deck),'deck'=>$deck,'tutorial'=>false,
-		'embers'=>0,'wins'=>array(),'hard_wins'=>array(),'played'=>0,'match'=>null,'purchases'=>array(),'recent'=>array(),'last_reward'=>null);
+		'embers'=>0,'wins'=>array(),'hard_wins'=>array(),'played'=>0,'match'=>null,'run'=>null,'purchases'=>array(),'recent'=>array(),'last_reward'=>null);
 }
 
 function fcg_load_account($raw)
@@ -52,7 +53,7 @@ function fcg_load_account($raw)
 	if($raw===null || $raw==='') return fcg_new_account();
 	$data=json_decode($raw,true);
 	if(!is_array($data) || !isset($data['collection'],$data['deck'],$data['rev'])) throw new RuntimeException('卡册读取失败，请联系管理员；原有收藏已保留。');
-	return $data+array('hard_wins'=>array(),'pvp_wins'=>0,'temp_cards'=>array(),'live_match'=>null,'live_settled'=>null,'pvp_daily'=>array());
+	return $data+array('run'=>null,'hard_wins'=>array(),'pvp_wins'=>0,'temp_cards'=>array(),'live_match'=>null,'live_settled'=>null,'pvp_daily'=>array());
 }
 
 function fcg_evo_load($now)
@@ -115,7 +116,8 @@ function fcg_award_title(&$user, $title)
 function fcg_settle(&$data, &$user, $now = 0, $room_key = '', &$evolution = null)
 {
 	$m=&$data['match'];
-	if($m && $m['result']!==null && !$m['rewarded']) {
+	if(!empty($m['draft'])) fcg_settle_draft($data,$m);
+	elseif($m && $m['result']!==null && !$m['rewarded']) {
 		if($m['opponent']===21 && empty($m['pvp']) && $m['turn']>=3 && isset($m['telemetry'])) {
 			if($evolution===null) $evolution=fcg_evo_load($now);
 			fcg_evo_record_and_optimize($evolution['state'],$m);
@@ -200,8 +202,11 @@ function fcg_action(&$data, &$user, $input, $now, $in_room, $evo_state = null)
 	switch($action) {
 		case 'tutorial': $data['tutorial']=true; break;
 		case 'deck': $data['deck']=fcg_validate_deck($input['deck'] ?? null,fcg_collection($data)); $data['temp_expired']=false; break;
+		case 'draft_enter': case 'draft_pick': case 'draft_node': case 'draft_battle': case 'draft_reward': case 'draft_abandon':
+			fcg_draft_action($data,$user,$input,$now,$in_room); break;
 		case 'start':
 			if(!$in_room) throw new InvalidArgumentException('请先在房间列表创建或加入 FCG 异色房间。');
+			if(!empty($data['run'])) throw new InvalidArgumentException('请先完成并领取当前远征的奖励。');
 			if($data['match'] && $data['match']['result']===null) throw new InvalidArgumentException('请先完成当前牌局。');
 			$id=$input['opponent'] ?? null;
 			if(!is_int($id)) throw new InvalidArgumentException('请选择牌手。');
@@ -267,7 +272,7 @@ function fcg_request_locked($input, $now)
 		}
 		$social=fcg_social_load($data,$user,$room,$now);
 		if($data['match'] && $data['match']['result']===null) fcg_advance($data['match'],$now);
-		$won=$data['match'] && $data['match']['result']==='win' && !$data['match']['rewarded'];
+		$won=$data['match'] && empty($data['match']['draft']) && $data['match']['result']==='win' && !$data['match']['rewarded'];
 		fcg_settle($data,$user,$now,$room_key,$evolution);
 		if(!$duplicate) {
 			if(!fcg_social_action($social,$data,$user,$input,$room,$now)) fcg_action($data,$user,$input,$now,$in_room,$evolution['state'] ?? null);
@@ -300,6 +305,6 @@ function fcg_public_state($data, $user, $in_room, $now)
 	$n=json_decode($user['nicksrev'] ?? '',true);
 	return array('rev'=>$data['rev'],'collection'=>(object)$data['collection'],'available'=>(object)fcg_collection($data),'temp_cards'=>(object)($data['temp_cards']['cards'] ?? array()),'deck'=>$data['deck'],
 		'tutorial'=>$data['tutorial'],'embers'=>$data['embers'],'wins'=>(object)$data['wins'],'hard_wins'=>(object)($data['hard_wins'] ?? array()),'played'=>$data['played'],
-		'match'=>$m,'last_reward'=>$data['last_reward'],'purchases'=>(object)$data['purchases'],
+		'match'=>$m,'run'=>fcg_draft_public($data),'last_reward'=>$data['last_reward'],'purchases'=>(object)$data['purchases'],
 		'credits'=>(int)$user['credits2'],'titles'=>$n['nicks'] ?? array(),'in_room'=>(bool)$in_room,'now'=>$now,'pvp_wins'=>$data['pvp_wins'] ?? 0,'temp_expired'=>$data['temp_expired'] ?? false);
 }

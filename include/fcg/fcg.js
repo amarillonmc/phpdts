@@ -5,10 +5,10 @@
   const dialog = document.getElementById('fcg-dialog'), dialogContent = document.getElementById('fcg-dialog-content');
   const colors = {W:['白','#d8d9e0'],R:['红','#f08e95'],Y:['黄','#edcf7c'],G:['绿','#82d2ae'],B:['蓝','#89b6ef']};
   const esc = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  let state=boot.state, tab=boot.shop?'shop':(state.match&&!state.match.result?'battle':'lobby'), shopCategory='fcg_pack';
+  let state=boot.state, tab=boot.shop?'shop':(state.match&&!state.match.result?'battle':state.run?'draft':'lobby'), shopCategory='fcg_pack';
   let draft=state.deck.slice(), busy=false, dirty=false, clockOffset=state.now*1000-Date.now(), tutorialStep=0;
   let filter={color:'all',rarity:'all',series:'all',keyword:'all',search:'',owned:false,inDeck:false}, inspectId=null, rewardView=null, stickerOpen=false;
-  let sampleHand=[], referenceSearch='';
+  let sampleHand=[], referenceSearch='', lastRun='', shownRunOver='';
   const keywordEntries={};
   for(const c of boot.cards) {
     c.keywords=[...new Set(c.glossary.flatMap(g=>g.keywords))];
@@ -21,6 +21,7 @@
   const available=id=>(state.available||state.collection)[id]||0;
   const num=value=>'<strong class="fcg-num">'+esc(value)+'</strong>';
   const socialPanel=document.createElement('div'); socialPanel.id='fcg-social'; content.before(socialPanel);
+  const runPanel=document.createElement('div'); runPanel.id='fcg-run'; content.before(runPanel);
   let activeRequest=Promise.resolve(), mutationPending=false, lastBattle='';
   const counts = list => list.reduce((out,id)=>{out[id]=(out[id]||0)+1;return out;},{});
   const notice = text => { document.getElementById('fcg-notice').textContent=text; };
@@ -37,6 +38,7 @@
     busy=true;
     const payload={action,csrf:boot.csrf,rev:state.rev,token:token(),...values};
     if(state.match) payload.match=state.match.id;
+    if(state.run && payload.run===undefined) payload.run=state.run.id;
     const controller=new AbortController(), timeout=setTimeout(()=>controller.abort(),15000);
     try {
       const response=await fetch('fcg.php',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:controller.signal});
@@ -47,12 +49,14 @@
       if(state.match&&state.match.id!==previousMatch) stickerOpen=false;
       if(!dirty) draft=state.deck.slice();
       if(action!=='status') notice('');
-      if(['start','mirror','accept'].includes(action)||(state.match&&state.match.live&&!state.match.result&&state.match.id!==previousMatch)) tab='battle';
+      if(['start','mirror','accept','draft_battle'].includes(action)||(state.match&&state.match.live&&!state.match.result&&state.match.id!==previousMatch)) tab='battle';
+      if(['draft_enter','draft_pick','draft_node','draft_abandon'].includes(action)) tab='draft';
+      if(action==='draft_reward') tab='draft';
       if(action==='deck') {dirty=false;draft=state.deck.slice();notice('卡组已保存，下局使用这副牌。');}
       if(action==='invite') notice('邀请已发出，请等待对方回应。');
       // Do not replace a focused search field/deck editor during background polling.
-      if(action!=='status' || tab==='lobby' || (tab==='battle' && JSON.stringify(state.match)!==lastBattle)) render(); else {renderWallet();renderSocial();}
-      if(action==='buy' || action==='embers') reward(state.last_reward);
+      if(action!=='status' || tab==='lobby' || (tab==='draft' && JSON.stringify(state.run)!==lastRun) || (tab==='battle' && JSON.stringify(state.match)!==lastBattle)) render(); else {renderWallet();renderSocial();renderRun();}
+      if(action==='buy' || action==='embers' || action==='draft_reward') reward(state.last_reward);
       return true;
     } catch(error) {
       notice(error.name==='AbortError' || error.message==='Failed to fetch'?'连接中断。请刷新状态后重试，已保存的收藏不会丢失。':error.message);
@@ -76,9 +80,12 @@
     } else if(mode==='deck') {
       const allowed=used<owned && (c.unlimited||used<7) && draft.length<100;
       actions='<div class="fcg-card-count">可用 '+owned+' · 已放 '+used+(temp?' · ✨借牌 '+temp:'')+'</div><div class="fcg-card-actions"><button data-action="remove" data-card="'+id+'" '+(!used?'disabled':'')+'>−</button><button data-action="add" data-card="'+id+'" '+(!allowed?'disabled':'')+'>＋</button></div>';
+    } else if(mode.startsWith('draft-')) {
+      const label={'draft-pick':'选入远征卡组','draft-reinforce':'选择这张补强','draft-upgrade':'升级这张卡','draft-remove':'移除这张卡'}[mode];
+      actions='<div class="fcg-card-count">远征幻影</div><div class="fcg-card-actions"><button data-action="'+mode+'" data-card="'+id+'" data-slot="'+slot+'" data-run="'+esc(state.run.id)+'" data-layer="'+state.run.layer+'" data-pick="'+state.run.picks.length+'" '+(!state.in_room?'disabled':'')+'>'+label+'</button></div>';
     }
     return '<article data-inspect="'+id+'" class="fcg-card '+(c.upgraded?'upgraded ':'')+(c.rare?'rare ':'')+(mode==='deck'&&!owned?'unowned':'')+'" style="--tone:'+colors[c.color][1]+'">'+
-      '<img src="'+esc(c.art)+'" alt="'+esc(c.name)+'" data-action="detail" data-card="'+id+'" tabindex="0" loading="lazy"><span class="fcg-cost" title="'+colors[c.color][0]+'色能量">'+num(cost)+'</span>'+
+      '<img src="'+esc(c.art)+'" alt="'+esc(c.name)+'" data-action="detail" data-card="'+id+'" data-back="'+(['draft-upgrade','draft-remove'].includes(mode)?mode+'-back':'')+'" tabindex="0" loading="lazy"><span class="fcg-cost" title="'+colors[c.color][0]+'色能量">'+num(cost)+'</span>'+
       '<div class="fcg-card-body"><h3>'+esc(c.name)+'</h3><p>'+colors[c.color][0]+' · '+(c.upgraded?'已升级':'未升级')+(c.rare?' · 稀有':'')+'</p>'+
       (c.type==='monster'?'<p>⚔ '+num(c.atk)+' ▣ '+num(c.def)+' ♥ '+num(c.hp)+'</p>':'')+'<p class="fcg-card-rules">'+c.short_rules+'</p></div>'+actions+'<i class="fcg-rarity" aria-hidden="true"></i></article>';
   }
@@ -90,19 +97,66 @@
   }
   function detail(id, heading='', back='') {
     const c=boot.cards[id];
-    modal((heading?'<h2>'+esc(heading)+'</h2>':'')+'<div class="fcg-detail"><img src="'+esc(c.art)+'" alt="'+esc(c.name)+'"><div><p class="fcg-eyebrow">'+(c.series==='vol2'?'Vol.2 红杀演武':'Vol.1 种火初啼')+' · '+colors[c.color][0]+' / '+(c.upgraded?'已升级':'未升级')+(c.rare?' / 稀有':'')+'</p><h2>'+esc(c.name)+'</h2><p>费用 '+num(c.cost)+' · '+(c.type==='monster'?'⚔ '+num(c.atk)+' ▣ '+num(c.def)+' ♥ '+num(c.hp):'法术')+'</p><p class="fcg-flavor">'+esc(c.flavor)+'</p><p class="fcg-muted">永久持有 '+(state.collection[id]||0)+' 张'+(state.temp_cards[id]?' · ✨本房借牌 '+state.temp_cards[id]:'')+'</p>'+glossary(c)+'</div></div>'+(back?'<button data-action="'+back+'">'+({'reward-back':'返回开包一览','sample-back':'返回范例手牌','keyword-reference':'返回关键字速查表'}[back])+'</button>':''));
+    modal((heading?'<h2>'+esc(heading)+'</h2>':'')+'<div class="fcg-detail"><img src="'+esc(c.art)+'" alt="'+esc(c.name)+'"><div><p class="fcg-eyebrow">'+(c.series==='vol2'?'Vol.2 红杀演武':'Vol.1 种火初啼')+' · '+colors[c.color][0]+' / '+(c.upgraded?'已升级':'未升级')+(c.rare?' / 稀有':'')+'</p><h2>'+esc(c.name)+'</h2><p>费用 '+num(c.cost)+' · '+(c.type==='monster'?'⚔ '+num(c.atk)+' ▣ '+num(c.def)+' ♥ '+num(c.hp):'法术')+'</p><p class="fcg-flavor">'+esc(c.flavor)+'</p><p class="fcg-muted">永久持有 '+(state.collection[id]||0)+' 张'+(state.temp_cards[id]?' · ✨本房借牌 '+state.temp_cards[id]:'')+'</p>'+glossary(c)+'</div></div>'+(back?'<button data-action="'+back+'">'+({'reward-back':'返回开包一览','sample-back':'返回范例手牌','keyword-reference':'返回关键字速查表','draft-upgrade-back':'返回升级选卡','draft-remove-back':'返回移除选卡'}[back])+'</button>':''));
   }
   function reward(r) {
     if(!r) return;
     rewardView=r;
-    if(r.cards) modal('<h2>开包收获一览</h2><p>共 '+r.cards.length+' 包 · 花费 '+num(r.total_cost)+' 切糕</p><div class="fcg-reward-grid">'+r.cards.map(x=>'<div class="'+(x.new?'fcg-new':'')+'"><b>已拥有 '+(state.collection[x.card]||0)+' 张'+(x.overflow?' · 🔥+1 印花':x.new?' · ✨NEW':'')+'</b>'+card(x.card,'preview')+'</div>').join('')+'</div>');
+    if(r.cards) modal((r.draft?'<h2>远征收获已入册</h2><p>'+r.wins+' 胜 · 永久卡片 '+r.cards.length+' 张 · 余烬印花 +'+r.embers+'</p><p>卡片从最终远征卡组抽取，同号不重复，能量卡除外。满 7 张的卡另转为 1 枚印花。</p>':'<h2>开包收获一览</h2><p>共 '+r.cards.length+' 包 · 花费 '+num(r.total_cost)+' 切糕</p>')+'<div class="fcg-reward-grid">'+r.cards.map(x=>'<div class="'+(x.new?'fcg-new':'')+'"><b>已拥有 '+(state.collection[x.card]||0)+' 张'+(x.overflow?' · 🔥+1 印花':x.new?' · ✨NEW':'')+'</b>'+card(x.card,'preview')+'</div>').join('')+'</div>');
     else if(r.card!==undefined) detail(r.card,'已拥有 '+(state.collection[r.card]||0)+' 张'+(r.overflow?' · 溢出卡片已化作 1 枚余烬印花':''));
     else modal('<h2>获得头衔「'+esc(boot.titles[r.title]||r.title)+'」</h2><p>在个人资料中装备，下次进入常规游戏时生效。</p><a href="user_profile.php">打开个人资料</a>');
   }
+  function draftEntrance() {
+    const r=state.run, disabled=!state.in_room||state.credits<500||(state.match&&!state.match.result);
+    return '<section class="fcg-expedition-entry"><div><p class="fcg-eyebrow">DRAFT ROGUELITE · 单人</p><h2>🔥 种火远征</h2><p>和四位虚拟牌手轮抽 24 张记忆，带上 8 张能量基底，挑战五层种火。生命不会自动回满，层间可补给或强化。</p><p class="fcg-muted">过程中的卡片都是幻影。结束时按 0／1–2／3–4／5 胜，从最终卡组抽取 0／1／2／3 张非能量卡永久入册；每胜 1 枚印花，零胜保底 1 枚。</p></div><div>'+(r?'<button data-action="draft-resume">'+(r.stage==='over'?'领取远征奖励':'继续远征')+'</button>':'<button data-action="draft-enter" '+(disabled?'disabled':'')+'>🔥 种火远征（轮抽）· 500 切糕</button><small>'+(state.credits<500?'切糕不足':!state.in_room?'请先加入 FCG 房间':state.match&&!state.match.result?'请先完成当前牌局':'点击支付入场费，开始轮抽')+'</small>')+'</div></section>';
+  }
+  function renderRun() {
+    const r=state.run;
+    if(!r) {runPanel.innerHTML='';return;}
+    const hp=state.match&&state.match.draft&&!state.match.result?Math.max(0,state.match.sides[0].hp):r.hp;
+    const phase={draft:'轮抽中',node:r.node&&r.node.type==='reinforce'?'战后补强':'篝火营地',battle:'迎战种火',over:'远征结束'}[r.stage];
+    runPanel.innerHTML='<div class="fcg-run-bar"><strong>🔥 种火远征 · '+phase+'</strong><span>♥ '+num(hp)+' / '+r.mhp+'</span><span>第 '+r.layer+' / 5 层 · '+r.wins+' 胜</span><button data-action="draft-resume">'+(r.stage==='over'?'领取奖励':'继续远征')+'</button>'+(r.stage!=='over'?'<button class="fcg-muted" data-action="draft-abandon">放弃远征</button>':'')+'</div>';
+    if(r.stage==='over'&&shownRunOver!==r.id) {shownRunOver=r.id;draftEnd();}
+  }
+  function draftEnd() {
+    const r=state.run;if(!r||r.stage!=='over')return;
+    const n=r.wins>=5?3:r.wins>=3?2:r.wins>=1?1:0;
+    modal('<h2>'+({win:'五层火光，尽收眼底。',loss:'把这一路的记忆带回去。',draw:'两团火苗，同时熄灭。',abandoned:'暂且收起远征的行囊。'}[r.ending]||'远征结束')+'</h2><p>本次 '+r.wins+' 胜 · '+n+' 张永久卡片 · '+Math.max(1,r.wins)+' 枚余烬印花</p><p>从最终卡组的非能量卡中随机抽取，卡号不重复。其余幻影卡片随行程消散。</p><button data-action="draft-reward" data-run="'+esc(r.id)+'">领取远征奖励</button>');
+  }
+  function draftForge() {
+    const r=state.run;if(!r||r.stage!=='node'||r.node.type!=='camp')return;
+    const canUpgrade=r.deck.some(id=>!boot.cards[id].unlimited&&!boot.cards[id].upgraded);
+    modal('<h2>在火光中重整卡组</h2><p>从以下三项中选择一项，然后进入本层战斗。能量基底不能升级或移除。</p><div class="fcg-draft-nodes"><button data-action="draft-choose-upgrade" '+(!canUpgrade?'disabled':'')+'><strong>淬炼记忆</strong><span>选择一张未升级卡，换为升级版</span></button><button data-action="draft-choose-remove"><strong>轻装前行</strong><span>选择并移除一张非能量卡</span></button><button data-action="draft-rest" data-run="'+esc(r.id)+'" data-layer="'+r.layer+'"><strong>炉边小憩</strong><span>恢复 12 点生命，获得 1 枚印花</span></button></div>');
+  }
+  function draftChoose(kind) {
+    const r=state.run;if(!r||r.stage!=='node'||r.node.type!=='camp')return;
+    modal('<h2>'+(kind==='upgrade'?'选择要升级的记忆':'选择要移除的记忆')+'</h2><p>只影响这次远征的幻影卡组。</p><div class="fcg-card-grid">'+r.deck.map((id,slot)=>({id,slot})).filter(x=>!boot.cards[x.id].unlimited&&(kind!=='upgrade'||!boot.cards[x.id].upgraded)).map(x=>card(x.id,'draft-'+kind,x.slot)).join('')+'</div><button data-action="draft-forge">返回强化选择</button>');
+  }
+  function expedition() {
+    const r=state.run;
+    if(!r) return draftEntrance()+(state.last_reward&&state.last_reward.draft?'<div class="fcg-note">上次远征：'+state.last_reward.wins+' 胜，奖励已领取。<button data-action="draft-last-reward">查看收获</button></div>':'');
+    let html=!state.in_room?'<div class="fcg-note">已离开 FCG 房间。行程已保存，回到 FCG 房间后可继续；也可以主动放弃并结算。</div>':'';
+    const disabled=!state.in_room?'disabled':'', list=r.stage==='draft'?r.picks:r.deck;
+    html+='<div class="fcg-expedition-layout"><div>';
+    if(r.stage==='draft') {
+      html+='<div class="fcg-section-head"><h2>第 '+(r.circle+1)+' 圈 · 第 '+(r.pick+1)+' / 8 包</h2><span>已选 '+r.picks.length+' / 24 张</span></div><progress class="fcg-draft-progress" max="24" value="'+r.picks.length+'">'+r.picks.length+' / 24</progress><p>本圈'+(r.circle%2?'逆向':'顺向')+'传牌 · 四位虚拟牌手已取走 '+(5-r.pack.length)+' 张，本包剩余 '+r.pack.length+' 张，选 1 张。</p><div class="fcg-draft-pack">'+r.pack.map((id,slot)=>card(id,'draft-pick',slot)).join('')+'</div><p class="fcg-muted">选满 24 张后，按选牌颜色配发 8 张能量基底。选牌会自动保存。</p>';
+    } else if(r.stage==='node'&&r.node.type==='reinforce') {
+      html+='<h2>第 '+r.layer+' 层通过 · 三选一补强</h2><p>从对手本局的牌组中选择一张幻影记忆。'+(r.wins===5?'这是最后一次补强，选完即结算远征。':'选完后前往下一处篝火。')+'</p><div class="fcg-draft-pack">'+r.node.opts.map((id,slot)=>card(id,'draft-reinforce',slot)).join('')+'</div>';
+    } else if(r.stage==='node') {
+      html+='<h2>第 '+r.layer+' 层前 · 篝火营地</h2><p>选择一项准备，再迎战下一位种火。生命上限为 '+r.mhp+'。</p><div class="fcg-draft-nodes"><button data-action="draft-supply" data-layer="'+r.layer+'" '+disabled+'><strong>补给</strong><span>恢复 24 点生命</span><small>♥ '+r.hp+' → '+Math.min(r.mhp,r.hp+24)+'</small></button><button data-action="draft-forge" '+disabled+'><strong>强化</strong><span>升级 / 移除 / 小憩，三选一</span><small>调整远征幻影卡组</small></button></div>';
+    } else if(r.stage==='battle') {
+      const o=boot.opponents[r.opponent], active=state.match&&state.match.draft&&!state.match.result;
+      html+='<h2>第 '+r.layer+' 层 · 火光的另一端</h2><article class="fcg-opponent fcg-draft-foe"><img src="'+esc(o.portrait)+'" alt="'+esc(o.name)+'"><div><h3>'+esc(o.name)+'</h3><p>♥ '+(o.hp+15*(r.layer-1))+' · 你的生命 '+r.hp+' / '+r.mhp+'</p></div>'+(active?'<button data-tab="battle">回到远征牌桌</button>':'<button data-action="draft-battle" data-layer="'+r.layer+'" '+disabled+'>进入第 '+r.layer+' 层战斗</button>')+'</article><p class="fcg-muted">胜利后可选一张补强；失败或认输会结束本次远征。</p>';
+    } else html+='<h2>远征结束 · '+r.wins+' 胜</h2><p>行程已保存，领取奖励后可以开始新的远征。</p><button data-action="draft-reward" data-run="'+esc(r.id)+'">领取远征奖励</button>';
+    const byColor=Object.fromEntries(Object.keys(colors).map(c=>[c,list.filter(id=>boot.cards[id].color===c).length]));
+    html+='</div><aside class="fcg-draft-list"><h3>'+(r.stage==='draft'?'已选记忆':'远征卡组')+' · '+list.length+' 张</h3><p>'+Object.keys(colors).filter(c=>byColor[c]).map(c=>'<span style="color:'+colors[c][1]+'">'+colors[c][0]+' '+byColor[c]+'</span>').join(' · ')+'</p><p class="fcg-muted">幻影卡片，结算前不计入永久卡册</p>'+Object.entries(counts(list)).map(([id,n])=>'<button data-action="detail" data-inspect="'+id+'" data-card="'+id+'"><span style="color:'+colors[boot.cards[id].color][1]+'">'+esc(boot.cards[id].name)+'</span><b>×'+n+'</b></button>').join('')+'</aside></div>';
+    return html;
+  }
   function lobby() {
-    const playing=state.match&&!state.match.result;
+    const playing=!!state.run || state.match&&!state.match.result;
     let html=(!state.in_room?'<div class="fcg-note">卡册和商店随时开放。开始对战前，请在 <a href="index.php">大厅房间列表</a> 的「创建异色房间」中选择 FCG，或加入已有 FCG 房间。</div>':'');
-    if(playing) html+='<div class="fcg-note">牌局仍在进行中。<button data-tab="battle">回到牌桌</button></div>';
+    html+=draftEntrance();
+    if(state.match&&!state.match.result) html+='<div class="fcg-note">牌局仍在进行中。<button data-tab="battle">回到牌桌</button></div>';
     if(state.in_room) html+='<h2>同房间的牌手</h2><div class="fcg-online">'+(state.online.length?state.online.map(p=>'<span>'+esc(p.name)+' <button data-action="invite" data-uid="'+p.uid+'" '+(playing||p.busy?'disabled':'')+'>'+(p.busy?'对局中':'发起切磋')+'</button></span>').join(''):'等待其他牌手落座。')+'</div>';
     html+='<div class="fcg-section-head"><h2>陪练的小家伙们</h2><span class="fcg-muted">赢过 '+Object.keys(state.wins).length+' / '+boot.opponents.length+' 位</span></div><p class="fcg-muted">对战免费。普通挑战获胜可获得对手本局牌组中的一张卡；认真模式赠送角色代表卡或精选升级／稀有卡，升级代表卡更易获得，不掉落基础能量卡。失败与平局不扣除卡片。</p>';
     for(const [lo,hi,title] of [[0,5,'初次相逢 · Lv.1–2'],[5,11,'外面的回声'],[11,17,'更深处的记忆'],[17,21,'演武场的锋芒 · Vol.2'],[21,22,'推演不息']]) {
@@ -121,24 +175,24 @@
   }
   function renderSocial() {
     const p=state.invite;
-    socialPanel.innerHTML=(p?'<div class="fcg-invite">'+esc(p.name)+' 邀请你来一局牌桌对决 <button data-action="accept" data-uid="'+p.from+'">接受</button> <button data-action="decline" data-uid="'+p.from+'">婉拒</button></div>':'')+(state.reports||[]).filter(r=>r.at>state.now-60).map(r=>'<p class="fcg-report">'+esc(r.text)+'</p>').join('');
+    socialPanel.innerHTML=(p?'<div class="fcg-invite">'+esc(p.name)+' 邀请你来一局牌桌对决 <button data-action="accept" data-uid="'+p.from+'" '+(state.run?'disabled':'')+'>接受</button> <button data-action="decline" data-uid="'+p.from+'">婉拒</button></div>':'')+(state.reports||[]).filter(r=>r.at>state.now-60).map(r=>'<p class="fcg-report">'+esc(r.text)+'</p>').join('');
   }
   function side(s, name, enemy, sticker) {
     let monster='<span class="fcg-muted">没有驻场帮手</span>';
     if(s.monster) {const m=s.monster,c=boot.cards[m.id];monster='<div class="fcg-monster" data-inspect="'+m.id+'"><img src="'+esc(c.art)+'" alt="'+esc(c.name)+'" data-action="detail" data-card="'+m.id+'"><div><b>'+esc(c.name)+'</b><br>⚔ '+num(m.atk)+' ▣ '+num(m.def)+' ♥ '+num(m.hp)+(m.frozen?'<br>❄️冻结 '+num(m.frozen):'')+(m.stealth?' · 🌫️潜伏':'')+'</div></div>';}
     const age=sticker?(Date.now()+clockOffset)/1000-sticker.at:99;
     const bubble=sticker&&age<2.5&&boot.stickers[sticker.id]?'<img class="fcg-sticker-bubble" data-expires="'+(sticker.at+2.5)+'" style="animation-delay:-'+Math.max(0,age)+'s" src="img/fcg/stickers/'+String(sticker.id).padStart(2,'0')+'.png" alt="'+esc(boot.stickers[sticker.id])+'">':'';
-    return '<div class="fcg-side"><div><h3>'+esc(name)+bubble+'</h3><div class="fcg-stats"><span>♥ '+num(Math.max(0,s.hp))+' / 200</span><span>攻击 '+num(s.atk)+(s.bonus?'＋'+num(s.bonus):'')+'</span><span>防御 '+num(s.def)+'</span><span>回血 '+num(s.regen)+'</span><span>符盾 '+num(s.barrier||0)+'</span><span>破绽 '+num(s.vuln||0)+'</span><span>牌库 '+num(s.deck_count)+'</span>'+(enemy?'<span>手牌 '+num(s.hand_count)+'</span>':'')+'</div><div class="fcg-hp"><i style="width:'+Math.max(0,Math.min(100,s.hp/2))+'%"></i></div><div class="fcg-energy">'+Object.keys(colors).map(c=>'<span style="--tone:'+colors[c][1]+'" title="'+colors[c][0]+'能量 / 每回合产能">'+colors[c][0]+' '+num(s.energy[c])+' <small>＋'+num(s.gen[c])+'</small></span>').join('')+'</div></div><div>'+monster+'</div></div>';
+    return '<div class="fcg-side"><div><h3>'+esc(name)+bubble+'</h3><div class="fcg-stats"><span>♥ '+num(Math.max(0,s.hp))+' / '+(s.mhp||200)+'</span><span>攻击 '+num(s.atk)+(s.bonus?'＋'+num(s.bonus):'')+'</span><span>防御 '+num(s.def)+'</span><span>回血 '+num(s.regen)+'</span><span>符盾 '+num(s.barrier||0)+'</span><span>破绽 '+num(s.vuln||0)+'</span><span>牌库 '+num(s.deck_count)+'</span>'+(enemy?'<span>手牌 '+num(s.hand_count)+'</span>':'')+'</div><div class="fcg-hp"><i style="width:'+Math.max(0,Math.min(100,s.hp/(s.mhp||200)*100))+'%"></i></div><div class="fcg-energy">'+Object.keys(colors).map(c=>'<span style="--tone:'+colors[c][1]+'" title="'+colors[c][0]+'能量 / 每回合产能">'+colors[c][0]+' '+num(s.energy[c])+' <small>＋'+num(s.gen[c])+'</small></span>').join('')+'</div></div><div>'+monster+'</div></div>';
   }
   function battle() {
     const m=state.match;
     if(!m) return '<div class="fcg-note">还没有开始牌局。<button data-tab="lobby">挑选牌手</button></div>';
     let html='';
     if(m.result) {
-      html='<div class="fcg-result"><h2>'+({win:m.pvp?'切磋获胜。':'小种火把一张记忆交给了你。',loss:'这次，是对手赢了。',draw:'两团火苗，同时熄灭。'}[m.result])+'</h2>';
+      html='<div class="fcg-result"><h2>'+({win:m.draft?'本层通过，带上新的幻影记忆。':m.pvp?'切磋获胜。':'小种火把一张记忆交给了你。',loss:'这次，是对手赢了。',draw:'两团火苗，同时熄灭。'}[m.result])+'</h2>';
       if(m.reward&&m.reward.pvp) html+='<p>余烬印花 +'+m.reward.embers+(m.reward.embers===0?'（今日奖励次数已用完，或已赢过这位对手）':'')+'</p>'+(m.reward.temp_card!==null?'<p>✨本房间幻影记忆「'+esc(boot.cards[m.reward.temp_card].name)+'」</p><button data-action="detail" data-card="'+m.reward.temp_card+'">查看借牌</button>':'');
       else if(m.reward) html+='<p>获得「'+esc(boot.cards[m.reward.card].name)+'」'+(m.reward.overflow?'，转为余烬印花 ×1':'')+'</p><button data-action="detail" data-card="'+m.reward.card+'">查看战利品</button> ';
-      html+='<button data-tab="lobby">再找一位牌手</button></div>';
+      html+=(m.draft?'<button data-action="draft-resume">'+(state.run&&state.run.stage==='over'?'远征结算':'选择补强，继续远征')+'</button>':'<button data-tab="lobby">再找一位牌手</button>')+'</div>';
     }
     const stickers=m.stickers||{};
     if(m.hard) html+='<p class="fcg-challenge-label">🔥 认真模式 (HARD)</p>';
@@ -203,8 +257,9 @@
   function render() {
     app.classList.toggle('fcg-playing',tab==='battle'&&!!state.match);
     if(tab==='battle') lastBattle=JSON.stringify(state.match);
-    renderWallet(); renderSocial(); app.querySelectorAll('.fcg-nav [data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
-    content.innerHTML=({lobby,battle,deck,shop}[tab]||lobby)();
+    lastRun=JSON.stringify(state.run);
+    renderWallet(); renderSocial(); renderRun(); app.querySelectorAll('.fcg-nav [data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+    content.innerHTML=({lobby,battle,deck,shop,draft:expedition}[tab]||lobby)();
     if(tab==='deck') renderDeckGrid();
     if(tab==='battle'&&inspectId!==null)inspect(inspectId);
     const menu=document.getElementById('fcg-sticker-menu');
@@ -247,8 +302,21 @@
     if(el.dataset.tab) {tab=el.dataset.tab;render();return;}
     if(el.dataset.shop) {shopCategory=el.dataset.shop;render();return;}
     const a=el.dataset.action,id=Number(el.dataset.card),slot=Number(el.dataset.slot);
-    if(a==='detail') {detail(id,'',el.closest('.fcg-reward-grid')?'reward-back':el.closest('.fcg-sample-hand')?'sample-back':el.closest('.fcg-keyword-table')?'keyword-reference':'');return;}
+    if(a==='detail') {detail(id,'',el.dataset.back||(el.closest('.fcg-reward-grid')?'reward-back':el.closest('.fcg-sample-hand')?'sample-back':el.closest('.fcg-keyword-table')?'keyword-reference':''));return;}
     if(a==='reward-back') {reward(rewardView);return;}
+    if(a==='draft-enter') {await send('draft_enter');return;}
+    if(a==='draft-resume') {tab=state.run&&state.run.stage==='battle'&&state.match&&state.match.draft&&!state.match.result?'battle':'draft';render();if(state.run&&state.run.stage==='over')draftEnd();return;}
+    if(a==='draft-pick') {await send('draft_pick',{slot,card:id,pick:Number(el.dataset.pick),run:el.dataset.run});return;}
+    if(a==='draft-forge') {draftForge();return;}
+    if(['draft-choose-upgrade','draft-choose-remove','draft-upgrade-back','draft-remove-back'].includes(a)) {draftChoose(a.includes('upgrade')?'upgrade':'remove');return;}
+    if(['draft-supply','draft-rest','draft-upgrade','draft-remove','draft-reinforce'].includes(a)) {
+      dialog.close();await send('draft_node',{choice:a.slice(6),slot,card:id,run:el.dataset.run||state.run.id,layer:Number(el.dataset.layer)});return;
+    }
+    if(a==='draft-battle') {await send('draft_battle',{layer:Number(el.dataset.layer)});return;}
+    if(a==='draft-reward') {dialog.close();await send('draft_reward',{run:el.dataset.run});return;}
+    if(a==='draft-last-reward') {reward(state.last_reward);return;}
+    if(a==='draft-abandon') {modal('<h2>在这里结束远征？</h2><p>按当前胜场结算最终奖励，其余幻影记忆消散。已支付的 500 切糕入场费不退还。</p><button data-action="draft-abandon-confirm" data-run="'+esc(state.run.id)+'">放弃并结算</button>');return;}
+    if(a==='draft-abandon-confirm') {dialog.close();await send('draft_abandon',{run:el.dataset.run});return;}
     if(a==='sample-hand') {drawSample();return;}
     if(a==='sample-back') {showSample();return;}
     if(['invite','accept','decline','mirror'].includes(a)){await send(a,{uid:Number(el.dataset.uid)});return;}
@@ -275,7 +343,7 @@
     if(a==='start') {await send('start',{opponent:Number(el.dataset.opponent),hard:el.dataset.hard==='1'});return;}
     if(a==='play'||a==='discard') {await send(a,{slot,card:id,turn:Number(el.dataset.turn)});return;}
     if(a==='destroy') {await send(a);return;}
-    if(a==='surrender') {modal('<h2>收起这一局的牌？</h2><p>认输不会失去收藏，本局不会获得胜利卡片。</p><button data-action="surrender-confirm">确认认输</button>');return;}
+    if(a==='surrender') {modal('<h2>收起这一局的牌？</h2><p>'+(state.match&&state.match.draft?'认输会结束本次远征，按此前的胜场结算最终奖励。':'认输不会失去收藏，本局不会获得胜利卡片。')+'</p><button data-action="surrender-confirm">确认认输</button>');return;}
     if(a==='surrender-confirm') {dialog.close();await send('surrender');return;}
     if(a==='buy') {const item=boot.catalog.find(i=>+i.item_id===Number(el.dataset.item));await send('buy',{item:+item.item_id,price:+item.price_credits2,count:el.dataset.count==='remaining'?'remaining':Number(el.dataset.count)});return;}
     if(a==='embers') await send(a,{kind:el.dataset.kind});

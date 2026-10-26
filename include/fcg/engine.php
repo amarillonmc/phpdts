@@ -320,7 +320,7 @@ function fcg_effect(&$m, $side, $card, $mirroring = false)
 			default: throw new LogicException('Unsupported FCG spell: '.$op);
 		}
 	}
-	$a['hp']=min(200,$a['hp']); $b['hp']=min(200,$b['hp']);
+	$a['hp']=min($a['mhp'] ?? 200,$a['hp']); $b['hp']=min($b['mhp'] ?? 200,$b['hp']);
 }
 
 function fcg_remove_hand(&$s, $slot)
@@ -467,7 +467,7 @@ function fcg_turn(&$m)
 	foreach(array(0,1) as $i) {
 		$s=&$m['sides'][$i];
 		if($s['regen']<0) fcg_hurt($s,-$s['regen']);
-		else $s['hp']=min(200,$s['hp']+$s['regen']);
+		else $s['hp']=min($s['mhp'] ?? 200,$s['hp']+$s['regen']);
 		$s['bonus']=$s['pierce']=$s['evade']=0; $s['thorns']=array(0,0);
 		if($s['monster'] && $s['monster']['hp']>0) {
 			if($s['monster']['frozen']) $s['monster']['frozen']--;
@@ -537,7 +537,7 @@ function fcg_advance(&$m, $now)
 
 function fcg_finish(&$m)
 {
-	foreach($m['sides'] as &$s) { $s['hp'] = min(200,$s['hp']); $s['atk'] = max(0,$s['atk']); $s['def'] = max(0,$s['def']); } unset($s);
+	foreach($m['sides'] as &$s) { $s['hp'] = min($s['mhp'] ?? 200,$s['hp']); $s['atk'] = max(0,$s['atk']); $s['def'] = max(0,$s['def']); } unset($s);
 	fcg_monster_death($m['sides'][0],$m['sides'][1]);
 	fcg_monster_death($m['sides'][1],$m['sides'][0]);
 	foreach($m['sides'] as &$s) if(!empty($s['endure'])) $s['hp']=max(1,$s['hp']); unset($s);
