@@ -7,14 +7,24 @@
   const esc = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let state=boot.state, tab=boot.shop?'shop':(state.match&&!state.match.result?'battle':'lobby'), shopCategory='fcg_pack';
   let draft=state.deck.slice(), busy=false, dirty=false, clockOffset=state.now*1000-Date.now(), tutorialStep=0;
-  let filter={color:'all',rarity:'all',series:'all',search:'',owned:false}, inspectId=null, rewardView=null, stickerOpen=false;
+  let filter={color:'all',rarity:'all',series:'all',keyword:'all',search:'',owned:false,inDeck:false}, inspectId=null, rewardView=null, stickerOpen=false;
+  let sampleHand=[], referenceSearch='';
+  const keywordEntries={};
+  for(const c of boot.cards) {
+    c.keywords=[...new Set(c.glossary.flatMap(g=>g.keywords))];
+    for(const g of c.glossary) for(const key of g.keywords) {
+      if(!keywordEntries[key]) keywordEntries[key]=[];
+      if(!keywordEntries[key].some(entry=>entry.label===g.label&&entry.text===g.text)) keywordEntries[key].push({...g,card:c.id});
+    }
+  }
+  const keywords=Object.keys(keywordEntries).sort((a,b)=>a.localeCompare(b,'zh-CN'));
   const available=id=>(state.available||state.collection)[id]||0;
   const num=value=>'<strong class="fcg-num">'+esc(value)+'</strong>';
   const socialPanel=document.createElement('div'); socialPanel.id='fcg-social'; content.before(socialPanel);
   let activeRequest=Promise.resolve(), mutationPending=false, lastBattle='';
   const counts = list => list.reduce((out,id)=>{out[id]=(out[id]||0)+1;return out;},{});
   const notice = text => { document.getElementById('fcg-notice').textContent=text; };
-  function modal(html) { dialogContent.innerHTML=html; if(!dialog.open) dialog.showModal(); }
+  function modal(html) { dialogContent.innerHTML=html; if(!dialog.open) dialog.showModal(); dialog.scrollTop=0; }
   const token = () => Array.from(crypto.getRandomValues(new Uint8Array(16)),x=>x.toString(16).padStart(2,'0')).join('');
   function send(action, values={}) {
     if((action==='status' && (busy||mutationPending)) || (action!=='status' && mutationPending)) return Promise.resolve(false);
@@ -78,15 +88,15 @@
     inspectId=id;const c=boot.cards[id];
     node.innerHTML='<img src="'+esc(c.art)+'" alt="'+esc(c.name)+'"><h3>'+esc(c.name)+'</h3><p>费用 '+num(c.cost)+(c.type==='monster'?' · ⚔ '+num(c.atk)+' ▣ '+num(c.def)+' ♥ '+num(c.hp):'')+'</p>'+glossary(c);
   }
-  function detail(id, heading='', back=false) {
+  function detail(id, heading='', back='') {
     const c=boot.cards[id];
-    modal((heading?'<h2>'+esc(heading)+'</h2>':'')+'<div class="fcg-detail"><img src="'+esc(c.art)+'" alt="'+esc(c.name)+'"><div><p class="fcg-eyebrow">'+(c.series==='vol2'?'Vol.2 红杀演武':'Vol.1 种火初啼')+' · '+colors[c.color][0]+' / '+(c.upgraded?'已升级':'未升级')+(c.rare?' / 稀有':'')+'</p><h2>'+esc(c.name)+'</h2><p>费用 '+num(c.cost)+' · '+(c.type==='monster'?'⚔ '+num(c.atk)+' ▣ '+num(c.def)+' ♥ '+num(c.hp):'法术')+'</p><p class="fcg-flavor">'+esc(c.flavor)+'</p><p class="fcg-muted">永久持有 '+(state.collection[id]||0)+' 张'+(state.temp_cards[id]?' · ✨本房借牌 '+state.temp_cards[id]:'')+'</p>'+glossary(c)+'</div></div>'+(back?'<button data-action="reward-back">返回开包一览</button>':''));
+    modal((heading?'<h2>'+esc(heading)+'</h2>':'')+'<div class="fcg-detail"><img src="'+esc(c.art)+'" alt="'+esc(c.name)+'"><div><p class="fcg-eyebrow">'+(c.series==='vol2'?'Vol.2 红杀演武':'Vol.1 种火初啼')+' · '+colors[c.color][0]+' / '+(c.upgraded?'已升级':'未升级')+(c.rare?' / 稀有':'')+'</p><h2>'+esc(c.name)+'</h2><p>费用 '+num(c.cost)+' · '+(c.type==='monster'?'⚔ '+num(c.atk)+' ▣ '+num(c.def)+' ♥ '+num(c.hp):'法术')+'</p><p class="fcg-flavor">'+esc(c.flavor)+'</p><p class="fcg-muted">永久持有 '+(state.collection[id]||0)+' 张'+(state.temp_cards[id]?' · ✨本房借牌 '+state.temp_cards[id]:'')+'</p>'+glossary(c)+'</div></div>'+(back?'<button data-action="'+back+'">'+({'reward-back':'返回开包一览','sample-back':'返回范例手牌','keyword-reference':'返回关键字速查表'}[back])+'</button>':''));
   }
   function reward(r) {
     if(!r) return;
     rewardView=r;
-    if(r.cards) modal('<h2>开包收获一览</h2><p>共 '+r.cards.length+' 包 · 花费 '+num(r.total_cost)+' 切糕</p><div class="fcg-reward-grid">'+r.cards.map(x=>'<div class="'+(x.new?'fcg-new':'')+'"><b>'+(x.overflow?'🔥+1 印花':x.new?'✨NEW':'已收入卡册')+'</b>'+card(x.card,'preview')+'</div>').join('')+'</div>');
-    else if(r.card!==undefined) detail(r.card,r.overflow?'溢出卡片已化作 1 枚余烬印花':'新的记忆，已收入卡册');
+    if(r.cards) modal('<h2>开包收获一览</h2><p>共 '+r.cards.length+' 包 · 花费 '+num(r.total_cost)+' 切糕</p><div class="fcg-reward-grid">'+r.cards.map(x=>'<div class="'+(x.new?'fcg-new':'')+'"><b>已拥有 '+(state.collection[x.card]||0)+' 张'+(x.overflow?' · 🔥+1 印花':x.new?' · ✨NEW':'')+'</b>'+card(x.card,'preview')+'</div>').join('')+'</div>');
+    else if(r.card!==undefined) detail(r.card,'已拥有 '+(state.collection[r.card]||0)+' 张'+(r.overflow?' · 溢出卡片已化作 1 枚余烬印花':''));
     else modal('<h2>获得头衔「'+esc(boot.titles[r.title]||r.title)+'」</h2><p>在个人资料中装备，下次进入常规游戏时生效。</p><a href="user_profile.php">打开个人资料</a>');
   }
   function lobby() {
@@ -130,13 +140,31 @@
     return '<div class="fcg-battle-layout"><div>'+html+'<h3 style="margin-top:18px">牌桌记事</h3><div class="fcg-log" id="fcg-log">'+m.log.map(line=>'<p>'+esc(line)+'</p>').join('')+'</div></div><aside id="fcg-inspector" class="fcg-inspector"><p>划过卡图，检视记忆与词条。</p></aside></div>';
   }
   function renderDeckGrid() {
-    const list=boot.cards.filter(c=>(filter.series==='all'||c.series===filter.series)&&(filter.color==='all'||c.color===filter.color)&&(!filter.owned||available(c.id))&&(!filter.search||c.name.includes(filter.search)||c.rules.includes(filter.search))&&(filter.rarity==='all'||(filter.rarity==='rare'?c.rare:filter.rarity==='upgraded'?c.upgraded:!c.upgraded)));
-    document.getElementById('fcg-deck-grid').innerHTML=list.map(c=>card(c.id,'deck')).join('');
     const used=counts(draft);
-    document.getElementById('fcg-deck-list').innerHTML='<h3>当前构筑 · '+draft.length+' 张</h3><p class="fcg-muted">25–100 张，同卡通常最多 7 张。普通与升级卡分别计算。</p>'+Object.keys(used).map(id=>'<div class="fcg-deck-row"><span>'+esc(boot.cards[id].name)+' ×'+used[id]+'</span><button data-action="remove" data-card="'+id+'" aria-label="移除一张'+esc(boot.cards[id].name)+'">−</button></div>').join('')+'<button data-action="save-deck">'+(dirty?'保存改动':'保存卡组')+'</button><button data-action="clear-deck">清空构筑</button>'+(dirty?'<button data-action="restore-deck">还原已保存的卡组</button>':'');
+    const query=filter.search.trim().toLocaleLowerCase();
+    const list=boot.cards.filter(c=>(filter.series==='all'||c.series===filter.series)&&(filter.color==='all'||c.color===filter.color)&&(!filter.owned||available(c.id))&&(!filter.inDeck||used[c.id])&&(filter.keyword==='all'||c.keywords.includes(filter.keyword))&&(!query||[c.name,c.rules,...c.keywords,...c.glossary.map(g=>g.label)].join(' ').toLocaleLowerCase().includes(query))&&(filter.rarity==='all'||(filter.rarity==='rare'?c.rare:filter.rarity==='upgraded'?c.upgraded:!c.upgraded)));
+    document.getElementById('fcg-deck-grid').innerHTML=list.length?list.map(c=>card(c.id,'deck')).join(''):'<p class="fcg-empty">没有符合筛选条件的卡片。</p>';
+    document.getElementById('fcg-filter-count').textContent='显示 '+list.length+' / '+boot.cards.length+' 种卡片';
+    const sorted=Object.keys(used).sort((a,b)=>boot.cards[a].cost-boot.cards[b].cost||Number(a)-Number(b));
+    document.getElementById('fcg-deck-list').innerHTML='<h3>当前构筑 · '+draft.length+' 张</h3><p class="fcg-muted">25–100 张，同卡通常最多 7 张。普通与升级卡分别计算。</p>'+manaCurve()+'<button data-action="sample-hand" '+(draft.length<3?'disabled':'')+'>抽一手范例手牌</button><p class="fcg-muted">从当前构筑抽取起手 3 张，包含未保存改动。</p>'+sorted.map(id=>{const c=boot.cards[id];return '<div class="fcg-deck-row"><span class="fcg-deck-cost" style="--tone:'+colors[c.color][1]+'" title="'+colors[c.color][0]+'色能量 '+c.cost+'">'+colors[c.color][0]+' '+num(c.cost)+'</span><button class="fcg-deck-name" data-action="detail" data-card="'+id+'">'+esc(c.name)+' ×'+used[id]+'</button><button data-action="remove" data-card="'+id+'" aria-label="移除一张'+esc(c.name)+'">−</button></div>';}).join('')+'<button data-action="save-deck">'+(dirty?'保存改动':'保存卡组')+'</button><button data-action="clear-deck">清空构筑</button>'+(dirty?'<button data-action="restore-deck">还原已保存的卡组</button>':'');
+  }
+  function manaCurve() {
+    const buckets=Array.from({length:9},()=>({total:0,colors:{}}));
+    for(const id of draft) {const c=boot.cards[id],bucket=buckets[Math.min(8,c.cost)];bucket.total++;bucket.colors[c.color]=(bucket.colors[c.color]||0)+1;}
+    const max=Math.max(1,...buckets.map(b=>b.total));
+    return '<div class="fcg-curve"><h4>费用曲线</h4><p class="fcg-muted">按投入张数 · 卡面费用 · 8+ 合并高费</p><div class="fcg-curve-bars" role="img" aria-label="'+buckets.map((b,i)=>(i===8?'8费及以上':i+'费')+' '+b.total+'张').join('，')+'">'+buckets.map((b,i)=>'<div class="fcg-curve-column" title="'+(i===8?'8费及以上':i+'费')+'：'+b.total+' 张'+Object.keys(colors).filter(c=>b.colors[c]).map(c=>' · '+colors[c][0]+' '+b.colors[c]+' 张').join('')+'"><span>'+b.total+'</span><div class="fcg-curve-track">'+Object.keys(colors).filter(c=>b.colors[c]).map(c=>'<i style="height:'+(b.colors[c]/max*100)+'%;background:'+colors[c][1]+'"></i>').join('')+'</div><span>'+i+(i===8?'+':'')+'</span></div>').join('')+'</div><div class="fcg-curve-legend">'+Object.keys(colors).map(c=>'<span style="--tone:'+colors[c][1]+'">'+colors[c][0]+'</span>').join('')+'</div></div>';
+  }
+  function drawSample() {
+    if(draft.length<3) return;
+    const pool=draft.slice(); sampleHand=[];
+    for(let i=0;i<3;i++) sampleHand.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);
+    showSample();
+  }
+  function showSample() {
+    modal('<h2>范例起手 · 3 张</h2><p>按当前构筑的投入张数随机抽取；未保存的改动也会使用。仅供试抽，不消耗卡片，也不影响牌局。</p><div class="fcg-sample-hand">'+sampleHand.map(id=>card(id,'preview')).join('')+'</div><div class="fcg-dialog-actions"><button data-action="sample-hand">再抽一手</button><button class="fcg-dialog-close">返回组卡</button></div>');
   }
   function deck() {
-    return '<h2>每一张，都是独立的记忆。</h2><p class="fcg-muted">点击卡图阅读完整规则。✨幻影借牌仅限本房间与当天，次日或换房自动消散。</p>'+(state.temp_expired?'<p class="fcg-note">之前的幻影记忆已消散，构筑已移除过期卡；不足 25 张时已还原入门卡组。</p>':'')+'<div class="fcg-filters"><input id="fcg-search" aria-label="搜索卡名或规则" placeholder="搜索卡名或规则" value="'+esc(filter.search)+'"><select id="fcg-series" aria-label="所属系列">'+[['all','全部系列'],['vol1','Vol.1 种火初啼'],['vol2','Vol.2 红杀演武']].map(([v,n])=>'<option value="'+v+'" '+(filter.series===v?'selected':'')+'>'+n+'</option>').join('')+'</select><select id="fcg-color" aria-label="颜色"><option value="all">全部颜色</option>'+Object.keys(colors).map(c=>'<option value="'+c+'" '+(filter.color===c?'selected':'')+'>'+colors[c][0]+'</option>').join('')+'</select><select id="fcg-rarity" aria-label="版本与稀有度">'+[['all','全部版本'],['base','未升级'],['upgraded','已升级'],['rare','稀有']].map(([v,n])=>'<option value="'+v+'" '+(filter.rarity===v?'selected':'')+'>'+n+'</option>').join('')+'</select><label><input type="checkbox" id="fcg-owned" '+(filter.owned?'checked':'')+'> 只看可用卡</label></div><div class="fcg-deck-layout"><div class="fcg-card-grid" id="fcg-deck-grid"></div><aside class="fcg-deck-list" id="fcg-deck-list"></aside></div>';
+    return '<h2>每一张，都是独立的记忆。</h2><p class="fcg-muted">点击卡图阅读完整规则。✨幻影借牌仅限本房间与当天，次日或换房自动消散。</p>'+(state.temp_expired?'<p class="fcg-note">之前的幻影记忆已消散，构筑已移除过期卡；不足 25 张时已还原入门卡组。</p>':'')+'<div class="fcg-filters"><input id="fcg-search" aria-label="搜索卡名、关键字或规则" placeholder="搜索卡名、关键字或规则" value="'+esc(filter.search)+'"><select id="fcg-series" aria-label="所属系列">'+[['all','全部系列'],['vol1','Vol.1 种火初啼'],['vol2','Vol.2 红杀演武']].map(([v,n])=>'<option value="'+v+'" '+(filter.series===v?'selected':'')+'>'+n+'</option>').join('')+'</select><select id="fcg-color" aria-label="颜色"><option value="all">全部颜色</option>'+Object.keys(colors).map(c=>'<option value="'+c+'" '+(filter.color===c?'selected':'')+'>'+colors[c][0]+'</option>').join('')+'</select><select id="fcg-rarity" aria-label="版本与稀有度">'+[['all','全部版本'],['base','未升级'],['upgraded','已升级'],['rare','稀有']].map(([v,n])=>'<option value="'+v+'" '+(filter.rarity===v?'selected':'')+'>'+n+'</option>').join('')+'</select><select id="fcg-keyword" aria-label="卡片关键字"><option value="all">全部关键字</option>'+keywords.map(key=>'<option value="'+esc(key)+'" '+(filter.keyword===key?'selected':'')+'>'+esc(key)+'</option>').join('')+'</select><label><input type="checkbox" id="fcg-owned" '+(filter.owned?'checked':'')+'> 只看可用卡</label><label><input type="checkbox" id="fcg-in-deck" '+(filter.inDeck?'checked':'')+'> 只显示卡组中的卡</label><button data-action="reset-filters">重置筛选</button><span id="fcg-filter-count" class="fcg-muted" role="status"></span></div><div class="fcg-deck-layout"><div class="fcg-card-grid" id="fcg-deck-grid"></div><aside class="fcg-deck-list" id="fcg-deck-list"></aside></div>';
   }
   function hosts(ruby,snow) {
     return '<div class="fcg-hosts"><div class="fcg-host"><img src="img/fcg/hosts/ruby.png" alt="埃尔文·露比"><div><strong>埃尔文·露比</strong><p>'+esc(ruby)+'</p></div></div><div class="fcg-host"><img src="img/fcg/hosts/snow.png" alt="保琳·斯诺"><div><strong>保琳·斯诺</strong><p>'+esc(snow)+'</p></div></div></div>';
@@ -191,7 +219,17 @@
   ];
   function tutorial(step=0) {
     tutorialStep=step; const l=lessons[step];
-    modal('<p class="fcg-tutorial-progress">课间 '+(step+1)+' / 4</p><h2>'+l[0]+'</h2>'+hosts(l[2],l[1])+'<div class="fcg-dialog-actions"><button data-action="lesson-prev" '+(step===0?'disabled':'')+'>上一幕</button><button data-action="lesson-next">'+(step===3?'去认识小家伙们':'下一幕')+'</button></div>');
+    modal('<p class="fcg-tutorial-progress">课间 '+(step+1)+' / 4</p><div class="fcg-lesson-tabs"><button data-action="lesson-resume" aria-pressed="true">入门课堂</button><button data-action="keyword-reference" aria-pressed="false">关键字速查表</button></div><h2>'+l[0]+'</h2>'+hosts(l[2],l[1])+'<div class="fcg-dialog-actions"><button data-action="lesson-prev" '+(step===0?'disabled':'')+'>上一幕</button><button data-action="lesson-next">'+(step===3?'去认识小家伙们':'下一幕')+'</button></div>');
+  }
+  function keywordReference() {
+    modal('<div class="fcg-lesson-tabs"><button data-action="lesson-resume" aria-pressed="false">入门课堂</button><button data-action="keyword-reference" aria-pressed="true">关键字速查表</button></div><h2>关键字速查表</h2><p>露比的笔记：以下释义来自实际卡片，数字与触发条件以对应卡片为准。同一关键字的其他写法可展开查看。</p><input id="fcg-keyword-search" aria-label="搜索关键字或释义" placeholder="搜索关键字或释义" value="'+esc(referenceSearch)+'"><div id="fcg-keyword-table"></div>');
+    renderKeywordTable();
+  }
+  function renderKeywordTable() {
+    const query=referenceSearch.trim().toLocaleLowerCase();
+    const list=keywords.filter(key=>!query||key.includes(query)||keywordEntries[key].some(g=>(g.label+' '+g.text).toLocaleLowerCase().includes(query))).sort((a,b)=>Number(b===query)-Number(a===query));
+    const entry=g=>'<div class="fcg-keyword-example"><b>'+esc(g.label)+'</b><p>'+esc(g.text)+'</p><button data-action="detail" data-card="'+g.card+'">卡例：'+esc(boot.cards[g.card].name)+'</button></div>';
+    document.getElementById('fcg-keyword-table').innerHTML=list.length?'<table class="fcg-keyword-table"><thead><tr><th scope="col">关键字</th><th scope="col">释义与卡例</th></tr></thead><tbody>'+list.map(key=>{const entries=keywordEntries[key].filter(g=>!query||key.includes(query)||(g.label+' '+g.text).toLocaleLowerCase().includes(query));return '<tr><th scope="row">'+esc(key)+'</th><td>'+entry(entries[0])+(entries.length>1?'<details><summary>其他 '+(entries.length-1)+' 种写法</summary>'+entries.slice(1).map(entry).join('')+'</details>':'')+'</td></tr>';}).join('')+'</tbody></table>':'<p class="fcg-empty">没有找到对应的关键字或释义。</p>';
   }
   app.addEventListener('click',async event=>{
     const el=event.target.closest('[data-action],[data-tab],[data-shop],.fcg-dialog-close');
@@ -200,12 +238,16 @@
     if(el.dataset.tab) {tab=el.dataset.tab;render();return;}
     if(el.dataset.shop) {shopCategory=el.dataset.shop;render();return;}
     const a=el.dataset.action,id=Number(el.dataset.card),slot=Number(el.dataset.slot);
-    if(a==='detail') {detail(id,'',!!el.closest('.fcg-reward-grid'));return;}
+    if(a==='detail') {detail(id,'',el.closest('.fcg-reward-grid')?'reward-back':el.closest('.fcg-sample-hand')?'sample-back':el.closest('.fcg-keyword-table')?'keyword-reference':'');return;}
     if(a==='reward-back') {reward(rewardView);return;}
+    if(a==='sample-hand') {drawSample();return;}
+    if(a==='sample-back') {showSample();return;}
     if(['invite','accept','decline','mirror'].includes(a)){await send(a,{uid:Number(el.dataset.uid)});return;}
     if(a==='sticker-menu'){const menu=document.getElementById('fcg-sticker-menu');stickerOpen=menu.hidden;menu.hidden=!stickerOpen;el.setAttribute('aria-expanded',String(stickerOpen));return;}
     if(a==='sticker'){stickerOpen=false;document.getElementById('fcg-sticker-menu').hidden=true;await send(a,{sticker:Number(el.dataset.sticker)});return;}
     if(a==='tutorial') {tutorial();return;}
+    if(a==='lesson-resume') {tutorial(tutorialStep);return;}
+    if(a==='keyword-reference') {keywordReference();return;}
     if(a==='lesson-prev') {tutorial(Math.max(0,tutorialStep-1));return;}
     if(a==='lesson-next') {if(tutorialStep<3)tutorial(tutorialStep+1);else{dialog.close();await send('tutorial');}return;}
     if(a==='pool') {
@@ -219,6 +261,7 @@
     if(a==='remove') {const at=draft.indexOf(id);if(at>=0){draft.splice(at,1);dirty=true;renderDeckGrid();}return;}
     if(a==='clear-deck') {draft=[];dirty=true;renderDeckGrid();return;}
     if(a==='restore-deck') {draft=state.deck.slice();dirty=false;notice('已还原上次保存的卡组。');renderDeckGrid();return;}
+    if(a==='reset-filters') {filter={color:'all',rarity:'all',series:'all',keyword:'all',search:'',owned:false,inDeck:false};render();return;}
     if(a==='save-deck') {await send('deck',{deck:draft});return;}
     if(a==='start') {await send('start',{opponent:Number(el.dataset.opponent)});return;}
     if(a==='play'||a==='discard') {await send(a,{slot,card:id,turn:Number(el.dataset.turn)});return;}
@@ -230,19 +273,22 @@
   });
   app.addEventListener('input',event=>{
     if(event.target.id==='fcg-search'){filter.search=event.target.value;renderDeckGrid();}
+    if(event.target.id==='fcg-keyword-search'){referenceSearch=event.target.value;renderKeywordTable();}
   });
   app.addEventListener('change',event=>{
     const id=event.target.id;
     if(id==='fcg-color')filter.color=event.target.value;
     else if(id==='fcg-series')filter.series=event.target.value;
     else if(id==='fcg-rarity')filter.rarity=event.target.value;
+    else if(id==='fcg-keyword')filter.keyword=event.target.value;
+    else if(id==='fcg-in-deck')filter.inDeck=event.target.checked;
     else if(id==='fcg-owned')filter.owned=event.target.checked;else return;
     renderDeckGrid();
   });
   render();
   app.addEventListener('mouseover',event=>{const el=event.target.closest('[data-inspect]');if(el)inspect(Number(el.dataset.inspect));});
   app.addEventListener('focusin',event=>{const el=event.target.closest('[data-inspect]');if(el)inspect(Number(el.dataset.inspect));});
-  app.addEventListener('keydown',event=>{if(event.key==='Enter'&&event.target.matches('img[data-action="detail"]'))detail(Number(event.target.dataset.card));});
+  app.addEventListener('keydown',event=>{if(event.key==='Enter'&&event.target.matches('img[data-action="detail"]'))event.target.click();});
   if(!state.tutorial) tutorial();
   setInterval(tick,100);
   setInterval(()=>{if(!document.hidden && !busy && (state.in_room||state.match&&!state.match.result)) send('status');},1000);

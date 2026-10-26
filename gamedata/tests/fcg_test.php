@@ -10,6 +10,16 @@ function fcg_test_match() { $m=fcg_new_match(fcg_starter_deck(),0,100); $m['ai_a
 
 $cards=fcg_cards();
 fcg_test(count($cards)===230,'230 independent card IDs');
+// Keyword filters and the classroom share the card's own labels, including conditional effects.
+fcg_test(fcg_token_keywords('resonance(W,draw(1))',$cards[156])===array('余韵','抽牌'),'resonance includes its conditional draw keyword');
+fcg_test(fcg_token_keywords('combo_2_pierce(7)',$cards[172])===array('连击','穿透直伤'),'legacy combo uses spell damage keyword');
+fcg_test(fcg_token_keywords('combo(3,draw(1))',$cards[173])===array('连击','抽牌'),'combo includes its conditional draw keyword');
+fcg_test(fcg_token_keywords('aura_spell_zap(3)',$cards[166])===array('中继','光环'),'named aura included in aura filter');
+fcg_test(fcg_token_keywords('aura_burn_monster_heal',$cards[198])===array('光环','传火'),'aura subtype included in reference');
+fcg_test(fcg_token_keywords('on_summon_eat_poison(3)',$cards[214])===array('吞毒回血','登场'),'named summon effect included in summon filter');
+fcg_test(fcg_token_keywords('gain_hp(enemy,5)',$cards[210])===array('恢复'),'healing keyword independent of target');
+$glossary=fcg_card_glossary($cards[156]);
+fcg_test($glossary[1]['keywords']===array('余韵','抽牌') && $glossary[1]['text']==='上一张牌为白色时：抽 1 张牌。','reference keeps condition and value with keywords');
 foreach(fcg_colors() as $c) fcg_test(count(fcg_pack_pool(array('color'=>$c)))===46,'balanced color '.$c);
 foreach(array(array(array('upgraded'=>false,'rare'=>false,'series'=>'vol1'),57),array(array('upgraded'=>false,'series'=>'vol1'),75),array(array('upgraded'=>true,'series'=>'vol1'),75),array(array('rare'=>true,'series'=>'vol1'),36),array(array('series'=>'vol2'),80),array(array('series'=>'vol2','rare'=>true),30)) as $case) fcg_test(count(fcg_pack_pool($case[0]))===$case[1],'pack population');
 fcg_test_throws(function(){fcg_pack_pool(array('color'=>'purple'));},'invalid pool');
@@ -137,7 +147,8 @@ fcg_packet($m['sides'][1],$m['sides'][0],$m['sides'][0]['monster']['def']+1,0,fa
 $m=fcg_test_ready(array(214));$m['sides'][0]['hp']=100;$m['sides'][0]['regen']=-4;fcg_play($m,0,0);fcg_test($m['sides'][0]['hp']==112 && $m['sides'][0]['regen']===0,'eat poison heals and cleans');
 $m=fcg_test_ready(array(226,228));fcg_play($m,0,0);fcg_test($m['sides'][0]['atk']==2 && $m['sides'][1]['regen']==-2,'chaos blessing affects both');$m['sides'][0]['monster']=null;$m['sides'][1]['def']=20;fcg_play($m,0,0);fcg_test($m['sides'][1]['def']===2,'flatten defense on entry');
 $m=fcg_test_ready(array(0,0,0,0,0,0));$m['live']=true;for($i=0;$i<6;$i++)fcg_play($m,0,0);fcg_test($m['deadline']===114,'live extension cap shared by all plays');fcg_turn($m);fcg_test($m['deadline']===119 && $m['extension']===0,'new turn resets extension');
-$m=fcg_test_ready();$m['live']=true;$m['seen']=array(100,100);$m['sides'][0]['hand']=array(0);fcg_live_advance($m,120);
+// Keep this timer assertion independent of random cards drawn before the AI takes over.
+$m=fcg_test_ready();$m['live']=true;$m['seen']=array(100,100);$m['sides'][0]['hand']=array(0);$m['sides'][0]['deck']=$m['sides'][1]['deck']=array();fcg_live_advance($m,120);
 fcg_test($m['sides'][0]['gen']['W']===2 && $m['deadline']>120,'offline player AI resumes at boundary');
 $m=fcg_test_ready(array(0));fcg_test_throws(function()use(&$m){fcg_duel_action($m,0,array('action'=>'play','slot'=>0,'card'=>0,'turn'=>2),100);},'old turn cannot play a new slot');
 fcg_duel_action($m,0,array('action'=>'sticker','sticker'=>1),100);fcg_test_throws(function()use(&$m){fcg_duel_action($m,0,array('action'=>'sticker','sticker'=>2),102);},'sticker cooldown');

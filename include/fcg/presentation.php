@@ -150,12 +150,27 @@ function fcg_card_short_rules($card)
 	return preg_replace('/(\d+(?:\.\d+)?)/','<strong class="fcg-num">$1</strong>',fcg_html(implode(' ',$out)));
 }
 
+function fcg_token_keywords($op, $card)
+{
+	// 直接沿用卡面词名，去掉图标、数值和颜色参数，避免筛选另用一套命名。
+	$short=fcg_short_token($op,$card);
+	preg_match('/[\p{Han}／]+/u',$short,$label);
+	$out=array($label[0]);
+	if($out[0]==='恢复敌方') $out[0]='恢复';
+	if(strpos($op,'aura_')===0) $out[]='光环';
+	if(strpos($op,'on_summon_')===0) $out[]='登场';
+	if(preg_match('/光环：([\p{Han}]+)/u',$short,$aura)) $out[]=$aura[1];
+	if(preg_match('/^(combo|resonance)\(([^,]+),\s*(.*)\)$/',$op,$condition)) $out=array_merge($out,fcg_token_keywords($condition[3],$card));
+	elseif(preg_match('/^combo_(\d+)_(.*)$/',$op,$condition)) $out=array_merge($out,fcg_token_keywords(preg_replace('/^pierce\(/','pierce_enemy(',$condition[2]),$card));
+	return array_values(array_unique($out));
+}
+
 function fcg_card_glossary($card)
 {
 	$out=array();
 	foreach(fcg_tokens($card['ops']) as $op) {
 		$sub=$card; $sub['ops']=$op;
-		$out[]=array('label'=>fcg_short_token($op,$card),'text'=>fcg_card_rules($sub));
+		$out[]=array('label'=>fcg_short_token($op,$card),'text'=>fcg_card_rules($sub),'keywords'=>fcg_token_keywords($op,$card));
 	}
 	return $out;
 }
