@@ -915,11 +915,8 @@ function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
 		}
 		unset($anpc_namelist);
 	}
-	else
-	{
-		return $summon_ids;
-	}
-	return;
+	// 整批召唤也返回成员pid，供高级小兵按本批次建立血缘。
+	return isset($summon_ids) ? $summon_ids : array();
 }
 
 function evonpc($type,$name){

@@ -84,6 +84,7 @@ namespace revcombat
 		global $db,$tablepre,$now,$mode,$main,$cmd,$log;
 		global $hdamage,$hplayer;
 		global $infinfo,$plsinfo,$hplsinfo,$nosta,$chase_obbs,$dfight_obbs;
+		unset($pa['ai93_panic_done'],$pd['ai93_panic_done']);
 
 		# 登记非功能性地点信息时合并隐藏地点
 		foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
@@ -142,8 +143,8 @@ namespace revcombat
 			//判断是否触发击杀或复活：1-继续战斗；0-中止战斗
 			$att_result = rev_combat_result($pa,$pd,$active);
 		} 
-		elseif(\ai93_hitrun($pa,$pd)) {
-			// 落空/零伤害也已经交手一回合；仅补被检体事件，不触发其他命中效果。
+		elseif(\ai93_hitrun($pa,$pd) || \ai93_react($pa,$pd)) {
+			// 落空/零伤害也已交手；只补高级小兵反应，不触发其他命中效果。
 			$att_result = 0;
 		}
 
@@ -202,6 +203,9 @@ namespace revcombat
 			$pa['hp'] = max(0,$pa['hp']-$def_dmg);
 			//判断是否触发击杀或复活。增补：$active已经没有用了，不用管它。
 			$def_result = rev_combat_result($pd,$pa,1-$active);
+		}
+		elseif(!empty($counter_flag) && (\ai93_hitrun($pd,$pa) || \ai93_react($pd,$pa))) {
+			$def_result = 0;
 		}
 
 		if(!empty($counter_flag) && (!isset($def_result) || $def_result) && !\fcg_battle_after_attack($pd,$pa,max(0,$def_dmg),1-$active)) $def_result=0;

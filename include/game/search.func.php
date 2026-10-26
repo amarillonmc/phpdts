@@ -858,7 +858,7 @@ function discover($schmode = 0,&$data=NULL)
 						? ruleset_force_player_initiative_hook($edata,$data) : NULL;
 					$active_dice = $force_player_initiative ? -1 : diceroll(99);
 					//先制
-					if($active_dice < $active_r)
+					if(empty($edata['ai93_first_strike']) && $active_dice < $active_r)
 					{
 						$action = 'enemy'; $bid = $edata['pid'];
 						if($data['pass'] != 'bot')

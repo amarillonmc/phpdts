@@ -165,42 +165,25 @@ function item_npc($itmn, &$data) {
         $log .= '你将这根权杖一般的钥匙狠狠插在了地面上，<br>很快，大批NPC就从空中降落到了战场上！<br>';
         if ($clbpara['randver1'] < 21) {
             // 1st set - WK High School Oni Girls
-            addnpc(93, 0, 6);
-            addnpc(93, 1, 6);
-            addnpc(93, 2, 6);
-            addnpc(93, 3, 6);
-            addnpc(93, 4, 6);
+            $ai93_sub = 0;
         } elseif ($clbpara['randver1'] < 42) {
             // 2nd set - WC Idol Magical Girls
-            addnpc(93, 5, 6);
-            addnpc(93, 6, 6);
-            addnpc(93, 7, 6);
-            addnpc(93, 8, 6);
-            addnpc(93, 9, 6);
+            $ai93_sub = 5;
         } elseif ($clbpara['randver1'] < 63) {
             // 3rd set - WG Mecha Girls
-            addnpc(93, 10, 6);
-            addnpc(93, 11, 6);
-            addnpc(93, 12, 6);
-            addnpc(93, 13, 6);
-            addnpc(93, 14, 6);
+            $ai93_sub = 10;
         } elseif ($clbpara['randver1'] < 84) {
-            // 4th set - WP Martial Arts Girls
-            addnpc(93, 15, 6);
-            addnpc(93, 16, 6);
-            addnpc(93, 17, 6);
-            addnpc(93, 18, 6);
-            addnpc(93, 19, 6);
+            // 4th set - WD Maids
+            $ai93_sub = 15;
         } else {
-            // 5th set - WD Explosive Girls
-            addnpc(93, 20, 6);
-            addnpc(93, 21, 6);
-            addnpc(93, 22, 6);
-            addnpc(93, 23, 6);
-            addnpc(93, 24, 6);
+            // 5th set - WP Specimens
+            $ai93_sub = 20;
         }
+        $ai93_ids = array();
+        for($ai93_i=$ai93_sub;$ai93_i<$ai93_sub+5;$ai93_i++) $ai93_ids = array_merge($ai93_ids,addnpc(93,$ai93_i,6));
         addnews($now, 'key4', $name, $nick);
         if(ai93_enabled()) {
+            ai93_group_create($ai93_ids);
             $ai93 = &ai93_state();
             $ai93['caller_pid'] = intval($pid);
             save_gameinfo();

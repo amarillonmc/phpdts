@@ -60,7 +60,8 @@ function bot_player_valid($vnums)
 # bot行为
 function bot_acts($id)
 {
-	global $log;
+	global $log,$ai93_moves;
+	$ai93_moves = 0; // 常驻BOT每条指令重新计算小兵族群迁移额度。
 
 	$bdata = fetch_playerdata_by_pid($id);
 	if($bdata && $bdata['hp'] > 0)

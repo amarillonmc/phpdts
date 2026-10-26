@@ -27,7 +27,7 @@ function &get_itmpara($value) { $value = get_clbpara($value); return $value; }
 function get_itmsk_array($value) { return is_array($value) ? $value : preg_split('//u',$value,-1,PREG_SPLIT_NO_EMPTY); }
 function get_safe_plslist() { global $test_safe; return $test_safe; }
 function diceroll($max) { global $test_dice; return min($max,$test_dice); }
-function addnews(...$args) {}
+function addnews(...$args) { global $test_news; $test_news[] = $args; }
 function logsave(...$args) {}
 function save_combatinfo() {}
 function init_battle_rev($pa,$pd,$active) {}
@@ -36,14 +36,18 @@ function npc_changewep_rev(&$pa,&$pd,$active) {}
 function addnoise(...$args) {}
 function check_add_searchmemory(...$args) {}
 function save_gameinfo() { global $gamevars,$saved_gamevars; $saved_gamevars = json_encode($gamevars); }
-function ruleset_get_fix_damage_hook(&$pa,&$pd,$active) { global $test_damage; return $test_damage; }
+function ruleset_get_fix_damage_hook(&$pa,&$pd,$active) { global $test_damage; return is_array($test_damage) ? $test_damage[$pa['pid']] : $test_damage; }
 function player_format_with_db_structure($data)
 {
 	$data = array_intersect_key($data,ai93_test_player(0));
 	foreach($data as $key=>$value) if(is_array($value)) $data[$key] = json_encode($value,JSON_UNESCAPED_UNICODE);
 	return $data;
 }
-function player_save($data) { global $db; $db->players[$data['pid']] = player_format_with_db_structure($data); }
+function player_save($data) {
+	global $db,$test_events;
+	$test_events[] = array('save',$data['pid'],$data['wep']);
+	$db->players[$data['pid']] = player_format_with_db_structure($data);
+}
 function fetch_playerdata_by_pid($pid)
 {
 	global $db;
@@ -63,7 +67,9 @@ class Ai93TestDb
 	public $last_id = 0;
 	function array_insert($table,$data)
 	{
+		global $test_events;
 		$table = str_replace('test_','',$table);
+		if($table === 'chat') $test_events[] = array('chat',$data['msg']);
 		$key = array('players'=>'pid','mapitem'=>'iid','maptrap'=>'tid','chat'=>'cid')[$table];
 		$id = $this->$table ? max(array_keys($this->$table))+1 : 1;
 		$data[$key] = $id;
@@ -217,7 +223,7 @@ $quest = ai93_test_npc(22); $quest['clbpara']['quest_id']='Q6';
 ai93_test_assert(ai93_branch($quest) === -1,'排除任务NPC');
 
 foreach(array('','YELLOWKNIFE') as $test_ruleset) {
-	$db = new Ai93TestDb(); $gamevars = array(); $pdata = ai93_test_player(1);
+	$db = new Ai93TestDb(); $gamevars = array(); $pdata = ai93_test_player(1000);
 	for($b=0;$b<5;$b++) { ai93_trigger($b,$pdata); ai93_trigger($b,$pdata); }
 	ai93_test_assert(count($gamevars['ai93']['pending']) === 5,'扳机队列去重 '.$test_ruleset);
 	$gamevars = json_decode($saved_gamevars,true);
@@ -225,17 +231,18 @@ foreach(array('','YELLOWKNIFE') as $test_ruleset) {
 	$counts = array();
 	$safe_arrival = true;
 	foreach($db->players as $npc) {
+		if($npc['type'] != 93) continue;
 		$counts[$npc['name']] = ($counts[$npc['name']] ?? 0)+1;
 		$safe_arrival = $safe_arrival && in_array($npc['pls'],$test_safe);
 	}
 	ai93_test_assert($safe_arrival,'入场安全地点');
-	ai93_test_assert(count($db->players) === 75 && count($counts) === 25 && array_unique(array_values($counts)) === array(3),'五分支各15只 '.$test_ruleset);
+	ai93_test_assert(array_sum($counts) === 75 && count($counts) === 25 && array_unique(array_values($counts)) === array(3),'五分支各15只 '.$test_ruleset);
 	$acts = array_sum(array_map(function($npc) { return get_clbpara($npc['clbpara'])['ai_acts'] ?? 0; },$db->players));
 	ai93_test_assert($acts >= 1 && $acts <= 2,'每次事件随机行动1至2只');
 	$gamevars = json_decode($saved_gamevars,true);
 	for($b=0;$b<5;$b++) ai93_trigger($b,$pdata);
 	aievent_minion(100,$pdata);
-	ai93_test_assert(count($db->players) === 75 && !$gamevars['ai93']['pending'],'重新加载、另一请求不能重复整批入场');
+	ai93_test_assert(count(array_filter($db->players,function($p) { return $p['type'] == 93; })) === 75 && !$gamevars['ai93']['pending'],'重新加载、另一请求不能重复整批入场');
 }
 $test_ruleset = ''; $gamevars = array(); $db = new Ai93TestDb();
 $pdata['killnum'] = 15; $pdata['inf'] = 'ie';
@@ -244,12 +251,12 @@ ai93_test_assert($gamevars['ai93']['pending'] === array(0,4) && !$db->players,'�
 $pdata = ai93_test_player(1); $pdata['rp']=180; $gamevars = array();
 aievent_minion(0,$pdata);
 ai93_test_assert($gamevars['ai93']['pending'] === array(0),'RP扳机');
-$pdata = ai93_test_player(1); $gamevars = array(); $starttime = $now-300;
+$pdata = ai93_test_player(1000); $gamevars = array(); $starttime = $now-300;
 for($i=0;$i<30;$i++) aievent_minion(100,$pdata);
 ai93_test_assert(!$db->players,'开局未超过五分钟不滴灌');
 $starttime--;
 for($i=0;$i<400;$i++) aievent_minion(100,$pdata);
-ai93_test_assert($gamevars['ai93']['drip_cnt'] === 8 && count($db->players) === 8,'滴灌最多8只，超过五分钟后自然入场');
+ai93_test_assert($gamevars['ai93']['drip_cnt'] === 8 && count(array_filter($db->players,function($p) { return $p['type'] == 93; })) === 8,'滴灌最多8只，超过五分钟后自然入场');
 
 $gamevars = array(); $db = new Ai93TestDb(); $npc = ai93_test_npc(0);
 $db->array_insert('test_mapitem',array('itm'=>'钥匙剑','itmk'=>'WK','itme'=>9,'itms'=>2,'itmsk'=>'','itmpara'=>'','pls'=>1));
@@ -307,7 +314,7 @@ $db->players = array(); $npc = ai93_test_npc(10);
 $npc['hp']=50; $ally = ai93_test_npc(0,101); $ally['hp']=25; player_save($ally);
 $quest = ai93_test_npc(0,102); $quest['clbpara']['quest_id']='Q6'; $quest['hp']=30; player_save($quest);
 $dead = ai93_test_npc(0,103); $dead['hp']=0; player_save($dead);
-ai93_test_roll(50,79); ai93_act($npc,$pdata);
+ai93_test_roll(50,99,50,79); ai93_act($npc,$pdata); // 跳过受伤自救，再抽中共鸣。
 ai93_test_assert($npc['hp'] === $npc['mhp'] && $npc['def'] === 197 && $db->players[101]['hp'] === 788 && $db->players[101]['wepe'] === 65,'共鸣同时强化自己及同图高级小兵');
 ai93_test_assert($db->players[102]['hp'] === 30 && $db->players[103]['hp'] === 0,'共鸣不改任务NPC、不复活死者');
 ai93_test_roll(80,99); ai93_act($npc,$pdata);
@@ -328,9 +335,9 @@ $trap = reset($db->maptrap);
 ai93_test_assert($trap['itmk'] === 'TO' && $trap['itme'] <= 60 && $trap['itmsk'] === 100 && isset(get_itmpara($trap['itmpara'])['ai93_inf']),'女仆异常雷低伤且有真实pid归属');
 
 $npc = ai93_test_npc(22); $npc['hp']=20;
-for($i=0;$i<5;$i++) { ai93_test_roll(0,59); ai93_act($npc,$pdata); }
+for($i=0;$i<5;$i++) { ai93_test_roll(50,99,0,59); ai93_act($npc,$pdata); }
 ai93_test_assert($npc['att'] > 129 && $npc['def'] > 167 && $npc['wp'] > 0 && $npc['hp'] === 1 && $npc['clbpara']['ai_needles'] === 5,'扎针叠面板，最多自损到1血并记录狂躁');
-ai93_test_roll(60,99); ai93_act($npc,$pdata);
+ai93_test_roll(50,99,60,99); ai93_act($npc,$pdata);
 ai93_test_assert($npc['pls'] === 2 && $npc['pose'] === 2,'游荡到存活玩家当前位置');
 
 // 真实战斗入口，包括击杀与原有双方player_save路径。
@@ -430,11 +437,284 @@ ai93_test_assert(!$gamevars,'宝石强化目标非法不触发');
 qianghua(2);
 ai93_test_assert($gamevars['ai93']['pending'] === array(2) && $pdata['itme2'] > 10,'成功提交强化二级菜单触发使魔');
 $gamevars = array(); $pdata = ai93_test_player(1); $db = new Ai93TestDb();
+player_save($pdata);
 ai93_test_item($pdata,'✦【自律AI呼唤器】','Y',1,1); item_npc(1,$pdata);
-ai93_test_assert(count($db->players) === 30 && $gamevars['ai93']['caller_pid'] === 1 && empty($gamevars['ai93']['unlocked'][0]),'呼唤器仍召唤30只，只记录召唤者、不占自然解锁');
+ai93_test_assert(count($db->players) === 31 && $gamevars['ai93']['caller_pid'] === 1 && empty($gamevars['ai93']['unlocked'][0]),'呼唤器仍召唤30只，只记录召唤者、不占自然解锁');
 player_save($pdata);
 $npc = fetch_playerdata_by_pid(2);
 for($i=0;$i<30;$i++) ai93_act($npc,$pdata);
 ai93_test_assert(count(array_filter($db->chat,function($chat) { return strpos($chat['msg'],'测试者1') !== false; })) > 0,'行动后有甩锅召唤者的广播');
+
+// 第二期：每例重新建立真实玩家与NPC，PID不重叠。
+function ai93_test_reset()
+{
+	global $db,$gamevars,$saved_gamevars,$pdata,$now,$starttime,$test_safe,$test_ruleset,$groomid,$weather,$aidata,$ai93_moves,$log,$test_news,$test_events,$test_dice,$test_damage,$areawarn;
+	$db = new Ai93TestDb(); $gamevars = array(); $saved_gamevars = '';
+	$now = mktime(12,0,0,10,26,2026); $starttime = $now-100;
+	$test_safe = array(1,2,3,11,19,32); $test_ruleset = ''; $groomid = 0;
+	$weather = 0; $aidata = false; $ai93_moves = 0; $log = ''; $areawarn = 0;
+	$test_dice = 1; $test_damage = 25; $pdata = ai93_test_player(1); player_save($pdata);
+	$test_news = $test_events = array();
+}
+function ai93_test_group($branch,$num=1)
+{
+	$ids = array();
+	for($sub=$branch*5;$sub<$branch*5+5;$sub++) $ids = array_merge($ids,addnpc(93,$sub,$num));
+	ai93_group_create($ids);
+	return array_map('fetch_playerdata_by_pid',$ids);
+}
+
+foreach(array('','YELLOWKNIFE') as $test_ruleset_id) {
+	ai93_test_reset(); $test_ruleset = $test_ruleset_id;
+	$expected = array('委员长 青鬼','粉色星辰 情欲草','迅雷使魔 依莱特');
+	for($branch=0;$branch<5;$branch++) {
+		$members = ai93_test_group($branch,3);
+		$leaders = array_values(array_filter($members,function($n) { return ($n['clbpara']['role'] ?? '') === 'leader'; }));
+		$followers = array_filter($members,function($n) { return ($n['clbpara']['role'] ?? '') === 'follower'; });
+		if($branch < 3) ai93_test_assert(count($leaders) === 1 && $leaders[0]['name'] === $expected[$branch] && count($followers) === 14
+			&& count(array_filter($followers,function($n) use($leaders) { return $n['clbpara']['leader_pid'] == $leaders[0]['pid']; })) === 14,'批次建群选实际领袖且全部成员关联 '.$branch.' '.$test_ruleset);
+		elseif($branch === 3) ai93_test_assert(count(array_filter($members,function($n) { return $n['clbpara']['role'] === 'buddy' && empty($n['clbpara']['leader_pid']); })) === 15,'女仆全员buddy '.$test_ruleset);
+		else ai93_test_assert(!array_filter($members,function($n) { return isset($n['clbpara']['grp']); }),'被检体不建血缘 '.$test_ruleset);
+	}
+}
+ai93_test_reset();
+$old_members = ai93_test_group(0); $old_leader = $old_members[0]['pid'];
+foreach(array(10,30,50,70,90) as $index=>$version) {
+	$before = array_keys($db->players);
+	$pdata['clbpara']['randver1'] = $version;
+	ai93_test_item($pdata,'✦【自律AI呼唤器】','Y',1,1); item_npc(1,$pdata);
+	$members = array_map('fetch_playerdata_by_pid',array_diff(array_keys($db->players),$before));
+	$leaders = array_filter($members,function($n) { return ($n['clbpara']['role'] ?? '') === 'leader'; });
+	ai93_test_assert(count($members) === 30 && ($index < 3 ? count($leaders) === 1 : count($leaders) === 0),'呼唤器30只按本分支建群 '.$index);
+}
+ai93_test_assert(fetch_playerdata_by_pid($old_members[1]['pid'])['clbpara']['leader_pid'] === $old_leader,'呼唤器不改写此前批次的血缘');
+
+// 遭遇：没看见、忽略、应战、逃跑、先攻、特殊及45秒冷却。
+foreach(array(0,25,50,15,80,85) as $roll) {
+	ai93_test_reset(); $npc = ai93_test_npc(0); player_save($npc);
+	ai93_test_roll($roll,$roll,40,99); ai93_encounter($npc,$pdata);
+	if($roll === 0 || $roll === 25) ai93_test_assert($npc['pls'] === 1 && !$aidata && !$db->chat,'无动作遭遇分支 '.$roll);
+	if($roll === 50) ai93_test_assert($npc['pose'] === 1 && $npc['tactic'] === 2,'五鬼遭遇应战姿态');
+	if($roll === 15) ai93_test_assert($npc['pls'] != 1 && $npc['pose'] === 0 && $npc['tactic'] === 4,'遭遇逃往异地安全点');
+	if($roll === 80) ai93_test_assert($aidata['pid'] === 100 && $aidata['pose'] === 2 && $aidata['tactic'] === 1 && $aidata['ai93_first_strike'],'先攻快照含切换后的姿态');
+	if($roll === 85) ai93_test_assert(strpos(end($db->chat)['msg'],$pdata['name']) !== false,'特殊反应公开报点');
+	ai93_test_assert(fetch_playerdata_by_pid(100)['clbpara']['last_react'] === $now,'遭遇冷却保存 '.$roll);
+}
+ai93_test_reset(); $npc = ai93_test_npc(22);
+ai93_test_roll(50,94); ai93_encounter($npc,$pdata);
+$first = $aidata['pid']; $other = ai93_test_npc(23,101);
+ai93_test_roll(50,94); ai93_encounter($other,$pdata);
+ai93_test_assert($aidata['pid'] === $first,'同一tick最多一只先攻者');
+$aidata = false; $npc = fetch_playerdata_by_pid(100); $now += 44;
+ai93_test_roll(50,94); ai93_encounter($npc,$pdata);
+ai93_test_assert(!$aidata,'重载后44秒内不重复反应');
+$now++; ai93_test_roll(50,94); ai93_encounter($npc,$pdata);
+ai93_test_assert(!empty($aidata['ai93_first_strike']),'45秒冷却到期可再次反应');
+foreach(array(11,19,32) as $hospital) {
+	ai93_test_reset(); $npc = ai93_test_npc(22); $npc['pls'] = $pdata['pls'] = $hospital;
+	ai93_test_roll(50,94); ai93_encounter($npc,$pdata);
+	ai93_test_assert(!$aidata,'医院禁止强制先攻 '.$hospital);
+}
+foreach(array('busy','quest','horizon','dead','other_ruleset') as $condition) {
+	ai93_test_reset(); $npc = ai93_test_npc(22);
+	if($condition === 'busy') $npc['bid'] = 1;
+	if($condition === 'quest') $npc['clbpara']['quest_id'] = 'Q6';
+	if($condition === 'horizon') $npc['horizon'] = 1;
+	if($condition === 'dead') $npc['hp'] = 0;
+	if($condition === 'other_ruleset') $test_ruleset = 'LAIKAADVENT';
+	ai93_test_roll(50,94); ai93_encounter($npc,$pdata);
+	ai93_test_assert(!$aidata && !$db->chat,'遭遇守卫 '.$condition);
+}
+
+// 受击反应：清场标记、慌乱下限及每场重置，特殊雷预算。
+ai93_test_reset(); $npc = ai93_test_npc(0); $npc['action']='enemy'; $npc['bid']=1;
+$pdata['action']='enemy'; $pdata['bid']=100; $pdata['coveratk_flag']=9;
+ai93_test_roll(0,29); $fled = ai93_react($pdata,$npc);
+ai93_test_assert($fled && $npc['pls'] != 1 && !$npc['bid'] && !$pdata['bid'] && !$pdata['action'] && !isset($pdata['coveratk_flag']),'受击逃跑中断并清理追击/协战状态');
+ai93_test_reset(); $npc = ai93_test_npc(0);
+ai93_test_roll(30,54); ai93_react($pdata,$npc); $att = $npc['att']; $def = $npc['def'];
+ai93_test_roll(30,54); ai93_react($pdata,$npc);
+ai93_test_assert($att === $npc['att'] && $def === $npc['def'] && $att < 129 && $def < 167,'慌乱每场只减一次且留在原地');
+unset($npc['ai93_panic_done']); $npc['att']=81; $npc['def']=101;
+ai93_test_roll(30,54); ai93_react($pdata,$npc);
+ai93_test_assert($npc['att'] === 80 && $npc['def'] === 100,'慌乱攻防下限80/100');
+player_save($npc); $npc = fetch_playerdata_by_pid(100);
+ai93_test_assert($npc['att'] === 80 && !isset($npc['ai93_panic_done']),'慌乱数值保留，单场标记不持久化');
+ai93_test_reset(); $panic_in_combat = false;
+for($seed=0;$seed<100 && !$panic_in_combat;$seed++) {
+	$npc = ai93_test_npc(0); $npc['ai93_panic_done']=true; $p = ai93_test_player(1);
+	srand($seed); \revcombat\rev_combat_prepare($p,$npc,1,'',0);
+	$panic_in_combat = $npc['att'] < 129;
+}
+ai93_test_assert($panic_in_combat,'真实战斗入口重置上一场慌乱标记');
+foreach(array(array(0,55,1,2),array(10,35,4,3),array(15,50,1,3)) as $case) {
+	ai93_test_reset(); $npc=ai93_test_npc($case[0]);
+	ai93_test_roll($case[1],$case[1]); $stopped=ai93_react($pdata,$npc);
+	ai93_test_assert(!$stopped && $npc['pose'] === $case[2] && $npc['tactic'] === $case[3],'受击应战继续原战斗 '.$case[0]);
+}
+ai93_test_reset(); $npc=ai93_test_npc(10);
+ai93_test_roll(80,99); ai93_react($pdata,$npc);
+ai93_test_assert(count($db->maptrap) === 1 && get_itmpara(reset($db->maptrap)['itmpara'])['ai93_inf'] === 'i','受击特殊反应留下对应元素雷');
+$gamevars['ai93']['trash_cnt']=30;
+ai93_test_roll(80,99); ai93_react($pdata,$npc);
+ai93_test_assert(count($db->maptrap) === 1,'受击特殊反应不突破第一期30额度');
+
+// 自救占本次行动，沿用行动成长；静养只在无人点回血。
+ai93_test_reset(); $npc=ai93_test_npc(0); $npc['mhp']=1000; $npc['hp']=100;
+ai93_test_roll(0,49,0,39); ai93_act($npc,$pdata);
+ai93_test_assert(in_array($npc['pls'],array(11,19,32)) && $npc['hp'] == 500 && $npc['clbpara']['resting'] === 1 && $npc['money'] === 580 && $npc['itms5'] === 2,'受伤自救赴无人医院回血40%，仍有统一成长');
+$npc = fetch_playerdata_by_pid(100); ai93_act($npc,$pdata);
+ai93_test_assert($npc['hp'] == 700,'静养重载后每次行动恢复20%');
+ai93_act($npc,$pdata); ai93_act($npc,$pdata);
+ai93_test_assert($npc['hp'] === 1000 && !$npc['clbpara']['resting'],'静养回满后结束');
+$npc['hp']=700; $npc['clbpara']['resting']=1; $pdata['pls']=$npc['pls'];
+ai93_test_roll(40,69); ai93_act($npc,$pdata);
+ai93_test_assert($npc['hp'] === 700 && !$npc['clbpara']['resting'],'驱动玩家抵达打断静养，无旧位置误判回血');
+ai93_test_reset(); $test_safe=array(1,2,11); $occupant=ai93_test_player(2); $occupant['pls']=11; player_save($occupant);
+$npc=ai93_test_npc(5); $npc['hp']=100;
+ai93_test_roll(0,49); ai93_injury($npc,$pdata);
+ai93_test_assert($npc['pls'] === 2,'医院有人时退到无人安全点');
+ai93_test_reset(); $npc=ai93_test_npc(15); $npc['hp']=100;
+ai93_test_item($npc,'备用饼干','HB',120,2,6); $npc['itmpara6']='{"old":1}';
+ai93_test_roll(30,69); ai93_injury($npc,$pdata);
+ai93_test_assert($npc['hp'] === 220 && !$npc['itms6'] && !$npc['itmpara6'] && $npc['itms5'] === 1,'受伤吃补给清完整槽位，不吃五系药');
+ai93_test_reset(); $npc=ai93_test_npc(22); $npc['hp']=100;
+ai93_test_roll(0,59); ai93_injury($npc,$pdata);
+ai93_test_assert($npc['att'] === round(129*1.15) && $npc['def'] === round(167*1.1) && $npc['pose'] === 2 && $npc['tactic'] === 1,'被检体受伤60%狂暴');
+$npc['att']=$npc['def']=4294967295; ai93_enrage($npc);
+ai93_test_assert($npc['att'] === 4294967295 && $npc['def'] === 4294967295,'狂暴按现有字段容量封顶');
+
+// 演唱作用域与内存/数据库一致性，含本次玩家刚移动但尚未保存。
+foreach(array(0,1) as $song_roll) {
+	ai93_test_reset(); $npc=ai93_test_npc(7); player_save($npc);
+	$db->players[1]['pls']=2;
+	$p2=ai93_test_player(2); player_save($p2);
+	$p3=ai93_test_player(3); $p3['hp']=0; player_save($p3);
+	$p4=ai93_test_player(4); $p4['pls']=2; player_save($p4);
+	$ally=ai93_test_npc(10,101); player_save($ally);
+	$quest=ai93_test_npc(10,102); $quest['clbpara']['quest_id']='Q6'; player_save($quest);
+	$story=ai93_test_npc(10,103); $story['type']=15; player_save($story);
+	$field = $song_roll ? 'att' : 'def'; $old=$npc[$field]; $pold=$pdata[$field]; $aold=$ally[$field];
+	ai93_test_roll($song_roll,$song_roll); $sang=ai93_sing($npc,$pdata);
+	ai93_test_assert($sang && $npc[$field] === $old+30 && $pdata[$field] === $pold+30 && $db->players[100][$field] === $npc[$field] && $db->players[1][$field] === $pdata[$field],'演唱同步歌手与刚到场玩家 '.$field);
+	ai93_test_assert($db->players[2][$field] === $pold+30 && $db->players[101][$field] === $aold+30 && $db->players[3][$field] === $pold && $db->players[4][$field] === $pold && $db->players[102][$field] === $aold && $db->players[103][$field] === $aold,'演唱只影响同图存活玩家与普通93 '.$field);
+	player_save($pdata); player_save($npc); $gamevars=json_decode($saved_gamevars,true);
+	$npc=fetch_playerdata_by_pid(100);
+	ai93_test_assert($npc[$field] === $old+30 && $gamevars['ai93']['sing_cnt'] === 1 && end($test_news)[1] === 'song','演唱保存重载不回滚且发布新闻');
+	$now+=899; ai93_test_assert(!ai93_sing($npc,$pdata),'单只偶像899秒仍冷却');
+	$now++; ai93_test_assert(ai93_sing($npc,$pdata),'900秒到期可演唱');
+	$now+=900; ai93_sing($npc,$pdata); $now+=900; ai93_sing($npc,$pdata); $now+=900;
+	ai93_test_assert(!ai93_sing($npc,$pdata) && $gamevars['ai93']['sing_cnt'] === 4,'正常演唱整局最多4次');
+}
+ai93_test_reset(); $npc=ai93_test_npc(7); $pdata['pls']=2;
+ai93_test_assert(!ai93_sing($npc,$pdata) && !$gamevars,'玩家已离开但数据库仍同图时不算观众');
+ai93_test_reset(); $npc=ai93_test_npc(7); $gamevars['ai93']=array('wth_cnt'=>3);
+ai93_test_roll(80,99); ai93_act($npc,$pdata);
+ai93_test_assert($gamevars['ai93']['sing_cnt'] === 1,'偶像原演出间歇实际开唱');
+ai93_test_reset(); $npc=ai93_test_npc(7);
+ai93_test_roll(0,29); ai93_special_reaction($npc,1,$pdata);
+ai93_test_assert($gamevars['ai93']['sing_cnt'] === 1,'偶像特殊遭遇30%开唱');
+
+// 族群共享两只迁移预算；忙碌、任务及异族成员不迁移。
+ai93_test_reset(); $members=ai93_test_group(0); $leader=$members[0];
+foreach($members as $member) { $member['pls']=2; player_save($member); }
+$leader['pls']=1; player_save($leader);
+$busy=$members[1]; $busy['pls']=2; $busy['bid']=1; player_save($busy);
+ai93_group_alert($leader); ai93_group_alert($leader);
+$gamevars=json_decode($saved_gamevars,true);
+ai93_test_assert(count($gamevars['ai93']['alerts']) === 1,'受击增援队列按grp去重并持久化');
+ai93_group_tick();
+$arrived=array_filter($db->players,function($n) { return $n['type']==93 && $n['pid']!=2 && $n['pls']==1; });
+ai93_test_assert(count($arrived) === 2 && $ai93_moves === 2 && $db->players[$busy['pid']]['pls'] === 2 && !$gamevars['ai93']['alerts'],'下一事件增援最多两只，跳过战斗中成员并消费队列');
+$before=$db->players; ai93_group_move($leader,3,'follow');
+ai93_test_assert($before === $db->players,'跟随与增援共用迁移额度');
+$ai93_moves=0; ai93_group_move($leader,3,'flee',1);
+ai93_test_assert($ai93_moves === 2 && count(array_filter($db->players,function($n) { return $n['type']==93 && $n['pls']==3; })) === 2,'共逃仅带同图同族的两只伙伴');
+$before=$db->players; $ai93_moves=0; $leader['pls']=99; ai93_group_alert($leader); ai93_group_tick();
+ai93_test_assert($before === $db->players && !$gamevars['ai93']['alerts'],'禁区目的地丢弃增援，不迁移任何人');
+$leader['hp']=0; player_save($leader); $before=$db->players[$busy['pid']]['att'];
+ai93_group_tick(); $after=$db->players[$busy['pid']]['att']; ai93_group_tick();
+ai93_test_assert($after === round($before*1.15) && $db->players[$busy['pid']]['att'] === $after && empty(get_clbpara($db->players[$busy['pid']]['clbpara'])['leader_pid']),'领袖死亡使包括忙碌成员在内的全批次狂暴一次并散伙');
+ai93_test_reset(); $members=ai93_test_group(2); $leader=$members[2];
+unset($db->players[$leader['pid']]); ai93_group_tick();
+ai93_test_assert(get_clbpara($db->players[$members[0]['pid']]['clbpara'])['role'] === 'buddy','领袖记录消失也会散伙');
+ai93_test_reset(); $members=ai93_test_group(1); $leader=$members[2]; $leader['pls']=99; player_save($leader);
+$gamevars['ai93']=array('wth_cnt'=>3);
+ai93_test_roll(80,99); ai93_act($leader,$pdata);
+ai93_test_assert($leader['pls'] != 99 && $ai93_moves <= 2 && count(array_filter($db->players,function($n) use($leader) { return $n['type']==93 && $n['pls']==$leader['pls']; })) >= 2,'头领自律移动会带小弟跟随');
+
+// 疯狂星期四：窗口、概率、独立额度、冷却、全字段换装与预警顺序。
+foreach(array(array(10,26,18,0),array(10,29,17,59),array(10,29,19,0)) as $timecase) {
+	ai93_test_reset(); $npc=ai93_test_npc(7); $now=mktime($timecase[2],$timecase[3],0,$timecase[0],$timecase[1],2026);
+	$gamevars['ai93']=array('sing_cnt'=>4);
+	ai93_test_roll(0,24);
+	ai93_test_assert(!ai93_sing($npc,$pdata) && $pdata['wep'] !== '鸡肉','鸡肉之歌不在窗口时不触发 '.implode('/',$timecase));
+}
+ai93_test_reset(); $npc=ai93_test_npc(7); player_save($npc);
+$now=mktime(18,0,0,10,29,2026); $gamevars['ai93']=array('sing_cnt'=>4);
+ai93_test_roll(25,25);
+ai93_test_assert(!ai93_sing($npc,$pdata),'25%概率边界：掷到25不改唱');
+$pdata['weppara']='{"old_weapon":1}'; $db->players[1]['pls']=2;
+$p2=ai93_test_player(2); player_save($p2); $dead=ai93_test_player(3); $dead['hp']=0; player_save($dead);
+$remote=ai93_test_player(4); $remote['pls']=2; player_save($remote);
+$ally=ai93_test_npc(0,101); player_save($ally);
+$test_events=array(); ai93_test_roll(24,24); $sang=ai93_sing($npc,$pdata);
+ai93_test_assert($sang && $gamevars['ai93']['chicken_cnt'] === 1 && $gamevars['ai93']['sing_cnt'] === 4,'周四18点掷到24改唱，鸡肉额度独立于正常演唱');
+ai93_test_assert($pdata['wep'] === '鸡肉' && $pdata['wepk'] === 'WC' && $pdata['wepe'] === 55 && $pdata['weps'] === 55 && $pdata['wepsk'] === 'z' && $pdata['weppara'] === '' && $db->players[1]['wepe'] === 55,'鸡肉武器完整换装并同步驱动玩家内存/数据库');
+ai93_test_assert($db->players[2]['wep'] === '鸡肉' && $db->players[3]['wep'] !== '鸡肉' && $db->players[4]['wep'] !== '鸡肉' && $db->players[101]['wep'] === $ally['wep'] && $npc['wep'] !== '鸡肉','鸡肉之歌仅换同图存活玩家武器');
+ai93_test_assert($test_events[0][0] === 'chat' && strpos($test_events[0][1],'永久') !== false && end($test_news)[4] === '鸡肉之歌','换装之前先发布预警，唱完发新闻');
+player_save($pdata); $npc=fetch_playerdata_by_pid(100); $gamevars=json_decode($saved_gamevars,true);
+ai93_test_roll(0,24); ai93_test_assert(!ai93_sing($npc,$pdata),'鸡肉之歌重载后仍受单只3600秒冷却');
+$other=ai93_test_npc(8,102); $now=mktime(18,59,59,10,29,2026);
+ai93_test_roll(0,24); ai93_test_assert(ai93_sing($other,$pdata),'18:59:59仍可触发第二次鸡肉之歌');
+$third=ai93_test_npc(9,103); ai93_test_roll(0,24);
+ai93_test_assert(!ai93_sing($third,$pdata) && $gamevars['ai93']['chicken_cnt'] === 2,'鸡肉之歌整局最多两次');
+
+// 实际discover链路：即使玩家的先攻骰为1，专属先攻仍由NPC先打。
+include_once GAME_ROOT.'include/game/search.func.php';
+$forced = false;
+for($seed=0;$seed<200 && !$forced;$seed++) {
+	ai93_test_reset(); $gamevars['sanmadead']=1; $pdata['pass']='bot';
+	$npc=ai93_test_npc(22); player_save($npc);
+	$event_obbs=$item_obbs=$trap_max_obbs=0; $pls_bgm=array(); $test_dice=1;
+	srand($seed); ob_start(); discover(0,$pdata); ob_end_clean();
+	$forced=!empty($aidata['ai93_first_strike']);
+	if($forced) ai93_test_assert($pdata['hp'] < 2000 && $db->players[100]['pls'] != 1,'实际探索中NPC强制先攻并经正常战斗保存');
+}
+ai93_test_assert($forced,'真实探索能抽中遭遇先攻分支');
+
+// 每次事件的遭遇数、共逃与真实反击零伤害入口。
+ai93_test_reset();
+for($i=100;$i<108;$i++) player_save(ai93_test_npc(0,$i));
+$busy=ai93_test_npc(0,108); $busy['bid']=1; player_save($busy);
+$quest=ai93_test_npc(0,109); $quest['clbpara']['quest_id']='Q6'; player_save($quest);
+srand(100); aievent_minion(100,$pdata);
+$reacted=array_filter($db->players,function($n) { return isset(get_clbpara($n['clbpara'])['last_react']); });
+ai93_test_assert(count($reacted) > 0 && count($reacted) <= 2 && !isset(get_clbpara($db->players[108]['clbpara'])['last_react']) && !isset(get_clbpara($db->players[109]['clbpara'])['last_react']),'实际AI事件至多两只遭遇反应，忙碌和任务NPC不参加');
+ai93_test_reset(); $members=ai93_test_group(3); $npc=$members[0];
+foreach($members as $member) { $member['pls']=1; player_save($member); }
+$npc['pls']=1; ai93_test_roll(0,24); $fled=ai93_react($pdata,$npc); player_save($npc);
+ai93_test_assert($fled && $ai93_moves === 2 && count(array_filter($db->players,function($n) use($npc) { return $n['type']==93 && $n['pls']==$npc['pls']; })) === 3,'女仆受击逃离会带走同图两位buddy');
+ai93_test_reset(); $npc=ai93_test_npc(0);
+for($i=101;$i<105;$i++) { $ally=ai93_test_npc(0,$i); $ally['pls']=2; player_save($ally); }
+$alien=ai93_test_npc(10,105); $alien['pls']=2; player_save($alien);
+$quest=ai93_test_npc(0,106); $quest['pls']=2; $quest['clbpara']['quest_id']='Q6'; player_save($quest);
+$busy=ai93_test_npc(0,107); $busy['pls']=2; $busy['bid']=1; player_save($busy);
+for($seed=0;$seed<100 && !$ai93_moves;$seed++) { srand($seed); ai93_special_reaction($npc,0,$pdata); }
+ai93_test_assert($ai93_moves === 2 && $db->players[105]['pls'] === 2 && $db->players[106]['pls'] === 2 && $db->players[107]['pls'] === 2,'五鬼呼叫只带同分支闲散同僚，至多两只');
+foreach(array('miss','counter_zero') as $battle_case) {
+	$observed = false;
+	for($seed=0;$seed<100 && !$observed;$seed++) {
+		ai93_test_reset(); $npc=ai93_test_npc(0); $p=ai93_test_player(1);
+		if($battle_case === 'miss') {
+			$test_dice=99; srand($seed); \revcombat\rev_combat_prepare($p,$npc,1,'',0);
+			$observed=$npc['pls'] != 1 && $npc['hp'] === 788 && $p['hp'] === 2000;
+		} else {
+			$test_damage=array(100=>25,1=>0); srand($seed); \revcombat\rev_combat_prepare($npc,$p,0,'',0);
+			$observed=!empty($p['is_counter']) && $npc['pls'] != 1 && $npc['hp'] === 788 && $p['hp'] === 1975;
+		}
+	}
+	ai93_test_assert($observed,'真实战斗未造成伤害时仍能触发普通小兵逃跑 '.$battle_case);
+}
 
 echo "All AI93 tests passed.\n";
