@@ -14,6 +14,8 @@ function elevator_item_label($item) {
     foreach (str_split($item['itmsk']??'') as $c) if (isset($itemspkinfo[$c])) $extra.=' '.$itemspkinfo[$c];
     if ($item['itmk']==='R') $extra='蓝图';
     if ($item['itmk']==='VS') $extra='技能：'.($cskills[$item['itmsk']]['name']??'未命名笔记');
+    $para=elevator_decode($item['itmpara']??array());
+    if (!empty($para['elevator_skill'])) $extra.=' 装备时生效：'.($cskills[$para['elevator_skill']]['name']??'夹层能力');
     return elevator_html($item['itm']).' <small>'.elevator_html($kind).' · 效果 '.(int)$item['itme'].' · 数量/耐久 '.elevator_html($item['itms']).elevator_html($extra).'</small>';
 }
 function elevator_panel($p,$e,$at) {
@@ -24,7 +26,8 @@ function elevator_panel($p,$e,$at) {
     $deadline=$e['state']==='travel'?$e['travel_end']:(in_array($e['state'],array('doors','closing'),true)?$e['door_deadline']:0);
     $players=elevator_read_players(); $active=array_filter($players,'elevator_active');
     $html='<div class="el-panel" data-el-pls="'.(int)$p['pls'].'" data-el-seq="'.(int)$s['seq'].'" data-el-csrf="'.elevator_html($s['csrf']).'">';
-    $html.='<nav class="el-quicknav"><a href="#elevator-panel">电梯</a><a href="#main">装备与战斗</a><a href="#cmd">操作与拾取</a><a href="#log">行动日志</a></nav>';
+    $html.='<nav class="el-quicknav"><a href="#elevator-panel">电梯</a><a href="#main">装备与战斗</a><a href="#cmd">操作与拾取</a><a href="#log">行动日志</a><button type="button" data-el-quest-open>楼层任务 · QUEST</button></nav>';
+    $html.='<template id="el-quest-source">'.elevator_quest_panel($p).'</template>';
     $html.='<div class="el-heading"><div><span class="el-kicker">ELEVATOR / 常磐夹层旅行</span><h2>'.elevator_html(elevator_floor_label($floor)).'</h2></div><div class="el-badge">'.($s['in']?'车厢内':'楼层探索').' · '.$state.'</div></div>';
     $html.='<div class="el-stats"><span>生命 <b>'.(int)$p['hp'].' / '.(int)$p['mhp'].'</b></span><span>体力 <b>'.(int)$p['sp'].' / '.(int)$p['msp'].'</b></span><span>现金 <b>'.(int)$p['money'].'</b></span><span>复活 <b>'.(int)$s['revive'].' 次</b></span><span>同行 <b>'.count($active).' / 8</b></span><span>本局剩余 <b data-el-countdown="'.max(0,$e['start_time']+$e['limit']-$at).'">'.max(0,$e['start_time']+$e['limit']-$at).' 秒</b></span></div>';
     if (!elevator_active($p)) return $html.'<p>行程已结算。<a href="end.php">查看结果与名人堂</a></p></div>';
@@ -75,6 +78,7 @@ function elevator_panel($p,$e,$at) {
         foreach ($data['objects'] as $o) if ($o['index']===$index) $html.=elevator_object_panel($p,$o['id']);
     }
     $html.='</section></div>';
+    $html.=elevator_fate_panel($p).elevator_skills_panel($p,$at);
     if ($e['event']) $html.=elevator_event_panel($p,$e,$at);
     if (!$s['in'] && $floor===-8) $html.=elevator_fireseed_panel($p);
     if ($e['phase']==='finite' && ($s['in'] || (int)$p['pls']===elevator_pls($floor)) && ($e['endless_vote'] || in_array($floor,array(3,5,7,-3,-5,-7,-8),true))) {
@@ -119,7 +123,15 @@ function elevator_object_panel($p,$id) {
         'guard'=>array('talk'=>'出示证件'),'projection'=>array('touch'=>'触碰投影'),'scavenger'=>array('info'=>'询问情报','trade'=>'两份回血食物换武器'),
         'data'=>array('yes'=>'我是','unsure'=>'我也不确定'),'watch'=>array('listen'=>'听歌 / 检查是否唱完'));
     if (in_array($o[3],array('turret','burnt','soldier','tap','mirror','error','half'),true)) $options[$o[3]]=array('fight'=>$o[3]==='turret'?'从北侧接近炮台':'靠近挑战');
-    if ($o[3]==='forest') $html.='<input id="el-answer-'.$id.'" aria-label="种火语答案" placeholder="按字母表输入种火语">'.elevator_button('吹出口哨','elevator_object',array('object'=>$id,'value'=>'answer'),array('answer'=>'el-answer-'.$id));
+    if ($o[3]==='armory') {
+        $data=elevator_floor_read($s['floor']); $state=$data['objects_state'][(string)$id]??array();
+        if (!empty($state['open']) || !empty($state['locked'])) return $html.'<p>'.(!empty($state['open'])?'柜子已经被搬空了。':'锁芯熔断，柜子无法再打开。').'</p></div>';
+        $html.='<p>封条：<b>'.elevator_html(strtoupper($data['armory_word']??elevator_armory_codes()[0])).'</b> · 译成种火语。已输错 '.(int)($state['fails']??0).' 次。</p>';
+        if (!empty($s['dictionary']) || elevator_find_named($p,'种火语密码手册')>=0) $html.='<p class="el-cipher">a b c d e f g h i j k l m n o p q r s t u v w x y z<br>'.elevator_html(elevator_cipher('a b c d e f g h i j k l m n o p q r s t u v w x y z')).'</p>';
+        $html.='<input id="el-answer-'.$id.'" aria-label="武器库种火语密码" placeholder="输入种火语">'.elevator_button('解谜开锁','elevator_object',array('object'=>$id,'value'=>'puzzle'),array('answer'=>'el-answer-'.$id));
+        $html.=elevator_button('投入零件（优先）或'.elevator_config('armory_price').'现金','elevator_object',array('object'=>$id,'value'=>'pay')).elevator_button('消耗一张钥匙卡','elevator_object',array('object'=>$id,'value'=>'key'));
+    }
+    elseif ($o[3]==='forest') $html.='<input id="el-answer-'.$id.'" aria-label="种火语答案" placeholder="按字母表输入种火语">'.elevator_button('吹出口哨','elevator_object',array('object'=>$id,'value'=>'answer'),array('answer'=>'el-answer-'.$id));
     else foreach ($options[$o[3]]??array('talk'=>'靠近交谈') as $choice=>$label) $html.=elevator_button($label,'elevator_object',array('object'=>$id,'value'=>$choice));
     $html.=elevator_button($o[3]==='turret'?'从南侧绕行':'离开','elevator_object',array('object'=>$id,'value'=>'leave'));
     return $html.'</div>';
@@ -223,7 +235,7 @@ function elevator_cabin_panel($p,$e,$at,$players) {
     return $html.'</details>';
 }
 function elevator_help() {
-    return '<p>1–8人共享一部电梯，不进行玩家间战斗。开局前10分钟可加入，每个账户每局只领一次起装。</p><p>车厢按钮优先于层外呼叫；已经承诺的目的地不会被改写。开门8秒、关门5秒，运行每层3秒。只有登记且仍站在对应电梯口的乘客才会自动登梯。</p><p>每层有150至100秒的个人暴露预算。离线期间暂停；入口初始保护60秒。返回电梯口呼叫候乘可暂停，离开入口或电梯离站后重新计时。每局所有来源合计只有一次复活，复活到电梯口并恢复30%生命。</p><p>±3、±5、±7层可脱出；−8层听完三个问题即可离开，答错也无妨。终点可提出无尽提案，120秒后愿意者留下，其余胜利离场。有限段最长60分钟，无尽段整局最长90分钟。</p><p>每层探索两个不同地点可获六选一遗物。配方、搜尸、背包和战斗使用原有操作；配方专用合成位于本面板。车厢的行商、保管箱与双方同意的交易可帮助你准备下一程。</p>';
+    return '<p>1–8人共享一部电梯，不进行玩家间战斗。开局前10分钟可加入，每个账户每局只领一次起装。</p><p>车厢按钮优先于层外呼叫；已经承诺的目的地不会被改写。开门8秒、关门5秒，运行每层3秒。只有登记且仍站在对应电梯口的乘客才会自动登梯。</p><p>每层有150至100秒的个人暴露预算。离线期间暂停；入口初始保护60秒。返回电梯口呼叫候乘可暂停，离开入口或电梯离站后重新计时。每局自带一次复活，回到电梯口并恢复30%生命；「重生」技能另有两次额度，先于自带复活消耗。</p><p>±3、±5、±7层可脱出；−8层听完三个问题即可离开，答错也无妨。终点可提出无尽提案，120秒后愿意者留下，其余胜利离场。有限段最长60分钟，无尽段整局最长90分钟。</p><p>每层探索两个不同地点可获六选一遗物。配方、搜尸、背包和战斗使用原有操作；配方专用合成位于本面板。车厢的行商、保管箱与双方同意的交易可帮助你准备下一程。</p><p>打开楼层任务·QUEST 接取委托：个人进度、各自领奖；互斥任务由全层先完成的一方决定命运。任务目标会依次回应乘客，击杀任务可继续探索寻找增援。</p><p>手枪路线起装90发；行商常售20发装子弹。武器库可用种火语、120现金或无线电零件、钥匙卡开启；连续三次解谜失败会永久锁死。</p><p>技能笔记与遗物提供夹层能力，蓝图装备可能附带持续生效的技能词条。无尽每深入三层增加一次诅咒，并获得一次技能三选一；错过的馈赠可以依次领取，刷新不会更换选项。</p>';
 }
 function elevator_page_start($title) {
     header('Content-Type: text/html; charset=utf-8'); header('Cache-Control: no-store');

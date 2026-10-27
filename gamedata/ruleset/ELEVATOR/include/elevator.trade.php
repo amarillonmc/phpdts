@@ -18,6 +18,7 @@ function elevator_merchant($e,$at,$refresh=true) {
         $item=elevator_item($id,$e['round']);
         $stock[]=array('item'=>$item,'price'=>35,'count'=>8);
     }
+    $stock[]=array('item'=>elevator_item(9001,$e['round']),'price'=>15,'count'=>12);
     foreach (array_slice($pool,0,4) as $item) $stock[]=array('item'=>$item,'price'=>max(40,(int)round((80+abs($e['floor'])*18)*mt_rand(80,120)/100)),'count'=>mt_rand(1,3));
     global $gamevars;
     $stock[]=array('item'=>array('itm'=>'旧式撬棍[+5]','itmk'=>'WP','itme'=>120,'itms'=>50,'itmsk'=>'','itmpara'=>array()),'price'=>180,'count'=>1);

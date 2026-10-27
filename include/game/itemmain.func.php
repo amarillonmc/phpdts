@@ -35,6 +35,7 @@ function calc_real_trap_obbs($pa,$trpnum)
 	if($pa['pls'] == 0) $real_trap_obbs += 15; //无月之影太恐怖啦
 	# 社团修正
 	if($pa['club'] == 6) $real_trap_obbs *= 0.85; //宛如疾风陷阱触发率*0.85
+	if(function_exists('elevator_curse_level') && elevator_curse_level($pa,'903')>=1) $real_trap_obbs*=1.2;
 	return $real_trap_obbs;
 }
 
@@ -1854,6 +1855,8 @@ function check_item_edit_event($pa,&$pd,$event)
 function weapon_loss(&$pa,$hurtvalue,$force_imp=0,$check_sk=0)
 {
 	global $log,$wepimprate,$nosta;
+	if($hurtvalue>0 && !$force_imp && function_exists('elevator_has_skill') && elevator_has_skill($pa,532) && !in_array($pa['wep_kind'],array('G','J','C','D','F','B'),true)) return;
+	if(!$force_imp && !empty($pa['is_wpg']) && preg_match('/^W[GJ]/',$pa['wepk']) && function_exists('elevator_has_skill') && elevator_has_skill($pa,422)) $force_imp=1;
 	if(!$force_imp && $hurtvalue>0 && !empty($pa['fcg_battle']) && fcg_attuned($pa,'W')) $hurtvalue=floor($hurtvalue/2)+(($hurtvalue%2 && mt_rand(0,1)) ? 1:0);
 
 	//小开不算开 以后再做弹药相关吧
@@ -1961,6 +1964,7 @@ function weapon_loss(&$pa,$hurtvalue,$force_imp=0,$check_sk=0)
 function armor_hurt(&$pa,$which,$hurtvalue,$check_sk=0)
 {
 	global $log,$nosta;
+	if($hurtvalue>0 && function_exists('elevator_has_skill') && elevator_has_skill($pa,532)) return;
 	if($hurtvalue>0 && !empty($pa['fcg_battle']) && fcg_attuned($pa,'W')) $hurtvalue=floor($hurtvalue/2)+(($hurtvalue%2 && mt_rand(0,1)) ? 1:0);
 
 	if(!empty($pa[$which.'s']) && !empty($hurtvalue))

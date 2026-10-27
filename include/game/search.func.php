@@ -276,6 +276,7 @@ function calc_move_search_sp_cost(&$data,$act)
 	}
 	# 宛如疾风消耗减少
 	if($club == 6) $costsp -= $lvl>=20 ? 14 : 10+floor($lvl/5);
+	if(function_exists('elevator_sp_cost')) $costsp=elevator_sp_cost($data,$costsp);
 
 	if($$actpoint > $costsp)
 	{
@@ -918,6 +919,7 @@ function discover($schmode = 0,&$data=NULL)
 		//echo "进入道具判定<br>";
 		//$find_r = get_find_r($weather,$pls,$pose,$tactic,$club,$inf);
 		$find_obbs = $item_obbs;
+		if(function_exists('elevator_find_rate')) $find_obbs=elevator_find_rate($data,$find_obbs);
 		$item_dice = rand(0,99);
 		if($item_dice < $find_obbs)
 		{

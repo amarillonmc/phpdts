@@ -434,6 +434,7 @@ namespace revcombat
 	# 执行完rev_attack() rev_combat_result()后 检查防守方(pd)是否能进行反击
 	function attack_check_can_counter(&$pa,&$pd,$active)
 	{
+		if(function_exists('elevator_has_skill') && elevator_has_skill($pd,803)) { $pd['cannot_counter_log']='铁壳纹丝不动，没有反击。'; return 0; }
 		# 被协战攻击无法反击
 		if(isset($pa['is_coveratk']))
 		{

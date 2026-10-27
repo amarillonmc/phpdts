@@ -39,14 +39,14 @@ function create_dummy_playerdata() {
     $p['clbpara']=array(); return $p;
 }
 function player_format_with_db_structure($p) { foreach ($p as $k=>$v) if (is_array($v)) $p[$k]=json_encode($v,JSON_UNESCAPED_UNICODE); return $p; }
-function player_save($p) { $GLOBALS['db']->players[$p['pid']]=player_format_with_db_structure($p); }
+function player_save($p) { $GLOBALS['db']->players[$p['pid']]=player_format_with_db_structure($p); $GLOBALS['db']->id=max($GLOBALS['db']->id,$p['pid']); }
 function fetch_playerdata_by_pid($id) { $p=$GLOBALS['db']->players[$id]??null; if ($p) $p['clbpara']=get_clbpara($p['clbpara']); return $p; }
 function save_gameinfo() {}
 function et_assert($value,$message) { if (!$value) throw new RuntimeException('FAIL: '.$message); $GLOBALS['et_count']++; }
 function et_reject($fn,$message) { try { $fn(); } catch (RuntimeException $ex) { et_assert(true,$message); return; } throw new RuntimeException('FAIL accepted: '.$message); }
 function et_player($id=1,$floor=1,$at=1000) {
     $p=create_dummy_playerdata(); $p=array_merge($p,array('pid'=>$id,'type'=>0,'name'=>'乘客'.$id,'hp'=>400,'mhp'=>400,'sp'=>400,'msp'=>400,'money'=>500,'att'=>100,'def'=>100));
-    $p['clbpara']=array('elevator'=>elevator_player_state($floor,$at),'skill'=>array()); elevator_entrance($p,$floor,$at,true);
+    $p['clbpara']=array('elevator'=>elevator_player_state($floor,$at),'skill'=>array(),'BGMBrand'=>''); elevator_entrance($p,$floor,$at,true);
     return $p;
 }
 function et_room($floor=1) {
@@ -56,12 +56,12 @@ function et_room($floor=1) {
 }
 $tablepre=$gtablepre='test_'; $now=1000; $nosta='∞'; $log=''; $gamecfg=1; $et_count=0;
 require GAME_ROOT.'gamedata/cache/resources_1.php';
-require GAME_ROOT.'gamedata/cache/clubskills_1.php';
+require GAME_ROOT.'gamedata/ruleset/ELEVATOR/cache/clubskills_1.php';
 require dirname(__DIR__).'/include/ruleset.func.php';
 mt_srand(2701);
 
 et_room(); $e=&$gamevars['elevator']; $p=et_player(); $other=et_player(2); $players=array(1=>$p,2=>$other);
-et_assert(count(elevator_maps())===64 && count(elevator_objects())===23 && count(elevator_catalog())===129,'all source content registered');
+et_assert(count(elevator_maps())===64 && count(elevator_objects())===26 && count(elevator_catalog())===131,'all source content registered');
 foreach (elevator_catalog() as $id=>$item) et_assert(isset(elevator_maps()[$item['map']]),'item has a real source map: '.$id);
 $ids=array(9000=>true); for($f=-30;$f<=30;$f++) if ($f) for($i=0;$i<=5;$i++) { $id=elevator_pls($f,$i); et_assert(!isset($ids[$id]),'unique runtime map'); $ids[$id]=true; }
 for ($i=0;$i<200;$i++) {
@@ -177,6 +177,7 @@ foreach (elevator_objects() as $id=>$object) {
         if ($role==='mirror') { $npc['hp']=0; ruleset_player_kill_hook($p,$npc,1); et_assert(!$npc['weps'] && $npc['itms1'],'mirror drops fragment, no equipment cloning'); }
         continue;
     }
+    if ($role==='armory') continue; // 共享武器库在扩展回归中单独验证。
     $choice='talk'; $answer='';
     if ($role==='cat' || $role==='catloot') { elevator_set_slot($p,1,elevator_item(elevator_item_id('猫粮罐头'),$e['round'])); $choice='feed'; }
     if ($role==='projection') $choice='touch';
@@ -198,4 +199,5 @@ for ($f=1;$f<=3;$f++) {
     elevator_interact($e,$p,301,'talk','',1000);
 }
 et_assert(count($p['clbpara']['elevator']['fragments'])===3 && $p['clbpara']['elevator']['dictionary'] && $p['itm1']==='种火语字典残页','three reachable positive-floor fragments give a real dictionary');
+require __DIR__.'/elevator_extensions_test.php';
 echo 'ELEVATOR: '.$et_count." assertions passed.\n";

@@ -30,6 +30,7 @@ namespace revbattle
 
 		//echo "enemyrate = {$enemyrate}";
 
+		if(function_exists('elevator_curse_level') && elevator_curse_level($pa,'903')>=2) $enemyrate*=.8;
 		return $enemyrate;
 	}
 

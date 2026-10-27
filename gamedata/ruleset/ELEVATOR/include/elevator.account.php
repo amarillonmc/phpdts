@@ -78,7 +78,7 @@ function elevator_join($user,$club,$at) {
     require_once GAME_ROOT.'include/game/clubslct.func.php'; changeclub($club,$p);
     $kind=array(1=>'WP',2=>'WK',3=>'WC',4=>'WG',5=>'WD',9=>'WF')[$club];
     $p['wep']='乘客制式'.array(1=>'撬棍',2=>'短刀',3=>'飞镖',4=>'手枪',5=>'爆破包',9=>'音叉')[$club];
-    $p['wepk']=$kind; $p['wepe']=60; $p['weps']=60; $p['wepsk']='';
+    $p['wepk']=$kind; $p['wepe']=60; $p['weps']=$club===4?90:60; $p['wepsk']='';
     $p['wep2']='拳头'; $p['wep2k']='WN'; $p['wep2e']=0; $p['wep2s']='∞';
     $p['arb']='乘客外套'; $p['arbk']='DB'; $p['arbe']=25; $p['arbs']=60;
     elevator_set_slot($p,1,array('itm'=>'夹层急救包','itmk'=>'HH','itme'=>120,'itms'=>8));

@@ -18,7 +18,7 @@ function rr_skill_pool() {
         3=>array('c2_intuit','c10_insight'),4=>array('c1_veteran','c4_break'),
         5=>array('npc_flying','c1_crit'),6=>array('npc_purity','c10_insight'));
 }
-function rr_generate_npc($rank,$offens_tend=0,$defens_tend=0,$variety=0) {
+function rr_generate_npc($rank,$offens_tend=0,$defens_tend=0,$variety=0,$pool=0,$tier=0,$floor=1) {
     $rank=max(1,(int)$rank); $r=min(20,$rank); $linear=1+max(0,$rank-20)*.12;
     $variety=max(0,min(20,(int)$variety));
     $off=mt_rand(90-$variety,110+$variety)/100*(1+$offens_tend/100);
@@ -42,22 +42,15 @@ function rr_generate_npc($rank,$offens_tend=0,$defens_tend=0,$variety=0) {
         $npc[$slot.'e']=$kind==='A'?1:(int)round(pow(1.25,$r)*3*$def*$linear);
         $npc[$slot.'s']=max(5,$r*5); $npc[$slot.'sk']=rr_gen_itmsk($r,$kind);
     }
-    $skills=rr_skill_pool(); $tier=min(6,1+(int)floor($r/4));
-    $npc['clbpara']['skill']=array(rr_pick($skills[$tier]));
-    if ($tier>=3) $npc['clbpara']['skill'][]=rr_pick($skills[1]);
+    $skills=rr_skill_pool(); $skilltier=min(6,1+(int)floor($r/4));
+    $npc['clbpara']['skill']=array(rr_pick($skills[$skilltier]));
+    if ($skilltier>=3) $npc['clbpara']['skill'][]=rr_pick($skills[1]);
     $npc['clbpara']['skill']=array_values(array_unique($npc['clbpara']['skill']));
     foreach ($npc['clbpara']['skill'] as $sk) $npc['clbpara']['skillpara'][$sk]=array('lvl'=>min(2,(int)floor($r/8)));
-    // 主要收益来自普通补给；1%蓝图、1%强化剂、2%额外补给。
-    $npc['itm1']='夹层急救包'; $npc['itmk1']='HH'; $npc['itme1']=80+$r*5; $npc['itms1']=2;
-    $dice=mt_rand(1,100);
-    if ($dice===1 && function_exists('rr_blueprint_item')) {
-        global $gamevars;
-        if (!empty($gamevars['rr_recipes'])) foreach (rr_blueprint_item(array_rand($gamevars['rr_recipes'])) as $key=>$v) $npc[$key.'2']=$v;
-    } elseif ($dice===2) {
-        $npc['itm2']='肉体强化剂'; $npc['itmk2']='MH'; $npc['itme2']=10; $npc['itms2']=1;
-    } elseif ($dice<=4) {
-        $npc['itm2']='夹层能量饮料'; $npc['itmk2']='HS'; $npc['itme2']=150; $npc['itms2']=2;
-    }
+    $newskills=array_values(array_intersect(elevator_round_skill_pool(),array_map(function($id){return 'el_'.$id;},$GLOBALS['elevator_npc_skill_pool']??array(449,456,464,513,515,532,558,570,755,760,437,471,422,455,442,401,761,723,552))));
+    if ($newskills) $npc['clbpara']['skill'][]=rr_pick($newskills);
+    elevator_set_slot($npc,1,array('itm'=>'夹层急救包','itmk'=>'HH','itme'=>80+$r*5,'itms'=>2));
+    foreach (elevator_pool_loot($pool,$tier,$floor,true) as $i=>$item) elevator_set_slot($npc,$i+2,$item);
     return $npc;
 }
 function elevator_insert_npc($npc,$at) {

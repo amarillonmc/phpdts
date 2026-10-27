@@ -39,6 +39,7 @@ function quest_get_global_value($questcfg_global, $key, $default)
 // 检查任务是否可接取 / Check whether a quest can be accepted
 function quest_is_available($qid, $cfg, &$data, $check_requirements = true, $check_obbs = true)
 {
+	if (!empty($cfg['floor_board'])) return false;
 	extract($data, EXTR_REFS);
 	quest_init_state($clbpara);
 
@@ -446,10 +447,11 @@ function quest_is_npc_alive($npc_id)
 }
 
 // 寻找背包中的任务道具 / Find quest item in pack
-function quest_find_item_slot($data, $qid, $action)
+function quest_find_item_slot($data, $qid, $action, $match = array())
 {
 	for ($i = 1; $i <= 6; $i++) {
 		if (empty($data['itms'.$i])) continue;
+		if ($match && function_exists('elevator_quest_match') && !empty($data['clbpara']['elevator']) && $data['itms'.$i]!=='∞' && elevator_quest_match(elevator_slot($data,$i),$match)) return $i;
 		$para = get_itmpara($data['itmpara'.$i]);
 		if (!empty($para['IsQuestItem']) && $para['QuestID'] == $qid && $para['QuestAction'] == $action) {
 			return $i;
@@ -693,6 +695,7 @@ function quest_handle_npc_death(&$pa, &$pd)
 {
 	if (empty($pd['type'])) return;
 	$pd['clbpara'] = get_clbpara($pd['clbpara']);
+	if (function_exists('elevator_quest_npc_death') && !empty($pd['clbpara']['elevator_npc'])) elevator_quest_npc_death($pa,$pd);
 	if (empty($pd['clbpara']['quest_id']) || empty($pd['clbpara']['linked_player_id'])) return;
 	$qid = $pd['clbpara']['quest_id'];
 	$owner_pid = $pd['clbpara']['linked_player_id'];

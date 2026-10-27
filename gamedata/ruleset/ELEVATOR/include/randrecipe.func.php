@@ -32,6 +32,11 @@ function rr_generate_recipe($itmk='') {
     if (!empty($infinite)) $r['result']['itms']='∞';
     $r['result']['itmsk']=implode('',array_unique(str_split($r['result']['itmsk'])));
     $r['result']['itm']='「'.rr_pick(array('未寄出的','昨日的','微醺的','漫游的','被记得的')).$names[$itmk].'」';
+    $traits=elevator_equipment_skill_pool();
+    if (!$food && $traits && mt_rand(1,100)<=elevator_config('recipe_skill_rate')) {
+        $trait=rr_pick($traits); $r['result']['itmpara']['elevator_skill']=$trait;
+        $r['result']['itm'].=' · '.elevator_skill_definitions()[(int)substr($trait,3)][0];
+    }
     $learn=mt_rand(1,100)<=70;
     $r['extra']=array('materials'=>$count,'learnable'=>$learn,'consume_recipe'=>!$learn);
     return $r;
@@ -132,7 +137,7 @@ function elevator_reward_pool($floor,$e) {
     foreach ($data['tpls']??($e['plan'][$floor]['tpls']??array()) as $tpl) $themes[]=(int)floor($tpl/100);
     if (!$themes) $themes=array($floor<0?8:7);
     foreach (elevator_catalog() as $id=>$s) if (!$s['unique'] && (in_array($s['pool'],$themes,true) || in_array($s['kind'],array('HH','HS','HB'),true))) $pool[]=elevator_item($id,$e['round']);
-    foreach (array('c1_def','c10_insight','c2_intuit') as $skill) $pool[]=array('itm'=>'夹层技能笔记','itmk'=>'VS','itme'=>1,'itms'=>1,'itmsk'=>$skill,'itmpara'=>array());
+    foreach (elevator_round_skill_pool() as $skill) $pool[]=elevator_skill_book($skill);
     $pool[]=array('itm'=>'夹层武艺手册','itmk'=>'VV','itme'=>60,'itms'=>1,'itmsk'=>'','itmpara'=>array());
     return $pool;
 }

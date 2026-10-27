@@ -3,6 +3,10 @@ if (!defined('IN_GAME')) exit('Access Denied');
 
 require_once GAME_ROOT.'include/game/elevator.func.php';
 require_once __DIR__.'/elevator.content.php';
+require_once __DIR__.'/elevator.loot.php';
+require_once __DIR__.'/elevator.skills.php';
+require_once __DIR__.'/elevator.curses.php';
+require_once __DIR__.'/elevator.quests.php';
 require_once __DIR__.'/randnpc.func.php';
 require_once __DIR__.'/randrecipe.func.php';
 require_once __DIR__.'/elevator.world.php';
@@ -24,6 +28,7 @@ function ruleset_round_init_hook($mode) {
     elevator_ensure_schema(); $db->query("DELETE FROM {$tablepre}elevator_floor");
     $gamevars['elevator']=elevator_room($starttime?:$now);
     $e=&$gamevars['elevator'];
+    elevator_round_skill_pool();
     foreach (array_merge(range(1,7),range(-1,-8)) as $floor) $e['plan'][$floor]=elevator_blueprint($floor);
     rr_create_recipes(elevator_config('recipe_count'));
     elevator_materialize_floor($e,1,$now);
@@ -35,6 +40,7 @@ function ruleset_round_clock_hook() {
     global $gamestate,$gamevars;
     require_once GAME_ROOT.'include/game.func.php';
     elevator_ensure_schema();
+    if (!empty($gamevars['elevator'])) elevator_round_skill_pool();
     if ($gamestate>=20) elevator_request_tick();
     else if (!empty($gamevars['elevator'])) elevator_refresh_maps();
     return true;
@@ -92,13 +98,18 @@ function ruleset_command_prepare_hook(&$p,$command) {
         if (preg_match('/^(sp_shop|shop|depot|senditem|corpse_depot|team|sp_weapon|song|hack|hackmove|club22|club23)/',$command) || in_array($mode,array('senditem','shop','depot'),true)) throw new RuntimeException('请使用车厢内的行商、交易与个人保管箱。');
         if (!empty($p['bid']) && in_array($mode,array('revcombat','combat','corpse'),true)) {
             $enemy=fetch_playerdata_by_pid((int)$p['bid']);
-            if (!$enemy || (int)$enemy['pls']!==(int)$p['pls'] || !$enemy['type']) throw new RuntimeException('目标已不在这里，或不能成为战斗目标。');
+            if (!$enemy || !$enemy['type'] || !elevator_can_fight($p,$enemy,true)) throw new RuntimeException('目标已不在这里，或不能成为战斗目标。');
         }
         return true;
     } catch (RuntimeException $ex) { $log.='<span class="yellow">'.elevator_html($ex->getMessage()).'</span><br>'; return false; }
 }
 function ruleset_command_end_hook(&$p,$command) {
     global $gamevars,$now;
+    if (!empty($GLOBALS['elevator_used_item'])) {
+        $used=$GLOBALS['elevator_used_item']; $after=elevator_slot($p,$used['slot']);
+        if ($after['itm']!==$used['item']['itm'] || $after['itms']<$used['item']['itms']) elevator_quest_event($p,'use',$used['item']);
+        unset($GLOBALS['elevator_used_item']);
+    }
     $e=&$gamevars['elevator'];
     $players=elevator_read_players(); $before=$players; $players[$p['pid']]=$p;
     if ($e['event'] && !empty($e['event']['npcs'])) {
@@ -129,6 +140,11 @@ function ruleset_move_search_success_hook(&$p,$command,$forced=false) {
     global $now,$gamevars;
     if (!$forced) {
         elevator_record_exploration($p,$now);
+        $s=&$p['clbpara']['elevator']; $floor=$s['floor'];
+        $s['floors'][$floor]['actions']=($s['floors'][$floor]['actions']??0)+1;
+        foreach ($s['floors'][$floor]['quest_skip']??array() as $qid=>$left) $s['floors'][$floor]['quest_skip'][$qid]=max(0,$left-1);
+        elevator_quest_event($p,'explore'); elevator_quest_reinforcements($p,$now);
+        if (elevator_has_skill($p,535) && mt_rand(1,100)<=elevator_skill_value(535,'chance')) $p['money']+=elevator_skill_value(535,'cash');
         if ($command==='move') $gamevars['elevator']['attention']++;
     }
 }
@@ -140,6 +156,13 @@ function elevator_can_fight($a,$b,$corpse=false) {
     foreach (array($a,$b) as $p) {
         if (empty($p['type']) && !elevator_active($p)) return false;
         $npc=$p['clbpara']['elevator_npc']??array();
+        if (!empty($npc['quest'])) {
+            $data=elevator_floor_read($npc['floor']); $row=$data['quests'][$npc['quest']]??array();
+            $opponent=$p['pid']===$a['pid']?$b:$a;
+            if (empty($row['owner']) || $row['owner']!=(int)$opponent['pid'] || !empty($row['voided'])) return false;
+        }
+        $duel=$npc['duel']??array();
+        if (($duel['until']??0)>($GLOBALS['now']??0) && !in_array((int)$duel['owner'],array((int)$a['pid'],(int)$b['pid']),true)) return false;
         if (isset($npc['owner']) && !in_array((int)$npc['owner'],array((int)$a['pid'],(int)$b['pid']),true)) return false;
     }
     if ((int)$a['pls']===elevator_pls(-8)) return false;
@@ -151,9 +174,22 @@ function elevator_can_fight($a,$b,$corpse=false) {
     }
     return in_array((int)($a['type']?:$b['type']),array(96,97,98),true);
 }
-function ruleset_combat_allowed_hook(&$a,&$b) { return elevator_can_fight($a,$b); }
-function ruleset_force_player_initiative_hook($enemy,$player=array()) { return true; }
+function ruleset_combat_allowed_hook(&$a,&$b) {
+    if (!elevator_can_fight($a,$b)) return false;
+    foreach (array(&$a,&$b) as &$p) {
+        if (elevator_has_skill($p,513)) $p['clbpara']['skillpara']['el_513']['barrier']=(int)ceil($p['mhp']*elevator_skill_value(513,'barrier'));
+        if (elevator_has_skill($p,455) && $p['type'] && empty($p['clbpara']['skillpara']['el_455']['used'])) { $p['clbpara']['skillpara']['el_455']['used']=true; $p['clbpara']['skillpara']['el_455']['until']=$GLOBALS['now']+elevator_skill_value(455,'duration'); }
+        if (elevator_has_skill($p,570) && $p['type'] && $p['rage']>=elevator_skill_value(570,'cost') && empty($p['clbpara']['skillpara']['el_570']['burst'])) { $p['rage']-=elevator_skill_value(570,'cost'); $p['clbpara']['skillpara']['el_570']['burst']=true; }
+        elevator_bone_tick($p,$GLOBALS['now'],$GLOBALS['now'],false);
+    }
+    unset($p); return true;
+}
+function ruleset_force_player_initiative_hook($enemy,$player=array()) {
+    if (elevator_has_skill($enemy,803)) return true;
+    return ($enemy['clbpara']['elevator_npc']['rule']??'')==='swift'?null:true;
+}
 function ruleset_damage_immunity_hook(&$p,$source,$damage) {
+    if ($source==='trap' && elevator_has_skill($p,455) && ($p['clbpara']['skillpara']['el_455']['until']??0)>$GLOBALS['now']) return 0;
     if (!empty($p['clbpara']['elevator']['in']) || (int)$p['pls']===elevator_pls(-8)) return 0;
     return null;
 }
@@ -165,10 +201,12 @@ function ruleset_natural_death_hook(&$p,$death,$name='',$type=0,$annex='') {
 function ruleset_revive_process_hook(&$a,&$b,$active) {
     global $now,$gamevars;
     if (!empty($b['clbpara']['elevator']['result'])) return 1;
+    if (!empty($b['type']) && elevator_skill_revive($b,$now)) return 1;
     if (!$b['type'] && !empty($b['clbpara']['elevator'])) return elevator_death($b,$now,$gamevars['elevator'])?1:0;
     return 0;
 }
 function ruleset_final_damage_fix_hook(&$a,&$b,$active,$damage) {
+    if (empty($a['clbpara']['elevator']) && empty($b['clbpara']['elevator']) && empty($a['clbpara']['elevator_npc']) && empty($b['clbpara']['elevator_npc'])) return null;
     if (!elevator_can_fight($a,$b)) return 0;
     return null;
 }
@@ -177,6 +215,8 @@ function ruleset_attribute_value_hook($p,$kind,$value) {
     if (($p['clbpara']['elevator']['blessing_until']??0)>$now) $value*=1.1;
     if ($kind==='att' && ($p['clbpara']['elevator']['buff_until']??0)>$now) $value*=1.1;
     if ($kind==='hit' && ($p['clbpara']['elevator']['blind_until']??0)>$now) $value*=.8;
+    if ($kind==='hit' && elevator_curse_level($p,'903')>=3) $value*=.8;
+    if ($kind==='hit' && ($p['clbpara']['elevator_npc']['rule']??'')==='swift') $value*=elevator_elite_rules()['swift']['hit'];
     return $value;
 }
 function ruleset_combat_result_hook(&$a,&$b,$active) {
@@ -189,6 +229,16 @@ function ruleset_combat_result_hook(&$a,&$b,$active) {
 }
 function ruleset_battle_finish_hook(&$a,&$b) {
     global $now,$gamevars,$db,$tablepre,$log;
+    elevator_quest_battle($a,$b);
+    foreach (array(&$a,&$b) as &$person) {
+        if (elevator_has_skill($person,803)) $person['inf']='';
+        if ($person['hp']>0 && elevator_has_skill($person,723) && preg_match('/^W[GJ]/',$person['wepk']) && strpos($person['wepsk'],'o')===false) {
+            $kind=strpos($person['wepk'],'WG')!==0?'GBh':(strpbrk($person['wepsk'],'ew')!==false?'GBe':(strpbrk($person['wepsk'],'iu')!==false?'GBi':(strpos($person['wepsk'],'r')!==false?'GBr':'GB')));
+            $capacity=array('GB'=>12,'GBh'=>3,'GBe'=>18,'GBi'=>18,'GBr'=>24)[$kind]*elevator_skill_value(723,'capacity');
+            for ($slot=1;$slot<=6 && ($person['weps']===$GLOBALS['nosta'] || $person['weps']<$capacity);$slot++) if (!empty($person['itms'.$slot]) && $person['itmk'.$slot]===$kind) { require_once GAME_ROOT.'include/game/item.ammo.php'; item_ammo_bullets($slot,$person); }
+        }
+    }
+    unset($person);
     foreach (array(0,1) as $side) {
         if ($side===0) { $npc=&$a; $player=&$b; } else { $npc=&$b; $player=&$a; }
         $meta=&$npc['clbpara']['elevator_npc'];
@@ -216,6 +266,7 @@ function ruleset_battle_finish_hook(&$a,&$b) {
     unset($npc,$player,$meta);
 }
 function ruleset_player_kill_hook(&$a,&$b,$active) {
+    elevator_skill_kill($a,$b);
     if (!empty($a['type']) || empty($a['clbpara']['elevator']) || !empty($b['clbpara']['elevator_rewarded'])) return;
     $b['clbpara']['elevator_rewarded']=true;
     $meta=$b['clbpara']['elevator_npc']??array(); $id=$meta['object']??0;
@@ -244,6 +295,17 @@ function ruleset_itemuse_hook(&$p,$slot,$item) {
     global $gamevars,$log,$now;
     $item['itmpara']=elevator_decode($item['itmpara']); $e=$gamevars['elevator'];
     try {
+        if (preg_match('/^[HP]/',$item['itmk'])) $GLOBALS['elevator_used_item']=array('slot'=>$slot,'item'=>$item);
+        if (!empty($item['itmpara']['elevator_quest_floor'])) {
+            $qid=$item['itmpara']['QuestID']??'';
+            if (in_array($item['itmpara']['QuestAction']??'',array('purify','comfort'),true)) elevator_quest_action($p,$qid,'use','',$e,$now);
+            else elevator_personal($p,'灯纸的微光留在你的委托记录里。');
+            return true;
+        }
+        if ($item['itmk']==='VS' && strpos($item['itmsk'],'el_')===0) {
+            if (elevator_grant_skill($p,$item['itmsk'])) elevator_consume($p,$slot); return true;
+        }
+        if (elevator_skill_itemuse($p,$slot,$item)) return true;
         if ($item['itmk']==='R') {
             if (($item['itmpara']['elevator_round']??'')!==$e['round']) throw new RuntimeException('蓝图不属于本次行程。');
             $p['clbpara']['elevator']['view']=array('kind'=>'recipes','key'=>(int)$item['itmsk'],'slot'=>$slot); return true;

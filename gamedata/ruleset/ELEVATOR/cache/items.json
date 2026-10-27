@@ -1279,6 +1279,14 @@
         "copies": 1,
         "unique": true
     },
+    "9001": {
+        "name": "手枪子弹", "kind": "GB", "effect": 1, "quantity": "20",
+        "pool": 4, "map": 406, "copies": 2, "unique": false
+    },
+    "9002": {
+        "name": "手枪子弹", "kind": "GB", "effect": 1, "quantity": "20",
+        "pool": 8, "map": 805, "copies": 2, "unique": false
+    },
     "8016": {
         "name": "五柱标记拓片",
         "kind": "X",

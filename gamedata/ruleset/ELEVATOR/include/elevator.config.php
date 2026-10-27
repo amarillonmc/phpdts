@@ -5,10 +5,17 @@ function elevator_config($key = '') {
     $cfg = array('budget_base'=>150, 'budget_min'=>100, 'door_open'=>8, 'door_close'=>5,
         'travel_unit'=>3, 'vote_window'=>120, 'limit_finite'=>3600, 'limit_endless'=>5400,
         'join_window'=>600, 'protection'=>60, 'presence'=>12, 'announce'=>20, 'event_limit'=>60,
-        'max_players'=>8, 'recipe_count'=>10, 'erosion'=>8, 'tap_turns'=>6);
-    foreach ($cfg as $name => $value) if (isset($GLOBALS['elevator_'.$name])) $cfg[$name] = max(1,(int)$GLOBALS['elevator_'.$name]);
+        'max_players'=>8, 'recipe_count'=>10, 'erosion'=>8, 'tap_turns'=>6,
+        'armory_price'=>120, 'armory_fails'=>3, 'armory_key_rate'=>4, 'armory_elite_key_bonus'=>6,
+        'armory_ammo_min'=>20, 'armory_ammo_max'=>40, 'armory_extra_rate'=>15,
+        'curse_step_interval'=>3, 'curse_erosion_rate'=>10, 'curse_skill_choices'=>3,
+        'elite_rate'=>25, 'elite_double_depth'=>3, 'quest_cash'=>80, 'quest_cash_depth'=>10,
+        'quest_reject_steps'=>3, 'quest_respawn_steps'=>4, 'skill_pool_size'=>18, 'recipe_skill_rate'=>25);
+    $zero=array('armory_price','armory_key_rate','armory_elite_key_bonus','armory_extra_rate','curse_erosion_rate','elite_rate','quest_cash','quest_cash_depth','recipe_skill_rate');
+    foreach ($cfg as $name => $value) if (isset($GLOBALS['elevator_'.$name])) $cfg[$name] = max(in_array($name,$zero,true)?0:1,(int)$GLOBALS['elevator_'.$name]);
     return $key === '' ? $cfg : $cfg[$key];
 }
+function elevator_armory_codes() { return $GLOBALS['elevator_armory_codes']??array('light','home','listen','memory','silver','promise'); }
 
 // 车厢不占用任何楼层地址。正负楼层交错映射，地图模板编号只用于取素材。
 function elevator_pls($floor, $index = 0) { return 10000 + (abs((int)$floor)*2 + ($floor<0?1:0))*16 + (int)$index; }

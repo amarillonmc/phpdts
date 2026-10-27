@@ -68,6 +68,7 @@ namespace revattr
 			}
 		}
 		# 这里是最终判断是否为枪托打人的环节
+		if(function_exists('elevator_has_skill') && elevator_has_skill($pa,422) && preg_match('/^W[GJ]/',$pa['wepk']) && !empty($pa['clbpara']['skillpara']['el_422']['melee'])) { $pa['wep_kind']='P'; $pa['is_wpg']=1; }
 		if(($pa['wep_kind'] == 'G' || $pa['wep_kind'] == 'J') && ($pa['weps'] == $nosta))
 		{
 			$pa['wep_kind'] = 'P';
@@ -800,6 +801,7 @@ namespace revattr
 		elseif(isset($pa['is_wpg']))
 		{
 			$pa['wepe_t'] = round ($pa['wepe']/ 5 );
+			if(function_exists('elevator_has_skill') && elevator_has_skill($pa,422) && preg_match('/^W[GJ]/',$pa['wepk'])) $pa['wepe_t']=$pa['wepe']*elevator_skill_value(422,substr($pa['wepk'],0,2));
 		}
 		//其他武器 武器伤害=面板数值*2
 		else
@@ -1065,6 +1067,7 @@ namespace revattr
 		$dmg_factor = (100 + $dfluc) / 100;
 		//echo "浮动前 damage = {$damage}<br>";
 		$damage = round ( $damage * $dmg_factor * rand ( 4, 10 ) / 10 );
+		if(function_exists('elevator_has_skill') && elevator_has_skill($pa,442)) $damage=round(($pa['base_att']/$pd['base_def'])*$pa['wep_skill']*$skill_dmg[$pa['wep_kind']]*elevator_skill_value(442,'factor'));
 		//echo "浮动后 damage = {$damage}<br>";
 		//把计算得到的原始伤害保存在$pa['original_dmg']里
 		$pa['original_dmg'] = $damage;
@@ -1267,6 +1270,7 @@ namespace revattr
 			$log .= "<span class='yellow'>{$pa['nm']}的饰品的特殊效应让造成的伤害增加了{$p}倍！</span><br>";
 		}
 
+		if(function_exists('elevator_skill_physical')) $dmg_p[]=elevator_skill_physical($pa,$pd);
 		return $dmg_p;
 	}
 
@@ -2431,6 +2435,7 @@ namespace revattr
 			$fin_dmg_p[] = $p;
 		}
 
+		if(function_exists('elevator_final_damage')) $fin_dmg=elevator_final_damage($pa,$pd,$fin_dmg);
 		return $fin_dmg;
 	}
 
@@ -2492,6 +2497,7 @@ namespace revattr
 	function get_hurt_events(&$pa,&$pd,$active)
 	{
 		global $log,$infinfo,$exdmginf,$db,$tablepre;
+		if(function_exists('elevator_hurt_events')) elevator_hurt_events($pa,$pd,$active);
 
 		# pd存在防具受损况，在这里应用
 		if(!empty($pd['armor_hurt']))
@@ -2678,6 +2684,7 @@ namespace revattr
 	function get_inf_rev(&$pa,$infnm,$type=0)
 	{
 		global $log;
+		if(function_exists('elevator_has_skill') && elevator_has_skill($pa,803)) return 0;
 
 		if(strpos($pa['inf'],$infnm) === false)
 		{
@@ -2691,7 +2698,8 @@ namespace revattr
 	# 应用技能类异常
 	function get_skillinf_rev(&$pa,$sk,$last=0)
 	{
-		global $log;
+		global $log,$cskills;
+		if(function_exists('elevator_has_skill') && elevator_has_skill($pa,803) && in_array('inf',$cskills[$sk]['tags']??array(),true)) return 0;
 		$flag = getclubskill($sk,$pa['clbpara']);
 		if($last && $flag) set_lasttimes($sk,$last,$pa['clbpara']);
 		return $flag;

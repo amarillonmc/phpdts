@@ -53,9 +53,10 @@ function elevator_blueprint($floor) {
     foreach ($candidates as $o) {
         if (count($objects)>=2) break;
         $exists=false; foreach ($objects as $old) if ($old['id']===$o['id']) $exists=true;
+        if ($all[$o['id']][3]==='armory') foreach ($objects as $old) if ($all[$old['id']][3]==='armory') $exists=true;
         if (!$exists) $objects[]=$o;
     }
-    return array('tpls'=>$tpls,'objects'=>$objects,'bias'=>mt_rand(0,100));
+    return array('tpls'=>$tpls,'objects'=>$objects,'bias'=>mt_rand(0,100),'armory_word'=>rr_pick(elevator_armory_codes()));
 }
 function elevator_ground($item,$pls) {
     global $db,$tablepre;
@@ -64,7 +65,11 @@ function elevator_ground($item,$pls) {
     $db->array_insert($tablepre.'mapitem',$row);
 }
 function elevator_materialize_floor(&$e,$floor,$at) {
-    if (elevator_floor_read($floor)) return;
+    $existing=elevator_floor_read($floor);
+    if ($existing) {
+        if (!isset($existing['quests'])) { elevator_quest_board($existing); $existing['armory_word']=$existing['armory_word']??rr_pick(elevator_armory_codes()); elevator_floor_save($floor,$existing); }
+        return;
+    }
     $plan=$e['plan'][$floor]??elevator_blueprint($floor);
     $data=$plan+array('floor'=>$floor,'spawned_at'=>$at,'objects_state'=>array());
     $catalog=elevator_catalog();
@@ -84,21 +89,22 @@ function elevator_materialize_floor(&$e,$floor,$at) {
     if ($floor!==-8) {
         global $gamevars;
         elevator_ground(rr_blueprint_item(array_rand($gamevars['rr_recipes']),$floor),elevator_pls($floor,1));
-        $skins=array(1=>'巷子里的混混',2=>'模因残留体',3=>'噪点体',4=>'旧红杀残兵',5=>'复制猫毛球',6=>'回声体',7=>'失控应援牌',8=>'数据碎片聚合体');
-        $n=mt_rand(2,4); $elite=mt_rand(1,100)<=25;
-        for ($i=0;$i<$n+($elite?1:0);$i++) {
+        $n=mt_rand(2,4); $elite=mt_rand(1,100)<=elevator_config('elite_rate');
+        $elites=$elite?(abs($floor)-7>=elevator_config('elite_double_depth')?2:1):0;
+        $followers=array();
+        for ($i=0;$i<$n+$elites;$i++) {
             $index=mt_rand(1,count($plan['tpls'])); $pool=(int)floor($plan['tpls'][$index-1]/100);
-            $rank=elevator_rank($floor)+($i===$n?2:0); $npc=rr_generate_npc($rank,$floor<0?25:0,$floor>0?15:0,min(20,$rank*2));
-            if ($i===$n) { $npc['hp']=$npc['mhp']=(int)round(min($npc['mhp']*1.5,8000*(1+max(0,$rank-20)*.12))); $npc['clbpara']['elevator_npc']['elite']=true; }
-            $npc['name']=$skins[$pool].($i===$n?'·精英':'·'.($i+1)); $npc['pls']=elevator_pls($floor,$index);
-            $npc['clbpara']['elevator_npc']['floor']=$floor;
-            if (mt_rand(1,100)<=10) {
-                $ids=array(); foreach ($catalog as $id=>$s) if ($s['pool']===$pool && !$s['unique']) $ids[]=$id;
-                foreach (elevator_item(rr_pick($ids),$e['round']) as $k=>$v) $npc[$k.'3']=$v;
+            $npc=elevator_floor_npc($floor,$pool,$i>=$n);
+            $npc['pls']=elevator_pls($floor,$index);
+            if (in_array(801,elevator_skill_pool_config(),true)) {
+                $npc['clbpara']['skill'][]='el_801';
+                $npc['clbpara']['skillpara']['el_801']=array('leader'=>$i===$n,'followers'=>$i===$n?$followers:array());
             }
-            elevator_insert_npc($npc,$at);
+            $spawned=elevator_insert_npc($npc,$at);
+            if ($i<$n) $followers[]=$spawned;
         }
     }
+    elevator_quest_board($data);
     elevator_floor_save($floor,$data);
 }
 function elevator_refresh_maps() {

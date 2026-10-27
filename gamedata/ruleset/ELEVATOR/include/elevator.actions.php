@@ -59,6 +59,12 @@ function elevator_action(&$e,&$p,$command,$a,$at) {
         $s['view']=array('kind'=>'recipes','key'=>(int)$arg,'slot'=>$slot);
     } elseif ($command==='elevator_craft') {
         rr_craft($p,(int)$arg,$slot,$token,$e);
+    } elseif ($command==='elevator_quest') {
+        elevator_quest_action($p,(string)($a['qid']??''),$arg,(string)($a['answer']??''),$e,$at);
+    } elseif ($command==='elevator_endless_skill') {
+        elevator_choose_endless_skill($p,(int)$arg,$token,$e);
+    } elseif ($command==='elevator_skill') {
+        elevator_skill_action($p,(int)$arg,$a,$e,$at);
     } elseif ($command==='elevator_relic') {
         elevator_choose_relic($p,$slot,(int)$arg,$token,$e);
     } elseif ($command==='elevator_buy') {

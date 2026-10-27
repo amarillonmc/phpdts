@@ -68,6 +68,7 @@ function item_ammo_bullets($itmn, &$data) {
 			}
 		}
 	}
+	if (function_exists('elevator_has_skill') && elevator_has_skill($data,723)) $bulletnum*=elevator_skill_value(723,'capacity');
 	if ($weps == $nosta) {
 		$weps = 0;
 	}

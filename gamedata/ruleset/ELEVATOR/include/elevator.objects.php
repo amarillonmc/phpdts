@@ -7,9 +7,9 @@ function elevator_find_named($p,$name) {
 }
 function elevator_object_spawn($id,$p,$floor,$at) {
     $objects=elevator_objects(); $role=$objects[$id][3]; $rank=elevator_rank($floor);
-    $npc=rr_generate_npc($rank,$floor<0?25:0,$floor>0?15:0,10);
+    $npc=rr_generate_npc($rank,$floor<0?25:0,$floor>0?15:0,10,$objects[$id][1],0,$floor);
     $npc['name']=$objects[$id][0]; $npc['pls']=$p['pls'];
-    $npc['clbpara']['elevator_npc']=array('object'=>$id,'floor'=>$floor,'rounds'=>0);
+    $npc['clbpara']['elevator_npc']=array('object'=>$id,'floor'=>$floor,'pool'=>$objects[$id][1],'rounds'=>0);
     if ($role==='mirror') {
         $npc['name']=$p['name'];
         foreach (array('mhp','msp','att','def','lvl','wp','wk','wg','wc','wd','wf','pose','tactic') as $key) $npc[$key]=$p[$key];
@@ -45,6 +45,7 @@ function elevator_interact(&$e,&$p,$id,$choice,$answer,$at) {
     if (!empty($progress['done'])) { elevator_personal($p,'这段相遇已记在你的笔记里。'); return; }
     if ($choice==='leave') { elevator_personal($p,'你向对方点头，留出安静的距离。'); return; }
     $role=$objects[$id][3];
+    if ($role==='armory') { elevator_armory_open($e,$p,$data,$id,$choice,$answer); return; }
     if (in_array($role,array('turret','burnt','soldier','tap','mirror','error','half'),true)) {
         if ($choice!=='fight') throw new RuntimeException('请选择靠近挑战，或离开。');
         $battlekey=$role==='mirror'?$key.'_'.$p['pid']:$key;
@@ -57,6 +58,7 @@ function elevator_interact(&$e,&$p,$id,$choice,$answer,$at) {
     if ($role==='cat' || $role==='catloot') {
         $slot=elevator_find_named($p,'猫粮罐头'); if ($slot<0) throw new RuntimeException('你还没有猫粮罐头。车厢行商常备猫粮。');
         elevator_consume($p,$slot); $s['cats']++;
+        elevator_quest_event($p,'use',array('itm'=>'猫粮罐头','itmk'=>'HH','itms'=>1));
         if ($role==='cat') elevator_personal($p,mt_rand(0,1)?elevator_next_hint($e):'猫老大暗示：战斗入侵之后，至少两次停靠和60秒内不会再有入侵。');
         else elevator_intrusion_reward($p,$e,array(5));
     } elseif ($role==='student') {
@@ -122,6 +124,50 @@ function elevator_interact(&$e,&$p,$id,$choice,$answer,$at) {
         elevator_intrusion_reward($p,$e); elevator_personal($p,'回声终于跟上了你的声音，把一份小小的礼物留在你手中。');
     }
     $progress['done']=true;
+}
+function elevator_keycard() {
+    return array('itm'=>'武器库钥匙卡','itmk'=>'X','itme'=>1,'itms'=>1,'itmsk'=>'','itmpara'=>array('elevator_keycard'=>true));
+}
+function elevator_armory_open($e,&$p,$data,$id,$choice,$answer) {
+    $floor=$p['clbpara']['elevator']['floor']; $state=&$data['objects_state'][(string)$id];
+    if (!empty($state['open'])) throw new RuntimeException('柜子已经被搬空了。');
+    if (!empty($state['locked'])) throw new RuntimeException('锁芯已经熔断，柜子无法再打开。');
+    if ($choice==='puzzle') {
+        $word=$data['armory_word']??elevator_armory_codes()[0];
+        if (trim($answer)!==elevator_cipher($word)) {
+            $state['fails']=($state['fails']??0)+1;
+            $state['locked']=$state['fails']>=elevator_config('armory_fails');
+            elevator_floor_save($floor,$data);
+            throw new RuntimeException($state['locked']?'第三次错误，锁芯熔断了。':'口哨没有对上，剩余'.(elevator_config('armory_fails')-$state['fails']).'次机会。');
+        }
+    } elseif ($choice==='pay') {
+        $slot=elevator_find_named($p,'无线电零件');
+        if ($slot>=0) elevator_consume($p,$slot);
+        elseif ($p['money']>=elevator_config('armory_price')) $p['money']-=elevator_config('armory_price');
+        else throw new RuntimeException('需要一个无线电零件，或'.elevator_config('armory_price').'现金。');
+    } elseif ($choice==='key') {
+        $slot=-1;
+        for ($i=0;$i<=6;$i++) if (!empty($p['itms'.$i]) && !empty(elevator_slot($p,$i)['itmpara']['elevator_keycard'])) { $slot=$i; break; }
+        if ($slot<0) throw new RuntimeException('你还没有武器库钥匙卡。');
+        elevator_consume($p,$slot);
+    } else throw new RuntimeException('请选择解谜、投入资源或使用钥匙卡。');
+    $state['open']=true; elevator_floor_save($floor,$data);
+    foreach (elevator_armory_loot($floor) as $item) elevator_give($p,$item);
+    elevator_personal($p,'封存的柜门弹开。你收好了弹药与武器，空柜子会留给后来的人。');
+}
+function elevator_armory_loot($floor) {
+    global $gamevars;
+    $round=$gamevars['elevator']['round']; $items=array();
+    $ammo=elevator_item(9001,$round); $ammo['itms']=mt_rand(elevator_config('armory_ammo_min'),max(elevator_config('armory_ammo_min'),elevator_config('armory_ammo_max'))); $items[]=$ammo;
+    $pool=array();
+    foreach (elevator_catalog() as $id=>$item) if (!$item['unique'] && in_array($item['kind'],array('WP','WC','WK'),true) && $item['effect']>=30 && $item['effect']<=80) $pool[]=$id;
+    $weapon=elevator_item(rr_pick($pool),$round);
+    $weapon['itme']=(int)round($weapon['itme']*(1+.1*floor(max(0,abs($floor)-1)/3))); $items[]=$weapon;
+    if (mt_rand(1,100)<=elevator_config('armory_extra_rate')) {
+        $pool=array(); foreach (elevator_catalog() as $id=>$item) if (!$item['unique'] && in_array($item['kind'],array('HH','HS','X'),true)) $pool[]=$id;
+        $items[]=elevator_item(rr_pick($pool),$round);
+    }
+    return $items;
 }
 function elevator_environment(&$e,&$p,$choice,$at) {
     $s=&$p['clbpara']['elevator']; $floor=$s['floor'];

@@ -86,6 +86,10 @@ function elevator_entrance(&$p,$floor,$at,$protect = false) {
     if ($floor===7) $s['attic']=true;
     if ($floor===-8) $s['fireseed']=true;
     if (abs($floor)===7) $s['endpoint']=true;
+    if (function_exists('elevator_quest_panel') && empty($s['floors'][$floor]['quest_notice']) && $floor!==-8) {
+        $s['floors'][$floor]['quest_notice']=true;
+        elevator_personal($p,'楼层任务板已经亮起：打开 QUEST 窗体可接取本层委托。');
+    }
     elevator_trim_floor_memory($s);
 }
 function elevator_trim_floor_memory(&$s) {
@@ -160,6 +164,9 @@ function elevator_death(&$p,$at,$e) {
     $s=&$p['clbpara']['elevator'];
     if (!empty($s['result'])) return false;
     $s['deaths']++;
+    if (function_exists('elevator_skill_revive') && elevator_skill_revive($p,$at)) {
+        elevator_entrance($p,$s['in']?$e['floor']:$s['floor'],$at,true); return true;
+    }
     if ($s['revive']>0) {
         $s['revive']--;
         $floor=$s['in']?$e['floor']:$s['floor'];
@@ -174,6 +181,7 @@ function elevator_death(&$p,$at,$e) {
 function elevator_budget_tick(&$p,$from,$to,$e) {
     if (!elevator_active($p)) return;
     $s=&$p['clbpara']['elevator'];
+    if (function_exists('elevator_bone_tick')) elevator_bone_tick($p,$from,$to,$s['in'] || $s['floor']===-8);
     if ($s['in'] || $s['floor']===-8) { $s['budget_start']=$to; return; }
     // 页面每4秒通过原有AJAX报到；断线窗口以外的时间不会在重连时补扣。
     $until=min($to,$s['last_seen']+elevator_config('presence'));
@@ -183,12 +191,19 @@ function elevator_budget_tick(&$p,$from,$to,$e) {
         $from=max($from,$s['protect_until']);
         if ($to >= $s['protect_until']) $s['protected']=false;
     }
-    $spent=max(0,$until-$from);
-    $excess=max(0,$spent-$s['budget']);
+    $rate=1;
+    if (function_exists('elevator_curse_level') && ($erosion=elevator_curse_level($p,'erosion'))>0) $rate*=1+elevator_config('curse_erosion_rate')/100*$erosion;
+    if (function_exists('elevator_has_skill') && elevator_has_skill($p,738) && ($p['clbpara']['skillpara']['el_738']['gear']??2)===3) $rate*=elevator_skill_value(738,'budget');
+    $rate=max(.001,$rate); $spent=max(0,$until-$from)*$rate;
+    // 同化只加快预算燃烧，预算归零后的伤害仍为每实际暴露秒8点。
+    $excess=max(0,$spent-$s['budget'])/$rate;
     $s['budget']=max(0,$s['budget']-$spent); $s['budget_start']=$to;
     if ($excess) {
-        $p['hp']=max(0,$p['hp']-$excess*elevator_config('erosion'));
-        if (!$p['hp']) elevator_death($p,$from+$spent,$e);
+        // 保留不足一点的侵蚀，避免提高刷新频率消掉同化带来的额外伤害。
+        $damage=$excess*elevator_config('erosion')+($s['erosion_fraction']??0);
+        $whole=(int)floor($damage+0.000001); $s['erosion_fraction']=max(0,$damage-$whole);
+        $p['hp']=max(0,$p['hp']-$whole);
+        if (!$p['hp']) elevator_death($p,$until,$e);
     }
 }
 function elevator_vote_finish(&$e,&$players,$at) {
@@ -203,6 +218,9 @@ function elevator_vote_finish(&$e,&$players,$at) {
         $e['phase']='endless'; $e['limit']=elevator_config('limit_endless'); $e['endless_dir']=$vote['dir'];
         foreach ($yes as $id) {
             $players[$id]['clbpara']['elevator']['endless']=true;
+            $players[$id]['clbpara']['elevator']['curses']=array('903'=>0,'904'=>0,'906'=>0,'erosion'=>0);
+            $players[$id]['clbpara']['elevator']['curse_depth']=0;
+            $players[$id]['clbpara']['elevator']['curse_claimed']=0;
             if (!empty($vote['fireseed'])) $players[$id]['clbpara']['elevator']['refused']=true;
         }
         elevator_notice($e,'无尽行程开始。留下的乘客再也无法普通脱出。',$at);
@@ -232,6 +250,8 @@ function elevator_tick(&$e,&$players,$now) {
             $e['floor']=$e['route'][0]['floor']; $e['route'][0]['arrived']=true;
             $e['stops']++; $e['last_stop']=$cursor; $e['attention']++;
             if (function_exists('elevator_materialize_floor')) elevator_materialize_floor($e,$e['floor'],$cursor);
+            if (function_exists('elevator_endless_step')) elevator_endless_step($e,$players,$cursor);
+            if (function_exists('elevator_supply_delivery')) elevator_supply_delivery($e,$e['floor'],$cursor);
             $intrusion=function_exists('elevator_intrusion_arbiter') && elevator_intrusion_arbiter($e,$players,$cursor);
             if (!$intrusion) elevator_open($e,$players,$cursor);
         } elseif ($e['state']==='doors' && $cursor >= $e['door_deadline']) {
@@ -263,6 +283,7 @@ function elevator_tick(&$e,&$players,$now) {
     $e['last_tick']=$cursor;
     foreach ($players as &$p) {
         $s=$p['clbpara']['elevator'];
+        if (function_exists('elevator_quest_sync')) elevator_quest_sync($p,$e);
         if (!empty($s['trade']) && (!$s['in'] || $e['state']==='hold' || $s['trade']['until']<=$now || !elevator_active($p))) elevator_trade_cancel($p);
     }
     unset($p);

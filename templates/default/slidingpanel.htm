@@ -708,6 +708,7 @@
 
             if (panel && isPanelOpen() &&
                 !panel.contains(event.target) &&
+                !event.target.closest('[data-el-quest-open]') &&
                 event.target !== button) {
                 closePanel();
             }
@@ -1176,6 +1177,7 @@
 
     // 更新任务窗体 / Update the task panel
     function updateQuestPanel() {
+        if (typeof window.elevatorRenderQuests === 'function' && window.elevatorRenderQuests()) return;
         const questList = document.getElementById('quest-list');
         if (!questList) return;
 
@@ -1293,7 +1295,7 @@
             panel.classList.add('open');
 
             // 从服务器获取最新数据
-            fetchLatestClbpara();
+            if (!window.elevatorUI) fetchLatestClbpara();
             // 然后更新显示
             updateChargeProgressBars();
             // 更新种火标签页

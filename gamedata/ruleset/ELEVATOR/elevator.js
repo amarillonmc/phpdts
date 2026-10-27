@@ -6,7 +6,7 @@
     function panel() { return document.querySelector('#elevator-panel .el-panel'); }
     function remember() {
         var values = {}, open = {};
-        document.querySelectorAll('#elevator-panel input[id],#elevator-panel select[id]').forEach(function (el) { values[el.id] = el.value; });
+        document.querySelectorAll('#elevator-panel input[id],#elevator-panel select[id],#quest-list input[id]').forEach(function (el) { values[el.id] = el.value; });
         document.querySelectorAll('#elevator-panel details[id]').forEach(function (el) { open[el.id] = el.open; });
         return {values: values, open: open, focus: document.activeElement && document.activeElement.id};
     }
@@ -26,6 +26,7 @@
         var polling = options.data.command === 'elevator_status';
         options.onSuccess = function () {
             busy = false;
+            window.elevatorRenderQuests();
             restore(state);
             if (!polling) {
                 var recipes = document.getElementById('el-recipes');
@@ -48,6 +49,12 @@
         return sent;
     };
     document.addEventListener('click', function (event) {
+        if (event.target.closest('[data-el-quest-open]')) {
+            if (typeof openPanel === 'function') openPanel();
+            var tab = document.querySelector('.tab-button');
+            if (tab) tab.click();
+            window.elevatorRenderQuests(); return;
+        }
         var button = event.target.closest('[data-el-command],[data-el-native]');
         if (!button) return;
         event.preventDefault();
@@ -62,6 +69,13 @@
             postCmd('gamecmd', 'command.php', {data: args});
         }
     });
+    window.elevatorRenderQuests = function () {
+        var source = document.getElementById('el-quest-source'), target = document.getElementById('quest-list');
+        if (!source || !target) return false;
+        target.innerHTML = source.innerHTML;
+        return true;
+    };
+    window.elevatorRenderQuests();
     // 状态请求走原有JSON更新器，和正常指令互斥；不重试任何有副作用的操作。
     window.setInterval(function () {
         if (!panel() || busy || document.hidden) return;
