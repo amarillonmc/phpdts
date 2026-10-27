@@ -5,21 +5,48 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
+function dts_template_error($message) {
+	// A compiler failure cannot safely render another template as its error page.
+	error_log('[PHPDTS template] '.$message);
+	while(ob_get_level() > 0) {
+		if(!@ob_end_clean()) break;
+	}
+	if(!headers_sent()) {
+		http_response_code(500);
+		header('Content-Type: text/plain; charset=utf-8');
+	}
+	exit('Page generation failed. Please contact the administrator.');
+}
+
 function parse_template($file, $templateid, $tpldir) {
 	global $language;
 
 	$nest = 5;
 	$tplfile = GAME_ROOT."./$tpldir/$file.htm";
 	$objfile = GAME_ROOT."./gamedata/templates/{$templateid}_$file.tpl.php";
+	$cachedir = GAME_ROOT.'./gamedata/templates';
 
-	if(!$fp = fopen($tplfile, 'r')) {
-		gexit("Current template file './$tpldir/$file.htm' not found or have no access!");
-	} elseif(!include_once language('templates', $templateid, $tpldir)) {
-		gexit("<br>Current template pack do not have a necessary language file 'templates.lang.php' or have syntax error!");
+	if(!is_dir($cachedir)) {
+		@mkdir($cachedir, 0755);
+		// Another request may have created the directory while mkdir was running.
+		clearstatcache(true, $cachedir);
+		if(!is_dir($cachedir)) {
+			dts_template_error('Cannot create template cache directory: '.$cachedir);
+		}
 	}
 
-	$template = fread($fp, filesize($tplfile));
+	if(!$fp = @fopen($tplfile, 'r')) {
+		dts_template_error('Cannot open template source: '.$tplfile);
+	} elseif(!include_once language('templates', $templateid, $tpldir)) {
+		fclose($fp);
+		dts_template_error('Cannot load template language file for: '.$tpldir);
+	}
+
+	$template = stream_get_contents($fp);
 	fclose($fp);
+	if($template === false) {
+		dts_template_error('Cannot read template source: '.$tplfile);
+	}
 
 	$var_regexp = "((\\\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)(\[[a-zA-Z0-9_\-\.\"\'\[\]\$\x7f-\xff]+\])*)";
 	$const_regexp = "([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)";
@@ -71,8 +98,8 @@ function parse_template($file, $templateid, $tpldir) {
 	$template = preg_replace("/\<\?/s", "<?php", $template);
 	$template = preg_replace("/\<\?php\=/s", "<?php echo ", $template);
 
-	if(!$fp = fopen($objfile, 'w')) {
-		gexit("Directory './gamedata/templates/' not found or have no access!");
+	if(!$fp = @fopen($objfile, 'w')) {
+		dts_template_error('Cannot open template cache for writing: '.$objfile);
 	}
 
 	$template = preg_replace_callback("/\"(http)?[\w\.\/:]+\?[^\"]+?&[^\"]+?\"/", function ($matches){
@@ -109,3 +136,4 @@ function stripvtags($expr, $statement) {
 }
 
 ?>
+
