@@ -181,6 +181,13 @@ function fcg_bootstrap($state, $csrf, $shop)
 	$cards=fcg_cards();
 	foreach($cards as &$card) {
 		$card['rules']=fcg_card_rules($card); $card['short_rules']=fcg_card_short_rules($card); $card['glossary']=fcg_card_glossary($card);
+		$combo_min=null; $res_colors=array();
+		foreach(fcg_tokens($card['ops']) as $op) {
+			if(preg_match('/^combo\((\d+),/',$op,$p) || preg_match('/^combo_(\d+)_/',$op,$p)) {
+				$n=(int)$p[1]; $combo_min=$combo_min===null ? $n : min($combo_min,$n);
+			} elseif(preg_match('/^resonance\(([^,]+),/',$op,$p)) $res_colors[]=$p[1];
+		}
+		$card['combo_min']=$combo_min; $card['res_colors']=array_values(array_unique($res_colors));
 		$card['escort']=in_array('escort',fcg_tokens($card['ops']),true); unset($card['ops']);
 	} unset($card);
 	$opponents=fcg_opponents(); foreach($opponents as &$o) unset($o['deck']); unset($o);

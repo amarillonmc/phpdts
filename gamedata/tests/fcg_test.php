@@ -444,4 +444,52 @@ $normal=fcg_test_match();fcg_effect($normal,0,$heal);fcg_test($normal['sides'][0
 $data=$camp;$user['nicksrev']='';fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'supply'));fcg_test_draft_action($data,$user,'draft_battle');
 $data['collection']=array_fill(0,150,1);fcg_settle($data,$user);fcg_test(fcg_title_owned($user,9106),'permanent collection title still checked during expedition');
 
+// Table UI: public piles survive reloads, without exposing either deck or the opponent's hand.
+foreach(array('normal','draft','pvp') as $context) {
+	$m=fcg_test_ready(array(0,26,24));
+	if($context==='draft') $m['draft']=true;
+	if($context==='pvp') { $m['pvp']=true; $m['live']=true; }
+	fcg_test($m['sides'][0]['played_cards']===array(),'new pile empty: '.$context);
+	fcg_play($m,0,0);fcg_play($m,0,0);fcg_play($m,0,0);
+	fcg_test($m['sides'][0]['played_cards']===array(0,26) && $m['sides'][0]['monster']['id']===24,'spells in order, resident helper stays out: '.$context);
+	$m['sides'][1]['hand']=array(146);fcg_play($m,1,0);
+	fcg_test($m['sides'][0]['played_cards']===array(0,26,24) && $m['sides'][1]['played_cards']===array(146),'killed helper goes into owner pile: '.$context);
+	fcg_finish($m);fcg_test($m['sides'][0]['played_cards']===array(0,26,24),'death recorded only once: '.$context);
+	$data=fcg_new_account();$data['match']=json_decode(fcg_json($m),true);
+	$public=fcg_public_state($data,array('credits2'=>0),true,100)['match'];
+	fcg_test($public['sides'][0]['played_cards']===array(0,26,24) && $public['sides'][1]['played_cards']===array(146) && !isset($public['sides'][1]['hand']) && !isset($public['sides'][1]['free']) && !isset($public['sides'][0]['deck']) && !isset($public['sides'][1]['deck']),'only public cards survive serialization: '.$context);
+	fcg_turn($m);fcg_test($m['sides'][0]['played_cards']===array() && $m['sides'][1]['played_cards']===array(),'new turn clears both piles: '.$context);
+}
+$m=fcg_test_ready(array(0));fcg_play($m,0,0);fcg_summon($m,1,$cards[150]);$m['sides'][1]['monster']['hp']=1;$m['sides'][0]['atk']=30;
+fcg_turn($m);fcg_test($m['turn']===2 && $m['sides'][0]['played_cards']===array() && $m['sides'][1]['played_cards']===array(150),'end-turn combat death remains visible in next turn');
+fcg_turn($m);fcg_test($m['sides'][1]['played_cards']===array(),'combat death clears on following turn');
+$m=fcg_test_ready(array(200));fcg_play($m,0,0);fcg_turn($m);
+fcg_test($m['sides'][0]['played_cards']===array(200),'ephemeral death remains in new turn pile');
+$rebirth=current(array_filter($cards,function($c){return in_array('rebirth_once',fcg_tokens($c['ops']),true);}));
+$m=fcg_test_ready();fcg_summon($m,0,$rebirth);$m['sides'][0]['monster']['hp']=0;fcg_finish($m);
+fcg_test($m['sides'][0]['monster']!==null && $m['sides'][0]['played_cards']===array(),'rebirth does not enter pile');
+$m['sides'][0]['monster']['hp']=0;fcg_finish($m);fcg_finish($m);
+fcg_test($m['sides'][0]['played_cards']===array($rebirth['id']),'second death enters pile once');
+$m=fcg_test_ready(array(198,196));fcg_play($m,0,0);fcg_play($m,0,0);
+fcg_test($m['sides'][0]['played_cards']===array(),'burned fuel never enters pile');
+$m=fcg_test_ready(array(172));$m['sides'][0]['energy']['R']=0;
+fcg_test_throws(function()use(&$m){fcg_play($m,0,0);},'unaffordable play rejected before pile');
+fcg_test($m['sides'][0]['played_cards']===array(),'failed play does not enter pile');
+$m=fcg_test_ready(array(0));unset($m['sides'][0]['played_cards'],$m['sides'][1]['played_cards']);fcg_play($m,0,0);
+fcg_test($m['sides'][0]['played_cards']===array(0),'existing saved match starts pile on next play');
+fcg_turn($m);fcg_test($m['sides'][1]['played_cards']===array(),'existing match receives both piles at turn boundary');
+
+// Bootstrap only needs a catalog read here; no live database or account is touched.
+$db=new class {
+	function query($sql) { return array(); }
+	function fetch_array($result) { return false; }
+};
+$gtablepre='';$titles_list=array();
+$boot=json_decode(fcg_bootstrap(array(),'test-csrf',false),true);
+fcg_test($boot['cards'][172]['combo_min']===2 && $boot['cards'][173]['combo_min']===2,'combo summary picks lowest trigger including legacy syntax');
+fcg_test($boot['cards'][156]['res_colors']===array('W'),'resonance summary exposes preceding color');
+fcg_test($boot['cards'][0]['combo_min']===null && $boot['cards'][0]['res_colors']===array(),'ordinary card has no highlight condition');
+foreach($boot['cards'] as $card) fcg_test(!isset($card['ops']) && array_key_exists('combo_min',$card) && is_array($card['res_colors']),'static summary without raw ops: '.$card['id']);
+unset($db);
+
 echo 'FCG: '.$checks." checks passed.\n";

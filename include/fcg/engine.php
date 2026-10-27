@@ -48,7 +48,7 @@ function fcg_side($deck, $hp = 80)
 	return array('hp'=>$hp,'atk'=>0,'def'=>0,'regen'=>0,'energy'=>array_fill_keys(fcg_colors(),1),
 		'gen'=>array_fill_keys(fcg_colors(),1),'hand'=>array_splice($deck,0,3),'deck'=>$deck,'monster'=>null,
 		'bonus'=>0,'pierce'=>0,'thorns'=>array(0,0),'evade'=>0,'free'=>array(),
-		'played_this_turn'=>0,'last_color'=>null,'disarm'=>0,'vuln'=>0,'endure'=>0,'barrier'=>0);
+		'played_this_turn'=>0,'played_cards'=>array(),'last_color'=>null,'disarm'=>0,'vuln'=>0,'endure'=>0,'barrier'=>0);
 }
 
 function fcg_opponents()
@@ -221,7 +221,10 @@ function fcg_monster_death(&$a, &$b)
 	if(fcg_ability($a['monster'],'rebirth_once') && empty($a['monster']['reborn'])) {
 		$a['monster']['reborn'] = true;
 		$a['monster']['hp'] = $a['monster']['maxhp'];
-	} else $a['monster'] = null;
+	} else {
+		$a['played_cards'][]=$a['monster']['id'];
+		$a['monster'] = null;
+	}
 }
 
 function fcg_effect(&$m, $side, $card, $mirroring = false)
@@ -400,6 +403,7 @@ function fcg_play(&$m, $side, $slot)
 		if(strpos($card['ops'],'mirror_last_spell')===false) $m['last_spell']=$card['id'];
 	}
 	$a['last_color']=$card['color']; $m['last_card']=$card['id'];
+	if($card['type']!=='monster') $a['played_cards'][]=$card['id'];
 	foreach(array(0,1) as $i) fcg_evo_observe_hand($m,$i);
 	if($side===1 && empty($m['live']) && $card['rare'] && $m['ai_at']-($m['stickers'][1]['at'] ?? 0)>=3) $m['stickers'][1]=array('id'=>22,'at'=>$m['ai_at']);
 	if(empty($m['live']) || ($m['extension'] ?? 0)<4) { $m['deadline']++; $m['extension']=($m['extension'] ?? 0)+1; }
@@ -438,6 +442,8 @@ function fcg_packet(&$attacker, &$defender, $damage, $pierce, $hunt, $color = nu
 function fcg_turn(&$m)
 {
 	fcg_evo_end_turn($m);
+	// 先收起上一回合的牌；本次结算阵亡的帮手留在新回合的牌堆中。
+	foreach($m['sides'] as &$s) $s['played_cards']=array(); unset($s);
 	// Snapshot offense before either side is hit; a simultaneous lethal attack still resolves.
 	$before=$m['sides']; $damage=array(0,0);
 	foreach(array(0,1) as $i) {
