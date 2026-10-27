@@ -8,6 +8,21 @@ function fcg_sql($s) { return "X'".bin2hex((string)$s)."'"; }
 function fcg_html($s) { return htmlspecialchars((string)$s,ENT_QUOTES,'UTF-8'); }
 function fcg_json($v) { return json_encode($v,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR); }
 
+function fcg_player_avatar($icon, $gd, $ruleset_id=null)
+{
+	if($icon===null || $gd===null) return null;
+	// 与游戏头像使用同一资源顺序，只返回站内图片路径。
+	$icon=basename(str_replace('\\','/',(string)$icon)); $gd=$gd==='f'?'f':'m';
+	if($ruleset_id) {
+		require_once GAME_ROOT.'gamedata/ruleset/ruleset_config.php';
+		$path=get_ruleset_avatar_path($ruleset_id,$gd==='f'?'female':'male',$icon);
+		if($path && is_file(GAME_ROOT.$path)) return $path;
+	}
+	if($icon!=='' && is_file(GAME_ROOT.'img/'.$icon)) return 'img/'.$icon;
+	$path='img/'.$gd.'_'.$icon.'.gif';
+	return is_file(GAME_ROOT.$path)?$path:null;
+}
+
 function fcg_ensure_storage()
 {
 	global $db,$gtablepre;
@@ -254,7 +269,7 @@ function fcg_request_locked($input, $now)
 	global $db,$gtablepre,$cuser,$cpass;
 	$action=$input['action'] ?? 'status';
 	for($attempt=0;$attempt<3;$attempt++) {
-		$result=$db->query("SELECT uid,username,password,credits2,nicksrev,nick,roomid,fcgdata,groupid FROM {$gtablepre}users WHERE username=".fcg_sql($cuser));
+		$result=$db->query("SELECT uid,username,password,credits2,nicksrev,nick,roomid,fcgdata,groupid,icon,gender FROM {$gtablepre}users WHERE username=".fcg_sql($cuser));
 		$old=$db->fetch_array($result);
 		if(!$old || !hash_equals((string)$old['password'],(string)$cpass)) throw new InvalidArgumentException('登录状态已失效，请重新登录。');
 		if((int)$old['groupid']<=0) throw new InvalidArgumentException('此账号暂时无法使用牌桌与商店。');
@@ -287,7 +302,23 @@ function fcg_request_locked($input, $now)
 		fcg_social_save($social,$data,$user,$room,$now);
 		if((!$duplicate && $action==='deck') || ($won && (isset($data['match']['opponent_uid']) || (fcg_opponents()[$data['match']['opponent']]['level'] ?? 0)>=4))) fcg_publish_mirror($data,$user,$room_key,$now);
 		$state=fcg_public_state($data,$user,$in_room,$now);
-		return fcg_social_public($state,$social,$data,$user,$room,$now);
+		$state=fcg_social_public($state,$social,$data,$user,$room,$now);
+		if($state['match']) {
+			// 完成双方视角转换后再放头像；账号字段为 gender，局内角色才使用 gd。
+			$ruleset=$room['gruleset'] ?? null;
+			$portraits=array(fcg_player_avatar($user['icon'],$user['gender'],$ruleset),null);
+			$opponent_uid=$state['match']['opponent_uid'] ?? null;
+			if($social['match']) {
+				$side=array_search((int)$user['uid'],$social['match']['uids'],true);
+				$opponent_uid=$social['match']['uids'][1-$side];
+			}
+			if($opponent_uid) {
+				$peer=$db->fetch_array($db->query("SELECT icon,gender FROM {$gtablepre}users WHERE uid=".(int)$opponent_uid));
+				if($peer) $portraits[1]=fcg_player_avatar($peer['icon'],$peer['gender'],$ruleset);
+			}
+			$state['match']['portraits']=$portraits;
+		}
+		return $state;
 	}
 	throw new RuntimeException('卡册正在被另一请求更新，未重复扣费，请稍后再试。');
 }

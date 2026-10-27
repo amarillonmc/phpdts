@@ -19,7 +19,7 @@ function dbreject($uid,$input,$message,$now=2000) { try { dbuser($uid,$input,$no
 $gtablepre='fcgtest_'.bin2hex(random_bytes(6)).'_'; $created=array();
 $cuser='fcg-test'; $cpass='local-test-password-hash'; $titles_list=array(9101=>'五色余烬',9106=>'具现的暗影');
 try {
-    $db->query("CREATE TABLE {$gtablepre}users (uid INT PRIMARY KEY,username VARCHAR(60),password VARCHAR(64),credits2 INT,nicksrev TEXT,nick INT DEFAULT 0,roomid INT,groupid INT) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4"); $created[]=$gtablepre.'users';
+    $db->query("CREATE TABLE {$gtablepre}users (uid INT PRIMARY KEY,username VARCHAR(60),password VARCHAR(64),credits2 INT,nicksrev TEXT,nick INT DEFAULT 0,roomid INT,groupid INT,icon VARCHAR(80) DEFAULT '1',gender CHAR(1) DEFAULT 'm') ENGINE=MyISAM DEFAULT CHARSET=utf8mb4"); $created[]=$gtablepre.'users';
     $db->query("CREATE TABLE {$gtablepre}game (groomid INT PRIMARY KEY,gruleset VARCHAR(50),gamenum INT DEFAULT 1,starttime INT DEFAULT 1000,gamevars TEXT) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4"); $created[]=$gtablepre.'game';
     $created[]=$gtablepre.'shop_items'; $created[]=$gtablepre.'fcg_matches'; $created[]=$gtablepre.'fcg_mirrors'; fcg_ensure_storage();
     $catalog=fcg_catalog();
@@ -48,6 +48,7 @@ try {
     try { fcg_request(dbaction($s,'start',array('opponent'=>0)),1000); throw new RuntimeException('room bypassed'); } catch(InvalidArgumentException $e) {}
     $db->query("UPDATE {$gtablepre}users SET roomid=1 WHERE uid=1");
     $s=fcg_request(dbaction($s,'start',array('opponent'=>0)),1000); dbcheck($s['match'] && $s['in_room'],'actual room gates match start');
+    dbcheck($s['match']['portraits']===array('img/m_1.gif',null),'NPC match exposes own avatar only');
     $s=fcg_request(dbaction($s,'surrender',array('match'=>$s['match']['id'])),1000); dbcheck($s['match']['result']==='loss' && $s['played']===1,'match settles once');
     $s=fcg_request(array('action'=>'status'),1000); dbcheck($s['played']===1,'reload does not settle twice');
     $old=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=1")); $user=$old; $data=fcg_load_account($old['fcgdata']); $data['rev']++; $user['credits2']-=10;
@@ -70,10 +71,12 @@ try {
     $db->query("UPDATE {$gtablepre}game SET gruleset='FCG' WHERE groomid=0");$db->query("UPDATE {$gtablepre}users SET roomid=0 WHERE uid=1");
     $peer=fcg_new_account();$peer['collection'][151]=1;$peer['deck'][]=151;
     foreach(array(2,3) as $uid) $db->query("INSERT INTO {$gtablepre}users (uid,username,password,credits2,nicksrev,roomid,groupid,fcgdata) VALUES ($uid,".fcg_sql('fcg-peer'.$uid).','.fcg_sql($cpass).",1000,'',".($uid===2?0:1).",1,".fcg_sql(fcg_json($peer)).')');
+    $db->query("UPDATE {$gtablepre}users SET icon='8',gender='f' WHERE uid=2");
     $s=dbuser(1,array('action'=>'status'));$b=dbuser(2,array('action'=>'status'));$x=dbuser(3,array('action'=>'status'));
     $s=dbuser(1,dbaction($s,'deck',array('deck'=>$s['deck'])));$b=dbuser(2,dbaction($b,'deck',array('deck'=>$b['deck'])));$s=dbuser(1,array('action'=>'status'));
     dbcheck(count($s['mirrors'])===1 && $s['mirrors'][0]['uid']===2 && !isset($s['mirrors'][0]['deck']),'mirror public state excludes self and hidden deck');
     $s=dbuser(1,dbaction($s,'mirror',array('uid'=>2)));dbcheck($s['match']['pvp'] && $s['match']['sides'][0]['hp']===100 && $s['match']['sides'][1]['hp']===100,'mirror uses PvP HP');
+    dbcheck($s['match']['portraits']===array('img/m_1.gif','img/f_8.gif'),'mirror uses current account portraits');
     $s=dbuser(1,dbaction($s,'surrender',array('match'=>$s['match']['id'])));
     dbreject(1,dbaction($s,'invite',array('uid'=>3)),'cross-room invitation accepted');
     $s=dbuser(1,dbaction($s,'invite',array('uid'=>2)));$b=dbuser(2,array('action'=>'status'));dbcheck($b['invite']['from']===1,'invite delivered by heartbeat');
@@ -81,6 +84,7 @@ try {
     $s=dbuser(1,dbaction($s,'invite',array('uid'=>2)));$b=dbuser(2,array('action'=>'status'));$accept=dbaction($b,'accept',array('uid'=>1));$b=dbuser(2,$accept);$matchid=$b['match']['id'];
     $b=dbuser(2,$accept);$s=dbuser(1,array('action'=>'status'));
     dbcheck($s['match']['id']===$matchid && $b['match']['names'][0]==='fcg-peer2' && $s['match']['names'][0]==='fcg-test','shared match and reversed names');
+    dbcheck($s['match']['portraits']===array('img/m_1.gif','img/f_8.gif') && $b['match']['portraits']===array('img/f_8.gif','img/m_1.gif') && !isset($s['match']['uids'],$b['match']['uids']),'live portraits follow both perspectives without exposing internal UID arrays');
     dbcheck(!isset($b['match']['sides'][1]['hand'],$b['match']['decks'],$b['match']['recent']) && count($b['match']['sides'][0]['hand'])===3,'peer secrets hidden after perspective reversal');
     dbcheck($db->num_rows($db->query("SELECT id FROM {$gtablepre}fcg_matches"))===1,'accept replay creates no second match');
     dbreject(1,dbaction($s,'start',array('opponent'=>0)),'live player escaped into solo game');
@@ -184,17 +188,29 @@ try {
         $s=dbuser(1,array('action'=>'status'),100000);dbcheck(count($s['run']['picks'])===$i+1,'selection survives reload '.$i);
     }
     dbcheck(count($s['run']['deck'])===32 && (array)$s['collection']===$collection && $s['deck']===$deck,'phantom draft deck persists separately');
-    $s=dbuser(1,dbdraft($s,'draft_node',array('choice'=>'supply')),100000);$s=dbuser(1,dbdraft($s,'draft_battle'),100000);$first=$s['match']['opponent'];
+    // Two known camp targets keep the replay test independent of randomly dealt packs.
+    $row=$db->fetch_array($db->query("SELECT fcgdata FROM {$gtablepre}users WHERE uid=1"));$data=fcg_load_account($row['fcgdata']);
+    $data['run']['deck'][0]=24;$data['run']['deck'][1]=24;
+    $db->query("UPDATE {$gtablepre}users SET fcgdata=".fcg_sql(fcg_json($data)).' WHERE uid=1');$s=dbuser(1,array('action'=>'status'),100000);
+    $upgrade=dbdraft($s,'draft_node',array('choice'=>'upgrade','slot'=>0,'card'=>24));$s=dbuser(1,$upgrade,100000);$camp_once=$s['run'];
+    $s=dbuser(1,$upgrade,100000);$s=dbuser(1,array('action'=>'status'),100000);
+    dbcheck($s['run']===$camp_once && $s['run']['node']['upgrades_left']===1 && $s['run']['deck'][0]===25,'first upgrade replay and reload preserve exactly one remaining use');
+    dbreject(1,dbdraft($s,'draft_node',array('choice'=>'upgrade','slot'=>0,'card'=>24)),'fresh token cannot upgrade stale card slot',100000);
+    $s=dbuser(1,dbdraft($s,'draft_node',array('choice'=>'upgrade','slot'=>1,'card'=>24)),100000);
+    dbcheck($s['run']['stage']==='battle' && $s['run']['deck'][1]===25,'second persisted upgrade leaves camp');
+    dbreject(1,dbdraft($s,'draft_node',array('choice'=>'upgrade','slot'=>2,'card'=>$s['run']['deck'][2])),'third camp upgrade rejected',100000);
+    $s=dbuser(1,dbdraft($s,'draft_battle'),100000);$first=$s['match']['opponent'];
     $old=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=1"));$data=fcg_load_account($old['fcgdata']);
     $data['match']['sides'][0]['hp']=55;$data['match']['sides'][0]['atk']=200;$data['match']['ai_at']=PHP_INT_MAX;
     $db->query("UPDATE {$gtablepre}users SET fcgdata=".fcg_sql(fcg_json($data)).' WHERE uid=1');
     $s=dbuser(1,array('action'=>'status'),100010);$reinforce=$s['run'];
-    dbcheck($s['run']['wins']===1 && $s['run']['hp']==55 && $s['run']['node']['type']==='reinforce','real timer victory persists HP and reinforcement');
+    dbcheck($s['run']['wins']===1 && $s['run']['hp']==68 && $s['run']['mhp']===85 && $s['run']['node']['type']==='reinforce','real timer victory persists health growth and reinforcement');
+    foreach($s['run']['node']['opts'] as $id) dbcheck(!fcg_cards()[$id]['unlimited'],'persisted reinforcement excludes energy');
     dbcheck((array)$s['collection']===$collection && (array)$s['wins']===$wins && (array)$s['hard_wins']===$hard_wins && $s['embers']===$embers,'layer victory does not leak normal reward');
     $s=dbuser(1,array('action'=>'status'),100010);dbcheck($s['run']===$reinforce,'refresh cannot reroll reinforcement or add win');
     $s=dbuser(1,dbdraft($s,'draft_node',array('choice'=>'reinforce','slot'=>0,'card'=>$s['run']['node']['opts'][0])),100010);
     $s=dbuser(1,dbdraft($s,'draft_node',array('choice'=>'supply')),100010);$s=dbuser(1,dbdraft($s,'draft_battle'),100010);
-    dbcheck($s['match']['sides'][0]['hp']==79 && $s['match']['opponent']!==$first && $s['match']['sides'][1]['hp']===95,'second layer inherits health, scales HP and uses another opponent');
+    dbcheck($s['match']['sides'][0]['hp']==85 && $s['match']['opponent']!==$first && $s['match']['sides'][1]['hp']===85,'second layer inherits health, scales HP and uses another opponent');
     $s=dbuser(1,dbaction($s,'surrender',array('match'=>$s['match']['id'])),100010);
     dbcheck($s['run']['stage']==='over' && $s['run']['wins']===1,'surrender persists completed expedition');
     $reward_input=dbdraft($s,'draft_reward');$s=dbuser(1,$reward_input,100010);$reward=$s['last_reward'];$total=$s['embers'];$earned=(array)$s['collection'];

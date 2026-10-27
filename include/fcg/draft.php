@@ -104,7 +104,10 @@ function fcg_settle_draft(&$data, &$m)
 	$m['rewarded']=true; $r['hp']=max(0,min($r['mhp'],$m['sides'][0]['hp']));
 	if($m['result']==='win') {
 		$r['wins']++;
-		$pool=array_values(array_unique($m['drop_pool'])); shuffle($pool);
+		$r['mhp']=min(100,$r['mhp']+5);
+		$r['hp']=min($r['mhp'],$r['hp']+(int)ceil($r['mhp']*0.15));
+		$cards=fcg_cards();
+		$pool=array_values(array_unique(array_filter($m['drop_pool'],function($id)use($cards){return !$cards[$id]['unlimited'];}))); shuffle($pool);
 		$r['stage']='node'; $r['node']=array('type'=>'reinforce','opts'=>array_slice($pool,0,3));
 		fcg_log($m,'本层通过。选择一张幻影记忆补强远征卡组；永久奖励在远征结束后领取。');
 	} else {
@@ -138,7 +141,7 @@ function fcg_draft_action(&$data, &$user, $input, $now, $in_room)
 		$r['picks'][]=$pack[$slot];
 		if(count($r['picks'])===24) {
 			$r['deck']=array_merge($r['picks'],fcg_draft_energy($r['picks']));
-			$r['stage']='node'; $r['node']=array('type'=>'camp');
+			$r['stage']='node'; $r['node']=array('type'=>'camp','upgrades_left'=>2);
 		}
 	} elseif($action==='draft_node') {
 		if($r['stage']!=='node' || ($input['layer'] ?? null)!==$r['layer']) throw new InvalidArgumentException('远征节点已更新，请查看当前行程。');
@@ -147,7 +150,7 @@ function fcg_draft_action(&$data, &$user, $input, $now, $in_room)
 			if($choice!=='reinforce' || !is_int($slot) || !isset($r['node']['opts'][$slot]) || ($input['card'] ?? null)!==$r['node']['opts'][$slot]) throw new InvalidArgumentException('请选择本次补强中的一张卡。');
 			$r['deck'][]=$r['node']['opts'][$slot];
 			if($r['wins']===5) { $r['stage']='over'; $r['node']=null; $r['ending']='win'; }
-			else { $r['layer']++; $r['node']=array('type'=>'camp'); }
+			else { $r['layer']++; $r['node']=array('type'=>'camp','upgrades_left'=>2); }
 			return;
 		}
 		if($choice==='supply' || $choice==='rest') {
@@ -158,8 +161,15 @@ function fcg_draft_action(&$data, &$user, $input, $now, $in_room)
 			$id=$r['deck'][$slot]; $c=$cards[$id];
 			if($c['unlimited']) throw new InvalidArgumentException('能量基底不能升级或移除。');
 			if($choice==='upgrade') {
-				if($c['upgraded'] || !isset($cards[$id+1]) || $cards[$id+1]['pair']!==$c['pair']) throw new InvalidArgumentException('这张卡已经升级，或没有升级版本。');
+				$left=$r['node']['upgrades_left'] ?? 2;
+				if($left<=0) throw new InvalidArgumentException('本次营地的升级机会已用完。');
+				if($c['upgraded'] || !isset($cards[$id+1]) || !$cards[$id+1]['upgraded'] || $cards[$id+1]['pair']!==$c['pair']) throw new InvalidArgumentException('这张卡已经升级，或没有升级版本。');
 				$r['deck'][$slot]=$id+1;
+				$r['node']['upgrades_left']=$left-1;
+				// 第一次升级后仍可补给、移除或小憩；没有可升级卡时直接出发。
+				if($left>1) foreach($r['deck'] as $next) {
+					if(!$cards[$next]['unlimited'] && !$cards[$next]['upgraded'] && isset($cards[$next+1]) && $cards[$next+1]['upgraded'] && $cards[$next+1]['pair']===$cards[$next]['pair']) return;
+				}
 			} else array_splice($r['deck'],$slot,1);
 		} else throw new InvalidArgumentException('请选择补给或一项强化。');
 		fcg_draft_prepare_battle($r);
@@ -167,7 +177,7 @@ function fcg_draft_action(&$data, &$user, $input, $now, $in_room)
 		if($r['stage']!=='battle' || ($input['layer'] ?? null)!==$r['layer'] || ($data['match'] && $data['match']['result']===null)) throw new InvalidArgumentException('请先完成当前节点或牌局，再确认本层对手。');
 		$m=fcg_new_match($r['deck'],$r['opponent'],$now);
 		$m['sides'][0]['hp']=$r['hp']; $m['sides'][0]['mhp']=$r['mhp'];
-		$m['sides'][1]['hp']+=15*($r['layer']-1);
+		$m['sides'][1]['hp']+=5*($r['layer']-1);
 		$m['draft']=true; $m['run_id']=$r['id']; $m['run_layer']=$r['layer'];
 		fcg_log($m,'种火远征第 '.$r['layer'].' 层。你带着 '.$r['hp'].' 点生命继续前行。');
 		$data['match']=$m; $data['live_match']=null; $r['opponents'][]=$r['opponent'];
