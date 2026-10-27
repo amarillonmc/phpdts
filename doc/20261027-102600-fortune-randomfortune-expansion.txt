@@ -1,0 +1,26 @@
+日期：2026-10-27
+改动文件：
+- include/game/fortune.func.php
+
+改动内容与原因：
+1. 完整填充 `randomFortune($fortune)` 函数中 `$fnumber` 从 1 到 1024 的全部连续整数分支（共 1024 条独立台词），无任何断档或重复。
+2. 台词内容涵盖六大类别（每条 1～2 句，高密度捏他）：
+   - 常磐·电波（DTS）相关的游戏、玩家、开发者与历史版本梗（如冴冴吃切糕、八禁合规、八念丁佛团子、☆平家宝刀小鸟☆、我头四、SANMA_TK、便当盒、221、233服歌神、士兵丁、301-387成就梗、400-806卡片技能梗、水化学整蛊道具、蹲站观察房六大名著、歌曲系统、电梯模式、FCG火焰卡牌大赛等）。
+   - 流行文化梗（中国网络迷因、日本与西方 ACG 梗、现实流行文化与数字梗）。
+   - DTS 背景故事与人物相关的台词与评论（红暮、蓝凝、芙蓉、丁香、飞龙、翼虎、幻铁、林苍月、林仙凤、林彩光、亚玛丽欧、林天星、单千铃、赛凡、亮亮、狂飙、薇娜、善德与恶德及七只动物伙伴、掣之断章五人组、ES队与岳城、红杀八大教头、G.D.S职场百态、EA-772、默晚、湾城五大核心地标、FCG小种火等）。
+   - 对 DTS 代码本身的吐槽（`extract($data, EXTR_REFS)`、`$itm1`～`$itm6`、三排 `global`、`$clbpara` JSON/数组双形态、`item.func.old`、`$itmpara` 拼写注释、`short_open_tag=1`、`process.lock`、`'$nosta'` 为 `'∞'`、`$now` 时差、`tinyint unsigned` 地图上限 255、编译模板缓存、`gstrfilter()`、`$tablepre` 与 `$gtablepre`、文件末尾 `//Yes, this file would probably be very large.` 预言等）。
+   - 纯发癫（无厘头随机脑洞）。
+   - 对 DTS 设定的谜语（涵盖种火、银白盒、电掣、GA-03、BASSLINE、#104B6、红杀棋盘、湾城地标、四结局路线等）。
+3. 为部分特殊数字（7、9、42、50、69、77、88、99、100、108、128、221、233、250、256、300、333、351、404、450、486、500、520、553、573、600、618、666、700、765、777、800、888、900、996、1000、1024）附加了轻微的彩蛋数值变化（HP/SP/SS/熟练度/金钱/怒气/RP），并在函数头部补充 `global $att, $def, $money, $rage;` 声明。
+4. 修正了原桩代码中 `> 1024` 至 `> 4096` 分支的判断顺序（原顺序 `> 1024` 在前会导致 `> 2048` 等分支不可达），调整为从 `> 4096` 到 `> 1024` 递减判断。
+
+验证方式：
+- 运行 `php -d short_open_tag=1 -l include/game/fortune.func.php`，语法检查通过。
+- 使用 CLI 脚本遍历测试 `-1..1025` 及 `2049, 3073, 3087, 4097` 全部分支（开启 `error_reporting(E_ALL)`），确认 `1..1024` 共 1024 条分支全部独立命中、无任何重复文本、无未定义变量或警告、数值增减正常。
+- 运行 `git diff --check` 确认无空白符或格式错误，且 `fortuneCookie1` 保持原样未受影响。
+
+已知限制：
+- `> 1024` 以上的区间目前保留原有的分段提示逻辑，待后续需要扩展更高点数时再继续填充。
+
+Summary (EN):
+Fully populated `randomFortune($fortune)` in `include/game/fortune.func.php` with 1,024 unique, contiguous entries (`1` through `1024`), added minor stat easter eggs on iconic numbers, and fixed the descending order of `> 4096`..`> 1024` range checks. Verified via `php -l`, exhaustive `E_ALL` branch execution across `1..1024`, and `git diff --check`.
