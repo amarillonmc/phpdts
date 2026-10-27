@@ -1,0 +1,9 @@
+编辑资料：恢复头像下拉列表
+
+原因：get_ruleset_avatar_limits() 只判断 avatar_config 存在，未判断是否启用玩家专属头像。FCG、ELEVATOR 等模式没有配置头像数量，或数量为零，get_iconlist() 因而得到 -1 上限，生成空列表。
+
+修改：未启用专属头像、或仅有 NPC 专属头像而没有玩家头像时，数量查询返回 false，沿用站点默认头像范围。本机配置下恢复 0–20，并保留当前头像预选；有玩家专属头像的旧规则集继续使用原范围。未修改头像保存、模板或站点配置。
+
+验证：PHP 7.4.33 语法检查、FCG 回归脚本和 git diff --check 通过。补充男女头像列表、FCG/ELEVATOR/ANOTHER/RAIDCAGEDBIRD/普通房间、当前选中值和 ACBRA_2009 专属范围的回归断言。Edge 浏览器使用真实编译的 default/nouveau 头像模板与原有 JavaScript，验证 21 个选项、性别与图片预览、AJAX 提交参数、模拟保存后刷新预选。
+
+限制：浏览器测试使用模拟账号响应，未联调真实数据库保存。临时夹具在忽略目录 test/avatar-profile/；测试生成的专用模板缓存已清理。

@@ -699,7 +699,9 @@ function ruleset_uses_custom_avatars($ruleset_id) {
 function get_ruleset_avatar_limits($ruleset_id) {
     $config = get_ruleset_config($ruleset_id);
 
-    if (!$config || !isset($config['avatar_config'])) {
+    // 未启用专属玩家头像（含仅替换 NPC 头像的模式）时沿用站点头像列表。
+    if (!$config || empty($config['avatar_config']['use_ruleset_avatars']) ||
+        (empty($config['avatar_config']['male_avatars']) && empty($config['avatar_config']['female_avatars']))) {
         return false;
     }
 

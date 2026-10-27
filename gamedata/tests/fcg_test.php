@@ -14,6 +14,29 @@ fcg_test(fcg_player_avatar('n_1.gif','f')==='img/n_1.gif','custom portrait takes
 fcg_test(fcg_player_avatar(1,'m','ACBRA_2009')==='./gamedata/ruleset/ACBRA_2009/img/m_1.gif','ruleset portrait takes precedence');
 fcg_test(fcg_player_avatar(1,'m','FCG')==='img/m_1.gif','FCG without custom avatars falls back to account portrait');
 fcg_test(fcg_player_avatar(null,null)===null && fcg_player_avatar('missing-avatar','m')===null,'missing player or image has no broken portrait URL');
+// The profile editor must keep the site avatar list in modes without custom portraits.
+require_once GAME_ROOT.'include/user.func.php';
+$iconlimit=20;$icon=8;$groomid=1;$gtablepre='';
+$db=new class {
+	public $rule;
+	function query($sql) { return $this->rule; }
+	function num_rows($result) { return 1; }
+	function fetch_array($result) { return array('gruleset'=>$result); }
+};
+foreach(array('FCG','ELEVATOR','ANOTHER','RAIDCAGEDBIRD','') as $rule) {
+	$db->rule=$rule;
+	if($rule!=='') fcg_test(get_ruleset_avatar_limits($rule)===false,'disabled custom avatars use default limits: '.$rule);
+	foreach(array('m','f') as $gender) {
+		$options=get_iconlist();
+		fcg_test(count($options)===21 && strpos($options[0],'value=0')!==false && strpos($options[20],'value=20')!==false,'profile offers default range: '.$rule.' '.$gender);
+		fcg_test(strpos($options[8],'selected')!==false,'profile keeps selected avatar: '.$rule.' '.$gender);
+	}
+}
+$db->rule='ACBRA_2009';
+foreach(array('m','f') as $gender) fcg_test(count(get_iconlist())===43,'enabled custom avatar range preserved: '.$gender);
+$db->rule='FCG';$groomid=0;
+fcg_test(count(get_iconlist())===21,'main-room profile still offers default avatar range');
+unset($db,$iconlimit,$icon,$gender,$groomid,$gtablepre);
 fcg_test(count($cards)===230,'230 independent card IDs');
 // Keyword filters and the classroom share the card's own labels, including conditional effects.
 fcg_test(fcg_token_keywords('resonance(W,draw(1))',$cards[156])===array('余韵','抽牌'),'resonance includes its conditional draw keyword');
