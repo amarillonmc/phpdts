@@ -8,6 +8,7 @@ if(!preg_match('/^(localhost|127\.0\.0\.1|::1)(:\d+)?$/',$dbhost)) exit("This te
 require GAME_ROOT.'include/db_mysqli.class.php';
 $db=new dbstuff(); $db->connect($dbhost,$dbuser,$dbpw,$dbname,0);
 require GAME_ROOT.'include/fcg/account.php';
+require GAME_ROOT.'include/fcg/presentation.php';
 function roommng_acquire_create_lock() { return fopen('php://temp','r+'); }
 function roommng_release_create_lock($lock) { fclose($lock); }
 function dbcheck($ok,$message) { if(!$ok) throw new RuntimeException($message); }
@@ -21,9 +22,17 @@ try {
     $db->query("CREATE TABLE {$gtablepre}users (uid INT PRIMARY KEY,username VARCHAR(60),password VARCHAR(64),credits2 INT,nicksrev TEXT,nick INT DEFAULT 0,roomid INT,groupid INT) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4"); $created[]=$gtablepre.'users';
     $db->query("CREATE TABLE {$gtablepre}game (groomid INT PRIMARY KEY,gruleset VARCHAR(50),gamenum INT DEFAULT 1,starttime INT DEFAULT 1000,gamevars TEXT) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4"); $created[]=$gtablepre.'game';
     $created[]=$gtablepre.'shop_items'; $created[]=$gtablepre.'fcg_matches'; $created[]=$gtablepre.'fcg_mirrors'; fcg_ensure_storage();
+    $catalog=fcg_catalog();
+    foreach(array(2=>false,8=>true) as $id=>$upgraded) {
+        $payload=json_decode($catalog[$id]['reward_payload'],true);
+        dbcheck($payload===array('upgraded'=>$upgraded,'rare'=>false),'new catalog persists rebalanced pack filter');
+        foreach(fcg_pack_pool($payload) as $card) dbcheck(!fcg_cards()[$card]['rare'],'seeded shop packs exclude rare cards');
+    }
     $db->query("INSERT INTO {$gtablepre}game (groomid,gruleset,gamevars) VALUES (0,'','{}'),(1,'FCG','{}')");
     $db->query("INSERT INTO {$gtablepre}users (uid,username,password,credits2,nicksrev,roomid,groupid) VALUES (1,".fcg_sql($cuser).','.fcg_sql($cpass).",1000,'{\"nicks\":[0]}',0,1)");
     $s=fcg_request(array('action'=>'status'),1000);
+    $boot=json_decode(fcg_bootstrap($s,'test-csrf',false),true);
+    dbcheck($boot['draft_tiers']===fcg_draft_tiers(),'browser receives server entry and reward tiers');
     dbcheck(count($s['deck'])>=25 && $s['rev']===1,'first visit initializes durable collection');
     $input=dbaction($s,'buy',array('item'=>2,'price'=>10)); $s=fcg_request($input,1000); $once=$s;
     dbcheck($s['credits']===990,'purchase debited once');
@@ -159,8 +168,8 @@ try {
     $db->query("UPDATE {$gtablepre}users SET credits2=2000 WHERE uid=1");$s=dbuser(1,array('action'=>'status'),100000);
     $collection=(array)$s['collection'];$deck=$s['deck'];$wins=(array)$s['wins'];$hard_wins=(array)$s['hard_wins'];$embers=$s['embers'];
     $enter=dbdraft($s,'draft_enter');$s=dbuser(1,$enter,100000);$runid=$s['run']['id'];
-    dbcheck($s['credits']===1500 && count($s['run']['pack'])===5 && !isset($s['run']['seed']),'entry debited with run, only first remainder public');
-    $s=dbuser(1,$enter,100000);dbcheck($s['credits']===1500 && $s['run']['id']===$runid,'entry replay cannot charge or reroll');
+    dbcheck($s['credits']===1750 && $s['run']['entry_cost']===250 && count($s['run']['pack'])===5 && !isset($s['run']['seed']),'entry debited with run, only first remainder public');
+    $s=dbuser(1,$enter,100000);dbcheck($s['credits']===1750 && $s['run']['id']===$runid,'entry replay cannot charge or reroll');
     dbreject(1,dbdraft($s,'draft_enter'),'new token cannot open overlapping run',100000);
     dbreject(1,dbaction($s,'start',array('opponent'=>21)),'normal duel cannot replace run',100000);
     dbreject(1,dbaction($s,'mirror',array('uid'=>2)),'mirror cannot replace run',100000);
@@ -189,22 +198,38 @@ try {
     $s=dbuser(1,dbaction($s,'surrender',array('match'=>$s['match']['id'])),100010);
     dbcheck($s['run']['stage']==='over' && $s['run']['wins']===1,'surrender persists completed expedition');
     $reward_input=dbdraft($s,'draft_reward');$s=dbuser(1,$reward_input,100010);$reward=$s['last_reward'];$total=$s['embers'];$earned=(array)$s['collection'];
-    dbcheck($s['run']===null && $s['match']===null && count($reward['cards'])===1 && !fcg_cards()[$reward['cards'][0]['card']]['unlimited'],'final reward goes to collection and clears run');
+    dbcheck($s['run']===null && $s['match']===null && count($reward['cards'])===1 && $reward['total_cost']===250 && !fcg_cards()[$reward['cards'][0]['card']]['unlimited'],'final reward goes to collection and clears run');
     dbcheck($total===$embers+1+($reward['cards'][0]['overflow']?1:0),'final stamp and overflow persist together');
     $s=dbuser(1,$reward_input,100010);$s=dbuser(1,array('action'=>'status'),100010);
-    dbcheck($s['last_reward']===$reward && $s['embers']===$total && (array)$s['collection']===$earned && $s['credits']===1500,'claim replay and reload preserve single reward');
+    dbcheck($s['last_reward']===$reward && $s['embers']===$total && (array)$s['collection']===$earned && $s['credits']===1750,'claim replay and reload preserve single reward');
     dbreject(1,dbdraft($s,'draft_reward',array('run'=>$runid)),'new claim token cannot grant again',100010);
 
     $s=dbuser(1,dbdraft($s,'draft_enter'),100020);$db->query("UPDATE {$gtablepre}users SET roomid=99 WHERE uid=1");
     $s=dbuser(1,dbdraft($s,'draft_abandon'),100020);$s=dbuser(1,dbdraft($s,'draft_reward'),100020);
-    dbcheck($s['credits']===1000 && !$s['in_room'] && !$s['last_reward']['cards'] && $s['embers']===$total+1 && (array)$s['collection']===$earned,'zero-win abandonment outside room gives one stamp only');
+    dbcheck($s['credits']===1500 && !$s['in_room'] && !$s['last_reward']['cards'] && $s['embers']===$total+1 && (array)$s['collection']===$earned,'zero-win abandonment outside room gives one stamp only');
     $db->query("UPDATE {$gtablepre}users SET roomid=0 WHERE uid=1");
+    foreach(array(4,5) as $wins) {
+        $s=dbuser(1,dbdraft($s,'draft_enter'),100025);$paid=$s['credits'];$before=(array)$s['collection'];$embers=$s['embers'];
+        $row=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=1"));$data=fcg_load_account($row['fcgdata']);
+        $data['run']['stage']='over';$data['run']['wins']=$wins;$data['run']['ending']=$wins===5?'win':'loss';
+        $data['run']['deck']=$wins===4?array(24,25,26,151):array(24,26);
+        $db->query("UPDATE {$gtablepre}users SET fcgdata=".fcg_sql(fcg_json($data)).' WHERE uid=1');
+        $s=dbuser(1,array('action'=>'status'),100025);$claim=dbdraft($s,'draft_reward');$s=dbuser(1,$claim,100025);$receipt=$s['last_reward'];
+        $ids=array_column($receipt['cards'],'card');$overflow=count(array_filter($receipt['cards'],function($card){return $card['overflow'];}));
+        dbcheck(count($ids)===4 && $receipt['total_cost']===250 && $receipt['embers']===$wins && $s['embers']===$embers+$wins+$overflow,'new tier and receipt commit together');
+        dbcheck(fcg_cards()[$ids[0]]['rare'] && ($wins!==4 || $ids[0]===151),'rare guarantee prioritizes final deck');
+        if($wins===5) dbcheck(fcg_cards()[$ids[1]]['upgraded'] && !fcg_cards()[$ids[1]]['rare'] && !fcg_cards()[$ids[1]]['unlimited'],'missing upgrade uses non-energy global fallback');
+        $expected=$before;foreach($receipt['cards'] as $card) if(!$card['overflow']) $expected[$card['card']]=($expected[$card['card']] ?? 0)+1;
+        dbcheck((array)$s['collection']===$expected && $s['run']===null && $s['credits']===$paid,'four permanent grants and cleared run persist without extra debit');
+        $s=dbuser(1,$claim,100025);$s=dbuser(1,array('action'=>'status'),100025);
+        dbcheck($s['last_reward']===$receipt && (array)$s['collection']===$expected && $s['embers']===$embers+$wins+$overflow,'guarantee replay cannot reroll or grant again');
+    }
     $old=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=1"));$user=$old;$data=fcg_load_account($old['fcgdata']);
     fcg_action($data,$user,array('action'=>'draft_enter'),100030,true);$data['rev']++;
-    $db->query("UPDATE {$gtablepre}users SET credits2=499 WHERE uid=1");
+    $db->query("UPDATE {$gtablepre}users SET credits2=249 WHERE uid=1");
     dbcheck(!fcg_account_save($old,$user,$data),'concurrent spend rejects entry');
     $row=$db->fetch_array($db->query("SELECT fcgdata,credits2 FROM {$gtablepre}users WHERE uid=1"));
-    dbcheck($row['fcgdata']===$old['fcgdata'] && (int)$row['credits2']===499,'rejected entry cannot leave unpaid run or partial debit');
+    dbcheck($row['fcgdata']===$old['fcgdata'] && (int)$row['credits2']===249,'rejected entry cannot leave unpaid run or partial debit');
     $db->query("UPDATE {$gtablepre}users SET credits2=1000 WHERE uid=1");
 
     // Publishing is bounded even after many active accounts; reserved row is never a mirror.

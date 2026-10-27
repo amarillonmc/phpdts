@@ -185,5 +185,5 @@ function fcg_bootstrap($state, $csrf, $shop)
 	} unset($card);
 	$opponents=fcg_opponents(); foreach($opponents as &$o) unset($o['deck']); unset($o);
 	return json_encode(array('state'=>$state,'csrf'=>$csrf,'shop'=>$shop,'cards'=>$cards,'opponents'=>array_values($opponents),
-		'catalog'=>array_values(fcg_catalog()),'titles'=>(object)$titles_list,'stickers'=>(object)fcg_stickers()),JSON_UNESCAPED_UNICODE|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_THROW_ON_ERROR);
+		'catalog'=>array_values(fcg_catalog()),'draft_tiers'=>fcg_draft_tiers(),'titles'=>(object)$titles_list,'stickers'=>(object)fcg_stickers()),JSON_UNESCAPED_UNICODE|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_THROW_ON_ERROR);
 }

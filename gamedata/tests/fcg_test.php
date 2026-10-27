@@ -22,6 +22,12 @@ $glossary=fcg_card_glossary($cards[156]);
 fcg_test($glossary[1]['keywords']===array('余韵','抽牌') && $glossary[1]['text']==='上一张牌为白色时：抽 1 张牌。','reference keeps condition and value with keywords');
 foreach(fcg_colors() as $c) fcg_test(count(fcg_pack_pool(array('color'=>$c)))===46,'balanced color '.$c);
 foreach(array(array(array('upgraded'=>false,'rare'=>false,'series'=>'vol1'),57),array(array('upgraded'=>false,'series'=>'vol1'),75),array(array('upgraded'=>true,'series'=>'vol1'),75),array(array('rare'=>true,'series'=>'vol1'),36),array(array('series'=>'vol2'),80),array(array('series'=>'vol2','rare'=>true),30)) as $case) fcg_test(count(fcg_pack_pool($case[0]))===$case[1],'pack population');
+$catalog=require GAME_ROOT.'gamedata/fcg_shop.php';
+foreach($catalog as $item) if(in_array($item[0],array(2,8),true)) {
+	$pool=fcg_pack_pool($item[6]);
+	fcg_test(count($pool)===82,'rebalanced shop pool keeps existing energy cards');
+	foreach($pool as $id) fcg_test(!$cards[$id]['rare'] && $cards[$id]['upgraded']===($item[0]===8),'seed pack excludes rare and respects upgrade tier');
+}
 fcg_test_throws(function(){fcg_pack_pool(array('color'=>'purple'));},'invalid pool');
 fcg_test_throws(function(){fcg_pack_pool(array('count'=>20));},'one card per pack');
 $data=fcg_new_account();
@@ -293,15 +299,21 @@ function fcg_test_finish_draft(&$data,&$user) {
 		fcg_test_draft_action($data,$user,'draft_pick',array('slot'=>0,'card'=>$pack[0],'pick'=>count($data['run']['picks'])));
 	}
 }
-$data=fcg_new_account();$user=array('uid'=>1,'nicksrev'=>'','credits2'=>499);$before=$data;
-fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_enter');},'entry requires 500 credits');
-fcg_test($data===$before && $user['credits2']===499,'failed entry leaves account untouched');
+$tiers=fcg_draft_tiers();fcg_test($tiers['entry']===250,'expedition entry costs 250');
+foreach(array(array(0,0,0,1),array(1,0,0,1),array(1,1,0,2),array(2,1,0,3),array(3,0,1,4),array(2,1,1,5)) as $wins=>$tier) {
+	fcg_test(array_values($tiers[$wins])===$tier,'configured deck/upgrade/rare/stamp tier '.$wins);
+}
+$data=fcg_new_account();$user=array('uid'=>1,'nicksrev'=>'','credits2'=>249);$before=$data;
+fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_enter');},'entry requires 250 credits');
+fcg_test($data===$before && $user['credits2']===249,'failed entry leaves account untouched');
+$boundary=$data;$payer=$user;$payer['credits2']=250;fcg_test_draft_action($boundary,$payer,'draft_enter');
+fcg_test($payer['credits2']===0 && $boundary['run']['entry_cost']===250,'exactly 250 credits admits entry and remembers payment');
 $user['credits2']=1000;
 fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_enter',array(),false);},'entry requires room');
 $data['match']=fcg_test_match();
 fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_enter');},'entry requires finished match');
 $data['match']=null;fcg_test_draft_action($data,$user,'draft_enter');$data['run']['seed']=4729;
-fcg_test($user['credits2']===500 && $data['run']['hp']===80 && $data['run']['stage']==='draft','entry starts at 80 HP and charges once');
+fcg_test($user['credits2']===750 && $data['run']['hp']===80 && $data['run']['stage']==='draft','entry starts at 80 HP and charges once');
 fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_enter');},'second entry rejected');
 fcg_test_throws(function()use(&$data,&$user){fcg_action($data,$user,array('action'=>'start','opponent'=>5),100,true);},'normal match cannot replace expedition');
 $social=array('match'=>null);$room=array('gruleset'=>'FCG');
@@ -382,17 +394,41 @@ for($layer=1;$layer<=5;$layer++) {
 	fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'reinforce','slot'=>0,'card'=>$data['run']['node']['opts'][0]));
 }
 fcg_test($data['run']['stage']==='over' && $data['run']['ending']==='win' && count($data['run']['deck'])===37,'all five reinforcement cards included in final deck');
-foreach(array(0=>0,1=>1,2=>1,3=>2,4=>2,5=>3) as $wins=>$amount) {
-	$data=$camp;$data['run']['stage']='over';$data['run']['wins']=$wins;$data['run']['deck']=array(0,1,20,21,22,23,24,24,25,26,151);
+foreach(array(0=>0,1=>1,2=>2,3=>3,4=>4,5=>4) as $wins=>$amount) {
+	$data=$camp;$data['run']['stage']='over';$data['run']['wins']=$wins;$data['run']['deck']=array_merge(range(0,23),array(24,24,25,26,151));
 	$before=$data['collection'];$embers=$data['embers'];fcg_test_draft_action($data,$user,'draft_reward',array(),false);$reward=$data['last_reward'];$once=$data;
 	fcg_test($data['run']===null && $data['match']===null && count($reward['cards'])===$amount && $reward['embers']===max(1,$wins),'wins map to final reward '.$wins);
 	$ids=array_column($reward['cards'],'card');fcg_test(count($ids)===count(array_unique($ids)) && !array_diff($ids,array(24,25,26,151)),'final pool deduplicated and excludes all unlimited');
+	fcg_test($reward['total_cost']===250,'receipt records new entry cost');
+	if($wins===2 || $wins===3) fcg_test($cards[$ids[0]]['upgraded'],'two and three wins guarantee an upgraded card from deck');
+	if($wins>=4) fcg_test($ids[0]===151,'rare guarantee takes the deck rare before other slots');
+	if($wins===5) fcg_test($ids[1]===25,'upgrade guarantee follows rare without reusing its card');
 	fcg_test($data['embers']-$embers===max(1,$wins)+count(array_filter($reward['cards'],function($r){return $r['overflow'];})),'final stamps and overflow use existing rules');
 	if(!$wins) fcg_test($data['collection']===$before,'zero wins means no permanent card');
 	fcg_test_throws(function()use(&$data,&$user){fcg_test_draft_action($data,$user,'draft_reward');},'reward cannot be claimed twice');fcg_test($data===$once,'rejected repeat leaves receipt intact');
 }
-$data=$camp;$data['run']['stage']='over';$data['run']['wins']=5;$data['run']['deck']=array(24,25,26);foreach(array(24,25,26) as $id)$data['collection'][$id]=7;
-fcg_test_draft_action($data,$user,'draft_reward');fcg_test($data['embers']===8 && $data['collection'][24]===7,'three full-stack rewards become three extra stamps');
+$data=$camp;$data['run']['stage']='over';$data['run']['wins']=5;$data['run']['deck']=array(24,25,26,151);foreach(array(24,25,26,151) as $id)$data['collection'][$id]=7;
+fcg_test_draft_action($data,$user,'draft_reward');fcg_test($data['embers']===9 && $data['collection'][24]===7,'four full-stack rewards become four extra stamps');
+// No matching deck cards: guarantee slots fall back globally, never to energy or ordinary cards.
+for($i=0;$i<64;$i++) {
+	$data=$camp;$data['run']['stage']='over';$data['run']['wins']=5;$data['run']['deck']=array_merge(range(0,23),array(24,24,26));
+	fcg_test_draft_action($data,$user,'draft_reward');$receipt=$data['last_reward'];$ids=array_column($receipt['cards'],'card');
+	fcg_test(count($ids)===4 && $cards[$ids[0]]['rare'] && !$cards[$ids[0]]['unlimited'],'rare fallback supplies non-energy rare');
+	fcg_test($cards[$ids[1]]['upgraded'] && !$cards[$ids[1]]['rare'] && !$cards[$ids[1]]['unlimited'],'upgrade fallback supplies non-energy non-rare upgrade');
+	$ordinary=array_slice($ids,2);sort($ordinary);fcg_test($ordinary===array(24,26),'ordinary slots still come from unique final deck cards');
+	$loaded=fcg_load_account(fcg_json($data));
+	fcg_test_throws(function()use(&$loaded,&$user){fcg_test_draft_action($loaded,$user,'draft_reward');},'fallback rewards cannot be rerolled after reload');
+	fcg_test($loaded['last_reward']===$receipt && $loaded['collection']===$data['collection'],'fallback receipt and collection survive reload unchanged');
+}
+$data=$camp;$data['run']['stage']='over';$data['run']['wins']=5;$data['run']['deck']=array(151,24,26);
+fcg_test_draft_action($data,$user,'draft_reward');$ids=array_column($data['last_reward']['cards'],'card');
+fcg_test($ids[0]===151 && $cards[$ids[1]]['upgraded'] && !$cards[$ids[1]]['rare'],'consumed upgraded rare triggers separate upgrade fallback');
+$data=$camp;$data['run']['stage']='over';$data['run']['wins']=2;$data['run']['deck']=array(151,24);
+fcg_test_draft_action($data,$user,'draft_reward');fcg_test(array_column($data['last_reward']['cards'],'card')===array(151,24),'upgrade slot accepts an upgraded rare present in deck');
+$data=$camp;$data['run']['stage']='over';$data['run']['wins']=5;$data['run']['deck']=array(24,26);$data['collection']=array_fill(0,count($cards),7);$before=$data['collection'];
+fcg_test_draft_action($data,$user,'draft_reward');fcg_test($data['embers']===9 && $data['collection']===$before,'global fallback also respects full-stack overflow');
+$data=$camp;$data['run']['stage']='over';$data['run']['wins']=0;unset($data['run']['entry_cost']);
+fcg_test_draft_action($data,$user,'draft_reward');fcg_test($data['last_reward']['total_cost']===500,'pre-rebalance run receipt preserves its actual entry payment');
 foreach(array('draft','node','battle') as $stage) {
 	$data=$stage==='draft'?$initial:$camp;
 	if($stage==='battle') {fcg_test_draft_action($data,$user,'draft_node',array('choice'=>'supply'));fcg_test_draft_action($data,$user,'draft_battle');}

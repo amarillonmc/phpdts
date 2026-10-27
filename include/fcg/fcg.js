@@ -102,13 +102,17 @@
   function reward(r) {
     if(!r) return;
     rewardView=r;
-    if(r.cards) modal((r.draft?'<h2>远征收获已入册</h2><p>'+r.wins+' 胜 · 永久卡片 '+r.cards.length+' 张 · 余烬印花 +'+r.embers+'</p><p>卡片从最终远征卡组抽取，同号不重复，能量卡除外。满 7 张的卡另转为 1 枚印花。</p>':'<h2>开包收获一览</h2><p>共 '+r.cards.length+' 包 · 花费 '+num(r.total_cost)+' 切糕</p>')+'<div class="fcg-reward-grid">'+r.cards.map(x=>'<div class="'+(x.new?'fcg-new':'')+'"><b>已拥有 '+(state.collection[x.card]||0)+' 张'+(x.overflow?' · 🔥+1 印花':x.new?' · ✨NEW':'')+'</b>'+card(x.card,'preview')+'</div>').join('')+'</div>');
+    if(r.cards) modal((r.draft?'<h2>远征收获已入册</h2><p>'+r.wins+' 胜 · 永久卡片 '+r.cards.length+' 张 · 余烬印花 +'+r.embers+' · 入场花费 '+num(r.total_cost)+' 切糕</p><p>卡组内的同一卡号只抽一次，能量卡除外。稀有与升级保底优先取自你的卡组；卡组不足时从全池非能量卡中补足。满 7 张的卡另转为 1 枚印花。</p>':'<h2>开包收获一览</h2><p>共 '+r.cards.length+' 包 · 花费 '+num(r.total_cost)+' 切糕</p>')+'<div class="fcg-reward-grid">'+r.cards.map(x=>'<div class="'+(x.new?'fcg-new':'')+'"><b>已拥有 '+(state.collection[x.card]||0)+' 张'+(x.overflow?' · 🔥+1 印花':x.new?' · ✨NEW':'')+'</b>'+card(x.card,'preview')+'</div>').join('')+'</div>');
     else if(r.card!==undefined) detail(r.card,'已拥有 '+(state.collection[r.card]||0)+' 张'+(r.overflow?' · 溢出卡片已化作 1 枚余烬印花':''));
     else modal('<h2>获得头衔「'+esc(boot.titles[r.title]||r.title)+'」</h2><p>在个人资料中装备，下次进入常规游戏时生效。</p><a href="user_profile.php">打开个人资料</a>');
   }
   function draftEntrance() {
-    const r=state.run, disabled=!state.in_room||state.credits<500||(state.match&&!state.match.result);
-    return '<section class="fcg-expedition-entry"><div><p class="fcg-eyebrow">DRAFT ROGUELITE · 单人</p><h2>🔥 种火远征</h2><p>和四位虚拟牌手轮抽 24 张记忆，带上 8 张能量基底，挑战五层种火。生命不会自动回满，层间可补给或强化。</p><p class="fcg-muted">过程中的卡片都是幻影。结束时按 0／1–2／3–4／5 胜，从最终卡组抽取 0／1／2／3 张非能量卡永久入册；每胜 1 枚印花，零胜保底 1 枚。</p></div><div>'+(r?'<button data-action="draft-resume">'+(r.stage==='over'?'领取远征奖励':'继续远征')+'</button>':'<button data-action="draft-enter" '+(disabled?'disabled':'')+'>🔥 种火远征（轮抽）· 500 切糕</button><small>'+(state.credits<500?'切糕不足':!state.in_room?'请先加入 FCG 房间':state.match&&!state.match.result?'请先完成当前牌局':'点击支付入场费，开始轮抽')+'</small>')+'</div></section>';
+    const r=state.run, tiers=boot.draft_tiers, entry=tiers.entry, disabled=!state.in_room||state.credits<entry||(state.match&&!state.match.result);
+    const rewards=[1,2,3,4,5].map(wins=>{
+      const t=tiers[wins], guaranteed=[t.rare?t.rare+' 张稀有':'',t.upgraded?t.upgraded+' 张升级':''].filter(Boolean).join('、');
+      return wins+' 胜 '+(t.deck+t.upgraded+t.rare)+' 张'+(guaranteed?'（含 '+guaranteed+' 保底）':'');
+    }).join('；');
+    return '<section class="fcg-expedition-entry"><div><p class="fcg-eyebrow">DRAFT ROGUELITE · 单人</p><h2>🔥 种火远征</h2><p>和四位虚拟牌手轮抽 24 张记忆，带上 8 张能量基底，挑战五层种火。生命不会自动回满，层间可补给或强化。</p><p class="fcg-muted">过程中的卡片都是幻影。结束后永久入册：'+rewards+'。每胜 1 枚印花，零胜 0 张卡、保底 '+tiers[0].embers+' 枚印花。稀有与升级保底优先从最终卡组抽取，缺少时从全池非能量卡中补足。</p></div><div>'+(r?'<button data-action="draft-resume">'+(r.stage==='over'?'领取远征奖励':'继续远征')+'</button>':'<button data-action="draft-enter" '+(disabled?'disabled':'')+'>🔥 种火远征（轮抽）· '+entry+' 切糕</button><small>'+(state.credits<entry?'切糕不足':!state.in_room?'请先加入 FCG 房间':state.match&&!state.match.result?'请先完成当前牌局':'点击支付入场费，开始轮抽')+'</small>')+'</div></section>';
   }
   function renderRun() {
     const r=state.run;
@@ -120,8 +124,9 @@
   }
   function draftEnd() {
     const r=state.run;if(!r||r.stage!=='over')return;
-    const n=r.wins>=5?3:r.wins>=3?2:r.wins>=1?1:0;
-    modal('<h2>'+({win:'五层火光，尽收眼底。',loss:'把这一路的记忆带回去。',draw:'两团火苗，同时熄灭。',abandoned:'暂且收起远征的行囊。'}[r.ending]||'远征结束')+'</h2><p>本次 '+r.wins+' 胜 · '+n+' 张永久卡片 · '+Math.max(1,r.wins)+' 枚余烬印花</p><p>从最终卡组的非能量卡中随机抽取，卡号不重复。其余幻影卡片随行程消散。</p><button data-action="draft-reward" data-run="'+esc(r.id)+'">领取远征奖励</button>');
+    const t=boot.draft_tiers[r.wins], n=t.deck+t.upgraded+t.rare;
+    const guaranteed=[t.rare?t.rare+' 张稀有':'',t.upgraded?t.upgraded+' 张升级':''].filter(Boolean).join('、');
+    modal('<h2>'+({win:'五层火光，尽收眼底。',loss:'把这一路的记忆带回去。',draw:'两团火苗，同时熄灭。',abandoned:'暂且收起远征的行囊。'}[r.ending]||'远征结束')+'</h2><p>本次 '+r.wins+' 胜 · '+n+' 张永久卡片 · '+t.embers+' 枚余烬印花'+(guaranteed?'（卡片含 '+guaranteed+' 保底）':'')+'</p><p>先抽稀有与升级保底，再抽其余卡组奖励；卡组内同号只抽一次。保底缺少时从全池非能量卡中补足，其余幻影卡片随行程消散。</p><button data-action="draft-reward" data-run="'+esc(r.id)+'">领取远征奖励</button>');
   }
   function draftForge() {
     const r=state.run;if(!r||r.stage!=='node'||r.node.type!=='camp')return;

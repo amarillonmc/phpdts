@@ -1,6 +1,20 @@
 <?php
 if(!defined('IN_GAME')) exit('Access Denied');
 
+// 入场与结算共用的经济档位，也提供给前端展示。
+function fcg_draft_tiers()
+{
+	return array(
+		'entry'=>250,
+		0=>array('deck'=>0,'upgraded'=>0,'rare'=>0,'embers'=>1),
+		1=>array('deck'=>1,'upgraded'=>0,'rare'=>0,'embers'=>1),
+		2=>array('deck'=>1,'upgraded'=>1,'rare'=>0,'embers'=>2),
+		3=>array('deck'=>2,'upgraded'=>1,'rare'=>0,'embers'=>3),
+		4=>array('deck'=>3,'upgraded'=>0,'rare'=>1,'embers'=>4),
+		5=>array('deck'=>2,'upgraded'=>1,'rare'=>1,'embers'=>5),
+	);
+}
+
 // 仅在轮抽重放的已播种 MT 序列中调用；四个未升级位和一个 60/30/10 加权位。
 function fcg_draft_deal()
 {
@@ -106,10 +120,11 @@ function fcg_draft_action(&$data, &$user, $input, $now, $in_room)
 		if(!$in_room) throw new InvalidArgumentException('请先创建或加入 FCG 房间，再开始远征。');
 		if(!empty($data['run'])) throw new InvalidArgumentException('请先完成并领取当前远征的奖励。');
 		if($data['match'] && $data['match']['result']===null) throw new InvalidArgumentException('请先完成当前牌局。');
-		if($user['credits2']<500) throw new InvalidArgumentException('远征需要 500 切糕。');
-		$data['run']=array('id'=>bin2hex(random_bytes(12)),'seed'=>random_int(1,2147483647),'stage'=>'draft',
+		$entry=fcg_draft_tiers()['entry'];
+		if($user['credits2']<$entry) throw new InvalidArgumentException('远征需要 '.$entry.' 切糕。');
+		$data['run']=array('id'=>bin2hex(random_bytes(12)),'seed'=>random_int(1,2147483647),'stage'=>'draft','entry_cost'=>$entry,
 			'picks'=>array(),'deck'=>array(),'hp'=>80,'mhp'=>80,'layer'=>1,'wins'=>0,'node'=>null,'opponents'=>array());
-		$user['credits2']-=500; $data['match']=null; $data['live_match']=null; $data['last_reward']=null;
+		$user['credits2']-=$entry; $data['match']=null; $data['live_match']=null; $data['last_reward']=null;
 		return;
 	}
 	$r=&$data['run'];
@@ -164,11 +179,27 @@ function fcg_draft_action(&$data, &$user, $input, $now, $in_room)
 		$r['hp']=0; $r['stage']='over'; $r['node']=null; $r['ending']='abandoned';
 	} elseif($action==='draft_reward') {
 		if($r['stage']!=='over') throw new InvalidArgumentException('远征尚未结束。');
-		$pool=array_values(array_unique(array_filter($r['deck'],function($id){return !fcg_cards()[$id]['unlimited'];})));
-		$n=$r['wins']>=5?3:($r['wins']>=3?2:($r['wins']>=1?1:0)); $embers=max(1,$r['wins']);
-		shuffle($pool); $reward=array('draft'=>true,'wins'=>$r['wins'],'cards'=>array(),'embers'=>$embers,'total_cost'=>500);
-		foreach(array_slice($pool,0,$n) as $id) $reward['cards'][]=fcg_add_card($data,$id);
-		$data['embers']+=$embers; $data['last_reward']=$reward;
+		$tiers=fcg_draft_tiers(); $tier=$tiers[min($r['wins'],5)]; $cards=fcg_cards();
+		$deck=array_values(array_unique(array_filter($r['deck'],function($id)use($cards){return !$cards[$id]['unlimited'];})));
+		// 改价前的行程已付 500；收据记实际费用，不随领奖时的价目变化。
+		$reward=array('draft'=>true,'wins'=>$r['wins'],'cards'=>array(),'embers'=>$tier['embers'],'total_cost'=>$r['entry_cost'] ?? 500);
+		// 先稀有、再升级、最后卡组抽；已抽走的卡号不再占用后续卡组奖励位。
+		foreach(array('rare','upgraded','deck') as $slot) {
+			$pool=array_values(array_filter($deck,function($id)use($slot,$cards){return $slot==='deck' || $cards[$id][$slot];}));
+			shuffle($pool);
+			for($i=0;$i<$tier[$slot];$i++) {
+				if($pool) $id=array_pop($pool);
+				elseif($slot!=='deck') {
+					$fallback=fcg_pack_pool($slot==='rare'?array('rare'=>true):array('upgraded'=>true,'rare'=>false));
+					// 通用卡包池含能量卡，远征保底须额外排除。
+					$fallback=array_values(array_filter($fallback,function($id)use($cards){return !$cards[$id]['unlimited'];}));
+					$id=$fallback[random_int(0,count($fallback)-1)];
+				} else break;
+				$deck=array_values(array_diff($deck,array($id)));
+				$reward['cards'][]=fcg_add_card($data,$id);
+			}
+		}
+		$data['embers']+=$tier['embers']; $data['last_reward']=$reward;
 		$data['run']=null; $data['match']=null;
 	} else throw new InvalidArgumentException('未知的远征操作。');
 }
