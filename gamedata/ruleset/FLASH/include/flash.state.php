@@ -46,7 +46,7 @@ function flash_fragments($p) {
 function flash_stage(&$p) {
     $s=&$p['clbpara']['flash']; $s['stage_max']=max($s['stage_max'],$s['stage_clicks']); $s['stage_clicks']=0;
 }
-function flash_die(&$p,$reason,$enemy=null) {
+function flash_die(&$p,$reason,$enemy=null,$state=10) {
     $s=&$p['clbpara']['flash'];
     if (!empty($s['result']) || !empty($s['pending'])) return;
     if ($GLOBALS['now'] >= $GLOBALS['gamevars']['flash']['start']+flash_cfg('seconds')) { flash_finish($p,'lost','timeout'); return; }
@@ -56,6 +56,8 @@ function flash_die(&$p,$reason,$enemy=null) {
     $step=flash_cfg('ban_steps')[$s['deaths']-1];
     $GLOBALS['areanum']=min(count($GLOBALS['gamevars']['flash']['order']),$GLOBALS['areanum']+$step);
     $s['deaths_log'][$s['deaths']]=array('time'=>$GLOBALS['now'],'place'=>$p['pls'],'reason'=>$reason,'text'=>flash_revival_text($s['deaths']));
+    $p['hp']=0; $p['state']=$state; $p['endtime']=$p['deathtime']=$GLOBALS['now'];
+    $p['action']=''; $p['bid']=$enemy?(int)$enemy['pid']:0;
     if ($s['deaths']>flash_cfg('revivals')) { flash_finish($p,'lost','deaths'); return; }
     // 门内的死亡不承担情报教学；其它第一次死亡才写第一页。
     if (!$s['gate']) {
@@ -67,14 +69,21 @@ function flash_die(&$p,$reason,$enemy=null) {
             flash_report($p,'weak'.$meta['evidence'],$enemy['name'].'在'.$kind.'系攻击面前会露出破绽；其它攻击无法穿透那层镜面。弱点在本局不会改变。');
         }
     }
-    $s['loss']=flash_snapshot($p); $s['pending']=true; $s['reset_world']=true; $s['path']=false;
+    $s['loss']=flash_snapshot($p); $s['pending']=true; $s['path']=false;
+    flash_stage($p); flash_say('你死了。死因：'.$reason.'。点击「继续复活」后，才能再次醒来。');
+    // 停在真实死亡地点和 HP=0；刷新页面、状态请求均不能替玩家继续复活。
+}
+function flash_revive(&$p) {
+    $s=&$p['clbpara']['flash'];
+    if ($s['result'] || !$s['pending'] || $p['hp']>0) throw new RuntimeException('现在没有等待继续的复活。');
     $p['hp']=1; $p['sp']=0; $p['pls']=0; $p['inf']=''; $p['state']=0; $p['action']=''; $p['bid']=0;
-    flash_stage($p); flash_story($p,'第 '.$s['deaths'].' 次醒来 · +'.$step.' 片崩坏',flash_revival_text($s['deaths']));
-    // 战斗中的另一方还会在引擎末尾保存；世界刷新必须等战斗返回后再做。
+    flash_world_reset($p);
+    $step=flash_cfg('ban_steps')[$s['deaths']-1];
+    flash_story($p,'第 '.$s['deaths'].' 次醒来 · +'.$step.' 片崩坏',flash_revival_text($s['deaths']));
 }
 function flash_keep(&$p,$choice) {
     $s=&$p['clbpara']['flash'];
-    if (!$s['pending'] || !in_array($choice,array('weapon','armor','stats'),true)) throw new RuntimeException('请选择这一次要带回的东西。');
+    if (!$s['pending'] || $p['hp']<=0 || !in_array($choice,array('weapon','armor','stats'),true)) throw new RuntimeException('请先继续复活，再选择这一次要带回的东西。');
     $old=$s['loss']; $lost=array('stats'=>array(),'equipment'=>array(),'bag'=>array(),'skill'=>array(),'skillpara'=>array());
     $base=flash_baseline($p);
     if ($choice!=='stats') {
@@ -102,7 +111,14 @@ function flash_keep(&$p,$choice) {
     unset($s['loss']); $s['pending']=false; $p['hp']=$p['mhp']; $p['sp']=$p['msp']; $p['rage']=0;
     $p['money']=max(20,(int)floor($p['money']*.25));
     $p['action']=''; $p['bid']=0;
+    flash_starting_supplies($p);
     flash_say('你把选中的东西攥在手里。剩下的，让搬运工帮你找回来。');
+}
+function flash_starting_supplies(&$p) {
+    // 与大房间开局相同；保留类目占满六格时放入待拾取物品，不覆盖保留装备。
+    foreach (array(flash_item('面包','HH',120,15),flash_item('矿泉水','HS',140,15)) as $item) {
+        if (!flash_take($p,$item)) flash_loot($p,array($item));
+    }
 }
 function flash_ready($p) { return !empty($p['clbpara']['flash']) && empty($p['clbpara']['flash']['result']) && empty($p['clbpara']['flash']['pending']); }
 function flash_true_available($p) {
@@ -112,8 +128,11 @@ function flash_true_available($p) {
 function flash_finish(&$p,$result,$reason='') {
     $s=&$p['clbpara']['flash']; if ($s['result']) return;
     $s['result']=$result; $s['reason']=$reason; $s['finished']=$GLOBALS['now']; $s['pending']=false; $s['target']=0; unset($s['reset_world']);
-    $p['hp']=$result==='lost'?0:max(1,$p['hp']); $p['state']=$result==='lost'?10:5; $p['endtime']=$GLOBALS['now']; $p['action']=''; $p['bid']=0;
+    $p['hp']=$result==='lost'?0:max(1,$p['hp']); $p['state']=$result==='lost'?max(10,$p['state']):5; $p['endtime']=$GLOBALS['now']; $p['action']='';
+    if ($result!=='lost') $p['bid']=0;
     flash_stage($p);
+    list($title,$text)=flash_ending_copy($p); flash_story($p,$title,$text);
+    if ($result!=='lost') foreach (flash_ending_extras($p) as $title=>$text) { flash_say($title); flash_say($text); }
 }
 function flash_tick(&$p) {
     if (empty($p['clbpara']['flash']['result']) && $GLOBALS['now']>=$GLOBALS['gamevars']['flash']['start']+flash_cfg('seconds')) flash_finish($p,'lost','timeout');

@@ -1,5 +1,6 @@
 {template header}
 {template elevator}
+{template flash_companion}
 <div id="dialogue-container">
     <!--{if isset($dialogue_id)}-->
         {template dialogue}
@@ -82,6 +83,7 @@
         </div>
     </section>
 
+    <!--{if empty($clbpara['flash'])}-->
     <section class="nv-window nv-window--action" id="nv-action" data-window-title="Actions">
         <div class="nv-window__titlebar">
             <span class="nv-window__title">Action Console / 行动控制</span>
@@ -104,6 +106,7 @@
         </div>
     </section>
 
+    <!--{/if}-->
     <section class="nv-window nv-window--log" id="nv-log-window" data-window-title="Log" data-window-resizable="true">
         <div class="nv-window__titlebar">
             <span class="nv-window__title">Signal Log / 行动日志</span>
@@ -121,6 +124,11 @@
                 <span class="red">剩余：<span id="anum">$alivenum</span>人</span>
             </div>
             <div id="log" class="nv-log">$log</div>
+            <!--{if !empty($clbpara['flash'])}-->
+            <div id="cmd" class="nv-command-legacy">
+                <!--{if $hp <= 0}-->{template death}<!--{else}-->$cmd<!--{/if}-->
+            </div>
+            <!--{/if}-->
         </div>
     </section>
 </div>

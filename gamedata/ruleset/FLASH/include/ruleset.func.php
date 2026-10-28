@@ -64,25 +64,32 @@ function flash_join($user,$kind) {
     $p=create_dummy_playerdata();
     $p=array_merge($p,array('name'=>$user['username'],'pass'=>$user['password'],'type'=>0,'gd'=>in_array($user['gender']??'',array('m','f'))?$user['gender']:'m',
         'icon'=>$user['icon']??0,'sNo'=>1,'validtime'=>$now,'endtime'=>$now,'pls'=>0,'pgroup'=>0,'money'=>300,'pose'=>1,'tactic'=>2,'club'=>0,'itmnumlimit'=>6));
-    $p['clbpara']=array('flash'=>flash_state(),'skill'=>array(),'skillpara'=>array(),'bgmbook'=>array(),'BGMBrand'=>'','randver1'=>mt_rand(0,255),'randver2'=>mt_rand(0,255),'charge1'=>0,'charge2'=>0,'charge3'=>0,'charge4'=>0);
+    $p['clbpara']=array('flash'=>flash_state(),'skill'=>array(),'skillpara'=>array(),'bgmbook'=>array(),'valid_bgmbook'=>array(),'BGMBrand'=>'','randver1'=>mt_rand(0,255),'randver2'=>mt_rand(0,255),'charge1'=>0,'charge2'=>0,'charge3'=>0,'charge4'=>0);
+    $p['clbpara']['valid_bgmbook']=$GLOBALS['regular_bgm']??array();
     foreach (flash_baseline($p) as $key=>$value) $p[$key]=$value;
     $p['hp']=$p['mhp']; $p['sp']=$p['msp']; quest_init_state($p['clbpara']);
     flash_set_equipment($p,'wep',flash_item('醒来时攥着的'.array('WP'=>'木棍','WK'=>'短刀','WG'=>'手枪','WC'=>'飞镖','WD'=>'爆破包','WF'=>'音叉')[$kind],$kind,80,200));
     flash_set_equipment($p,'wep2',flash_item('拳头','WN',0,'∞'));
     flash_set_equipment($p,'arb',flash_item('旧外套','DB',30,100));
-    flash_set_item($p,1,flash_item('留在枕边的水','HB',200,6));
-    flash_set_item($p,2,flash_item('混沌人肉探雷车','Y',1,1));
-    flash_set_item($p,3,flash_item('万能药','Ca',1,3));
+    flash_starting_supplies($p);
+    flash_set_item($p,3,flash_item('混沌人肉探雷车','Y',1,1));
+    flash_set_item($p,4,flash_item('万能药','Ca',1,3));
     $row=player_format_with_db_structure($p); unset($row['pid']); $db->array_insert($tablepre.'players',$row);
     $p['pid']=(int)$db->insert_id(); $gamevars['flash']['owner']=$p['pid']; $validnum=$alivenum=1;
-    save_gameinfo(); return $p;
+    save_gameinfo();
+    $scene=$p['clbpara']['flash']['scene']; flash_story($p,$scene['title'],$scene['text']);
+    return $p;
 }
 function flash_validate_command($p,$post) {
     foreach (array('command','flash_csrf','flash_rev') as $key) if (!isset($post[$key]) || !is_string($post[$key])) throw new RuntimeException('请刷新页面后重新操作。');
     if (!hash_equals($p['clbpara']['flash']['csrf'],$post['flash_csrf'])) throw new RuntimeException('请从当前游戏页面操作。');
     if (!ctype_digit($post['flash_rev']) || (int)$post['flash_rev']!==$p['clbpara']['flash']['revision']) throw new RuntimeException('刚才的操作已经处理，界面已更新。');
     foreach (array('arg','extra') as $key) if (isset($post[$key]) && (!is_string($post[$key]) || strlen($post[$key])>80)) throw new RuntimeException('行动参数无效。');
-    if (!preg_match('/^flash_([a-z_]+)$/D',$post['command'],$m)) throw new RuntimeException('请使用闪回的行动面板。');
+    if ($post['command']==='menu') return array('status','','');
+    if ($post['command']==='changewep') return array('swap','','');
+    if (preg_match('/^off(wep|arb|arh|ara|arf|art)$/D',$post['command'],$m)) return array('unequip',$m[1],'');
+    if (preg_match('/^itm([1-6])$/D',$post['command'],$m)) return array('use',$m[1],'');
+    if (!preg_match('/^flash_([a-z_]+)$/D',$post['command'],$m)) throw new RuntimeException('请使用闪回的行动选项。');
     $action=$m[1]; $arg=$post['arg']??'';
     if (in_array($action,array('move','track','use','feed','drop','take','loot_use','loot_feed'),true) && !ctype_digit($arg)) throw new RuntimeException('行动对象无效。');
     return array($action,$arg,$post['extra']??'');
@@ -117,14 +124,17 @@ function flash_http($kind) {
         // 验证后才修改；若结算已经发生，仍保存已发生的事实，不回退回溯/消耗。
         if ($p) flash_settle($p);
     }
-    if ($p && $log!=='') {
-        $lines=explode("\n",strip_tags(preg_replace('/<br\s*\/?\s*>/i',"\n",$log)));
-        $p['clbpara']['flash']['last_log']=implode("\n",array_slice($lines,-100)); player_save($p);
+    if ($p && $log!=='') { $p['clbpara']['flash']['last_log']=$log; player_save($p); }
+    if ($p && $log==='') {
+        $log=$p['clbpara']['flash']['last_log']??'';
+        if ($log==='') { $scene=$p['clbpara']['flash']['scene']; flash_story($p,$scene['title'],$scene['text']); }
     }
+    if ($error!=='') $log.='<span class="yellow" role="alert">'.flash_html($error).'</span><br>';
     if ($kind==='command') {
         if (ob_get_level()) ob_clean(); header('Content-Type: application/json; charset=utf-8'); header('Cache-Control: no-store');
-        echo json_encode(array('html'=>flash_panel($p,$error),'revision'=>$p?$p['clbpara']['flash']['revision']:0),JSON_UNESCAPED_UNICODE); return;
+        echo json_encode($p?flash_game_view($p,true):array('url'=>'valid.php'),JSON_UNESCAPED_UNICODE); return;
     }
-    $flash_body=$p?flash_panel($p,$error):flash_join_panel($user,$error);
-    if (ob_get_level()) ob_clean(); header('Cache-Control: no-store'); include template('flash');
+    if (ob_get_level()) ob_clean(); header('Cache-Control: no-store');
+    if ($p) echo flash_game_view($p);
+    else { extract($GLOBALS,EXTR_SKIP); $flash_body=flash_join_panel($user,$error); include template('flash'); }
 }

@@ -71,8 +71,8 @@ function flash_world_reset(&$p=null,$initial=false) {
         $n['action']=''; $n['bid']=0; player_save($n);
     }
     if ($initial) {
-        $j=flash_spawn(array('name'=>'乔乔','gd'=>'f','icon'=>0,'club'=>0,'mhp'=>3200,'msp'=>400,'att'=>360,'def'=>280,'lvl'=>30,'skill'=>900,
-            'wep'=>'利爪','wepk'=>'WK','wepe'=>25,'weps'=>'∞','wepsk'=>'r','arb'=>'小小的探险斗篷','arbk'=>'DB','arbe'=>180,'arbs'=>'∞','arbsk'=>'E'),
+        $j=flash_spawn(array('name'=>'乔乔','gd'=>'f','icon'=>0,'club'=>0,'mhp'=>3200,'msp'=>400,'att'=>360,'def'=>280,'lvl'=>30,'skill'=>900,'wk'=>100,
+            'wep'=>'利爪','wepk'=>'WK','wepe'=>25,'weps'=>'∞','wepsk'=>'r','arb'=>'小小的探险斗篷','arbk'=>'DB','arbe'=>180,'arbs'=>'∞','arbsk'=>'EH'),
             'jojo','jojo',0,true);
         foreach (flash_boss_specs() as $id=>$spec) {
             $n=call_user_func_array('flash_source',$spec['source']); $n['name']=$spec['name'];

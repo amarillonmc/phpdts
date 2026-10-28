@@ -46,6 +46,7 @@ function fr_heal(&$p) {
 function fr_revival(&$p) {
     if ($p['clbpara']['flash']['result']) throw new RuntimeException('route failed: '.$p['clbpara']['flash']['result']);
     if ($p['clbpara']['flash']['pending']) {
+        if ($p['hp']<=0) fr_step($p,'revive');
         fr_step($p,'keep','stats'); fr_step($p,'talk','cook'); fr_loot($p);
         fr_job($p,'equipment_WK');
     }
@@ -120,6 +121,6 @@ if (defined('FLASH_ROUTE_HELPERS')) return;
 fr_route(2810);
 fr_route(1031,true);
 $p=ft_start(); $pdata=&$p;
-for ($i=1;$i<=12;$i++) { fr_step($p,'rewind'); if ($i<12) fr_step($p,'keep','stats'); }
-ft_assert($p['clbpara']['flash']['result']==='lost' && $p['clbpara']['flash']['clicks']===23,'death budget route ends on twelfth death');
-echo "Failure: 23 action clicks, 12 deaths, 34 collapsed maps.\n";
+for ($i=1;$i<=12;$i++) { fr_step($p,'rewind'); if ($i<12) { fr_step($p,'revive'); fr_step($p,'keep','stats'); } }
+ft_assert($p['clbpara']['flash']['result']==='lost' && $p['clbpara']['flash']['clicks']===34,'death budget route ends on twelfth death');
+echo "Failure: 34 action clicks, 12 deaths, 34 collapsed maps.\n";

@@ -56,11 +56,11 @@ function load_gameinfo() {}
 function save_combatinfo() {}
 function addnews() {}
 function logsave() {}
-function init_battle_rev() {}
+if (!defined('FLASH_TEST_UI')) { function init_battle_rev() {} }
 function npc_changewep_rev() {}
 function npc_chat_rev() { return ''; }
 function addnoise() {}
-function template($name) { return GAME_ROOT.'gamedata/ruleset/FLASH/cache/mapitem_1.php'; }
+if (!defined('FLASH_TEST_UI')) { function template($name) { return GAME_ROOT.'gamedata/ruleset/FLASH/cache/mapitem_1.php'; } }
 function get_itmsk_array($keys) { return array_values(array_filter(preg_split('//u',(string)$keys,-1,PREG_SPLIT_NO_EMPTY),function($k){return isset($GLOBALS['itemspkinfo'][$k]);})); }
 function get_itmsk_strlen($keys,$max=30) { return implode('',$keys); }
 function diceroll($max) { return isset($GLOBALS['ft_dice'])?min($max,$GLOBALS['ft_dice']):mt_rand(0,$max); }
@@ -104,6 +104,7 @@ function ft_reload(&$p) { player_save($p); $p=fetch_playerdata_by_pid($p['pid'])
 if (defined('FLASH_TEST_BOOTSTRAP')) return;
 
 $p=ft_start(); $pdata=&$p;
+ft_assert($p['itm1']==='面包' && $p['itms1']===15 && $p['itm2']==='矿泉水' && $p['itms2']===15,'initial bread and mineral water');
 ft_assert(count(flash_closed())===0 && count(flash_safe())===35,'zero-ban world and permanent safe origin');
 ft_assert(count(array_filter(flash_npcs(),function($n){return flash_role($n)==='boss';}))===5,'five evidence bosses');
 ft_assert(count(array_filter(flash_npcs(),function($n){return flash_role($n)==='hazard';}))===3,'old zero-ban hazard trio');
@@ -121,7 +122,14 @@ foreach (array('weapon','armor','stats') as $choice) {
     flash_set_equipment($p,'arb',flash_item('标记防具','DB',555,70,'AH',array('stamp'=>'armor')));
     flash_mark($p,'FL_evidence_1'); flash_die($p,'test'); flash_die($p,'duplicate');
     ft_assert($p['clbpara']['flash']['deaths']===1,'one death cannot settle twice');
-    flash_tick($p); ft_reload($p); flash_keep($p,$choice); ft_reload($p);
+    flash_tick($p); ft_reload($p);
+    ft_assert($p['hp']===0 && $p['clbpara']['flash']['pending'],'reload stays dead');
+    ft_reject(function()use(&$p,$choice){flash_keep($p,$choice);},'keep cannot bypass death screen');
+    ft_reject(function()use(&$p){flash_action($p,'explore','');},'dead player cannot act');
+    flash_action($p,'revive',''); ft_reload($p);
+    ft_reject(function()use(&$p){flash_action($p,'revive','');},'continue cannot repeat');
+    flash_keep($p,$choice); ft_reload($p);
+    ft_assert($p['itm1']==='面包' && $p['itme1']===120 && $p['itms1']===15 && $p['itm2']==='矿泉水' && $p['itme2']===140 && $p['itms2']===15,'each category restores starting food');
     ft_assert(flash_fragments($p)===1 && flash_report_count($p)===1,'quest progress survives reload and loop');
     ft_assert(($p['wepe']==777)===($choice==='weapon'),'weapon category '.$choice);
     ft_assert(($p['arbe']==555)===($choice==='armor'),'armor category '.$choice);
@@ -129,7 +137,7 @@ foreach (array('weapon','armor','stats') as $choice) {
     if ($choice==='weapon') ft_assert(get_itmpara($p['weppara'])['stamp']==='kept','weapon para retained');
     ft_reject(function()use(&$p,$choice){flash_keep($p,$choice);},'keep cannot be submitted twice');
     flash_accept($p,'FL_recover_1'); $need=$p['clbpara']['quest']['active']['FL_recover_1']['need'];
-    flash_die($p,'again'); flash_tick($p); flash_keep($p,'stats');
+    flash_die($p,'again'); flash_tick($p); flash_revive($p); flash_keep($p,'stats');
     ft_assert($p['clbpara']['quest']['active']['FL_recover_1']['need']===$need,'accepted difficulty locked across another death');
     flash_job_event($p,'explore',$need); flash_claim($p,'FL_recover_1','stats');
     ft_reject(function()use(&$p){flash_claim($p,'FL_recover_1','stats');},'recover reward not paid twice');
@@ -138,14 +146,23 @@ $p=ft_start(); $pdata=&$p; $expected=array(1,2,4,6,9,12,16,20,24,28,32,34);
 foreach ($expected as $i=>$count) {
     flash_die($p,'sequence'); ft_assert(count(flash_closed())===$count,'ban expansion '.$i);
     ft_assert(!in_array(0,flash_closed(),true),'origin never collapses');
-    if ($i<11) { flash_tick($p); flash_keep($p,'stats'); ft_assert($p['hp']>0 && $p['sp']===$p['msp'],'revival fills pools'); }
+    if ($i<11) { flash_tick($p); flash_revive($p); flash_keep($p,'stats'); ft_assert($p['hp']>0 && $p['sp']===$p['msp'],'revival fills pools'); }
 }
 ft_assert($p['clbpara']['flash']['result']==='lost' && $p['clbpara']['flash']['deaths']===12,'twelfth death fails');
+ft_reject(function()use(&$p){flash_action($p,'revive','');},'twelfth death has no revival');
+
+$p=ft_start(); $pdata=&$p;
+for ($i=1;$i<=6;$i++) flash_set_item($p,$i,flash_item('保留武器'.$i,'WK',200,50,'',array('slot'=>$i)));
+flash_die($p,'full bag'); flash_revive($p); flash_keep($p,'weapon'); ft_reload($p);
+ft_assert(count($p['clbpara']['flash']['loot'])===2 && $p['clbpara']['flash']['loot'][0]['itm']==='面包' && $p['clbpara']['flash']['loot'][1]['itm']==='矿泉水','full retained bag still receives both starting supplies');
+for ($i=1;$i<=6;$i++) ft_assert($p['itm'.$i]==='保留武器'.$i && get_itmpara($p['itmpara'.$i])['slot']===$i,'supplies never overwrite retained weapon '.$i);
 
 $p=ft_start(); $pdata=&$p; $boss=flash_npc('boss1'); $boss['hp']=137; player_save($boss);
 $final=flash_npc('final'); $final['hp']=1; $final['clbpara']['flash_npc']['rewinds']=2; player_save($final);
 $j=flash_npc('jojo'); $j['att']=999; player_save($j); $old_minions=array_filter(flash_npcs(),function($n){return flash_role($n)==='minion';});
 flash_die($p,'world reset'); flash_tick($p);
+ft_assert(flash_npc('final')['hp']===1 && array_intersect_key($old_minions,flash_npcs())===$old_minions,'world waits at death screen');
+flash_revive($p);
 ft_assert(flash_npc('boss1')['hp']===137,'intermediate boss health persists');
 ft_assert(flash_npc('final')['hp']===flash_npc('final')['mhp'] && flash_npc('final')['clbpara']['flash_npc']['rewinds']===0,'final health and rewind allowance reset');
 ft_assert(flash_npc('jojo')['att']===999,'companion growth persists');
@@ -157,6 +174,15 @@ ft_assert($p['hp']===90 && $p['mhp']===$mhp-2 && $p['msp']===$msp-2,'erosion cha
 flash_erosion($p,true); flash_erosion($p,true); ft_assert(strpos($p['inf'],'u')!==false && isset($p['clbpara']['quest']['completed']['FL_clue_'.$blocked]),'third eroded search gives status and clue');
 
 // 正式战斗公式：弱点包括固伤，三段+四次攻击，反噬与死亡保存。
+$p=ft_start(); $pdata=&$p; $j=flash_npc('jojo');
+ft_assert($j['wk']===100,'companion starts at one hundred slash proficiency');
+$j['nm']='乔乔'; $j['wep_name']=$j['wep']; $j['final_damage']=5000;
+$j['ex_keys']=array_merge(\revattr\get_equip_ex_array($j),\revattr\get_wep_ex_array($j));
+$n=flash_npc('boss1'); $hp=$j['hp']; \revattr\attack_finish_events($j,$n,1);
+ft_assert((int)$j['hp']===$hp-(int)floor(floor($hp*4/5)/10),'companion cloak applies native HP control to recoil');
+$hp=$j['hp']; \revattr\attack_finish_events($j,$n,1);
+ft_assert($j['hp']>2700 && (int)$j['hp']===(int)$hp-(int)floor(floor($hp*4/5)/10),'two high damage attacks no longer leave companion near death');
+
 $p=ft_start(); $pdata=&$p; $n=flash_npc('boss2'); $p['wep_kind']='N';
 ft_assert(ruleset_get_fix_damage_hook($p,$n,1)===0 && ruleset_final_damage_fix_hook($p,$n,1,9999)===0,'wrong weakness also blocks fixed damage');
 $p['wep_kind']=$gamevars['flash']['weak'][2]; ft_assert(ruleset_final_damage_fix_hook($p,$n,1,100)===null,'correct weakness follows native damage');
@@ -171,10 +197,10 @@ $n=flash_npc('final'); $n['nm']=$n['name']; $n['wep_name']=$n['wep']; $n['final_
 ft_assert((int)$n['hp']===$hp,'final cannot be killed through recoil');
 
 // 实际往返原生战斗与序列化，而非仅直接调用死亡钩子。
-$p=ft_start(); $pdata=&$p; $n=flash_npc('boss1'); $n['pls']=0; $n['wepsk']=''; $n['att']=100000; $n['wepe']=100000; player_save($n);
+$p=ft_start(); $pdata=&$p; $n=flash_npc('boss1'); $p['pls']=$n['pls']=1; $n['wepsk']=''; $n['att']=100000; $n['wepe']=100000; player_save($n);
 $p['clbpara']['flash']['stance']='suppress'; $p['hp']=1; $ft_dice=0;
 flash_fight($p,$n['pid'],false,1); unset($ft_dice); flash_tick($p); ft_reload($p);
-ft_assert($p['clbpara']['flash']['pending'] && $p['clbpara']['flash']['deaths']===1 && $p['pls']===0,'native lethal combat returns home after save');
+ft_assert($p['clbpara']['flash']['pending'] && $p['clbpara']['flash']['deaths']===1 && $p['hp']===0 && $p['pls']===1 && $p['bid']===$n['pid'],'native lethal combat preserves death location and killer after save');
 
 $p=ft_start(); $pdata=&$p; flash_accept($p,'patrol'); flash_job_event($p,'minion',3); $before=$p['att']; flash_claim($p,'FL_job_patrol','stats');
 ft_assert($p['att']>$before && isset($p['clbpara']['quest']['completed']['FL_job_patrol']),'job completion pays');
@@ -193,9 +219,11 @@ flash_action($p,'escape',''); ft_assert($p['clbpara']['flash']['result']==='norm
 ft_reject(function()use(&$p){flash_action($p,'escape','');},'ending cannot settle twice');
 $p=ft_start(); $pdata=&$p; $now=4600; flash_tick($p); ft_assert($p['clbpara']['flash']['result']==='lost' && $p['clbpara']['flash']['deaths']===0,'timeout independent of death and no chain death');
 
-// 两套皮肤都使用 fallback 的同一个 FLASH 模板，直接输出玩家可见文本检查泄露边界。
+// 两套皮肤复用相同信息区和死亡控制，玩家文本不泄露原 NPC 身份。
 $p=ft_start(); $pdata=&$p; $html=flash_panel($p); ft_assert(strpos($html,'data-action="explore"')!==false && strpos($html,'data-action="keep"')===false,'active controls render');
-flash_die($p,'preview'); $html=flash_panel($p); ft_assert(substr_count($html,'data-action="keep"')===3,'revival has exactly three choices');
+flash_die($p,'preview'); $html=flash_panel($p);
+ft_assert(substr_count($html,'data-action="revive"')===1 && strpos($html,'data-action="keep"')===false,'death screen offers only explicit continue');
+flash_revive($p); $html=flash_panel($p); ft_assert(substr_count($html,'data-action="keep"')===3,'revival has exactly three choices');
 foreach (array('EA-772','奥西戈夫','AI','训练','时空特使','七星','QM') as $secret) ft_assert(strpos(strip_tags($html),$secret)===false,'public copy excludes '.$secret);
 // 待选物品与满包，正式换装/喂食处理，保留 para 与旧装备。
 $p=ft_start(); $pdata=&$p;
@@ -208,6 +236,9 @@ ft_assert($p['wep']==='有标记的刀' && get_itmpara($p['weppara'])['stamp']==
 ft_assert($p['clbpara']['flash']['loot'][0]['itm']==='醒来时攥着的短刀','replaced equipment stays in offer');
 $att=flash_npc('jojo')['att']; flash_action($p,'loot_feed','0'); ft_reload($p);
 ft_assert(!$p['clbpara']['flash']['loot'] && flash_npc('jojo')['att']>$att,'feeding offered weapon grows saved companion');
+flash_action($p,'unequip','wep'); ft_reload($p);
+ft_assert($p['wepk']==='WN' && !$p['itms0'] && $p['clbpara']['flash']['loot'][0]['itmpara']['stamp']==='reward','native unequip preserves full-bag equipment and para in offer');
+ft_reject(function()use(&$p){flash_action($p,'unequip','arb');},'unequip cannot overwrite unhandled offer');
 $before=$p['clbpara']['quest']['active']; ft_reject(function()use(&$p){flash_accept($p,'FL_recover_fake');},'forged recovery rejected');
 ft_assert($before===$p['clbpara']['quest']['active'],'forged recovery does not add active state');
 ft_reject(function()use(&$p){flash_claim($p,'FL_job_collect','equipment_WX');},'forged weapon family rejected');
@@ -241,7 +272,9 @@ foreach (array(true,false) as $success) {
 }
 $p['pls']=1; $p['hp']=400; $ft_dice=99; flash_trap($p,true); unset($ft_dice);
 ft_assert($p['clbpara']['flash']['pending'] && $p['clbpara']['flash']['deaths_log'][1]['reason']==='阔剑地雷','native claymore triggers loop with readable cause');
-ft_assert(!$p['itms0'],'trap processing clears temporary slot'); flash_tick($p); flash_keep($p,'stats'); $p['pls']=2;
+ft_assert(!$p['itms0'],'trap processing clears temporary slot'); flash_tick($p); ft_reload($p);
+ft_assert($p['hp']===0 && $p['pls']===1 && $p['state']===27,'claymore death persists before continue');
+flash_revive($p); flash_keep($p,'stats'); $p['pls']=2;
 flash_set_item($p,2,flash_item('混沌人肉探雷车','Y',1,1)); $before=count($db->maptrap); flash_use($p,2);
 ft_assert(count($db->maptrap)===$before-1 && !$p['itms2'],'mine car removes one area claymore and is consumed');
 flash_set_item($p,2,flash_item('混沌人肉探雷车','Y',1,1)); ft_reject(function()use(&$p){flash_use($p,2);},'empty disarm does not consume');
@@ -252,7 +285,7 @@ $p=ft_start(); $pdata=&$p; $p['att']=$p['def']=100000; $p['mhp']=$p['hp']=100000
 $ft_dice=0; flash_event($p,'chain'); unset($ft_dice);
 ft_assert(isset($p['clbpara']['quest']['completed']['FL_report_chain']) && flash_npc('friend_red')['hp']<=0,'counterkill still keeps witnessed page');
 ft_assert(flash_ready($p) && !isset($p['clbpara']['quest']['completed']['FL_report_wrong']),'counterkill continues without wrong-person death');
-flash_die($p,'回溯'); flash_tick($p);
+flash_die($p,'回溯'); flash_tick($p); flash_revive($p);
 ft_assert(flash_npc('friend_red')['hp']>0 && flash_npc('friend_blue')['hp']>0 && empty(flash_npc('friend_red')['clbpara']['flash_npc']['silence']),'murder pair reset together');
 
 // 代打的真实战斗、死亡牵连、找回，以及终局重置后再次领取的条件。
@@ -260,11 +293,11 @@ $p=ft_start(); $pdata=&$p; $n=flash_npc('boss1'); $n['pls']=0; $n['hp']=$n['mhp'
 $j=flash_npc('jojo'); $j['hp']=1; player_save($j); $p['clbpara']['flash']['stance']='suppress'; $ft_dice=0;
 flash_fight($p,$n['pid'],true,1); unset($ft_dice); flash_tick($p); ft_reload($p);
 ft_assert($p['clbpara']['flash']['pending'] && $p['clbpara']['flash']['jojo_deaths']===1 && flash_npc('jojo')['hp']<=0,'companion defeat forces player loop');
-flash_keep($p,'stats'); flash_action($p,'recover_jojo',''); ft_reload($p);
+flash_revive($p); flash_keep($p,'stats'); flash_action($p,'recover_jojo',''); ft_reload($p);
 ft_assert(!$p['clbpara']['flash']['jojo_missing'] && flash_npc('jojo')['hp']>0 && !flash_true_available($p),'recover companion does not erase prior death');
 $p=ft_start(); $pdata=&$p; $p['clbpara']['flash']['gate']=true; $p['inf']='e'; $n=flash_npc('final');
 for ($i=0;$i<3;$i++) { $n['hp']=0; ruleset_combat_result_hook($p,$n,1); ft_assert(($n['hp']>0)===($i<2),'final rewinds at most twice'); }
-player_save($n); flash_die($p,'门后的回溯'); flash_tick($p); $n=flash_npc('final');
+player_save($n); flash_die($p,'门后的回溯'); flash_tick($p); flash_revive($p); $n=flash_npc('final');
 ft_assert($n['hp']===$n['mhp'] && empty($n['clbpara']['flash_npc']['rewarded']),'next loop final can settle again');
 $now=$gamevars['flash']['start']+3600; flash_tick($p); ft_assert($p['clbpara']['flash']['result']==='lost' && $p['clbpara']['flash']['deaths']===1,'timeout while choosing does not spend another life');
 $a=array('bskill_c7_electric'=>1); $b=array();
@@ -282,5 +315,21 @@ $p=ft_start(); $pdata=&$p; $areanum=1; $p['pls']=flash_closed()[0];
 for ($i=0;$i<3;$i++) flash_erosion($p,true);
 ft_reload($p); $qid='FL_clue_'.$p['pls'];
 ft_assert(!empty($p['clbpara']['quest']['completed'][$qid]['reason']) && strpos(flash_journal_panel($p),'空白里的学生证')!==false,'optional clue can be reread after reload');
+
+// 气泡只出现在同伴确实同行时，后端也校验喂食对象的状态。
+$p=ft_start(); $pdata=&$p;
+ft_assert(strpos(flash_companion($p),'data-action="feed"')!==false && strpos(flash_panel($p),'data-action="feed"')===false,'companion controls live in floating bubble');
+$j=flash_npc('jojo'); $j['pls']=1; player_save($j);
+ft_assert(flash_companion($p)==='','companion not at player location is hidden');
+ft_reject(function()use(&$p){flash_feed($p,1);},'feeding distant companion rejected');
+$j['pls']=0; $j['hp']=0; player_save($j);
+ft_assert(flash_companion($p)==='','dead companion is hidden');
+ft_reject(function()use(&$p){flash_feed($p,1);},'feeding dead companion rejected');
+$j['hp']=$j['mhp']; player_save($j); $p['clbpara']['flash']['jojo_missing']=true;
+ft_assert(flash_companion($p)==='','missing companion is hidden');
+$p['clbpara']['flash']['jojo_missing']=false; flash_die($p,'preview');
+ft_assert(flash_companion($p)==='','death screen hides companion');
+flash_revive($p); ft_assert(flash_companion($p)==='','retention choice hides companion');
+flash_keep($p,'stats'); ft_assert(strpos(flash_companion($p),'flash-jojo-toggle')!==false,'continued journey restores companion widget');
 
 echo 'FLASH: '.$ft_count." assertions passed.\n";

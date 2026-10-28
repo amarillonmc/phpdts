@@ -89,7 +89,10 @@ function ruleset_attack_damage_hook(&$a,&$b,$active,$damage) {
 function ruleset_backlash_damage_hook(&$a,&$b,$damage) { return flash_is_final($a)?0:$damage; }
 function ruleset_combat_result_hook(&$a,&$b,$active) {
     if ($b['hp']>0) return null;
-    if (!$b['type'] && !empty($b['clbpara']['flash'])) { flash_die($b,$a['name'],$a); return 0; }
+    if (!$b['type'] && !empty($b['clbpara']['flash'])) {
+        $states=array('P'=>20,'K'=>21,'G'=>22,'C'=>23,'D'=>24,'F'=>25);
+        flash_die($b,$a['name'],$a,$states[$a['wep_kind']??substr($a['wepk'],1,1)]??20); return 0;
+    }
     $role=flash_role($b); if ($role==='') return null;
     $owner=&$GLOBALS['pdata']; $s=&$owner['clbpara']['flash']; $meta=&$b['clbpara']['flash_npc'];
     if (flash_is_final($b) && ($meta['rewinds']??0)<2 && strpos($owner['inf'],'e')!==false) {
@@ -130,7 +133,7 @@ function ruleset_combat_result_hook(&$a,&$b,$active) {
 }
 function ruleset_battle_finish_hook(&$a,&$b) {
     foreach (array(&$a,&$b) as &$n) {
-        $n['action']=''; $n['bid']=0;
+        $n['action']=''; if ($n['hp']>0) $n['bid']=0;
         flash_limit_stats($n);
         // 怒气与清理临时标记的时机与原生战斗相同，永不把回溯后的旧位置写回来。
         if (flash_role($n)==='jojo') $n['rage']=min($GLOBALS['mrage'],$n['rage']+20);
@@ -141,7 +144,8 @@ function ruleset_battle_finish_hook(&$a,&$b) {
 function ruleset_natural_death_hook(&$p,$death,$name='',$type=0,$annex='') {
     if (!$p['type'] && !empty($p['clbpara']['flash'])) {
         $causes=array('trap'=>'陷阱','poison'=>'中毒','hack'=>'通路崩塌','injured'=>'伤势恶化','area'=>'崩坏区域');
-        flash_die($p,$name?:($annex?:($causes[$death]??'意外'))); return true;
+        $states=array('trap'=>27,'poison'=>26,'hack'=>14,'injured'=>10,'area'=>11);
+        flash_die($p,$name?:($annex?:($causes[$death]??'意外')),null,$states[$death]??10); return true;
     }
     return null;
 }

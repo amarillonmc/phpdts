@@ -4,7 +4,10 @@ if (!defined('IN_GAME')) exit('Access Denied');
 function flash_cfg($key) { return $GLOBALS['flash_config'][$key]; }
 function flash_html($s) { return htmlspecialchars((string)$s,ENT_QUOTES,'UTF-8'); }
 function flash_say($s) { $GLOBALS['log'].=flash_html($s).'<br>'; }
-function flash_story(&$p,$title,$text) { $p['clbpara']['flash']['scene']=array('title'=>$title,'text'=>$text); flash_say($text); }
+function flash_story(&$p,$title,$text) {
+    $p['clbpara']['flash']['scene']=array('title'=>$title,'text'=>$text);
+    $GLOBALS['log'].='<span class="yellow">'.flash_html($title).'</span><br>'; flash_say($text);
+}
 function flash_revival_text($n) {
     $lines=array(
         1=>'你死了。……然后，你在无月之影睁开眼睛。报告册里多了一页：地点、时间，还有没来得及喊出的那一声。乔乔把笔递给你，手还在抖。窗外，一条街道消失了。',

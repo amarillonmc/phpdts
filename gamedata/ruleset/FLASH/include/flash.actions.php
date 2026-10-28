@@ -274,10 +274,13 @@ function flash_event(&$p,$event) {
 function flash_action(&$p,$action,$arg,$extra='') {
     $s=&$p['clbpara']['flash'];
     if ($s['result']) throw new RuntimeException('这一段旅程已经结束。');
+    if ($action==='revive') { flash_revive($p); return; }
     if ($action==='keep') { flash_keep($p,$arg); return; }
     if ($s['pending']) throw new RuntimeException('先选择这次回溯要保留的东西。');
     if (!flash_ready($p)) throw new RuntimeException('你现在无法行动。');
     switch ($action) {
+        case 'journal': $GLOBALS['log'].=flash_journal_panel($p); break;
+        case 'recall': flash_story($p,$s['scene']['title'],$s['scene']['text']); break;
         case 'move': flash_move($p,(int)$arg); break;
         case 'return': flash_move($p,(int)$s['last_place'],true); break;
         case 'explore': flash_explore($p); break;
@@ -291,6 +294,14 @@ function flash_action(&$p,$action,$arg,$extra='') {
         case 'use': flash_use($p,(int)$arg); break;
         case 'feed': flash_feed($p,(int)$arg); break;
         case 'swap': change_subwep(2,$p); break;
+        case 'unequip':
+            if (!in_array($arg,array('wep','arb','arh','ara','arf','art'),true)) throw new RuntimeException('请选择身上的装备。');
+            flash_require_empty_loot($p);
+            foreach (array($arg,$arg.'k',$arg.'e',$arg.'s',$arg.'sk',$arg.'para','itm0','itmk0','itme0','itms0','itmsk0','itmpara0') as $field) $GLOBALS[$field]=&$p[$field];
+            ob_start();
+            try { itemoff($arg); } finally { ob_end_clean(); }
+            if ($p['itms0']) { flash_loot($p,array(flash_item_at($p,0))); flash_set_item($p,0); }
+            break;
         case 'drop':
             if ((int)$arg<0 || (int)$arg>6 || empty($p['itms'.(int)$arg])) throw new RuntimeException('没有这件物品。');
             itemdrop((int)$arg,$p); break;
