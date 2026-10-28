@@ -570,8 +570,8 @@ function player_format_with_db_structure($data){
     $db_player_structure = update_db_player_structure();
     foreach ($db_player_structure as $key)
     {
-        if(isset($data[$key]) && is_array($data[$key])) $data[$key]=json_encode($data[$key],JSON_UNESCAPED_UNICODE);
-		$ndata[$key]=isset($data[$key]) ? $data[$key] : '';
+        // 字段可能仍与全局变量引用绑定；只序列化输出行，不能改写调用方的运行状态。
+		$ndata[$key]=isset($data[$key]) ? (is_array($data[$key]) ? json_encode($data[$key],JSON_UNESCAPED_UNICODE) : $data[$key]) : '';
     }
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
 	reload_equip_items($ndata);

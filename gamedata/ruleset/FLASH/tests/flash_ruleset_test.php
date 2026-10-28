@@ -46,11 +46,29 @@ function ft_fields() {
     return $fields;
 }
 function create_dummy_playerdata() { $p=ft_fields(); $p['clbpara']=array(); $p['money']=10000; return $p; }
-function player_format_with_db_structure($p) {
-    $out=array(); foreach (ft_fields() as $key=>$default) { $v=$p[$key]??$default; $out[$key]=is_array($v)?json_encode($v,JSON_UNESCAPED_UNICODE):$v; }
-    if (function_exists('reload_equip_items')) reload_equip_items($out);
-    return $out;
+function update_db_player_structure($type=0) { return array_keys(ft_fields()); }
+// 执行正式序列化函数；只替换数据库结构查询，避免保存替身掩盖 PHP 引用副作用。
+function ft_load_function($file,$name) {
+    $tokens=token_get_all(file_get_contents(GAME_ROOT.$file));
+    for ($i=0;$i<count($tokens);$i++) {
+        if (!is_array($tokens[$i]) || $tokens[$i][0]!==T_FUNCTION) continue;
+        $found='';
+        for ($j=$i+1;$j<count($tokens);$j++) {
+            if (is_array($tokens[$j]) && $tokens[$j][0]===T_STRING) { $found=$tokens[$j][1]; break; }
+            if ($tokens[$j]==='(') break;
+        }
+        if ($found!==$name) continue;
+        $code=''; $depth=0; $started=false;
+        for (;$i<count($tokens);$i++) {
+            $token=$tokens[$i]; $code.=is_array($token)?$token[1]:$token;
+            if ($token==='{') { $depth++; $started=true; }
+            elseif ($token==='}' && --$depth===0 && $started) { eval($code); return; }
+            elseif (is_array($token) && in_array($token[0],array(T_CURLY_OPEN,T_DOLLAR_OPEN_CURLY_BRACES),true)) $depth++;
+        }
+    }
+    throw new RuntimeException('Missing production function: '.$name);
 }
+ft_load_function('include/global.func.php','player_format_with_db_structure');
 function player_save($p) { $GLOBALS['db']->players[$p['pid']]=player_format_with_db_structure($p); }
 function fetch_playerdata_by_pid($id) { $p=$GLOBALS['db']->players[$id]??null; if ($p) { $p['clbpara']=get_clbpara($p['clbpara']); $p['pls']=(int)$p['pls']; $p['type']=(int)$p['type']; } return $p; }
 function save_gameinfo() { $GLOBALS['ft_saved_game']=json_encode($GLOBALS['gamevars'],JSON_UNESCAPED_UNICODE); }
@@ -391,6 +409,22 @@ ft_reject(function()use(&$p){flash_action($p,'cancel','FL_job_disarm');},'automa
 ft_reject(function()use(&$p){flash_action($p,'cancel','FL_recover_1');},'recoverable losses cannot be discarded by task cancellation');
 
 // 原生商店、整理、合成与技能操作经过请求校验和保存，不能绕过死亡/重复提交。
+$p=ft_start(); $pdata=&$p; $p['pls']=$shops[0];
+$scene=$p['clbpara']['flash']['scene']; $quests=$p['clbpara']['quest'];
+flash_set_item($p,5,flash_item('带参数的道具','C',1,1,'',array('mark'=>'商店保存')));
+flash_action($p,'native',array('command'=>'special','sp_cmd'=>'sp_shop'));
+flash_settle($p);
+ft_assert(is_array($p['clbpara']) && is_array($p['itmpara5']),'saving native shop command must not serialize live player references');
+ft_assert($p['clbpara']['flash']['scene']===$scene && $p['clbpara']['quest']===$quests,'shop save preserves story and quest state');
+ft_assert(is_string($db->players[$p['pid']]['clbpara']) && is_string($db->players[$p['pid']]['itmpara5']),'database row still receives JSON strings');
+$log=''; flash_story($p,$scene['title'],$scene['text']); $p['clbpara']['flash']['last_log']=$log; player_save($p);
+ft_assert(is_array($p['clbpara']) && $p['clbpara']['flash']['last_log']===$log,'story fallback and second save remain usable after shop');
+ft_reload($p);
+ft_assert($p['clbpara']['flash']['scene']===$scene && $p['clbpara']['quest']===$quests && get_itmpara($p['itmpara5'])['mark']==='商店保存','shop state and item metadata survive reload');
+ft_reject(function()use(&$p){flash_action($p,'native',array('command'=>'itemmove','from'=>'5','to'=>'99'));},'invalid native command still reaches error response path');
+flash_settle($p);
+ft_assert(is_array($p['clbpara']) && $p['clbpara']['flash']['scene']===$scene,'error-path save preserves live story state');
+
 $p=ft_start(); $pdata=&$p; $p['pls']=$shops[0];
 ft_command($p,array('command'=>'special','sp_cmd'=>'sp_shop'));
 ft_assert($flash_cmd_template==='sp_shop','native shop menu opens');

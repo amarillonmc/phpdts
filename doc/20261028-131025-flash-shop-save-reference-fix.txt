@@ -1,0 +1,18 @@
+FLASH 商店 HTTP 500：保存时引用字段被改成字符串
+时间：2026-10-28（UTC）
+
+问题与修复
+进入商店等原生操作后，flash_native_command 会将玩家字段与全局变量引用绑定。player_save 调用 player_format_with_db_structure 时，虽然参数按值传递，数组中的引用仍指向原玩家字段。原函数给 $data[$key] 回写 JSON 字符串，连带把正在使用的 clbpara / itmpara 改成字符串。
+随后 flash_http 读取剧情时，将 JSON 的首字符“{”误当成标题、正文，最终在 flash_story 写入 scene 时触发 Cannot use string offset as an array。已有日志时也可能在回写 last_log 处出错。
+
+修改 include/global.func.php 的 player_format_with_db_structure：直接将序列化结果写入数据库输出数组 $ndata，不修改输入字段。数据库仍保存原来的 JSON 格式，运行中的剧情、任务和物品参数保持数组；不改变玩法或数据库结构。
+更新服务器时必须包含公共文件 include/global.func.php，只同步 FLASH 目录不会带上此修复。无需清空玩家数据或重开房间。
+
+回归与验证
+- 原 FLASH 测试的序列化替身没有复现引用副作用。现改为加载并执行正式 player_format_with_db_structure，仅以测试表结构替代数据库结构读取。
+- 新用例在修复前稳定失败；修复后验证打开商店、保存、无日志剧情回显、再次保存、重载以及非法原生命令的错误保存路径。数据库输出仍为 JSON，剧情/任务及道具附加参数均保留。
+- PHP 7.4.33、short_open_tag=1：FLASH 298 项断言通过；普通/真/失败三条结局路线通过；Q6、LAIKAADVENT、RAIDCAGEDBIRD 现有回归通过。改动 PHP 文件语法检查与 git diff --check 通过。
+- 浏览器使用隔离内存数据库、真实序列化函数和模板，default / nouveau 均完成商店入口、分类、购买、扣款及重新载入验证；包括 last_log 为空时的剧情回显。浏览器无脚本错误，未出现本次 fatal。临时服务器、页面及编译模板已清理。
+
+范围与限制
+生产代码仅修改上述公共序列化函数，另补测试与本记录。未连接线上数据库或替用户部署，页面夹具验证不等于线上联调。
