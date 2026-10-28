@@ -5,7 +5,7 @@ function flash_state() {
     return array('csrf'=>bin2hex(random_bytes(24)),'revision'=>0,'deaths'=>0,'pending'=>false,'result'=>'','finished'=>0,
         'jojo_deaths'=>0,'jojo_missing'=>false,'fed'=>0,'food_buff'=>0,'stance'=>'attack','target'=>0,'snare'=>0,'gate'=>false,'trial'=>false,
         'gate_returns'=>0,'death_places'=>array(),'friends_killed'=>array(),'events'=>array(),'loot'=>array(),'erosion'=>0,'eroded_actions'=>0,
-        'path'=>false,'clues'=>array(),'actions'=>0,'clicks'=>0,'stage_clicks'=>0,'stage_max'=>0,'last_place'=>0,
+        'path'=>false,'clues'=>array(),'actions'=>0,'clicks'=>0,'stage_clicks'=>0,'stage_max'=>0,'last_place'=>0,'idle_at'=>$GLOBALS['now'],
         'scene'=>array('title'=>'大人同盟探险队','text'=>'你在无月之影醒来，却记不起自己的名字。猫耳少女蹲在身旁，始终没有放开你的衣角。「乔乔是大人同盟探险队的乔乔的说！不记得名字的话，就先叫旅人酱的说。醒了的话，就是同伴了的说！」'));
 }
 function flash_stats() { return array('mhp','msp','att','def','lvl','exp','wp','wk','wg','wc','wd','wf','skills','skillpoint'); }
@@ -53,6 +53,7 @@ function flash_die(&$p,$reason,$enemy=null,$state=10) {
     $s['last_place']=(int)$p['pls'];
     $s['death_places'][$p['pls']]=($s['death_places'][$p['pls']]??0)+1;
     $s['deaths']++;
+    $s['events']['first_step']=true;
     $step=flash_cfg('ban_steps')[$s['deaths']-1];
     $GLOBALS['areanum']=min(count($GLOBALS['gamevars']['flash']['order']),$GLOBALS['areanum']+$step);
     $s['deaths_log'][$s['deaths']]=array('time'=>$GLOBALS['now'],'place'=>$p['pls'],'reason'=>$reason,'text'=>flash_revival_text($s['deaths']));
@@ -107,11 +108,13 @@ function flash_keep(&$p,$choice) {
     }
     // 每次损失只有一份找回委托；最多 11 份，任务对象不随下一次回溯重置。
     $qid='FL_recover_'.$s['deaths'];
-    $p['clbpara']['quest']['active'][$qid]=array('accepted'=>false,'progress'=>0,'loss'=>$lost,'death'=>$s['deaths']);
+    $p['clbpara']['quest']['active'][$qid]=array('accepted'=>true,'progress'=>0,'loss'=>$lost,'death'=>$s['deaths'],'at_revive'=>$s['deaths'],'need'=>2+(int)floor($s['deaths']/2));
     unset($s['loss']); $s['pending']=false; $p['hp']=$p['mhp']; $p['sp']=$p['msp']; $p['rage']=0;
     $p['money']=max(20,(int)floor($p['money']*.25));
     $p['action']=''; $p['bid']=0;
     flash_starting_supplies($p);
+    flash_loot($p,$old['found']??array());
+    $s['idle_at']=$GLOBALS['now']; flash_update_quests($p);
     flash_say('你把选中的东西攥在手里。剩下的，让搬运工帮你找回来。');
 }
 function flash_starting_supplies(&$p) {
@@ -137,6 +140,17 @@ function flash_finish(&$p,$result,$reason='') {
 function flash_tick(&$p) {
     if (empty($p['clbpara']['flash']['result']) && $GLOBALS['now']>=$GLOBALS['gamevars']['flash']['start']+flash_cfg('seconds')) flash_finish($p,'lost','timeout');
     if (!empty($p['clbpara']['flash']['reset_world'])) flash_world_reset($p);
+    $s=&$p['clbpara']['flash'];
+    if (!isset($s['idle_at']) || !flash_ready($p) || $p['hp']<=0) $s['idle_at']=$GLOBALS['now'];
+    else {
+        $ticks=(int)floor(max(0,$GLOBALS['now']-$s['idle_at'])/flash_cfg('idle_seconds'));
+        if ($ticks) {
+            $p['hp']=min($p['mhp'],$p['hp']+$ticks*flash_cfg('idle_hp'));
+            $p['sp']=min($p['msp'],$p['sp']+$ticks*flash_cfg('idle_sp'));
+            $s['idle_at']+=$ticks*flash_cfg('idle_seconds');
+        }
+    }
+    flash_update_quests($p);
 }
 function flash_settle(&$p) {
     global $gamestate;
@@ -148,7 +162,8 @@ function flash_settle(&$p) {
     }
 }
 function flash_pay(&$p,$cost) {
-    if ($p['sp']<$cost) throw new RuntimeException('体力不足。使用补给，或回溯后再出发。');
+    if ($p['sp']<$cost) throw new RuntimeException('体力不足。稍候恢复，或使用补给再出发。');
+    $p['clbpara']['flash']['idle_at']=$GLOBALS['now'];
     $p['sp']-=$cost; $p['clbpara']['flash']['actions']+=(int)($cost/15);
 }
 function flash_erosion(&$p,$search=false) {
@@ -167,7 +182,7 @@ function flash_erosion(&$p,$search=false) {
     if ($p['hp']<=0) flash_die($p,'崩坏侵蚀');
 }
 function flash_job_event(&$p,$kind,$count=1) {
-    quest_init_state($p['clbpara']);
+    flash_update_quests($p);
     foreach ($p['clbpara']['quest']['active'] as $qid=>&$q) {
         if (strpos($qid,'FL_job_')===0 && ($q['kind']??'')===$kind) $q['progress']=min($q['need'],$q['progress']+$count);
         if (strpos($qid,'FL_recover_')===0 && !empty($q['accepted']) && in_array($kind,array('minion','holo','elite','boss','explore'),true)) $q['progress']=min($q['need'],$q['progress']+$count);

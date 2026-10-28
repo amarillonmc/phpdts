@@ -4,6 +4,11 @@ if (!defined('IN_GAME')) exit('Access Denied');
 function flash_require_empty_loot($p) {
     if (!empty($p['clbpara']['flash']['loot']) || !empty($p['itms0'])) throw new RuntimeException('先整理眼前的物品，或把它们留在这里。');
 }
+function flash_mines($place=null) {
+    $rows=array(); $q=$GLOBALS['db']->query('SELECT * FROM '.$GLOBALS['tablepre'].'maptrap'.($place===null?'':' WHERE pls='.(int)$place));
+    while ($row=$GLOBALS['db']->fetch_array($q)) if (strpos($row['itm'],'阔剑')!==false) $rows[]=$row;
+    return $rows;
+}
 function flash_after_action(&$p,$kind) {
     if (!flash_ready($p)) return;
     flash_job_event($p,$kind);
@@ -15,17 +20,21 @@ function flash_after_action(&$p,$kind) {
     }
     require_once GAME_ROOT.'include/game/aievent.func.php'; aievent(25,$p);
 }
-function flash_trap(&$p,$certain=false) {
+function flash_trap(&$p,$certain=false,$search=false) {
     global $db,$tablepre;
-    if ((int)$p['pls']===0 || (!$certain && mt_rand(1,100)>15)) return;
-    $q=$db->query("SELECT * FROM {$tablepre}maptrap WHERE pls=".(int)$p['pls']);
-    $item=$db->fetch_array($q); if (!$item) return;
+    if ((!$search && !flash_first_encounter_active($p)) || (int)$p['pls']===0) return false;
+    $mines=flash_mines($p['pls']);
+    if (!$mines || (!$certain && mt_rand(1,100)>15)) return false;
+    $item=$mines[0];
     $held=flash_item_at($p,0);
     flash_set_item($p,0,$item); $db->query("DELETE FROM {$tablepre}maptrap WHERE tid=".(int)$item['tid']);
     // 原生陷阱负责回避、防御与致死判定；拆出的雷仍作为待选物品显示。
     trap($p);
+    $p['clbpara']['flash']['events']['first_step']=true;
     if (flash_ready($p) && !empty($p['itms0'])) flash_loot($p,array(flash_item_at($p,0)));
     flash_set_item($p,0,$held);
+    flash_update_quests($p);
+    return true;
 }
 function flash_move(&$p,$dest,$back=false) {
     $s=&$p['clbpara']['flash'];
@@ -36,37 +45,50 @@ function flash_move(&$p,$dest,$back=false) {
     if ($s['gate']) { $s['gate']=false; $s['gate_returns']++; }
     flash_say('你抵达了'.$GLOBALS['plsinfo'][$dest].'。');
     if (in_array($dest,flash_closed(),true)) flash_say('乔乔停在边界外：「乔乔在这里等你的说！一定要回来牵手的说！」');
-    if (!$s['deaths'] && empty($s['events']['first_step']) && $dest!==0) {
-        $s['events']['first_step']=true;
-        if (mt_rand(1,100)<=80) {
-            $hazard=mt_rand(0,3);
-            if ($hazard===3) flash_trap($p,true);
-            else {
-                $n=flash_npc('hazard'.$hazard); $n['pls']=$dest; player_save($n);
-                flash_say('你还没认清脚下的路，熟悉又陌生的身影已先一步出手。');
-                flash_fight($p,(int)$n['pid'],false,1,false,true);
+    if (flash_first_encounter_active($p) && $dest!==0) {
+        if (empty($s['events']['first_move'])) {
+            $s['events']['first_move']=true;
+            if (mt_rand(1,100)<=80) {
+                $hazard=mt_rand(0,3);
+                if ($hazard!==3 || !flash_trap($p,true)) {
+                    if ($hazard===3) $hazard=mt_rand(0,2);
+                    $n=flash_npc('hazard'.$hazard); $n['pls']=$dest; player_save($n);
+                    flash_say('你还没认清脚下的路，熟悉又陌生的身影已先一步出手。');
+                    flash_fight($p,(int)$n['pid'],false,1,false,true);
+                }
             }
-        }
-    } else flash_trap($p);
+        } else flash_trap($p);
+    }
     flash_after_action($p,(!$s['jojo_missing'] && !in_array($dest,flash_closed(),true))?'move':'travel');
 }
-function flash_explore(&$p) {
+function flash_explore(&$p,$count=3) {
     global $db,$tablepre;
-    flash_require_empty_loot($p); flash_pay($p,45); $p['pose']=3;
+    if (!in_array($count,array(3,10),true)) throw new RuntimeException('请选择探索三次或十次。');
+    flash_require_empty_loot($p); flash_pay($p,$count===10?100:45); $p['pose']=3;
     $rows=array(); $q=$db->query("SELECT * FROM {$tablepre}mapitem WHERE pls=".(int)$p['pls']);
     while ($row=$db->fetch_array($q)) $rows[]=$row;
-    shuffle($rows); $count=mt_rand(1,3);
-    foreach (array_slice($rows,0,$count) as $row) {
+    shuffle($rows); $found=0; $stopped=false;
+    for ($i=0;$i<$count;$i++) {
+        if (flash_trap($p,false,true)) {
+            $stopped=true;
+            // 只保存这一批已经发现的物品；其它死亡仍执行原有的三选一损失。
+            if (!empty($p['clbpara']['flash']['pending'])) $p['clbpara']['flash']['loss']['found']=$p['clbpara']['flash']['loot'];
+            flash_say('地雷打断了探索，本批剩余的次数已停止。此前发现的物品仍会留给你。');
+            break;
+        }
+        if (!$rows || mt_rand(1,100)>$GLOBALS['item_obbs']) continue;
+        $row=array_pop($rows); $found++;
         $item=array_intersect_key($row,array_flip(array('itm','itmk','itme','itms','itmsk','itmpara'))); $item['itmpara']=get_itmpara($item['itmpara']);
         flash_loot($p,array($item)); $db->query("DELETE FROM {$tablepre}mapitem WHERE iid=".(int)$row['iid']);
     }
-    flash_say($rows?'你沿着她记下的路线搜完了一带。挑些带得走的东西。':'这片地方已经搜空了。换条街道，或等下一次回溯。');
+    if (!$stopped) flash_say('完成 '.$count.' 次探索，发现 '.$found.' 件物品。'.($found?'挑些带得走的东西。':'这一趟没有新的发现。'));
     flash_after_action($p,'explore');
 }
 function flash_track(&$p,$id) {
     $s=&$p['clbpara']['flash']; $npc=fetch_playerdata_by_pid($id);
     if ($s['snare']) throw new RuntimeException('藤蔓束住了脚踝，暂时无法追踪。');
     if (!$npc || $npc['hp']<=0 || empty($npc['clbpara']['flash_npc']) || flash_is_final($npc) || flash_role($npc)==='jojo') throw new RuntimeException('找不到这样的足迹。');
+    if (flash_role($npc)==='hazard' && !flash_first_encounter_active($p)) throw new RuntimeException('那段初见时的回声已经散去了。');
     if (!ruleset_move_allowed_hook($p,(int)$npc['pls'])) throw new RuntimeException('足迹通向崩坏区域。先让移动PC维持一条通路。');
     flash_pay($p,45);
     if (mt_rand(1,100)<=flash_cfg('track_chance')) {
@@ -83,12 +105,13 @@ function flash_battle_action(&$p,$sweep=false,$jojo=false) {
         if ($p['sp']<30) break;
         if ($sweep && $p['hp']<=$p['mhp']*flash_cfg('sweep_hp')) { flash_say('生命不足三成，扫荡已经停下。先治疗再出发。'); break; }
         $enemy=$s['target']?fetch_playerdata_by_pid((int)$s['target']):null;
+        if ($enemy && flash_role($enemy)==='hazard' && !flash_first_encounter_active($p)) { $enemy=null; $s['target']=0; }
         if (!$enemy || $enemy['hp']<=0 || (int)$enemy['pls']!==(int)$p['pls']) {
             $pool=array();
             if ($s['gate']) foreach ($s['trial']?array('guardian','hunter'):array('final') as $key) {
                 $n=flash_npc($key); if ($n && $n['hp']>0 && (int)$n['pls']===(int)$p['pls']) $pool[]=$n;
             }
-            foreach (flash_npcs() as $n) if ($n['hp']>0 && (int)$n['pls']===(int)$p['pls'] && !in_array(flash_role($n),array('jojo','friend','final','hunter','guardian'),true)) $pool[]=$n;
+            foreach (flash_npcs() as $n) if ($n['hp']>0 && (int)$n['pls']===(int)$p['pls'] && !in_array(flash_role($n),array('jojo','friend','final','hunter','guardian'),true) && (flash_role($n)!=='hazard' || flash_first_encounter_active($p))) $pool[]=$n;
             if (!$pool) { flash_say('附近的敌人已经清空。'); break; }
             $enemy=$pool[array_rand($pool)];
         }
@@ -126,7 +149,7 @@ function flash_use(&$p,$slot) {
     if ($slot<0 || $slot>6 || empty($p['itms'.$slot])) throw new RuntimeException('这个位置没有物品。');
     $item=flash_item_at($p,$slot);
     // 旧道具中的全局解禁、召唤和结局按钮不能绕过本模式的五片证据。
-    if (!preg_match('/^(W|D|A|H[HSB]|C|GB|GA|EE|B)/',$item['itmk']) && empty($item['itmpara']['flash_reward']) && $item['itm']!=='混沌人肉探雷车') throw new RuntimeException('这件东西留作纪念吧。这里的路要用报告册来找。');
+    if (!preg_match('/^(W|D|A|H|P|C|GB|GA|EE|B|V|M)/',$item['itmk']) && empty($item['itmpara']['flash_reward']) && $item['itm']!=='混沌人肉探雷车') throw new RuntimeException('这件东西留作纪念吧。这里的路要用报告册来找。');
     if (!function_exists('itemuse')) require_once GAME_ROOT.'include/game/item.main.php';
     itemuse($slot,$p);
 }
@@ -145,10 +168,10 @@ function ruleset_itemuse_hook(&$p,$slot,$item) {
         return true;
     }
     if ($item['itm']==='混沌人肉探雷车') {
-        $q=$db->query("SELECT * FROM {$tablepre}maptrap WHERE pls=".(int)$p['pls']); $count=0;
-        while ($trap=$db->fetch_array($q)) if (strpos($trap['itm'],'阔剑')!==false) { $db->query("DELETE FROM {$tablepre}maptrap WHERE tid=".(int)$trap['tid']); $count++; }
+        $count=0;
+        foreach (flash_mines($p['pls']) as $trap) { $db->query("DELETE FROM {$tablepre}maptrap WHERE tid=".(int)$trap['tid']); $count++; }
         if (!$count) throw new RuntimeException('这一带没有阔剑地雷。');
-        flash_consume($p,$slot); flash_job_event($p,'disarm'); flash_say('探雷车驶过路口。'.$count.' 枚阔剑地雷被清除了。'); return true;
+        flash_consume($p,$slot); flash_say('探雷车驶过路口。'.$count.' 枚阔剑地雷被清除了。'); flash_update_quests($p); return true;
     }
     $para=get_itmpara($item['itmpara']);
     if (!empty($para['flash_reward'])) {
@@ -193,21 +216,38 @@ function flash_reward(&$p,$tier,$choice,$weapon='') {
     $extra=flash_dream_reward(min(3,1+(int)floor(($tier-1)/2)),$tier); if ($extra) $items[]=$extra;
     flash_loot($p,$items);
 }
-function flash_accept(&$p,$key) {
-    $s=&$p['clbpara']['flash']; $jobs=flash_jobs();
-    if (strpos($key,'FL_recover_')===0) {
-        if (empty($p['clbpara']['quest']['active'][$key]['loss']) || !empty($p['clbpara']['quest']['active'][$key]['accepted'])) throw new RuntimeException('这份找回委托已经接下，或已经完成。');
-        $q=&$p['clbpara']['quest']['active'][$key];
-        $q['accepted']=true; $q['at_revive']=$s['deaths']; $q['need']=2+(int)floor($s['deaths']/2); $q['progress']=0;
-        flash_say('搬运工记下了现在的路况。完成 '.$q['need'].' 次探索或击杀，就能找回这一页约四分之三的损失。以后回溯不会提高这份委托的难度。'); return;
+function flash_update_quests(&$p) {
+    quest_init_state($p['clbpara']);
+    $s=&$p['clbpara']['flash']; $quests=&$p['clbpara']['quest'];
+    // 旧局可能已经重复接下完成过的任务；保留完成记录，不再结算第二份报酬。
+    foreach ($quests['completed'] as $qid=>$unused) unset($quests['active'][$qid]);
+    $ready=flash_ready($p) && $p['hp']>0;
+    if ($ready) {
+        foreach ($quests['active'] as $qid=>&$q) if (strpos($qid,'FL_recover_')===0 && empty($q['accepted'])) {
+            $q['accepted']=true; $q['at_revive']=$s['deaths']; $q['need']=2+(int)floor($s['deaths']/2); $q['progress']=0;
+        }
+        unset($q);
+        foreach (flash_jobs() as $key=>$spec) {
+            $qid='FL_job_'.$key;
+            if (isset($quests['active'][$qid]) || isset($quests['completed'][$qid]) || $p['lvl']<$spec['lvl'] || $s['deaths']<$spec['rev']) continue;
+            $quests['active'][$qid]=array('kind'=>$spec['kind'],'need'=>$spec['need'],'progress'=>0,'at_revive'=>$s['deaths']);
+            flash_say('新委托已记下：'.$spec['title'].'。');
+        }
     }
-    if (!isset($jobs[$key])) throw new RuntimeException('没有这份委托。');
-    $spec=$jobs[$key]; $qid='FL_job_'.$key;
-    if ($p['lvl']<$spec['lvl'] || $s['deaths']<$spec['rev']) throw new RuntimeException('还没有到接下这份委托的时候。');
-    if (!empty($p['clbpara']['quest']['active'][$qid])) throw new RuntimeException('这份委托已经接下了。');
-    // 同一委托完成后可再次接取；奖励与目标只在接取时确定。
-    $p['clbpara']['quest']['active'][$qid]=array('kind'=>$spec['kind'],'need'=>$spec['need'],'progress'=>0,'tier'=>flash_reward_tier($p),'at_revive'=>$s['deaths']);
-    flash_say($spec['text']);
+    if (!isset($quests['active']['FL_job_disarm'])) return;
+    $remaining=count(flash_mines());
+    // 没有总数的旧局按目前实际存留的雷建立目标，不补种已经消失的雷。
+    if (!isset($GLOBALS['gamevars']['flash']['mines_total'])) {
+        $GLOBALS['gamevars']['flash']['mines_total']=$remaining; save_gameinfo();
+    }
+    $q=&$quests['active']['FL_job_disarm'];
+    $q['need']=max($remaining,(int)$GLOBALS['gamevars']['flash']['mines_total']); $q['progress']=$q['need']-$remaining;
+    if (!$remaining && $s['deaths']>=1 && $ready) {
+        $tier=flash_reward_tier($p); unset($q);
+        quest_complete('FL_job_disarm',$p);
+        flash_say('最后一枚阔剑地雷已清除。搬运工把排雷报酬送了过来。');
+        flash_reward($p,$tier,'supplies');
+    }
 }
 function flash_claim(&$p,$qid,$choice) {
     $weapon='';
@@ -215,7 +255,8 @@ function flash_claim(&$p,$qid,$choice) {
     if (!in_array($choice,array('stats','equipment','supplies'),true)) throw new RuntimeException('选择一种委托报酬。');
     flash_require_empty_loot($p);
     $q=$p['clbpara']['quest']['active'][$qid]??null;
-    if (!$q || (strpos($qid,'FL_job_')!==0 && strpos($qid,'FL_recover_')!==0)) throw new RuntimeException('这份委托不在进行中。');
+    if (!$q || isset($p['clbpara']['quest']['completed'][$qid]) || (strpos($qid,'FL_job_')!==0 && strpos($qid,'FL_recover_')!==0)) throw new RuntimeException('这份委托不在进行中。');
+    if ($qid==='FL_job_disarm') throw new RuntimeException('清除场上全部阔剑地雷后，报酬会自动送达。');
     if (($q['kind']??'')==='collect') {
         $available=0; for ($i=1;$i<=6;$i++) if (preg_match('/^H[HSB]/',$p['itmk'.$i]) && $p['itms'.$i]!=='∞') $available+=(int)$p['itms'.$i];
         if ($available<$q['need']) throw new RuntimeException('背包里还没有足够的补给。');
@@ -235,12 +276,12 @@ function flash_claim(&$p,$qid,$choice) {
         $items=array();
         foreach (array_merge(array_values($q['loss']['equipment']),$q['loss']['bag']) as $item) { $item['itme']=max(1,(int)floor($item['itme']*.75)); $items[]=$item; }
         flash_limit_stats($p); flash_loot($p,$items); flash_say('包裹找回来了。破损的部分补不全，但大约四分之三还在。');
-    } else flash_reward($p,$q['tier'],$choice,$weapon);
+    } else flash_reward($p,flash_reward_tier($p),$choice,$weapon);
 }
 function flash_talk(&$p,$key) {
     $n=flash_npc('friend_'.$key); $s=&$p['clbpara']['flash'];
     if (!$n || $n['hp']<=0 || (int)$n['pls']!==(int)$p['pls']) throw new RuntimeException('那位旅人不在身旁。');
-    if ($key==='porter') flash_story($p,'迷之搬运工','「快递单上写着你的名字，那就没跑儿了。这地方送件比什么都危险。不过，你已经回来过一次了吧？那这活儿就有人干了。」委托随时可在右侧接取与提交。');
+    if ($key==='porter') flash_story($p,'迷之搬运工','「快递单上写着你的名字，那就没跑儿了。这地方送件比什么都危险。不过，你已经回来过一次了吧？那这活儿就有人干了。」符合条件的委托会自动记入任务窗，每份只能完成一次。');
     elseif ($key==='nurse') {
         if (empty($s['events']['nursed'])) { $p['hp']=$p['mhp']; $p['inf']=''; $s['events']['nursed']=true; }
         flash_story($p,'看护女仆 · 黑河','「我替您包扎好了。药箱这一回只够用一次，请好好走到下个路口。」她的指尖很冷，绷带却是暖的。');
@@ -278,12 +319,17 @@ function flash_action(&$p,$action,$arg,$extra='') {
     if ($action==='keep') { flash_keep($p,$arg); return; }
     if ($s['pending']) throw new RuntimeException('先选择这次回溯要保留的东西。');
     if (!flash_ready($p)) throw new RuntimeException('你现在无法行动。');
+    flash_update_quests($p);
+    if (!in_array($action,array('journal','recall','native'),true)) $s['idle_at']=$GLOBALS['now'];
     switch ($action) {
+        case 'native': flash_native_command($p,$arg); break;
         case 'journal': $GLOBALS['log'].=flash_journal_panel($p); break;
         case 'recall': flash_story($p,$s['scene']['title'],$s['scene']['text']); break;
         case 'move': flash_move($p,(int)$arg); break;
         case 'return': flash_move($p,(int)$s['last_place'],true); break;
-        case 'explore': flash_explore($p); break;
+        case 'explore':
+            if (!in_array($arg,array('','3','10'),true)) throw new RuntimeException('请选择探索三次或十次。');
+            flash_explore($p,$arg==='10'?10:3); break;
         case 'battle': flash_battle_action($p); break;
         case 'sweep': flash_battle_action($p,true); break;
         case 'jojo': flash_battle_action($p,false,true); break;
@@ -304,7 +350,7 @@ function flash_action(&$p,$action,$arg,$extra='') {
             break;
         case 'drop':
             if ((int)$arg<0 || (int)$arg>6 || empty($p['itms'.(int)$arg])) throw new RuntimeException('没有这件物品。');
-            itemdrop((int)$arg,$p); break;
+            itemdrop('itm'.(int)$arg,$p); break;
         case 'take': case 'loot_use': case 'loot_feed':
             if (!ctype_digit((string)$arg) || !isset($s['loot'][(int)$arg])) throw new RuntimeException('这件物品已经取走了。');
             $item=$s['loot'][(int)$arg];
@@ -328,7 +374,7 @@ function flash_action(&$p,$action,$arg,$extra='') {
             foreach (array('wep','arb','art') as $slot) if (!empty($n[$slot.'s'])) $items[]=flash_equipment($n,$slot);
             for ($i=1;$i<=6;$i++) if (!empty($n['itms'.$i])) $items[]=flash_item_at($n,$i);
             flash_loot($p,$items); player_save($n); break;
-        case 'accept': flash_accept($p,$arg); break;
+        case 'accept': case 'cancel': throw new RuntimeException('委托会自动记入任务窗，每份只能完成一次，无需接取或撤下。');
         case 'claim': flash_claim($p,$arg,$extra); break;
         case 'talk': flash_talk($p,$arg); break;
         case 'event': flash_event($p,$arg); break;
@@ -360,4 +406,5 @@ function flash_action(&$p,$action,$arg,$extra='') {
         case 'rewind': flash_die($p,'合上这一页'); break;
         default: throw new RuntimeException('无法执行这项行动，请刷新页面。');
     }
+    flash_update_quests($p);
 }

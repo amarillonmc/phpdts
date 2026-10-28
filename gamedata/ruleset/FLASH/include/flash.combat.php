@@ -155,6 +155,7 @@ function ruleset_move_allowed_hook(&$p,$dest) {
 function flash_fight(&$p,$id,$jojo=false,$rounds=1,$charge=true,$ambush=false) {
     $s=&$p['clbpara']['flash']; $enemy=fetch_playerdata_by_pid($id);
     if (!$enemy || $enemy['hp']<=0 || !$enemy['type'] || (int)$enemy['pls']!==(int)$p['pls'] || flash_role($enemy)==='jojo') throw new RuntimeException('目标已经不在这里。');
+    if (flash_role($enemy)==='hazard' && !flash_first_encounter_active($p)) throw new RuntimeException('那段初见时的回声已经散去了。');
     if (flash_is_final($enemy) && !$s['gate'] && !(flash_role($enemy)==='hunter' && $s['trial']) && !($ambush && flash_role($enemy)==='final' && !empty($s['events']['gate_opened']))) throw new RuntimeException('先到门前，拼好五片证据。');
     if (in_array(flash_role($enemy),array('hunter','guardian'),true) && !$s['trial']) throw new RuntimeException('那是门另一边的脚步。');
     if ($jojo && ($s['jojo_missing'] || !($j=flash_npc('jojo')) || $j['hp']<=0 || (int)$j['pls']!==(int)$p['pls'])) throw new RuntimeException('乔乔现在不能替你出击。');
@@ -181,6 +182,7 @@ function flash_fight(&$p,$id,$jojo=false,$rounds=1,$charge=true,$ambush=false) {
         flash_clean($p); $GLOBALS['pdata']=&$p;
         if ($enemy['hp']<=0 || !flash_ready($p) || $p['hp']<=$p['mhp']*flash_cfg('sweep_hp')) break;
     }
+    if (flash_role($enemy)==='hazard') { $s['events']['first_step']=true; $s['target']=0; }
     if ($enemy['hp']<=0) $p['clbpara']['flash']['target']=0;
     player_save($p);
 }

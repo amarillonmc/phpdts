@@ -4,6 +4,11 @@ if (!defined('IN_GAME')) exit('Access Denied');
 function flash_button($label,$action,$arg='',$extra='',$disabled=false) {
     return '<button type="button" class="cmdbutton" data-action="'.flash_html($action).'" data-arg="'.flash_html($arg).'" data-extra="'.flash_html($extra).'"'.($disabled?' disabled':'').'>'.$label.'</button> ';
 }
+function flash_native_template($p,$template_name,$vars=array()) {
+    extract($GLOBALS,EXTR_SKIP); extract($p,EXTR_OVERWRITE); extract($vars,EXTR_OVERWRITE);
+    $pdata=$p;
+    ob_start(); include template($template_name); return ob_get_clean();
+}
 function flash_join_panel($user,$error='') {
     $html='<p>你在无月之影醒来，身边的猫耳少女始终没有放开你的衣角。</p><p>11 次复活 · 5 片证据 · 60 分钟</p>';
     if ($error!=='') $html.='<p class="yellow">'.flash_html($error).'</p>';
@@ -15,13 +20,13 @@ function flash_join_panel($user,$error='') {
     return $html.'<p><a href="index.php">返回大厅</a></p>';
 }
 function flash_inventory($p) {
-    $html='<details id="flash-bag"><summary>使用物品 / 放下</summary>';
+    $html='<details id="flash-bag" open><summary>使用物品 / 放下</summary>';
     for ($i=1;$i<=6;$i++) {
         $item=flash_item_at($p,$i); if (!$item['itms']) continue;
         $html.='<p><span class="yellow">'.flash_html($item['itm']).'</span> / '.(int)$item['itme'].' / '.flash_html($item['itms']).'<br>';
         $html.=flash_button('使用','use',$i).flash_button('放下','drop',$i).'</p>';
     }
-    return $html.flash_button('交换主副武器','swap').'</details>';
+    return $html.'</details>';
 }
 function flash_loot_panel($p) {
     $html='<p class="yellow">可以带走的东西</p>';
@@ -33,17 +38,22 @@ function flash_loot_panel($p) {
 }
 function flash_quests_panel($p) {
     $s=$p['clbpara']['flash']; $disabled=!flash_ready($p);
-    $html='<p>证据 '.flash_fragments($p).' / 5 · 关键报告 '.flash_report_count($p).' / 5</p><p>委托与证据跨回溯保留；接取时锁定难度和报酬。</p>';
+    $html='<p>证据 '.flash_fragments($p).' / 5 · 关键报告 '.flash_report_count($p).' / 5</p><p>满足条件自动记入，每份仅完成一次。进展跨回溯保留，报酬随旅程进展提升；找回难度在入栏时锁定。</p>';
     foreach ($p['clbpara']['quest']['active'] as $qid=>$q) if (strpos($qid,'FL_recover_')===0) {
         $html.='<div class="progress-item"><div class="progress-label">找回 · 第 '.(int)$q['death'].' 次遗失的东西</div>';
-        if (empty($q['accepted'])) $html.='<div class="quest-item">可找回约 75% 的损失。</div>'.flash_button('接下找回委托','accept',$qid,'',$disabled);
-        else $html.='<div class="quest-item">探索 / 击杀 '.(int)$q['progress'].' / '.(int)$q['need'].' · 按复活 '.(int)$q['at_revive'].' 次时接取</div>'.flash_button('取回包裹','claim',$qid,'stats',$disabled || $q['progress']<$q['need']);
+        $html.='<div class="quest-item">探索 / 击杀 '.(int)$q['progress'].' / '.(int)($q['need']??0).' · 可找回约 75% 的损失</div>'.flash_button('取回包裹','claim',$qid,'stats',$disabled || empty($q['accepted']) || $q['progress']<$q['need']);
         $html.='</div>';
     }
     foreach (flash_jobs() as $key=>$job) {
         $qid='FL_job_'.$key; $q=$p['clbpara']['quest']['active'][$qid]??null;
         $html.='<div class="progress-item"><div class="progress-label">'.flash_html($job['title']).'</div><div class="quest-item">'.flash_html($job['text']).'</div>';
-        if (!$q) $html.=flash_button('接下委托','accept',$key,'',$disabled || $p['lvl']<$job['lvl'] || $s['deaths']<$job['rev']).'<small>等级 '.$job['lvl'].' / 复活 '.$job['rev'].' 次起</small>';
+        if (isset($p['clbpara']['quest']['completed'][$qid])) $html.='<p class="lime">已完成 · 报酬已领取</p>';
+        elseif (!$q) $html.='<small>等级 '.$job['lvl'].' / 复活 '.$job['rev'].' 次起自动记入</small>';
+        elseif ($key==='disarm') {
+            $html.='<p>已清除 '.$q['progress'].' / '.$q['need'].' · 全清后自动发奖</p>';
+            $places=array_unique(array_column(flash_mines(),'pls'));
+            foreach ($places as $place) $html.='<span>'.flash_html($GLOBALS['plsinfo'][$place]).(in_array((int)$place,flash_closed(),true)?'（需移动PC通路）':'').' </span>';
+        }
         else {
             $html.='<p>'.($q['kind']==='collect'?'提交背包中的两份补给':('进展 '.$q['progress'].' / '.$q['need'])).'</p>';
             $blocked=$disabled || ($q['kind']!=='collect' && $q['progress']<$q['need']);
@@ -84,25 +94,31 @@ function flash_people_panel($p) {
         if (!$done) $html.=flash_button('循迹寻找','track',$n['pid']); $html.='</p>';
     }
     $html.='<details id="flash-echoes"><summary>游荡的回声 · 幻象与强敌</summary>';
-    foreach (flash_npcs() as $n) if ($n['hp']>0 && in_array(flash_role($n),array('holo','elite','hazard'),true)) $html.='<p>'.flash_html($n['name']).' · '.flash_html($GLOBALS['plsinfo'][$n['pls']]).'<br>'.flash_button('追踪','track',$n['pid']).'</p>';
+    foreach (flash_npcs() as $n) if ($n['hp']>0 && in_array(flash_role($n),array('holo','elite','hazard'),true) && (flash_role($n)!=='hazard' || flash_first_encounter_active($p))) $html.='<p>'.flash_html($n['name']).' · '.flash_html($GLOBALS['plsinfo'][$n['pls']]).'<br>'.flash_button('追踪','track',$n['pid']).'</p>';
     return $html.'</details></details>';
 }
 function flash_panel($p) {
     $s=$p['clbpara']['flash'];
-    $html='<div id="flash-state" data-revision="'.(int)$s['revision'].'"><input type="hidden" name="flash_csrf" value="'.flash_html($s['csrf']).'"><input type="hidden" name="flash_rev" value="'.(int)$s['revision'].'"><input type="hidden" id="mode" name="mode" value="command"><input type="hidden" id="command" name="command" value="menu">';
+    $html='<div id="flash-state" data-revision="'.(int)$s['revision'].'"><input type="hidden" name="flash_csrf" value="'.flash_html($s['csrf']).'"><input type="hidden" name="flash_rev" value="'.(int)$s['revision'].'"><input type="hidden" id="moveto" name="moveto" value="'.(int)$p['pls'].'">';
     $html.='<p>FLASH · 复活 '.min(11,$s['deaths']).' / 11 · 证据 '.flash_fragments($p).' / 5';
     if (!$s['result']) $html.='<br>剩余 <span id="flash-clock" data-remaining="'.max(0,$GLOBALS['gamevars']['flash']['start']+flash_cfg('seconds')-$GLOBALS['now']).'"></span>';
     $html.='</p><template id="flash-quest-source">'.flash_quests_panel($p).'</template>';
+    if (flash_ready($p) && !empty($GLOBALS['flash_cmd_template'])) {
+        $body=!empty($GLOBALS['cmd'])?$GLOBALS['cmd']:flash_native_template($p,$GLOBALS['flash_cmd_template'],$GLOBALS['flash_cmd_vars']??array());
+        return $html.$body.'</div>';
+    }
+    $html.='<input type="hidden" id="mode" name="mode" value="command"><input type="hidden" id="command" name="command" value="menu">';
     if ($s['result']) return $html.'<a href="index.php">返回常磐大厅</a></div>';
     if ($s['pending']) {
         if ($p['hp']<=0) return $html.flash_button('继续复活','revive').'</div>';
         $html.='<p>这一次，要带回什么？</p>';
         foreach (array('weapon'=>'武器','armor'=>'防具','stats'=>'属性') as $key=>$label) $html.=flash_button($label,'keep',$key);
-        return $html.'<p>未保留的成长可接取找回委托。证据和报告册始终留下。</p></div>';
+        return $html.'<p>未保留的成长会自动生成找回委托。证据和报告册始终留下。</p></div>';
     }
     $html.='<button type="button" class="cmdbutton" data-flash-quest-open>任务</button> '.flash_button('报告册','journal').flash_button('回想刚才的事','recall').'<hr>';
     if ($s['loot']) $html.=flash_loot_panel($p);
-    foreach (array('explore'=>'探索 45 SP','battle'=>'战斗 30 SP/轮','sweep'=>'扫荡 30 SP/人','return'=>'沿旧路返回 45 SP') as $key=>$label) $html.=flash_button($label,$key,'','',$key==='return' && !$s['deaths']);
+    $html.=flash_button('探索 3 次 · 45 SP','explore','3').flash_button('探索 10 次 · 100 SP','explore','10');
+    foreach (array('battle'=>'战斗 30 SP/轮','sweep'=>'扫荡 30 SP/人','return'=>'沿旧路返回 45 SP') as $key=>$label) $html.=flash_button($label,$key,'','',$key==='return' && !$s['deaths']);
     $html.=flash_button('整理遗骸','corpse','','',empty($s['corpse'])).'<br>';
     if ($s['jojo_missing'] && $p['pls']===0) $html.='<p>'.flash_button('找回走散的乔乔 45 SP','recover_jojo').'</p>';
     $html.='<p>附近的路 · 15 SP<br>';
@@ -121,7 +137,7 @@ function flash_panel($p) {
         $html.=flash_button('从门前折返 15 SP','retreat','','',$s['snare']>0);
     } elseif ($p['pls']===0) $html.=flash_button(flash_fragments($p)===5?'拼好证据，推开门':'试着硬闯真相门（危险）','gate');
     if ($s['snare']) $html.='<p class="yellow">藤蔓还会束缚 '.(int)$s['snare'].' 次交战。</p>';
-    $html.='<hr>'.flash_inventory($p).flash_people_panel($p).'<details id="flash-events"><summary>尚未走过的岔路</summary><p>这些路可能需要花一条命才能读懂，也可以绕开。</p>';
+    $html.='<hr>'.flash_native_template($p,'flash_controls').flash_inventory($p).flash_people_panel($p).'<details id="flash-events"><summary>尚未走过的岔路</summary><p>这些路可能需要花一条命才能读懂，也可以绕开。</p>';
     foreach (array('chain'=>'赶往争执的路口','drift'=>'跟上重复的脚步','kind'=>'接受门里的热茶') as $key=>$label) $html.=flash_button($label,'event',$key,'',!empty($s['events'][$key]));
     return $html.'</details><details id="flash-rewind"><summary>这一回，已经走不动了</summary><p>主动结束本轮，消耗一次复活。</p>'.flash_button('合上这一页，回溯','rewind').'</details></div>';
 }
@@ -153,11 +169,14 @@ function flash_game_view($p,$ajax=false) {
     $view_main='profile';
     $enemy_id=$p['hp']<=0?$p['bid']:$p['clbpara']['flash']['target'];
     if ($enemy_id && ($enemy=fetch_playerdata_by_pid((int)$enemy_id))) {
+        if (!isset($GLOBALS['sexinfo'][$enemy['gd']])) $enemy['gd']='n';
         init_battle_rev($p,$enemy,1); $view_main='battle_rev';
     }
+    if (flash_ready($p) && ($GLOBALS['flash_cmd_template']??'')==='itemmix') $view_main='itemmix_tips';
     extract($GLOBALS,EXTR_SKIP);
     extract($p,EXTR_OVERWRITE);
     $pdata=$p; $main=$view_main; $mode='command'; $command='enter';
+    if ($main==='itemmix_tips') $itemcmd='itemmix';
     $alivenum=$hp>0?1:0;
     $battle_title=$hp<=0?'你被击杀了':'战斗发生';
     $dtime=date('Y年m月d日H时i分s秒',$deathtime?:$endtime);
@@ -169,9 +188,22 @@ function flash_game_view($p,$ajax=false) {
         if (!$bid && $kname!=='') $dinfo[$state].='<br>死因：'.$kname;
         ob_start(); include template('death'); $cmd=ob_get_clean();
     } else $cmd=flash_panel($p);
+    $dialogs='';
+    if (flash_ready($p) && $hp>0) {
+        $dialogs=flash_native_template($p,'skillpage');
+        // 原生地图没有预定禁区；FLASH 的崩坏顺序已确定，原点始终安全。
+        $old_map=array($GLOBALS['plsinfo'],$GLOBALS['xyinfo'],$GLOBALS['arealist'],$GLOBALS['areaadd']);
+        $GLOBALS['plsinfo']=array_intersect_key($GLOBALS['plsinfo'],array_flip(range(0,34)));
+        $GLOBALS['xyinfo']=array_intersect_key($GLOBALS['xyinfo'],$GLOBALS['plsinfo']);
+        $GLOBALS['arealist']=array_merge(array(-1),$gamevars['flash']['order'],array(0)); $GLOBALS['areaadd']=0;
+        try { $dialogs.=flash_native_template($p,'sp_terminal'); }
+        finally { list($GLOBALS['plsinfo'],$GLOBALS['xyinfo'],$GLOBALS['arealist'],$GLOBALS['areaadd'])=$old_map; }
+    }
+    $flash_native_dialogs=$dialogs;
     if ($ajax) {
+        if (!empty($GLOBALS['flash_cmd_template'])) $mode='itemmain';
         ob_start(); include template($main); $profile=ob_get_clean();
-        return array('innerHTML'=>array('main'=>$profile,'cmd'=>$cmd,'log'=>$log,'pls'=>flash_html($plsinfo[$pls]),'anum'=>$alivenum,'notice'=>'','dialogue-container'=>'','flash-companion'=>flash_companion($p)),'clbpara'=>$clbpara,'locationId'=>(int)$pls);
+        return array('innerHTML'=>array('main'=>$profile,'cmd'=>$cmd,'log'=>$log,'pls'=>flash_html($plsinfo[$pls]),'anum'=>$alivenum,'notice'=>'','dialogue-container'=>'','flash-companion'=>flash_companion($p),'flash-native-dialogs'=>$dialogs),'clbpara'=>$clbpara,'locationId'=>(int)$pls,'opendialog'=>$opendialog??'');
     }
     $chatdata=getchat(0,$teamID); $emdata=get_emdata();
     ob_start(); include template('game'); return ob_get_clean();

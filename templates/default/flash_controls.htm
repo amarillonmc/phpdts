@@ -1,0 +1,18 @@
+<input type="hidden" id="subcmd" name="subcmd" value="">
+<button type="button" class="cmdbutton" id="itemmix" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='itemmix';postCmd('gamecmd','command.php');">道具合成</button>
+<button type="button" class="cmdbutton" id="itemmerge" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='itemmerge';postCmd('gamecmd','command.php');">整理包裹</button>
+<button type="button" class="cmdbutton" id="itemdrop" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='itemdrop';postCmd('gamecmd','command.php');">道具丢弃</button>
+<button type="button" class="cmdbutton" id="cc" data-action="swap">[C]切换武器</button>
+<button type="button" class="cmdbutton" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_weapon';postCmd('gamecmd','command.php');">武器模式</button>
+<!--{if strpos($arbsk,'^')!==false && $arbs && $arbe}-->
+<button type="button" class="cmdbutton" onclick="$('command').value='iteminfo';postCmd('gamecmd','command.php');">背包信息</button>
+<!--{/if}-->
+<br>
+<!--{if in_array($pls,$shops) || !check_skill_unlock('c11_ebuy',$pdata)}-->
+<button type="button" class="cmdbutton" id="aa" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_shop';postCmd('gamecmd','command.php');">[A]商店</button>
+<!--{else}-->
+<button type="button" class="cmdbutton" disabled title="请前往商店所在地">商店（此处没有）</button>
+<!--{/if}-->
+<button type="button" class="cmdbutton" id="s" onclick="showModalDialog($('terminal'));">[S]地图 / 音乐</button>
+<button type="button" class="cmdbutton" id="v" onclick="showModalDialog($('skillpage'));">[V]技能表</button>
+<p class="grey">等待时每 <!--{eval echo flash_cfg('idle_seconds');}--> 秒恢复 <!--{eval echo flash_cfg('idle_hp');}--> 生命、<!--{eval echo flash_cfg('idle_sp');}--> 体力。补给与看护女仆可加快恢复。姿态与策略随行动和乔乔指令切换。</p>

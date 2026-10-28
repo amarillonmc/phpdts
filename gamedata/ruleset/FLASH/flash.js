@@ -39,16 +39,35 @@
     function refresh() {
         var timer = document.getElementById('flash-clock');
         if (timer) deadline = performance.now() + Number(timer.dataset.remaining) * 1000;
-        // FLASH 的姿态随行动/同行策略切换，不开放普通模式的自由称号与视界入口。
-        ['pose', 'tactic', 'horizon', 'clubsel'].forEach(function (id) {
+        // FLASH 的姿态随行动/同行策略切换，称号仍由本模式的成长流程决定。
+        ['pose', 'tactic', 'clubsel'].forEach(function (id) {
             var select = document.getElementById(id);
             if (select) select.disabled = true;
         });
+        // 原生子菜单有些只有 name；资料区和地图按钮仍使用 id 查找 mode。
+        var form = document.getElementById('gamecmd');
+        if (form && !document.getElementById('mode')) {
+            var mode = form.querySelector('[name="mode"]');
+            if (mode) mode.id = 'mode';
+        }
+        [['explore', 'zz'], ['swap', 'cc']].forEach(function (entry) {
+            var button = document.querySelector('#cmd [data-action="' + entry[0] + '"]');
+            if (button) button.id = entry[1];
+        });
+        for (var i = 1; i <= 6; i++) {
+            var use = document.querySelector('#cmd [data-action="use"][data-arg="' + i + '"]');
+            if (use) use.id = String(i) + i;
+        }
+        document.querySelectorAll('#flash-native-dialogs [name]').forEach(function (input) { input.setAttribute('form', 'gamecmd'); });
         window.flashRenderQuests();
         // 原生背景更新把数字 0 当作空值；回到无月之影时传入地点字符串。
         if (window.shwData && window.shwData.locationId === 0 && typeof updateBackgroundImage === 'function') updateBackgroundImage('0');
         placeJojo();
         clock();
+        if (window.shwData && ['skillpage', 'itemmix_tips'].indexOf(window.shwData.opendialog) !== -1) {
+            var dialog = document.getElementById(window.shwData.opendialog);
+            if (dialog && !dialog.open) showModalDialog(dialog);
+        }
     }
     window.flashRenderQuests = function () {
         var source = document.getElementById('flash-quest-source'), target = document.getElementById('quest-list');
@@ -65,6 +84,11 @@
             flash_csrf: current.querySelector('[name="flash_csrf"]').value,
             flash_rev: current.dataset.revision
         });
+        if (form === 'maincmd') {
+            // Nouveau 的 main 位于 gamecmd 内，浏览器会去掉嵌套的 maincmd 表单。
+            Object.assign(options.data, {command: 'itemmain', itemcmd: 'itemmix', itemindex: document.getElementById('itemindex').value});
+            form = 'gamecmd';
+        }
         options.timeout = options.timeout || 15000;
         var opened = {};
         document.querySelectorAll('#cmd details[id],#quest-list details[id]').forEach(function (el) { opened[el.id] = el.open; });
@@ -138,4 +162,10 @@
     window.addEventListener('resize', placeJojo);
     refresh();
     window.setInterval(clock, 1000);
+    window.setInterval(function () {
+        // 等待回复时更新真实命体；不打断商店、合成输入或打开的模态框。
+        if (busy || document.hidden || !document.querySelector('#cmd [data-action="explore"]') || document.querySelector('dialog[open]')) return;
+        if (document.activeElement && /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+        postCmd('gamecmd', 'command.php', {data: {command: 'flash_status'}});
+    }, 10000);
 }());

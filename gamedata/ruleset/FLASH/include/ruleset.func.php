@@ -5,6 +5,7 @@ require_once __DIR__.'/flash.world.php';
 require_once __DIR__.'/flash.state.php';
 require_once __DIR__.'/flash.combat.php';
 require_once __DIR__.'/flash.actions.php';
+require_once __DIR__.'/flash.native.php';
 require_once __DIR__.'/flash.ui.php';
 
 function ruleset_legacy_bot_allowed_hook() { return false; }
@@ -26,13 +27,13 @@ function ruleset_round_init_hook($mode) {
 }
 function ruleset_round_clock_hook() {
     global $gamevars,$gamestate,$now;
-    if (empty($gamevars['flash']) || $gamestate<20) return true;
+    if (empty($gamevars['flash']) || $gamestate<20 || !flash_lock()) return true;
     require_once GAME_ROOT.'include/game.func.php'; require_once GAME_ROOT.'include/game/quest.func.php';
     $p=flash_read_player();
     if ($p) {
-        $reset=!empty($p['clbpara']['flash']['reset_world']); flash_tick($p);
+        flash_tick($p);
         if (!empty($p['clbpara']['flash']['result'])) flash_settle($p);
-        elseif ($reset) player_save($p);
+        else player_save($p);
     }
     elseif ($now >= $gamevars['flash']['start']+flash_cfg('seconds')) gameover($now,'end4');
     return true;
@@ -74,6 +75,7 @@ function flash_join($user,$kind) {
     flash_starting_supplies($p);
     flash_set_item($p,3,flash_item('混沌人肉探雷车','Y',1,1));
     flash_set_item($p,4,flash_item('万能药','Ca',1,3));
+    flash_update_quests($p);
     $row=player_format_with_db_structure($p); unset($row['pid']); $db->array_insert($tablepre.'players',$row);
     $p['pid']=(int)$db->insert_id(); $gamevars['flash']['owner']=$p['pid']; $validnum=$alivenum=1;
     save_gameinfo();
@@ -87,17 +89,21 @@ function flash_validate_command($p,$post) {
     foreach (array('arg','extra') as $key) if (isset($post[$key]) && (!is_string($post[$key]) || strlen($post[$key])>80)) throw new RuntimeException('行动参数无效。');
     if ($post['command']==='menu') return array('status','','');
     if ($post['command']==='changewep') return array('swap','','');
+    if ($post['command']==='move') return array('move',(string)flash_native_int($post,'moveto',0,34),'');
+    if ($post['command']==='search') return array('explore','','');
     if (preg_match('/^off(wep|arb|arh|ara|arf|art)$/D',$post['command'],$m)) return array('unequip',$m[1],'');
     if (preg_match('/^itm([1-6])$/D',$post['command'],$m)) return array('use',$m[1],'');
+    if (preg_match('/^drop(?:itm)?([1-6])$/D',$post['command'],$m)) return array('drop',$m[1],'');
+    if (strpos($post['command'],'flash_')!==0) return array('native',$post,'');
     if (!preg_match('/^flash_([a-z_]+)$/D',$post['command'],$m)) throw new RuntimeException('请使用闪回的行动选项。');
     $action=$m[1]; $arg=$post['arg']??'';
     if (in_array($action,array('move','track','use','feed','drop','take','loot_use','loot_feed'),true) && !ctype_digit($arg)) throw new RuntimeException('行动对象无效。');
     return array($action,$arg,$post['extra']??'');
 }
 function flash_http($kind) {
-    global $now,$gamevars,$gamestate,$log,$pdata;
+    global $now,$gamevars,$gamestate,$log,$pdata,$mode,$cmd,$flash_cmd_template,$flash_cmd_vars,$opendialog;
     require_once GAME_ROOT.'include/game.func.php'; require_once GAME_ROOT.'include/game/quest.func.php';
-    $p=null; $error=''; $user=null; $log='';
+    $p=null; $error=''; $user=null; $log=''; $cmd=''; $mode='command'; $flash_cmd_template=''; $flash_cmd_vars=array(); $opendialog='';
     try {
         $user=flash_authorized();
         if (!flash_lock()) throw new RuntimeException('这一次闪回尚未结束，请稍后重试。');

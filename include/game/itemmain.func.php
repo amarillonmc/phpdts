@@ -660,7 +660,8 @@ function itemdrop($item,&$data=NULL) {
 	}
 	else
 	{
-		$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk ,itmpara, pls) VALUES ('$itm', '$itmk', '$itme', '$itms', '$itmsk', '$itmpara', '$pls')");
+		$drop_para = is_array($itmpara) ? json_encode($itmpara,JSON_UNESCAPED_UNICODE) : $itmpara;
+		$db->array_insert($tablepre.'mapitem',array('itm'=>$itm,'itmk'=>$itmk,'itme'=>$itme,'itms'=>$itms,'itmsk'=>$itmsk,'itmpara'=>$drop_para,'pls'=>$pls));
 		$drop_iid = $db->insert_id();
 		$log .= "你丢弃了<span class=\"red\">$itm</span>。<br>";
 		check_add_searchmemory($drop_iid,'itm',$itm,$data);

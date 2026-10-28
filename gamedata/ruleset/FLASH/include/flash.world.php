@@ -25,6 +25,9 @@ function flash_npc($key) {
     $id=$GLOBALS['gamevars']['flash']['npcs'][$key]??0;
     return $id?fetch_playerdata_by_pid((int)$id):null;
 }
+function flash_first_encounter_active($p=null) {
+    return !$p || ((int)$p['clbpara']['flash']['deaths']===0 && empty($p['clbpara']['flash']['events']['first_step']));
+}
 function flash_source($pool,$type,$sub) {
     static $pools;
     if (!$pools) {
@@ -108,18 +111,26 @@ function flash_world_reset(&$p=null,$initial=false) {
         $n=flash_spawn(flash_source('add',2,$i%8),'','holo',$safe[array_rand($safe)]);
         if ($i%3===0) { $n['clbpara']['flash_npc']['flee']=true; player_save($n); }
     }
-    foreach (array(array('old',5,0),array('old',5,1),array('old',6,0)) as $i=>$source) flash_spawn(call_user_func_array('flash_source',$source),'hazard'.$i,'hazard',$safe[array_rand($safe)]);
+    if (flash_first_encounter_active($p)) foreach (array(array('old',5,0),array('old',5,1),array('old',6,0)) as $i=>$source) flash_spawn(call_user_func_array('flash_source',$source),'hazard'.$i,'hazard',$safe[array_rand($safe)]);
+    else for ($i=0;$i<3;$i++) unset($gamevars['flash']['npcs']['hazard'.$i]);
     foreach (array(array('npc',91,0),array('add',5,1),array('add',4,0),array('npc',20,0),array('npc',1,0)) as $source) flash_spawn(call_user_func_array('flash_source',$source),'','elite',$safe[array_rand($safe)]);
-    flash_mapitems_reset($safe);
+    flash_mapitems_reset($safe,$p,$initial);
     if ($p) {
-        $s=&$p['clbpara']['flash']; $s['events']=array(); $s['loot']=array(); $s['target']=0; $s['snare']=0; $s['gate']=false; $s['trial']=false;
+        $s=&$p['clbpara']['flash']; $first_done=!flash_first_encounter_active($p);
+        $first_move=!empty($s['events']['first_move']);
+        $s['events']=$first_done?array('first_step'=>true):array('first_move'=>$first_move); $s['loot']=array(); $s['target']=0; $s['snare']=0; $s['gate']=false; $s['trial']=false;
         unset($s['reset_world']);
     }
     save_gameinfo();
 }
-function flash_mapitems_reset($safe) {
-    global $db,$tablepre;
-    $db->query("DELETE FROM {$tablepre}mapitem"); $db->query("DELETE FROM {$tablepre}maptrap");
+function flash_mapitems_reset($safe,$p=null,$initial=false) {
+    global $db,$tablepre,$gamevars;
+    $db->query("DELETE FROM {$tablepre}mapitem");
+    if ($initial) {
+        $db->query("DELETE FROM {$tablepre}maptrap");
+        foreach (flash_cfg('mine_places') as $place) $db->array_insert($tablepre.'maptrap',array('itm'=>'阔剑地雷','itmk'=>'TO','itme'=>1200,'itms'=>1,'itmsk'=>'','pls'=>$place,'itmpara'=>''));
+        $gamevars['flash']['mines_total']=count(flash_cfg('mine_places'));
+    }
     // 与公共资源相同的列顺序、数量权重和随机地点；不复制其他模式的资源文件。
     foreach (openfile(GAME_ROOT.'gamedata/cache/mapitem_1.php') as $line) {
         $parts=explode(',',$line,9); if (count($parts)<8 || !in_array((int)$parts[0],array(0,99),true)) continue;
@@ -132,7 +143,6 @@ function flash_mapitems_reset($safe) {
         }
     }
     foreach ($safe as $place) {
-        $db->array_insert($tablepre.'maptrap',array('itm'=>'阔剑地雷','itmk'=>'TO','itme'=>1200,'itms'=>1,'itmsk'=>'','pls'=>$place,'itmpara'=>''));
         foreach (array(flash_item('压缩饼干','HB',100,4),flash_item('混沌人肉探雷车','Y',1,1)) as $item) { $item['pls']=$place; $db->array_insert($tablepre.'mapitem',$item); }
     }
     $pc=flash_item('移动PC','EE',5,1); $pc['pls']=0; $db->array_insert($tablepre.'mapitem',$pc);
