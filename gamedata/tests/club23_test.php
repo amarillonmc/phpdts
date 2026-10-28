@@ -231,6 +231,7 @@ $b = club23_test_player(2); $b['clbpara']['subliminal'] = 3000;
 $club23cfg['dialogue_chance_max'] = 100; $club23_contacts = Array();
 club23_move_search($b);
 club23_test_assert(isset($b['clbpara']['dialogue']) && $b['clbpara']['dialogue'] === 'club23_intrusion','高S在实际探索结算中触发侵入对白');
+club23_test_assert(empty($b['clbpara']['noskip_dialogue']),'侵入对白可跳过，不设置强制对白行动锁');
 $b['clbpara']['dialogue'] = 'quest'; $b['clbpara']['noskip_dialogue'] = 1;
 club23_move_search($b);
 club23_test_assert($b['clbpara']['dialogue'] === 'quest','侵入对白不会覆盖已有剧情或强制对话');

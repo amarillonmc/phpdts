@@ -1,5 +1,28 @@
 // 对话系统的JavaScript扩展
 
+// 关闭可跳过对白时独立提交指令，兼容拾取、尸体等临时页面的表单。
+function endSkippableDialogue() {
+    var dialogueElement = document.getElementById('dialogue');
+    if(!dialogueElement || dialogueElement.getAttribute('data-skippable') !== '1'
+        || dialogueElement.getAttribute('data-closing') === '1') return false;
+
+    dialogueElement.setAttribute('data-closing', '1');
+    closeDialog(dialogueElement);
+    postCmd('gamecmd', 'command.php', {
+        data: {mode: 'command', command: 'skip_dialogue'},
+        bypassDelay: true,
+        timeout: 15000,
+        onError: function() {
+            dialogueElement.removeAttribute('data-closing');
+            showNotice('对白未能关闭，请重试。');
+            if(document.getElementById('dialogue') === dialogueElement) {
+                showModalDialog(dialogueElement);
+            }
+        }
+    });
+    return false;
+}
+
 // 扩展changePages函数，处理对话选择页面
 function dialogueChangePages(mode, cPages) {
     console.log('dialogueChangePages called with mode=' + mode + ', cPages=' + cPages);

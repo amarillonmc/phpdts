@@ -12,7 +12,7 @@ if (! defined('IN_GAME')) {
  * @param array &$data 玩家数据
  */
 function item_npc($itmn, &$data) {
-    global $log, $now, $db, $tablepre, $hack, $gamevars;
+    global $log, $now, $db, $tablepre, $hack, $gamevars, $nosta, $plsinfo;
     extract($data, EXTR_REFS);
 
     $itm = & ${'itm' . $itmn};
@@ -194,7 +194,60 @@ function item_npc($itmn, &$data) {
             $itm = $itmk = $itmsk = '';
             $itme = $itms = 0;
         }
-        } elseif ($itm == '【我想要领略真正的红杀之力】') {
+    } elseif ($itm == '电掣召唤仪') {
+        include_once GAME_ROOT . './include/system.func.php';
+        $summoned = addnpc(89, rand(0, 6), 1);
+        if (empty($summoned)) {
+            $log .= '召唤仪没有得到回应，请稍后重试。<br>';
+            return;
+        }
+        $log .= '【电掣】公司为你服务，你点的神秘乐子已送达，祝你愉快！<br>';
+        if ($itms != $nosta) {
+            $itms--;
+            if ($itms <= 0) {
+                include_once GAME_ROOT . './include/game/itemmain.func.php';
+                destory_single_item($data, $itmn, 1);
+            }
+        }
+    } elseif ($itm == '✦种火定点移位装置✦' || $itm == '✦种火聚集装置✦') {
+        $npls = (int)$pls;
+        if ($itm == '✦种火定点移位装置✦') {
+            // 沿用原来的五个目的地和 0～100 掷骰区间。
+            $dice = rand(0, 100);
+            if ($dice <= 20) {
+                $npls = 0;
+                $reply = '不过红暮看上去像个好人就是了……';
+            } elseif ($dice <= 40) {
+                $npls = 22;
+                $reply = '唔……这里是【约定】之地呢。';
+            } elseif ($dice <= 60) {
+                $npls = 23;
+                $reply = '唔……这里是【幻想】之地呢。';
+            } elseif ($dice <= 80) {
+                $npls = 24;
+                $reply = '唔……这里是【永恒】之地呢。';
+            } else {
+                $npls = 28;
+                $reply = '唔……这里是【试炼】之地呢。';
+            }
+            if (!isset($plsinfo[$npls])) {
+                $log .= '装置无法定位到目的地。<br>';
+                return;
+            }
+            $log .= "你使用了种火定点移位装置。<br>地图上全部种火被移动到了【{$plsinfo[$npls]}】！<br>";
+            $broadcast = '看起来有搅局的人出现了，我们被全扔去了【'.$plsinfo[$npls].'】';
+        } else {
+            $log .= '你使用了种火聚集装置。<br>地图上全部种火被移动到了你所在的位置！<br>';
+            $broadcast = '看起来有搅局的人出现了，我们被什么玩家全体移动了位置呢。';
+            $reply = '看一下「游戏状况」，来确认一下吧！';
+        }
+        $db->query("UPDATE {$tablepre}players SET pls = '$npls' WHERE type = 92 AND hp > 0");
+        $db->array_insert("{$tablepre}chat", array('type'=>2, 'time'=>$now, 'send'=>'【Ｅ】', 'recv'=>'', 'msg'=>$broadcast));
+        $db->array_insert("{$tablepre}chat", array('type'=>2, 'time'=>$now, 'send'=>'【Ｐ】', 'recv'=>'', 'msg'=>$reply));
+        addnews($now, 'fsmove', $name, '', $pls, $nick);
+        include_once GAME_ROOT . './include/game/itemmain.func.php';
+        destory_single_item($data, $itmn);
+    } elseif ($itm == '【我想要领略真正的红杀之力】') {
             // 召唤红暮与蓝凝（从旧版逻辑迁移，恢复原有功能）
             include_once GAME_ROOT . './include/system.func.php';
             $log .= '你拿起了这个球状物体，重重地向天空抛去！<br>地图上空出现了红杀组织的龙虎徽标！<br>';

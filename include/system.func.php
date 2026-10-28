@@ -816,7 +816,7 @@ function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
 			$npc['sp'] = $npc['msp'];
 			if(!isset($npc['state'])){$npc['state'] = 0;}
 			foreach(Array('p','k','g','c','d','f') as $val){
-				if(!$npc['w'.$val]){
+				if(!$npc['w'.$val] && isset($npc['skill'])){
 					$npc['w'.$val] = $npc['skill'];
 				}
 			}

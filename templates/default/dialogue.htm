@@ -1,4 +1,10 @@
-<dialog id="dialogue" style="width: 460px; max-width: 90%;max-height: 80%;">
+<!--{eval $dialogue_skippable = empty($clbpara['noskip_dialogue']) && !isset($dialogue_branch[$dialogue_id]) && !isset($dialogue_ending[$dialogue_id]) && !isset($dialogue_end[$dialogue_id]);}-->
+<dialog id="dialogue" style="width: 460px; max-width: 90%;max-height: 80%;" <!--{if $dialogue_skippable}-->data-skippable="1" oncancel="event.preventDefault();endSkippableDialogue();"<!--{/if}-->>
+<!--{if $dialogue_skippable}-->
+<div style="text-align: right;">
+    <input type="button" class="cmdbutton" value="关闭（Esc）" onclick="endSkippableDialogue();">
+</div>
+<!--{/if}-->
 <p><center>
 
 <!-- 当前阅读页面 -->
@@ -58,9 +64,9 @@
 <!-- 调试信息已移除 -->
 
 </center></p>
-<!--{if (isset($dialogue_branch[$dialogue_id]) || isset($dialogue_ending[$dialogue_id]) || isset($dialogue_end[$dialogue_id]))}-->
-    <img class="dialog-background" src="img/profile.gif" onclick="">
+<!--{if $dialogue_skippable}-->
+    <img class="dialog-background" src="img/profile.gif" onclick="endSkippableDialogue();">
 <!--{else}-->
-    <img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('dialogue'));$('command').value='end_dialogue';postCmd('gamecmd','command.php');this.disabled=true;">
+    <img class="dialog-background" src="img/profile.gif" onclick="">
 <!--{/if}-->
 </dialog>

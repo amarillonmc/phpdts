@@ -477,5 +477,37 @@ function item_other($itmn, &$data) {
 	$itmsk = & ${'itmsk' . $itmn};
 	
 	// 处理其他未分类的物品
+	if(strpos($itmk, '🥚') === 0) {
+		$code = substr($itmsk, 0, 1);
+		if(in_array($code, array('J', 's', 'X', 'x'), true)) {
+			if($itmn != 0 && !empty($itms0)) {
+				$log .= '请先处理手中的物品，再使用代码片段。<br>';
+				return;
+			}
+			if($code == 'J' || $code == 's') {
+				$log .= '你将这个蛋捧在手里仔细端详着……<br>它突然变成了一包卡牌！<br>';
+				$result = array('游戏王卡包', 'ygo', 1, 1, '');
+			} elseif($code == 'X') {
+				$log .= '你将这个蛋捧在手里仔细端详着……<br>它突然变成了一本黑色的小册子<br>卧槽，这不会是……<br>';
+				$result = array('■DeathNote■', 'Y', 1, 1, '');
+			} else {
+				$log .= '你将这个蛋捧在手里仔细端详着……<br>它突然变成了一枚奇迹的元素！<br>';
+				$result = array('奇迹的元素', 'HB', 65535, 1, 'z');
+			}
+			include_once GAME_ROOT.'./include/game/itemmain.func.php';
+			destory_single_item($data, $itmn);
+			list($data['itm0'], $data['itmk0'], $data['itme0'], $data['itms0'], $data['itmsk0']) = $result;
+			$data['itmpara0'] = '';
+		} elseif($code == 'v' || $code == 'V') {
+			$log .= '你看了一眼这个蛋，就理解了它的用法。<br>你痛快地……吃掉了它？<br>';
+			$log .= $code == 'v' ? '你感觉到你的武器泛起了一股诅咒的力量……<br>' : '你感觉到你的武器绑定在了你的身上……<br>';
+			$wepsk .= $code;
+			include_once GAME_ROOT.'./include/game/itemmain.func.php';
+			destory_single_item($data, $itmn);
+		} else {
+			$log .= '你似乎听到了一个佻皮的女孩声音：<br><br>“这个代码片段……不妨以后再来探索吧！”<br>';
+		}
+		return;
+	}
 	$log .= "你使用了<span class=\"yellow\">$itm</span>，但是什么也没有发生。<br>";
 }

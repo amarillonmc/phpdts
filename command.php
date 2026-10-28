@@ -50,6 +50,7 @@ if($gamestate == 0) {
 $pdata['clbpara'] = get_clbpara($pdata['clbpara']);
 extract($pdata,EXTR_REFS);
 $log = $cmd = $main = '';
+$dialogue_skipped = false;
 $gamedata = array();
 init_playerdata();
 
@@ -102,6 +103,19 @@ if($hp > 0){
 
 	//如果身上存在时效性技能，检查技能是否超时
 	if($hp > 0 && !empty($clbpara['lasttimes'])) check_skilllasttimes($pdata);
+	// 关闭可跳过对白不算行动，不能被待拾取物品拦住，也不能触发追击或清掉交互状态。
+	if($command === 'skip_dialogue')
+	{
+		if(empty($clbpara['noskip_dialogue']) && (empty($clbpara['dialogue'])
+			|| (!isset($dialogue_branch[$clbpara['dialogue']]) && !isset($dialogue_ending[$clbpara['dialogue']]) && !isset($dialogue_end[$clbpara['dialogue']]))))
+		{
+			if(!empty($clbpara['dialogue']) && !empty($dialogue_log[$clbpara['dialogue']])) $log .= $dialogue_log[$clbpara['dialogue']];
+			unset($clbpara['dialogue']);
+			$dialogue_skipped = true;
+		}
+		elseif(empty($clbpara['dialogue']) && !empty($clbpara['noskip_dialogue'])) $opendialog = $clbpara['noskip_dialogue'];
+		goto ruleset_command_finished;
+	}
 	//应用眩晕状态效果
 	if($hp > 0 && !empty($clbpara['skill']) && in_array('inf_dizzy',$clbpara['skill']))
 	{
@@ -1101,6 +1115,11 @@ $gamedata['locationId'] = $pls;
 ob_clean();
 $main ? include template($main) : include template('profile');
 $gamedata['innerHTML']['main'] = ob_get_contents();
+if($dialogue_skipped && empty($clbpara['dialogue']) && empty($clbpara['noskip_dialogue']) && !isset($opendialog)) {
+	// 只移除对白，保留当前战斗、尸体或拾取界面及其中尚未提交的选择。
+	unset($gamedata['innerHTML']['cmd'], $gamedata['innerHTML']['main']);
+	$gamedata['innerHTML']['dialogue'] = '';
+}
 // 添加调试信息，显示最终的 log 变量状态
 $log .= "<!-- DEBUG: 最终的 log 变量长度: " . strlen($log) . " -->";
 

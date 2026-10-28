@@ -84,6 +84,10 @@ class Ai93TestDb
 	}
 	function query($sql)
 	{
+		if(preg_match("/^UPDATE test_players SET pls = '?(\d+)'? WHERE type = 92 AND hp > 0$/",$sql,$m)) {
+			foreach($this->players as &$row) if($row['type'] == 92 && $row['hp'] > 0) $row['pls'] = intval($m[1]);
+			unset($row); return true;
+		}
 		if(preg_match('/^DELETE FROM test_(mapitem|maptrap) WHERE (?:iid|tid)=\'?(\d+)/',$sql,$m)) {
 			unset($this->{$m[1]}[$m[2]]); return true;
 		}
@@ -717,4 +721,69 @@ foreach(array('miss','counter_zero') as $battle_case) {
 	ai93_test_assert($observed,'真实战斗未造成伤害时仍能触发普通小兵逃跑 '.$battle_case);
 }
 
-echo "All AI93 tests passed.\n";
+// 物品拆分漏迁回归：沿用本脚本的真实addnpc与内存数据库，检查实际生成、移动和消耗。
+$summon_seeds = $move_seeds = array();
+for($seed=0;count($summon_seeds)<7;$seed++) { srand($seed); $summon_seeds[rand(0,6)]=$seed; }
+for($seed=0;count($move_seeds)<101;$seed++) { srand($seed); $move_seeds[rand(0,100)]=$seed; }
+foreach(array('','YELLOWKNIFE','LAIKAADVENT','RAIDCAGEDBIRD') as $ruleset_id) {
+	foreach($summon_seeds as $sub=>$seed) {
+		ai93_test_reset(); $test_ruleset=$ruleset_id;
+		$p = ai93_test_player(1); ai93_test_item($p,'电掣召唤仪','Z'); $p['itmpara1']='{"source":true}';
+		$info=get_addnpcinfo(); srand($seed); item_npc(1,$p);
+		$npc=$db->players[2];
+		ai93_test_assert(count($db->players) === 2 && $npc['type'] === 89 && $npc['name'] === $info[89]['sub'][$sub]['name']
+			&& ($sub != 4 || $npc['wg'] === 0),'电掣召唤对应NPC并保留零熟练度 '.$ruleset_id.' sub'.$sub);
+		// MySQL读取数量为字符串，避免PHP 7把整数0与无限耐久字符串作宽松比较。
+		player_save($p); $p=fetch_playerdata_by_pid(1); $p['itms1']=(string)$p['itms1']; itemuse(1,$p);
+		ai93_test_assert(!$p['itms1'] && $p['itmpara1'] === '' && count($db->players) === 2,'召唤后消耗及参数清理已保存，重放不重复召唤 '.$ruleset_id.' sub'.$sub);
+	}
+}
+foreach(array(2,$nosta) as $uses) {
+	ai93_test_reset(); $p=ai93_test_player(1); ai93_test_item($p,'电掣召唤仪','Y',1,$uses);
+	item_npc(1,$p);
+	ai93_test_assert(count($db->players) === 2 && $p['itms1'] === ($uses == $nosta ? $nosta : 1),'召唤仪仅消耗一次，保留无限耐久 '.$uses);
+}
+foreach(array(0=>0,20=>0,21=>22,40=>22,41=>23,60=>23,61=>24,80=>24,81=>28,100=>28,'gather'=>7) as $roll=>$destination) {
+	ai93_test_reset(); $p=ai93_test_player(1); $p['pls']=7;
+	$gather=$roll === 'gather';
+	ai93_test_item($p,$gather ? '✦种火聚集装置✦' : '✦种火定点移位装置✦','Y'); $p['itmpara1']='{"source":true}';
+	foreach(array(10=>array(92,100),11=>array(92,100),12=>array(92,0),13=>array(89,100)) as $npc_pid=>$attrs) {
+		$npc=ai93_test_player($npc_pid); $npc['type']=$attrs[0]; $npc['hp']=$attrs[1]; $npc['pls']=3; player_save($npc);
+	}
+	if(!$gather) srand($move_seeds[$roll]);
+	item_npc(1,$p);
+	ai93_test_assert($db->players[10]['pls'] === $destination && $db->players[11]['pls'] === $destination
+		&& $db->players[12]['pls'] === 3 && $db->players[13]['pls'] === 3 && $p['pls'] === 7,'种火装置只移动存活种火，目的地及边界 '.$roll);
+	ai93_test_assert(count($db->chat) === 2 && $test_news[0][1] === 'fsmove' && $test_news[0][4] === 7,'种火装置广播及新闻 '.$roll);
+	player_save($p); $p=fetch_playerdata_by_pid(1); $p['itms1']=(string)$p['itms1']; $db->players[10]['pls']=3; itemuse(1,$p);
+	ai93_test_assert(!$p['itms1'] && $p['itmpara1'] === '' && $db->players[10]['pls'] === 3 && count($db->chat) === 2,'种火装置消耗已保存，重放不再次移动 '.$roll);
+}
+ai93_test_reset(); $p=ai93_test_player(1); ai93_test_item($p,'✦种火定点移位装置✦','Y');
+$saved_pls=$plsinfo[0]; unset($plsinfo[0]); srand($move_seeds[0]); item_npc(1,$p); $plsinfo[0]=$saved_pls;
+ai93_test_assert($p['itms1'] === 1 && !$db->chat && !$test_news && strpos($log,'无法定位') !== false,'目的地不存在时保留种火装置并提示');
+
+include_once GAME_ROOT.'include/game/item.other.php';
+foreach(array('J'=>array('游戏王卡包','ygo',1,''),'s'=>array('游戏王卡包','ygo',1,''),
+	'X'=>array('■DeathNote■','Y',1,''),'x'=>array('奇迹的元素','HB',65535,'z'),'Jp'=>array('游戏王卡包','ygo',1,'')) as $code=>$expected) {
+	foreach(array(0,6) as $slot) {
+		ai93_test_reset(); $p=ai93_test_player(1); ai93_test_item($p,'属性代码片段','🥚',40,8,$slot);
+		$p['itmsk'.$slot]=$code; $p['itmpara'.$slot]='{"source":true}';
+		item_other($slot,$p); player_save($p); $p=fetch_playerdata_by_pid(1);
+		ai93_test_assert(array($p['itm0'],$p['itmk0'],$p['itme0'],$p['itmsk0']) === $expected && $p['itms0'] === 1
+			&& $p['itmpara0'] === '' && ($slot === 0 || (!$p['itms6'] && $p['itmpara6'] === '')),'代码片段转换整件并清除旧参数，保存后产物正确 '.$code.' 槽'.$slot);
+	}
+}
+foreach(array('v','V') as $code) {
+	ai93_test_reset(); $p=ai93_test_player(1); ai93_test_item($p,'属性代码片段','🥚',40,8);
+	$p['itmsk1']=$code; $p['itmpara1']='{"source":true}'; $p['wepsk']='p';
+	item_other(1,$p); player_save($p); $p=fetch_playerdata_by_pid(1); $p['itms1']=(string)$p['itms1']; itemuse(1,$p);
+	ai93_test_assert($p['wepsk'] === 'p'.$code && !$p['itms1'] && $p['itmpara1'] === '','诅咒/绑定代码作用于当前武器且重放不重复附加 '.$code);
+}
+ai93_test_reset(); $p=ai93_test_player(1); ai93_test_item($p,'属性代码片段','🥚',40,8); $p['itmsk1']='X';
+ai93_test_item($p,'手中原物品','Y',5,2,0); $p['itmpara0']='{"keep":true}'; $before=$p;
+item_other(1,$p);
+ai93_test_assert($p === $before && strpos($log,'先处理手中的物品') !== false,'手中有物品时不覆盖、不消耗代码片段');
+$p['itmsk1']='A'; $before=$p; $log=''; item_other(1,$p);
+ai93_test_assert($p === $before && strpos($log,'以后再来探索') !== false,'未实现的代码属性保留原物品并提示');
+
+echo "All AI93 and restored item tests passed.\n";
