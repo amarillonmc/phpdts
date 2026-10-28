@@ -362,7 +362,7 @@ namespace revattr
 		if(isset($pa['bskill_c7_electric']) && $key == 'e')
 		{
 			$sk_var = get_skillvars('c7_electric','exdmgfix');
-			$ex_damage_fix += $sk_var;
+			$ex_dmg_fix += $sk_var;
 		}
 		return $ex_dmg_fix;
 	}

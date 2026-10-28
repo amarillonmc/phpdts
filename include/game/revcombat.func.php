@@ -610,6 +610,8 @@ namespace revcombat
 					$log .= "</span>。</span><br>";
 				}
 			}
+			// 同伴追加攻击在原有伤害制御之后汇入，不能跳过守方的普通减伤计算。
+			if(function_exists('ruleset_attack_damage_hook')) $damage = ruleset_attack_damage_hook($pa,$pd,$active,$damage);
 			// 称号代价与旧痕同样覆盖常规固定伤害；记忆攻击已在上方独立返回。
 			$c23_damage = \club23_adjust_damage($pa,$pd,$damage);
 			if($c23_damage != $damage) $log .= "<span class=\"yellow\">修正后的总伤害：{$c23_damage}。</span><br>";

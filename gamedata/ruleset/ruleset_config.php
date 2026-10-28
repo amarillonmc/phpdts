@@ -18,6 +18,15 @@ $ruleset_enabled = true;
 
 // RuleSet配置
 $ruleset_config = Array(
+	'FLASH' => Array(
+		'name' => 'FLASH：闪回',
+		'description' => '单人轮回探险。与猫耳少女乔乔寻找五片证据；每次死亡选择保留武器、防具或属性，世界随回溯崩坏。11 次复活，60 分钟。',
+		'credits_cost' => 1, 'admin_free' => true,
+		'initial_setup' => Array(), 'override_modules' => Array(),
+		'title_system' => 0, 'club_skills' => 2,
+		'avatar_config' => Array('use_ruleset_avatars'=>false),
+		'story_config' => Array('opening_story'=>'', 'ending_story'=>''),
+	),
 	'ELEVATOR' => Array(
 		'name' => 'ELEVATOR：帧间电梯',
 		'description' => '1—8 人共乘一部电梯，探索湾城、记忆、阁楼与钻探深处。无 PVP；可在节点个人脱出，也可选择双向无尽。',

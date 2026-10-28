@@ -545,6 +545,8 @@ namespace revattr
 		{
 			$atk_t = $pa['wep_skill'] >= 800 ? 6 : 2 + floor($pa['wep_skill']/200);
 		}
+		// 模式只调整段数，命中衰减、耐久和每段伤害仍走下面的公共计算。
+		if(function_exists('ruleset_hit_count_hook')) $atk_t = max(1,(int)ruleset_hit_count_hook($pa,$pd,$active,$atk_t));
 		//对于消耗型武器，命中次数不能超过武器耐久
 		if($wep_imp < 0)
 		{
@@ -2480,6 +2482,7 @@ namespace revattr
 				$hp_d = floor($hp_d * $sk_r);
 				$log .= "<span class='yellow'>「冰心」使{$pa['nm']}受到的反噬伤害降低了！</span><br>";
 			}
+			if($hp_d > 0 && function_exists('ruleset_backlash_damage_hook')) $hp_d = ruleset_backlash_damage_hook($pa,$pd,$hp_d);
 			if($hp_d > 0)
 			{
 				$log .= "惨无人道的攻击对{$pa['nm']}自身造成了<span class=\"red\">$hp_d</span>点<span class=\"red\">反噬伤害！</span><br>";

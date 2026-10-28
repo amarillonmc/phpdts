@@ -96,7 +96,7 @@
 			<div style="margin: 15px 0;">
 				<!--{loop $available_rulesets $ruleset_id $config}-->
 					<!--{eval $can_create = can_create_ruleset_room($ruleset_id, $udata);}-->
-					<div data-ruleset-group="<!--{if in_array($ruleset_id,array('FCG','LAIKAADVENT','RAIDCAGEDBIRD','ANOTHER','ELEVATOR'))}-->special<!--{else}-->history<!--{/if}-->" style="border: 1px solid #666; margin: 10px 0; padding: 15px; background: rgba(0,0,0,0.3);">
+					<div data-ruleset-group="<!--{if in_array($ruleset_id,array('FCG','LAIKAADVENT','RAIDCAGEDBIRD','ANOTHER','ELEVATOR','FLASH'))}-->special<!--{else}-->history<!--{/if}-->" style="border: 1px solid #666; margin: 10px 0; padding: 15px; background: rgba(0,0,0,0.3);">
 						<h4 class="<!--{if $can_create}-->lime<!--{else}-->grey<!--{/if}-->">$config[name]</h4>
 						<p class="evergreen2">$config[description]</p>
 						<div style="margin-top: 10px;">
