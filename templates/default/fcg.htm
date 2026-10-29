@@ -1,6 +1,7 @@
 {template header}
-<link rel="stylesheet" href="include/fcg/fcg.css?v=20261029vol3">
+<link rel="stylesheet" href="include/fcg/fcg.css?v=20261029onboarding">
 <div id="fcg-app" class="fcg-app">
+	<audio id="fcg-bgm" preload="none" hidden></audio>
 	<header class="fcg-masthead">
 		<div><div class="fcg-eyebrow">FIRESEED COLLECTION GAME</div><h1><!--{if $fcg_shop_view}-->种火商店<!--{else}-->记忆，在此交汇。<!--{/if}--></h1><p>小家伙们把外面的世界，轻轻放在了牌桌上。</p></div>
 		<div class="fcg-wallet"><small>你的切糕</small><strong id="fcg-balance">—</strong><span id="fcg-collection-count"></span></div>
@@ -9,7 +10,7 @@
 		<button type="button" data-tab="lobby">种火牌手</button><button type="button" data-tab="battle">当前牌局</button>
 		<button type="button" data-tab="draft">种火远征</button>
 		<button type="button" data-tab="deck">卡册与构筑</button><button type="button" data-tab="shop">种火商店</button>
-		<button type="button" data-action="tutorial">露比与斯诺的课间</button><button type="button" data-action="settings" aria-haspopup="dialog" aria-controls="fcg-settings" aria-expanded="false">设置</button><a href="index.php">返回大厅</a>
+		<button type="button" data-action="tutorial">露比与斯诺的课间</button><button type="button" data-action="settings" aria-haspopup="dialog" aria-controls="fcg-settings" aria-expanded="false">⚙ 设置</button><a href="index.php">返回大厅</a>
 	</nav>
 	<div id="fcg-bookmark" class="fcg-bookmark" hidden><button type="button" data-action="bookmark" aria-expanded="false" aria-label="展开或收拢牌桌导航">▾ 种火牌桌</button><button type="button" data-action="settings" aria-haspopup="dialog" aria-controls="fcg-settings" aria-expanded="false" class="fcg-bookmark-gear" aria-label="牌桌设置">⚙ 设置</button></div>
 	<div id="fcg-notice" role="status" aria-live="polite"></div>
@@ -17,5 +18,5 @@
 	<dialog id="fcg-dialog"><button type="button" class="fcg-dialog-close" aria-label="关闭">×</button><div id="fcg-dialog-content"></div></dialog>
 </div>
 <script id="fcg-bootstrap" type="application/json">$fcg_boot</script>
-<script src="include/fcg/fcg.js?v=20261029vol3" defer></script>
+<script src="include/fcg/fcg.js?v=20261029onboarding" defer></script>
 {template footer}

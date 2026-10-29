@@ -183,7 +183,7 @@ function fcg_draft_action(&$data, &$user, $input, $now, $in_room)
 		fcg_draft_advance($r);
 	} elseif($action==='draft_battle') {
 		if($r['stage']!=='battle' || ($input['layer'] ?? null)!==$r['layer'] || ($data['match'] && $data['match']['result']===null)) throw new InvalidArgumentException('请先完成当前节点或牌局，再确认本层对手。');
-		$m=fcg_new_match($r['deck'],$r['opponent'],$now);
+		$m=fcg_new_match($r['deck'],$r['opponent'],$now,false,null,$data['turn_mode']);
 		$m['sides'][0]['hp']=$r['hp']; $m['sides'][0]['mhp']=$r['mhp'];
 		$m['sides'][1]['hp']+=5*($r['layer']-1);
 		$m['draft']=true; $m['run_id']=$r['id']; $m['run_layer']=$r['layer'];

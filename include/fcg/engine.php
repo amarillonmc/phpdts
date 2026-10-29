@@ -138,7 +138,7 @@ function fcg_hard_drop_pool($opponent)
 	return $pool;
 }
 
-function fcg_new_match($deck, $opponent, $now, $hard = false, $evo = null)
+function fcg_new_match($deck, $opponent, $now, $hard = false, $evo = null, $turn_mode = 'instinct')
 {
 	$all = fcg_opponents();
 	if(!is_int($opponent) || !isset($all[$opponent])) throw new InvalidArgumentException('找不到这位牌手。');
@@ -162,7 +162,97 @@ function fcg_new_match($deck, $opponent, $now, $hard = false, $evo = null)
 		$label=array('W'=>'白','R'=>'红','Y'=>'黄','G'=>'绿','B'=>'蓝')[$color];
 		fcg_log($m,'推演的炉火选用了'.$label.'色构筑，第 '.$m['ai_gen'].' 世代。'.$m['ai_change']);
 	}
+	$m['turn_modes']=array($turn_mode,'instinct');
+	fcg_reset_turn_timers($m,$now);
 	return $m;
+}
+
+function fcg_has_playable_card($m, $side)
+{
+	$s=$m['sides'][$side]; $cards=fcg_cards();
+	foreach($s['hand'] as $slot=>$id) {
+		$c=$cards[$id];
+		if($s['energy'][$c['color']]>=fcg_card_cost($s,$slot) && ($c['type']!=='monster' || fcg_can_summon($s,$c))) return true;
+	}
+	return false;
+}
+
+function fcg_side_turn_seconds($m, $side)
+{
+	if(($m['turn_modes'][$side] ?? 'instinct')==='think') return 180;
+	// 保留原牌桌第一回合的 10 秒热身。
+	return $m['turn']===1?10:5;
+}
+
+function fcg_reset_turn_timers(&$m, $now)
+{
+	$m['turn_modes']=$m['turn_modes'] ?? array('instinct','instinct');
+	$m['turn_started']=$now; $m['turn_done']=array(false,false); $m['no_playable_shortened']=array(false,false);
+	$m['side_deadlines']=array($now+fcg_side_turn_seconds($m,0),$now+fcg_side_turn_seconds($m,1));
+	$m['side_extensions']=array(0,0);
+	fcg_refresh_turn_deadline($m,$now);
+}
+
+function fcg_refresh_turn_deadline(&$m, $now)
+{
+	if(!isset($m['side_deadlines'])) {
+		// 已在进行中的旧局沿用剩余时间，到下一回合再使用新计时。
+		$m['turn_modes']=array('instinct','instinct'); $m['turn_done']=array(false,false);
+		$m['turn_started']=$m['deadline']-($m['turn']===1?10:5);
+		$m['side_deadlines']=array($m['deadline'],$m['deadline']);
+		$m['no_playable_shortened']=array(false,false); $m['side_extensions']=array(0,0);
+	}
+	foreach(empty($m['live'])?array(0):array(0,1) as $side) {
+		if(!$m['turn_done'][$side] && $m['turn_modes'][$side]==='think' && !fcg_has_playable_card($m,$side)) {
+			$m['side_deadlines'][$side]=min($m['side_deadlines'][$side],$now+5);
+			$m['no_playable_shortened'][$side]=true;
+		}
+	}
+	$pending=array();
+	foreach(empty($m['live'])?array(0):array(0,1) as $side) if(!$m['turn_done'][$side]) $pending[]=$m['side_deadlines'][$side];
+	$m['deadline']=$pending?min($pending):$now;
+}
+
+function fcg_set_turn_mode(&$m, $side, $mode, $now)
+{
+	fcg_refresh_turn_deadline($m,$now);
+	if($m['turn_modes'][$side]===$mode) return;
+	$m['turn_modes'][$side]=$mode;
+	// 切换不重置回合起点，也不撤销已经结束/无牌缩时的状态。
+	if(!$m['turn_done'][$side] && !$m['no_playable_shortened'][$side]) $m['side_deadlines'][$side]=$m['turn_started']+fcg_side_turn_seconds($m,$side);
+	fcg_refresh_turn_deadline($m,$now);
+}
+
+function fcg_end_turn(&$m, $side, $now)
+{
+	if($m['result']!==null || !empty($m['turn_done'][$side])) return;
+	fcg_refresh_turn_deadline($m,$now);
+	$m['turn_done'][$side]=true; $m['side_deadlines'][$side]=$now;
+	if(empty($m['live'])) {
+		// 提前收牌仍补完 AI 在原本 5 秒（首回合 10 秒）内应有的决策。
+		// 不以手牌张数判断是否行动：抽牌、重构可能让张数保持不变。
+		$until=max($now,$m['turn_started']+($m['turn']===1?10:5)); $guard=0;
+		while($m['result']===null && $m['ai_at']<$until && $guard++<1200) {
+			$at=$m['ai_at']; $before=$m['sides'][1]['played_this_turn'];
+			fcg_ai($m); $m['ai_at']=$at+(!empty($m['hard'])?1:2);
+			if($m['sides'][1]['played_this_turn']>$before) $until++;
+		}
+		$m['turn_done'][1]=true;
+	}
+	if($m['result']===null && $m['turn_done'][0] && $m['turn_done'][1]) {
+		fcg_turn($m,$now);
+		if(empty($m['live'])) $m['ai_at']=$now+(!empty($m['hard'])?1:2);
+	} else fcg_refresh_turn_deadline($m,$now);
+}
+
+function fcg_public_timers(&$m, $side)
+{
+	$m['deadline']=$m['side_deadlines'][$side] ?? $m['deadline'];
+	$m['turn_mode']=$m['turn_modes'][$side] ?? 'instinct';
+	$m['turn_seconds']=fcg_side_turn_seconds($m,$side);
+	$m['my_turn_done']=!empty($m['turn_done'][$side]); $m['opp_turn_done']=!empty($m['turn_done'][1-$side]);
+	$m['no_playable']=!empty($m['no_playable_shortened'][$side]);
+	unset($m['turn_modes'],$m['side_deadlines'],$m['turn_done'],$m['no_playable_shortened'],$m['side_extensions']);
 }
 
 function fcg_log(&$m, $line)
@@ -572,6 +662,7 @@ function fcg_summon(&$m, $side, $card)
 function fcg_play(&$m, $side, $slot)
 {
 	if($m['result'] !== null) throw new InvalidArgumentException('牌局已经结束。');
+	if(!empty($m['turn_done'][$side])) throw new InvalidArgumentException('本回合已结束，请等待对手。');
 	$a=&$m['sides'][$side]; $b=&$m['sides'][1-$side];
 	if(!is_int($slot) || !isset($a['hand'][$slot])) throw new InvalidArgumentException('这张牌已经不在手中了。');
 	$card=fcg_cards()[$a['hand'][$slot]]; $cost=fcg_card_cost($a,$slot);
@@ -615,7 +706,15 @@ function fcg_play(&$m, $side, $slot)
 	if(!$card['unlimited'] && preg_match('/(?:gain_hp|add_regen|add_energy|add_gen)\(/',$card['ops'])) fcg_check_trap($m,1-$side,'on_enemy_heal_or_energy');
 	foreach(array(0,1) as $i) fcg_evo_observe_hand($m,$i);
 	if($side===1 && empty($m['live']) && $card['rare'] && $m['ai_at']-($m['stickers'][1]['at'] ?? 0)>=3) $m['stickers'][1]=array('id'=>22,'at'=>$m['ai_at']);
-	if(empty($m['live']) || ($m['extension'] ?? 0)<4) { $m['deadline']++; $m['extension']=($m['extension'] ?? 0)+1; }
+	if(isset($m['side_deadlines'])) {
+		// 本能单人局保留双方出牌续秒；真人局只影响出牌者自己的时钟。
+		$clock=empty($m['live'])?0:$side;
+		if($m['turn_modes'][$clock]==='instinct' && !$m['turn_done'][$clock] && (empty($m['live']) || $m['side_extensions'][$clock]<4)) {
+			$m['side_deadlines'][$clock]++; $m['side_extensions'][$clock]++;
+			$m['deadline']=$m['side_deadlines'][$clock];
+			if(!empty($m['live']) && !$m['turn_done'][1-$clock]) $m['deadline']=min($m['deadline'],$m['side_deadlines'][1-$clock]);
+		}
+	} elseif(empty($m['live']) || ($m['extension'] ?? 0)<4) { $m['deadline']++; $m['extension']=($m['extension'] ?? 0)+1; }
 	fcg_finish($m);
 }
 
@@ -691,7 +790,7 @@ function fcg_field_turn(&$m, $side)
 	}
 }
 
-function fcg_turn(&$m)
+function fcg_turn(&$m, $now = null)
 {
 	fcg_evo_end_turn($m);
 	// 先收起上一回合的牌；本次结算阵亡的帮手留在新回合的牌堆中。
@@ -756,8 +855,10 @@ function fcg_turn(&$m)
 		$s['played_this_turn']=$s['disarm']=$s['endure']=$s['sql_inject']=0;
 	} unset($s);
 	if($m['result']!==null) return;
-	$m['turn']++; $m['deadline']+=5; $m['extension']=0;
+	$now=$now ?? $m['deadline'];
+	$m['turn']++; $m['extension']=0;
 	foreach($m['sides'] as &$s) { foreach(fcg_colors() as $c) fcg_energy($s,$c,$s['gen'][$c]); fcg_draw($s); } unset($s);
+	fcg_reset_turn_timers($m,$now);
 	if(isset($m['telemetry'])) foreach(array(0,1) as $i) { $m['telemetry'][$i]['seen_this_turn']=array(); fcg_evo_observe_hand($m,$i); }
 }
 
@@ -790,10 +891,11 @@ function fcg_ai(&$m, $side = 1)
 function fcg_advance(&$m, $now)
 {
 	// Both AI decisions and turn boundaries use the persisted clock, independent of polling frequency.
+	fcg_refresh_turn_deadline($m,$now);
 	$steps=0;
 	while($m['result']===null && min($m['deadline'],$m['ai_at'])<=$now && $steps++<1200) {
-		if($m['ai_at']<$m['deadline']) { $at=$m['ai_at']; fcg_ai($m); $m['ai_at']=$at+(!empty($m['hard'])?1:2); }
-		else { $at=$m['deadline']; fcg_turn($m); }
+		if($m['ai_at']<$m['deadline']) { $at=$m['ai_at']; fcg_ai($m); $m['ai_at']=$at+(!empty($m['hard'])?1:2); fcg_refresh_turn_deadline($m,$at); }
+		else { $at=$m['deadline']; fcg_turn($m,$at); }
 		if($m['result']!==null) $m['stickers'][1]=array('id'=>$m['result']==='loss'?28:12,'at'=>$at);
 	}
 }

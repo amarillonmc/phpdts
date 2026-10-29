@@ -1,0 +1,112 @@
+[
+  {
+    "output": "img/fcg/quiz/q1.png",
+    "title": "第一问 · 陌生的异常牌桌",
+    "size": "960x540",
+    "references": [
+      "img/fcg/hosts/ruby.png",
+      "img/fcg/hosts/snow.png"
+    ],
+    "prompt": "Use case: illustration-story. Create one 16:9 full-bleed scene. Image 1 is Ruby character reference; image 2 is Snow character reference. Preserve their hair, eye colors, and costumes. Do not reproduce the portrait frames or lettering. Cute anime light novel illustration with the character identities and costumes from the reference portraits, 16:9 wide shot inside a warm arcane card classroom. Two girls standing behind a wooden tabletop where a mysterious glowing prismatic fireseed core is pulsing with unstable sparks: on the left, Erwin Ruby (pink hair with blunt bangs and long side locks, red-pink eyes, pale collared school outfit, matching the first reference) grins excitedly and leans forward with a clenched fist; on the right, Pauline Snow (silver-blue bobbed hair and blunt bangs, blue eyes, pale blue collared school outfit, matching the second reference) calmly observes the core through floating frost runes. Cute round little fireseed sprites peeking from the table corners, dramatic magical lighting, NO text, NO letters, NO numbers, NO watermark, NO card border, NO UI frame, full-bleed anime illustration."
+  },
+  {
+    "output": "img/fcg/quiz/q2.png",
+    "title": "第二问 · 龟缩不出的对手",
+    "size": "960x540",
+    "references": [
+      "img/fcg/hosts/ruby.png",
+      "img/fcg/hosts/snow.png"
+    ],
+    "prompt": "Use case: illustration-story. Create one 16:9 full-bleed scene. Image 1 is Ruby character reference; image 2 is Snow character reference. Preserve their hair, eye colors, and costumes. Do not reproduce the portrait frames or lettering. Cute anime light novel illustration with the character identities and costumes from the reference portraits, 16:9 wide shot. On a glowing tabletop battleground, a chubby little white fireseed sprite is hiding inside a comically stacked fortress of ten heavy iron shields and scrap armor plates. Behind the table, Erwin Ruby (pink hair with blunt bangs and long side locks, red-pink eyes, pale collared school outfit, matching the first reference) is swinging a glowing brass knuckle ready to smash the shell, while Pauline Snow (silver-blue bobbed hair and blunt bangs, blue eyes, pale blue collared school outfit, matching the second reference) points a finger conjuring a clockwork sheep and frost tendrils around the iron shell. Dynamic comedic contrast, vibrant colors, NO text, NO letters, NO numbers, NO watermark, NO card border, NO UI frame, full-bleed anime illustration."
+  },
+  {
+    "output": "img/fcg/quiz/q3.png",
+    "title": "第三问 · 课间茶歇的犒赏",
+    "size": "960x540",
+    "references": [
+      "img/fcg/hosts/ruby.png",
+      "img/fcg/hosts/snow.png"
+    ],
+    "prompt": "Use case: illustration-story. Create one 16:9 full-bleed scene. Image 1 is Ruby character reference; image 2 is Snow character reference. Preserve their hair, eye colors, and costumes. Do not reproduce the portrait frames or lettering. Cute anime light novel illustration with the character identities and costumes from the reference portraits, 16:9 wide shot of a cozy twilight recess lounge in the card academy. A wooden table overflowing with five distinct treats: a steaming teacup with cough syrup, spicy sizzling street skewers, a golden bucket of crispy fried chicken, a grilled Pacific saury fish with herbal soup, and an iced drip black coffee. Erwin Ruby (pink hair with blunt bangs and long side locks, red-pink eyes, pale collared school outfit, matching the first reference) happily holds up a fried chicken drumstick and a skewer, while Pauline Snow (silver-blue bobbed hair and blunt bangs, blue eyes, pale blue collared school outfit, matching the second reference) gracefully sips iced black coffee beside her spellbook. Little colorful fireseed sprites drooling around the table, warm inviting atmosphere, NO text, NO letters, NO numbers, NO watermark, NO card border, NO UI frame, full-bleed anime illustration."
+  },
+  {
+    "output": "img/fcg/quiz/q4.png",
+    "title": "第四问 · 最信赖的牌桌搭档",
+    "size": "960x540",
+    "references": [
+      "img/fcg/hosts/ruby.png",
+      "img/fcg/hosts/snow.png"
+    ],
+    "prompt": "Use case: illustration-story. Create one 16:9 full-bleed scene. Image 1 is Ruby character reference; image 2 is Snow character reference. Preserve their hair, eye colors, and costumes. Do not reproduce the portrait frames or lettering. Cute anime light novel illustration with the character identities and costumes from the reference portraits, 16:9 wide shot. Erwin Ruby (pink hair with blunt bangs and long side locks, red-pink eyes, pale collared school outfit, matching the first reference) and Pauline Snow (silver-blue bobbed hair and blunt bangs, blue eyes, pale blue collared school outfit, matching the second reference) standing side by side as hologram-like summon silhouettes rise from five glowing cards on the table between them: a riot shield security guard, a martial artist wreathed in red aura, a brass clockwork steam sheep, a glowing green caged bird, and a frost tavern brawler. Rich magical particles in white, red, yellow, green, and blue, high-detail cel shading, NO text, NO letters, NO numbers, NO watermark, NO card border, NO UI frame, full-bleed anime illustration."
+  },
+  {
+    "output": "img/fcg/quiz/q5.png",
+    "title": "第五问 · 决胜时刻的美学",
+    "size": "960x540",
+    "references": [
+      "img/fcg/hosts/ruby.png",
+      "img/fcg/hosts/snow.png"
+    ],
+    "prompt": "Use case: illustration-story. Create one 16:9 full-bleed scene. Image 1 is Ruby character reference; image 2 is Snow character reference. Preserve their hair, eye colors, and costumes. Do not reproduce the portrait frames or lettering. Cute anime light novel illustration with the character identities and costumes from the reference portraits, 16:9 wide shot of a climactic card duel finale. Erwin Ruby (pink hair with blunt bangs and long side locks, red-pink eyes, pale collared school outfit, matching the first reference) leaps forward throwing a blazing red card that erupts into a fiery broken blade projection, while Pauline Snow (silver-blue bobbed hair and blunt bangs, blue eyes, pale blue collared school outfit, matching the second reference) raises her glowing tome as a giant crystalline kaleidoscope and golden abacus light up the starry ceiling of the card hall. Sparks and ice crystals swirling in harmony, cinematic lighting, NO text, NO letters, NO numbers, NO watermark, NO card border, NO UI frame, full-bleed anime illustration."
+  },
+  {
+    "output": "img/fcg/starters/starter_w.png",
+    "title": "白昼铸甲·铁壁武装",
+    "size": "960x540",
+    "references": [
+      "img/fcg/hosts/ruby.png",
+      "img/fcg/hosts/snow.png"
+    ],
+    "prompt": "Use case: illustration-story. Create one 16:9 full-bleed scene. Image 1 is Ruby character reference; image 2 is Snow character reference. Preserve their hair, eye colors, and costumes. Do not reproduce the portrait frames or lettering. Cute anime light novel illustration with the character identities and costumes from the reference portraits, 16:9 wide shot representing the White Iron-Fortress starter deck. Pauline Snow (silver-blue bobbed hair and blunt bangs, blue eyes, pale blue collared school outfit, matching the second reference) stands in front of an interlocking wall of silver-white riot shields and a glowing永恒护身符 (eternal white fire amulet), calmly stamping an official document, while Erwin Ruby (pink hair with blunt bangs and long side locks, red-pink eyes, pale collared school outfit, matching the first reference) holds a razor-sharp silver katana and a bronze tomb-raider compass that strips away enemy armor plates. Silver-white and warm ivory lighting, metallic textures, NO text, NO letters, NO numbers, NO watermark, NO card border, NO UI frame, full-bleed anime illustration."
+  },
+  {
+    "output": "img/fcg/starters/starter_r.png",
+    "title": "绯红狂飙·疾风爆破",
+    "size": "960x540",
+    "references": [
+      "img/fcg/hosts/ruby.png",
+      "img/fcg/hosts/snow.png"
+    ],
+    "prompt": "Use case: illustration-story. Create one 16:9 full-bleed scene. Image 1 is Ruby character reference; image 2 is Snow character reference. Preserve their hair, eye colors, and costumes. Do not reproduce the portrait frames or lettering. Cute anime light novel illustration with the character identities and costumes from the reference portraits, 16:9 wide shot representing the Red Blitz-Explosion starter deck. Erwin Ruby (pink hair with blunt bangs and long side locks, red-pink eyes, pale collared school outfit, matching the first reference) takes center stage wearing heavy tungsten-steel brass knuckles and wielding the blazingBroken Blade of Remnant Fire, surrounded by roaring flames and flying Molotov sparks, while Pauline Snow (silver-blue bobbed hair and blunt bangs, blue eyes, pale blue collared school outfit, matching the second reference) stands slightly behind shielding her eyes from the heat with her spellbook and a wry smile. Intense crimson and gold action lighting, dynamic motion lines, NO text, NO letters, NO numbers, NO watermark, NO card border, NO UI frame, full-bleed anime illustration."
+  },
+  {
+    "output": "img/fcg/starters/starter_y.png",
+    "title": "黄金奇策·机关窃能",
+    "size": "960x540",
+    "references": [
+      "img/fcg/hosts/ruby.png",
+      "img/fcg/hosts/snow.png"
+    ],
+    "prompt": "Use case: illustration-story. Create one 16:9 full-bleed scene. Image 1 is Ruby character reference; image 2 is Snow character reference. Preserve their hair, eye colors, and costumes. Do not reproduce the portrait frames or lettering. Cute anime light novel illustration with the character identities and costumes from the reference portraits, 16:9 wide shot representing the Yellow Clockwork-Trickery starter deck. Erwin Ruby (pink hair with blunt bangs and long side locks, red-pink eyes, pale collared school outfit, matching the first reference) and Pauline Snow (silver-blue bobbed hair and blunt bangs, blue eyes, pale blue collared school outfit, matching the second reference) sit at a brass gear-strewn table with sly, knowing smiles. Snow flicks a glowing golden abacus while Ruby flips a two-headed lucky coin; around them, cute brass clockwork steam sheep and gear-eating sheep are chewing through enemy armor and carrying back stolen glowing energy orbs and a bucket of fried chicken. Amber-gold steampunk lighting, NO text, NO letters, NO numbers, NO watermark, NO card border, NO UI frame, full-bleed anime illustration."
+  },
+  {
+    "output": "img/fcg/starters/starter_g.png",
+    "title": "翠绿温床·剧毒生机",
+    "size": "960x540",
+    "references": [
+      "img/fcg/hosts/ruby.png",
+      "img/fcg/hosts/snow.png"
+    ],
+    "prompt": "Use case: illustration-story. Create one 16:9 full-bleed scene. Image 1 is Ruby character reference; image 2 is Snow character reference. Preserve their hair, eye colors, and costumes. Do not reproduce the portrait frames or lettering. Cute anime light novel illustration with the character identities and costumes from the reference portraits, 16:9 wide shot representing the Green Venom-Vitality starter deck. Inside a lush bioluminescent greenhouse laboratory, Pauline Snow (silver-blue bobbed hair and blunt bangs, blue eyes, pale blue collared school outfit, matching the second reference) holds a glowing emerald megaphone and a script marked with fluorescent ink, while Erwin Ruby (pink hair with blunt bangs and long side locks, red-pink eyes, pale collared school outfit, matching the first reference) cheerfully serves a steaming bowl of special chicken soup swirling with purple-green alchemical mist and holds a poison-coated pocket dagger. A glowing emerald bird perches nearby, vibrant emerald and violet lighting, NO text, NO letters, NO numbers, NO watermark, NO card border, NO UI frame, full-bleed anime illustration."
+  },
+  {
+    "output": "img/fcg/starters/starter_b.png",
+    "title": "苍蓝视界·冰封秘仪",
+    "size": "960x540",
+    "references": [
+      "img/fcg/hosts/ruby.png",
+      "img/fcg/hosts/snow.png"
+    ],
+    "prompt": "Use case: illustration-story. Create one 16:9 full-bleed scene. Image 1 is Ruby character reference; image 2 is Snow character reference. Preserve their hair, eye colors, and costumes. Do not reproduce the portrait frames or lettering. Cute anime light novel illustration with the character identities and costumes from the reference portraits, 16:9 wide shot representing the Blue Frost-Arcana starter deck. Pauline Snow (silver-blue bobbed hair and blunt bangs, blue eyes, pale blue collared school outfit, matching the second reference) dominates the foreground, conjuring a dazzling crystalline kaleidoscope and a beam of pure white analytical light that freezes the entire battlefield into translucent ice pillars, while Erwin Ruby (pink hair with blunt bangs and long side locks, red-pink eyes, pale collared school outfit, matching the first reference) leans against a frozen warning siren sipping a cup of hot black coffee with a cinnabar talisman floating beside her. Deep sapphire and cyan aurora lighting, NO text, NO letters, NO numbers, NO watermark, NO card border, NO UI frame, full-bleed anime illustration."
+  },
+  {
+    "output": "img/fcg/starters/starter_orig.png",
+    "title": "五色杂烩·小种火本能",
+    "size": "960x540",
+    "references": [
+      "img/fcg/hosts/ruby.png",
+      "img/fcg/hosts/snow.png"
+    ],
+    "prompt": "Use case: illustration-story. Create one 16:9 full-bleed scene. Image 1 is Ruby character reference; image 2 is Snow character reference. Preserve their hair, eye colors, and costumes. Do not reproduce the portrait frames or lettering. Cute anime light novel illustration with the character identities and costumes from the reference portraits, 16:9 wide shot representing the chaotic 5-color Little Fireseed Instinct deck. On the table, five chubby little fireseed sprites (white, red, yellow, green, blue) are chaotically piling mismatched cards, rusty knives, fish, and wires into a tottering, messy tower that is about to collapse. Behind them, Erwin Ruby (pink hair with blunt bangs and long side locks, red-pink eyes, pale collared school outfit, matching the first reference) facepalms in exasperated laughter, while Pauline Snow (silver-blue bobbed hair and blunt bangs, blue eyes, pale blue collared school outfit, matching the second reference) sighs helplessly holding her forehead. Warm comical atmosphere, rainbow sparks, NO text, NO letters, NO numbers, NO watermark, NO card border, NO UI frame, full-bleed anime illustration."
+  }
+]

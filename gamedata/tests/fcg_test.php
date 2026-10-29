@@ -180,7 +180,7 @@ $m=fcg_test_ready(array(182,218));fcg_play($m,0,0);$old=$m['sides'][0]['monster'
 fcg_packet($m['sides'][1],$m['sides'][0],$m['sides'][0]['monster']['def']+1,0,false);fcg_test($m['sides'][0]['monster']['atk']==$old['atk']+$cards[218]['atk']+(int)floor($old['atk']/2)+3,'enrage survives hit');
 $m=fcg_test_ready(array(214));$m['sides'][0]['hp']=100;$m['sides'][0]['regen']=-4;fcg_play($m,0,0);fcg_test($m['sides'][0]['hp']==112 && $m['sides'][0]['regen']===0,'eat poison heals and cleans');
 $m=fcg_test_ready(array(226,228));fcg_play($m,0,0);fcg_test($m['sides'][0]['atk']==2 && $m['sides'][1]['regen']==-2,'chaos blessing affects both');$m['sides'][0]['monster']=null;$m['sides'][1]['def']=20;fcg_play($m,0,0);fcg_test($m['sides'][1]['def']===2,'flatten defense on entry');
-$m=fcg_test_ready(array(0,0,0,0,0,0));$m['live']=true;for($i=0;$i<6;$i++)fcg_play($m,0,0);fcg_test($m['deadline']===114,'live extension cap shared by all plays');fcg_turn($m);fcg_test($m['deadline']===119 && $m['extension']===0,'new turn resets extension');
+$m=fcg_test_ready(array(0,0,0,0,0,0));$m['live']=true;for($i=0;$i<6;$i++)fcg_play($m,0,0);fcg_test($m['side_deadlines']===array(114,110),'live plays extend only the actor clock, capped at four');fcg_turn($m,114);fcg_test($m['deadline']===119 && $m['side_extensions']===array(0,0),'new turn resets extension');
 // Keep this timer assertion independent of random cards drawn before the AI takes over.
 $m=fcg_test_ready();$m['live']=true;$m['seen']=array(100,100);$m['sides'][0]['hand']=array(0);$m['sides'][0]['deck']=$m['sides'][1]['deck']=array();fcg_live_advance($m,120);
 fcg_test($m['sides'][0]['gen']['W']===2 && $m['deadline']>120,'offline player AI resumes at boundary');
@@ -197,7 +197,7 @@ $before=$data;fcg_test_throws(function()use(&$data,&$user,$pack){fcg_buy($data,$
 $data=fcg_new_account();$permanent=$data['collection'];$key='0:1:100';
 foreach(array(2,2,3,4,5) as $uid)fcg_pvp_reward($data,$user,$uid,array(150,151,0),100,$key);
 fcg_test($data['embers']===6 && $data['pvp_wins']===5 && $data['collection']===$permanent && $data['temp_cards']['cards'][151]===5,'unique daily rewards and priority temporary upgraded rare');
-$data['deck'][]=151;fcg_test(count(fcg_validate_deck($data['deck'],fcg_collection($data)))===31,'temporary card available to deck');
+$data['deck'][]=151;$data['decks'][0]['cards']=$data['deck'];fcg_test(count(fcg_validate_deck($data['deck'],fcg_collection($data)))===31,'temporary card available to deck');
 fcg_expire_temp($data,$user,101,$key);fcg_test(count($data['deck'])===31,'room zero temporary card remains valid');
 fcg_expire_temp($data,$user,86500,$key);fcg_test(empty($data['temp_cards']) && count($data['deck'])===30 && $data['collection']===$permanent,'next day prunes borrowed card without permanent loss');
 fcg_pvp_reward($data,$user,2,array(151),86500,$key);fcg_test($data['embers']===8,'daily reward resets');fcg_expire_temp($data,$user,86501,'0:2:200');fcg_test(empty($data['temp_cards']),'new room instance expires borrowed card');
@@ -703,5 +703,74 @@ fcg_test($boot['cards'][156]['res_colors']===array('W'),'resonance summary expos
 fcg_test($boot['cards'][0]['combo_min']===null && $boot['cards'][0]['res_colors']===array(),'ordinary card has no highlight condition');
 foreach($boot['cards'] as $card) fcg_test(!isset($card['ops']) && array_key_exists('combo_min',$card) && is_array($card['res_colors']),'static summary without raw ops: '.$card['id']);
 unset($db);
+
+// Onboarding grants are permanent, bounded and shared by all saved decks.
+$data=fcg_new_account(); $user=array('credits2'=>500,'nicksrev'=>'');
+fcg_test(count(fcg_quiz_definitions()['questions'])===5 && count(fcg_color_starter_decks())===6,'five questions and six starter choices');
+foreach(fcg_colors() as $color) {
+	$deck=fcg_color_starter_decks()[$color]['cards'];
+	fcg_test(count($deck)===30,'starter has thirty cards: '.$color);
+	foreach($deck as $id) fcg_test($cards[$id]['color']===$color && $cards[$id]['series']!=='vol3','starter uses own color from Vol1/2');
+	fcg_test(fcg_evaluate_quiz(array_fill(0,5,$color))['recommended']===$color,'uniform quiz color');
+}
+fcg_test(fcg_evaluate_quiz(fcg_colors())['recommended']==='ORIG' && fcg_evaluate_quiz(fcg_colors())['is_random'],'flat quiz uses instinct deck');
+fcg_test(fcg_evaluate_quiz(array('W','R','W','G','R'))['recommended']==='R','Q5 breaks tied colors');
+fcg_test(fcg_evaluate_quiz(array('W','R','R','W','G'))['recommended']==='W','non-tied Q5 falls back to first tied answer');
+foreach(array(null,array('W'),array_fill(0,6,'W'),array('W','R',array(),'G','B')) as $answers) fcg_test_throws(function()use($answers){fcg_evaluate_quiz($answers);},'malformed quiz rejected');
+fcg_action($data,$user,array('action'=>'quiz','answers'=>array()),100,false);
+fcg_claim_starter_deck($data,$user,'ORIG');fcg_test(!$data['starter_claimed'] && $user['credits2']===500 && $data['quiz_result']==='ORIG','skipping and original preserve free grant');
+fcg_claim_starter_deck($data,$user,'W');$before=$data;
+fcg_test($data['starter_claimed'] && $user['credits2']===500 && fcg_validate_deck($data['deck'],$data['collection'])===$data['deck'],'free color delivered and playable');
+fcg_claim_starter_deck($data,$user,'W');fcg_test($before===$data && $user['credits2']===500,'same starter never grants twice');
+fcg_claim_starter_deck($data,$user,'ORIG');fcg_test($data['starter_claimed'],'original cannot reset consumed free grant');
+foreach(array('R','Y','G','B') as $color) {fcg_claim_starter_deck($data,$user,$color);fcg_test(fcg_validate_deck($data['deck'],$data['collection'])===$data['deck'],'paid starter playable');}
+fcg_test($user['credits2']===100 && count($data['owned_starters'])===6,'remaining four colors cost exactly 400');
+$data=fcg_load_account(fcg_json($data));$before=$data;fcg_claim_starter_deck($data,$user,'B');fcg_test($data===$before && $user['credits2']===100,'reload preserves ownership');
+$data=fcg_new_account();$user['credits2']=0;fcg_claim_starter_deck($data,$user,'W');$before=$data;
+fcg_test_throws(function()use(&$data,&$user){fcg_claim_starter_deck($data,$user,'R');},'paid starter needs funds');fcg_test($data===$before && $user['credits2']===0,'failed grant unchanged');
+fcg_test_throws(function()use(&$data,&$user){fcg_claim_starter_deck($data,$user,array('R'));},'starter key type checked');
+$data['collection'][152]=7;$user['credits2']=100;fcg_claim_starter_deck($data,$user,'R');fcg_test($data['collection'][152]===7 && $data['embers']===4,'overflow uses existing stamps');
+
+$legacy=fcg_new_account();unset($legacy['decks'],$legacy['deck_slots'],$legacy['active_deck'],$legacy['turn_mode'],$legacy['starter_claimed'],$legacy['owned_starters']);$legacy['deck']=array_fill(0,25,0);
+$legacy=fcg_load_account(fcg_json($legacy));fcg_test($legacy['decks'][0]['cards']===$legacy['deck'] && !$legacy['starter_claimed'] && $legacy['turn_mode']==='instinct','legacy custom deck and free grant preserved');
+$data=fcg_new_account();$user['credits2']=5000;
+$slot_item=array('item_id'=>35,'enabled'=>1,'price_credits2'=>500,'daily_limit'=>0,'total_limit'=>9,'reward_type'=>'custom','reward_payload'=>array('kind'=>'deck_slot','count'=>1));
+fcg_buy($data,$user,$slot_item,100);fcg_test($data['deck_slots']===2 && $data['decks'][1]['cards']===array() && $user['credits2']===4500,'slot unlock costs 500 and starts empty');
+fcg_test_throws(function()use(&$data){fcg_deck_slot($data,array('slot'=>1,'op'=>'activate'));},'empty slot cannot become active');
+fcg_deck_slot($data,array('slot'=>1,'op'=>'save','deck'=>array_reverse($data['deck'])));fcg_deck_slot($data,array('slot'=>1,'op'=>'rename','name'=>'另一副牌'));
+$loaded=fcg_load_account(fcg_json($data));fcg_test($loaded['active_deck']===1 && $loaded['deck']===$loaded['decks'][1]['cards'] && $loaded['decks'][1]['name']==='另一副牌','slot activation and name persist');
+fcg_deck_slot($data,array('slot'=>0,'op'=>'activate'));fcg_test($data['deck']===fcg_starter_deck(),'original slot can be restored');
+for($i=2;$i<10;$i++) fcg_buy($data,$user,$slot_item,100);
+$before=$data;$balance=$user['credits2'];fcg_test_throws(function()use(&$data,&$user,$slot_item){fcg_buy($data,$user,$slot_item,100);},'slot limit ten');fcg_test($data===$before && $user['credits2']===$balance,'slot limit does not debit');
+fcg_test_throws(function()use(&$data){fcg_deck_slot($data,array('slot'=>10,'op'=>'rename','name'=>'bad'));},'unowned slot rejected');
+fcg_test_throws(function()use(&$data){fcg_deck_slot($data,array('slot'=>0,'op'=>'rename','name'=>str_repeat('字',31)));},'rename length checked');
+$data['temp_cards']=array('room'=>1,'key'=>'1:1:1','day'=>'1970-01-01','cards'=>array(151=>1));$data['decks'][1]['cards'][]=151;
+fcg_expire_temp($data,array('roomid'=>2),86500,'2:1:1');fcg_test(!in_array(151,$data['decks'][1]['cards'],true) && $data['decks'][2]['cards']===array(),'expiry prunes inactive slots and preserves empty slots');
+
+// Actual discounted costs and summon restrictions drive no-playable shortening.
+$m=fcg_test_ready(array(0,0));$m['turn_modes'][0]='think';fcg_reset_turn_timers($m,100);
+fcg_test($m['deadline']===280,'think turn starts with 180 seconds');
+fcg_duel_action($m,0,array('action'=>'play','slot'=>0,'card'=>0,'turn'=>1),101);fcg_test($m['deadline']===280,'think play never extends deadline');
+fcg_duel_action($m,0,array('action'=>'play','slot'=>0,'card'=>0,'turn'=>1),102);fcg_test($m['deadline']===107 && $m['no_playable_shortened'][0],'last playable card shortens to five seconds');
+fcg_advance($m,106);fcg_test($m['turn']===1,'shortened timer waits');fcg_advance($m,107);fcg_test($m['turn']===2,'shortened timer settles');
+$m=fcg_test_ready(array(238));$m['sides'][0]['energy']=array_fill_keys(fcg_colors(),0);$m['sides'][0]['surge'][0]=99;fcg_test(fcg_has_playable_card($m,0),'surge discounted card is playable');
+$m['sides'][0]['surge']=array();fcg_test(!fcg_has_playable_card($m,0),'unaffordable hand is not playable');$m['sides'][0]['free'][0]=true;fcg_test(fcg_has_playable_card($m,0),'free card is playable');
+$m=fcg_test_ready(array(24));$m['sides'][0]['monster']=array('id'=>24,'hp'=>10,'frozen'=>0,'abilities'=>array());fcg_test(!fcg_has_playable_card($m,0),'occupied monster slot blocks summon');
+$m['turn_modes'][0]='think';fcg_reset_turn_timers($m,100);fcg_duel_action($m,0,array('action'=>'destroy','turn'=>1),101);fcg_test(fcg_has_playable_card($m,0) && $m['deadline']===105,'dismiss opens slot without resetting shortened timer');
+$m=fcg_test_ready(array(0));$m['turn_modes'][0]='think';fcg_reset_turn_timers($m,100);fcg_duel_action($m,0,array('action'=>'discard','slot'=>0,'card'=>0,'turn'=>1),102);fcg_test($m['deadline']===107,'discard also shortens timer');
+$m=fcg_test_ready(array(0));$m['turn_modes'][0]='think';$m['ai_at']=102;$m['sides'][1]['hand']=array(26,26);fcg_reset_turn_timers($m,100);
+fcg_duel_action($m,0,array('action'=>'end_turn','turn'=>1),100);fcg_test($m['turn']===2 && $m['sides'][1]['atk']==6 && $m['sides'][0]['hp']==194,'early end completes AI before combat');
+fcg_test_throws(function()use(&$m){fcg_duel_action($m,0,array('action'=>'end_turn','turn'=>1),100);},'stale end turn cannot skip next round');
+fcg_test_throws(function()use(&$m){fcg_duel_action($m,0,array('action'=>'destroy','turn'=>1),100);},'stale destroy cannot affect next round');
+$m=fcg_test_ready(array(0));$m['live']=true;$m['turn_modes']=array('instinct','think');$m['sides'][1]['hand']=array(0);$m['seen']=array(100,100);fcg_reset_turn_timers($m,100);
+fcg_live_advance($m,110);fcg_test($m['turn']===1 && $m['turn_done']===array(true,false) && $m['deadline']===280,'live fast side waits for thinking side');
+fcg_test_throws(function()use(&$m){fcg_duel_action($m,0,array('action'=>'play','slot'=>0,'card'=>0,'turn'=>1),111);},'finished player cannot play');
+fcg_test_throws(function()use(&$m){fcg_duel_action($m,0,array('action'=>'discard','slot'=>0,'card'=>0,'turn'=>1),111);},'finished player cannot discard');
+fcg_test_throws(function()use(&$m){fcg_duel_action($m,0,array('action'=>'destroy','turn'=>1),111);},'finished player cannot dismiss');
+$view=$m;fcg_public_timers($view,1);fcg_test($view['turn_mode']==='think' && !$view['my_turn_done'] && $view['opp_turn_done'] && $view['deadline']===280,'second player sees own timer and readiness');
+fcg_end_turn($m,1,112);fcg_test($m['turn']===2 && $m['turn_done']===array(false,false) && $m['side_deadlines']===array(117,292),'both done settle once and reset independent clocks');
+$m=fcg_test_ready(array(0));fcg_set_turn_mode($m,0,'think',101);fcg_test($m['deadline']===280,'switch uses original round start');fcg_set_turn_mode($m,0,'instinct',102);fcg_set_turn_mode($m,0,'think',103);fcg_test($m['deadline']===280,'repeated switching cannot reset time');
+$m=fcg_test_ready();unset($m['side_deadlines']);fcg_advance($m,100);fcg_test($m['side_deadlines']===array(110,110),'legacy in-flight match migrates without losing time');
+$bgm=fcg_load_bgm_config();fcg_test(count($bgm['tracks'])===5 && count($bgm['events'])===3,'BGM scene scaffold loads');foreach($bgm['tracks'] as $track)fcg_test($track['url']==='','BGM starts silent');
 
 echo 'FCG: '.$checks." checks passed.\n";

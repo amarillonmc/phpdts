@@ -83,7 +83,7 @@ try {
     $s=dbuser(1,$input,1020);dbcheck($s['credits']===400 && $s['last_reward']===$batch,'batch replay is idempotent');
     // Main room 0 is also a valid FCG room. Two real account rows share one match row.
     $db->query("UPDATE {$gtablepre}game SET gruleset='FCG' WHERE groomid=0");$db->query("UPDATE {$gtablepre}users SET roomid=0 WHERE uid=1");
-    $peer=fcg_new_account();$peer['collection'][151]=1;$peer['deck'][]=151;
+    $peer=fcg_new_account();$peer['collection'][151]=1;$peer['deck'][]=151;$peer['decks'][0]['cards']=$peer['deck'];
     foreach(array(2,3) as $uid) $db->query("INSERT INTO {$gtablepre}users (uid,username,password,credits2,nicksrev,roomid,groupid,fcgdata) VALUES ($uid,".fcg_sql('fcg-peer'.$uid).','.fcg_sql($cpass).",1000,'',".($uid===2?0:1).",1,".fcg_sql(fcg_json($peer)).')');
     $db->query("UPDATE {$gtablepre}users SET icon='8',gender='f' WHERE uid=2");
     $s=dbuser(1,array('action'=>'status'));$b=dbuser(2,array('action'=>'status'));$x=dbuser(3,array('action'=>'status'));
@@ -279,5 +279,42 @@ try {
     $count=$db->fetch_array($db->query("SELECT COUNT(*) AS n FROM {$gtablepre}shop_items WHERE reward_payload LIKE '%vol2%'"));
     dbcheck((int)$count['n']===3 && (int)$catalog[40]['price_credits2']===17 && $catalog[40]['name']==='custom pack','upgrade fills missing packs once and preserves customization');
     dbcheck($catalog[24]['name']==='阿卡夏的共犯','upgrade renames the original title seed');
-    echo "FCG database: migration, purchases, PvP, HARD, adaptive learning, draft expedition, privacy, replay, atomic account/shared writes and mirror retention passed on MyISAM.\n";
+    // Old catalogs receive one slot product, preserving ID 6 and administrator prices.
+    $db->query("DELETE FROM {$gtablepre}shop_items WHERE reward_type='custom' AND reward_payload LIKE '%deck_slot%'");
+    fcg_ensure_social_storage();fcg_ensure_social_storage();$slot_items=array();
+    foreach(fcg_catalog() as $item) if($item['reward_type']==='custom' && strpos($item['reward_payload'],'deck_slot')!==false)$slot_items[]=$item;
+    dbcheck(count($slot_items)===1 && (int)$slot_items[0]['price_credits2']===500 && fcg_catalog()[6]['reward_type']==='fcg_pack','existing catalog gains one slot product without overwriting green pack');
+    $slot=$slot_items[0];$db->query("UPDATE {$gtablepre}shop_items SET price_credits2=501 WHERE item_id=".$slot['item_id']);fcg_ensure_social_storage();
+    dbcheck((int)fcg_catalog()[$slot['item_id']]['price_credits2']===501,'slot migration preserves admin price');
+    $db->query("UPDATE {$gtablepre}shop_items SET price_credits2=500 WHERE item_id=".$slot['item_id']);
+    $db->query("INSERT INTO {$gtablepre}users (uid,username,password,credits2,nicksrev,roomid,groupid,fcgdata) VALUES (4,'fcg-peer4',".fcg_sql($cpass).",5000,'',0,1,NULL)");
+    $s=dbuser(4,array('action'=>'status'),110000);$s=dbuser(4,dbaction($s,'quiz',array('answers'=>array())),110000);
+    $s=dbuser(4,dbaction($s,'starter_claim',array('key'=>'ORIG')),110000);dbcheck(!$s['starter_claimed'] && $s['credits']===5000,'skip and original preserve free grant in DB');
+    $input=dbaction($s,'starter_claim',array('key'=>'W'));$s=dbuser(4,$input,110000);$collection=$s['collection'];$s=dbuser(4,$input,110000);
+    dbcheck($s['starter_claimed'] && $s['credits']===5000 && $s['collection']==$collection,'free color replay grants once');
+    $input=dbaction($s,'starter_claim',array('key'=>'R'));$s=dbuser(4,$input,110000);$collection=$s['collection'];$s=dbuser(4,$input,110000);
+    dbcheck($s['credits']===4900 && $s['collection']==$collection,'paid color replay debits once');
+    $s=dbuser(4,dbaction($s,'starter_claim',array('key'=>'R')),110000);dbcheck($s['credits']===4900 && $s['collection']==$collection,'owned starter new request does not grant again');
+    $input=dbaction($s,'buy',array('item'=>(int)$slot['item_id'],'price'=>500));$s=dbuser(4,$input,110000);$s=dbuser(4,$input,110000);
+    dbcheck($s['deck_slots']===2 && $s['decks'][1]['cards']===array() && $s['credits']===4400,'slot delivery and debit survive replay');
+    dbreject(4,dbaction($s,'deck_slot',array('slot'=>1,'op'=>'activate')),'empty slot activation accepted',110000);
+    $s=dbuser(4,dbaction($s,'deck',array('slot'=>1,'deck'=>array_reverse($s['deck']))),110000);
+    $s=dbuser(4,dbaction($s,'deck_slot',array('slot'=>1,'op'=>'rename','name'=>'测试卡盒')),110000);$s=dbuser(4,array('action'=>'status'),110000);
+    dbcheck($s['active_deck']===1 && $s['deck']===$s['decks'][1]['cards'] && $s['decks'][1]['name']==='测试卡盒','slot save name and activation survive reload');
+    $s=dbuser(4,dbaction($s,'set_options',array('turn_mode'=>'think')),110000);
+    $s=dbuser(4,dbaction($s,'start',array('opponent'=>1)),110000);dbcheck($s['match']['turn_mode']==='think','match inherits saved turn mode');
+    $input=dbaction($s,'end_turn',array('match'=>$s['match']['id'],'turn'=>$s['match']['turn']));$s=dbuser(4,$input,110000);$turn=$s['match']['turn'];$s=dbuser(4,$input,110000);
+    dbcheck($turn===2 && $s['match']['turn']===2,'end-turn replay settles once');
+    dbreject(4,dbaction($s,'end_turn',array('match'=>$s['match']['id'],'turn'=>1)),'stale end turn accepted',110000);
+    $s=dbuser(4,dbaction($s,'surrender',array('match'=>$s['match']['id'])),110000);
+    $s=dbuser(4,array('action'=>'status'),110000);$b=dbuser(2,array('action'=>'status'),110000);
+    $b=dbuser(2,dbaction($b,'set_options',array('turn_mode'=>'instinct')),110000);
+    $s=dbuser(4,dbaction($s,'invite',array('uid'=>2)),110000);$b=dbuser(2,array('action'=>'status'),110000);$b=dbuser(2,dbaction($b,'accept',array('uid'=>4)),110000);$s=dbuser(4,array('action'=>'status'),110000);
+    dbcheck($s['match']['turn_mode']==='think' && $b['match']['turn_mode']==='instinct','live views inherit separate player modes');
+    $input=dbaction($s,'end_turn',array('match'=>$s['match']['id'],'turn'=>1));$s=dbuser(4,$input,110000);$s=dbuser(4,$input,110000);$b=dbuser(2,array('action'=>'status'),110000);
+    dbcheck($s['match']['my_turn_done'] && $b['match']['opp_turn_done'] && $s['match']['turn']===1,'live end and replay wait for peer');
+    dbreject(4,dbaction($s,'discard',array('match'=>$s['match']['id'],'turn'=>1,'slot'=>0,'card'=>$s['match']['sides'][0]['hand'][0])),'ready player discarded',110000);
+    $b=dbuser(2,dbaction($b,'end_turn',array('match'=>$b['match']['id'],'turn'=>1)),110000);$s=dbuser(4,array('action'=>'status'),110000);
+    dbcheck($s['match']['turn']===2 && $b['match']['turn']===2 && !$s['match']['my_turn_done'],'second player end advances shared round once');
+    echo "FCG database: migration, purchases, PvP, HARD, adaptive learning, draft expedition, privacy, replay, atomic writes, starters, deck slots and independent timers passed on MyISAM.\n";
 } finally { foreach(array_reverse($created) as $table) $db->query('DROP TABLE `'.$table.'`','SILENT'); }

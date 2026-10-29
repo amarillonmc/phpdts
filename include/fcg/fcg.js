@@ -13,6 +13,10 @@
   let uiMode='classic', tblExpanded=false, pileLogSide=null, logOpen=false, tblViewport=null;
   let prevMatchView=null;
   let deckPage=1, poolPage=1, poolItem=null, overlayOrder=1200;
+  let editSlot=state.active_deck, quizAnswers=[];
+  const bgm=document.getElementById('fcg-bgm');
+  let bgmEnabled=true, bgmVolume=.35, bgmTrack='', bgmFade=null;
+  try {bgmEnabled=localStorage.getItem('fcg_bgm_on')!=='0';const v=localStorage.getItem('fcg_bgm_vol');if(v!==null&&Number.isFinite(+v))bgmVolume=Math.max(0,Math.min(1,+v));} catch(e) {}
   const pageSize=24;
   const seriesName=c=>({vol1:'Vol.1 种火初啼',vol2:'Vol.2 红杀演武',vol3:'Vol.3 常磐万象 & 电波狂想'}[c.series]);
   const handCost=(s,slot,c)=>s.costs?.[slot]??(s.free?.[slot]?0:c.cost);
@@ -35,6 +39,7 @@
   settingsPanel.setAttribute('role','dialog'); settingsPanel.setAttribute('aria-label','牌桌设置');
   settingsPanel.innerHTML='<div class="fcg-tbl-panel-head"><h2>牌桌设置</h2><button type="button" data-action="settings-close" aria-label="关闭设置">×</button></div><h3>对战界面</h3><div class="fcg-settings-options"><button type="button" data-action="set-ui" data-ui="classic">经典牌桌</button><button type="button" data-action="set-ui" data-ui="table">新牌桌</button></div><p>选择保存在本浏览器；新牌桌仍在打磨，对局中可随时切回经典。</p>';
   app.append(settingsPanel);
+  settingsPanel.insertAdjacentHTML('beforeend','<h3>操作方案</h3>'+turnModeButtons()+'<p>本能模式保留首回合 10 秒热身、随后 5 秒的节奏。思考模式每回合 180 秒，无牌可出时缩至最多 5 秒；可随时手动结束。切换不重置本回合计时。</p><h3>背景音乐</h3><label><input id="fcg-bgm-enabled" type="checkbox"> 开启 BGM</label><label class="fcg-volume">音量 <input id="fcg-bgm-volume" type="range" min="0" max="1" step="0.05" aria-label="BGM 音量"></label>');
   const pilePanel=document.createElement('section'); pilePanel.id='fcg-pile-log'; pilePanel.className='fcg-tbl-panel'; pilePanel.hidden=true; pilePanel.setAttribute('aria-label','本回合出牌记录'); app.append(pilePanel);
   const logPanel=document.createElement('section'); logPanel.id='fcg-log-panel'; logPanel.className='fcg-tbl-panel'; logPanel.hidden=true; logPanel.setAttribute('aria-label','牌桌记事'); app.append(logPanel);
   const stickerPanel=document.createElement('div');stickerPanel.id='fcg-sticker-menu';stickerPanel.hidden=true;app.append(stickerPanel);
@@ -66,7 +71,28 @@
   let activeRequest=Promise.resolve(), mutationPending=false, lastBattle='';
   const counts = list => list.reduce((out,id)=>{out[id]=(out[id]||0)+1;return out;},{});
   const notice = text => { document.getElementById('fcg-notice').textContent=text; };
-  function modal(html) { dialogContent.innerHTML=html; if(!dialog.open) dialog.showModal(); dialog.scrollTop=0; }
+  function modal(html, classroom=false) { dialogContent.innerHTML=html;dialog.dataset.classroom=String(classroom);if(!dialog.open) dialog.showModal();dialog.scrollTop=0;fcgSyncBgm(); }
+  function turnModeButtons(classroom=false) {
+    return '<div class="fcg-settings-options">'+[['instinct','⚡ 本能模式 · 5 秒'],['think','🧠 思考模式 · 180 秒']].map(([key,label])=>'<button data-action="set-turn-mode" data-mode="'+key+'" data-classroom="'+classroom+'" aria-pressed="'+(state.turn_mode===key)+'">'+label+'</button>').join('')+'</div>';
+  }
+  function fcgSyncBgm() {
+    if(!bgm) return;
+    const m=state.match, classroom=dialog.open&&dialog.dataset.classroom==='true', battle=tab==='battle'&&m;
+    const scene=classroom?'fcg_classroom':battle?(m.hard||m.pvp||(boot.opponents[m.opponent]?.level||0)>=5?'fcg_battle_boss':'fcg_battle_normal'):tab==='draft'?'fcg_expedition':'fcg_lobby';
+    let track=(boot.bgm?.tracks||[]).find(t=>t.id===scene)||{url:'',loop:1};
+    const events=boot.bgm?.events||{}, event=classroom?null:battle&&m.result?(m.result==='win'?'victory':m.result==='loss'?'defeat':null):battle&&m.opponent===20?'opponent_20':null;
+    if(event&&events[event])track={url:events[event],loop:event==='opponent_20'};
+    const src=bgmEnabled&&track.url?'audio/'+track.url:'';
+    if(src!==bgmTrack) {
+      clearInterval(bgmFade);bgmFade=null;bgm.pause();bgmTrack=src;bgm.loop=!!track.loop;
+      if(!src) {bgm.removeAttribute('src');bgm.load();return;}
+      bgm.src=src;bgm.volume=0;
+      bgmFade=setInterval(()=>{bgm.volume=Math.min(bgmVolume,bgm.volume+.05);if(bgm.volume>=bgmVolume){clearInterval(bgmFade);bgmFade=null;}},40);
+    } else if(!bgmFade) bgm.volume=bgmVolume;
+    if(src&&bgm.paused&&!bgm.ended)bgm.play().catch(()=>{});
+  }
+  dialog.addEventListener('close',()=>fcgSyncBgm());
+  app.addEventListener('pointerdown',()=>fcgSyncBgm());
   const token = () => Array.from(crypto.getRandomValues(new Uint8Array(16)),x=>x.toString(16).padStart(2,'0')).join('');
   function send(action, values={}) {
     if((action==='status' && (busy||mutationPending)) || (action!=='status' && mutationPending)) return Promise.resolve(false);
@@ -88,16 +114,17 @@
       const previousMatch=state.match&&state.match.id;
       state=result.state; clockOffset=state.now*1000-Date.now();
       if(state.match&&state.match.id!==previousMatch) {stickerOpen=false;tblExpanded=false;pileLogSide=null;logOpen=false;inspectId=null;}
-      if(!dirty) draft=state.deck.slice();
+      if(!dirty) draft=state.decks[editSlot].cards.slice();
       if(action!=='status') notice('');
       if(['start','mirror','accept','draft_battle'].includes(action)||(state.match&&state.match.live&&!state.match.result&&state.match.id!==previousMatch)) tab='battle';
       if(['draft_enter','draft_pick','draft_node','draft_abandon'].includes(action)) tab='draft';
       if(action==='draft_reward') tab='draft';
-      if(action==='deck') {dirty=false;draft=state.deck.slice();notice('卡组已保存，下局使用这副牌。');}
+      if(action==='deck'||(action==='deck_slot'&&values.op!=='rename')||action==='starter_claim') {dirty=false;editSlot=state.active_deck;draft=state.deck.slice();notice('卡组已保存，下局使用这副牌。');}
       if(action==='invite') notice('邀请已发出，请等待对方回应。');
       // Do not replace a focused search field/deck editor during background polling.
       if(action!=='status' || tab==='lobby' || (tab==='draft' && JSON.stringify(state.run)!==lastRun) || (tab==='battle' && JSON.stringify(state.match)!==lastBattle)) render(); else {renderWallet();renderSocial();renderRun();}
       fitTable();
+      renderSettings();fcgSyncBgm();
       if(action==='buy' || action==='embers' || action==='draft_reward') reward(state.last_reward);
       return true;
     } catch(error) {
@@ -119,9 +146,9 @@
     if(mode==='hand') {
       const s=state.match.sides[0]; cost=handCost(s,slot,c);
       const burn=s.monster&&!s.monster.frozen&&s.monster.abilities.includes('aura_burn_monster_heal');
-      const allowed=s.energy[c.color]>=cost && !(c.type==='monster'&&s.monster&&!c.escort&&!burn) && !state.match.result;
+      const allowed=s.energy[c.color]>=cost && !(c.type==='monster'&&s.monster&&!c.escort&&!burn) && !state.match.result && !state.match.my_turn_done;
       const attrs=' data-card="'+id+'" data-turn="'+state.match.turn+'" data-slot="'+slot+'"';
-      actions='<div class="fcg-card-actions"><button data-action="play"'+attrs+' '+(!allowed?'disabled':'')+'>出牌</button><button data-action="discard"'+attrs+' title="'+discardHint(c)+'">弃牌</button></div>';
+      actions='<div class="fcg-card-actions"><button data-action="play"'+attrs+' '+(!allowed?'disabled':'')+'>出牌</button><button data-action="discard"'+attrs+(state.match.my_turn_done?' disabled':'')+' title="'+discardHint(c)+'">弃牌</button></div>';
     } else if(mode==='deck') {
       const allowed=used<owned && (c.unlimited||used<7) && draft.length<100;
       actions='<div class="fcg-card-count">可用 '+owned+' · 已放 '+used+(temp?' · ✨借牌 '+temp:'')+'</div><div class="fcg-card-actions"><button data-action="remove" data-card="'+id+'" '+(!used?'disabled':'')+'>−</button><button data-action="add" data-card="'+id+'" '+(!allowed?'disabled':'')+'>＋</button></div>';
@@ -150,6 +177,7 @@
     rewardView=r;
     if(r.cards) modal((r.draft?'<h2>远征收获已入册</h2><p>'+r.wins+' 胜 · 永久卡片 '+r.cards.length+' 张 · 余烬印花 +'+r.embers+' · 入场花费 '+num(r.total_cost)+' 切糕</p><p>卡组内的同一卡号只抽一次，能量卡除外。稀有与升级保底优先取自你的卡组；卡组不足时从全池非能量卡中补足。满 7 张的卡另转为 1 枚印花。</p>':'<h2>开包收获一览</h2><p>共 '+r.cards.length+' 包 · 花费 '+num(r.total_cost)+' 切糕</p>')+'<div class="fcg-reward-grid">'+r.cards.map(x=>'<div class="'+(x.new?'fcg-new':'')+'"><b>已拥有 '+(state.collection[x.card]||0)+' 张'+(x.overflow?' · 🔥+1 印花':x.new?' · ✨NEW':'')+'</b>'+card(x.card,'preview')+'</div>').join('')+'</div>');
     else if(r.card!==undefined) detail(r.card,'已拥有 '+(state.collection[r.card]||0)+' 张'+(r.overflow?' · 溢出卡片已化作 1 枚余烬印花':''));
+    else if(r.deck_slots) modal('<h2>新的空白战术卡盒已解锁</h2><p>当前共 '+r.deck_slots+' 个槽位。切糕已扣除，新卡盒可在卡册与构筑中使用。</p><button data-action="new-deck-slot">去构筑新卡组</button>');
     else modal('<h2>获得头衔「'+esc(boot.titles[r.title]||r.title)+'」</h2><p>在个人资料中装备，下次进入常规游戏时生效。</p><a href="user_profile.php">打开个人资料</a>');
   }
   function draftEntrance() {
@@ -247,6 +275,9 @@
   function renderSettings() {
     if(settingsPanel.hidden&&settingsPanel.hasAttribute('popover')&&settingsPanel.matches(':popover-open'))settingsPanel.hidePopover();
     settingsPanel.querySelectorAll('[data-ui]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.ui===uiMode)));
+    settingsPanel.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===state.turn_mode)));
+    document.getElementById('fcg-bgm-enabled').checked=bgmEnabled;
+    document.getElementById('fcg-bgm-volume').value=bgmVolume;
     app.querySelectorAll('[data-action="settings"]').forEach(b=>b.setAttribute('aria-expanded',String(!settingsPanel.hidden)));
   }
   function setUiMode(mode) {
@@ -293,12 +324,12 @@
   function cardTblHand(id, slot) {
     const c=boot.cards[id], s=state.match.sides[0], cost=handCost(s,slot,c);
     const burn=s.monster&&!s.monster.frozen&&s.monster.abilities.includes('aura_burn_monster_heal');
-    const allowed=s.energy[c.color]>=cost && !(c.type==='monster'&&s.monster&&!c.escort&&!burn) && !state.match.result;
+    const allowed=s.energy[c.color]>=cost && !(c.type==='monster'&&s.monster&&!c.escort&&!burn) && !state.match.result && !state.match.my_turn_done;
     const hot=allowed && ((s.sql_inject && c.keywords.some(k=>['连击','余韵','极意','奇迹','囤积'].includes(k))) || (c.combo_min!=null && (s.played_this_turn||0)+1>=c.combo_min) || ((c.res_colors||[]).length && s.last_color && (c.res_colors.includes('ANY')||c.res_colors.includes(s.last_color))));
     const attrs=' data-card="'+id+'" data-slot="'+slot+'" data-turn="'+state.match.turn+'"';
     return '<article class="fcg-card fcg-tbl-handcard '+(c.upgraded?'upgraded ':'')+(c.rare?'rare ':'')+(hot?'fcg-hot ':'')+(allowed?'':'disabled')+'" data-inspect="'+id+'" style="--tone:'+colors[c.color][1]+'" '+(allowed?'data-action="play"'+attrs+' role="button" tabindex="0" aria-label="打出「'+esc(c.name)+'」"':'aria-label="暂时无法打出「'+esc(c.name)+'」，仍可查看详情或弃牌"')+'>'+
       '<img src="'+esc(c.art)+'" alt="'+esc(c.name)+'" loading="lazy"><span class="fcg-cost'+(cost<c.cost?' fcg-cost-discounted':'')+'" title="'+colors[c.color][0]+'色能量">'+num(cost)+'</span>'+
-      '<button type="button" class="fcg-tbl-lens" data-action="detail" data-card="'+id+'" aria-label="查看「'+esc(c.name)+'」详情">🔍</button><button type="button" class="fcg-tbl-trash" data-action="discard"'+attrs+' title="'+discardHint(c)+'" aria-label="弃掉「'+esc(c.name)+'」">🗑️</button>'+
+      '<button type="button" class="fcg-tbl-lens" data-action="detail" data-card="'+id+'" aria-label="查看「'+esc(c.name)+'」详情">🔍</button><button type="button" class="fcg-tbl-trash" data-action="discard"'+attrs+(state.match.my_turn_done?' disabled':'')+' title="'+discardHint(c)+'" aria-label="弃掉「'+esc(c.name)+'」">🗑️</button>'+
       '<div class="fcg-card-body"><h3>'+esc(c.name)+'</h3><p>'+colors[c.color][0]+' · '+(c.upgraded?'已升级':'未升级')+(c.rare?' · 稀有':'')+'</p>'+(c.type==='monster'?'<p>'+cardStats(c)+'</p>':'')+'<p class="fcg-card-rules">'+c.short_rules+'</p></div><i class="fcg-rarity" aria-hidden="true"></i></article>';
   }
   function pileCard(id, i, side, inLog=false) {
@@ -476,18 +507,27 @@
       tableProjectile(additions[source].length?now.pile:(now.monster||old.monster||(delta>0?now.portrait:now.info)),target,delta>0);
     }
   }
+  function turnHint(m) {
+    return m.turn_mode==='think'?'双方同时行动 · 180 秒思考 · 无牌可出时缩至 5 秒':'双方同时行动 · 本能模式出牌续 1 秒'+(m.live?'（仅自己，每回合最多续 4 秒）':'');
+  }
+  function turnControls(m) {
+    if(m.result) return '';
+    return (m.turn_mode==='think'?'<button class="fcg-end-turn" data-action="end_turn" '+(m.my_turn_done?'disabled':'')+'>⏭ '+(m.my_turn_done?'已结束回合':'回合结束')+'</button>':'')+
+      (m.no_playable&&!m.my_turn_done?'<small class="fcg-short-timer">无牌可出 · 剩余最多 5 秒</small>':'')+
+      (m.live?'<small class="fcg-turn-ready">'+(m.my_turn_done?'你已就绪，等待对手':m.opp_turn_done?'对手已就绪':'双方行动中')+'</small>':'');
+  }
   function battleTable() {
     const m=state.match;
     if(!m) return battleClassic();
     const self=m.sides[0], foe=m.sides[1];
     const challenge=(m.hard?'<p class="fcg-challenge-label">🔥 认真模式 (HARD)</p>':'')+(m.ai_color?'<div class="fcg-tbl-ai"><strong>'+colors[m.ai_color][0]+'色推演 · 第 '+esc(m.ai_gen)+' 世代</strong><p>'+esc(m.ai_change)+'</p></div>':'');
-    const hud='<div class="fcg-tbl-hud">'+challenge+'<div class="fcg-tbl-tools">'+(m.last_card!=null?'<button class="fcg-last-card fcg-tbl-last" data-inspect="'+m.last_card+'" data-action="detail" data-card="'+m.last_card+'"><img src="'+esc(boot.cards[m.last_card].art)+'" alt=""><span>上一张<br><b>'+esc(boot.cards[m.last_card].name)+'</b></span></button>':'')+'<button type="button" data-action="log" aria-controls="fcg-log-panel" aria-expanded="false">📜 牌桌记事</button></div><p class="fcg-tbl-hint">双方同时行动 · 出牌续 1 秒'+(m.live?'（每回合最多续 4 秒）':'')+'</p></div>';
+    const hud='<div class="fcg-tbl-hud">'+challenge+'<div class="fcg-tbl-tools">'+(m.last_card!=null?'<button class="fcg-last-card fcg-tbl-last" data-inspect="'+m.last_card+'" data-action="detail" data-card="'+m.last_card+'"><img src="'+esc(boot.cards[m.last_card].art)+'" alt=""><span>上一张<br><b>'+esc(boot.cards[m.last_card].name)+'</b></span></button>':'')+'<button type="button" data-action="log" aria-controls="fcg-log-panel" aria-expanded="false">📜 牌桌记事</button></div><p class="fcg-tbl-hint">'+turnHint(m)+'</p></div>';
     const inspector='<aside id="fcg-inspector" class="fcg-tbl-inspector" hidden></aside>';
     if(m.result) return battleResult(m)+'<div class="fcg-tbl-result-tools">'+hud+'</div>'+inspector;
     return '<div class="fcg-tbl-stage" id="fcg-tbl-stage"><div class="fcg-tbl-row1">'+hud+'<div class="fcg-tbl-foe"><div class="fcg-tbl-foe-info" data-side="1">'+tableStats(m,1)+'</div><div class="fcg-tbl-monster-zone" data-side="1">'+tableMonster(foe)+'</div></div></div>'+
-      '<div class="fcg-tbl-row2">'+tableField(self,0)+tablePile(self,0)+tablePile(foe,1)+tableField(foe,1)+'</div><div class="fcg-tbl-turn"><span class="fcg-tbl-hourglass" aria-hidden="true">⏳</span><strong>第 '+m.turn+' 回合</strong><span id="fcg-seconds">—</span><div class="fcg-timer"><i id="fcg-timer-bar"></i></div></div>'+
+      '<div class="fcg-tbl-row2">'+tableField(self,0)+tablePile(self,0)+tablePile(foe,1)+tableField(foe,1)+'</div><div class="fcg-tbl-turn"><span class="fcg-tbl-hourglass" aria-hidden="true">⏳</span><strong>第 '+m.turn+' 回合</strong><span id="fcg-seconds">—</span><div class="fcg-timer"><i id="fcg-timer-bar"></i></div>'+turnControls(m)+'</div>'+
       '<div class="fcg-tbl-row3"><div class="fcg-tbl-monster-zone" data-side="0">'+tableMonster(self)+'</div><div class="fcg-tbl-self-info" data-side="0">'+tableStats(m,0)+
-      '<div class="fcg-tbl-controls"><button data-action="destroy" '+(!self.monster?'disabled':'')+'>解散帮手</button><button data-action="surrender">认输</button><div class="fcg-sticker-control"><button data-action="sticker-menu" aria-expanded="false">😊 表情</button></div></div>'+tablePortrait(m,0)+'</div>'+
+      '<div class="fcg-tbl-controls"><button data-action="destroy" '+(!self.monster||m.my_turn_done?'disabled':'')+'>解散帮手</button><button data-action="surrender">认输</button><div class="fcg-sticker-control"><button data-action="sticker-menu" aria-expanded="false">😊 表情</button></div></div>'+tablePortrait(m,0)+'</div>'+
       '<div class="fcg-tbl-hand" aria-label="你的手牌">'+(self.hand.length?self.hand.map((id,i)=>cardTblHand(id,i)).join(''):'<p class="fcg-tbl-empty-hand">等待下一张记忆</p>')+'</div>'+tableCount(self.deck_count,0)+'</div></div>'+inspector;
   }
   function battleResult(m) {
@@ -504,8 +544,8 @@
     const stickers=m.stickers||{};
     if(m.hard) html+='<p class="fcg-challenge-label">🔥 认真模式 (HARD)</p>';
     if(m.ai_color) html+='<div class="fcg-note"><strong>'+colors[m.ai_color][0]+'色推演 · 第 '+esc(m.ai_gen)+' 世代</strong><p>'+esc(m.ai_change)+'</p></div>';
-    html+='<div class="fcg-match-status"><strong>第 '+num(m.turn)+' 回合</strong><div class="fcg-timer"><i id="fcg-timer-bar"></i></div><span id="fcg-seconds">—</span></div><div class="fcg-duel">'+side(m.sides[0],m.names?m.names[0]:'你的牌桌',false,stickers[0])+side(m.sides[1],m.names?m.names[1]:boot.opponents[m.opponent].name,true,stickers[1])+'</div>';
-    if(!m.result) html+='<div class="fcg-hand">'+m.sides[0].hand.map((id,i)=>card(id,'hand',i)).join('')+'</div><div class="fcg-stats"><button data-action="destroy" '+(!m.sides[0].monster?'disabled':'')+'>解散帮手</button><button data-action="surrender">认输</button><div class="fcg-sticker-control"><button data-action="sticker-menu" aria-expanded="false">😊 表情</button></div><span>双方同时行动 · 出牌续 1 秒'+(m.live?'（每回合最多续 4 秒）':'')+'</span></div>';
+    html+='<div class="fcg-match-status"><strong>第 '+num(m.turn)+' 回合</strong><div class="fcg-timer"><i id="fcg-timer-bar"></i></div><span id="fcg-seconds">—</span>'+turnControls(m)+'</div><div class="fcg-duel">'+side(m.sides[0],m.names?m.names[0]:'你的牌桌',false,stickers[0])+side(m.sides[1],m.names?m.names[1]:boot.opponents[m.opponent].name,true,stickers[1])+'</div>';
+    if(!m.result) html+='<div class="fcg-hand">'+m.sides[0].hand.map((id,i)=>card(id,'hand',i)).join('')+'</div><div class="fcg-stats"><button data-action="destroy" '+(!m.sides[0].monster||m.my_turn_done?'disabled':'')+'>解散帮手</button><button data-action="surrender">认输</button><div class="fcg-sticker-control"><button data-action="sticker-menu" aria-expanded="false">😊 表情</button></div><span>'+turnHint(m)+'</span></div>';
     if(m.last_card!=null)html+='<button class="fcg-last-card" data-inspect="'+m.last_card+'" data-action="detail" data-card="'+m.last_card+'">上一张：'+esc(boot.cards[m.last_card].name)+'</button>';
     return '<div class="fcg-battle-layout"><div>'+html+'<h3 style="margin-top:18px">牌桌记事</h3><div class="fcg-log" id="fcg-log">'+m.log.map(line=>'<p>'+esc(line)+'</p>').join('')+'</div></div><aside id="fcg-inspector" class="fcg-inspector"><p>划过卡图，检视记忆与词条。</p></aside></div>';
   }
@@ -518,7 +558,7 @@
     document.querySelectorAll('.fcg-deck-pages').forEach(el=>el.innerHTML=pagination('deck-page',deckPage,list.length));
     document.getElementById('fcg-filter-count').textContent='找到 '+list.length+' / '+boot.cards.length+' 种卡片';
     const sorted=Object.keys(used).sort((a,b)=>boot.cards[a].cost-boot.cards[b].cost||Number(a)-Number(b));
-    document.getElementById('fcg-deck-list').innerHTML='<h3>当前构筑 · '+draft.length+' 张</h3><p class="fcg-muted">25–100 张，同卡通常最多 7 张。普通与升级卡分别计算。</p>'+manaCurve()+'<button data-action="sample-hand" '+(draft.length<3?'disabled':'')+'>抽一手范例手牌</button><p class="fcg-muted">从当前构筑抽取起手 3 张，包含未保存改动。</p>'+sorted.map(id=>{const c=boot.cards[id];return '<div class="fcg-deck-row"><span class="fcg-deck-cost" style="--tone:'+colors[c.color][1]+'" title="'+colors[c.color][0]+'色能量 '+c.cost+'">'+colors[c.color][0]+' '+num(c.cost)+'</span><button class="fcg-deck-name" data-action="detail" data-card="'+id+'">'+esc(c.name)+' ×'+used[id]+'</button><button data-action="remove" data-card="'+id+'" aria-label="移除一张'+esc(c.name)+'">−</button></div>';}).join('')+'<button data-action="save-deck">'+(dirty?'保存改动':'保存卡组')+'</button><button data-action="clear-deck">清空构筑</button>'+(dirty?'<button data-action="restore-deck">还原已保存的卡组</button>':'');
+    document.getElementById('fcg-deck-list').innerHTML='<h3>'+esc(state.decks[editSlot].name)+' · '+draft.length+' 张</h3><p class="fcg-muted">25–100 张，同卡通常最多 7 张。普通与升级卡分别计算。</p>'+manaCurve()+'<button data-action="sample-hand" '+(draft.length<3?'disabled':'')+'>抽一手范例手牌</button><p class="fcg-muted">从当前构筑抽取起手 3 张，包含未保存改动。</p>'+sorted.map(id=>{const c=boot.cards[id];return '<div class="fcg-deck-row"><span class="fcg-deck-cost" style="--tone:'+colors[c.color][1]+'" title="'+colors[c.color][0]+'色能量 '+c.cost+'">'+colors[c.color][0]+' '+num(c.cost)+'</span><button class="fcg-deck-name" data-action="detail" data-card="'+id+'">'+esc(c.name)+' ×'+used[id]+'</button><button data-action="remove" data-card="'+id+'" aria-label="移除一张'+esc(c.name)+'">−</button></div>';}).join('')+'<button data-action="save-deck">'+(dirty?'保存并设为主战':'设为主战卡组')+'</button><button data-action="clear-deck">清空构筑</button>'+(dirty?'<button data-action="restore-deck">还原已保存的卡组</button>':'');
   }
   function pagination(action, page, total) {
     const pages=Math.max(1,Math.ceil(total/pageSize));
@@ -543,6 +583,12 @@
   function showSample() {
     modal('<h2>范例起手 · 3 张</h2><p>按当前构筑的投入张数随机抽取；未保存的改动也会使用。仅供试抽，不消耗卡片，也不影响牌局。</p><div class="fcg-sample-hand">'+sampleHand.map(id=>card(id,'preview')).join('')+'</div><div class="fcg-dialog-actions"><button data-action="sample-hand">再抽一手</button><button class="fcg-dialog-close">返回组卡</button></div>');
   }
+  function deckSlots() {
+    const item=boot.catalog.find(i=>i.reward_type==='custom'&&JSON.parse(i.reward_payload).kind==='deck_slot');
+    return '<div class="fcg-deck-slots" aria-label="卡组槽位">'+state.decks.map((d,i)=>'<button data-action="edit-slot" data-slot="'+i+'" aria-pressed="'+(i===editSlot)+'">'+(i===state.active_deck?'★ ':'')+esc(d.name)+' ('+(d.cards.length||'空')+')</button>').join('')+
+      (item&&state.deck_slots<10?'<button data-action="buy" data-item="'+item.item_id+'" data-count="1" '+(state.credits<+item.price_credits2?'disabled':'')+'>＋ 扩充槽位 ('+item.price_credits2+' 切糕)</button>':'<span>已解锁 '+state.deck_slots+' / 10 个槽位</span>')+
+      '</div><div class="fcg-slot-name"><label>卡组名 <input id="fcg-slot-name" maxlength="30" value="'+esc(state.decks[editSlot].name)+'"></label><button data-action="rename-slot">重命名</button><span>★ 为下局使用的主战卡组；每个槽位共用卡册。</span></div>';
+  }
   function deck() {
     return '<h2>每一张，都是独立的记忆。</h2><p class="fcg-muted">点击卡图阅读完整规则。✨幻影借牌仅限本房间与当天，次日或换房自动消散。</p>'+(state.temp_expired?'<p class="fcg-note">之前的幻影记忆已消散，构筑已移除过期卡；不足 25 张时已还原入门卡组。</p>':'')+'<div class="fcg-filters"><input id="fcg-search" aria-label="搜索卡名、关键字或规则" placeholder="搜索卡名、关键字或规则" value="'+esc(filter.search)+'"><select id="fcg-series" aria-label="所属系列">'+[['all','全部系列'],['vol1','Vol.1 种火初啼'],['vol2','Vol.2 红杀演武'],['vol3','Vol.3 常磐万象 & 电波狂想']].map(([v,n])=>'<option value="'+v+'" '+(filter.series===v?'selected':'')+'>'+n+'</option>').join('')+'</select><select id="fcg-cost" aria-label="费用">'+[['all','全部费用'],...Array.from({length:8},(_,n)=>[String(n),n+' 费']),['8+','8 费及以上']].map(([v,n])=>'<option value="'+v+'" '+(filter.cost===v?'selected':'')+'>'+n+'</option>').join('')+'</select><select id="fcg-color" aria-label="颜色"><option value="all">全部颜色</option>'+Object.keys(colors).map(c=>'<option value="'+c+'" '+(filter.color===c?'selected':'')+'>'+colors[c][0]+'</option>').join('')+'</select><select id="fcg-rarity" aria-label="版本与稀有度">'+[['all','全部版本'],['base','未升级'],['upgraded','已升级'],['rare','稀有']].map(([v,n])=>'<option value="'+v+'" '+(filter.rarity===v?'selected':'')+'>'+n+'</option>').join('')+'</select><select id="fcg-keyword" aria-label="卡片关键字"><option value="all">全部关键字</option>'+keywords.map(key=>'<option value="'+esc(key)+'" '+(filter.keyword===key?'selected':'')+'>'+esc(key)+'</option>').join('')+'</select><label><input type="checkbox" id="fcg-owned" '+(filter.owned?'checked':'')+'> 只看可用卡</label><label><input type="checkbox" id="fcg-in-deck" '+(filter.inDeck?'checked':'')+'> 只显示卡组中的卡</label><button data-action="reset-filters">重置筛选</button><span id="fcg-filter-count" class="fcg-muted" role="status"></span></div><div class="fcg-deck-layout"><div class="fcg-deck-catalog"><div class="fcg-deck-pages"></div><div class="fcg-card-grid" id="fcg-deck-grid"></div><div class="fcg-deck-pages"></div></div><aside class="fcg-deck-list" id="fcg-deck-list"></aside></div>';
   }
@@ -560,11 +606,11 @@
     for(const item of boot.catalog.filter(i=>shopCategory==='fcg_pack'?i.category==='fcg_pack':i.category!=='fcg_pack')) {
       const p=JSON.parse(item.reward_payload), c=state.purchases[item.item_id]||{daily:0,total:0,day:today};
       const owned=item.reward_type==='title'&&state.titles.includes(p.title);
-      const limited=(+item.daily_limit>0&&c.day===today&&c.daily>=+item.daily_limit)||(+item.total_limit>0&&c.total>=+item.total_limit);
-      const unsupported=!['title','fcg_pack'].includes(item.reward_type);
+      const limited=(p.kind==='deck_slot'&&state.deck_slots>=10)||(+item.daily_limit>0&&c.day===today&&c.daily>=+item.daily_limit)||(+item.total_limit>0&&c.total>=+item.total_limit);
+      const unsupported=!['title','fcg_pack'].includes(item.reward_type)&&!(item.reward_type==='custom'&&p.kind==='deck_slot');
       const remaining=Math.min(+item.daily_limit?Math.max(0,+item.daily_limit-(c.day===today?c.daily:0)):Infinity,+item.total_limit?Math.max(0,+item.total_limit-c.total):Infinity);
       const options=item.reward_type==='fcg_pack'?(+item.price_credits2?[1,5,10]:(+item.daily_limit?['remaining']:[1])):[1];
-      html+='<article class="fcg-product"><h3>'+esc(item.name)+'</h3><p>'+esc(item.description)+'</p><small>'+(+item.daily_limit?'今日剩余 '+Math.max(0,+item.daily_limit-(c.day===today?c.daily:0))+' 次':'')+(+item.total_limit?' · 每账号限 '+item.total_limit+' 次':'')+'</small><div class="fcg-price">'+(+item.price_credits2?Number(item.price_credits2).toLocaleString()+' 切糕 / 包':'免费')+'</div>'+(item.reward_type==='fcg_pack'?'<small>每包 1 张 · 范围内各卡等概率</small><button data-action="pool" data-item="'+item.item_id+'">查看卡池 · '+poolFor(item).length+' 张</button>':'')+options.filter(n=>n===1||n==='remaining'||item.reward_type==='fcg_pack'&&+item.total_limit!==1&&+item.daily_limit!==1).map(n=>{
+      html+='<article class="fcg-product"><h3>'+esc(item.name)+'</h3><p>'+esc(item.description)+'</p><small>'+(+item.daily_limit?'今日剩余 '+Math.max(0,+item.daily_limit-(c.day===today?c.daily:0))+' 次':'')+(+item.total_limit?' · 每账号限 '+item.total_limit+' 次':'')+'</small><div class="fcg-price">'+(+item.price_credits2?Number(item.price_credits2).toLocaleString()+' 切糕 / '+(item.reward_type==='fcg_pack'?'包':'件'):'免费')+'</div>'+(item.reward_type==='fcg_pack'?'<small>每包 1 张 · 范围内各卡等概率</small><button data-action="pool" data-item="'+item.item_id+'">查看卡池 · '+poolFor(item).length+' 张</button>':'')+options.filter(n=>n===1||n==='remaining'||item.reward_type==='fcg_pack'&&+item.total_limit!==1&&+item.daily_limit!==1).map(n=>{
         const amount=n==='remaining'?remaining:n,price=Math.round(+item.price_credits2*amount*(n===10?0.8:n===5?0.9:1));
         return '<button data-action="buy" data-count="'+n+'" data-item="'+item.item_id+'" '+(owned||limited||unsupported||amount>remaining||state.credits<price?'disabled':'')+'>'+(owned?'已经拥有':limited?'已达限购':unsupported?'暂未开放':n==='remaining'?'一键领取今日剩余（'+amount+' 包）':item.reward_type!=='fcg_pack'?'购买并领取':n===1?'单抽 · '+price+' 切糕':n+' 连 · '+price+' 切糕（'+(n===5?'9':'8')+'折）')+'</button>';
       }).join('')+'</article>';
@@ -596,7 +642,7 @@
     renderWallet(); renderSocial(); renderRun(); app.querySelectorAll('.fcg-nav [data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
     content.innerHTML=({lobby,battle:()=>uiMode==='table'?battleTable():battleClassic(),deck,shop,draft:expedition}[tab]||lobby)();
     const hand=content.querySelector('.fcg-tbl-hand');if(hand)hand.scrollLeft=handScroll;
-    if(tab==='deck') renderDeckGrid();
+    if(tab==='deck') {content.querySelector('h2').insertAdjacentHTML('afterend',deckSlots());renderDeckGrid();}
     if(tab==='battle'&&inspectId!==null&&!inTblBattle)inspect(inspectId);
     renderSettings(); renderPileLog(); renderLogPanel();
     renderStickers();
@@ -605,28 +651,50 @@
     fitTable();
     layoutHand();
     animateTable(oldRects);
-    tick();
+    tick();fcgSyncBgm();
   }
   function tick() {
     document.querySelectorAll('.fcg-sticker-bubble').forEach(el=>{if(+el.dataset.expires<(Date.now()+clockOffset)/1000)el.remove();});
     const seconds=document.getElementById('fcg-seconds'),bar=document.getElementById('fcg-timer-bar');
     if(!seconds||!state.match) return;
     const remain=Math.max(0,state.match.deadline-(Date.now()+clockOffset)/1000);
-    seconds.textContent=state.match.result?'已结束':remain.toFixed(1)+' 秒';
-    if(bar) bar.style.width=(state.match.result?0:Math.min(100,remain/(state.match.turn===1?10:5)*100))+'%';
+    seconds.textContent=state.match.result?'已结束':state.match.my_turn_done?'等待对手':remain.toFixed(1)+' 秒';
+    if(bar) bar.style.width=(state.match.result?0:Math.min(100,remain/(state.match.turn_seconds||5)*100))+'%';
   }
   const lessons=[
     ['为什么打牌','欢迎来到梦境与代码的夹缝——好啦其实也没那么玄乎！如你所见，下面那群不会好好说话的小家伙（小种火），最近迷上了把在幻境里见到的东西压成扁扁的卡片。','准确来说，那群小豆丁只是顺着本能在收集外面的情报而已。但光攒着数据没法消化，所以它们就照着《记忆之链》那种老掉牙的套路，把记忆碎片做成了能互相对撞的牌局——顺便还塞了你一副最基础的陪练卡组。'],
-    ['五秒，同时行动','打起来很简单！每回合大家同时掏牌，谁先把对面的体力削光谁就赢！只要手里的五色火苗（能量）够用，一回合你想甩多少张牌出去都行哦！','前提是你手速够快。第一回合给你 10 秒热身，之后每回合只有 5 秒——当然，每打出一张牌会给你续 1 秒。记住先打发电卡把每回合自动涨的能量提上去，不然抓一手大牌也只能干瞪眼。'],
+    ['同时行动，两种节奏','打起来很简单！每回合大家同时掏牌，谁先把对面的体力削光谁就赢！只要手里的五色火苗（能量）够用，一回合你想甩多少张牌出去都行哦！','本能模式首回合给你 10 秒热身，之后每回合 5 秒，出牌续 1 秒；也可以选每回合 180 秒的思考模式，想好就按「回合结束」。稍后会让你选择。记住先打发电卡，不然抓一手大牌也只能干瞪眼。'],
     ['两次攻击，各算各的','还有还有，你可以自己提刀上去砍（玩家攻击），也可以叫一个帮手驻场（怪物攻击）！如果帮手把对面的帮手打飞了，多出来的力气还会顺便糊在对面脸上！','但注意了——你自己的攻击和帮手的攻击是分开算防御的！如果对面堆了 10 点防御，你 7 攻、帮手 9 攻，两边破不了防就是 0 伤害，别算错了！另外手牌满了（6 张）或者牌库抽干了还硬抽，是会直接叠中毒（负回血）的。'],
     ['新的记忆，从哪里来','打赢那些小家伙的话，它们一高兴就会从自己的牌堆里随便抖落一张卡送你！要是你看到有些长得很像熟人的新种火……嘘，别问，问就是它们自己捏着玩的！','嫌刷得慢、或者想弄点已经升级好的深层卡片，就带着你的切糕来我们店里买补充包。行了，去跟新手村那五只小家伙练手吧！']
   ];
   function tutorial(step=0) {
     tutorialStep=step; const l=lessons[step];
-    modal('<p class="fcg-tutorial-progress">课间 '+(step+1)+' / 4</p><div class="fcg-lesson-tabs"><button data-action="lesson-resume" aria-pressed="true">入门课堂</button><button data-action="keyword-reference" aria-pressed="false">关键字速查表</button></div><h2>'+l[0]+'</h2>'+hosts(l[2],l[1])+'<div class="fcg-dialog-actions"><button data-action="lesson-prev" '+(step===0?'disabled':'')+'>上一幕</button><button data-action="lesson-next">'+(step===3?'去认识小家伙们':'下一幕')+'</button></div>');
+    modal('<p class="fcg-tutorial-progress">课间 '+(step+1)+' / 4</p><div class="fcg-lesson-tabs"><button data-action="lesson-resume" aria-pressed="true">入门课堂</button><button data-action="quiz-intro">心理测试与初始牌组</button><button data-action="keyword-reference" aria-pressed="false">关键字速查表</button></div><h2>'+l[0]+'</h2>'+hosts(l[2],l[1])+'<div class="fcg-dialog-actions"><button data-action="lesson-prev" '+(step===0?'disabled':'')+'>上一幕</button><button data-action="lesson-next">'+(step===3?'选择操作方案':'下一幕')+'</button></div>',true);
+  }
+  function chooseTurnMode() {
+    modal('<h2>你可以凭本能，也可以先想一想。</h2>'+hosts('小种火打牌也是靠本能，但我们知道人类一般不仅仅有本能，还可以思考。','选择本能模式，沿用首回合 10 秒、之后 5 秒的节奏；选择思考模式，每回合最多 180 秒，想好就按「回合结束」，没牌可出时会缩至最多 5 秒。')+turnModeButtons(true)+'<p>随时可在 ⚙ 设置中切换。真人约战时双方各自计时，都结束行动后才结算。</p><button data-action="quiz-intro">继续，看看适合我的牌组</button>',true);
+  }
+  function quizIntro() {
+    quizAnswers=[];
+    modal('<h2>露比与斯诺的心理测试</h2>'+hosts(boot.quiz_defs.intro.ruby,boot.quiz_defs.intro.snow)+'<p>'+(state.starter_claimed?'你已领过免费单色牌组，其余颜色各 100 切糕；已拥有的牌组可随时重新载入。':'包括老测试玩家在内，每人可免费领取一次单色初始牌组。跳过测试或选择原版五色，不消耗免费额度。')+'</p><div class="fcg-dialog-actions"><button data-action="quiz-skip">跳过测试</button><button data-action="quiz-start">开始五道题</button></div><button data-action="starter-list">查看六套初始牌组 / 补购</button>',true);
+  }
+  function quizQuestion() {
+    const q=boot.quiz_defs.questions[quizAnswers.length];
+    modal('<p class="fcg-tutorial-progress">心理测试 '+(quizAnswers.length+1)+' / 5</p><h2>'+esc(q.title)+'</h2><img class="fcg-quiz-art" src="'+esc(q.image)+'" alt="'+esc(q.title)+'"><p>'+esc(q.prompt)+'</p><div class="fcg-quiz-options">'+q.options.map(o=>'<button data-action="quiz-answer" data-color="'+o.color+'">'+esc(o.text)+'</button>').join('')+'</div><div class="fcg-dialog-actions"><button data-action="quiz-back" '+(!quizAnswers.length?'disabled':'')+'>上一题</button><button data-action="quiz-skip">跳过测试</button></div>',true);
+  }
+  function starterPrice(key) {return key==='ORIG'||state.owned_starters.includes(key)||!state.starter_claimed?0:100;}
+  function starterLabel(key) {return state.owned_starters.includes(key)?'载入已有牌组':starterPrice(key)?'100 切糕购买并使用':'免费领取并使用';}
+  function starterResult(key, selection=false) {
+    const d=boot.starter_decks_meta[key];
+    modal('<h2>'+esc(d.name)+'</h2><p class="fcg-starter-style">'+esc(d.style_tag)+'</p><img class="fcg-quiz-art" src="'+esc(d.image)+'" alt="'+esc(d.name)+'">'+hosts(d.ruby_comment,d.snow_comment)+
+      '<div class="fcg-color-lore">'+Object.entries(boot.quiz_defs.color_lore).map(([c,lore])=>'<p class="'+(c===key?'selected':'')+'">'+esc(lore)+'</p>').join('')+'</div><p>'+(key==='ORIG'?'原版可随时免费使用；尚未领取的单色免费额度会继续保留。':state.starter_claimed?'已拥有的颜色可免费载入，未拥有的颜色每套 100 切糕。':'本次领取单色牌组免费，之后其他颜色每套 100 切糕。')+'</p><p>领取后会将「'+esc(state.decks[state.active_deck].name)+'」替换为这套 30 张牌；已有收藏保留。</p>'+
+      '<div class="fcg-dialog-actions"><button data-action="starter-list">'+(selection?'改选其他颜色':'欸，这不对劲')+'</button><button data-action="starter-claim" data-key="'+key+'" '+(state.credits<starterPrice(key)?'disabled':'')+'>'+starterLabel(key)+'</button></div><button data-action="quiz-intro">重新测试</button>',true);
+  }
+  function starterList() {
+    modal('<h2>挑一副你喜欢的牌组</h2><p>单色牌组可免费领取一次，之后每个新颜色 100 切糕；原版不消耗免费额度。</p><div class="fcg-starter-grid">'+Object.values(boot.starter_decks_meta).map(d=>'<button data-action="starter-preview" data-key="'+d.key+'"><img src="'+esc(d.image)+'" alt=""><strong>'+esc(d.name)+'</strong><span>'+esc(d.style_tag)+'</span><small>'+starterLabel(d.key)+'</small></button>').join('')+'</div><button data-action="quiz-intro">返回心理测试</button>',true);
   }
   function keywordReference() {
-    modal('<div class="fcg-lesson-tabs"><button data-action="lesson-resume" aria-pressed="false">入门课堂</button><button data-action="keyword-reference" aria-pressed="true">关键字速查表</button></div><h2>关键字速查表</h2><p>露比的笔记：以下释义来自实际卡片，数字与触发条件以对应卡片为准。同一关键字的其他写法可展开查看。</p><input id="fcg-keyword-search" aria-label="搜索关键字或释义" placeholder="搜索关键字或释义" value="'+esc(referenceSearch)+'"><div id="fcg-keyword-table"></div>');
+    modal('<div class="fcg-lesson-tabs"><button data-action="lesson-resume" aria-pressed="false">入门课堂</button><button data-action="keyword-reference" aria-pressed="true">关键字速查表</button></div><h2>关键字速查表</h2><p>露比的笔记：以下释义来自实际卡片，数字与触发条件以对应卡片为准。同一关键字的其他写法可展开查看。</p><input id="fcg-keyword-search" aria-label="搜索关键字或释义" placeholder="搜索关键字或释义" value="'+esc(referenceSearch)+'"><div id="fcg-keyword-table"></div>',true);
     renderKeywordTable();
   }
   function renderKeywordTable() {
@@ -643,6 +711,7 @@
     if(el.dataset.shop) {shopCategory=el.dataset.shop;render();return;}
     const a=el.dataset.action,id=Number(el.dataset.card),slot=Number(el.dataset.slot);
     if(a==='settings') {syncPanel(settingsPanel,settingsPanel.hidden);renderSettings();return;}
+    if(a==='set-turn-mode') {if(await send('set_options',{turn_mode:el.dataset.mode})&&el.dataset.classroom==='true')chooseTurnMode();return;}
     if(a==='set-ui') {setUiMode(el.dataset.ui);return;}
     if(a==='settings-close') {syncPanel(settingsPanel,false);renderSettings();return;}
     if(a==='bookmark') {tblExpanded=!tblExpanded;render();return;}
@@ -674,35 +743,57 @@
     if(a==='sticker-menu'){stickerOpen=!stickerOpen;renderStickers();return;}
     if(a==='sticker'){stickerOpen=false;renderStickers();await send(a,{sticker:Number(el.dataset.sticker)});return;}
     if(a==='tutorial') {tutorial();return;}
+    if(a==='quiz-intro') {quizIntro();return;}
+    if(a==='quiz-start') {quizAnswers=[];quizQuestion();return;}
+    if(a==='quiz-back') {quizAnswers.pop();quizQuestion();return;}
+    if(a==='quiz-answer') {
+      if(quizAnswers.length>=5)return;
+      quizAnswers.push(el.dataset.color);
+      if(quizAnswers.length<5)quizQuestion();
+      else if(await send('quiz',{answers:quizAnswers}))starterResult(state.quiz_result);
+      else {quizAnswers.pop();quizQuestion();}
+      return;
+    }
+    if(a==='quiz-skip') {if(await send('quiz',{answers:[]}))starterResult('ORIG');return;}
+    if(a==='starter-list') {starterList();return;}
+    if(a==='starter-preview') {starterResult(el.dataset.key,true);return;}
+    if(a==='starter-claim') {if(await send('starter_claim',{key:el.dataset.key})){dialog.close();notice('初始牌组已载入主战卡组，收藏已保存。');}return;}
     if(a==='lesson-resume') {tutorial(tutorialStep);return;}
     if(a==='keyword-reference') {keywordReference();return;}
     if(a==='lesson-prev') {tutorial(Math.max(0,tutorialStep-1));return;}
-    if(a==='lesson-next') {if(tutorialStep<3)tutorial(tutorialStep+1);else{dialog.close();await send('tutorial');}return;}
+    if(a==='lesson-next') {if(tutorialStep<3)tutorial(tutorialStep+1);else{chooseTurnMode();}return;}
     if(a==='pool') {poolItem=boot.catalog.find(i=>+i.item_id===Number(el.dataset.item));poolPage=1;showPool();return;}
     if(a==='pool-page') {poolPage=Number(el.dataset.page);showPool();return;}
     if(a==='deck-page') {deckPage=Number(el.dataset.page);renderDeckGrid();document.querySelector('.fcg-deck-catalog').scrollIntoView({block:'start'});return;}
+    if(a==='edit-slot'||a==='new-deck-slot') {
+      if(dirty){notice('当前构筑还有未保存改动，请先保存或还原，再切换卡盒。');return;}
+      editSlot=a==='new-deck-slot'?state.deck_slots-1:slot;draft=state.decks[editSlot].cards.slice();tab='deck';dialog.close();render();return;
+    }
+    if(a==='rename-slot') {await send('deck_slot',{op:'rename',slot:editSlot,name:document.getElementById('fcg-slot-name').value});return;}
     if(a==='add') {
       const c=boot.cards[id],n=counts(draft)[id]||0;
       if(draft.length<100&&n<available(id)&&(c.unlimited||n<7)){draft.push(id);dirty=true;renderDeckGrid();}return;
     }
     if(a==='remove') {const at=draft.indexOf(id);if(at>=0){draft.splice(at,1);dirty=true;renderDeckGrid();}return;}
     if(a==='clear-deck') {draft=[];dirty=true;renderDeckGrid();return;}
-    if(a==='restore-deck') {draft=state.deck.slice();dirty=false;notice('已还原上次保存的卡组。');renderDeckGrid();return;}
+    if(a==='restore-deck') {draft=state.decks[editSlot].cards.slice();dirty=false;notice('已还原上次保存的卡组。');renderDeckGrid();return;}
     if(a==='reset-filters') {deckPage=1;filter={cost:'all',color:'all',rarity:'all',series:'all',keyword:'all',search:'',owned:false,inDeck:false};render();return;}
-    if(a==='save-deck') {await send('deck',{deck:draft});return;}
+    if(a==='save-deck') {await send('deck',{deck:draft,slot:editSlot});return;}
     if(a==='start') {await send('start',{opponent:Number(el.dataset.opponent),hard:el.dataset.hard==='1'});return;}
     if(a==='play'||a==='discard') {await send(a,{slot,card:id,turn:Number(el.dataset.turn)});return;}
-    if(a==='destroy') {await send(a);return;}
+    if(a==='destroy'||a==='end_turn') {await send(a,{turn:state.match.turn});return;}
     if(a==='surrender') {modal('<h2>收起这一局的牌？</h2><p>'+(state.match&&state.match.draft?'认输会结束本次远征，按此前的胜场结算最终奖励。':'认输不会失去收藏，本局不会获得胜利卡片。')+'</p><button data-action="surrender-confirm">确认认输</button>');return;}
     if(a==='surrender-confirm') {dialog.close();await send('surrender');return;}
     if(a==='buy') {const item=boot.catalog.find(i=>+i.item_id===Number(el.dataset.item));await send('buy',{item:+item.item_id,price:+item.price_credits2,count:el.dataset.count==='remaining'?'remaining':Number(el.dataset.count)});return;}
     if(a==='embers') await send(a,{kind:el.dataset.kind});
   });
   app.addEventListener('input',event=>{
+    if(event.target.id==='fcg-bgm-volume') {bgmVolume=+event.target.value;try{localStorage.setItem('fcg_bgm_vol',String(bgmVolume));}catch(e){}if(bgm)bgm.volume=bgmVolume;return;}
     if(event.target.id==='fcg-search'){filter.search=event.target.value;deckPage=1;renderDeckGrid();}
     if(event.target.id==='fcg-keyword-search'){referenceSearch=event.target.value;renderKeywordTable();}
   });
   app.addEventListener('change',event=>{
+    if(event.target.id==='fcg-bgm-enabled') {bgmEnabled=event.target.checked;try{localStorage.setItem('fcg_bgm_on',bgmEnabled?'1':'0');}catch(e){}fcgSyncBgm();return;}
     const id=event.target.id;
     if(id==='fcg-color')filter.color=event.target.value;
     else if(id==='fcg-cost')filter.cost=event.target.value;

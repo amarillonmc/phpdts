@@ -21,6 +21,14 @@ function fcg_ensure_social_storage()
 		$check=$db->query("SELECT item_id FROM {$gtablepre}shop_items WHERE reward_type='fcg_pack' AND reward_payload=".fcg_sql(fcg_json($payload)).' LIMIT 1');
 		if(!$db->num_rows($check)) $db->query("INSERT INTO {$gtablepre}shop_items (category,name,description,price_credits2,reward_type,reward_payload,daily_limit,total_limit,sort_order) VALUES (".fcg_sql($category).','.fcg_sql($name).','.fcg_sql($description).','.$price.','.fcg_sql($type).','.fcg_sql(fcg_json($payload)).",$daily,$total,$id)");
 	}
+	// 老商店按商品用途补种，不能覆盖已占用的编号或后台改价。
+	$slot_item=false;
+	foreach(fcg_catalog(true) as $item) {
+		$payload=json_decode($item['reward_payload'],true);
+		if($item['reward_type']==='custom' && ($payload['kind'] ?? '')==='deck_slot') $slot_item=true;
+	}
+	if(!$slot_item) $db->query("INSERT INTO {$gtablepre}shop_items (category,name,description,price_credits2,reward_type,reward_payload,total_limit,sort_order) VALUES (".
+		fcg_sql('special').','.fcg_sql('空白战术卡盒（空卡组槽位）').','.fcg_sql('扩充 1 个空白卡组保存位置，可在卡册与构筑中切换，上限 10 个槽位。').",500,'custom',".fcg_sql('{"kind":"deck_slot","count":1}').',9,35)');
 }
 
 function fcg_room_key($room) { return $room['groomid'].':'.$room['gamenum'].':'.$room['starttime']; }
@@ -36,12 +44,17 @@ function fcg_expire_temp(&$data, $user, $now, $room_key)
 {
 	$t=$data['temp_cards'] ?? array();
 	if(!$t || ($t['room']===(int)$user['roomid'] && $t['key']===$room_key && $t['day']===date('Y-m-d',$now))) return;
-	$data['temp_cards']=array(); $kept=array(); $counts=array();
-	foreach($data['deck'] as $id) {
-		$counts[$id]=($counts[$id] ?? 0)+1;
-		if($counts[$id]<=($data['collection'][$id] ?? 0)) $kept[]=$id;
-	}
-	$data['deck']=count($kept)>=25 ? $kept : fcg_starter_deck();
+	$data['temp_cards']=array();
+	foreach($data['decks'] as &$deck) {
+		if(!$deck['cards']) continue;
+		$kept=array(); $counts=array();
+		foreach($deck['cards'] as $id) {
+			$counts[$id]=($counts[$id] ?? 0)+1;
+			if($counts[$id]<=($data['collection'][$id] ?? 0)) $kept[]=$id;
+		}
+		$deck['cards']=count($kept)>=25?$kept:fcg_starter_deck();
+	} unset($deck);
+	$data['deck']=$data['decks'][$data['active_deck']]['cards'];
 	$data['temp_expired']=true;
 }
 
@@ -108,13 +121,19 @@ function fcg_live_write($m, $room, $now)
 
 function fcg_live_advance(&$m, $now)
 {
+	fcg_refresh_turn_deadline($m,$now);
 	$steps=0;
 	while($m['result']===null && $m['deadline']<=$now && $steps++<1200) {
-		foreach(array(0,1) as $side) if($m['deadline']-$m['seen'][$side]>15 && ($m['auto_turn'][$side] ?? 0)!==$m['turn']) {
-			$m['auto_turn'][$side]=$m['turn']; fcg_ai($m,$side);
+		$at=$m['deadline'];
+		foreach(array(0,1) as $side) if(!$m['turn_done'][$side] && $m['side_deadlines'][$side]<=$at) {
+			if($at-$m['seen'][$side]>15 && ($m['auto_turn'][$side] ?? 0)!==$m['turn']) {
+				$m['auto_turn'][$side]=$m['turn']; fcg_ai($m,$side);
+			}
+			if($m['side_deadlines'][$side]<=$at) $m['turn_done'][$side]=true;
 		}
-		if($m['result']!==null || $m['deadline']>$now) break;
-		fcg_turn($m);
+		if($m['result']!==null) break;
+		if($m['turn_done'][0] && $m['turn_done'][1]) fcg_turn($m,$at);
+		else fcg_refresh_turn_deadline($m,$at);
 	}
 }
 
@@ -159,6 +178,13 @@ function fcg_social_action(&$social, &$data, &$user, $input, $room, $now)
 	$action=$input['action'] ?? 'status'; $uid=(int)$user['uid']; $m=&$social['match'];
 	$in_room=$room && $room['gruleset']==='FCG';
 	$active=$m && $m['result']===null;
+	if($action==='set_options' && $active) {
+		$mode=$input['turn_mode'] ?? null;
+		if(!in_array($mode,array('instinct','think'),true)) throw new InvalidArgumentException('请选择本能模式或思考模式。');
+		$data['turn_mode']=$mode;
+		fcg_set_turn_mode($m,array_search($uid,$m['uids'],true),$mode,$now);
+		fcg_live_advance($m,$now); fcg_live_write($m,$room,$now); return true;
+	}
 	if($action==='accept' && $m && in_array($input['token'] ?? '',$m['recent'][$uid] ?? array(),true)) { $data['match']=null; return true; }
 	if($active && in_array($action,array('start','mirror','invite','accept','draft_enter'),true)) throw new InvalidArgumentException('请先完成当前切磋。');
 	if($action==='draft_enter' && $m && !$active && ($data['live_settled'] ?? '')!==$m['id']) throw new InvalidArgumentException('请先刷新牌桌，收好上一场切磋的奖励，再开始远征。');
@@ -188,6 +214,7 @@ function fcg_social_action(&$social, &$data, &$user, $input, $room, $now)
 				'turn'=>1,'deadline'=>$now+10,'extension'=>0,'sides'=>array(fcg_side($peer_data['deck'],100),fcg_side($data['deck'],100)),
 				'decks'=>array($peer_data['deck'],$data['deck']),'seen'=>array($now,$now),'last_spell'=>null,'result'=>null,'ack'=>array(),'recent'=>array(),
 				'log'=>array('两位牌手落座，同房切磋开始。'),'stickers'=>array());
+			$m['turn_modes']=array($peer_data['turn_mode'],$data['turn_mode']); fcg_reset_turn_timers($m,$now);
 			$m['recent'][$uid]=array($input['token']);
 			$data['live_match']=$m['id']; $data['match']=null; $data['live_reward']=null;
 			foreach($social['vars']['fcg_invites'] as $to=>$pending) if(in_array((int)$to,$m['uids'],true) || in_array($pending['from'],$m['uids'],true)) unset($social['vars']['fcg_invites'][$to]);
@@ -200,14 +227,15 @@ function fcg_social_action(&$social, &$data, &$user, $input, $room, $now)
 		$id=$input['uid'] ?? null; $mirror=is_int($id)?($social['mirrors'][$id] ?? null):null;
 		if(!$mirror) throw new InvalidArgumentException('这位残影已经离场，请刷新大厅。');
 		fcg_validate_deck($data['deck'],fcg_collection($data));
-		$data['match']=fcg_new_match($data['deck'],0,$now); $solo=&$data['match'];
+		$data['match']=fcg_new_match($data['deck'],0,$now,false,null,$data['turn_mode']); $solo=&$data['match'];
 		$solo['sides']=array(fcg_side($data['deck'],100),fcg_side($mirror['deck'],100)); $solo['drop_pool']=$mirror['deck'];
 		$solo['pvp']=true; $solo['opponent_uid']=$id; $solo['names']=array($user['username'],'✦'.$mirror['name'].'的残影');
+		fcg_reset_turn_timers($solo,$now);
 		$solo['log']=array('游荡的牌手残影展开了拓印的卡组。'); $data['live_match']=null; $m=null; $data['last_reward']=null;
 		return true;
 	}
 	if(in_array($action,array('start','draft_enter'),true) && !$active) { $m=null; return false; }
-	if($m && in_array($action,array('play','discard','destroy','surrender','sticker'),true)) {
+	if($m && in_array($action,array('play','discard','destroy','surrender','sticker','end_turn'),true)) {
 		if(($input['match'] ?? '')!==$m['id']) throw new InvalidArgumentException('牌局已切换，请刷新牌桌。');
 		if(in_array($input['token'],$m['recent'][$uid] ?? array(),true)) return true;
 		if($m['result']!==null && $action!=='sticker') throw new InvalidArgumentException('这场切磋已结束。');
@@ -227,12 +255,17 @@ function fcg_social_action(&$social, &$data, &$user, $input, $room, $now)
 function fcg_duel_action(&$m, $side, $input, $now)
 {
 	$action=$input['action']; $s=&$m['sides'][$side];
+	if(in_array($action,array('play','discard','destroy','end_turn'),true)) {
+		if(($input['turn'] ?? null)!==$m['turn']) throw new InvalidArgumentException('回合已更新，请重新操作。');
+		if(!empty($m['turn_done'][$side])) throw new InvalidArgumentException('本回合已结束，请等待对手。');
+	}
 	if($action==='play' || $action==='discard') {
 		$slot=$input['slot'] ?? null;
 		if(!is_int($slot) || !isset($s['hand'][$slot]) || ($input['turn'] ?? null)!==$m['turn'] || ($input['card'] ?? null)!==$s['hand'][$slot]) throw new InvalidArgumentException('手牌或回合已更新，请重新选择。');
 		if($action==='play') fcg_play($m,$side,$slot);
 		else fcg_discard_slot($m,$side,$slot);
 	} elseif($action==='destroy') { $s['monster']=null; fcg_log($m,fcg_side_name($m,$side).'解散了帮手。'); }
+	elseif($action==='end_turn') fcg_end_turn($m,$side,$now);
 	elseif($action==='surrender') { $m['result']=$side===0?'loss':'win'; fcg_log($m,fcg_side_name($m,$side).'认输了。'); }
 	elseif($action==='sticker') {
 		$id=$input['sticker'] ?? null;
@@ -240,6 +273,7 @@ function fcg_duel_action(&$m, $side, $input, $now)
 		if(isset($m['stickers'][$side]) && $now-$m['stickers'][$side]['at']<3) throw new InvalidArgumentException('表情稍等 3 秒再发送。');
 		$m['stickers'][$side]=array('id'=>$id,'at'=>$now);
 	}
+	fcg_refresh_turn_deadline($m,$now);
 }
 
 function fcg_social_settle(&$social, &$data, &$user, $room, $now)
@@ -287,6 +321,7 @@ function fcg_social_public($state, $social, $data, $user, $room, $now)
 	$state['mirrors']=array(); foreach(array_slice($mirrors,0,4) as $mirror) { $mirror['count']=count($mirror['deck']); unset($mirror['deck'],$mirror['scope']); $state['mirrors'][]=$mirror; }
 	if($social['match']) {
 		$m=$social['match']; $side=array_search((int)$user['uid'],$m['uids'],true);
+		fcg_public_timers($m,$side);
 		if($side===1) { $m['sides']=array($m['sides'][1],$m['sides'][0]); $m['names']=array($m['names'][1],$m['names'][0]); $m['stickers']=array($m['stickers'][1] ?? null,$m['stickers'][0] ?? null); if($m['result'] && $m['result']!=='draw') $m['result']=$m['result']==='win'?'loss':'win'; }
 		$m['reward']=$m['result']==='win'?($data['live_reward'] ?? null):null;
 		foreach($m['sides'] as $i=>&$s) fcg_public_side($s,$i===1); unset($s);
