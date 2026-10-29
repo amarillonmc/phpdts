@@ -187,29 +187,30 @@ try {
         }
         $s=dbuser(1,array('action'=>'status'),100000);dbcheck(count($s['run']['picks'])===$i+1,'selection survives reload '.$i);
     }
-    dbcheck(count($s['run']['deck'])===32 && (array)$s['collection']===$collection && $s['deck']===$deck,'phantom draft deck persists separately');
-    // Two known camp targets keep the replay test independent of randomly dealt packs.
+    dbcheck(count($s['run']['deck'])===32 && $s['run']['stage']==='battle' && (array)$s['collection']===$collection && $s['deck']===$deck,'phantom draft deck persists and prepares battle directly');
+    // Identical adjacent cards check that a stale removal cannot consume another copy.
     $row=$db->fetch_array($db->query("SELECT fcgdata FROM {$gtablepre}users WHERE uid=1"));$data=fcg_load_account($row['fcgdata']);
     $data['run']['deck'][0]=24;$data['run']['deck'][1]=24;
     $db->query("UPDATE {$gtablepre}users SET fcgdata=".fcg_sql(fcg_json($data)).' WHERE uid=1');$s=dbuser(1,array('action'=>'status'),100000);
-    $upgrade=dbdraft($s,'draft_node',array('choice'=>'upgrade','slot'=>0,'card'=>24));$s=dbuser(1,$upgrade,100000);$camp_once=$s['run'];
-    $s=dbuser(1,$upgrade,100000);$s=dbuser(1,array('action'=>'status'),100000);
-    dbcheck($s['run']===$camp_once && $s['run']['node']['upgrades_left']===1 && $s['run']['deck'][0]===25,'first upgrade replay and reload preserve exactly one remaining use');
-    dbreject(1,dbdraft($s,'draft_node',array('choice'=>'upgrade','slot'=>0,'card'=>24)),'fresh token cannot upgrade stale card slot',100000);
-    $s=dbuser(1,dbdraft($s,'draft_node',array('choice'=>'upgrade','slot'=>1,'card'=>24)),100000);
-    dbcheck($s['run']['stage']==='battle' && $s['run']['deck'][1]===25,'second persisted upgrade leaves camp');
-    dbreject(1,dbdraft($s,'draft_node',array('choice'=>'upgrade','slot'=>2,'card'=>$s['run']['deck'][2])),'third camp upgrade rejected',100000);
     $s=dbuser(1,dbdraft($s,'draft_battle'),100000);$first=$s['match']['opponent'];
     $old=$db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=1"));$data=fcg_load_account($old['fcgdata']);
     $data['match']['sides'][0]['hp']=55;$data['match']['sides'][0]['atk']=200;$data['match']['ai_at']=PHP_INT_MAX;
     $db->query("UPDATE {$gtablepre}users SET fcgdata=".fcg_sql(fcg_json($data)).' WHERE uid=1');
-    $s=dbuser(1,array('action'=>'status'),100010);$reinforce=$s['run'];
-    dbcheck($s['run']['wins']===1 && $s['run']['hp']==68 && $s['run']['mhp']===85 && $s['run']['node']['type']==='reinforce','real timer victory persists health growth and reinforcement');
+    $s=dbuser(1,array('action'=>'status'),100010);$victory=$s['run'];
+    dbcheck($s['run']['wins']===1 && $s['run']['hp']===85 && $s['run']['mhp']===85 && $s['run']['node']['type']==='victory','real timer victory persists health growth and full recovery');
     foreach($s['run']['node']['opts'] as $id) dbcheck(!fcg_cards()[$id]['unlimited'],'persisted reinforcement excludes energy');
     dbcheck((array)$s['collection']===$collection && (array)$s['wins']===$wins && (array)$s['hard_wins']===$hard_wins && $s['embers']===$embers,'layer victory does not leak normal reward');
-    $s=dbuser(1,array('action'=>'status'),100010);dbcheck($s['run']===$reinforce,'refresh cannot reroll reinforcement or add win');
-    $s=dbuser(1,dbdraft($s,'draft_node',array('choice'=>'reinforce','slot'=>0,'card'=>$s['run']['node']['opts'][0])),100010);
-    $s=dbuser(1,dbdraft($s,'draft_node',array('choice'=>'supply')),100010);$s=dbuser(1,dbdraft($s,'draft_battle'),100010);
+    $s=dbuser(1,array('action'=>'status'),100010);dbcheck($s['run']===$victory,'refresh cannot reroll reinforcement or add win');
+    $remove=dbdraft($s,'draft_node',array('choice'=>'remove','slot'=>0,'card'=>24,'removed'=>0));$s=dbuser(1,$remove,100010);$once=$s['run'];
+    $s=dbuser(1,$remove,100010);$s=dbuser(1,array('action'=>'status'),100010);
+    dbcheck($s['run']===$once && $s['run']['node']['removed']===1 && count($s['run']['deck'])===31,'first removal replay and reload preserve exactly one removal');
+    dbreject(1,dbdraft($s,'draft_node',array('choice'=>'remove','slot'=>0,'card'=>24,'removed'=>0)),'fresh token cannot replay removal of identical next copy',100010);
+    dbreject(1,dbdraft($s,'draft_node',array('choice'=>'upgrade','slot'=>0,'card'=>24)),'cannot switch to upgrade after first removal',100010);
+    $remove=dbdraft($s,'draft_node',array('choice'=>'remove','slot'=>0,'card'=>24,'removed'=>1));$s=dbuser(1,$remove,100010);$once=$s['run'];
+    $s=dbuser(1,$remove,100010);
+    dbcheck($s['run']===$once && $s['run']['stage']==='battle' && count($s['run']['deck'])===30,'second removal advances once without camp');
+    dbreject(1,dbdraft($s,'draft_node',array('choice'=>'remove','slot'=>0,'card'=>$s['run']['deck'][0],'removed'=>1)),'third removal rejected after advancement',100010);
+    $s=dbuser(1,dbdraft($s,'draft_battle'),100010);
     dbcheck($s['match']['sides'][0]['hp']==85 && $s['match']['opponent']!==$first && $s['match']['sides'][1]['hp']===85,'second layer inherits health, scales HP and uses another opponent');
     $s=dbuser(1,dbaction($s,'surrender',array('match'=>$s['match']['id'])),100010);
     dbcheck($s['run']['stage']==='over' && $s['run']['wins']===1,'surrender persists completed expedition');

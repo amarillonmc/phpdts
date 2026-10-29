@@ -97,7 +97,7 @@
       actions='<div class="fcg-card-count">可用 '+owned+' · 已放 '+used+(temp?' · ✨借牌 '+temp:'')+'</div><div class="fcg-card-actions"><button data-action="remove" data-card="'+id+'" '+(!used?'disabled':'')+'>−</button><button data-action="add" data-card="'+id+'" '+(!allowed?'disabled':'')+'>＋</button></div>';
     } else if(mode.startsWith('draft-')) {
       const label={'draft-pick':'选入远征卡组','draft-reinforce':'选择这张补强','draft-upgrade':'查看升级','draft-remove':'移除这张卡'}[mode];
-      actions='<div class="fcg-card-count">远征幻影</div><div class="fcg-card-actions"><button data-action="'+(mode==='draft-upgrade'?'draft-upgrade-preview':mode)+'" data-card="'+id+'" data-slot="'+slot+'" data-run="'+esc(state.run.id)+'" data-layer="'+state.run.layer+'" data-pick="'+state.run.picks.length+'" '+(!state.in_room?'disabled':'')+'>'+label+'</button></div>';
+      actions='<div class="fcg-card-count">远征幻影</div><div class="fcg-card-actions"><button data-action="'+(mode==='draft-upgrade'?'draft-upgrade-preview':mode)+'" data-card="'+id+'" data-slot="'+slot+'" data-run="'+esc(state.run.id)+'" data-layer="'+state.run.layer+'" data-pick="'+state.run.picks.length+'"'+(mode==='draft-remove'?' data-removed="'+state.run.node.removed+'"':'')+' '+(!state.in_room?'disabled':'')+'>'+label+'</button></div>';
     }
     return '<article data-inspect="'+id+'" class="fcg-card '+(c.upgraded?'upgraded ':'')+(c.rare?'rare ':'')+(mode==='deck'&&!owned?'unowned':'')+'" style="--tone:'+colors[c.color][1]+'">'+
       '<img src="'+esc(c.art)+'" alt="'+esc(c.name)+'" data-action="detail" data-card="'+id+'" data-back="'+(['draft-upgrade','draft-remove'].includes(mode)?mode+'-back':'')+'" tabindex="0" loading="lazy"><span class="fcg-cost" title="'+colors[c.color][0]+'色能量">'+num(cost)+'</span>'+
@@ -128,13 +128,13 @@
       const t=tiers[wins], guaranteed=[t.rare?t.rare+' 张稀有':'',t.upgraded?t.upgraded+' 张升级':''].filter(Boolean).join('、');
       return wins+' 胜 '+(t.deck+t.upgraded+t.rare)+' 张'+(guaranteed?'（含 '+guaranteed+' 保底）':'');
     }).join('；');
-    return '<section class="fcg-expedition-entry"><div><p class="fcg-eyebrow">DRAFT ROGUELITE · 单人</p><h2>🔥 种火远征</h2><p>和四位虚拟牌手轮抽 24 张记忆，带上 8 张能量基底，挑战五层种火。每胜生命上限 +5（最高 100），恢复新上限的 15% 生命（向上取整）；层间可补给或强化。</p><p class="fcg-muted">过程中的卡片都是幻影。结束后永久入册：'+rewards+'。每胜 1 枚印花，零胜 0 张卡、保底 '+tiers[0].embers+' 枚印花。稀有与升级保底优先从最终卡组抽取，缺少时从全池非能量卡中补足。</p></div><div>'+(r?'<button data-action="draft-resume">'+(r.stage==='over'?'领取远征奖励':'继续远征')+'</button>':'<button data-action="draft-enter" '+(disabled?'disabled':'')+'>🔥 种火远征（轮抽）· '+entry+' 切糕</button><small>'+(state.credits<entry?'切糕不足':!state.in_room?'请先加入 FCG 房间':state.match&&!state.match.result?'请先完成当前牌局':'点击支付入场费，开始轮抽')+'</small>')+'</div></section>';
+    return '<section class="fcg-expedition-entry"><div><p class="fcg-eyebrow">DRAFT ROGUELITE · 单人</p><h2>🔥 种火远征</h2><p>和四位虚拟牌手轮抽 24 张记忆，带上 8 张能量基底，直接挑战五层种火。每胜生命上限 +5（最高 100），并恢复全部生命；胜利奖励三选一：移除两张牌、强化一张牌，或从对手牌组选择一张牌。</p><p class="fcg-muted">过程中的卡片都是幻影。结束后永久入册：'+rewards+'。每胜 1 枚印花，零胜 0 张卡、保底 '+tiers[0].embers+' 枚印花。稀有与升级保底优先从最终卡组抽取，缺少时从全池非能量卡中补足。</p></div><div>'+(r?'<button data-action="draft-resume">'+(r.stage==='over'?'领取远征奖励':'继续远征')+'</button>':'<button data-action="draft-enter" '+(disabled?'disabled':'')+'>🔥 种火远征（轮抽）· '+entry+' 切糕</button><small>'+(state.credits<entry?'切糕不足':!state.in_room?'请先加入 FCG 房间':state.match&&!state.match.result?'请先完成当前牌局':'点击支付入场费，开始轮抽')+'</small>')+'</div></section>';
   }
   function renderRun() {
     const r=state.run;
     if(!r) {runPanel.innerHTML='';return;}
     const hp=state.match&&state.match.draft&&!state.match.result?Math.max(0,state.match.sides[0].hp):r.hp;
-    const phase={draft:'轮抽中',node:r.node&&r.node.type==='reinforce'?'战后补强':'篝火营地',battle:'迎战种火',over:'远征结束'}[r.stage];
+    const phase={draft:'轮抽中',node:r.node&&r.node.type==='victory'?'胜利奖励':'远征途中',battle:'迎战种火',over:'远征结束'}[r.stage];
     runPanel.innerHTML='<div class="fcg-run-bar"><strong>🔥 种火远征 · '+phase+'</strong><span>♥ '+num(hp)+' / '+r.mhp+'</span><span>第 '+r.layer+' / 5 层 · '+r.wins+' 胜</span><button data-action="draft-resume">'+(r.stage==='over'?'领取奖励':'继续远征')+'</button>'+(r.stage!=='over'?'<button class="fcg-muted" data-action="draft-abandon">放弃远征</button>':'')+'</div>';
     if(r.stage==='over'&&shownRunOver!==r.id) {shownRunOver=r.id;draftEnd();}
   }
@@ -144,25 +144,23 @@
     const guaranteed=[t.rare?t.rare+' 张稀有':'',t.upgraded?t.upgraded+' 张升级':''].filter(Boolean).join('、');
     modal('<h2>'+({win:'五层火光，尽收眼底。',loss:'把这一路的记忆带回去。',draw:'两团火苗，同时熄灭。',abandoned:'暂且收起远征的行囊。'}[r.ending]||'远征结束')+'</h2><p>本次 '+r.wins+' 胜 · '+n+' 张永久卡片 · '+t.embers+' 枚余烬印花'+(guaranteed?'（卡片含 '+guaranteed+' 保底）':'')+'</p><p>先抽稀有与升级保底，再抽其余卡组奖励；卡组内同号只抽一次。保底缺少时从全池非能量卡中补足，其余幻影卡片随行程消散。</p><button data-action="draft-reward" data-run="'+esc(r.id)+'">领取远征奖励</button>');
   }
-  function draftForge() {
-    const r=state.run;if(!r||r.stage!=='node'||r.node.type!=='camp')return;
-    const left=r.node.upgrades_left??2, canUpgrade=left>0&&r.deck.some(canDraftUpgrade);
-    modal('<h2>在火光中重整卡组</h2><p>还可升级 '+left+' 张。升级机会用完后出发；也可选择补给、移除或小憩，直接进入本层战斗。能量基底不能升级或移除。</p><div class="fcg-draft-nodes"><button data-action="draft-choose-upgrade" '+(!canUpgrade?'disabled':'')+'><strong>淬炼记忆</strong><span>查看升级前后的变化，再确认升级</span></button><button data-action="draft-choose-remove"><strong>轻装前行</strong><span>选择并移除一张非能量卡</span></button><button data-action="draft-rest" data-run="'+esc(r.id)+'" data-layer="'+r.layer+'"><strong>炉边小憩</strong><span>恢复 '+Math.round(r.mhp*.15)+' 点生命，获得 1 枚印花</span></button></div><button data-action="draft-camp-back">返回营地补给</button>');
-  }
   function canDraftUpgrade(id) {
     const c=boot.cards[id], next=boot.cards[id+1];
     return c&&!c.unlimited&&!c.upgraded&&next&&next.upgraded&&next.pair===c.pair;
   }
   function draftChoose(kind) {
-    const r=state.run;if(!r||r.stage!=='node'||r.node.type!=='camp')return;
-    modal('<h2>'+(kind==='upgrade'?'选择要升级的记忆':'选择要移除的记忆')+'</h2><p>只影响这次远征的幻影卡组。'+(kind==='upgrade'?'还可升级 '+(r.node.upgrades_left??2)+' 张。':'')+'</p><div class="fcg-card-grid">'+r.deck.map((id,slot)=>({id,slot})).filter(x=>!boot.cards[x.id].unlimited&&(kind!=='upgrade'||canDraftUpgrade(x.id))).map(x=>card(x.id,'draft-'+kind,x.slot)).join('')+'</div><button data-action="draft-forge">返回强化选择</button>');
+    const r=state.run;if(!r||r.stage!=='node'||r.node.type!=='victory'||(r.node.removed>0&&kind!=='remove'))return;
+    if(kind==='pick') {
+      modal('<h2>选择对手的一张记忆</h2><p>从对手本局的牌组中选择一张幻影记忆，完成本次胜利奖励。</p><div class="fcg-draft-pack">'+r.node.opts.map((id,slot)=>card(id,'draft-reinforce',slot)).join('')+'</div><button data-action="draft-node-back">返回胜利奖励</button>');return;
+    }
+    modal('<h2>'+(kind==='upgrade'?'选择要强化的记忆':'选择要移除的记忆 · 已移除 '+r.node.removed+'/2')+'</h2><p>只影响这次远征的幻影卡组。'+(kind==='upgrade'?'强化一张后完成本次奖励。':'还需移除 '+(2-r.node.removed)+' 张；移除第一张后不能改选其他奖励。')+'能量基底不能强化或移除。</p><div class="fcg-card-grid">'+r.deck.map((id,slot)=>({id,slot})).filter(x=>!boot.cards[x.id].unlimited&&(kind!=='upgrade'||canDraftUpgrade(x.id))).map(x=>card(x.id,'draft-'+kind,x.slot)).join('')+'</div><button data-action="draft-node-back">返回胜利奖励</button>');
   }
   function upgradePreview(id, slot) {
     const r=state.run;
-    if(!r||r.stage!=='node'||r.node.type!=='camp'||r.deck[slot]!==id||!canDraftUpgrade(id)) {notice('这张记忆现在无法升级，请重新选择。');return;}
+    if(!r||r.stage!=='node'||r.node.type!=='victory'||r.node.removed>0||r.deck[slot]!==id||!canDraftUpgrade(id)) {notice('这张记忆现在无法升级，请重新选择。');return;}
     const c=boot.cards[id], next=boot.cards[id+1];
     const diff=(label,key)=>'<p class="'+(c[key]!==next[key]?'fcg-diff':'fcg-same')+'">'+label+'：'+num(c[key])+' → '+num(next[key])+'</p>';
-    modal('<h2>升级预览：'+esc(c.name)+'</h2><p>确认后消耗 1 次升级机会；返回选卡不会改变卡组。</p><div class="fcg-upgrade-preview"><div><h3>当前记忆</h3>'+card(id,'preview')+'</div><span class="fcg-upgrade-arrow" aria-hidden="true">→</span><div><h3>升级之后</h3>'+card(id+1,'preview')+'</div></div><div class="fcg-upgrade-diff">'+diff('费用','cost')+(c.type==='monster'?diff('攻击','atk')+diff('防御','def')+diff('生命','hp'):'')+'</div><div class="fcg-dialog-actions"><button data-action="draft-upgrade" data-card="'+id+'" data-slot="'+slot+'" data-run="'+esc(r.id)+'" data-layer="'+r.layer+'" '+(!state.in_room?'disabled':'')+'>确认升级</button><button data-action="draft-upgrade-back">返回选卡</button></div>');
+    modal('<h2>升级预览：'+esc(c.name)+'</h2><p>确认后完成本次胜利奖励；返回选卡不会改变卡组。</p><div class="fcg-upgrade-preview"><div><h3>当前记忆</h3>'+card(id,'preview')+'</div><span class="fcg-upgrade-arrow" aria-hidden="true">→</span><div><h3>升级之后</h3>'+card(id+1,'preview')+'</div></div><div class="fcg-upgrade-diff">'+diff('费用','cost')+(c.type==='monster'?diff('攻击','atk')+diff('防御','def')+diff('生命','hp'):'')+'</div><div class="fcg-dialog-actions"><button data-action="draft-upgrade" data-card="'+id+'" data-slot="'+slot+'" data-run="'+esc(r.id)+'" data-layer="'+r.layer+'" '+(!state.in_room?'disabled':'')+'>确认升级</button><button data-action="draft-upgrade-back">返回选卡</button></div>');
     dialogContent.querySelectorAll('[data-action="detail"]').forEach(el=>{el.dataset.back='draft-upgrade-back';});
   }
   function expedition() {
@@ -173,13 +171,12 @@
     html+='<div class="fcg-expedition-layout"><div>';
     if(r.stage==='draft') {
       html+='<div class="fcg-section-head"><h2>第 '+(r.circle+1)+' 圈 · 第 '+(r.pick+1)+' / 8 包</h2><span>已选 '+r.picks.length+' / 24 张</span></div><progress class="fcg-draft-progress" max="24" value="'+r.picks.length+'">'+r.picks.length+' / 24</progress><p>本圈'+(r.circle%2?'逆向':'顺向')+'传牌 · 四位虚拟牌手已取走 '+(5-r.pack.length)+' 张，本包剩余 '+r.pack.length+' 张，选 1 张。</p><div class="fcg-draft-pack">'+r.pack.map((id,slot)=>card(id,'draft-pick',slot)).join('')+'</div><p class="fcg-muted">选满 24 张后，按选牌颜色配发 8 张能量基底。选牌会自动保存。</p>';
-    } else if(r.stage==='node'&&r.node.type==='reinforce') {
-      html+='<h2>第 '+r.layer+' 层通过 · 三选一补强</h2><p>从对手本局的牌组中选择一张幻影记忆。'+(r.wins===5?'这是最后一次补强，选完即结算远征。':'选完后前往下一处篝火。')+'</p><div class="fcg-draft-pack">'+r.node.opts.map((id,slot)=>card(id,'draft-reinforce',slot)).join('')+'</div>';
-    } else if(r.stage==='node') {
-      html+='<h2>第 '+r.layer+' 层前 · 篝火营地</h2><p>每处营地最多升级两张，也可补给、移除或小憩后出发。生命上限为 '+r.mhp+'。</p><div class="fcg-draft-nodes"><button data-action="draft-supply" data-layer="'+r.layer+'" '+disabled+'><strong>补给</strong><span>恢复 '+Math.round(r.mhp*.3)+' 点生命</span><small>♥ '+r.hp+' → '+Math.min(r.mhp,r.hp+Math.round(r.mhp*.3))+'</small></button><button data-action="draft-forge" '+disabled+'><strong>强化</strong><span>还可升级 '+(r.node.upgrades_left??2)+' 张 / 移除 / 小憩</span><small>调整远征幻影卡组</small></button></div>';
+    } else if(r.stage==='node'&&r.node.type==='victory') {
+      const removed=r.node.removed, removable=r.deck.filter(id=>!boot.cards[id].unlimited).length;
+      html+='<h2>第 '+r.layer+' 层通过 · 胜利奖励三选一</h2><p>生命已完全恢复。'+(r.wins===5?'这是最后一次胜利奖励，完成后结算远征。':'选择一项奖励后进入下一层。')+'只影响远征幻影卡组。</p><div class="fcg-draft-nodes"><button data-action="draft-choose-remove" '+(disabled||removable<2-removed?'disabled':'')+'><strong>移除两张牌</strong><span>'+(removed?'已移除 '+removed+'/2 · 请继续选择':'选择两张非能量卡移除')+'</span></button><button data-action="draft-choose-upgrade" '+(disabled||removed>0||!r.deck.some(canDraftUpgrade)?'disabled':'')+'><strong>强化一张牌</strong><span>查看升级前后的变化，再确认强化</span></button>'+(r.node.opts.length?'<button data-action="draft-choose-pick" '+(disabled||removed>0?'disabled':'')+'><strong>选择对手 1 张牌</strong><span>从三张候选记忆中选择一张补强</span></button>':'')+'</div>';
     } else if(r.stage==='battle') {
       const o=boot.opponents[r.opponent], active=state.match&&state.match.draft&&!state.match.result;
-      html+='<h2>第 '+r.layer+' 层 · 火光的另一端</h2><article class="fcg-opponent fcg-draft-foe"><img src="'+esc(o.portrait)+'" alt="'+esc(o.name)+'"><div><h3>'+esc(o.name)+'</h3><p>♥ '+(o.hp+5*(r.layer-1))+' · 你的生命 '+r.hp+' / '+r.mhp+'</p></div>'+(active?'<button data-tab="battle">回到远征牌桌</button>':'<button data-action="draft-battle" data-layer="'+r.layer+'" '+disabled+'>进入第 '+r.layer+' 层战斗</button>')+'</article><p class="fcg-muted">胜利后可选一张补强；失败或认输会结束本次远征。</p>';
+      html+='<h2>第 '+r.layer+' 层 · 火光的另一端</h2><article class="fcg-opponent fcg-draft-foe"><img src="'+esc(o.portrait)+'" alt="'+esc(o.name)+'"><div><h3>'+esc(o.name)+'</h3><p>♥ '+(o.hp+5*(r.layer-1))+' · 你的生命 '+r.hp+' / '+r.mhp+'</p></div>'+(active?'<button data-tab="battle">回到远征牌桌</button>':'<button data-action="draft-battle" data-layer="'+r.layer+'" '+disabled+'>进入第 '+r.layer+' 层战斗</button>')+'</article><p class="fcg-muted">胜利后生命回满，并三选一领取奖励；失败或认输会结束本次远征。</p>';
     } else html+='<h2>远征结束 · '+r.wins+' 胜</h2><p>行程已保存，领取奖励后可以开始新的远征。</p><button data-action="draft-reward" data-run="'+esc(r.id)+'">领取远征奖励</button>';
     const byColor=Object.fromEntries(Object.keys(colors).map(c=>[c,list.filter(id=>boot.cards[id].color===c).length]));
     html+='</div><aside class="fcg-draft-list"><h3>'+(r.stage==='draft'?'已选记忆':'远征卡组')+' · '+list.length+' 张</h3><p>'+Object.keys(colors).filter(c=>byColor[c]).map(c=>'<span style="color:'+colors[c][1]+'">'+colors[c][0]+' '+byColor[c]+'</span>').join(' · ')+'</p><p class="fcg-muted">幻影卡片，结算前不计入永久卡册</p>'+Object.entries(counts(list)).map(([id,n])=>'<button data-action="detail" data-inspect="'+id+'" data-card="'+id+'"><span style="color:'+colors[boot.cards[id].color][1]+'">'+esc(boot.cards[id].name)+'</span><b>×'+n+'</b></button>').join('')+'</aside></div>';
@@ -229,6 +226,23 @@
   function fitTable() {
     const stage=document.getElementById('fcg-tbl-stage');
     if(stage) stage.style.height=window.innerWidth>700?Math.max(320,window.innerHeight-content.getBoundingClientRect().top-12)+'px':'';
+  }
+  function layoutHand() {
+    const hand=content.querySelector('.fcg-tbl-hand');if(!hand)return;
+    const cards=[...hand.querySelectorAll('.fcg-tbl-handcard')], n=cards.length;
+    if(window.innerWidth<=700) {cards.forEach(c=>{c.style.width='';c.style.marginLeft='';c.style.flex='';});return;}
+    if(!n)return;
+    const GAP=6, CLEAR=26, MIN_STRIP=24;
+    const port=content.querySelector('.fcg-tbl-self-info .fcg-tbl-portrait'), rect=hand.getBoundingClientRect();
+    const right=rect.right-2, capLeft=(port?port.getBoundingClientRect().right:rect.left)+CLEAR;
+    const avail=Math.max(0,right-capLeft);
+    let width=Math.round(Math.max(110,Math.min(144,window.innerWidth*.11))), step=width+GAP;
+    if(n>1&&n*width+(n-1)*GAP>avail) {
+      // 放不下时向左重叠，给头像右侧的防御角标留出位置。
+      step=(avail-width)/(n-1);
+      if(step<MIN_STRIP) {width=Math.max(1,avail-(n-1)*MIN_STRIP);step=MIN_STRIP;}
+    }
+    cards.forEach((c,i)=>{c.style.width=width+'px';c.style.flex='0 0 auto';c.style.marginLeft=i?(step-width)+'px':'0';});
   }
   function renderPileLog() {
     const scroll=pilePanel.dataset.side===String(pileLogSide)?pilePanel.scrollTop:0;
@@ -285,7 +299,7 @@
       statBadge('🧿','符盾',s.barrier||0,'抵挡伤害时消耗的符盾','','',null,null,'fcg-tbl-status','barrier')+statBadge('🔬','破绽',s.vuln||0,'下一次受到攻击时的额外伤害','','',null,null,'fcg-tbl-status','vuln')+'</div>';
     const energy='<div class="fcg-tbl-energy">'+
       Object.keys(colors).map(c=>statBadge('',colors[c][0]+'能量',s.energy[c],colors[c][0]+'色能量 '+s.energy[c]+'；每回合产能 '+s.gen[c],'<i class="fcg-tbl-gen"><span aria-hidden="true">▲</span><strong>'+esc(s.gen[c])+'</strong></i>',colors[c][1],s.energy[c]/15*100,(s.energy[c]+s.gen[c])/15*100,'','energy-'+c)).join('')+'</div>';
-    return '<div class="fcg-tbl-info-row">'+(side===0?stats+energy+health+tablePortrait(m,side):tablePortrait(m,side)+health+stats+energy)+'</div>'+(side===1?'<div class="fcg-tbl-foe-counts">'+tableCount(s.deck_count,1)+tableCount(s.hand_count,1,true)+'</div>':'');
+    return '<div class="fcg-tbl-info-row">'+(side===0?health+stats+energy:tablePortrait(m,side)+health+stats+energy)+'</div>'+(side===1?'<div class="fcg-tbl-foe-counts">'+tableCount(s.deck_count,1)+tableCount(s.hand_count,1,true)+'</div>':'');
   }
   function tableCount(value, side, hand=false) {
     const label=hand?'手牌':'牌库', title=(side===0?'你的':'对手的')+label+'剩余 '+value+' 张';
@@ -416,15 +430,15 @@
     if(m.result) return battleResult(m)+'<div class="fcg-tbl-result-tools">'+hud+'</div>'+inspector;
     return '<div class="fcg-tbl-stage" id="fcg-tbl-stage"><div class="fcg-tbl-row1">'+hud+'<div class="fcg-tbl-foe"><div class="fcg-tbl-foe-info" data-side="1">'+tableStats(m,1)+'</div><div class="fcg-tbl-monster-zone" data-side="1">'+tableMonster(foe)+'</div></div></div>'+
       '<div class="fcg-tbl-row2">'+tablePile(self,0)+tablePile(foe,1)+'</div><div class="fcg-tbl-turn"><span class="fcg-tbl-hourglass" aria-hidden="true">⏳</span><strong>第 '+m.turn+' 回合</strong><span id="fcg-seconds">—</span><div class="fcg-timer"><i id="fcg-timer-bar"></i></div></div>'+
-      '<div class="fcg-tbl-row3"><div class="fcg-tbl-monster-zone" data-side="0">'+tableMonster(self)+'</div><div class="fcg-tbl-self-info" data-side="0">'+tableStats(m,0)+'</div>'+
-      '<div class="fcg-tbl-controls"><button data-action="destroy" '+(!self.monster?'disabled':'')+'>解散帮手</button><button data-action="surrender">认输</button><div class="fcg-sticker-control"><button data-action="sticker-menu" aria-expanded="false">😊 表情</button><div id="fcg-sticker-menu" hidden>'+Object.keys(boot.stickers).map(id=>'<button data-action="sticker" data-sticker="'+id+'" title="'+esc(boot.stickers[id])+'"><img src="img/fcg/stickers/'+String(id).padStart(2,'0')+'.png" alt="'+esc(boot.stickers[id])+'"></button>').join('')+'</div></div></div>'+
+      '<div class="fcg-tbl-row3"><div class="fcg-tbl-monster-zone" data-side="0">'+tableMonster(self)+'</div><div class="fcg-tbl-self-info" data-side="0">'+tableStats(m,0)+
+      '<div class="fcg-tbl-controls"><button data-action="destroy" '+(!self.monster?'disabled':'')+'>解散帮手</button><button data-action="surrender">认输</button><div class="fcg-sticker-control"><button data-action="sticker-menu" aria-expanded="false">😊 表情</button><div id="fcg-sticker-menu" hidden>'+Object.keys(boot.stickers).map(id=>'<button data-action="sticker" data-sticker="'+id+'" title="'+esc(boot.stickers[id])+'"><img src="img/fcg/stickers/'+String(id).padStart(2,'0')+'.png" alt="'+esc(boot.stickers[id])+'"></button>').join('')+'</div></div></div>'+tablePortrait(m,0)+'</div>'+
       '<div class="fcg-tbl-hand" aria-label="你的手牌">'+(self.hand.length?self.hand.map((id,i)=>cardTblHand(id,i)).join(''):'<p class="fcg-tbl-empty-hand">等待下一张记忆</p>')+'</div>'+tableCount(self.deck_count,0)+'</div></div>'+inspector;
   }
   function battleResult(m) {
-    let html='<div class="fcg-result"><h2>'+({win:m.draft?'本层通过，带上新的幻影记忆。':m.pvp?'切磋获胜。':'小种火把一张记忆交给了你。',loss:'这次，是对手赢了。',draw:'两团火苗，同时熄灭。'}[m.result])+'</h2>';
+    let html='<div class="fcg-result"><h2>'+({win:m.draft?'本层通过，生命已完全恢复。':m.pvp?'切磋获胜。':'小种火把一张记忆交给了你。',loss:'这次，是对手赢了。',draw:'两团火苗，同时熄灭。'}[m.result])+'</h2>';
     if(m.reward&&m.reward.pvp) html+='<p>余烬印花 +'+m.reward.embers+(m.reward.embers===0?'（今日奖励次数已用完，或已赢过这位对手）':'')+'</p>'+(m.reward.temp_card!==null?'<p>✨本房间幻影记忆「'+esc(boot.cards[m.reward.temp_card].name)+'」</p><button data-action="detail" data-card="'+m.reward.temp_card+'">查看借牌</button>':'');
     else if(m.reward) html+='<p>获得「'+esc(boot.cards[m.reward.card].name)+'」'+(m.reward.overflow?'，转为余烬印花 ×1':'')+'</p><button data-action="detail" data-card="'+m.reward.card+'">查看战利品</button> ';
-    return html+(m.draft?'<button data-action="draft-resume">'+(state.run&&state.run.stage==='over'?'远征结算':'选择补强，继续远征')+'</button>':'<button data-tab="lobby">再找一位牌手</button>')+'</div>';
+    return html+(m.draft?'<button data-action="draft-resume">'+(state.run&&state.run.stage==='over'?'远征结算':'继续远征，查看胜利奖励')+'</button>':'<button data-tab="lobby">再找一位牌手</button>')+'</div>';
   }
   function battleClassic() {
     const m=state.match;
@@ -524,6 +538,7 @@
     const log=document.getElementById('fcg-log'); if(log) log.scrollTop=log.scrollHeight;
     if(inTblBattle&&changedTable) window.scrollTo(0,0);
     fitTable();
+    layoutHand();
     animateTable(oldRects);
     tick();
   }
@@ -575,13 +590,13 @@
     if(a==='draft-enter') {await send('draft_enter');return;}
     if(a==='draft-resume') {tab=state.run&&state.run.stage==='battle'&&state.match&&state.match.draft&&!state.match.result?'battle':'draft';render();if(state.run&&state.run.stage==='over')draftEnd();return;}
     if(a==='draft-pick') {await send('draft_pick',{slot,card:id,pick:Number(el.dataset.pick),run:el.dataset.run});return;}
-    if(a==='draft-forge') {draftForge();return;}
-    if(a==='draft-camp-back') {dialog.close();return;}
+    if(a==='draft-node-back') {dialog.close();return;}
+    if(a==='draft-choose-pick') {draftChoose('pick');return;}
     if(a==='draft-upgrade-preview') {upgradePreview(id,slot);return;}
     if(['draft-choose-upgrade','draft-choose-remove','draft-upgrade-back','draft-remove-back'].includes(a)) {draftChoose(a.includes('upgrade')?'upgrade':'remove');return;}
-    if(['draft-supply','draft-rest','draft-upgrade','draft-remove','draft-reinforce'].includes(a)) {
-      dialog.close();const ok=await send('draft_node',{choice:a.slice(6),slot,card:id,run:el.dataset.run||state.run.id,layer:Number(el.dataset.layer)});
-      if(ok&&a==='draft-upgrade'&&state.run&&state.run.stage==='node'&&state.run.node.type==='camp') draftForge();return;
+    if(['draft-upgrade','draft-remove','draft-reinforce'].includes(a)) {
+      dialog.close();const ok=await send('draft_node',{choice:a==='draft-reinforce'?'pick':a.slice(6),slot,card:id,run:el.dataset.run,layer:Number(el.dataset.layer),...(a==='draft-remove'?{removed:Number(el.dataset.removed)}:{})});
+      if(ok&&a==='draft-remove'&&state.run&&state.run.stage==='node'&&state.run.node.type==='victory') draftChoose('remove');return;
     }
     if(a==='draft-battle') {await send('draft_battle',{layer:Number(el.dataset.layer)});return;}
     if(a==='draft-reward') {dialog.close();await send('draft_reward',{run:el.dataset.run});return;}
@@ -658,7 +673,7 @@
     }
   });
   let tableResize=0;
-  window.addEventListener('resize',()=>{if(!tableResize)tableResize=requestAnimationFrame(()=>{tableResize=0;fitTable();});});
+  window.addEventListener('resize',()=>{if(!tableResize)tableResize=requestAnimationFrame(()=>{tableResize=0;fitTable();layoutHand();});});
   if(!state.tutorial) tutorial();
   setInterval(tick,100);
   setInterval(()=>{if(!document.hidden && !busy && (state.in_room||state.match&&!state.match.result)) send('status');},1000);

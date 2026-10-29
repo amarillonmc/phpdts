@@ -212,7 +212,18 @@ function fcg_account_save($old, $user, $data, $evolution = null, $now = 0)
 function fcg_action(&$data, &$user, $input, $now, $in_room, $evo_state = null)
 {
 	$action=$input['action'] ?? 'status';
-	if($action==='status') return;
+	if($action==='status') {
+		// 接续更新前停在营地或补强页的行程，保留已取得的卡组和胜场。
+		$r=&$data['run'];
+		if($r && $r['stage']==='node') {
+			if($r['node']['type']==='camp') fcg_draft_prepare_battle($r);
+			elseif($r['node']['type']==='reinforce') {
+				$r['node']=array('type'=>'victory','removed'=>0,'opts'=>$r['node']['opts']);
+				$r['hp']=$r['mhp'];
+			}
+		}
+		return;
+	}
 	if(!is_string($action)) throw new InvalidArgumentException('操作无效。');
 	switch($action) {
 		case 'tutorial': $data['tutorial']=true; break;
