@@ -90,7 +90,7 @@ function fcg_draft_energy($picks)
 function fcg_draft_prepare_battle(&$run)
 {
 	$layer=$run['layer'];
-	$pool=$layer<=2?range(0,4):($layer===3?range(5,10):($layer===4?range(11,16):range(17,20)));
+	$pool=$layer<=2?range(0,4):($layer===3?range(5,10):($layer===4?range(11,16):range(17,25)));
 	$pool=array_values(array_diff($pool,$run['opponents']));
 	$run['opponent']=$pool[random_int(0,count($pool)-1)];
 	$run['stage']='battle'; $run['node']=null;

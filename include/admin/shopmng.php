@@ -54,7 +54,7 @@ $shop_items[0]=array('item_id'=>0,'category'=>'fcg_pack','name'=>'','description
 $shop_categories=array('fcg_pack'=>'种火卡包铺','title'=>'头衔','special'=>'其他奇物');
 $shop_types=array('fcg_pack'=>'单卡补充包','title'=>'头衔','custom'=>'扩展商品（尚未接发货逻辑）');
 $shop_colors=array('all'=>'全部颜色','W'=>'白','R'=>'红','Y'=>'黄','G'=>'绿','B'=>'蓝');
-$shop_series=array('all'=>'全部系列','vol1'=>'Vol.1 · 种火初啼','vol2'=>'Vol.2 · 红杀演武');
+$shop_series=array('all'=>'全部系列','vol1'=>'Vol.1 · 种火初啼','vol2'=>'Vol.2 · 红杀演武','vol3'=>'Vol.3 · 常磐万象 & 电波狂想');
 $shop_filters=array('all'=>'不限','yes'=>'是','no'=>'否');
 $shop_group_names=$shop_categories+array('new'=>'新增商品');
 $shop_groups=array_fill_keys(array_keys($shop_group_names),array());

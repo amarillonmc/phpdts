@@ -1,0 +1,22 @@
+FCG Vol.3 美术生成记录（2026-10-29）
+
+使用内置 image_gen 生图工具，逐张生成，未使用 CLI/API 回退。最终资源：
+- img/fcg/cards/230.png 至 309.png：80 张独立卡图。
+- img/fcg/fireseeds/18.png 至 21.png：4 张种火头像。
+全部为 451×451 PNG，与前两卷沿用相同尺寸；使用 tools/prepare_fcg_art.ps1 等比缩小原图。
+
+逐图原始提示词、角色参考图和资源路径保存在：
+- doc/fcg/vol3-art-jobs.json
+- doc/fcg/vol3-portrait-jobs.json
+对应作者原稿保存在 doc/design/fcg_vol3_cardpool_and_artprompts.md。
+
+卡图的生成约束：正方形完整插画，无文字、数字、卡框、UI、水印。为统一原稿中涉及代码/数字的意象与 NO text/NO numbers 的全局要求，在任务 prompt 前使用以下规范化前缀：
+Generate a single square full-bleed game illustration asset. Any text, digits, code or lettering mentioned below must be represented by abstract, unreadable light strokes or symbolic imagery, never legible text.
+230.png 使用相同的正方形插画要求；其提示词不涉及代码/数字，没有追加文字意象解释。
+
+头像以任务 refs 中的种火原设图作为角色比例、面孔与画风参考，使用此前缀：
+Create a new square game character portrait based on the reference image's Fireseed body proportions, face and art style. Reference is for character design, not an image to simply reproduce.
+随后使用任务 prompt，并追加卡图相同的 anime digital illustration / cel-shaded / atmospheric lighting / NO text / NO numbers / NO card border / NO UI frame / NO watermark 约束。
+
+质量复核：检查全部 80 张卡图的联系表与 4 张头像。305.png 初稿出现可读数字，经同一生图工具定向编辑为蓝色发光雷霆锤的视觉意象，保留被缩小的敌方、红苹果、冲击与原构图，移除数字后复核。
+原始大图由内置工具保存于 Codex generated_images；本次本地备份及联系表位于被忽略的 test/fcg-vol3-art/。项目实际加载上面列出的 84 个 PNG，不依赖生成器目录。

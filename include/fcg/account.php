@@ -96,7 +96,7 @@ function fcg_add_card(&$data, $id)
 function fcg_pack_pool($filter)
 {
 	if(!is_array($filter) || array_diff(array_keys($filter),array('upgraded','rare','rare_only','color','count','series'))) throw new InvalidArgumentException('卡包筛选条件无效。');
-	if(isset($filter['series']) && !in_array($filter['series'],array('all','vol1','vol2'),true)) throw new InvalidArgumentException('卡包系列无效。');
+	if(isset($filter['series']) && !in_array($filter['series'],array('all','vol1','vol2','vol3'),true)) throw new InvalidArgumentException('卡包系列无效。');
 	if(isset($filter['rare_only'])) $filter['rare']=$filter['rare_only'] ? true : ($filter['rare'] ?? null);
 	foreach(array('upgraded','rare') as $key) if(isset($filter[$key]) && !is_bool($filter[$key])) throw new InvalidArgumentException('卡包稀有度及升级条件须为布尔值。');
 	if(isset($filter['color']) && $filter['color']!=='all' && !in_array($filter['color'],fcg_colors(),true)) throw new InvalidArgumentException('卡包颜色无效。');
@@ -245,11 +245,13 @@ function fcg_action(&$data, &$user, $input, $now, $in_room, $evo_state = null)
 			if(!$in_room) throw new InvalidArgumentException('已离开 FCG 房间，请重新加入后继续。');
 			$m=&$data['match'];
 			if(!$m || $m['result']!==null || ($input['match'] ?? '')!==$m['id']) throw new InvalidArgumentException('这场牌局已经结束或已切换，请刷新牌桌。');
+			if($action==='play' || $action==='discard') {
+				$slot=$input['slot'] ?? null;
+				if(!is_int($slot) || !isset($m['sides'][0]['hand'][$slot]) || ($input['turn'] ?? null)!==$m['turn'] || ($input['card'] ?? null)!==$m['sides'][0]['hand'][$slot]) throw new InvalidArgumentException('手牌或回合已更新，请重新选择。');
+			}
 			if($action==='play') fcg_play($m,0,$input['slot'] ?? null);
 			elseif($action==='discard') {
-				$slot=$input['slot'] ?? null;
-				if(!is_int($slot) || !isset($m['sides'][0]['hand'][$slot])) throw new InvalidArgumentException('请选择一张手牌。');
-				fcg_evo_observe_hand($m,0); fcg_remove_hand($m['sides'][0],$slot); $m['sides'][0]['regen']--; fcg_log($m,'你弃掉一张牌，回合回血降低了 1 点。');
+				fcg_discard_slot($m,0,$slot);
 			} elseif($action==='destroy') { $m['sides'][0]['monster']=null; fcg_log($m,'你解散了驻场帮手。'); }
 			else { $m['result']='loss'; fcg_log($m,'你向小种火认输了。'); }
 			break;
@@ -339,8 +341,7 @@ function fcg_public_state($data, $user, $in_room, $now)
 	$m=$data['match'];
 	if($m) {
 		foreach($m['sides'] as $i=>&$s) {
-			$s['deck_count']=count($s['deck']); unset($s['deck']);
-			if($i===1) { $s['hand_count']=count($s['hand']); unset($s['hand'],$s['free']); }
+			fcg_public_side($s,$i===1);
 		} unset($s);
 		unset($m['drop_pool'],$m['ai_at'],$m['telemetry']);
 	}
@@ -349,4 +350,15 @@ function fcg_public_state($data, $user, $in_room, $now)
 		'tutorial'=>$data['tutorial'],'embers'=>$data['embers'],'wins'=>(object)$data['wins'],'hard_wins'=>(object)($data['hard_wins'] ?? array()),'played'=>$data['played'],
 		'match'=>$m,'run'=>fcg_draft_public($data),'last_reward'=>$data['last_reward'],'purchases'=>(object)$data['purchases'],
 		'credits'=>(int)$user['credits2'],'titles'=>$n['nicks'] ?? array(),'in_room'=>(bool)$in_room,'now'=>$now,'pvp_wins'=>$data['pvp_wins'] ?? 0,'temp_expired'=>$data['temp_expired'] ?? false);
+}
+
+function fcg_public_side(&$s, $enemy)
+{
+	$s['deck_count']=count($s['deck']); unset($s['deck']);
+	if($enemy) {
+		$s['hand_count']=count($s['hand']); unset($s['hand'],$s['free'],$s['surge']);
+		if(($s['field']['kind'] ?? '')==='trap') $s['field']=array('kind'=>'trap','hidden'=>true);
+	} else {
+		$s['costs']=array(); foreach($s['hand'] as $slot=>$id) $s['costs'][$slot]=fcg_card_cost($s,$slot);
+	}
 }

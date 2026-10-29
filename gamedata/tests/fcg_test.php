@@ -37,7 +37,7 @@ foreach(array('m','f') as $gender) fcg_test(count(get_iconlist())===43,'enabled 
 $db->rule='FCG';$groomid=0;
 fcg_test(count(get_iconlist())===21,'main-room profile still offers default avatar range');
 unset($db,$iconlimit,$icon,$gender,$groomid,$gtablepre);
-fcg_test(count($cards)===230,'230 independent card IDs');
+fcg_test(count($cards)===310,'310 independent card IDs');
 // Keyword filters and the classroom share the card's own labels, including conditional effects.
 fcg_test(fcg_token_keywords('resonance(W,draw(1))',$cards[156])===array('余韵','抽牌'),'resonance includes its conditional draw keyword');
 fcg_test(fcg_token_keywords('combo_2_pierce(7)',$cards[172])===array('连击','穿透直伤'),'legacy combo uses spell damage keyword');
@@ -48,12 +48,12 @@ fcg_test(fcg_token_keywords('on_summon_eat_poison(3)',$cards[214])===array('吞�
 fcg_test(fcg_token_keywords('gain_hp(enemy,5)',$cards[210])===array('恢复'),'healing keyword independent of target');
 $glossary=fcg_card_glossary($cards[156]);
 fcg_test($glossary[1]['keywords']===array('余韵','抽牌') && $glossary[1]['text']==='上一张牌为白色时：抽 1 张牌。','reference keeps condition and value with keywords');
-foreach(fcg_colors() as $c) fcg_test(count(fcg_pack_pool(array('color'=>$c)))===46,'balanced color '.$c);
+foreach(fcg_colors() as $c) fcg_test(count(fcg_pack_pool(array('color'=>$c)))===62,'balanced color '.$c);
 foreach(array(array(array('upgraded'=>false,'rare'=>false,'series'=>'vol1'),57),array(array('upgraded'=>false,'series'=>'vol1'),75),array(array('upgraded'=>true,'series'=>'vol1'),75),array(array('rare'=>true,'series'=>'vol1'),36),array(array('series'=>'vol2'),80),array(array('series'=>'vol2','rare'=>true),30)) as $case) fcg_test(count(fcg_pack_pool($case[0]))===$case[1],'pack population');
 $catalog=require GAME_ROOT.'gamedata/fcg_shop.php';
 foreach($catalog as $item) if(in_array($item[0],array(2,8),true)) {
 	$pool=fcg_pack_pool($item[6]);
-	fcg_test(count($pool)===82,'rebalanced shop pool keeps existing energy cards');
+	fcg_test(count($pool)===109,'rebalanced shop pool keeps existing energy cards');
 	foreach($pool as $id) fcg_test(!$cards[$id]['rare'] && $cards[$id]['upgraded']===($item[0]===8),'seed pack excludes rare and respects upgrade tier');
 }
 fcg_test_throws(function(){fcg_pack_pool(array('color'=>'purple'));},'invalid pool');
@@ -120,7 +120,7 @@ $public=fcg_public_state($data,$user,true,100);fcg_test(!isset($public['match'][
 
 // All opponent decks are legal; complete automated matches exercise the timer loop until an outcome.
 foreach(fcg_opponents() as $o) {
-	fcg_validate_deck($o['deck'],array_fill(0,230,100));
+	fcg_validate_deck($o['deck'],array_fill(0,310,100));
 	$m=fcg_new_match(fcg_starter_deck(),$o['id'],100);fcg_advance($m,100000);
 	fcg_test($m['result']!==null,'offline match terminates '.$o['id']);
 }
@@ -205,11 +205,11 @@ $data['pvp_wins']=9;fcg_pvp_reward($data,$user,2,array(151),86500,$key);fcg_test
 $data=fcg_new_account();$user['nicksrev']='';foreach(range(4,20) as $i)$data['wins'][$i]=1;fcg_settle($data,$user);fcg_test(!fcg_title_owned($user,9106),'new opponents do not substitute for initial seventeen');foreach(range(0,16) as $i)$data['wins'][$i]=1;fcg_settle($data,$user);fcg_test(fcg_title_owned($user,9106),'old seventeen achievement unchanged');
 // Phase 3: HARD is a server-validated variant; normal decks and rewards remain available.
 $opponents=fcg_opponents(); $npc_decks=fcg_npc_decks();
-fcg_test(count($opponents)===22 && count($npc_decks['hard'])===16,'22 opponents and exactly 16 hard decks');
-foreach(range(5,20) as $id) {
+fcg_test(count($opponents)===26 && count($npc_decks['hard'])===20,'26 opponents and exactly 20 hard decks');
+foreach(array_merge(range(5,20),range(22,25)) as $id) {
 	$o=$opponents[$id]; $hard=fcg_new_match(fcg_starter_deck(),$id,100,true); $normal=fcg_new_match(fcg_starter_deck(),$id,100);
 	fcg_test(count($npc_decks['hard'][$id])===32,'hard has 32 cards '.$id);
-	fcg_validate_deck($npc_decks['hard'][$id],array_fill(0,230,100));
+	fcg_validate_deck($npc_decks['hard'][$id],array_fill(0,310,100));
 	$actual=array_merge($hard['sides'][1]['hand'],$hard['sides'][1]['deck']); sort($actual); $expected=$npc_decks['hard'][$id]; sort($expected);
 	fcg_test($actual===$expected && $hard['sides'][1]['hp']===$o['hp']+25 && $o['hard_level']===$o['level']+2,'hard deck and stats '.$id);
 	fcg_test($normal['drop_pool']===$o['deck'] && $normal['sides'][1]['hp']===$o['hp'],'normal unchanged '.$id);
@@ -222,7 +222,7 @@ foreach(range(5,20) as $id) {
 	fcg_test($new_rate>=$old_rate,'signature drops not diluted '.$id);
 	fcg_advance($hard,100000); fcg_test($hard['result']!==null,'hard match terminates '.$id);
 }
-foreach(array(0,4,21,22) as $id) fcg_test_throws(function()use($id){fcg_new_match(fcg_starter_deck(),$id,100,true);},'unsupported hard opponent '.$id);
+foreach(array(0,4,21,26) as $id) fcg_test_throws(function()use($id){fcg_new_match(fcg_starter_deck(),$id,100,true);},'unsupported hard opponent '.$id);
 fcg_test_throws(function(){fcg_new_match(fcg_starter_deck(),5,100,'1');},'hard must be boolean');
 $data=fcg_new_account(); $user=array('nicksrev'=>'','credits2'=>0);
 fcg_test_throws(function()use(&$data,&$user){fcg_action($data,$user,array('action'=>'start','opponent'=>5,'hard'=>true),100,false);},'hard requires FCG room');
@@ -472,7 +472,7 @@ foreach(array(array(1,3),array(25,1),array(24,1),array(25,25,1)) as $deck) forea
 $data=$ready;
 for($layer=1;$layer<=5;$layer++) {
 	fcg_test_draft_action($data,$user,'draft_battle');$opp=$data['match']['opponent'];
-	$range=$layer<=2?range(0,4):($layer===3?range(5,10):($layer===4?range(11,16):range(17,20)));
+	$range=$layer<=2?range(0,4):($layer===3?range(5,10):($layer===4?range(11,16):range(17,25)));
 	fcg_test(in_array($opp,$range,true) && $data['match']['sides'][1]['hp']===$opponents[$opp]['hp']+5*($layer-1),'layer opponent band and HP '.$layer);
 	$data['match']['result']='win';$data['match']['sides'][0]['hp']=40;fcg_settle($data,$user);
 	fcg_test($data['run']['stage']==='node' && $data['run']['wins']===$layer,'victory offers choice including fifth layer');
@@ -571,6 +571,125 @@ fcg_test($m['sides'][0]['played_cards']===array(),'failed play does not enter pi
 $m=fcg_test_ready(array(0));unset($m['sides'][0]['played_cards'],$m['sides'][1]['played_cards']);fcg_play($m,0,0);
 fcg_test($m['sides'][0]['played_cards']===array(0),'existing saved match starts pile on next play');
 fcg_turn($m);fcg_test($m['sides'][1]['played_cards']===array(),'existing match receives both piles at turn boundary');
+
+// Vol.3: costs, conditional effects, field lifetime and hidden information.
+fcg_test(count(fcg_pack_pool(array('series'=>'vol3')))===80 && count(fcg_pack_pool(array('series'=>'vol3','rare'=>true)))===26,'Vol.3 preserves all 13 authored rare pairs');
+foreach(range(17,25) as $opponent) {
+	$run=array('layer'=>5,'opponents'=>array_values(array_diff(range(17,25),array($opponent))));fcg_draft_prepare_battle($run);
+	fcg_test($run['opponent']===$opponent,'every final-layer opponent remains eligible: '.$opponent);
+}
+foreach(fcg_colors() as $color) fcg_test(count(fcg_pack_pool(array('series'=>'vol3','color'=>$color)))===16,'Vol.3 color balance '.$color);
+fcg_test(fcg_tokens('gamble(draw(1); mastery(R, 4, gain_atk(self, 2); draw(1))); refactor(draw(1))')===array('gamble(draw(1); mastery(R, 4, gain_atk(self, 2); draw(1)))','refactor(draw(1))'),'nested semicolons stay within their condition');
+fcg_test(in_array('抽牌',fcg_token_keywords($cards[262]['ops'],$cards[262]),true),'nested keyword descriptions remain searchable');
+$m=fcg_test_ready(array(260,266,254,0,24));fcg_play($m,0,3);
+fcg_test(fcg_card_cost($m['sides'][0],0)===8 && fcg_card_cost($m['sides'][0],1)===9 && fcg_card_cost($m['sides'][0],2)===9,'energy spell reduces both hand surge cards and match surge');
+fcg_play($m,0,3);
+fcg_test(fcg_card_cost($m['sides'][0],0)===7 && fcg_card_cost($m['sides'][0],1)===9 && fcg_card_cost($m['sides'][0],2)===8,'monster only advances non-spell-only surge');
+$m['sides'][0]['free'][1]=true;fcg_discard_slot($m,0,0);
+fcg_test(fcg_card_cost($m['sides'][0],0)===0 && fcg_card_cost($m['sides'][0],1)===7,'free and surge slots shift together on discard');
+$s=fcg_side(array());$s['hand']=array(254);$s['discarded_match']=40;fcg_test(fcg_card_cost($s,0)===0,'surge has zero floor');
+$m=fcg_test_ready(array(260));$m['sides'][0]['surge'][0]=7;$m['sides'][0]['energy']['R']=2;fcg_play($m,0,0);
+fcg_test($m['sides'][0]['energy']['R']===0 && $m['sides'][0]['monster']['id']===260,'actual reduced cost paid');
+$m=fcg_test_ready(array(262));fcg_play($m,0,0);fcg_test(count($m['sides'][0]['hand'])===2 && $m['sides'][0]['energy']['Y']===96,'playing refactor card does not also discard it');
+$m=fcg_test_ready(array(263));$m['sides'][0]['energy']['Y']=0;fcg_discard_slot($m,0,0);
+fcg_test(count($m['sides'][0]['hand'])===2 && $m['sides'][0]['energy']['Y']===4 && $m['sides'][0]['regen']===0 && $m['sides'][0]['discarded_match']===1,'manual refactor free, no regen penalty');
+$m=fcg_test_ready(array(257,0,258));$m['sides'][0]['surge'][2]=3;fcg_play($m,0,0);
+fcg_test($m['sides'][0]['hand']===array(0) && $m['sides'][1]['hp']==192 && $m['sides'][0]['atk']==7 && $m['sides'][0]['barrier']==16 && $m['sides'][0]['endure']===1,'gamble chooses rightmost lowest actual cost and chains refactor');
+$m=fcg_test_ready(array(257));fcg_play($m,0,0);fcg_test($m['sides'][0]['atk']==7 && $m['sides'][0]['regen']===0,'empty hand gamble succeeds');
+$m=fcg_test_ready(array(264));fcg_discard_slot($m,0,0);fcg_test($m['sides'][0]['monster']['id']===264,'discarded mecha summons itself');
+$m['sides'][0]['hp']=100;$m['sides'][0]['hand']=array(264);fcg_discard_slot($m,0,0);fcg_test($m['sides'][0]['hp']==110 && $m['sides'][0]['def']==4,'mecha refactor with resident helper heals instead of escort');
+$m=fcg_test_ready(array(268));fcg_discard_slot($m,0,0);fcg_field_turn($m,0);
+fcg_test($m['sides'][0]['field']['op']==='digital_life_1' && $m['sides'][1]['hp']==196,'digital refactor uploads a damaging domain');
+$m=fcg_test_ready();fcg_summon($m,0,$cards[269]);$m['sides'][0]['monster']['abilities'][]='rebirth_once';$m['sides'][0]['monster']['hp']=0;fcg_finish($m);
+fcg_test(!$m['sides'][0]['field'] && $m['sides'][0]['monster']['reborn'],'rebirth delays upload');
+$m['sides'][0]['monster']['hp']=0;fcg_finish($m);fcg_test($m['sides'][0]['field']['op']==='digital_life_2','final death uploads');
+
+$m=fcg_test_ready(array(230,232,234));fcg_play($m,0,0);fcg_test($m['sides'][0]['played_cards']===array(),'resident domain not duplicated in pile');
+fcg_play($m,0,0);fcg_test($m['sides'][0]['played_cards']===array(230) && $m['sides'][0]['atk']==2,'replacement sends old field to pile and applies Valhalla entry');
+fcg_summon($m,0,$cards[24]);$m['sides'][0]['monster']['hp']=0;$m['sides'][0]['energy']['W']=0;fcg_finish($m);
+fcg_test($m['sides'][0]['atk']==4 && $m['sides'][0]['energy']['W']==2,'Valhalla death award once');
+$m['sides'][0]['hp']=100;fcg_field_turn($m,0);fcg_test($m['sides'][0]['hp']==103,'Valhalla documented healing branch');
+$m=fcg_test_ready(array(231));fcg_play($m,0,0);fcg_summon($m,0,$cards[24]);$m['sides'][0]['hp']=100;$m['sides'][0]['monster']['hp']=1;$m['sides'][0]['monster']['frozen']=3;fcg_field_turn($m,0);
+fcg_test($m['sides'][0]['hp']==106 && $m['sides'][0]['def']==1 && $m['sides'][0]['monster']['hp']<=$m['sides'][0]['monster']['maxhp'] && $m['sides'][0]['monster']['frozen']===0,'sanctuary heals, caps helper health and cleans freeze');
+$m=fcg_test_ready(array(243));fcg_play($m,0,0);$m['sides'][0]['hand']=array(260,0);$m['sides'][1]['hand']=array(0,26);fcg_play($m,1,0);
+fcg_test(empty($m['sides'][0]['surge']),'peep ignores basic energy cards');fcg_play($m,1,0);fcg_test(fcg_card_cost($m['sides'][0],0)===8,'enemy spell discounts most expensive hand card');
+$m=fcg_test_ready(array(245));fcg_play($m,0,0);fcg_summon($m,0,$cards[24]);$old=$m['sides'][0]['monster'];$m['sides'][0]['gen']['G']=4;fcg_field_turn($m,0);
+fcg_test($m['sides'][0]['regen']===1 && $m['sides'][1]['regen']===-2 && $m['sides'][0]['monster']['atk']==$old['atk']+3,'forest poison and green mastery');
+$m=fcg_test_ready(array(236));fcg_play($m,0,0);fcg_field_turn($m,0);$m=json_decode(fcg_json($m),true);fcg_field_turn($m,0);
+fcg_test($m['sides'][0]['field']['turns']===1 && $m['sides'][1]['hp']===200,'countdown persists without early blast');fcg_field_turn($m,0);fcg_field_turn($m,0);
+fcg_test($m['sides'][1]['hp']==176 && $m['sides'][0]['hp']==192 && $m['sides'][0]['played_cards']===array(236),'nuke resolves once and leaves field');
+$m=fcg_test_ready(array(248));fcg_play($m,0,0);fcg_packet($m['sides'][1],$m['sides'][0],11,0,false);
+fcg_test($m['sides'][0]['hp']==194,'eight zones halves direct attack rounding up');fcg_field_turn($m,0);fcg_field_turn($m,0);
+fcg_test($m['sides'][1]['hp']==184 && count($m['sides'][0]['hand'])===2,'eight zones counts both total generation');
+$m=fcg_test_ready(array(297));fcg_play($m,0,0);fcg_field_turn($m,0);
+fcg_test($m['sides'][1]['atk']===1 && $m['sides'][1]['hp']==175 && $m['sides'][1]['regen']===-5,'jinx buffs then halves attack and poisons');
+
+foreach(array(234,238,240,246,250) as $id) {
+	$m=fcg_test_ready();$m['sides'][1]['hand']=array($id);fcg_play($m,1,0);
+	$data=fcg_new_account();$data['match']=json_decode(fcg_json($m),true);$public=fcg_public_state($data,array('credits2'=>0),true,100)['match'];
+	fcg_test($public['sides'][1]['field']===array('kind'=>'trap','hidden'=>true) && $public['sides'][1]['played_cards']===array() && !isset($public['last_card']) && $public['last_spell']===null && strpos(implode(' ',$public['log']),$cards[$id]['name'])===false,'trap identity hidden in field, log, piles and copy history: '.$id);
+	fcg_test(!isset($public['sides'][1]['surge']),'enemy discounts not exposed');
+}
+$m=fcg_test_ready(array(234));fcg_play($m,0,0);fcg_summon($m,1,$cards[24]);
+fcg_test(!$m['sides'][0]['field'] && $m['sides'][0]['played_cards']===array(234) && !$m['sides'][1]['monster'] && $m['last_card']===234,'mine reveals and kills summoned unit');
+$m=fcg_test_ready(array(238));fcg_play($m,0,0);$m['sides'][1]['hand']=array(0,0,26);fcg_play($m,1,0);fcg_play($m,1,0);
+fcg_test($m['sides'][0]['field']!==null,'combo trap ignores unlimited cards');fcg_play($m,1,0);fcg_test(!$m['sides'][0]['field'] && $m['sides'][1]['hp']==188,'combo trap triggers on subsequent non-energy card');
+$m=fcg_test_ready(array(241));fcg_play($m,0,0);$m['sides'][1]['hand']=array(260);$m['sides'][1]['free'][0]=true;fcg_play($m,1,0);
+fcg_test(!$m['sides'][0]['field'] && $m['sides'][1]['monster']['frozen']===3 && $m['sides'][1]['disarm']===6,'EMP uses printed cost even on free summon');
+$m=fcg_test_ready(array(246));fcg_play($m,0,0);$m['sides'][1]['hand']=array(272);fcg_play($m,1,0);
+fcg_test($m['sides'][1]['hp']==190 && $m['sides'][1]['regen']===-3,'poison feast detects nested energy gain');
+$m=fcg_test_ready(array(251));fcg_play($m,0,0);fcg_packet($m['sides'][1],$m['sides'][0],9,0,false,null,false,$m,0);
+fcg_test($m['sides'][0]['field']!==null,'mirror waits for heavy hit');fcg_packet($m['sides'][1],$m['sides'][0],20,0,false,null,false,$m,0);
+fcg_test($m['sides'][0]['hp']==190 && $m['sides'][1]['hp']==174 && $m['sides'][0]['played_cards']===array(251),'heavy hit reflects original plus six and reduces to one');
+$m=fcg_test_ready(array(253));$m['sides'][1]['hand']=array(234);fcg_play($m,1,0);$m['sides'][0]['energy']['Y']=10;fcg_play($m,0,0);
+fcg_test(!$m['sides'][1]['field'] && $m['sides'][1]['played_cards']===array(234) && $m['sides'][0]['energy']['Y']===14 && $m['sides'][0]['def']==9,'clear field disarms without triggering and rewards');
+
+$m=fcg_test_ready(array(277));$m['sides'][0]['gen']['R']=3;$m['sides'][0]['hp']=40;fcg_play($m,0,0);fcg_test($m['sides'][1]['hp']==182,'mastery fails below threshold');
+$m=fcg_test_ready(array(277));$m['sides'][0]['gen']['R']=4;$m['sides'][0]['hp']=40;fcg_play($m,0,0);fcg_test($m['sides'][1]['hp']==154,'mastery and desperate nested effects');
+$m=fcg_test_ready(array(275));$m['sides'][0]['gen']['W']=4;fcg_play($m,0,0);fcg_test($m['sides'][0]['monster']['def']===19 && $m['sides'][0]['monster']['hp']===26,'monster mastery bonuses');
+$m['sides'][1]['def']=99;fcg_turn($m);fcg_test($m['sides'][1]['hp']==181,'armor press ignores defense');$m['sides'][0]['monster']['frozen']=2;fcg_turn($m);fcg_test($m['sides'][1]['hp']==181,'frozen armor press disabled');
+$m=fcg_test_ready(array(287));$m['sides'][0]['gen']['B']=4;fcg_summon($m,1,$cards[170]);fcg_play($m,0,0);
+fcg_test(!$m['sides'][1]['monster'] && $m['sides'][1]['hp']==171,'deathnote ignores stealth');
+$m=fcg_test_ready(array(299,277,303));$m['sides'][0]['hp']=40;fcg_play($m,0,0);fcg_play($m,0,0);
+fcg_test($m['sides'][1]['hp']==154,'SQL forces mastery below generation requirement');$m['sides'][0]['hand']=array(303);$m['sides'][0]['energy']['G']=10;fcg_play($m,0,0);
+fcg_test($m['sides'][0]['hp']==64 && $m['sides'][0]['energy']['G']===19,'SQL hoard counts six after safe draw');fcg_turn($m);fcg_test($m['sides'][0]['sql_inject']===0,'SQL expires at turn end');
+$m=fcg_test_ready(array(299,156,172));fcg_play($m,0,0);$m['sides'][0]['played_this_turn']=0;fcg_play($m,0,1);
+fcg_test($m['sides'][1]['hp']==186,'SQL forces legacy combo');$n=count($m['sides'][0]['hand']);fcg_play($m,0,0);fcg_test(count($m['sides'][0]['hand'])===$n,'SQL forces off-color resonance');
+$m=fcg_test_ready(array(290));$m['sides'][0]['hp']=100;$m['sides'][0]['energy']=array_fill_keys(fcg_colors(),10);fcg_play($m,0,0);
+fcg_test($m['sides'][1]['hp']==186 && count($m['sides'][0]['hand'])===2 && $m['sides'][0]['energy']['W']===12,'behind on health guarantees miracle jackpot');
+$m=fcg_test_ready(array(293,295));fcg_play($m,0,0);fcg_play($m,0,0);
+fcg_test($m['sides'][0]['atk']==8 && $m['sides'][0]['monster']['atk']==10 && in_array('rebirth_once',$m['sides'][0]['monster']['abilities'],true),'cheat aura guarantees gem and grants helper rebirth');
+$m=fcg_test_ready(array(302,0,0,0,0,0));$m['sides'][0]['hp']=100;fcg_play($m,0,0);
+fcg_test(count($m['sides'][0]['hand'])===6 && $m['sides'][0]['regen']===0 && $m['sides'][0]['hp']==118,'safe draw at capacity avoids penalty and feeds hoard');
+$m=fcg_test_ready(array(305));$m['sides'][1]['atk']=30;$m['sides'][1]['def']=40;fcg_summon($m,1,$cards[24]);fcg_play($m,0,0);
+fcg_test($m['sides'][1]['def']===1 && $m['sides'][1]['atk']===30 && $m['sides'][1]['monster']['atk']===1 && min($m['sides'][1]['energy'])===1,'programmer rewrites highest stats and energy');
+$m=fcg_test_ready(array(277,309));fcg_play($m,0,0);fcg_turn($m);fcg_play($m,0,0);
+fcg_test(in_array(277,$m['sides'][0]['hand'],true) && fcg_card_cost($m['sides'][0],array_search(277,$m['sides'][0]['hand'],true))===4,'rewind persists own previous play across turn');
+$m=fcg_test_ready(array(307));$m['sides'][1]['hand']=array(279,234);fcg_play($m,1,0);fcg_play($m,1,0);fcg_play($m,0,0);
+fcg_test($m['sides'][0]['hand']===array(279) && fcg_card_cost($m['sides'][0],0)===1,'copy uses enemy last public card and cannot copy hidden trap');
+
+$m=fcg_test_ready(array(281));$m['sides'][0]['gen']['Y']=4;fcg_summon($m,0,$cards[24]);fcg_summon($m,1,$cards[24]);
+$m['sides'][1]['monster']['atk']=9;$m['sides'][1]['monster']['def']=7;$m['sides'][1]['monster']['abilities']=array('escort','ephemeral','growth(1,1,1)');fcg_play($m,0,0);
+fcg_test($m['sides'][0]['atk']==4 && $m['sides'][0]['def']==3 && $m['sides'][1]['monster']['atk']==5 && $m['sides'][1]['monster']['def']==4,'mastery soul steal transfers half rounded down');
+fcg_test(in_array('growth(1,1,1)',$m['sides'][0]['monster']['abilities'],true) && !in_array('ephemeral',$m['sides'][0]['monster']['abilities'],true) && !in_array('escort',$m['sides'][0]['monster']['abilities'],true),'soul copy excludes escort and ephemeral');
+$m=fcg_test_ready();$s=&$m['sides'][0];$s['deck']=array();fcg_draw($s,2,true);fcg_test($s['regen']===-2,'safe draw still penalizes empty deck');unset($s);
+$data=fcg_new_account();$data['match']=fcg_test_ready(array(263,24));$data['match']['sides'][0]['energy']['Y']=0;$user=array('credits2'=>0);
+$input=array('action'=>'discard','match'=>$data['match']['id'],'slot'=>0,'card'=>263,'turn'=>1);
+fcg_action($data,$user,$input,100,true);$data=fcg_load_account(fcg_json($data));$once=$data['match'];
+fcg_test($once['sides'][0]['energy']['Y']===4 && $once['sides'][0]['regen']===0,'refactor request persists its free reward');
+fcg_test_throws(function()use(&$data,&$user,$input){fcg_action($data,$user,$input,100,true);},'stale refactor slot rejected');
+fcg_test($once===$data['match'],'stale discard cannot grant refactor twice');
+foreach(array('play','discard') as $action) {
+	$input=array('action'=>$action,'match'=>$data['match']['id'],'slot'=>0,'card'=>24,'turn'=>2);
+	fcg_test_throws(function()use(&$data,&$user,$input){fcg_action($data,$user,$input,100,true);},'NPC request rejects changed turn: '.$action);
+}
+$m=fcg_test_ready(array(234));$m['uids']=array(11,12);$m['names']=array('甲','乙');$m['stickers']=array();$m['decks']=array(array(234),array(241));$m['sides'][1]['hand']=array(241);
+fcg_duel_action($m,0,array('action'=>'play','slot'=>0,'card'=>234,'turn'=>1),100);fcg_duel_action($m,1,array('action'=>'play','slot'=>0,'card'=>241,'turn'=>1),100);
+foreach(array(11,12) as $uid) {
+	$public=fcg_social_public(array(),array('match'=>json_decode(fcg_json($m),true),'vars'=>array(),'mirrors'=>array()),fcg_new_account(),array('uid'=>$uid),null,100)['match'];
+	fcg_test($public['sides'][0]['field']['id']===($uid===11?234:241) && $public['sides'][1]['field']===array('kind'=>'trap','hidden'=>true),'PvP owner sees own trap only: '.$uid);
+	fcg_test(!isset($public['decks']) && !isset($public['sides'][1]['hand']) && !isset($public['sides'][1]['surge']) && $public['sides'][1]['played_cards']===array(),'PvP hidden trap survives serialization and perspective swap: '.$uid);
+}
 
 // Bootstrap only needs a catalog read here; no live database or account is touched.
 $db=new class {

@@ -1,11 +1,49 @@
 <?php
 if(!defined('IN_GAME')) exit('Access Denied');
 
+function fcg_field_rules($op)
+{
+	$rules=array(
+		'heal_both_4_clean_freeze'=>'每回合末牌手与帮手恢复 4 生命，帮手解除冻结',
+		'heal_both_6_def_1_clean_freeze'=>'每回合末牌手与帮手恢复 6 生命，牌手防御 +1，帮手解除冻结',
+		'valhalla_2'=>'置入时牌手攻防 +2；帮手阵亡且未重生时牌手攻击 +2、白能量 +2；每回合末恢复 3 生命，帮手 +1 攻／+1 防',
+		'valhalla_3'=>'置入时牌手攻防 +3；帮手阵亡且未重生时牌手攻击 +3、白能量 +3；每回合末恢复 5 生命，帮手 +2 攻／+1 防',
+		'peep_room_1'=>'敌方每出一张非能量卡，己方当前最贵手牌减费 1；每回合末黄能量 +1',
+		'peep_room_2'=>'敌方每出一张非能量卡，己方当前最贵手牌减费 1；每回合末黄能量 +2、抽 1 张牌',
+		'viridian_1'=>'每回合末己方回血 +1、敌方回血 −1；绿产能至少 4 时，帮手 +2 攻／+1 防／+2 生命',
+		'viridian_2'=>'每回合末己方回血 +1、敌方回血 −2；绿产能至少 4 时，帮手 +3 攻／+2 防／+3 生命',
+		'digital_life_1'=>'每回合末五色能量 +1，对敌方牌手造成 4 点直伤',
+		'digital_life_2'=>'每回合末五色能量 +1，对敌方牌手造成 6 点直伤',
+		'nuke_24_8'=>'归零时敌方牌手与帮手各受 24 点直伤，己方牌手受到 8 点波及伤害',
+		'nuke_32_12'=>'归零时敌方牌手与帮手各受 32 点直伤，己方牌手受到 12 点波及伤害',
+		'stall_eight_zones_1'=>'驻留时双方直接攻击伤害减半（向上取整）；归零时造成双方总产能 +6 点直伤，并抽 2 张牌',
+		'stall_eight_zones_2'=>'驻留时双方直接攻击伤害减半（向上取整）；归零时造成双方总产能 +12 点直伤，并抽 2 张牌',
+		'mine_snare_10_3'=>'敌方召唤或协战时，对其帮手造成 10 点伤害，溢出伤及牌手，牌手防御 −3',
+		'mine_snare_15_5'=>'敌方召唤或协战时，对其帮手造成 15 点伤害，溢出伤及牌手，牌手防御 −5',
+		'booby_12_3'=>'敌方本回合第 2 张及以后的非能量出牌后，牌手受 12 点直伤，牌手与帮手防御 −3',
+		'booby_16_5'=>'敌方本回合第 2 张及以后的非能量出牌后，牌手受 16 点直伤，牌手与帮手防御 −5',
+		'emp_trap_3_2_4'=>'敌方打出原始费用至少 4 的牌后，夺取其最多颜色能量 3 点，冻结帮手 2 回合，本回合牌手攻击降低 4',
+		'emp_trap_5_3_6'=>'敌方打出原始费用至少 4 的牌后，夺取其最多颜色能量 5 点，冻结帮手 3 回合，本回合牌手攻击降低 6',
+		'poison_feast_3_10'=>'敌方打出含恢复生命、回血、能量或产能效果的非能量牌后，其回血 −3，并受 10 点直伤',
+		'poison_feast_5_14'=>'敌方打出含恢复生命、回血、能量或产能效果的非能量牌后，其回血 −5，并受 14 点直伤',
+		'mirror_backfire_1'=>'下一次至少 10 点的直接攻击伤害降为 1，将原伤害反打给攻击者',
+		'mirror_backfire_2'=>'下一次至少 10 点的直接攻击伤害降为 1，将原伤害加 6 反打给攻击者'
+	);
+	return $rules[$op];
+}
+
 function fcg_card_rules($card)
 {
 	$colors=array('W'=>'白','R'=>'红','Y'=>'黄','G'=>'绿','B'=>'蓝','ALL'=>'五色');
 	$labels=array('atk'=>'攻击','def'=>'防御','gen_max'=>'最高颜色产能'); $out=array();
 	foreach(fcg_tokens($card['ops']) as $op) {
+		if(preg_match('/^(gamble|refactor)\((.*)\)$/',$op,$p)) {
+			$sub=$card; $sub['ops']=$p[2];
+			$out[]=($p[1]==='gamble'?'孤注：弃掉其他手牌中实际费用最低的一张（并列取最右，空手也满足），不扣回血，可触发重构；随后':'重构：主动弃掉或被孤注弃掉时，免除弃牌扣回血并免费').'：'.rtrim(fcg_card_rules($sub),'。'); continue;
+		}
+		if(preg_match('/^mastery\(([WRYGB]),\s*(\d+),\s*(.*)\)$/',$op,$p)) {
+			$sub=$card; $sub['ops']=$p[3]; $out[]=$colors[$p[1]].'产能至少 '.$p[2].' 时：'.rtrim(fcg_card_rules($sub),'。'); continue;
+		}
 		if(preg_match('/^(combo|resonance)\(([^,]+),\s*(.*)\)$/',$op,$p)) {
 			$sub=$card; $sub['ops']=$p[3];
 			$out[]=($p[1]==='combo' ? '本回合第 '.$p[2].' 张及以后出牌时' : '上一张牌为'.($colors[$p[2]] ?? '任意').'色时').'：'.rtrim(fcg_card_rules($sub),'。'); continue;
@@ -26,6 +64,33 @@ function fcg_card_rules($card)
 		$k=$match[1]; $v=isset($match[2]) ? array_map('trim',explode(',',$match[2])) : array();
 		$n=$v[0] ?? ''; $n2=$v[1] ?? ''; $n3=$v[2] ?? '';
 		switch($k) {
+			case 'field_domain': $out[]='场地：'.fcg_field_rules($n).'；占用己方唯一场地区，覆盖旧卡使其入堆'; break;
+			case 'field_countdown': $out[]='倒数 '.$n.'：每回合末减 1；'.fcg_field_rules($n2).'；占用己方唯一场地区，覆盖旧卡使其入堆'; break;
+			case 'trap_set': $out[]='伏击：暗牌盖放在己方唯一场地区，覆盖旧卡使其入堆；'.fcg_field_rules($n2).'，触发后退场'; break;
+			case 'clear_enemy_field': $out[]='拆除敌方场地区且不触发伏击；成功拆除时黄能量 +'.$n.'、防御 +'.$n2; break;
+			case 'surge_hand': $out[]='在手牌期间，每打出一张'.($card['pair']===134?'法术':'其他牌').'，本卡费用 −1（最低 0）'; break;
+			case 'surge_match': $out[]='本局每已打出或弃掉一张牌，本卡费用 −1（最低 0）'; break;
+			case 'surge_boost_hand': $out[]='当前全部手牌费用 −'.$n.'（最低 0）'; break;
+			case 'summon_self_or_heal': $out[]='无帮手时免费召唤本卡；已有帮手时恢复牌手 '.$n.' 生命、防御 +4'; break;
+			case 'upload_on_death': $out[]='阵亡且未重生时上传为数字生命场地：'.fcg_field_rules('digital_life_'.$n); break;
+			case 'armor_press': $out[]='未冻结时，每回合末额外造成等于帮手当前防御的直伤'; break;
+			case 'mastery_mon': $out[]=$colors[$n].'产能至少 '.$n2.' 时，登场帮手额外 +'.$n3.' 攻／+'.$v[3].' 防／+'.$v[4].' 生命'; break;
+			case 'desperate_burst': $out[]='自身生命不高于 '.$n.' 时，额外造成 '.$n2.' 点穿透直伤'; break;
+			case 'steal_valkyrie_soul': $out[]='夺取敌方帮手一半攻防（向下取整）给牌手，己方帮手复制其除协战、瞬身外的词条；敌方无帮手时改为夺能 '.($n==='2'?6:4).' 并造成 '.($n==='2'?14:10).' 点穿透直伤'; break;
+			case 'gain_monster_stats': $out[]='帮手 +'.$n.' 攻／+'.$n2.' 防／+'.$n3.' 生命；无帮手时由牌手获得'; break;
+			case 'mastery_deathnote': $out[]='登场时蓝产能至少 '.$n.'，无视潜伏击破敌方帮手，并对牌手造成 '.$n2.' 点直伤'; break;
+			case 'miracle_box': $out[]='奇迹：五色能量 +'.($n==='2'?2:1).'，恢复 '.($n==='2'?14:10).' 生命；大成功额外五色能量 +1、穿透直伤 '.($n==='2'?20:14).'、抽 2 张牌；概率 50%，自身生命低于敌方或有出千光环时必定大成功'; break;
+			case 'miracle_gem': $out[]='奇迹：攻防各 +'.$n.'；大成功改为各 +'.$n2.'，并使己方帮手 +4 攻／+4 防、获得一次重生；概率 50%，自身生命低于敌方或有出千光环时必定大成功'; break;
+			case 'aura_cheat_miracle': $out[]='未冻结时奇迹必定大成功，每次奇迹额外抽 1 张牌、黄能量 +'.$n; break;
+			case 'on_summon_jinx': $out[]='登场时敌方攻击 +'.$n.'，己方场地区置入倒数 1：归零使敌方攻击减半、受到 '.$n2.' 点直伤、回血 −'.$n3; break;
+			case 'sql_inject': $out[]='本回合连击、余韵、极意、奇迹条件全部满足，囤积按 6 张手牌计算'; break;
+			case 'hoard_slides': $out[]='登场时每张剩余手牌提供 '.$n.' 防御、'.$n2.' 生命；至少 4 张时白产能 +'.($card['upgraded']?2:1); break;
+			case 'draw_safe': $out[]='抽 '.$n.' 张牌，满手时跳过且不扣回血（空牌库仍扣回血）'; break;
+			case 'hoard_feast': $out[]='每张当前手牌恢复 '.$n.' 生命、绿能量 +'.$n2; break;
+			case 'programmer_husband': $out[]='敌方牌手攻防中较高项设为 1（同值取攻击），帮手攻击设为 1'.($n==='2'?'，最多颜色能量设为 1':''); break;
+			case 'copy_enemy_last_card': $out[]='复制敌方上一张公开打出的牌至手牌，费用 −'.$n.'（最低 0，满手跳过）'; break;
+			case 'rewind_last_played': $out[]='将己方上一张非本卡的公开出牌复制回手牌，费用 −'.$n.'（最低 0，满手跳过）'; break;
+			case 'on_summon_draw': $out[]='登场时抽 '.$n.' 张牌'; break;
 			case 'add_gen': $out[]=($colors[$n] ?? $n).'产能 +'.$n2; break;
 			case 'add_energy': $out[]=$n==='enemy_random' ? '敌方随机一种能量 +'.$n2 : ($colors[$n] ?? $n).'能量 +'.$n2; break;
 			case 'gen': $out[]='每回合'.($colors[$n] ?? $n).'能量 '.((float)$n2>=0?'+':'').$n2; break;
@@ -35,7 +100,7 @@ function fcg_card_rules($card)
 			case 'gain_hp': $out[]=($n==='enemy'?'敌方':'自身').'恢复 '.$n2.' 生命'; break;
 			case 'lose_hp': $out[]=($n==='enemy'?'敌方':'自身').'失去 '.$n2.' 生命'; break;
 			case 'add_regen': $out[]='每回合回血 +'.$n2; break;
-			case 'add_poison': $out[]='敌方每回合回血 −'.$n2; break;
+			case 'add_poison': $out[]=($n==='self'?'自身':'敌方').'每回合回血 −'.$n2; break;
 			case 'turn_bonus_dmg': $out[]='本回合自身攻击 +'.$n; break;
 			case 'draw': $out[]='抽 '.$n.' 张牌'; break;
 			case 'gain_monster_def': $out[]='己方帮手防御 +'.$n2; break;
@@ -111,6 +176,8 @@ function fcg_card_rules($card)
 function fcg_short_token($op, $card)
 {
 	$colors=array('W'=>'⚪','R'=>'🔴','Y'=>'🟡','G'=>'🟢','B'=>'🔵','ALL'=>'五色','ANY'=>'任意');
+	if(preg_match('/^(gamble|refactor)\((.*)\)$/',$op,$p)) return ($p[1]==='gamble'?'🔥孤注':'♻️重构').'：'.implode(' · ',array_map(function($sub)use($card){return fcg_short_token($sub,$card);},fcg_tokens($p[2])));
+	if(preg_match('/^mastery\(([WRYGB]),\s*(\d+),\s*(.*)\)$/',$op,$p)) return '🌟'.$colors[$p[1]].'极意 '.$p[2].'：'.implode(' · ',array_map(function($sub)use($card){return fcg_short_token($sub,$card);},fcg_tokens($p[3])));
 	if(preg_match('/^(combo|resonance)\(([^,]+),\s*(.*)\)$/',$op,$p)) return ($p[1]==='combo'?'🔗连击 '.$p[2]:'🎨余韵 '.($colors[$p[2]] ?? $p[2])).'：'.fcg_short_token($p[3],$card);
 	if(preg_match('/^combo_(\d+)_(.*)$/',$op,$p)) return '🔗连击 '.$p[1].'：'.fcg_short_token(preg_replace('/^pierce\(/','pierce_enemy(',$p[2]),$card);
 	if(strpos($op,'scale_by(')===0) return '📐增幅';
@@ -121,8 +188,23 @@ function fcg_short_token($op, $card)
 		'cleanse_flip_self'=>'✨净化反转','clean_self_poison'=>'✨净毒','clean_self_poison_to_enemy'=>'☠️移毒','invert_enemy_regen'=>'☯️回血反转',
 		'mirror_balance_stats'=>'⚖️攻防同步','kill_enemy_monster'=>'💀击破帮手','kill_monster_absorb_hp'=>'🩸吞噬帮手','steal_monster_atk_to_self'=>'🧲吸攻',
 		'endure_lethal'=>'🔒锁血','weak_to_red'=>'🔥惧火','shuffle_stats'=>'🔀攻防乱序','clean_self_poison_on_death'=>'💀亡语：净毒',
-		'aura_artillery'=>'⛩️光环：炮架','aura_burn_monster_heal'=>'⛩️光环：传火');
+		'aura_artillery'=>'⛩️光环：炮架','aura_burn_monster_heal'=>'⛩️光环：传火',
+		'surge_hand'=>'⚡涌动','surge_match'=>'⚡全局涌动','clear_enemy_field'=>'🌪️拆场','armor_press'=>'🪨盾压',
+		'miracle_box'=>'🎲奇迹：妙妙箱','miracle_gem'=>'🎲奇迹：赌玉','sql_inject'=>'💉注入：条件全满足',
+		'programmer_husband'=>'🍎逻辑短路：设为1','aura_cheat_miracle'=>'⛩️光环：出千');
 	if(isset($labels[$key])) return $labels[$key];
+	if($key==='field_domain') return '🏛️场地：'.array('heal_both_4_clean_freeze'=>'圣所','heal_both_6_def_1_clean_freeze'=>'圣所','valhalla_2'=>'英灵','valhalla_3'=>'英灵','peep_room_1'=>'蹲站','peep_room_2'=>'蹲站','viridian_1'=>'常磐','viridian_2'=>'常磐','digital_life_1'=>'数字生命','digital_life_2'=>'数字生命')[$n];
+	if($key==='field_countdown') return '🚨倒数 '.$n.'：'.(strpos($n2,'nuke_')===0?'核爆':'八禁');
+	if($key==='trap_set') return '🪤伏击：'.array('on_enemy_summon'=>'阔剑','on_enemy_combo2'=>'诡雷','on_enemy_big_card'=>'脉冲','on_enemy_heal_or_energy'=>'毒饵','on_enemy_heavy_hit'=>'反噬')[$n];
+	if($key==='mastery_mon') return '🌟'.$colors[$n].'极意 '.$n2.'：+'.$n3.'/+'.$v[3].'/+'.$v[4];
+	if($key==='mastery_deathnote') return '🌟🔵极意 '.$n.'：抹杀·伤'.$n2;
+	if($key==='on_summon_jinx') return '📣倒数 1：毒奶'.$n2;
+	if($key==='hoard_slides') return '🐹囤积：防'.$n.'／血'.$n2;
+	if($key==='hoard_feast') return '🐹囤积：血'.$n.'／绿能'.$n2;
+	if($key==='gain_monster_stats') return '💪帮手强化 +'.$n.'/+'.$n2.'/+'.$n3;
+	if($key==='desperate_burst') return '🔥绝境 ≤'.$n.'：穿伤'.$n2;
+	$vol3=array('surge_boost_hand'=>'⚡全手减费','summon_self_or_heal'=>'♻️跃出／恢复','upload_on_death'=>'💀上传','steal_valkyrie_soul'=>'🧲偷魂','draw_safe'=>'🃏安全抽牌','copy_enemy_last_card'=>'🤖复刻减费','rewind_last_played'=>'⏪回收减费','on_summon_draw'=>'📣登场：抽牌');
+	if(isset($vol3[$key])) return $vol3[$key].' '.$n;
 	if($key==='growth') return '🌱成长 +'.$n.'/+'.$n2.'/+'.$n3;
 	if($key==='gen' || $key==='add_gen' || $key==='add_energy') return ($key==='add_energy'?'⚡能量 ':'⚡产能 ').($colors[$n] ?? '敌方随机').' '.$n2;
 	if($key==='gain_atk_def') return '⚔攻防 +'.$n2.'/+'.$n3;
@@ -160,6 +242,9 @@ function fcg_token_keywords($op, $card)
 	if(strpos($op,'aura_')===0) $out[]='光环';
 	if(strpos($op,'on_summon_')===0) $out[]='登场';
 	if(preg_match('/光环：([\p{Han}]+)/u',$short,$aura)) $out[]=$aura[1];
+	if(preg_match('/^(gamble|refactor)\((.*)\)$/',$op,$p) || preg_match('/^(mastery)\([WRYGB],\s*\d+,\s*(.*)\)$/',$op,$p)) {
+		foreach(fcg_tokens($p[2]) as $sub) $out=array_merge($out,fcg_token_keywords($sub,$card));
+	}
 	if(preg_match('/^(combo|resonance)\(([^,]+),\s*(.*)\)$/',$op,$condition)) $out=array_merge($out,fcg_token_keywords($condition[3],$card));
 	elseif(preg_match('/^combo_(\d+)_(.*)$/',$op,$condition)) $out=array_merge($out,fcg_token_keywords(preg_replace('/^pierce\(/','pierce_enemy(',$condition[2]),$card));
 	return array_values(array_unique($out));
@@ -188,7 +273,9 @@ function fcg_bootstrap($state, $csrf, $shop)
 			} elseif(preg_match('/^resonance\(([^,]+),/',$op,$p)) $res_colors[]=$p[1];
 		}
 		$card['combo_min']=$combo_min; $card['res_colors']=array_values(array_unique($res_colors));
-		$card['escort']=in_array('escort',fcg_tokens($card['ops']),true); unset($card['ops']);
+		$card['escort']=in_array('escort',fcg_tokens($card['ops']),true);
+		$card['refactor']=strpos($card['ops'],'refactor(')!==false;
+		unset($card['ops']);
 	} unset($card);
 	$opponents=fcg_opponents(); foreach($opponents as &$o) unset($o['deck']); unset($o);
 	return json_encode(array('state'=>$state,'csrf'=>$csrf,'shop'=>$shop,'cards'=>$cards,'opponents'=>array_values($opponents),

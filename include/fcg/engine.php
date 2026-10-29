@@ -48,7 +48,8 @@ function fcg_side($deck, $hp = 80)
 	return array('hp'=>$hp,'atk'=>0,'def'=>0,'regen'=>0,'energy'=>array_fill_keys(fcg_colors(),1),
 		'gen'=>array_fill_keys(fcg_colors(),1),'hand'=>array_splice($deck,0,3),'deck'=>$deck,'monster'=>null,
 		'bonus'=>0,'pierce'=>0,'thorns'=>array(0,0),'evade'=>0,'free'=>array(),
-		'played_this_turn'=>0,'played_cards'=>array(),'last_color'=>null,'disarm'=>0,'vuln'=>0,'endure'=>0,'barrier'=>0);
+		'played_this_turn'=>0,'played_cards'=>array(),'last_color'=>null,'disarm'=>0,'vuln'=>0,'endure'=>0,'barrier'=>0,
+		'field'=>null,'surge'=>array(),'discarded_match'=>0,'sql_inject'=>0,'last_card'=>null);
 }
 
 function fcg_opponents()
@@ -101,6 +102,25 @@ function fcg_opponents()
 	}
 	$opponents[21]=array('id'=>21,'name'=>'✦推演的炉火','level'=>7,'hp'=>120,
 		'deck'=>fcg_npc_decks()['adaptive']['W'],'portrait'=>'img/fcg/fireseeds/17.png','adaptive'=>true);
+	$vol3=array(
+		array('屏息的潜火',6,115,array(118,120,121,122,124,125,126)),
+		array('孤注的炽火',6,115,array(128,129,130,131,132,133,134,135)),
+		array('登峰的罡火',7,120,array(116,117,136,138,139,140,142,144,145)),
+		array('弄巧的游火',7,120,array(119,123,127,137,141,143,146,147,148,149,150,151,152,153,154,155))
+	);
+	foreach($vol3 as $i=>$row) {
+		list($name,$level,$hp,$pairs)=$row; $deck=array(); $colors=array();
+		foreach($pairs as $pair) {
+			$id=2*($pair-1); $colors[$cards[$id]['color']]=true;
+			$deck=array_merge($deck,array($id,$id,$id+1));
+		}
+		foreach(array_keys($colors) as $color) {
+			$id=4*array_search($color,fcg_colors(),true);
+			$deck=array_merge($deck,array($id,$id,$id,$id+2,$id+2));
+		}
+		$opponents[22+$i]=array('id'=>22+$i,'name'=>'✦'.$name,'level'=>$level,'hp'=>$hp,'deck'=>$deck,
+			'portrait'=>'img/fcg/fireseeds/'.(18+$i).'.png','has_hard'=>true,'hard_hp'=>$hp+25,'hard_level'=>$level+2);
+	}
 	return $opponents;
 }
 
@@ -151,10 +171,10 @@ function fcg_log(&$m, $line)
 	if(count($m['log']) > 40) $m['log'] = array_slice($m['log'],-40);
 }
 
-function fcg_draw(&$s, $n = 1)
+function fcg_draw(&$s, $n = 1, $safe = false)
 {
 	for($i=0;$i<$n;$i++) {
-		if(count($s['hand']) >= 6 || !$s['deck']) $s['regen']--;
+		if(count($s['hand']) >= 6 || !$s['deck']) { if(!$safe || count($s['hand'])<6) $s['regen']--; }
 		else $s['hand'][] = array_shift($s['deck']);
 	}
 }
@@ -181,7 +201,89 @@ function fcg_steal(&$a, &$b, $stat, $n)
 // Card effects are a fixed vocabulary from the approved card table, never executable PHP.
 function fcg_tokens($ops)
 {
-	return array_values(array_filter(array_map('trim',explode(';',$ops)),'strlen'));
+	$out=array(); $buf=''; $depth=0; $len=strlen($ops);
+	for($i=0;$i<$len;$i++) {
+		$ch=$ops[$i];
+		if($ch==='(') $depth++;
+		elseif($ch===')' && $depth>0) $depth--;
+		if($ch===';' && $depth===0) { if(trim($buf)!=='') $out[]=trim($buf); $buf=''; }
+		else $buf.=$ch;
+	}
+	if(trim($buf)!=='') $out[]=trim($buf);
+	return $out;
+}
+
+function fcg_has_mastery($side, $color, $n)
+{
+	return !empty($side['sql_inject']) || ($side['gen'][$color] ?? 1)>=$n;
+}
+
+function fcg_card_cost($side, $slot)
+{
+	if(!isset($side['hand'][$slot])) return 99;
+	if(!empty($side['free'][$slot])) return 0;
+	$card=fcg_cards()[$side['hand'][$slot]]; $discount=(int)($side['surge'][$slot] ?? 0);
+	if(in_array('surge_match',fcg_tokens($card['ops']),true)) $discount+=(int)($side['discarded_match'] ?? 0);
+	return max(0,$card['cost']-$discount);
+}
+
+function fcg_trigger_hand_surge(&$side, $played_card)
+{
+	foreach($side['hand'] as $slot=>$id) {
+		$card=fcg_cards()[$id];
+		if(in_array('surge_hand',fcg_tokens($card['ops']),true) && ($card['pair']!==134 || $played_card['type']==='spell'))
+			$side['surge'][$slot]=($side['surge'][$slot] ?? 0)+1;
+	}
+}
+
+function fcg_discard_slot(&$m, $side, $slot, $by_gamble = false)
+{
+	$a=&$m['sides'][$side];
+	if(!is_int($slot) || !isset($a['hand'][$slot])) throw new InvalidArgumentException('请选择一张手牌。');
+	$card=fcg_cards()[$a['hand'][$slot]];
+	fcg_evo_observe_hand($m,$side); fcg_remove_hand($a,$slot);
+	$a['discarded_match']=($a['discarded_match'] ?? 0)+1; $a['played_cards'][]=$card['id'];
+	foreach(fcg_tokens($card['ops']) as $token) if(preg_match('/^refactor\((.*)\)$/',$token,$p)) {
+		$sub=$card; $sub['ops']=$p[1]; fcg_effect($m,$side,$sub);
+		fcg_log($m,fcg_side_name($m,$side).'弃掉「'.$card['name'].'」，触发了【重构】！');
+		// 孤注的代价与主效果一起结算，不能在锁血等主效果执行前提前结束牌局。
+		if(!$by_gamble) fcg_finish($m);
+		return;
+	}
+	if(!$by_gamble) $a['regen']--;
+	fcg_log($m,fcg_side_name($m,$side).'弃掉了一张牌。'.($by_gamble?'':'回合回血降低了 1 点。'));
+}
+
+function fcg_set_field(&$side, $card, $kind, $op, $turns = 0, $trigger = '')
+{
+	if(!empty($side['field'])) $side['played_cards'][]=$side['field']['id'];
+	$side['field']=array('id'=>$card['id'],'kind'=>$kind,'op'=>$op,'turns'=>$turns);
+	if($trigger!=='') $side['field']['trigger']=$trigger;
+}
+
+function fcg_check_trap(&$m, $defender_side, $trigger, $context = 0)
+{
+	$d=&$m['sides'][$defender_side]; $a=&$m['sides'][1-$defender_side]; $f=$d['field'] ?? null;
+	if(!$f || $f['kind']!=='trap' || $f['trigger']!==$trigger) return false;
+	$d['field']=null; $d['played_cards'][]=$f['id']; $m['last_card']=$f['id'];
+	fcg_log($m,fcg_side_name($m,$defender_side).'翻开了伏击卡「'.fcg_cards()[$f['id']]['name'].'」！');
+	$v=explode('_',$f['op']);
+	switch($trigger) {
+		case 'on_enemy_summon':
+			$n=(int)$v[2]; $a['def']=max(0,$a['def']-(int)$v[3]);
+			if($a['monster']) { fcg_hurt($a,max(0,$n-$a['monster']['hp'])); $a['monster']['hp']-=$n; fcg_monster_death($a,$d); }
+			break;
+		case 'on_enemy_combo2':
+			fcg_hurt($a,(int)$v[1]); $a['def']=max(0,$a['def']-(int)$v[2]);
+			if($a['monster']) $a['monster']['def']=max(0,$a['monster']['def']-(int)$v[2]); break;
+		case 'on_enemy_big_card':
+			fcg_steal($d,$a,'energy',(int)$v[2]);
+			if($a['monster']) $a['monster']['frozen']=max($a['monster']['frozen'],(int)$v[3]);
+			$a['disarm']=($a['disarm'] ?? 0)+(int)$v[4]; break;
+		case 'on_enemy_heal_or_energy': $a['regen']-=(int)$v[2]; fcg_hurt($a,(int)$v[3]); break;
+		case 'on_enemy_heavy_hit': fcg_hurt($a,$context+($v[2]==='2'?6:0)); break;
+	}
+	return true;
 }
 
 function fcg_ability($monster, $key, $default = 0)
@@ -222,6 +324,11 @@ function fcg_monster_death(&$a, &$b)
 		$a['monster']['reborn'] = true;
 		$a['monster']['hp'] = $a['monster']['maxhp'];
 	} else {
+		if(preg_match('/^valhalla_(2|3)$/',$a['field']['op'] ?? '',$p)) {
+			$a['atk']+=(int)$p[1]; fcg_energy($a,'W',(int)$p[1]);
+		}
+		$tier=fcg_ability($a['monster'],'upload_on_death');
+		if($tier) fcg_set_field($a,$a['monster'],'domain','digital_life_'.(int)$tier);
 		$a['played_cards'][]=$a['monster']['id'];
 		$a['monster'] = null;
 	}
@@ -232,14 +339,25 @@ function fcg_effect(&$m, $side, $card, $mirroring = false)
 	$a = &$m['sides'][$side]; $b = &$m['sides'][1-$side];
 	$dead_monster = null;
 	foreach(fcg_tokens($card['ops']) as $token) {
+		if(preg_match('/^refactor\((.*)\)$/',$token)) continue;
+		if(preg_match('/^gamble\((.*)\)$/',$token,$p)) {
+			$min=null;
+			foreach($a['hand'] as $slot=>$id) if($min===null || fcg_card_cost($a,$slot)<=fcg_card_cost($a,$min)) $min=$slot;
+			if($min!==null) fcg_discard_slot($m,$side,$min,true);
+			$sub=$card; $sub['ops']=$p[1]; fcg_effect($m,$side,$sub,$mirroring); continue;
+		}
+		if(preg_match('/^mastery\(([WRYGB]),\s*(\d+),\s*(.*)\)$/',$token,$p)) {
+			if(fcg_has_mastery($a,$p[1],(int)$p[2])) { $sub=$card; $sub['ops']=$p[3]; fcg_effect($m,$side,$sub,$mirroring); }
+			continue;
+		}
 		if(preg_match('/^(combo|resonance)\(([^,]+),\s*(.*)\)$/',$token,$condition)) {
-			if($condition[1]==='combo' ? ($a['played_this_turn'] ?? 0)>=(int)$condition[2] : (($a['last_color'] ?? null)!==null && ($condition[2]==='ANY' || $a['last_color']===$condition[2]))) {
+			if(!empty($a['sql_inject']) || ($condition[1]==='combo' ? ($a['played_this_turn'] ?? 0)>=(int)$condition[2] : (($a['last_color'] ?? null)!==null && ($condition[2]==='ANY' || $a['last_color']===$condition[2])))) {
 				$sub=$card; $sub['ops']=$condition[3]; fcg_effect($m,$side,$sub,$mirroring);
 			}
 			continue;
 		}
 		if(preg_match('/^combo_(\d+)_(.*)$/',$token,$condition)) {
-			if(($a['played_this_turn'] ?? 0)>=(int)$condition[1]) {
+			if(!empty($a['sql_inject']) || ($a['played_this_turn'] ?? 0)>=(int)$condition[1]) {
 				$sub=$card; $sub['ops']=preg_replace('/^pierce\(/','pierce_enemy(',$condition[2]); fcg_effect($m,$side,$sub,$mirroring);
 			}
 			continue;
@@ -262,6 +380,63 @@ function fcg_effect(&$m, $side, $card, $mirroring = false)
 		$op = $parts[1]; $v = isset($parts[2]) ? array_map('trim',explode(',',$parts[2])) : array();
 		$n = isset($v[0]) ? (float)$v[0] : 0;
 		switch($op) {
+			case 'surge_hand': case 'surge_match': break;
+			case 'field_domain':
+				fcg_set_field($a,$card,'domain',$v[0]);
+				if(preg_match('/^valhalla_(2|3)$/',$v[0],$p)) { $a['atk']+=(int)$p[1]; $a['def']+=(int)$p[1]; } break;
+			case 'field_countdown': fcg_set_field($a,$card,'countdown',$v[1],(int)$n); break;
+			case 'trap_set': fcg_set_field($a,$card,'trap',$v[1],0,$v[0]); break;
+			case 'clear_enemy_field':
+				if(!empty($b['field'])) { $b['played_cards'][]=$b['field']['id']; $b['field']=null; fcg_energy($a,'Y',(int)$n); $a['def']+=(int)$v[1]; } break;
+			case 'surge_boost_hand':
+				foreach($a['hand'] as $slot=>$id) $a['surge'][$slot]=($a['surge'][$slot] ?? 0)+(int)$n; break;
+			case 'summon_self_or_heal':
+				if(!$a['monster']) fcg_summon($m,$side,fcg_cards()[$card['id']]);
+				else { $a['hp']+=$n; $a['def']+=4; } break;
+			case 'desperate_burst': if($a['hp']<=$n) fcg_hurt($b,(int)$v[1]); break;
+			case 'steal_valkyrie_soul':
+				if($b['monster']) {
+					foreach(array('atk','def') as $stat) { $gain=(int)floor($b['monster'][$stat]/2); $b['monster'][$stat]-=$gain; $a[$stat]+=$gain; }
+					if($a['monster']) $a['monster']['abilities']=array_values(array_unique(array_merge($a['monster']['abilities'],array_diff($b['monster']['abilities'],array('escort','ephemeral')))));
+				} else { fcg_steal($a,$b,'energy',$n==2?6:4); fcg_hurt($b,$n==2?14:10); } break;
+			case 'gain_monster_stats':
+				foreach(array('atk','def','hp') as $i=>$stat) {
+					if($a['monster']) $a['monster'][$stat]+=(int)$v[$i]; else $a[$stat]+=(int)$v[$i];
+				}
+				if($a['monster']) $a['monster']['maxhp']+=(int)$v[2]; break;
+			case 'miracle_box': case 'miracle_gem':
+				$cheat=fcg_aura($a,'aura_cheat_miracle');
+				$jackpot=!empty($a['sql_inject']) || $cheat>0 || $a['hp']<$b['hp'] || random_int(1,100)<=50;
+				if($op==='miracle_box') {
+					fcg_energy($a,'ALL',$n==2?2:1); $a['hp']+=$n==2?14:10;
+					if($jackpot) { fcg_energy($a,'ALL',1); fcg_hurt($b,$n==2?20:14); fcg_draw($a,2); }
+				} else {
+					$a['atk']+=$jackpot?(int)$v[1]:$n; $a['def']+=$jackpot?(int)$v[1]:$n;
+					if($jackpot && $a['monster']) {
+						$a['monster']['atk']+=4; $a['monster']['def']+=4;
+						if(!in_array('rebirth_once',$a['monster']['abilities'],true)) $a['monster']['abilities'][]='rebirth_once';
+					}
+				}
+				if($cheat) { fcg_draw($a); fcg_energy($a,'Y',$cheat); }
+				fcg_log($m,fcg_side_name($m,$side).'的奇迹'.($jackpot?'大成功！':'获得了保底收益。')); break;
+			case 'sql_inject': $a['sql_inject']=1; break;
+			case 'draw_safe': fcg_draw($a,(int)$n,true); break;
+			case 'hoard_feast':
+				$cnt=!empty($a['sql_inject'])?6:count($a['hand']); $a['hp']+=$cnt*$n; fcg_energy($a,'G',$cnt*(int)$v[1]); break;
+			case 'programmer_husband':
+				$b[$b['atk']>=$b['def']?'atk':'def']=1;
+				if($b['monster']) $b['monster']['atk']=1;
+				if($n==2) $b['energy'][array_search(max($b['energy']),$b['energy'],true)]=1; break;
+			case 'copy_enemy_last_card': case 'rewind_last_played':
+				// 记住各自上一张公开出牌，跨回合可回收，盖伏卡不会进入这个记录。
+				$id=$op==='copy_enemy_last_card'?($b['last_card'] ?? null):($a['last_card'] ?? null);
+				if($op==='rewind_last_played' && ($id===null || $id===$card['id'])) {
+					$id=null;
+					foreach(array_reverse($a['played_cards'] ?? array()) as $previous) if($previous!==$card['id']) { $id=$previous; break; }
+				}
+				if($id!==null && ($op!=='rewind_last_played' || $id!==$card['id']) && count($a['hand'])<6) {
+					$a['hand'][]=$id; $a['surge'][count($a['hand'])-1]=(int)$n;
+				} break;
 			case 'add_gen': case 'add_energy':
 				if($v[0] === 'enemy_random') fcg_energy($b,fcg_colors()[random_int(0,4)],(int)$v[1]);
 				else fcg_energy($a,$v[0],(int)$v[1],$op==='add_gen' ? 'gen' : 'energy'); break;
@@ -319,7 +494,8 @@ function fcg_effect(&$m, $side, $card, $mirroring = false)
 				if(!$a['monster']) $a['monster']=array('id'=>$card['id'],'atk'=>0,'def'=>0,'hp'=>0,'maxhp'=>0,'frozen'=>0,'abilities'=>array('lure'));
 				foreach(array('atk','def','hp') as $k) $a['monster'][$k]+=$stats[$k];
 				$a['monster']['maxhp']=max($a['monster']['maxhp'],$a['monster']['hp']);
-				$a['monster']['abilities'][]='growth('.$stats['growth'].','.$stats['growth'].',0)'; break;
+				$a['monster']['abilities'][]='growth('.$stats['growth'].','.$stats['growth'].',0)';
+				fcg_check_trap($m,1-$side,'on_enemy_summon'); break;
 			default: throw new LogicException('Unsupported FCG spell: '.$op);
 		}
 	}
@@ -328,9 +504,12 @@ function fcg_effect(&$m, $side, $card, $mirroring = false)
 
 function fcg_remove_hand(&$s, $slot)
 {
-	array_splice($s['hand'],$slot,1); $free=array();
-	foreach($s['free'] as $i=>$value) if($i!==$slot) $free[$i>$slot ? $i-1 : $i]=$value;
-	$s['free']=$free;
+	array_splice($s['hand'],$slot,1);
+	foreach(array('free','surge') as $key) {
+		$next=array();
+		foreach($s[$key] ?? array() as $i=>$value) if($i!==$slot) $next[$i>$slot ? $i-1 : $i]=$value;
+		$s[$key]=$next;
+	}
 }
 
 function fcg_can_summon($side, $card)
@@ -349,11 +528,26 @@ function fcg_summon(&$m, $side, $card)
 	}
 	$unit=array('id'=>$card['id'],'atk'=>$card['atk'],'def'=>$card['def'],'hp'=>$card['hp'],'maxhp'=>$card['hp'],
 		'frozen'=>0,'age'=>0,'stealth'=>in_array('stealth',$abilities,true)?1:0,'abilities'=>$abilities);
+	foreach($abilities as $op) if(preg_match('/^mastery_mon\(([WRYGB]),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\)$/',$op,$p) && fcg_has_mastery($a,$p[1],(int)$p[2])) {
+		$unit['atk']+=(int)$p[3]; $unit['def']+=(int)$p[4]; $unit['hp']+=(int)$p[5]; $unit['maxhp']+=(int)$p[5];
+	}
 	if($old && $escort) {
 		foreach(array('atk','def','hp','maxhp') as $key) $a['monster'][$key]+=$unit[$key];
 		$a['monster']['abilities']=array_merge($old['abilities'],array_values(array_diff($abilities,array('escort'))));
 	} else $a['monster']=$unit;
 	foreach($abilities as $op) {
+		if(preg_match('/^on_summon_draw\((\d+)\)$/',$op,$p)) fcg_draw($a,(int)$p[1]);
+		if(preg_match('/^mastery_deathnote\((\d+),\s*(\d+)\)$/',$op,$p) && fcg_has_mastery($a,'B',(int)$p[1])) {
+			if($b['monster']) { $b['monster']['hp']=0; fcg_monster_death($b,$a); }
+			fcg_hurt($b,(int)$p[2]);
+		}
+		if(preg_match('/^on_summon_jinx\((\d+),\s*(\d+),\s*(\d+)\)$/',$op,$p)) {
+			$b['atk']+=(int)$p[1]; fcg_set_field($a,$card,'countdown','jinx_'.$p[2].'_'.$p[3],1);
+		}
+		if(preg_match('/^hoard_slides\((\d+),\s*(\d+)\)$/',$op,$p)) {
+			$n=!empty($a['sql_inject'])?6:count($a['hand']); $a['def']+=$n*(int)$p[1]; $a['hp']+=$n*(int)$p[2];
+			if($n>=4) fcg_energy($a,'W',$card['upgraded']?2:1,'gen');
+		}
 		if(preg_match('/^on_summon_(gain_hp|gain_def|dmg_enemy|barrier|eat_poison|chaos_blessing|flatten_def)\((\d+)\)$/',$op,$p)) {
 			$n=(int)$p[2];
 			switch($p[1]) {
@@ -372,6 +566,7 @@ function fcg_summon(&$m, $side, $card)
 		}
 		if(strpos($op,'add_regen(')===0) { $sub=$card; $sub['ops']=$op; fcg_effect($m,$side,$sub); }
 	}
+	fcg_check_trap($m,1-$side,'on_enemy_summon');
 }
 
 function fcg_play(&$m, $side, $slot)
@@ -379,11 +574,13 @@ function fcg_play(&$m, $side, $slot)
 	if($m['result'] !== null) throw new InvalidArgumentException('牌局已经结束。');
 	$a=&$m['sides'][$side]; $b=&$m['sides'][1-$side];
 	if(!is_int($slot) || !isset($a['hand'][$slot])) throw new InvalidArgumentException('这张牌已经不在手中了。');
-	$card=fcg_cards()[$a['hand'][$slot]]; $cost=!empty($a['free'][$slot]) ? 0 : $card['cost'];
+	$card=fcg_cards()[$a['hand'][$slot]]; $cost=fcg_card_cost($a,$slot);
+	$trap=strpos($card['ops'],'trap_set(')===0;
 	if($a['energy'][$card['color']]<$cost) throw new InvalidArgumentException('对应颜色的能量不足。');
 	if($card['type']==='monster' && !fcg_can_summon($a,$card)) throw new InvalidArgumentException('驻场位置已被占据，可以先解散帮手。');
 	fcg_evo_observe_hand($m,$side);
 	$a['energy'][$card['color']]-=$cost; fcg_remove_hand($a,$slot);
+	fcg_trigger_hand_surge($a,$card); $a['discarded_match']=($a['discarded_match'] ?? 0)+1;
 	if(isset($m['telemetry'][$side])) {
 		$t=&$m['telemetry'][$side]; $id=$card['id'];
 		$t['played'][$id]=($t['played'][$id] ?? 0)+1;
@@ -394,20 +591,32 @@ function fcg_play(&$m, $side, $slot)
 	$a['played_this_turn']=($a['played_this_turn'] ?? 0)+1;
 	$bug=fcg_aura($b,'aura_bug_draw',null);
 	if(!$card['unlimited'] && $bug!==null) { if($bug==0) fcg_draw($b); else fcg_energy($b,'Y',$bug); }
+	if(!$card['unlimited'] && in_array($b['field']['op'] ?? '',array('peep_room_1','peep_room_2'),true)) {
+		$max=null;
+		foreach($b['hand'] as $slot=>$id) if($max===null || fcg_card_cost($b,$slot)>fcg_card_cost($b,$max)) $max=$slot;
+		if($max!==null) $b['surge'][$max]=($b['surge'][$max] ?? 0)+1;
+	}
+	// 先记录已公开的出牌，之后翻开的伏击卡才是最新公开牌。
+	fcg_log($m,fcg_side_name($m,$side).($trap?'在场地区盖放了一张伏击卡。':'打出了「'.$card['name'].'」。'));
+	if(!$trap) $m['last_card']=$card['id'];
 	if($card['type']==='monster') {
 		fcg_summon($m,$side,$card);
 	} else {
 		fcg_effect($m,$side,$card);
 		fcg_hurt($b,fcg_aura($a,'aura_spell_zap'));
 		// Keep the preceding real spell when a mirror is played: mirrors cannot form a recursive chain.
-		if(strpos($card['ops'],'mirror_last_spell')===false) $m['last_spell']=$card['id'];
+		if(!$trap && strpos($card['ops'],'mirror_last_spell')===false) $m['last_spell']=$card['id'];
 	}
-	$a['last_color']=$card['color']; $m['last_card']=$card['id'];
-	if($card['type']!=='monster') $a['played_cards'][]=$card['id'];
+	$a['last_color']=$card['color'];
+	if(!$trap) $a['last_card']=$card['id'];
+	if($card['type']!=='monster' && !$trap && strpos($card['ops'],'field_domain(')!==0 && strpos($card['ops'],'field_countdown(')!==0) $a['played_cards'][]=$card['id'];
+	if(!$card['unlimited'] && $a['played_this_turn']>=2) fcg_check_trap($m,1-$side,'on_enemy_combo2');
+	if($card['cost']>=4) fcg_check_trap($m,1-$side,'on_enemy_big_card');
+	if(!$card['unlimited'] && preg_match('/(?:gain_hp|add_regen|add_energy|add_gen)\(/',$card['ops'])) fcg_check_trap($m,1-$side,'on_enemy_heal_or_energy');
 	foreach(array(0,1) as $i) fcg_evo_observe_hand($m,$i);
 	if($side===1 && empty($m['live']) && $card['rare'] && $m['ai_at']-($m['stickers'][1]['at'] ?? 0)>=3) $m['stickers'][1]=array('id'=>22,'at'=>$m['ai_at']);
 	if(empty($m['live']) || ($m['extension'] ?? 0)<4) { $m['deadline']++; $m['extension']=($m['extension'] ?? 0)+1; }
-	fcg_log($m,fcg_side_name($m,$side).'打出了「'.$card['name'].'」。'); fcg_finish($m);
+	fcg_finish($m);
 }
 
 function fcg_side_name($m, $side)
@@ -415,7 +624,7 @@ function fcg_side_name($m, $side)
 	return $m['names'][$side] ?? ($side ? '种火' : '你');
 }
 
-function fcg_packet(&$attacker, &$defender, $damage, $pierce, $hunt, $color = null, $artillery = false)
+function fcg_packet(&$attacker, &$defender, $damage, $pierce, $hunt, $color = null, $artillery = false, &$m = null, $defender_side = null)
 {
 	if($damage<=0) return 0;
 	$monster_target=!$artillery && $defender['monster'] && $defender['monster']['hp']>0 && empty($defender['monster']['stealth']) && ($hunt || fcg_ability($defender['monster'],'lure'));
@@ -423,6 +632,10 @@ function fcg_packet(&$attacker, &$defender, $damage, $pierce, $hunt, $color = nu
 	$dealt=max(0,(int)round($damage-max(0,$armor-$pierce)));
 	if($monster_target && $color==='R' && fcg_ability($defender['monster'],'weak_to_red')) $dealt*=2;
 	if(!$monster_target && !empty($defender['vuln'])) { $dealt+=$defender['vuln']; $defender['vuln']=0; }
+	if(!$monster_target) {
+		foreach(array($attacker,$defender) as $s) if(strpos($s['field']['op'] ?? '','stall_eight_zones_')===0) { $dealt=(int)ceil($dealt/2); break; }
+		if($dealt>=10 && $m!==null && fcg_check_trap($m,$defender_side,'on_enemy_heavy_hit',$dealt)) $dealt=1;
+	}
 	if(!$monster_target && $dealt>0 && $defender['evade']) {
 		if($defender['evade']===2) fcg_hurt($attacker,$dealt);
 		$defender['evade']=0; $dealt=1;
@@ -439,6 +652,45 @@ function fcg_packet(&$attacker, &$defender, $damage, $pierce, $hunt, $color = nu
 	return $dealt;
 }
 
+function fcg_field_turn(&$m, $side)
+{
+	$s=&$m['sides'][$side]; $enemy=&$m['sides'][1-$side]; $f=$s['field'] ?? null;
+	if(!$f || $f['kind']==='trap') return;
+	$op=$f['op'];
+	if($f['kind']==='countdown') {
+		if(--$s['field']['turns']>0) return;
+		$s['field']=null; $s['played_cards'][]=$f['id']; $m['last_card']=$f['id'];
+		fcg_log($m,'「'.fcg_cards()[$f['id']]['name'].'」的倒数归零！');
+		if(preg_match('/^nuke_(\d+)_(\d+)$/',$op,$p)) {
+			fcg_hurt($enemy,(int)$p[1]); fcg_hurt($s,(int)$p[2]);
+			if($enemy['monster']) { $enemy['monster']['hp']-=(int)$p[1]; fcg_monster_death($enemy,$s); }
+		} elseif(strpos($op,'stall_eight_zones_')===0) {
+			fcg_hurt($enemy,array_sum($s['gen'])+array_sum($enemy['gen'])+($op==='stall_eight_zones_2'?12:6)); fcg_draw($s,2);
+		} elseif(preg_match('/^jinx_(\d+)_(\d+)$/',$op,$p)) {
+			$enemy['atk']=(int)floor($enemy['atk']/2); fcg_hurt($enemy,(int)$p[1]); $enemy['regen']-=(int)$p[2];
+		}
+		return;
+	}
+	switch($op) {
+		case 'heal_both_4_clean_freeze': case 'heal_both_6_def_1_clean_freeze':
+			$n=$op==='heal_both_4_clean_freeze'?4:6; $s['hp']+=$n; if($n===6) $s['def']++;
+			if($s['monster']) { $s['monster']['hp']=min($s['monster']['maxhp'],$s['monster']['hp']+$n); $s['monster']['frozen']=0; } break;
+		case 'valhalla_2': case 'valhalla_3':
+			// 交接稿的回合收益二选一采用回血，避免临时攻击在同次回合末被清空。
+			$up=$op==='valhalla_3'; $s['hp']+=$up?5:3;
+			if($s['monster']) { $s['monster']['atk']+=$up?2:1; $s['monster']['def']++; } break;
+		case 'peep_room_1': case 'peep_room_2':
+			fcg_energy($s,'Y',$op==='peep_room_2'?2:1); if($op==='peep_room_2') fcg_draw($s); break;
+		case 'viridian_1': case 'viridian_2':
+			$up=$op==='viridian_2'; $s['regen']++; $enemy['regen']-=$up?2:1;
+			if($s['monster'] && fcg_has_mastery($s,'G',4)) {
+				$s['monster']['atk']+=$up?3:2; $s['monster']['def']+=$up?2:1;
+				$s['monster']['hp']+=$up?3:2; $s['monster']['maxhp']+=$up?3:2;
+			} break;
+		case 'digital_life_1': case 'digital_life_2': fcg_energy($s,'ALL',1); fcg_hurt($enemy,$op==='digital_life_2'?6:4); break;
+	}
+}
+
 function fcg_turn(&$m)
 {
 	fcg_evo_end_turn($m);
@@ -453,17 +705,18 @@ function fcg_turn(&$m)
 	foreach(array(0,1) as $i) {
 		$a=&$m['sides'][$i]; $b=&$m['sides'][1-$i]; $s=$before[$i]; $monster=$s['monster'];
 		$artillery=!empty($s['barrier']) || fcg_aura($s,'aura_artillery');
-		$direct=fcg_packet($a,$b,max(0,$s['atk']+$s['bonus']-($s['disarm'] ?? 0)),$s['pierce'],false,$s['last_color'] ?? null,$artillery);
+		$direct=fcg_packet($a,$b,max(0,$s['atk']+$s['bonus']-($s['disarm'] ?? 0)),$s['pierce'],false,$s['last_color'] ?? null,$artillery,$m,1-$i);
 		$damage[$i]+=$direct;
 		if($direct>0) $b['regen']-=fcg_aura($s,'aura_venom');
 		if($monster && !$monster['frozen']) {
 			$n=fcg_ability($monster,'sunder'); $b['def']=max(0,$b['def']-$n);
 			if($b['monster']) $b['monster']['def']=max(0,$b['monster']['def']-$n);
 			$attack=$monster['atk']; $combo=fcg_ability($monster,'combo_attack_bonus'); $headshot=fcg_ability($monster,'headshot');
-			if($combo && ($s['played_this_turn'] ?? 0)>=$combo[0]) $attack+=$combo[1];
+			if($combo && (!empty($s['sql_inject']) || ($s['played_this_turn'] ?? 0)>=$combo[0])) $attack+=$combo[1];
 			if(!empty($monster['stealth'])) { $attack*=2; if($a['monster']) $a['monster']['stealth']=0; }
 			if($headshot && $before[1-$i]['hp']<=$headshot[0]) $attack+=$headshot[1];
-			$hit=fcg_packet($a,$b,$attack,fcg_ability($monster,'pierce'),fcg_ability($monster,'kill_monsters'),fcg_cards()[$monster['id']]['color'],$artillery);
+			$hit=fcg_packet($a,$b,$attack,fcg_ability($monster,'pierce'),fcg_ability($monster,'kill_monsters'),fcg_cards()[$monster['id']]['color'],$artillery,$m,1-$i);
+			if(fcg_ability($monster,'armor_press')) fcg_hurt($b,$monster['def']);
 			$damage[$i]+=$hit;
 			if($hit>0) $b['vuln']=($b['vuln'] ?? 0)+fcg_ability($monster,'mark_vuln_on_hit');
 			$b['regen']-=fcg_ability($monster,'poison_enemy');
@@ -494,11 +747,13 @@ function fcg_turn(&$m)
 			if(fcg_ability($s['monster'],'ephemeral')) { $s['monster']['hp']=0; fcg_monster_death($s,$m['sides'][1-$i]); }
 		}
 	}
+	foreach(array(0,1) as $i) fcg_monster_death($m['sides'][$i],$m['sides'][1-$i]);
+	foreach(array(0,1) as $i) fcg_field_turn($m,$i);
 	fcg_log($m,'第 '.$m['turn'].' 回合：'.fcg_side_name($m,0).'造成 '.$damage[0].' 点伤害，'.fcg_side_name($m,1).'造成 '.$damage[1].' 点伤害。');
 	fcg_finish($m);
 	foreach($m['sides'] as &$s) {
 		if(empty($s['played_this_turn'])) $s['vuln']=0;
-		$s['played_this_turn']=$s['disarm']=$s['endure']=0;
+		$s['played_this_turn']=$s['disarm']=$s['endure']=$s['sql_inject']=0;
 	} unset($s);
 	if($m['result']!==null) return;
 	$m['turn']++; $m['deadline']+=5; $m['extension']=0;
@@ -510,7 +765,7 @@ function fcg_ai(&$m, $side = 1)
 {
 	$s=$m['sides'][$side]; $cards=fcg_cards(); $best=null; $score=-INF;
 	foreach($s['hand'] as $slot=>$id) {
-		$c=$cards[$id]; if($s['energy'][$c['color']]<(!empty($s['free'][$slot]) ? 0 : $c['cost']) || ($c['type']==='monster' && !fcg_can_summon($s,$c))) continue;
+		$c=$cards[$id]; if($s['energy'][$c['color']]<fcg_card_cost($s,$slot) || ($c['type']==='monster' && !fcg_can_summon($s,$c))) continue;
 		$value=$c['cost']+random_int(0,3);
 		if($c['type']==='monster') $value+=8;
 		if(strpos($c['ops'],'aura_')!==false) $value+=6;
@@ -519,14 +774,16 @@ function fcg_ai(&$m, $side = 1)
 		if($c['cost']<=2 && ($s['played_this_turn'] ?? 0)<2) $value+=3;
 		if(strpos($c['ops'],'add_gen')!==false) $value+=$m['turn']<10 ? 12 : 1;
 		if($s['hp']<45 && strpos($c['ops'],'gain_hp')!==false) $value+=8;
+		if(strpos($c['ops'],'field_')===0 || strpos($c['ops'],'trap_set(')===0) $value+=empty($s['field'])?6:-8;
+		if(strpos($c['ops'],'sql_inject')!==false && count($s['hand'])>=3) $value+=7;
 		if($value>$score) { $best=$slot; $score=$value; }
 	}
 	if($best!==null) fcg_play($m,$side,$best);
 	elseif(count($s['hand'])===6) {
 		// Do not remain permanently blocked behind a full hand of unaffordable/duplicate units.
-		$worst=0; foreach($s['hand'] as $slot=>$id) if($cards[$id]['cost']>$cards[$s['hand'][$worst]]['cost']) $worst=$slot;
-		fcg_evo_observe_hand($m,$side); fcg_remove_hand($m['sides'][$side],$worst); $m['sides'][$side]['regen']--;
-		fcg_log($m,fcg_side_name($m,$side).'弃掉了一张手牌。');
+		$worst=0; foreach($s['hand'] as $slot=>$id) if(fcg_card_cost($s,$slot)>fcg_card_cost($s,$worst)) $worst=$slot;
+		foreach($s['hand'] as $slot=>$id) if(strpos($cards[$id]['ops'],'refactor(')!==false) { $worst=$slot; break; }
+		fcg_discard_slot($m,$side,$worst);
 	}
 }
 

@@ -13,12 +13,13 @@ function fcg_ensure_social_storage()
 	if($install) {
 		// Rename only the original seed label; preserve any administrator customization.
 		$db->query("UPDATE {$gtablepre}shop_items SET name=".fcg_sql('阿卡夏的共犯')." WHERE reward_type='title' AND reward_payload=".fcg_sql(fcg_json(array('title'=>9105))).' AND name='.fcg_sql('“共犯”'));
-		$seeds=require GAME_ROOT.'./gamedata/fcg_shop.php';
-		foreach($seeds as $row) if(($row[6]['series'] ?? '')==='vol2') {
-			list($id,$category,$name,$description,$price,$type,$payload,$daily,$total)=$row;
-			$check=$db->query("SELECT item_id FROM {$gtablepre}shop_items WHERE reward_payload=".fcg_sql(fcg_json($payload)).' LIMIT 1');
-			if(!$db->num_rows($check)) $db->query("INSERT INTO {$gtablepre}shop_items (category,name,description,price_credits2,reward_type,reward_payload,daily_limit,total_limit,sort_order) VALUES (".fcg_sql($category).','.fcg_sql($name).','.fcg_sql($description).','.$price.','.fcg_sql($type).','.fcg_sql(fcg_json($payload)).",$daily,$total,$id)");
-		}
+	}
+	// 已安装过多人牌桌的站点也要补入新卷商品，按配置查重并保留后台改价。
+	$seeds=require GAME_ROOT.'./gamedata/fcg_shop.php';
+	foreach($seeds as $row) if(($row[6]['series'] ?? '')==='vol3' || ($install && ($row[6]['series'] ?? '')==='vol2')) {
+		list($id,$category,$name,$description,$price,$type,$payload,$daily,$total)=$row;
+		$check=$db->query("SELECT item_id FROM {$gtablepre}shop_items WHERE reward_type='fcg_pack' AND reward_payload=".fcg_sql(fcg_json($payload)).' LIMIT 1');
+		if(!$db->num_rows($check)) $db->query("INSERT INTO {$gtablepre}shop_items (category,name,description,price_credits2,reward_type,reward_payload,daily_limit,total_limit,sort_order) VALUES (".fcg_sql($category).','.fcg_sql($name).','.fcg_sql($description).','.$price.','.fcg_sql($type).','.fcg_sql(fcg_json($payload)).",$daily,$total,$id)");
 	}
 }
 
@@ -230,7 +231,7 @@ function fcg_duel_action(&$m, $side, $input, $now)
 		$slot=$input['slot'] ?? null;
 		if(!is_int($slot) || !isset($s['hand'][$slot]) || ($input['turn'] ?? null)!==$m['turn'] || ($input['card'] ?? null)!==$s['hand'][$slot]) throw new InvalidArgumentException('手牌或回合已更新，请重新选择。');
 		if($action==='play') fcg_play($m,$side,$slot);
-		else { fcg_remove_hand($s,$slot); $s['regen']--; fcg_log($m,fcg_side_name($m,$side).'弃掉了一张牌。'); }
+		else fcg_discard_slot($m,$side,$slot);
 	} elseif($action==='destroy') { $s['monster']=null; fcg_log($m,fcg_side_name($m,$side).'解散了帮手。'); }
 	elseif($action==='surrender') { $m['result']=$side===0?'loss':'win'; fcg_log($m,fcg_side_name($m,$side).'认输了。'); }
 	elseif($action==='sticker') {
@@ -288,7 +289,7 @@ function fcg_social_public($state, $social, $data, $user, $room, $now)
 		$m=$social['match']; $side=array_search((int)$user['uid'],$m['uids'],true);
 		if($side===1) { $m['sides']=array($m['sides'][1],$m['sides'][0]); $m['names']=array($m['names'][1],$m['names'][0]); $m['stickers']=array($m['stickers'][1] ?? null,$m['stickers'][0] ?? null); if($m['result'] && $m['result']!=='draw') $m['result']=$m['result']==='win'?'loss':'win'; }
 		$m['reward']=$m['result']==='win'?($data['live_reward'] ?? null):null;
-		foreach($m['sides'] as $i=>&$s) { $s['deck_count']=count($s['deck']); unset($s['deck']); if($i===1) { $s['hand_count']=count($s['hand']); unset($s['hand'],$s['free']); } } unset($s);
+		foreach($m['sides'] as $i=>&$s) fcg_public_side($s,$i===1); unset($s);
 		unset($m['uids'],$m['decks'],$m['seen'],$m['recent'],$m['ack'],$m['auto_turn']); $state['match']=$m;
 	}
 	return $state;

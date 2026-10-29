@@ -1,8 +1,8 @@
 // Rebuild the authored card data and art job list from the approved consultation document.
-// Usage: node tools/build_fcg_cards.cjs <Vol.1 document> <reference-art-directory> [Vol.2 document]
+// Usage: node tools/build_fcg_cards.cjs <Vol.1 document> <reference-art-directory> [Vol.2 document] [Vol.3 document]
 const fs = require('fs');
 const path = require('path');
-const source = fs.readFileSync(process.argv[2], 'utf8') + (process.argv[4] ? '\n'+fs.readFileSync(process.argv[4], 'utf8') : '');
+const source = [process.argv[2], process.argv[4], process.argv[5]].filter(Boolean).map(file=>fs.readFileSync(file, 'utf8')).join('\n');
 const refRoot = process.argv[3];
 const root = path.resolve(__dirname, '..');
 const clean = s => s.replace(/<br\s*\/?\s*>/gi, '\n').replace(/[`*]/g, '').trim();
@@ -28,13 +28,13 @@ for (const line of source.split(/\r?\n/)) {
     const id = (pair-1)*2+up, costs=clean(c[4]).match(/(\d+)E/g);
     const stats=variant(c[4],up).match(/(\d+)\/(\d+)\/(\d+)/);
     const card={id,pair,name:names[up],color:color[c[1]],type:c[2].includes('Monster')?'monster':'spell',rare:c[2].includes('Rare'),upgraded:!!up,cost:Number(costs[Math.min(up,costs.length-1)].replace('E','')),atk:stats?+stats[1]:0,def:stats?+stats[2]:0,hp:stats?+stats[3]:0,ops:variant(c[5],up,true),flavor:flavors[up]||flavors[0],unlimited:pair<=12,art:'img/fcg/cards/'+String(id).padStart(3,'0')+'.png'};
-    card.series=pair<=75?'vol1':'vol2';
+    card.series=pair<=75?'vol1':pair<=115?'vol2':'vol3';
     card.ops=card.ops.split(/\n【|\n💘/)[0].trim();
     cards.push(card);
     jobs.push({id,name:card.name,path:card.art,refs,prompt:clean(prompts[up+1])+' anime digital illustration, cel-shaded with atmospheric lighting, clean composition, card game illustration art, NO text, NO numbers, NO card border, NO UI frame, NO watermark.'});
   }
 }
-const expected=process.argv[4]?230:150;
+const expected=process.argv[5]?310:process.argv[4]?230:150;
 if(cards.length!==expected || new Set(cards.map(c=>c.id)).size!==expected) throw new Error('Expected all '+expected+' distinct cards');
 // The document explicitly permits cross-color adjustments to obtain 15 pairs per color.
 // Preserve every name, effect and original art prompt; record these choices in the change note.
@@ -46,9 +46,9 @@ fs.mkdirSync(path.join(root,'gamedata/ruleset/FCG'),{recursive:true});
 fs.mkdirSync(path.join(root,'img/fcg/cards'),{recursive:true});
 fs.mkdirSync(path.join(root,'doc/fcg'),{recursive:true});
 fs.writeFileSync(path.join(root,'gamedata/ruleset/FCG/cards.php'),"<?php\nif(!defined('IN_GAME')) exit('Access Denied');\nreturn json_decode(<<<'FCG_CARDS'\n"+JSON.stringify(cards,null,2)+"\nFCG_CARDS\n, true);\n");
-for(const series of ['vol1','vol2']) {
-  const list=jobs.filter(j=>series==='vol1'?j.id<150:j.id>=150);
-  if(list.length) fs.writeFileSync(path.join(root,'doc/fcg/'+(series==='vol1'?'art-jobs':'vol2-art-jobs')+'.json'),JSON.stringify(list,null,2)+'\n');
+for(const series of ['vol1','vol2','vol3']) {
+  const list=jobs.filter(j=>series==='vol1'?j.id<150:series==='vol2'?j.id>=150&&j.id<230:j.id>=230);
+  if(list.length) fs.writeFileSync(path.join(root,'doc/fcg/'+(series==='vol1'?'':series+'-')+'art-jobs.json'),JSON.stringify(list,null,2)+'\n');
 }
 const portraits = source.split(/\r?\n/).filter(line=>/^\| \d{2} \|/.test(line)).map(line=>{
   const c=line.split('|').slice(1,-1).map(x=>x.trim()), id=Number(c[0]);
@@ -56,10 +56,10 @@ const portraits = source.split(/\r?\n/).filter(line=>/^\| \d{2} \|/.test(line)).
   return {id,name:clean(c[1]),path:'img/fcg/fireseeds/'+String(id).padStart(2,'0')+'.png',refs,
     prompt:clean(c[4]).replace('"WARNING" paper slips','warning-symbol paper slips')+' Single full-body small chibi Fireseed portrait, square composition, dark virtual background. First reference is the small Fireseed body and art style; other references supply only color, mood and signature motifs, not adult faces or body proportions. No readable text, letters, numbers, border, UI or watermark.'};
 });
-if(portraits.length!==(process.argv[4]?16:12)) throw new Error('Unexpected Fireseed portrait count');
+if(portraits.length!==(process.argv[5]?20:process.argv[4]?16:12)) throw new Error('Unexpected Fireseed portrait count');
 fs.mkdirSync(path.join(root,'img/fcg/fireseeds'),{recursive:true});
-for(const series of ['vol1','vol2']) {
-  const list=portraits.filter(j=>series==='vol1'?j.id<=12:j.id>12);
-  if(list.length) fs.writeFileSync(path.join(root,'doc/fcg/'+(series==='vol1'?'portrait-jobs':'vol2-portrait-jobs')+'.json'),JSON.stringify(list,null,2)+'\n');
+for(const series of ['vol1','vol2','vol3']) {
+  const list=portraits.filter(j=>series==='vol1'?j.id<=12:series==='vol2'?j.id>12&&j.id<=16:j.id>=18);
+  if(list.length) fs.writeFileSync(path.join(root,'doc/fcg/'+(series==='vol1'?'':series+'-')+'portrait-jobs.json'),JSON.stringify(list,null,2)+'\n');
 }
 console.log('Cards',cards.length,'Rare',cards.filter(c=>c.rare).length,'Colors',counts());

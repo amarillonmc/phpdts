@@ -28,6 +28,20 @@ try {
         dbcheck($payload===array('upgraded'=>$upgraded,'rare'=>false),'new catalog persists rebalanced pack filter');
         foreach(fcg_pack_pool($payload) as $card) dbcheck(!fcg_cards()[$card]['rare'],'seeded shop packs exclude rare cards');
     }
+    foreach(array(43=>40,44=>40,45=>26) as $id=>$count) {
+        $payload=json_decode($catalog[$id]['reward_payload'],true);
+        dbcheck($payload['series']==='vol3' && count(fcg_pack_pool($payload))===$count,'Vol.3 seed has correct pack population');
+    }
+    // Simulate an existing Vol.2 installation within these disposable test tables.
+    $db->query("DELETE FROM {$gtablepre}shop_items WHERE item_id IN (43,44,45)");
+    fcg_ensure_social_storage();
+    $vol3=array();foreach(fcg_catalog(true) as $id=>$row) if((json_decode($row['reward_payload'],true)['series'] ?? '')==='vol3') $vol3[$id]=$row;
+    dbcheck(count($vol3)===3,'existing installation receives all Vol.3 packs');
+    $custom_id=(int)key($vol3);
+    $db->query("UPDATE {$gtablepre}shop_items SET price_credits2=17,enabled=0 WHERE item_id=$custom_id");
+    fcg_ensure_social_storage();fcg_ensure_social_storage();
+    $vol3=array();foreach(fcg_catalog(true) as $id=>$row) if((json_decode($row['reward_payload'],true)['series'] ?? '')==='vol3') $vol3[$id]=$row;
+    dbcheck(count($vol3)===3 && (int)$vol3[$custom_id]['price_credits2']===17 && (int)$vol3[$custom_id]['enabled']===0,'Vol.3 upgrade is idempotent and preserves admin price and visibility');
     $db->query("INSERT INTO {$gtablepre}game (groomid,gruleset,gamevars) VALUES (0,'','{}'),(1,'FCG','{}')");
     $db->query("INSERT INTO {$gtablepre}users (uid,username,password,credits2,nicksrev,roomid,groupid) VALUES (1,".fcg_sql($cuser).','.fcg_sql($cpass).",1000,'{\"nicks\":[0]}',0,1)");
     $s=fcg_request(array('action'=>'status'),1000);

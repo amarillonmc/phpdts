@@ -29,7 +29,7 @@ function fcg_evo_end_turn(&$m)
 		foreach($s['hand'] as $slot=>$id) {
 			$c=$cards[$id];
 			// 帮手占位不属于缺能量；免费检索牌也不能被误算成卡费。
-			if($s['energy'][$c['color']]>=(!empty($s['free'][$slot])?0:$c['cost'])) $affordable=true;
+			if($s['energy'][$c['color']]>=fcg_card_cost($s,$slot)) $affordable=true;
 		}
 		foreach(array_unique($s['hand']) as $id) $t['stalled_turns'][$id]=($t['stalled_turns'][$id] ?? 0)+1;
 		if($s['hand'] && !$affordable) $t['energy_starved']++;
@@ -59,6 +59,8 @@ function fcg_evo_effect_value($ops, $card)
 		'code_fu_search'=>12,'mystery_upgraded_zero_cost'=>10,'mirror_balance_stats'=>8,'steal_monster_atk_to_self'=>5,
 		'shuffle_stats'=>1,'clean_self_poison_on_death'=>3,'ephemeral'=>-5,'weak_to_red'=>-4);
 	foreach(fcg_tokens($ops) as $token) {
+		if(preg_match('/^(gamble|refactor)\((.*)\)$/',$token,$p)) { $value+=fcg_evo_effect_value($p[2],$card)*0.75; continue; }
+		if(preg_match('/^mastery\(([WRYGB]),\s*(\d+),\s*(.*)\)$/',$token,$p)) { $value+=fcg_evo_effect_value($p[3],$card)*0.7; continue; }
 		if(preg_match('/^(combo|resonance)\(([^,]+),\s*(.*)\)$/',$token,$p)) {
 			if($p[1]==='resonance' && !in_array(trim($p[2]),array($card['color'],'ANY'),true)) continue;
 			$value+=fcg_evo_effect_value($p[3],$card)*($p[1]==='combo'?0.6:0.8); continue;
@@ -70,6 +72,26 @@ function fcg_evo_effect_value($ops, $card)
 		$n=isset($v[0])?(float)$v[0]:0; $b=isset($v[1])?(float)$v[1]:0;
 		if(isset($weights[$op])) { $value+=$weights[$op]; continue; }
 		switch($op) {
+			case 'field_domain': case 'field_countdown': case 'trap_set': $value+=18; break;
+			case 'surge_hand': case 'surge_match': $value+=16; break;
+			case 'surge_boost_hand': $value+=$n*7; break;
+			case 'clear_enemy_field': $value+=8; break;
+			case 'upload_on_death': $value+=12; break;
+			case 'armor_press': $value+=$card['def']*1.5; break;
+			case 'mastery_mon': $value+=array_sum(array_slice($v,2))*0.8; break;
+			case 'mastery_deathnote': $value+=10+$b*0.7; break;
+			case 'steal_valkyrie_soul': case 'programmer_husband': $value+=18; break;
+			case 'gain_monster_stats': $value+=array_sum($v); break;
+			case 'desperate_burst': $value+=$b*0.5; break;
+			case 'miracle_box': $value+=20+$n*5; break;
+			case 'miracle_gem': $value+=($n+$b)*1.6; break;
+			case 'aura_cheat_miracle': $value+=8; break;
+			case 'on_summon_jinx': $value+=$b+(float)$v[2]*2-$n; break;
+			case 'sql_inject': $value+=12; break;
+			case 'hoard_slides': case 'hoard_feast': $value+=($n+$b)*2; break;
+			case 'draw_safe': case 'on_summon_draw': $value+=$n*4; break;
+			case 'copy_enemy_last_card': case 'rewind_last_played': $value+=5+$n; break;
+			case 'summon_self_or_heal': $value+=10; break;
 			case 'add_energy': case 'add_gen': case 'gen':
 				if(in_array($v[0],array($card['color'],'ALL'),true)) $value+=$b*($op==='add_energy'?1.2:3); break;
 			case 'gain_atk': case 'gain_def': $value+=($v[0]==='enemy'?-1:1)*$b*1.6; break;
