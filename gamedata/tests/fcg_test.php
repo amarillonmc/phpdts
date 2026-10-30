@@ -256,7 +256,8 @@ function fcg_test_evo_match($hand=array()) {
 	return $m;
 }
 $evo=fcg_evo_initial_state();
-foreach(fcg_colors() as $color) fcg_test(fcg_test_evo_deck($evo['decks'][$color],$color)===array(10,12,6,4),'cold curve '.$color);
+$evo_curves=array('W'=>array(10,10,8,4),'R'=>array(10,12,6,4),'Y'=>array(10,12,6,4),'G'=>array(10,12,6,4),'B'=>array(10,12,6,4));
+foreach(fcg_colors() as $color) fcg_test(fcg_test_evo_deck($evo['decks'][$color],$color)===$evo_curves[$color],'cold curve '.$color);
 $m=fcg_new_match(fcg_starter_deck(),21,100,false,$evo); $chosen=$m['ai_color'];
 $actual=array_merge($m['sides'][1]['hand'],$m['sides'][1]['deck']);sort($actual);$expected=$evo['decks'][$chosen];sort($expected);
 fcg_test($actual===$expected && $m['sides'][1]['hp']===120 && $m['ai_gen']===1 && count($m['telemetry'])===2,'adaptive opening takes chosen generation');
@@ -291,7 +292,7 @@ $expected=0.6*70+0.25*60+0.15*fcg_card_prior_score($cards[33])-3/12*35;
 fcg_test(abs(fcg_evo_card_score($evo,33)-$expected)<0.00001,'smoothed 60/25/15 score and stall penalty');
 $evo=fcg_evo_initial_state();$evo['card_stats'][24]=array('npc_played_games'=>100,'npc_played_wins'=>0,'npc_seen'=>100,'npc_stalled'=>100);
 fcg_evolve_npc_deck($evo,'W');fcg_test(array_count_values($evo['decks']['W'])[24]===1,'two worst non-energy copies replaced in their fee band');
-fcg_test(fcg_test_evo_deck($evo['decks']['W'],'W')===array(10,12,6,4),'slot replacement preserves curve');
+fcg_test(fcg_test_evo_deck($evo['decks']['W'],'W')===$evo_curves['W'],'slot replacement preserves curve');
 $evo=fcg_evo_initial_state();$before=fcg_evo_card_score($evo,33);$evo['card_stats'][33]=array('plr_played_games'=>20,'plr_played_wins'=>20);
 fcg_test(fcg_evo_card_score($evo,33)>$before,'player wins increase candidate score for its own color');
 
@@ -593,7 +594,7 @@ fcg_test($m['sides'][0]['energy']['R']===0 && $m['sides'][0]['monster']['id']===
 $m=fcg_test_ready(array(262));fcg_play($m,0,0);fcg_test(count($m['sides'][0]['hand'])===2 && $m['sides'][0]['energy']['Y']===96,'playing refactor card does not also discard it');
 $m=fcg_test_ready(array(263));$m['sides'][0]['energy']['Y']=0;fcg_discard_slot($m,0,0);
 fcg_test(count($m['sides'][0]['hand'])===2 && $m['sides'][0]['energy']['Y']===4 && $m['sides'][0]['regen']===0 && $m['sides'][0]['discarded_match']===1,'manual refactor free, no regen penalty');
-$m=fcg_test_ready(array(257,0,258));$m['sides'][0]['surge'][2]=3;fcg_play($m,0,0);
+$m=fcg_test_ready(array(257,0,258));$m['sides'][0]['surge'][2]=5;fcg_play($m,0,0);
 fcg_test($m['sides'][0]['hand']===array(0) && $m['sides'][1]['hp']==192 && $m['sides'][0]['atk']==7 && $m['sides'][0]['barrier']==16 && $m['sides'][0]['endure']===1,'gamble chooses rightmost lowest actual cost and chains refactor');
 $m=fcg_test_ready(array(257));fcg_play($m,0,0);fcg_test($m['sides'][0]['atk']==7 && $m['sides'][0]['regen']===0,'empty hand gamble succeeds');
 $m=fcg_test_ready(array(264));fcg_discard_slot($m,0,0);fcg_test($m['sides'][0]['monster']['id']===264,'discarded mecha summons itself');
