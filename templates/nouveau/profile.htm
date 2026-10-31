@@ -21,7 +21,7 @@
 
         <div class="nv-status-meters">
             <div class="nv-meter">
-                <div class="nv-meter__label"><span>{lang hp}</span><span><!--{if isset($shield_info)}-->{$shield_info}<!--{/if}-->$hp / $mhp</span></div>
+                <div class="nv-meter__label"><span>{lang hp}</span><span><!--{if !empty($clbpara['kimi_no_hp'])}-->已废除（{$clbpara['kimi_charge']}/{$clbpara['kimi_recorded_mss']}）<!--{else}--><!--{if isset($shield_info)}-->{$shield_info}<!--{/if}-->$hp / $mhp<!--{/if}--></span></div>
                 <div class="nv-meter__track"><span class="nv-meter__fill nv-meter__fill--hp" data-meter-value="$nv_hp_pct"></span></div>
             </div>
             <div class="nv-meter">
@@ -33,7 +33,7 @@
                 <div class="nv-meter__track"><span class="nv-meter__fill nv-meter__fill--rage" data-meter-value="$nv_rage_pct"></span></div>
             </div>
             <div class="nv-meter">
-                <div class="nv-meter__label"><span>{lang ss}</span><span>$ss / $mss</span></div>
+                <div class="nv-meter__label"><span>{lang ss}</span><span><!--{if !empty($clbpara['kimi_no_ss'])}-->已废除<!--{else}-->$ss / $mss<!--{/if}--></span></div>
                 <div class="nv-meter__track"><span class="nv-meter__fill nv-meter__fill--ss" data-meter-value="$nv_ss_pct"></span></div>
             </div>
         </div>

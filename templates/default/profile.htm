@@ -159,7 +159,7 @@
 						<span>
 							<span class="<!--{if $hp <= $mhp*0.2}-->red<!--{elseif $hp <= $mhp*0.5}-->yellow<!--{else}-->clan<!--{/if}-->">
 								<!--{if isset($shield_info)}-->{$shield_info}<!--{/if}-->
-								$hp / $mhp
+								<!--{if !empty($clbpara['kimi_no_hp'])}--><span class="grey">已废除（{$clbpara['kimi_charge']}/{$clbpara['kimi_recorded_mss']}）</span><!--{else}-->$hp / $mhp<!--{/if}-->
 							</span>
 						</span>
 					</td>
@@ -176,7 +176,7 @@
 						</select>
 					</td>
 					<td class="b2"><span>{lang ss}</span></td>
-					<td class="b3"><span class="<!--{if $ss <= $mss*0.2}-->red<!--{elseif $ss <= $mss*0.5}-->yellow<!--{else}-->clan<!--{/if}-->">$ss / $mss</span></td>
+					<td class="b3"><!--{if !empty($clbpara['kimi_no_ss'])}--><span class="grey">已废除</span><!--{else}--><span class="<!--{if $ss <= $mss*0.2}-->red<!--{elseif $ss <= $mss*0.5}-->yellow<!--{else}-->clan<!--{/if}-->">$ss / $mss</span><!--{/if}--></td>
 					<td class="b2"><span>{lang killnum}</span></td>
 					<td class="b3"><span>$killnum</span></td>
 				</tr>

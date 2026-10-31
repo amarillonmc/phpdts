@@ -27,6 +27,65 @@
 
 		if (!$death) return;
 
+		# 《Philosophyz》改写护盾：抵御一次雏菊/救济事件抹杀
+		if (!$type && in_array($death, array('kagari1', 'kagari2', 'kagari3', 'salv')) && !empty($clbpara['rewrite_kagari_shield'])) {
+			global $log;
+			unset($clbpara['rewrite_kagari_shield']);
+			$hp = max(1, $mhp);
+			$state = 0;
+			$log .= "<span class=\"clan\">【Philosophyz】在毁灭的光芒吞没你的瞬间，你预先刻下的改写之歌发动，强行改写了你被抹杀的命运！</span><br>";
+			player_save($data);
+			return '';
+		}
+
+		# 《きみは帰る場所》：被判定死亡且未过载时，不死亡，改为废除HP槽
+		if (!$type && !empty($clbpara['kimi_no_ss']) && empty($clbpara['kimi_overloaded'])) {
+			global $log;
+			$hp = 1;
+			$mhp = 1;
+			$state = 0;
+			if (empty($clbpara['kimi_no_hp'])) {
+				$clbpara['kimi_no_hp'] = 1;
+				if (!isset($clbpara['kimi_charge'])) $clbpara['kimi_charge'] = 0;
+				$log .= "<span class=\"clan\">【きみは帰る場所】在死亡降临的瞬间，你心中的归处牵引住了你的灵魂——你没有死去，但你的HP槽已被彻底废除！</span><br>";
+			} else {
+				$log .= "<span class=\"clan\">【きみは帰る場所】已废除HP槽的躯体无视了这次死亡判定！</span><br>";
+			}
+			player_save($data);
+			return '';
+		}
+
+		# 《ローリンガール》翻滚免死（非过载、非忘忧草自尽时）
+		if (!$type && !empty($clbpara['song_rolling']) && empty($clbpara['kimi_overloaded'])) {
+			global $log;
+			unset($clbpara['song_rolling']);
+			$hp = 1;
+			$state = 0;
+			$log .= "<span class=\"lime\">「もう一回、もう一回！」翻滚少女的惯性让你在绝境中翻身逃过一劫！</span><br>";
+			player_save($data);
+			return '';
+		}
+
+		# 《星をつなげて》星标紧急脱离
+		if (!$type && isset($clbpara['star_mark_pls']) && $clbpara['star_mark_pls'] !== '' && empty($clbpara['kimi_overloaded'])) {
+			global $log, $plsinfo;
+			$target_pls = intval($clbpara['star_mark_pls']);
+			unset($clbpara['star_mark_pls']);
+			include_once GAME_ROOT.'./include/game/search.func.php';
+			$safepls = get_safe_plslist(0);
+			if (!in_array($target_pls, $safepls) && !empty($safepls)) {
+				$target_pls = $safepls[array_rand($safepls)];
+			}
+			$pls = $target_pls;
+			$hp = max(1, round($mhp * 0.5));
+			$sp = max($sp, round($msp * 0.5));
+			$state = 0;
+			if (function_exists('lost_searchmemory')) lost_searchmemory('all', $data);
+			$log .= "<span class=\"clan\">【星をつなげて】致命危机之下，夜空中的星标骤然亮起，将你紧急传送回了<span class=\"yellow\">{$plsinfo[$pls]}</span>！</span><br>";
+			player_save($data);
+			return '';
+		}
+
 		$hp = 0;
 		if ($death == 'poison') {
 			$state = 26;
@@ -128,6 +187,9 @@
 		}
 
 		// 登记死法
+		if (!$pd['type'] && !empty($pd['clbpara']['kimi_no_ss']) && empty($pd['clbpara']['kimi_overloaded'])) {
+			return '';
+		}
 		// 传入了数字编号死法
 		if (is_numeric($death)) {
 			$pd['state'] = $death;
@@ -206,6 +268,56 @@
 		$revival_flag = 0;
 
 		$dname = $pd['name']; $dnick = $pd['nick'];
+
+		# 《きみは帰る場所》：被判定死亡且未过载时，不死亡，改为废除HP槽
+		if (!$revival_flag && !$pd['type'] && !empty($pd['clbpara']['kimi_no_ss']) && empty($pd['clbpara']['kimi_overloaded']))
+		{
+			$revival_flag = 'kimi_home';
+			$pd['hp'] = 1;
+			$pd['mhp'] = 1;
+			$pd['state'] = 0;
+			if (empty($pd['clbpara']['kimi_no_hp'])) {
+				$pd['clbpara']['kimi_no_hp'] = 1;
+				if (!isset($pd['clbpara']['kimi_charge'])) $pd['clbpara']['kimi_charge'] = 0;
+				$log .= "<span class=\"clan\">【きみは帰る場所】在死亡降临的瞬间，{$pd['nm']}心中的归处牵引住了灵魂——{$pd['nm']}没有死去，但HP槽已被彻底废除！</span><br>";
+			} else {
+				$log .= "<span class=\"clan\">【きみは帰る場所】已废除HP槽的{$pd['nm']}无视了这次死亡判定！</span><br>";
+			}
+			return $revival_flag;
+		}
+
+		# 《ローリンガール》翻滚免死
+		if (!$revival_flag && !$pd['type'] && !empty($pd['clbpara']['song_rolling']))
+		{
+			$revival_flag = 'rolling_girl';
+			unset($pd['clbpara']['song_rolling']);
+			$pd['hp'] = 1;
+			$pd['state'] = 0;
+			$log .= "<span class=\"lime\">「もう一回、もう一回！」翻滚的惯性让{$pd['nm']}在倒下的瞬间再度翻身站起！</span><br>";
+			return $revival_flag;
+		}
+
+		# 《星をつなげて》星标紧急脱离
+		if (!$revival_flag && !$pd['type'] && isset($pd['clbpara']['star_mark_pls']) && $pd['clbpara']['star_mark_pls'] !== '')
+		{
+			global $plsinfo;
+			$revival_flag = 'star_link';
+			$target_pls = intval($pd['clbpara']['star_mark_pls']);
+			unset($pd['clbpara']['star_mark_pls']);
+			include_once GAME_ROOT.'./include/game/search.func.php';
+			$safepls = get_safe_plslist(0);
+			if (!in_array($target_pls, $safepls) && !empty($safepls)) {
+				$target_pls = $safepls[array_rand($safepls)];
+			}
+			$pd['pls'] = $target_pls;
+			$pd['hp'] = max(1, round($pd['mhp'] * 0.5));
+			$pd['sp'] = max($pd['sp'], round($pd['msp'] * 0.5));
+			$pd['state'] = 0;
+			$pd['bid'] = 0; $pd['action'] = '';
+			if (function_exists('lost_searchmemory')) lost_searchmemory('all', $pd);
+			$log .= "<span class=\"clan\">【星をつなげて】致命危机之下，夜空中的星标骤然亮起，将{$pd['nm']}紧急传送回了<span class=\"yellow\">{$plsinfo[$target_pls]}</span>！</span><br>";
+			return $revival_flag;
+		}
 
 		#光玉雨天气下，提供者有概率复活
 		if (!$revival_flag && $weather == 18 && $gamevars['wth18pid'] == $pd['pid'])

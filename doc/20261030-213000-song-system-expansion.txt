@@ -1,0 +1,28 @@
+# 歌唱系统扩充（新增15首歌曲）
+日期：2026-10-30
+
+## 改动内容
+1. `include/game/song.inc.php`：
+   - 在 `sing($sn)` 中扩充实装 15 首新歌曲分支（保持歌词卡片 `ss` 的 `1/1` 或 `X/1` 装备逻辑，多次歌唱效果通过歌魂与 `$clbpara` 状态驱动，不消耗卡片耐久）：
+     - 《忘忧草》：消耗至少 200 点歌魂歌唱，输出专属文案，全图所有玩家（`type=0`）的 `$rp` 下降等同于歌者最大生命值 `$mhp` 的数值，随后歌者事件死亡。
+     - 《きみは帰る場所》：歌唱后立即废除歌魂槽（`$clbpara['kimi_no_ss'] = 1`，`$ss = $mss = 0`）并记录原歌魂上限至 `$clbpara['kimi_recorded_mss']`；被判定死亡时不死亡，改为废除 HP 槽（`$clbpara['kimi_no_hp'] = 1`）。
+     - VOCALOID 系列：《サイハテ》（放晴、超度当前区域尸体并转化恢复/上限/熟练度/遗物）、《SETSUNA》（无噪音歌唱、3次行动禁歌、冻结并眩晕同地区玩家、四季小镇赋予冰华/奇迹）、《ローリンガール》（清异常、怒气提升、移动叠加翻滚加速与一次致命伤害翻滚免死）。
+     - Key / VisualArts 系列：《鳥の詩》（随累计歌唱次数三段递进，第3次获得 `npc_flying` 飞翼移动零消耗）、《Philosophyz》（转化异常与已损HP为攻防/生命上限、消耗20歌魂上限强化武器防具15%、降低正RP并获得一次抵御雏菊/救济抹杀的改写护盾）、《だんご大家族》（降低RP、随机生成五种歌词团子之一、光玉雨天气延长持续时间并突破恢复）。
+     - 动物朋友系列：《ようこそジャパリパークへ》（清除当前区域陷阱与自身诅咒、将同地图玩家怒气转化为体力与经验、生成加帕里馒头）、《星をつなげて》（恢复已损生命体力50%、切极光天气并开启全图雷达、锚定/延后当前区域禁区顺位并在二次歌唱或致命伤害时星标回传）、《乗ってけ！ジャパリビート》（切换狂飙姿态、最高系熟练度+40、背包补给品耐久+1、5次移动加帕里铁道回血回体并碾碎沿途陷阱）、《大空ドリーマー》（解冻并赋防冻、风雨冰雪天气返还歌魂并加全熟、提升第一梦值 `randver1` 上限并按梦值3倍突破恢复HP/SP）。
+     - 华语经典系列：《水手》（清异常并按异常数提升防御与生命上限、恶劣天气翻倍、保底重随并按三项梦值总和恢复生命体力及赋予护盾）、《挪威的森林》（清除异常天气与同地区角色探索视野/专注、森林地形满体切偷袭姿态、武器赋予热恋与灵魂抽取并随机顺手牵羊同地区角色一件背包道具）、《当》（同地区其他玩家锐器变钝器、推迟下阶段禁区时间300秒并延后四季小镇禁区顺位、武器防具赋予灵魂绑定并强化25%、背包携酒时触发“对酒当歌”满怒及攻熟加成）。
+2. `include/state.func.php`：
+   - 在 `death()`、`pre_kill_events()`、`revive_process()` 中接入《きみは帰る場所》的免死转废除 HP 槽判定、《Philosophyz》抵御 `kagari1~3`/`salv` 抹杀判定、《ローリンガール》翻滚免死判定，以及《星をつなげて》致命伤害星标回传判定。
+3. `include/game/search.func.php`：
+   - 在 `move_search_events()` 中接入《きみは帰る場所》废除 HP 槽后的随机充能（基于 `$clbpara['randver1']` 从 0 随机充能，超过 `$clbpara['kimi_recorded_mss']` 时过载死亡）、《SETSUNA》禁歌计数递减、《ローリンガール》移动翻滚加成、《乗ってけ！ジャパリビート》移动回血回体与碾碎陷阱。
+4. `include/game/item.recovery.php`：
+   - 废除 HP 槽（`kimi_no_hp`）时禁止生命恢复药剂生效；废除歌魂槽（`kimi_no_ss`）时禁止歌魂恢复/增加药剂生效。
+5. `gamedata/cache/resources_1.php`、`gamedata/resources_1.php`、`templates/default/profile.htm`、`templates/nouveau/profile.htm`：
+   - 在 `$noiseinfo` 中登记 15 首新歌名；在默认与 nouveau 状态面板中显示 HP 槽/歌魂槽“已废除”状态及充能进度。
+
+## 验证方式
+- 运行 `php -d short_open_tag=1 -l` 通过全部修改文件的 PHP 语法检查。
+- 使用独立回归脚本对全部 15 首歌曲的歌唱效果、《きみは帰る場所》“废除歌魂槽 -> 致死转废除HP槽 -> 探索随机充能 -> 超上限死亡”完整生命周期、《鳥の詩》三段飞翼解锁、《Philosophyz》防抹杀护盾进行了模拟验证。
+- 尚未在连接真实数据库的浏览器站点中进行联调。
+
+## English Summary
+Expanded the singing system in `include/game/song.inc.php` with 15 new songs (《忘忧草》, 《きみは帰る場所》, and 13 approved VOCALOID, Key/VisualArts, Kemono Friends, and Mandopop classics) along with minimal supporting hooks in `include/state.func.php`, `include/game/search.func.php`, `include/game/item.recovery.php`, resource noise mappings, and profile templates.

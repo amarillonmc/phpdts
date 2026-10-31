@@ -461,6 +461,73 @@ function move_search_events(&$data,$act)
 	}
 	fcg_skills_on_action($data);
 
+	# 《SETSUNA》无声余韵递减
+	if (!empty($clbpara['setsuna_mute'])) {
+		$clbpara['setsuna_mute'] = max(0, intval($clbpara['setsuna_mute']) - 1);
+		if ($clbpara['setsuna_mute'] <= 0) {
+			unset($clbpara['setsuna_mute']);
+		}
+	}
+
+	# 《ローリンガール》移动翻滚加速
+	if ($act == 'move' && !empty($clbpara['song_rolling'])) {
+		$clbpara['song_rolling'] = intval($clbpara['song_rolling']) + 1;
+		$roll = $clbpara['song_rolling'];
+		$sp = min($msp, $sp + 5);
+		$rg_gain = min(15, 4 + $roll);
+		$att += $rg_gain;
+		$def += $rg_gain;
+		$rg_sks = array('wp', 'wk', 'wg', 'wc', 'wd', 'wf');
+		$rg_sk = $rg_sks[array_rand($rg_sks)];
+		$$rg_sk += 2;
+		$log .= "<span class=\"lime\">「もう一回！」你在翻滚中获得了惯性（第<span class=\"yellow\">{$roll}</span>次翻滚），体力+5，基础攻防+<span class=\"yellow\">{$rg_gain}</span>！</span><br>";
+		if ($roll % 7 == 0) {
+			$exp += 20;
+			if (empty($clbpara['kimi_no_ss'])) {
+				$ss = min($mss, $ss + 15);
+			}
+			if (rand(1, 100) <= 30 && strpos($inf, 'w') === false) {
+				$inf .= 'w';
+				$log .= "<span class=\"yellow\">连续翻滚让你有些天旋地转（陷入混乱），但你获得了20点经验与15点歌魂！</span><br>";
+			} else {
+				$log .= "<span class=\"clan\">越滚越快的节奏让你获得了20点经验与15点歌魂！</span><br>";
+			}
+		}
+	}
+
+	# 《乗ってけ！ジャパリビート》加帕里铁道疾驰
+	if ($act == 'move' && !empty($clbpara['japari_line'])) {
+		global $db, $tablepre;
+		$clbpara['japari_line'] = max(0, intval($clbpara['japari_line']) - 1);
+		if (empty($clbpara['kimi_no_hp'])) {
+			$hp = min($mhp, $hp + 50);
+		}
+		$sp = min($msp, $sp + 50);
+		$db->query("DELETE FROM {$tablepre}maptrap WHERE pls='$pls' LIMIT 1");
+		$crush_msg = $db->affected_rows() > 0 ? "，并直接碾碎了路途上的一处陷阱" : "";
+		$log .= "<span class=\"lime\">【加帕里铁道】疾驰的列车恢复了你50点生命与体力{$crush_msg}（剩余<span class=\"yellow\">{$clbpara['japari_line']}</span>站）！</span><br>";
+		if ($clbpara['japari_line'] <= 0) {
+			unset($clbpara['japari_line']);
+		}
+	}
+
+	# 《きみは帰る場所》：HP槽已废除时的探索随机充能与过载死亡判定
+	if (!empty($clbpara['kimi_no_hp'])) {
+		$hp = 1;
+		$mhp = 1;
+		$rv_max = max(1, intval(isset($clbpara['randver1']) ? $clbpara['randver1'] : 32));
+		$add_charge = rand(0, $rv_max);
+		$clbpara['kimi_charge'] = intval(isset($clbpara['kimi_charge']) ? $clbpara['kimi_charge'] : 0) + $add_charge;
+		$limit_mss = max(1, intval(isset($clbpara['kimi_recorded_mss']) ? $clbpara['kimi_recorded_mss'] : 1));
+		$log .= "<span class=\"clan\">【きみは帰る場所】归途的回响正在充能：+<span class=\"yellow\">{$add_charge}</span>（当前：<span class=\"yellow\">{$clbpara['kimi_charge']}</span> / <span class=\"yellow\">{$limit_mss}</span>）。</span><br>";
+		if ($clbpara['kimi_charge'] > $limit_mss) {
+			$clbpara['kimi_overloaded'] = 1;
+			$log .= "<span class=\"red\">充能数值超越了昔日歌魂的界限……漫长的旅途终于抵达了终点，你回到了真正的归处。</span><br>";
+			death('event', '', 0, '【きみは帰る場所】', $data);
+			return;
+		}
+	}
+
 	if($inf)
 	{
 		foreach ($inf_move_hp as $inf_ky => $o_dmg) {

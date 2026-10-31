@@ -244,7 +244,22 @@ $noiseinfo = Array(
 	'Crow Song'=>'Crow Song',
 	'Alicemagic'=>'Alicemagic',
 	'恋歌'=>'恋歌',
-	'鸡肉之歌'=>'鸡肉之歌'
+	'鸡肉之歌'=>'鸡肉之歌',
+	'忘忧草'=>'忘忧草',
+	'きみは帰る場所'=>'きみは帰る場所',
+	'サイハテ'=>'サイハテ',
+	'SETSUNA'=>'SETSUNA',
+	'ローリンガール'=>'ローリンガール',
+	'鳥の詩'=>'鳥の詩',
+	'Philosophyz'=>'Philosophyz',
+	'だんご大家族'=>'だんご大家族',
+	'ようこそジャパリパークへ'=>'ようこそジャパリパークへ',
+	'星をつなげて'=>'星をつなげて',
+	'乗ってけ！ジャパリビート'=>'乗ってけ！ジャパリビート',
+	'大空ドリーマー'=>'大空ドリーマー',
+	'水手'=>'水手',
+	'挪威的森林'=>'挪威的森林',
+	'当'=>'当'
 	);
 $exdmgname = Array('p' => '毒性攻击', 'u' => '火焰燃烧', 'i'=>'冻气缠绕', 'd'=>'爆炸','e'=>'电击','w'=>'音波攻击','f' => '<span class="yellow">炽热之焰</span>','k' => '<span class="clan">凝结之息</span>');
 $exdmginf = Array('h' => '<span class="red">头部受伤</span>', 'b' => '<span class="red">胸部受伤</span>', 'a'=> '<span class="red">腕部受伤</span>', 'f'=> '<span class="red">足部受伤</span>', 'p'=> '<span class="purple">中毒</span>', 'u'=> '<span class="red">烧伤</span>', 'i'=> '<span class="blue">冻结</span>', 'e'=> '<span class="yellow">身体麻痹</span>', 'w'=> '<span class="grey">混乱</span>');

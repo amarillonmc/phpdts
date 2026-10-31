@@ -54,6 +54,11 @@ function item_recovery_health($itmn, &$data) {
 	global $log, $nosta;
 	extract($data, EXTR_REFS);
 
+	if (!empty($clbpara['kimi_no_hp'])) {
+		$log .= "<span class=\"grey\">你的HP槽已经废除，无法恢复生命。</span><br>";
+		return;
+	}
+
 	$itm = & ${'itm' . $itmn};
 	$itmk = & ${'itmk' . $itmn};
 	$itme = & ${'itme' . $itmn};
@@ -105,6 +110,11 @@ function item_recovery_soul_increase($itmn, &$data) {
 	global $log, $nosta;
 	extract($data, EXTR_REFS);
 
+	if (!empty($clbpara['kimi_no_ss'])) {
+		$log .= "<span class=\"grey\">你的歌魂槽已经废除，无法增加歌魂。</span><br>";
+		return;
+	}
+
 	$itm = & ${'itm' . $itmn};
 	$itmk = & ${'itmk' . $itmn};
 	$itme = & ${'itme' . $itmn};
@@ -136,6 +146,11 @@ function item_recovery_soul_increase($itmn, &$data) {
 function item_recovery_soul($itmn, &$data) {
 	global $log, $nosta;
 	extract($data, EXTR_REFS);
+
+	if (!empty($clbpara['kimi_no_ss'])) {
+		$log .= "<span class=\"grey\">你的歌魂槽已经废除，无法恢复歌魂。</span><br>";
+		return;
+	}
 
 	$itm = & ${'itm' . $itmn};
 	$itmk = & ${'itmk' . $itmn};
