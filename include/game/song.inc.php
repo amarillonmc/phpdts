@@ -1,7 +1,185 @@
 <?php
-//require_once './include/common.inc.php';
+if(!defined('IN_GAME')) exit('Access Denied');
 
+function song_costs()
+{
+	static $songcost = Array(
+		'Alicemagic'=>30, 'Crow Song'=>90, '恋歌'=>98, '鸡肉之歌'=>30,
+		'サイハテ'=>88, 'SETSUNA'=>77, 'ローリンガール'=>39,
+		'鳥の詩'=>60, 'Philosophyz'=>99, 'だんご大家族'=>48,
+		'ようこそジャパリパークへ'=>49, '星をつなげて'=>69,
+		'乗ってけ！ジャパリビート'=>68, '大空ドリーマー'=>70,
+		'水手'=>50, '挪威的森林'=>100, '当'=>117, '忘忧草'=>200, 'きみは帰る場所'=>1,
+		'一剪梅'=>233, '棺材舞'=>233, 'Caramelldansen'=>233, 'Moonlight Shadow'=>233,
+	);
+	return $songcost;
+}
 
+function song_showcase_songs()
+{
+	return Array('一剪梅','棺材舞','Caramelldansen','Moonlight Shadow');
+}
+
+// 歌单和实际演唱共用资格判断，不能靠伪造 songkind 绕过卡片或演出门槛。
+function song_list($data)
+{
+	$para = get_clbpara($data['clbpara']);
+	$list = Array();
+	$showcase = song_showcase_songs();
+	foreach(song_costs() as $song=>$cost) {
+		if(in_array($song,$showcase)) {
+			if(!empty($para['showcase'])) $list[$song] = $cost;
+		} elseif(!empty($para['songbook'][$song]) || (!empty($data['arts'])
+			&& strpos($data['artk'],'ss') === 0 && $data['art'] === '【'.$song.'】')) {
+			$list[$song] = $cost;
+		}
+	}
+	return $list;
+}
+
+function song_echo_cleanup()
+{
+	global $gamevars,$now;
+	if(!empty($gamevars['songecho'])) {
+		foreach($gamevars['songecho'] as $place=>$echo) {
+			if($echo['expire'] <= $now) unset($gamevars['songecho'][$place]);
+		}
+	}
+	if(isset($gamevars['worldecho']) && $gamevars['worldecho']['expire'] <= $now) unset($gamevars['worldecho']);
+}
+
+function song_echo_place($sn,$power,$pls,$world=false)
+{
+	global $gamevars,$now;
+	song_echo_cleanup();
+	$serial = intval($gamevars['echo_serial'] ?? 0) + 1;
+	$gamevars['echo_serial'] = $serial;
+	$resonance = 0;
+	if(!$world && isset($gamevars['songecho'][$pls]) && $gamevars['songecho'][$pls]['song'] === $sn) {
+		$resonance = min(2,intval($gamevars['songecho'][$pls]['resonance'] ?? 0)+1);
+	}
+	// 共鸣最多两次；持续时间依次为五、七分半、十分钟，重新起唱刷新期限。
+	$echo = Array('song'=>$sn, 'power'=>(int)floor($power*pow(1.5,$resonance)),
+		'serial'=>$serial, 'expire'=>$now+300+150*$resonance, 'resonance'=>$resonance);
+	if($world) {
+		if($sn === '一剪梅') $echo['double'] = 1;
+		$gamevars['worldecho'] = $echo;
+	} else $gamevars['songecho'][$pls] = $echo;
+	save_gameinfo();
+	return $echo;
+}
+
+function song_echo_claim(&$data,$pls)
+{
+	global $gamevars,$log;
+	song_echo_cleanup();
+	$data['clbpara'] = get_clbpara($data['clbpara']);
+	if($data['type'] || $data['hp'] <= 0 || !empty($data['clbpara']['kimi_no_ss'])) return;
+	$para = &$data['clbpara'];
+	$echoes = Array();
+	if(isset($gamevars['songecho'][$pls])) $echoes[$pls] = $gamevars['songecho'][$pls];
+	if(isset($gamevars['worldecho'])) $echoes['world'] = $gamevars['worldecho'];
+	foreach($echoes as $key=>$echo) {
+		if(isset($para['echo_claimed'][$key]) && $para['echo_claimed'][$key] == $echo['serial']) continue;
+		$gain = max(3,min(15,(int)round($echo['power']*0.1)));
+		if(!empty($echo['double'])) $gain *= 2;
+		$para['echo_claimed'][$key] = $echo['serial'];
+		$data['ss'] += $gain;
+		$data['mss'] = max($data['mss'],$data['ss']);
+		$song = htmlspecialchars($echo['song'],ENT_QUOTES,'UTF-8');
+		$log .= "<span class=\"clan\">你在风中听见了《{$song}》的残响，获得了{$gain}点歌魂。</span><br>";
+		break; // 地点残响优先；下一次行动仍可领取尚未听过的全岛残响。
+	}
+}
+
+function song_dance_drift($destination,$data)
+{
+	global $plsinfo,$hplsinfo,$arealist,$areanum,$hack;
+	$hidden = !isset($plsinfo[$data['pls']]) && isset($hplsinfo[$data['pgroup']]);
+	$places = $hidden ? array_keys($hplsinfo[$data['pgroup']]) : array_keys($plsinfo);
+	$allowed = Array();
+	foreach($places as $place) {
+		if($place == $data['pls'] && $place != $destination) continue;
+		if(!$hidden && ($place < 0 || $place >= count($plsinfo)
+			|| (!$hack && array_search($place,$arealist) <= $areanum))) continue;
+		if(function_exists('ruleset_move_allowed_hook') && !ruleset_move_allowed_hook($data,$place)) continue;
+		$allowed[] = $place;
+	}
+	$index = array_search($destination,$allowed);
+	if($index === false || count($allowed) < 2) return $destination;
+	// 普通地图没有坐标邻接；在合法目的地列表中向前或向后错开一位。
+	$offset = rand(0,1) ? 1 : -1;
+	return $allowed[($index+$offset+count($allowed))%count($allowed)];
+}
+
+function song_shadow_single_shot($singer,&$target)
+{
+	global $skill_dmg,$dmg_fluc;
+	// 演出的枪声不借用装备、弹药和战斗技能；沿用射系原始伤害及浮动公式。
+	$defence = max(1,$target['def']+$target['arbe']+$target['arhe']+$target['arae']+$target['arfe']);
+	$damage = max(0,$singer['att'])/$defence * max(0,$singer['wg']) * $skill_dmg['G'];
+	$damage = max(1,(int)round($damage*(100+rand(-$dmg_fluc['G'],$dmg_fluc['G']))/100*rand(4,10)/10));
+	if(function_exists('ruleset_damage_immunity_hook')) {
+		$immune = ruleset_damage_immunity_hook($target,'songshot',$damage);
+		if($immune !== NULL) $damage = max(0,intval($immune));
+	}
+	$target['hp'] -= $damage;
+	return $damage;
+}
+
+function song_shadow_volley($singer,$shots=6)
+{
+	global $db,$tablepre,$now,$log;
+	$place = intval($singer['pls']); $id = intval($singer['pid']);
+	$result = $db->query("SELECT * FROM {$tablepre}players WHERE hp>0 AND pls<>$place AND pid<>$id");
+	$pool = Array();
+	while($row = $db->fetch_array($result)) $pool[] = $row;
+	if(!$pool) return '月光如洗，四下无人';
+	$target = $pool[array_rand($pool)];
+	$target['clbpara'] = get_clbpara($target['clbpara']);
+	$target['nm'] = '你';
+	$hits = Array();
+	$singer_log = $log; $log = '';
+	include_once GAME_ROOT.'./include/state.func.php';
+	for($i=0;$i<$shots && $target['hp']>0;$i++) {
+		$hits[] = song_shadow_single_shot($singer,$target);
+		if($target['hp'] <= 0) {
+			// 事件死亡保留歌曲免死等现有判定，不走 kill() 的击杀计数与奖励。
+			death('event',$singer['name'],$singer['type'],'【Moonlight Shadow】',$target);
+			if($target['hp'] <= 0) {
+				$target['bid'] = $singer['pid'];
+				$target['endtime'] = $now;
+			}
+		}
+	}
+	$damage = array_sum($hits);
+	$source = htmlspecialchars($singer['name'],ENT_QUOTES,'UTF-8');
+	$victim = htmlspecialchars($target['name'],ENT_QUOTES,'UTF-8');
+	logsave($target['pid'],$now,"<span class=\"red\">{$source}的《Moonlight Shadow》将月光中的枪声送到了你身边，共造成{$damage}点伤害！</span><br>".$log);
+	$log = $singer_log;
+	player_save($target);
+	addnews($now,'songshot',$source,$victim,$damage,$target['hp'] <= 0 ? '倒在月光之中' : '仍然站立');
+	return $victim.'受到'.implode('、',$hits).'点伤害';
+}
+
+function song_showcase_reward(&$data)
+{
+	global $db,$tablepre,$log;
+	if(!empty($data['clbpara']['showcase_done'])) return;
+	foreach(song_showcase_songs() as $song) if(empty($data['clbpara']['showcase_sung'][$song])) return;
+	$item = Array('itm'=>'【歌单】瑞克·拉玛尔','itmk'=>'Z','itme'=>1,'itms'=>1,'itmsk'=>'','itmpara'=>'');
+	$slot = -1;
+	for($i=0;$i<=6;$i++) if(empty($data['itms'.$i])) { $slot = $i; break; }
+	if($slot >= 0) {
+		foreach($item as $key=>$value) $data[$key.$slot] = $value;
+	} else {
+		$item['pls'] = intval($data['pls']);
+		$db->array_insert($tablepre.'mapitem',$item);
+	}
+	$data['clbpara']['showcase_done'] = 1;
+	$where = $slot === 0 ? '请收好手中的歌单' : ($slot > 0 ? '歌单已放入行囊' : '歌单落在了你的脚边');
+	$log .= "<span class=\"clan\">四场演出落幕，反叛随机数大神的旋律悄然响起——你获得了<span class=\"yellow\">【歌单】瑞克·拉玛尔</span>！{$where}。</span><br>";
+}
 
 function sing($sn){
 	global $log,$msg,$now,$pls,$name,$nick,$plsinfo,$hplsinfo,$ss,$mss,$noiseinfo,$arte;
@@ -11,7 +189,13 @@ function sing($sn){
 	global $rp;
 	global $pdata,$weather,$gamevars,$areatime,$arealist,$areanum,$deathnum,$nosta;
 	
+	$pdata['clbpara'] = get_clbpara($pdata['clbpara']);
 	extract($pdata, EXTR_REFS);
+	$songlist = song_list($pdata);
+	if(!is_string($sn) || !isset($songlist[$sn]) || $type || $hp <= 0) {
+		$log .= '你还不会唱这首歌，请先装备对应的歌词卡片；演出曲需要先学会十首普通歌曲。<br>';
+		return;
+	}
 
 	if (!empty($clbpara['kimi_no_ss'])) {
 		$log.="<span class=\"grey\">你的歌魂槽已经废除，再也无法歌唱了……</span><br>";
@@ -30,7 +214,8 @@ function sing($sn){
 	//A better fix would be removing $hplsinfo from $plsinfo after processing the song. But still.
 
 	//$log.=$sn.'_'.$now.'_'.$pls.'_'.$name."<br>";
-	$r = ($sn == '忘忧草') ? max(intval($arte), 200) : intval($arte);
+	$r = $songlist[$sn];
+	if($sn === '忘忧草') $r = max(200,$r);
 	$song_title = isset($noiseinfo[$sn]) ? $noiseinfo[$sn] : $sn;
 	include_once GAME_ROOT.'./include/game/revcombat.func.php';
 	
@@ -44,6 +229,61 @@ function sing($sn){
 
 	// 记录唱歌动作
 	$pdata['clbpara']['achvars']['sing'] = 1;
+	if(empty($clbpara['songbook'][$sn])) {
+		$clbpara['songbook'][$sn] = 1;
+		$log .= '这首歌已铭刻在你的歌簿之中，今后无需装备卡片也能歌唱。<br>';
+	}
+	$showcase_songs = song_showcase_songs();
+	$learned = array_diff(array_keys($clbpara['songbook']),$showcase_songs);
+	if(count($learned) >= 10 && empty($clbpara['showcase'])) {
+		$clbpara['showcase'] = 1;
+		$log .= '<span class="clan">歌簿的第十页悄然翻开——你听见了来自远方的、不属于任何歌手的旋律。四首【演出】曲目已向你敞开。</span><br>';
+	}
+	if(!in_array($sn,$showcase_songs)) {
+		$echo = song_echo_place($sn,$r,$pls);
+		if($echo['resonance']) $log .= '<span class="clan">你的歌声与此地的残响共鸣，旋律更浓，也将停留得更久。</span><br>';
+	} else {
+		global $corpseprotect,$database;
+		$lines = Array(
+			'一剪梅'=>'疾速鼓点卷起雪原，孤梅的红影在冷光中摇曳；合成器的长音穿过北风，整座岛仿佛滑入一场雪夜疾驰。',
+			'棺材舞'=>'黑衣舞者托起沉默的棺木，铜管般明亮的旋律越过荒野；脚步与低音严丝合缝，送别也成了昂扬的舞会。',
+			'Caramelldansen'=>'糖果色的灯光随着高速节拍闪烁，双手举过头顶，腰身左右摇摆；连脚下的道路都忍不住跟着错开一步。',
+			'Moonlight Shadow'=>'月影掠过疾驰的霓虹，远方的人影在合成器的浪潮中明灭；六道枪火划开夜色，回声追逐着未说完的告别。',
+		);
+		$log .= '<span class="clan">'.$lines[$sn].'</span><br>';
+		$chat = Array('type'=>0,'time'=>$now,'send'=>htmlspecialchars($name,ENT_QUOTES,'UTF-8'),'recv'=>'','msg'=>$lines[$sn]);
+		if($database === 'mysql') {
+			$chat['send'] = mysql_real_escape_string($chat['send']);
+			$chat['msg'] = mysql_real_escape_string($chat['msg']);
+		}
+		$db->array_insert($tablepre.'chat',$chat);
+		$first = empty($clbpara['showcase_sung'][$sn]);
+		if($first) {
+			$clbpara['showcase_sung'][$sn] = 1;
+			if($sn === '一剪梅') {
+				$weather = 7;
+				$log .= '<span class="clan">雪幕笼罩全岛，这场演出的残响带来的歌魂翻倍！</span><br>';
+			} elseif($sn === '棺材舞') {
+				$tm = intval($now-$corpseprotect); $place = intval($pls);
+				$db->query("UPDATE {$tablepre}players SET pls='$place' WHERE hp<=0 AND endtime<=$tm");
+				$count = $db->affected_rows();
+				addnews($now,'corpsegather',$name,$count,$nick);
+				$log .= "抬棺的队伍踏着节拍而来，{$count}具尸体起舞着来到了你的面前。<br>";
+			} elseif($sn === 'Caramelldansen') {
+				$clbpara['dance_step'] = 10;
+				$log .= '舞会的节律留在了你的脚下，接下来十次移动都会踩着舞步错位。<br>';
+			} else {
+				$hit = song_shadow_volley($pdata);
+				$log .= '<span class="red">月光中的枪声落幕：'.$hit.'。</span><br>';
+			}
+		}
+		song_echo_place($sn,$r,$pls,$first);
+		if($first) $log .= '<span class="clan">演出的残响传遍全岛，远方的人们也能听见。</span><br>';
+		song_showcase_reward($pdata);
+		addnoise($sn,'__',$now,$pls,0,0,$sn);
+		addnews($now,'song',$name,$plsinfo[$pls] ?? $hplsinfo[$pgroup][$pls],$song_title,$nick);
+		return;
+	}
 	
 	if ($sn=="Alicemagic"){
 		$log.="♪你說過在哭泣之後應該可以破涕而笑♪<br>
@@ -131,7 +371,7 @@ function sing($sn){
 
 		include_once GAME_ROOT.'./include/state.func.php';
 		$clbpara['kimi_overloaded'] = 1;
-		death('event', '', 0, $art, $pdata);
+		death('event', '', 0, '【忘忧草】', $pdata);
 		return;
 
 	}elseif ($sn=="きみは帰る場所"){
@@ -497,6 +737,7 @@ function sing($sn){
 		return;
 
 	}elseif ($sn=="星をつなげて"){
+		$song_pls = $pls; // 星标回传之后，新闻和声响仍指向留下残响的演唱地点。
 		$log.="♪夜空に瞬く　小さな光をつなげて♪<br>
 				♪離れていても　同じ空を見上げてる♪<br>
 				♪星座の道しるべ　迷わないように♪<br>
@@ -543,8 +784,8 @@ function sing($sn){
 			$log.="<span class=\"clan\">星光相连的羁绊引导你跨越旅途，瞬间回到了<span class=\"yellow\">{$plsinfo[$pls]}</span>！</span><br>";
 		}
 
-		addnoise($sn,'__',$now,$pls,0,0,$sn);
-		addnews($now,'song',$name,$plsinfo[$pls],$song_title,$nick);
+		addnoise($sn,'__',$now,$song_pls,0,0,$sn);
+		addnews($now,'song',$name,$plsinfo[$song_pls],$song_title,$nick);
 		return;
 
 	}elseif ($sn=="乗ってけ！ジャパリビート"){

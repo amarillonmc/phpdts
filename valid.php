@@ -93,6 +93,7 @@ if($mode == 'enter') {
 	$sNo = $validnum;
 	$hp = $mhp = $hplimit;
 	$sp = $msp = $splimit;
+	$ss = $mss = 30;
 	$rand = rand(0,15);
 	$att = 95 + $rand;
 	$def = 105 - $rand;

@@ -28,6 +28,7 @@ function bot_player_valid($vnums)
 			$sNo = $validnum;
 			$hp = $mhp;
 			$sp = $msp;
+			$ss = $mss = 30;
 			$pls = 0;
 			$killnum = 0;
 			$lvl = 0;

@@ -755,7 +755,7 @@
         /** 安全箱 */
         "depot" => in_array($pls,$depots),
         /** 歌唱 */
-        "song" => strpos($artk,'ss') !== false,
+        "song" => strpos($artk,'ss') !== false || !empty($clbpara['songbook']),
         /** 带电 */
         "electric" => $club == 7,
         /** 淬毒 */

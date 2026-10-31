@@ -333,6 +333,10 @@ $noiseinfo = Array(
 	'水手'=>'水手',
 	'挪威的森林'=>'挪威的森林',
 	'当'=>'当',
+	'一剪梅'=>'一剪梅',
+	'棺材舞'=>'棺材舞',
+	'Caramelldansen'=>'Caramelldansen',
+	'Moonlight Shadow'=>'Moonlight Shadow',
 	'song' => '熟悉的旋律',
 	);
 $exdmgname = Array('p' => '毒性攻击', 'u' => '火焰燃烧', 'i'=>'冻气缠绕', 'd'=>'爆炸','e'=>'电击','w'=>'音波攻击','f' => '<span class="yellow">炽热之焰</span>','k' => '<span class="clan">凝结之息</span>');

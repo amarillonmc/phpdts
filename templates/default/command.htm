@@ -91,8 +91,8 @@
 	<span tooltip="装备的武器中带有“多重”属性时，点此转换武器模式">
 		<input type="button" class="cmdbutton" name="sp_weapon" value="武器模式" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_weapon';postCmd('gamecmd','command.php');this.disabled=true;">
 	</span>
-	<span tooltip="消耗{$arte}点歌魂歌唱，可能会暴露自己的位置">
-		<!--{if strpos($artk,'ss')!==false}-->
+	<span tooltip="演唱歌词卡片或歌簿中的歌曲，消耗对应歌魂并留下残响，可能会暴露自己的位置">
+		<!--{if strpos($artk,'ss')!==false || !empty($clbpara['songbook'])}-->
 		<input type="button" class="cmdbutton" id="sp_weapon" name="sp_weapon" value="歌唱" onclick="$('command').value='song';$('subcmd').name='song';postCmd('gamecmd','command.php');this.disabled=true;">
 		<!--{/if}-->
 	</span>

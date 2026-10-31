@@ -28,20 +28,24 @@ function get_itmsk_array($value) { return is_array($value) ? $value : preg_split
 function get_safe_plslist() { global $test_safe; return $test_safe; }
 function diceroll($max) { global $test_dice; return min($max,$test_dice); }
 function addnews(...$args) { global $test_news; $test_news[] = $args; }
-function logsave(...$args) {}
+function logsave(...$args) { global $test_logs; $test_logs[] = $args; }
 function save_combatinfo() {}
 function init_battle_rev($pa,$pd,$active) {}
 function npc_chat_rev($pa,$pd,$event) { return ''; }
 function npc_changewep_rev(&$pa,&$pd,$active) {}
 function addnoise(...$args) {}
 function check_add_searchmemory(...$args) {}
+function lost_searchmemory($key,&$data) { unset($data['clbpara']['smeo']); }
+function openfile($path) { return file($path); }
 function save_gameinfo() { global $gamevars,$saved_gamevars; $saved_gamevars = json_encode($gamevars); }
+function create_dummy_playerdata() { return ai93_test_player(0); }
 function ruleset_get_fix_damage_hook(&$pa,&$pd,$active) { global $test_damage; return is_array($test_damage) ? $test_damage[$pa['pid']] : $test_damage; }
 function player_format_with_db_structure($data)
 {
 	$data = array_intersect_key($data,ai93_test_player(0));
-	foreach($data as $key=>$value) if(is_array($value)) $data[$key] = json_encode($value,JSON_UNESCAPED_UNICODE);
-	return $data;
+	$row = array();
+	foreach($data as $key=>$value) $row[$key] = is_array($value) ? json_encode($value,JSON_UNESCAPED_UNICODE) : $value;
+	return $row; // 与正式格式化函数一致：不能序列化掉 EXTR_REFS 绑定的运行状态。
 }
 function player_save($data) {
 	global $db,$test_events;
@@ -65,6 +69,7 @@ class Ai93TestDb
 {
 	public $players = array(), $mapitem = array(), $maptrap = array(), $chat = array();
 	public $last_id = 0;
+	public $affected = 0;
 	function array_insert($table,$data)
 	{
 		global $test_events;
@@ -84,6 +89,13 @@ class Ai93TestDb
 	}
 	function query($sql)
 	{
+		if(preg_match("/^UPDATE test_players SET pls='(\d+)' WHERE hp<=0 AND endtime<=(\d+)$/",$sql,$m)) {
+			$this->affected = 0;
+			foreach($this->players as &$row) if($row['hp'] <= 0 && $row['endtime'] <= $m[2] && $row['pls'] != $m[1]) {
+				$row['pls'] = intval($m[1]); $this->affected++;
+			}
+			unset($row); return true;
+		}
 		if(preg_match("/^UPDATE test_players SET pls = '?(\d+)'? WHERE type = 92 AND hp > 0$/",$sql,$m)) {
 			foreach($this->players as &$row) if($row['type'] == 92 && $row['hp'] > 0) $row['pls'] = intval($m[1]);
 			unset($row); return true;
@@ -91,10 +103,12 @@ class Ai93TestDb
 		if(preg_match('/^DELETE FROM test_(mapitem|maptrap) WHERE (?:iid|tid)=\'?(\d+)/',$sql,$m)) {
 			unset($this->{$m[1]}[$m[2]]); return true;
 		}
-		if(preg_match('/^INSERT INTO test_(mapitem|maptrap) \((.*?)\) VALUES \((.*)\)$/',$sql,$m)) {
+		if(preg_match('/^INSERT INTO test_(mapitem|maptrap) \((.*?)\) VALUES \((.*)\)$/s',$sql,$m)) {
 			$keys = array_map('trim',explode(',',$m[2]));
-			$values = str_getcsv($m[3],',',"'",'\\');
-			$this->array_insert('test_'.$m[1],array_combine($keys,array_map('trim',$values)));
+			foreach(preg_split('/\),\s*\(/',$m[3]) as $tuple) {
+				$values = str_getcsv($tuple,',',"'",'\\');
+				$this->array_insert('test_'.$m[1],array_combine($keys,array_map('trim',$values)));
+			}
 			return true;
 		}
 		if(!preg_match('/^SELECT .* FROM test_(players|mapitem|maptrap|chat)(?: WHERE (.*))?$/',$sql,$m)) {
@@ -110,11 +124,11 @@ class Ai93TestDb
 				if($condition === '') continue;
 				if(preg_match("/^(\w+) IN \((.*)\)$/",$condition,$c)) {
 					$match = $match && in_array($row[$c[1]],str_getcsv($c[2],',',"'"));
-				} elseif(preg_match("/^(\w+)\s*(<=|>=|<>|=|>|<)\s*'?([^']*)'?$/",$condition,$c)) {
+				} elseif(preg_match("/^(\w+)\s*(<=|>=|<>|!=|=|>|<)\s*'?([^']*)'?$/",$condition,$c)) {
 					$a = $row[$c[1]] ?? 0; $b = $c[3];
 					switch($c[2]) {
 						case '=': $ok = $a == $b; break;
-						case '<>': $ok = $a != $b; break;
+						case '!=': case '<>': $ok = $a != $b; break;
 						case '>': $ok = $a > $b; break;
 						case '<': $ok = $a < $b; break;
 						case '<=': $ok = $a <= $b; break;
@@ -139,13 +153,14 @@ class Ai93TestDb
 	function num_rows($result) { return count($result->rows); }
 	function data_seek($result,$offset) { $result->offset = $offset; }
 	function insert_id() { return $this->last_id; }
+	function affected_rows() { return $this->affected; }
 	function result($result,$index=0) { return ''; }
 }
 function ai93_test_player($pid)
 {
 	$data = array(
 		'pid'=>$pid,'name'=>'测试者'.$pid,'nm'=>'测试者'.$pid,'pass'=>'test','type'=>0,'club'=>0,
-		'hp'=>2000,'mhp'=>2000,'sp'=>1000,'msp'=>1000,'att'=>100,'def'=>100,'lvl'=>10,'exp'=>0,
+		'hp'=>2000,'mhp'=>2000,'sp'=>1000,'msp'=>1000,'ss'=>30,'mss'=>30,'att'=>100,'def'=>100,'lvl'=>10,'exp'=>0,
 		'rage'=>0,'rp'=>0,'pose'=>1,'tactic'=>3,'pls'=>1,'pgroup'=>0,'nick'=>0,'gd'=>'n','icon'=>0,'sNo'=>1,
 		'inf'=>'','state'=>0,'action'=>'','bid'=>0,'killnum'=>0,'endtime'=>0,'deathtime'=>0,'validtime'=>1,
 		'money'=>0,'skillpoint'=>20,'ip'=>'127.0.0.1','horizon'=>0,
@@ -786,4 +801,198 @@ ai93_test_assert($p === $before && strpos($log,'先处理手中的物品') !== f
 $p['itmsk1']='A'; $before=$p; $log=''; item_other(1,$p);
 ai93_test_assert($p === $before && strpos($log,'以后再来探索') !== false,'未实现的代码属性保留原物品并提示');
 
-echo "All AI93 and restored item tests passed.\n";
+// 歌簿、残响与演出沿用真实函数及同一内存数据库，覆盖保存后再提交。
+include_once GAME_ROOT.'include/game/song.inc.php';
+ai93_test_reset();
+$pdata['art']='【Alicemagic】'; $pdata['artk']='ss'; $pdata['arts']=1; $pdata['arte']=999;
+$pdata['ss']=29;
+sing('Alicemagic');
+ai93_test_assert($pdata['ss'] === 29 && empty($pdata['clbpara']['songbook']) && !$gamevars,'歌魂不足不记歌、不留残响');
+$pdata['ss']=100;
+sing('Alicemagic');
+ai93_test_assert($pdata['ss'] === 70 && isset($pdata['clbpara']['songbook']['Alicemagic']) && $gamevars['songecho'][1]['power'] === 30,'歌词卡解锁按歌曲成本扣费，不使用卡片效果值');
+$pdata['art']=$pdata['artk']=''; $pdata['arts']=0;
+player_save($pdata); $pdata=fetch_playerdata_by_pid(1);
+sing('Alicemagic');
+ai93_test_assert($pdata['ss'] === 40 && count($pdata['clbpara']['songbook']) === 1,'重载后免装备重唱，歌簿去重');
+$before=$pdata; $echo_before=$gamevars;
+foreach(array('Crow Song','一剪梅','不存在的歌曲',array('Alicemagic')) as $invalid) sing($invalid);
+ai93_test_assert($pdata === $before && $gamevars === $echo_before,'拒绝未学、未解锁、未知及数组形式的曲目');
+$pdata['art']='【Crow Song】'; $pdata['artk']='Y'; $pdata['arts']=1;
+ai93_test_assert(!isset(song_list($pdata)['Crow Song']),'同名非歌词卡不能解锁');
+$pdata['artk']='ss'; $pdata['arts']=0;
+ai93_test_assert(!isset(song_list($pdata)['Crow Song']),'已耗尽的歌词卡不能解锁');
+$pdata['arts']=1;
+ai93_test_assert(isset(song_list($pdata)['Crow Song']),'歌单同时列出歌簿和当前歌词卡');
+
+ai93_test_reset(); $pdata['ss']=200; $pdata['clbpara']['songbook']=array('星をつなげて'=>1);
+$pdata['clbpara']['star_mark_pls']=2;
+$mode=''; // 无页面上下文时探测仪不绘制雷达，本例只验证回传和回响落点。
+sing('星をつなげて'); player_save($pdata); $pdata=fetch_playerdata_by_pid(1);
+$mode='command';
+ai93_test_assert($pdata['pls'] === 2 && isset($gamevars['songecho'][1]) && !isset($gamevars['songecho'][2])
+	&& end($test_news)[3] === $plsinfo[1],'星标回传后残响和新闻仍留在原演唱地点');
+ai93_test_reset(); $pdata['art']='【忘忧草】'; $pdata['artk']='ss'; $pdata['arts']=1; $pdata['arte']=1;
+$pdata['ss']=199; sing('忘忧草');
+ai93_test_assert($pdata['hp'] === 2000 && $pdata['ss'] === 199 && empty($pdata['clbpara']['songbook']),'忘忧草不足200歌魂不能演唱');
+$pdata['clbpara']['songbook']=array('忘忧草'=>1); $pdata['art']='其他饰物'; $pdata['artk']='Y';
+$pdata['ss']=200; sing('忘忧草'); player_save($pdata); $pdata=fetch_playerdata_by_pid(1);
+ai93_test_assert($pdata['hp'] === 0 && $pdata['ss'] === 0 && isset($pdata['clbpara']['songbook']['忘忧草'])
+	&& $gamevars['songecho'][1]['power'] === 200 && end($test_news)[5] === '【忘忧草】','无卡重唱忘忧草留下正确死亡来源，残响与歌簿保存后仍保留');
+
+ai93_test_reset();
+$costs=song_costs();
+$ten=array_slice(array_keys($costs),0,10);
+$pdata['clbpara']['songbook']=array_fill_keys(array_slice($ten,0,9),1);
+$pdata['art']='【'.$ten[9].'】'; $pdata['artk']='ss'; $pdata['arts']=1; $pdata['ss']=1000;
+sing($ten[9]);
+ai93_test_assert(count($pdata['clbpara']['songbook']) === 10 && !empty($pdata['clbpara']['showcase']) && count(song_list($pdata)) === 14,'第十首普通歌解锁四首演出');
+$log=''; sing($ten[9]);
+ai93_test_assert(strpos($log,'第十页') === false,'解锁提示不重复');
+$pdata['clbpara']['setsuna_mute']=1; $before=$pdata;
+sing('一剪梅'); ai93_test_assert($pdata === $before,'失声时不扣费也不首演');
+unset($pdata['clbpara']['setsuna_mute']);
+$pdata['clbpara']['kimi_no_ss']=1; $before=$pdata;
+sing('一剪梅'); ai93_test_assert($pdata === $before,'歌魂槽废除时不能演出');
+
+ai93_test_reset();
+$echo=song_echo_place('Alicemagic',30,1);
+ai93_test_assert($echo['expire'] === $now+300 && $echo['serial'] === 1,'普通残响持续300秒');
+$gamevars=json_decode($saved_gamevars,true);
+$pdata['ss']=$pdata['mss']=0; $pdata['clbpara']=json_encode($pdata['clbpara']);
+move_search_events($pdata,'search'); player_save($pdata); $pdata=fetch_playerdata_by_pid(1);
+move_search_events($pdata,'search');
+ai93_test_assert($pdata['ss'] === 3 && $pdata['mss'] === 3,'真实探索钩子领取下限3，JSON及重载后重复探索不再领取');
+$other=ai93_test_player(2); $other['ss']=0;
+song_echo_claim($other,1);
+ai93_test_assert($other['ss'] === 3,'不同玩家可各领一次同一残响');
+$other['pls']=2; $other['ss']=0; song_echo_claim($other,2);
+ai93_test_assert($other['ss'] === 0,'不同地点不能领地点残响');
+$e2=song_echo_place('Alicemagic',30,1);
+$gamevars=json_decode($saved_gamevars,true);
+$e3=song_echo_place('Alicemagic',30,1); $e4=song_echo_place('Alicemagic',30,1);
+ai93_test_assert($e2['power'] === 45 && $e3['power'] === 67 && $e4['power'] === 67 && $e4['resonance'] === 2 && $e4['expire'] === $now+600,'共鸣1.5倍、2.25倍封顶，时长相应延长');
+song_echo_claim($pdata,1);
+ai93_test_assert($pdata['ss'] === 10,'新残响序号允许再次领取');
+$cover=song_echo_place('Crow Song',900,1); song_echo_claim($pdata,1);
+ai93_test_assert(count($gamevars['songecho']) === 1 && $cover['resonance'] === 0 && $pdata['ss'] === 25,'异歌覆盖同地点且不继承共鸣，单次上限15');
+$world=song_echo_place('一剪梅',233,1,true); song_echo_claim($other,2);
+ai93_test_assert($other['ss'] === 30 && $other['mss'] >= $other['ss'],'雪中全岛残响在远方领取30歌魂');
+player_save($other); $other=fetch_playerdata_by_pid(2); song_echo_claim($other,3);
+ai93_test_assert($other['ss'] === 30,'全岛残响换地点和重载均不能重复领取');
+$world=song_echo_place('棺材舞',233,1,true);
+ai93_test_assert($gamevars['worldecho']['song'] === '棺材舞' && empty($world['double']),'后演出覆盖全岛残响，不继承雪中翻倍');
+$p=ai93_test_player(3); $p['clbpara']['kimi_no_ss']=1; $before=$p; song_echo_claim($p,1);
+ai93_test_assert($p === $before,'废除歌魂槽者不领残响也不记领取');
+$npc=ai93_test_npc(7); $before=$npc; song_echo_claim($npc,1);
+ai93_test_assert($npc === $before,'NPC不领歌魂');
+$p=ai93_test_player(4); $p['hp']=0; $before=$p; song_echo_claim($p,1);
+ai93_test_assert($p === $before,'死者不领歌魂');
+$now+=300; song_echo_claim($pdata,1);
+ai93_test_assert(empty($gamevars['songecho']) && !isset($gamevars['worldecho']),'到期边界清理地点与全岛残响');
+$fresh=song_echo_place('Crow Song',30,1);
+ai93_test_assert($fresh['power'] === 30 && $fresh['serial'] > $world['serial'],'到期后不共鸣，序号不重用');
+
+ai93_test_reset(); $npc=ai93_test_npc(7); player_save($npc);
+ai93_sing($npc,$pdata);
+ai93_test_assert($gamevars['songecho'][1]['power'] === 60 && end($test_news)[1] === 'song','偶像演唱留下60强度残响并保留地点新闻');
+$now=mktime(18,0,0,10,29,2026); ai93_test_roll(0,24); ai93_sing($npc,$pdata);
+ai93_test_assert($gamevars['songecho'][1]['song'] === '鸡肉之歌' && $gamevars['songecho'][1]['power'] === 10,'鸡肉彩蛋残响强度10');
+
+ai93_test_reset(); $pdata['ss']=$pdata['mss']=5000; $pdata['clbpara']['showcase']=1;
+sing('一剪梅'); player_save($pdata); $pdata=fetch_playerdata_by_pid(1);
+ai93_test_assert($weather === 7 && !empty($pdata['clbpara']['showcase_sung']['一剪梅']) && !empty($gamevars['worldecho']['double']),'一剪梅首唱下雪并留下双倍全岛残响');
+$world=$gamevars['worldecho']; $weather=1;
+sing('一剪梅');
+ai93_test_assert($weather === 1 && $gamevars['worldecho'] === $world && $gamevars['songecho'][1]['song'] === '一剪梅','一剪梅重唱只留地点残响，不再次改天气或世界残响');
+$dead=ai93_test_player(2); $dead['hp']=0; $dead['pls']=2; $dead['endtime']=$now-$corpseprotect; player_save($dead);
+$protected=ai93_test_player(3); $protected['hp']=0; $protected['pls']=2; $protected['endtime']=$now-$corpseprotect+1; player_save($protected);
+$rp_before=$pdata['rp']; sing('棺材舞');
+ai93_test_assert($db->players[2]['pls'] === 1 && $db->players[3]['pls'] === 2 && $pdata['rp'] === $rp_before,'棺材舞只搬保护期外尸体，无RP惩罚');
+$db->players[2]['pls']=2; sing('棺材舞');
+ai93_test_assert($db->players[2]['pls'] === 2,'棺材舞重唱不搬尸体');
+sing('Caramelldansen'); $pdata['clbpara']['dance_step']=9; sing('Caramelldansen');
+ai93_test_assert($pdata['clbpara']['dance_step'] === 9,'扭腰舞首唱获得10步，重唱不刷新');
+// 当前只剩同地活人和死者；空场首演仍会落幕并给一次奖励。
+sing('Moonlight Shadow');
+ai93_test_assert($pdata['itm0'] === '【歌单】瑞克·拉玛尔' && $pdata['itmk0'] === 'Z' && $pdata['itmpara0'] === '' && !empty($pdata['clbpara']['showcase_done']),'四场演完在手中发正确类别歌单');
+include config('audio'); include_once GAME_ROOT.'include/game/item.nachster_booster.php';
+item_nachster_booster(0,$pdata); player_save($pdata); $pdata=fetch_playerdata_by_pid(1);
+ai93_test_assert(!$pdata['itms0'] && $pdata['clbpara']['BGMBrand'] === 'rixolamal' && $pdata['clbpara']['traitorRoll'] === 0
+	&& $pdata['clbpara']['event_bgmbook'] === $event_bgm['rixolamaltracks'],'奖励歌单沿用原道具处理启用骰子反叛播放列表');
+player_save($pdata); $pdata=fetch_playerdata_by_pid(1); ai93_test_item($pdata,'原有物品','Y',1,1,0);
+sing('Moonlight Shadow');
+ai93_test_assert($pdata['itm0'] === '原有物品' && !$pdata['itms1'] && !$db->mapitem,'重载重唱不覆盖手中物品、不重复发奖');
+foreach(array(3,-1) as $empty_slot) {
+	ai93_test_reset(); $pdata['clbpara']['showcase_sung']=array_fill_keys(song_showcase_songs(),1);
+	for($i=0;$i<=6;$i++) ai93_test_item($pdata,'保留'.$i,'Y',3,2,$i);
+	if($empty_slot >= 0) { $pdata['itms'.$empty_slot]=0; $pdata['itmpara'.$empty_slot]='旧参数'; }
+	song_showcase_reward($pdata); player_save($pdata); $pdata=fetch_playerdata_by_pid(1); song_showcase_reward($pdata);
+	if($empty_slot >= 0) ai93_test_assert($pdata['itm3'] === '【歌单】瑞克·拉玛尔' && $pdata['itmpara3'] === '' && !$db->mapitem,'手中占用时奖励进空包格，清全字段');
+	else ai93_test_assert(count($db->mapitem) === 1 && reset($db->mapitem)['itmk'] === 'Z' && reset($db->mapitem)['pls'] === 1 && $pdata['itm0'] === '保留0','满手满包时歌单只落地一次');
+}
+
+// 六连射从异地活人/NPC中选一个，保留装备，不启动正常战斗计数。
+foreach(array(0,93) as $target_type) {
+	ai93_test_reset(); $target=ai93_test_player(2); $target['pls']=2; $target['type']=$target_type; player_save($target);
+	$same=ai93_test_player(3); player_save($same);
+	$dead=ai93_test_player(4); $dead['hp']=0; $dead['pls']=2; player_save($dead);
+	$before=$pdata; $test_logs=array(); $hit=song_shadow_volley($pdata);
+	ai93_test_assert($pdata === $before && $db->players[2]['hp'] < 2000 && $db->players[3]['hp'] === 2000 && $db->players[4]['hp'] === 0
+		&& count(explode('、',$hit)) === 6 && end($test_news)[1] === 'songshot' && end($test_logs)[0] === 2,'六次射系伤害仅命中异地存活目标，新闻及受害者日志 '.$target_type);
+}
+ai93_test_reset(); $target=ai93_test_player(2); $target['pls']=2; $target['hp']=1; player_save($target);
+$deaths_before=$deathnum; song_shadow_volley($pdata); $target=fetch_playerdata_by_pid(2);
+ai93_test_assert($target['hp'] === 0 && $target['bid'] === 1 && $target['endtime'] === $now && $target['deathtime'] === $now && $pdata['killnum'] === 0 && $deathnum === $deaths_before+1,'致死枪声保存死者及来源，不增加歌手击杀数');
+ai93_test_reset(); $target=ai93_test_player(2); $target['pls']=2; $target['hp']=1;
+$target['clbpara']['songbook']=array('Alicemagic'=>1); $target['clbpara']['kimi_no_ss']=1; player_save($target);
+song_shadow_volley($pdata); $target=fetch_playerdata_by_pid(2);
+ai93_test_assert($target['hp'] === 1 && !empty($target['clbpara']['kimi_no_hp']) && isset($target['clbpara']['songbook']['Alicemagic']),'六连射保留归处免死语义和歌簿');
+unset($target['clbpara']['kimi_no_ss'],$target['clbpara']['kimi_no_hp']);
+death('event','',0,'测试',$target); player_save($target); $target=fetch_playerdata_by_pid(2);
+ai93_test_assert(isset($target['clbpara']['songbook']['Alicemagic']),'事件死亡保存后歌簿仍在');
+
+// 舞步走真实移动入口，只有成功移动消耗次数，探索仍可正常领取残响。
+ai93_test_reset(); $pdata['clbpara']['dance_step']=10; $pdata['pass']='bot';
+$gamevars['sanmadead']=1; $event_obbs=$item_obbs=$enemy_obbs=$trap_max_obbs=0; $pls_bgm=array();
+$ai93cfg['event_rate']=0; $saved_areas=$arealist; $saved_areanum=$areanum;
+$arealist=array_keys($plsinfo); sort($arealist); $areanum=0;
+$before=$pdata; move(0,$pdata);
+ai93_test_assert($pdata === $before,'移动到禁区失败不扣舞步');
+for($i=10;$i>0;$i--) {
+	$destination=$pdata['pls'] == 2 ? 3 : 2;
+	move($destination,$pdata);
+	ai93_test_assert($pdata['pls'] != $destination && $pdata['pls'] != 0 && ($pdata['clbpara']['dance_step'] ?? 0) === $i-1,'成功移动偏移并扣减舞步 '.$i);
+	player_save($pdata); $pdata=fetch_playerdata_by_pid(1);
+}
+$destination=$pdata['pls'] == 2 ? 3 : 2; move($destination,$pdata);
+ai93_test_assert($pdata['pls'] == $destination && !isset($pdata['clbpara']['dance_step']),'十步用尽后恢复正常移动');
+$pdata['clbpara']['dance_step']=2; search($pdata);
+ai93_test_assert($pdata['clbpara']['dance_step'] === 2,'原地探索不扣舞步');
+$hidden_before=$hplsinfo; $hplsinfo[999]=array(900=>'测试甲',901=>'测试乙',902=>'测试丙');
+$pdata['pls']=900; $pdata['pgroup']=999;
+ai93_test_assert(song_dance_drift(901,$pdata) === 902,'隐藏地图偏移不离开当前地图组');
+$hplsinfo[999]=array(900=>'测试甲',901=>'测试乙');
+ai93_test_assert(song_dance_drift(901,$pdata) === 901,'唯一合法落点不强行跨组或踏入禁区');
+$hplsinfo=$hidden_before; $arealist=$saved_areas; $areanum=$saved_areanum;
+
+// 真正执行开局物品投放，只写内存数据库；不是检查资源文件中的字符串。
+ai93_test_reset(); $areanum=0; rs_game(16);
+$new_songs=array_slice(song_costs(),4,15,true);
+foreach($new_songs as $song=>$cost) {
+	$cards=array_filter($db->mapitem,function($item) use($song) { return $item['itm'] === '【'.$song.'】'; });
+	ai93_test_assert(count($cards) === 7 && count(array_unique(array_column($cards,'pls'))) > 1,'开局随机投放七张歌词卡 '.$song);
+	$valid_cards=array_filter($cards,function($card) use($cost) { return $card['itmk'] === 'ss' && $card['itme'] == $cost && $card['itms'] == 1 && $card['itmpara'] === ''; });
+	ai93_test_assert(count($valid_cards) === 7,'歌词卡完整字段 '.$song);
+}
+
+// 配置默认值与可调参数都走实际读取；其余默认行为已由上面的既有用例覆盖。
+unset($ai93cfg);
+ai93_test_assert(ai93_cfg('event_rate') === 20 && ai93_cfg('sing_max') === 4 && ai93_cfg('migrate_max') === 2,'频率配置按原默认值读取');
+ai93_test_reset(); $ai93cfg['sing_max']=1; $ai93cfg['sing_cooldown']=0; $npc=ai93_test_npc(7);
+ai93_test_assert(ai93_sing($npc,$pdata) && !ai93_sing($npc,$pdata),'调整演唱配置即影响上限');
+$ai93cfg['trash_max']=0;
+ai93_test_assert(!ai93_drop(1,'测试垃圾') && !$db->mapitem,'调整投放配置即影响上限');
+unset($ai93cfg);
+
+echo "All AI93, song and restored item tests passed.\n";

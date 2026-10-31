@@ -126,6 +126,18 @@ function move($moveto = 99,&$data=NULL)
 	$moved = pre_move_search_events($data,'move');
 	if($hp <= 0) return;
 
+	if(!$type && !empty($clbpara['dance_step'])) {
+		include_once GAME_ROOT.'./include/game/song.inc.php';
+		$destination = $moved ? $pls : $moveto;
+		$moveto = song_dance_drift($destination,$data);
+		$steps = max(0,intval($clbpara['dance_step'])-1);
+		if($steps) $clbpara['dance_step'] = $steps;
+		else unset($clbpara['dance_step']);
+		$dance_place = $hpls_flag ? $hplsinfo[$pgroup][$moveto] : $plsinfo[$moveto];
+		$dance_msg = $moveto == $destination ? '这次没有偏离落点' : '舞步把你带向了'.$dance_place;
+		$log .= "<span class=\"lime\">你随节拍扭腰踏出一步，{$dance_msg}……（剩余{$steps}次）</span><br>";
+		if($moved) $pls = $moveto;
+	}
 	if(!$moved)
 	{
 		if(!$hpls_flag) $pgroup = 0;
@@ -460,6 +472,10 @@ function move_search_events(&$data,$act)
 		lost_searchmemory('all',$data);
 	}
 	fcg_skills_on_action($data);
+	if(($act === 'move' || $act === 'search') && (isset($gamevars['songecho']) || isset($gamevars['worldecho']))) {
+		include_once GAME_ROOT.'./include/game/song.inc.php';
+		song_echo_claim($data,$pls);
+	}
 
 	# 《SETSUNA》无声余韵递减
 	if (!empty($clbpara['setsuna_mute'])) {
@@ -734,7 +750,7 @@ function discover($schmode = 0,&$data=NULL)
 
 	include_once GAME_ROOT. './include/game/aievent.func.php';//AI事件
 	$aidata = false;//用于判断天然呆AI（冴冴这样的）是否已经来到你身后并且很生气
-	aievent(20,$data);//触发AI事件的概率
+	aievent(ai93_enabled() ? ai93_cfg('event_rate') : 20,$data);//触发AI事件的概率
 	if(is_array($aidata))
 	{
 		//触发了AI追击事件

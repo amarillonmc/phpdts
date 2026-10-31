@@ -245,10 +245,16 @@ if($hp > 0){
 					$mode = $itemcmd;
 				}
 			} elseif($command == 'song') {
-				$sname=trim(trim($art,'【'),'】');
 				include_once GAME_ROOT.'./include/game/song.inc.php';
-				//$log.=$sname;
-				sing($sname);
+				if(isset($_POST['songkind'])) {
+					sing($_POST['songkind']);
+				} elseif(!empty($clbpara['songbook'])) {
+					$songlist = song_list($pdata);
+					$mode = 'songlist';
+				} else {
+					$sname = preg_replace('/^【(.*)】$/u','$1',$art);
+					sing($sname);
+				}
 			}elseif($command == 'special') {
 				if($sp_cmd == 'sp_word'){
 					include_once GAME_ROOT.'./include/game/special.func.php';
@@ -1078,7 +1084,7 @@ if($hp <= 0) {
 	$gamedata['innerHTML']['cmd'] = ob_get_contents();
 } elseif(!$cmd) {
 	ob_clean();
-	if($mode&&file_exists(GAME_ROOT.TPLDIR.'/'.$mode.'.htm')) {
+	if($mode === 'songlist' || ($mode&&file_exists(GAME_ROOT.TPLDIR.'/'.$mode.'.htm'))) {
 		include template($mode);
 	} else {
 		include template('command');

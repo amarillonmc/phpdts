@@ -317,6 +317,8 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，{$a}使<span class=\"yellow\">{$b}</span>的位置移动了！<br>\n";
 		}elseif($news == 'song') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}</span>在<span class=\"yellow\">{$b}</span>歌唱了<span class=\"red\">{$c}</span>。<br>\n";
+		}elseif($news == 'songshot') {
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，{$a}的《Moonlight Shadow》向远方送出枪声，{$b}受到{$c}点伤害，{$d}。<br>\n";
 		}  elseif($news == 'itembuy') {
 			//$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}购买了{$b}</span><br>\n";
 			$newsinfo .= '';

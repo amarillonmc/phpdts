@@ -1,6 +1,13 @@
 <?php
 if(!defined('IN_GAME')) exit('Access Denied');
 
+function ai93_cfg($key)
+{
+	global $ai93cfg;
+	if(!isset($ai93cfg)) $ai93cfg = include config('ai93cfg',1);
+	return $ai93cfg[$key];
+}
+
 // 默认大房间与 YELLOWKNIFE 共用这套生态；大房间切到其他规则集时不启用。
 function ai93_enabled()
 {
@@ -121,7 +128,7 @@ function ai93_drop($pls,$itm,$itmk='X',$itme=1,$itms=1,$owner=0,$inf='')
 {
 	global $db,$tablepre;
 	$state = &ai93_state();
-	if($state['trash_cnt'] >= 30) return false;
+	if($state['trash_cnt'] >= ai93_cfg('trash_max')) return false;
 	$para = $inf === '' ? '' : json_encode(array('ai93_inf'=>$inf),JSON_UNESCAPED_UNICODE);
 	$db->array_insert($tablepre.($itmk === 'TO' ? 'maptrap' : 'mapitem'),array(
 		'itm'=>$itm, 'itmk'=>$itmk, 'itme'=>$itme, 'itms'=>$itms,
@@ -191,7 +198,7 @@ function aievent_minion($rate,&$data)
 		$state['pending'] = array();
 		save_gameinfo();
 	}
-	if(!$batch && $now-$starttime > 300 && $state['drip_cnt'] < 8 && rand(0,99) < 8) {
+	if(!$batch && $now-$starttime > ai93_cfg('drip_delay') && $state['drip_cnt'] < ai93_cfg('drip_max') && rand(0,99) < ai93_cfg('drip_chance')) {
 		$subs = array();
 		for($b=0;$b<5;$b++) if(empty($state['unlocked'][$b])) $subs = array_merge($subs,range($b*5,$b*5+4));
 		if(!$subs) $subs = range(0,24);
@@ -208,7 +215,7 @@ function aievent_minion($rate,&$data)
 	$ids = array();
 	while($npc = $db->fetch_array($result)) if(ai93_branch($npc) >= 0) $ids[] = $npc['pid'];
 	shuffle($ids);
-	foreach(array_slice($ids,0,rand(1,2)) as $id) {
+	foreach(array_slice($ids,0,rand(ai93_cfg('tick_act_min'),ai93_cfg('tick_act_max'))) as $id) {
 		$npc = fetch_playerdata_by_pid($id);
 		if($npc && $npc['hp'] > 0) ai93_act($npc,$data);
 	}
@@ -246,7 +253,7 @@ function ai93_act(&$npc,&$current)
 		}
 		$npc['clbpara']['resting'] = 0;
 	}
-	if($npc['hp'] <= round($npc['mhp']*0.6) && rand(0,99) < 50) {
+	if($npc['hp'] <= round($npc['mhp']*ai93_cfg('injury_threshold')/100) && rand(0,99) < ai93_cfg('injury_chance')) {
 		ai93_injury($npc,$current);
 		goto ai93_act_finish;
 	}
@@ -292,7 +299,7 @@ function ai93_act(&$npc,&$current)
 		}
 	} elseif($branch === 1) {
 		$recent = $state['last_wth_by_player'] > 0 && $now >= $state['last_wth_by_player'] && $now-$state['last_wth_by_player'] <= 90;
-		if(($recent && $state['wth_cnt'] < 3) || (!$recent && $state['wth_cnt'] < 2 && rand(0,99) < 5)) {
+		if(($recent && $state['wth_cnt'] < ai93_cfg('weather_cap_recent')) || (!$recent && $state['wth_cnt'] < ai93_cfg('weather_cap_normal') && rand(0,99) < ai93_cfg('weather_chance'))) {
 			$weathers = array_values(array_diff(array(8,9,17),array($weather)));
 			$weather = $weathers[array_rand($weathers)];
 			$state['wth_cnt']++;
@@ -327,14 +334,14 @@ function ai93_act(&$npc,&$current)
 			}
 		} elseif($roll < 80) {
 			$npc['pls'] = $safe[array_rand($safe)];
-			if(rand(0,99) < 80) ai93_drop($npc['pls'],$trash['idol'][array_rand($trash['idol'])]);
+			if(rand(0,99) < ai93_cfg('idol_trash_chance')) ai93_drop($npc['pls'],$trash['idol'][array_rand($trash['idol'])]);
 			else ai93_drop($npc['pls'],'闪耀星辰应援饮料','HB',150,2);
 		} else {
 			ai93_sing($npc,$current);
 		}
 	} elseif($branch === 2) {
 		if($roll < 50) {
-			if($state['trash_cnt'] < 30) {
+			if($state['trash_cnt'] < ai93_cfg('trash_max')) {
 				$count = rand(1,2);
 				for($i=0;$i<$count;$i++) {
 					$item = $trash['art'][array_rand($trash['art'])];
@@ -406,7 +413,7 @@ function ai93_act(&$npc,&$current)
 	// 养肥后的固定五系药战利品随行动增加，拾荒只用itm1—itm4。
 	if(preg_match('/^C[iuepw]$/',$npc['itmk5'])) $npc['itms5']++;
 	player_save($npc);
-	if(!empty($state['caller_pid']) && rand(0,99) < 25) {
+	if(!empty($state['caller_pid']) && rand(0,99) < ai93_cfg('caller_chance')) {
 		$result = $db->query("SELECT name FROM {$tablepre}players WHERE pid=".intval($state['caller_pid'])." AND type=0");
 		$caller = $db->fetch_array($result);
 		if($caller) ai93_chat($npc['name'],'blame_caller',array('[caller]'=>$caller['name'],'[pls]'=>$plsinfo[$npc['pls']]));
@@ -456,7 +463,7 @@ function ai93_group_move($source,$dest,$kind,$oldpls=NULL,$exclude=array())
 {
 	global $db,$tablepre,$ai93_moves,$plsinfo;
 	if(!isset($ai93_moves)) $ai93_moves = 0;
-	if(!ai93_enabled() || $ai93_moves >= 2 || !in_array($dest,ai93_safe_plslist())) return;
+	if(!ai93_enabled() || $ai93_moves >= ai93_cfg('migrate_max') || !in_array($dest,ai93_safe_plslist())) return;
 	$para = get_clbpara($source['clbpara']);
 	$grp = $kind === 'call' ? ai93_branch($source) : ($para['grp'] ?? -1);
 	if($grp < 0 || $grp >= 4) return;
@@ -479,7 +486,7 @@ function ai93_group_move($source,$dest,$kind,$oldpls=NULL,$exclude=array())
 		player_save($ally);
 		$speaker = $ally['name'];
 		$count++; $ai93_moves++;
-		if($ai93_moves >= 2) break;
+		if($ai93_moves >= ai93_cfg('migrate_max')) break;
 	}
 	if($count) ai93_chat($speaker,'group_'.$kind,array('[pls]'=>$plsinfo[$dest]));
 }
@@ -559,9 +566,9 @@ function ai93_special_reaction(&$npc,$branch,&$current)
 	global $plsinfo;
 	$values = array('[plyr]'=>$current['name'],'[pls]'=>$plsinfo[$npc['pls']]);
 	if($branch !== 2) ai93_chat($npc['name'],'enc_spot',$values);
-	if($branch === 0 && rand(0,99) < 40) ai93_group_move($npc,$npc['pls'],'call');
-	elseif($branch === 1 && rand(0,99) < 30) ai93_sing($npc,$current);
-	elseif($branch === 2 || ($branch === 3 && rand(0,99) < 50)) {
+	if($branch === 0 && rand(0,99) < ai93_cfg('act_chance_five')) ai93_group_move($npc,$npc['pls'],'call');
+	elseif($branch === 1 && rand(0,99) < ai93_cfg('act_chance_idol')) ai93_sing($npc,$current);
+	elseif($branch === 2 || ($branch === 3 && rand(0,99) < ai93_cfg('act_chance_maid'))) {
 		ai93_drop($npc['pls'],'慌忙丢下的元素瓶','TO',40,1,$npc['pid'],ai93_element($npc));
 	}
 }
@@ -573,7 +580,7 @@ function ai93_encounter(&$npc,&$data)
 	$branch = ai93_branch($npc);
 	if($branch < 0) return;
 	$npc['clbpara'] = get_clbpara($npc['clbpara']);
-	if(isset($npc['clbpara']['last_react']) && $now-$npc['clbpara']['last_react'] < 45) return;
+	if(isset($npc['clbpara']['last_react']) && $now-$npc['clbpara']['last_react'] < ai93_cfg('react_cooldown')) return;
 	$weights = array(array(15,10,25,30,5),array(15,15,30,15,3),array(20,15,25,20,5),array(20,20,20,20,5),array(5,10,10,25,45));
 	$w = $weights[$branch]; $roll = rand(0,99); $sum = $w[0]; $strike = false;
 	if($roll < $sum) { /* 没注意到玩家。 */ }
@@ -680,9 +687,9 @@ function ai93_sing(&$npc,&$current=NULL)
 	if(!$audience) return false;
 	$state = &ai93_state();
 	$npc['clbpara'] = get_clbpara($npc['clbpara']);
-	$chicken = date('w',$now) == 4 && date('H',$now) == 18 && $state['chicken_cnt'] < 2
-		&& (!isset($npc['clbpara']['last_chicken']) || $now-$npc['clbpara']['last_chicken'] >= 3600) && rand(0,99) < 25;
-	if(!$chicken && ($state['sing_cnt'] >= 4 || (isset($npc['clbpara']['last_sing']) && $now-$npc['clbpara']['last_sing'] < 900))) return false;
+	$chicken = date('w',$now) == 4 && date('H',$now) == 18 && $state['chicken_cnt'] < ai93_cfg('chicken_max')
+		&& (!isset($npc['clbpara']['last_chicken']) || $now-$npc['clbpara']['last_chicken'] >= ai93_cfg('chicken_cooldown')) && rand(0,99) < ai93_cfg('chicken_chance');
+	if(!$chicken && ($state['sing_cnt'] >= ai93_cfg('sing_max') || (isset($npc['clbpara']['last_sing']) && $now-$npc['clbpara']['last_sing'] < ai93_cfg('sing_cooldown')))) return false;
 	$song = $chicken ? '鸡肉之歌' : (rand(0,1) ? 'Crow Song' : 'Alicemagic');
 	$field = $song === 'Crow Song' ? 'att' : 'def';
 	$ids = array_keys($audience);
@@ -712,7 +719,8 @@ function ai93_sing(&$npc,&$current=NULL)
 	$npc['clbpara'][$chicken ? 'last_chicken' : 'last_sing'] = $now;
 	$state[$chicken ? 'chicken_cnt' : 'sing_cnt']++;
 	player_save($npc);
-	save_gameinfo();
+	include_once GAME_ROOT.'./include/game/song.inc.php';
+	song_echo_place($song,$chicken ? 10 : 60,$npc['pls']);
 	ai93_chat($npc['name'],$chicken ? 'chicken_song' : 'idol_sing',array('[song]'=>$song,'[pls]'=>$plsinfo[$npc['pls']]));
 	addnews($now,'song',$npc['name'],$plsinfo[$npc['pls']],$song,$npc['nick'] ?? 0);
 	return true;
