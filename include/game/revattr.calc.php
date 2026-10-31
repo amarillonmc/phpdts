@@ -102,6 +102,11 @@ namespace revattr
 			$sk_r = 1 + (get_skillvars('c10_insight','accgain',$sk_lvl) / 100);
 			$hitrate *= $sk_r;
 		}
+		#「重力」是双方共享的场地效果，两人都有时也只乘一次。
+		if(isset($pa['skill_gravity']) || isset($pd['skill_gravity']))
+		{
+			$hitrate *= 5/3;
+		}
 
 		# 减益：
 		#「枭眼」效果判定：

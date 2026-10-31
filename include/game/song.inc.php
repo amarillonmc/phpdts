@@ -10,6 +10,7 @@ function song_costs()
 		'ようこそジャパリパークへ'=>49, '星をつなげて'=>69,
 		'乗ってけ！ジャパリビート'=>68, '大空ドリーマー'=>70,
 		'水手'=>50, '挪威的森林'=>100, '当'=>117, '忘忧草'=>200, 'きみは帰る場所'=>1,
+		'春日影'=>60,
 		'一剪梅'=>233, '棺材舞'=>233, 'Caramelldansen'=>233, 'Moonlight Shadow'=>233,
 	);
 	return $songcost;
@@ -852,6 +853,44 @@ function sing($sn){
 
 		addnoise($sn,'__',$now,$pls,0,0,$sn);
 		addnews($now,'song',$name,$plsinfo[$pls],$song_title,$nick);
+		return;
+
+	}elseif ($sn=="春日影"){
+		$log.="♪ 悴んだ心　ふるえる眼差し ♪<br>
+				♪ 世界で 僕は ひとりぼっちだった ♪<br>
+				♪ 散ることしか知らない春は　毎年 冷たくあしらう ♪<br>
+				♪ 光は やさしく連れ立つよ ♪<br>
+				♪ 君の手は どうしてこんなにも温かいの？ ♪<br>";
+
+		global $database;
+		$chat = Array('type'=>0,'time'=>$now,'send'=>htmlspecialchars($name,ENT_QUOTES,'UTF-8'),'recv'=>'','msg'=>'♪ 悴んだ心　ふるえる眼差し ♪');
+		if($database === 'mysql') {
+			$chat['send'] = mysql_real_escape_string($chat['send']);
+			$chat['msg'] = mysql_real_escape_string($chat['msg']);
+		}
+		$db->array_insert($tablepre.'chat',$chat);
+
+		include_once GAME_ROOT.'./include/game/revclubskills.func.php';
+		if(getclubskill('gravity',$clbpara)) {
+			$log.='<span class="clan">歌声落下，你感觉空气变得沉重——你获得了被动技能<span class="yellow">「重力」</span>！</span><br>';
+		} else {
+			$log.='<span class="lime">你已身处重力场之中。</span><br>';
+		}
+
+		// 唱者只获得重力；其他在场活人逐行保存，避免只改临时变量。
+		$place = intval($pls); $singer_id = intval($pid);
+		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pls='$place' AND type=0 AND hp>0 AND pid!='$singer_id'");
+		while($target = $db->fetch_array($result)) {
+			$target['clbpara'] = get_clbpara($target['clbpara']);
+			$target['mhp'] += 10;
+			$target['hp'] = min($target['mhp'],$target['hp']+10);
+			player_save($target);
+			$target_name = htmlspecialchars($target['name'],ENT_QUOTES,'UTF-8');
+			$log.="<span class=\"lime\">{$target_name}也听见了春日影，生命上限上升了10点，恢复了10点生命！</span><br>";
+		}
+
+		addnoise($sn,'__',$now,$pls,0,0,$sn);
+		addnews($now,'song',$name,$plsinfo[$pls] ?? $hplsinfo[$pgroup][$pls],$song_title,$nick);
 		return;
 
 	}elseif ($sn=="水手"){

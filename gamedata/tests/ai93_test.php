@@ -825,6 +825,62 @@ ai93_test_assert(!isset(song_list($pdata)['Crow Song']),'已耗尽的歌词卡�
 $pdata['arts']=1;
 ai93_test_assert(isset(song_list($pdata)['Crow Song']),'歌单同时列出歌簿和当前歌词卡');
 
+// 春日影：唱者学会重力，只有同点其他存活玩家获得生命增益。
+ai93_test_reset(); $pdata['hp']=800; $pdata['ss']=59;
+$pdata['art']='【春日影】'; $pdata['artk']='ss'; $pdata['arts']=1; $pdata['arte']=999;
+foreach(array(2,3,4,5,6) as $id) {
+	$listener=ai93_test_player($id);
+	if($id === 2) { $listener['hp']=1000; $listener['clbpara']['songbook']=array('水手'=>1); }
+	if($id === 4) $listener['hp']=0;
+	if($id === 5) $listener['pls']=2;
+	if($id === 6) $listener['type']=93;
+	player_save($listener);
+}
+$before=$pdata; $listeners_before=$db->players;
+sing('春日影');
+ai93_test_assert($pdata === $before && $db->players === $listeners_before && !$gamevars && !$db->chat,'春日影不足60歌魂时不学习、不加生命、不广播');
+$pdata['ss']=180; sing('春日影'); player_save($pdata); $pdata=fetch_playerdata_by_pid(1);
+ai93_test_assert($pdata['ss'] === 120 && $pdata['hp'] === 800 && $pdata['mhp'] === 2000
+	&& in_array('gravity',$pdata['clbpara']['skill']) && isset($pdata['clbpara']['songbook']['春日影']),'歌词卡演唱春日影扣60、学歌与重力，唱者不加生命');
+$listener=fetch_playerdata_by_pid(2);
+ai93_test_assert($listener['hp'] === 1010 && $listener['mhp'] === 2010 && isset($listener['clbpara']['songbook']['水手'])
+	&& $db->players[3]['hp'] === 2010 && $db->players[3]['mhp'] === 2010,'同点满血和受伤玩家各增加10生命及上限，重载保留原歌簿');
+ai93_test_assert($db->players[4] === $listeners_before[4] && $db->players[5] === $listeners_before[5]
+	&& $db->players[6] === $listeners_before[6],'春日影不影响尸体、异地玩家和NPC');
+ai93_test_assert($gamevars['echo_serial'] === 1 && $gamevars['songecho'][1]['power'] === 60
+	&& count($db->chat) === 1 && end($test_news)[1] === 'song' && end($test_news)[4] === '春日影','春日影只放一次普通残响，并发布歌词和歌名新闻');
+$pdata['art']=$pdata['artk']=''; $pdata['arts']=0; player_save($pdata); $pdata=fetch_playerdata_by_pid(1);
+sing('春日影'); player_save($pdata); $pdata=fetch_playerdata_by_pid(1);
+ai93_test_assert($pdata['ss'] === 60 && count(array_keys($pdata['clbpara']['skill'],'gravity')) === 1
+	&& count($pdata['clbpara']['songbook']) === 1 && $db->players[2]['hp'] === 1020 && $db->players[2]['mhp'] === 2020
+	&& $gamevars['echo_serial'] === 2 && $gamevars['songecho'][1]['power'] === 90,'重载后无卡重唱照常扣费、加生命与共鸣，技能和歌簿不重复登记');
+$pdata['clbpara']['setsuna_mute']=1; $before=$pdata; $listeners_before=$db->players; $echo_before=$gamevars;
+sing('春日影');
+ai93_test_assert($pdata === $before && $db->players === $listeners_before && $gamevars === $echo_before,'春日影失声时不触发任何增益');
+unset($pdata['clbpara']['setsuna_mute']);
+death('event','',0,'测试',$pdata); $pdata=fetch_playerdata_by_pid(1);
+ai93_test_assert(in_array('gravity',$pdata['clbpara']['skill']) && isset($pdata['clbpara']['songbook']['春日影']),'事件死亡保存后重力和春日影歌簿均保留');
+
+// 真实战斗准备自动铺被动标记；倍率作用于双方且只乘一次，可以越过基础命中上限。
+foreach(array(0,1,2,3) as $holders) foreach(array(1,0) as $active) {
+	ai93_test_reset(); $a=ai93_test_player(1); $b=ai93_test_player(2); $a['wp']=$b['wp']=10000;
+	if($holders & 1) getclubskill('gravity',$a['clbpara']);
+	if($holders & 2) getclubskill('gravity',$b['clbpara']);
+	\revcombat\get_attr_wepbase($a,$b,$active);
+	$expected=$hitrate_max_obbs['P']*($holders ? 5/3 : 1);
+	ai93_test_assert(abs(\revattr\get_hitrate_rev($a,$b,$active)-$expected) < 0.000001
+		&& abs(\revattr\get_hitrate_rev($b,$a,1-$active)-$expected) < 0.000001,'双方命中倍率、无持有者不变、双持不叠乘 '.$holders.' 视角'.$active);
+	$test_dice=99; \revcombat\rev_combat_prepare($a,$b,$active,'',0);
+	ai93_test_assert($a['hitrate_times'] === ($holders ? 1 : 0) && $b['hp'] === ($holders ? 1975 : 2000),'真实战斗99点命中骰在重力下命中，原上限下落空 '.$holders.' 视角'.$active);
+}
+foreach(array('c2_intuit'=>'WK','c4_stable'=>'WG') as $skill=>$weapon) {
+	ai93_test_reset(); $a=ai93_test_player(1); $b=ai93_test_player(2); $a['wepk']=$weapon;
+	getclubskill($skill,$a['clbpara']); set_skillpara($skill,'lvl',6,$a['clbpara']);
+	\revcombat\get_attr_wepbase($a,$b,1); $before=\revattr\get_hitrate_rev($a,$b,1);
+	getclubskill('gravity',$b['clbpara']); \revcombat\get_attr_wepbase($a,$b,1);
+	ai93_test_assert(abs(\revattr\get_hitrate_rev($a,$b,1)-$before*5/3) < 0.000001,'重力与既有命中技能乘法叠加 '.$skill);
+}
+
 ai93_test_reset(); $pdata['ss']=200; $pdata['clbpara']['songbook']=array('星をつなげて'=>1);
 $pdata['clbpara']['star_mark_pls']=2;
 $mode=''; // 无页面上下文时探测仪不绘制雷达，本例只验证回传和回响落点。
@@ -979,6 +1035,7 @@ $hplsinfo=$hidden_before; $arealist=$saved_areas; $areanum=$saved_areanum;
 // 真正执行开局物品投放，只写内存数据库；不是检查资源文件中的字符串。
 ai93_test_reset(); $areanum=0; rs_game(16);
 $new_songs=array_slice(song_costs(),4,15,true);
+$new_songs['春日影']=song_costs()['春日影'];
 foreach($new_songs as $song=>$cost) {
 	$cards=array_filter($db->mapitem,function($item) use($song) { return $item['itm'] === '【'.$song.'】'; });
 	ai93_test_assert(count($cards) === 7 && count(array_unique(array_column($cards,'pls'))) > 1,'开局随机投放七张歌词卡 '.$song);

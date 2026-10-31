@@ -138,6 +138,12 @@ $cskills = Array
 		'tags' => Array('passive'),
 		'desc' => '你移动不消耗体力值。',
 	),
+	'gravity' => Array
+	(
+		'name' => '重力',
+		'tags' => Array('passive'),
+		'desc' => '你与对手之间的战斗被重力束缚：任意一方持有该技能时，双方基础命中率<span class="yellow">×5/3</span>，可突破武器基础命中上限。',
+	),
 	'npc_mecstasy' => Array
 	(
 		'name' => '来潮',
