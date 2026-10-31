@@ -375,12 +375,12 @@ function sing($sn){
 		return;
 
 	}elseif ($sn=="きみは帰る場所"){
-		$log.="♪探していた場所は　君の心の中♪<br>
-				♪いつでも帰れるよ　ここが君の場所♪<br>
-				♪遠回りしたって　迷い込んだって♪<br>
-				♪最後にはきっと　辿り着けるから♪<br>";
+		$log.="♪誰も知らない世界も こわくないきみといれば♪<br>
+				♪何万年経って化石になっても きみのもとにさあ帰れるんだ♪<br>
+				♪旅は続いてく ♪<br>
+				♪旅を続けよう♪<br>";
 
-		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','$plsinfo','♪探していた場所は　君の心の中♪')");
+		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','$plsinfo','♪何万年経って化石になっても きみのもとにさあ帰れるんだ♪')");
 
 		$recorded_mss = max(1, intval($mss));
 		$clbpara['kimi_recorded_mss'] = $recorded_mss;
@@ -396,12 +396,12 @@ function sing($sn){
 		return;
 
 	}elseif ($sn=="サイハテ"){
-		$log.="♪晴れた空に　君が笑う♪<br>
-				♪悲しみも全部　風に溶けてゆく♪<br>
-				♪さよならじゃないよ　また会える日まで♪<br>
-				♪最果ての空へ　花束を贈ろう♪<br>";
+		$log.="♪ありふれた人生を♪<br>
+				♪紅く色付ける様な♪<br>
+				♪たおやかな恋でした たおやかな恋でした♪<br>
+				♪さよなら♪<br>";
 
-		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','$plsinfo','♪最果ての空へ　花束を贈ろう♪')");
+		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','$plsinfo','♪たおやかな恋でした たおやかな恋でした♪')");
 
 		if ($weather > 1 && $weather < 17) {
 			$weather = 0;
@@ -490,12 +490,12 @@ function sing($sn){
 		return;
 
 	}elseif ($sn=="SETSUNA"){
-		$log.="♪季節が巡るたび　思い出すのは♪<br>
-				♪あの日の刹那　凍りついた時間♪<br>
-				♪声にならないまま　消えてゆくけれど♪<br>
-				♪この瞬間だけは　永遠になる♪<br>";
+		$log.="♪巡り来る季節に君は少しだけ　うつむきがちな視線を空に向ける♪<br>
+				♪重なった季節が時を告げて　まだ思い出せる君の記憶♪<br>
+				♪旅立ちはいつだって窓の向こうから　真夜中の月明かり膝に落とす♪<br>
+				♪擦れ違った言葉でキズつけても　忘れられない瞳はまだ…♪<br>";
 
-		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','$plsinfo','♪あの日の刹那　凍りついた時間♪')");
+		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','$plsinfo','♪Any time , stay beside me...♪')");
 
 		$clbpara['setsuna_mute'] = 3;
 		include_once GAME_ROOT.'./include/game/revclubskills.func.php';
@@ -738,12 +738,15 @@ function sing($sn){
 
 	}elseif ($sn=="星をつなげて"){
 		$song_pls = $pls; // 星标回传之后，新闻和声响仍指向留下残响的演唱地点。
-		$log.="♪夜空に瞬く　小さな光をつなげて♪<br>
-				♪離れていても　同じ空を見上げてる♪<br>
-				♪星座の道しるべ　迷わないように♪<br>
-				♪約束の場所まで　きっと連れてゆくよ♪<br>";
+		$log.="♪暗い空の　一等星なら♪<br>
+				♪待ち合わせに　ちょうど良いから♪<br>
+				♪帰り道を　間違った時は♪<br>
+				♪一緒に探そう♪<br>
+				♪夕暮れから　青空まで♪<br>
+				♪空の色は　たくさんあるから♪<br>
+				♪今日の特別な空に 名前をつけよう♪<br>";
 
-		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','$plsinfo','♪夜空に瞬く　小さな光をつなげて♪')");
+		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','$plsinfo','♪今日の特別な空に 名前をつけよう♪')");
 
 		if (empty($clbpara['kimi_no_hp'])) {
 			$hp += ceil(max(0, $mhp - $hp) * 0.5);
@@ -789,10 +792,10 @@ function sing($sn){
 		return;
 
 	}elseif ($sn=="乗ってけ！ジャパリビート"){
-		$log.="♪乗ってけ！ジャパリビート　リズムに合わせて♪<br>
-				♪どこまでも走るよ　ジャパリライン♪<br>
-				♪風を切って進め　止まらないステップで♪<br>
-				♪次のステージへ　飛び出そう！♪<br>";
+		$log.="♪出発進行　ジャパリパーク♪<br>
+				♪さあおいで♪<br>
+				♪君も飛び乗って　手を繋いだら♪<br>
+				♪それが夢のフリーパス♪<br>";
 
 		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','$plsinfo','♪乗ってけ！ジャパリビート！♪')");
 
@@ -818,12 +821,14 @@ function sing($sn){
 		return;
 
 	}elseif ($sn=="大空ドリーマー"){
-		$log.="♪大空ドリーマー　向かい風に乗って♪<br>
-				♪誰も見たことない　高さまで飛ぼう♪<br>
-				♪ペンギンだって　空を飛べるんだよ♪<br>
-				♪夢見る翼は　誰にも止められない！♪<br>";
+		$log.="♪空は飛べないけど♪<br>
+				♪夢のツバサがある♪<br>
+				♪だから♪<br>
+				♪PYUN PYUN　世界を旅して♪<br>
+				♪PIKA PIKA　光り輝いて♪<br>
+				♪どこまでも君と行くのだ！♪<br>";
 
-		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','$plsinfo','♪大空ドリーマー　向かい風に乗って♪')");
+		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','$plsinfo','♪空は飛べないけど 夢のツバサがある♪')");
 
 		$inf = str_replace('i', '', $inf);
 		if ($arbs > 0 && strpos($arbsk, 'I') === false) {
