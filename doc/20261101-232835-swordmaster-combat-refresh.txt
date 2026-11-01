@@ -1,0 +1,18 @@
+剑圣重铸同步战斗参数
+2026-11-01
+
+玩家在战斗中触发剑圣重铸后，当次后续结算使用斩系攻击方式、熟练度与射程，
+不再出现武器已变斩系却仍射击、扣弹药或用旧射程阻止反击的情况。
+
+include/state.func.php 的 check_swordmaster_rp() 在已有战斗参数时调用现有
+get_wep_kind/get_wep_range/get_wep_skill 刷新数据，清掉旧空枪标记，
+并保留已经生效的技能抽取减益。非战斗重铸仍由下次交战初始化参数。
+重铸门槛、触发位置、RP消耗、效果与耐久加成均沿用原逻辑。
+
+验证：PHP 7.4.33，开启 short_open_tag。新增 swordmaster_test.php，复用现有
+club23 回归的数据库和骰子桩，实际执行 rev_combat_prepare/攻击/反击/保存流程。
+修复前复现“攻击前重铸立即切换实际攻击方式”失败，修复后通过全部20项断言，
+覆盖命中前RP事件、打击结束重铸、技能抽取、空枪、非战斗、失败条件与保存重载。
+原有 club23 与 wheelchair_battle 回归通过；轮椅战斗仍有既有 battle.func.php:87
+can_lootdepot_type 未定义告警。相关 PHP 语法与 git diff --check 通过。
+未连接真实数据库或在线房间，本次不修改神触之笔或轮椅战力估算。

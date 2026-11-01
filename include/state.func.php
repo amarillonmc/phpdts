@@ -709,6 +709,15 @@
 			$add_s = max(1, round($cost_rp * 0.25));
 			$pa['wepe'] += $add_e;
 			if($pa['weps'] != $nosta) $pa['weps'] += $add_s;
+			// 战斗中重铸必须同步已初始化的武器参数；非战斗时仍由下次交战初始化。
+			if(isset($pa['wep_kind']))
+			{
+				\revattr\get_wep_kind($pa);
+				$pa['wep_range'] = \revattr\get_wep_range($pa);
+				$pa['wep_skill'] = \revattr\get_wep_skill($pa);
+				// 命中前的RP事件发生在技能抽取之后，刷新熟练不能解除该减益。
+				if(!empty($pa['skdr_flag'])) $pa['wep_skill'] = sqrt($pa['wep_skill']);
+			}
 			$log .= "<span class=\"yellow\">剑圣之道大成！你消耗了全部的{$cost_rp}点报应点数，将{$pa['wep']}化为斩系利刃，效果+{$add_e}，耐久+{$add_s}！</span><br>";
 		}
 	}
