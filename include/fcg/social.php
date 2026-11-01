@@ -16,9 +16,9 @@ function fcg_ensure_social_storage()
 	}
 	// 已安装过多人牌桌的站点也要补入新卷商品，按配置查重并保留后台改价。
 	$seeds=require GAME_ROOT.'./gamedata/fcg_shop.php';
-	foreach($seeds as $row) if(($row[6]['series'] ?? '')==='vol3' || ($install && ($row[6]['series'] ?? '')==='vol2')) {
+	foreach($seeds as $row) if(($row[6]['title'] ?? 0)===9301 || ($row[6]['series'] ?? '')==='vol3' || ($install && ($row[6]['series'] ?? '')==='vol2')) {
 		list($id,$category,$name,$description,$price,$type,$payload,$daily,$total)=$row;
-		$check=$db->query("SELECT item_id FROM {$gtablepre}shop_items WHERE reward_type='fcg_pack' AND reward_payload=".fcg_sql(fcg_json($payload)).' LIMIT 1');
+		$check=$db->query("SELECT item_id FROM {$gtablepre}shop_items WHERE reward_type=".fcg_sql($type)." AND reward_payload=".fcg_sql(fcg_json($payload)).' LIMIT 1');
 		if(!$db->num_rows($check)) $db->query("INSERT INTO {$gtablepre}shop_items (category,name,description,price_credits2,reward_type,reward_payload,daily_limit,total_limit,sort_order) VALUES (".fcg_sql($category).','.fcg_sql($name).','.fcg_sql($description).','.$price.','.fcg_sql($type).','.fcg_sql(fcg_json($payload)).",$daily,$total,$id)");
 	}
 	// 老商店按商品用途补种，不能覆盖已占用的编号或后台改价。

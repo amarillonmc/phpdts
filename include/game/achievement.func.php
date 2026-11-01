@@ -3,6 +3,7 @@
 if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
+include_once GAME_ROOT.'./include/game/wheelchair.func.php';
 
 # 初始化单个成就页面
 function init_achtabledata($ach)
@@ -178,7 +179,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		if (!check_achievement_rev(1,$nn) && $timeused<=300) {
 		done_achievement_rev(1,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+30 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+16 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,16);
 		get_title("KEY男",$nn);
 		}
 		//609.日常 合成一次KEY弹
@@ -254,7 +255,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(0,$nn)>=1 && (check_achievement_rev(0,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(0,1,$nn);
 		}
 	}
@@ -278,7 +279,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(14,$nn)>=1 && (check_achievement_rev(14,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(14,1,$nn);
 		}
 	}
@@ -302,7 +303,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(15,$nn)>=1 && (check_achievement_rev(15,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(15,1,$nn);
 		}
 	}
@@ -313,7 +314,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		if ((int)fetch_achievement_rev(33,$nn)>=1 && (check_achievement_rev(33,$nn)<999)) {
 		done_achievement_rev(33,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+522 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,522);
 		
 		get_title("剑圣",$nn);
 		}
@@ -338,7 +339,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(35,$nn)>=1 && (check_achievement_rev(35,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(35,1,$nn);
 		}
 	}
@@ -362,7 +363,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(36,$nn)>=1 && (check_achievement_rev(36,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(36,1,$nn);
 		}
 	}
@@ -386,7 +387,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(37,$nn)>=1 && (check_achievement_rev(37,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(37,1,$nn);
 		}
 	}
@@ -410,7 +411,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(38,$nn)>=1 && (check_achievement_rev(38,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(38,1,$nn);
 		}
 	}
@@ -434,7 +435,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(39,$nn)>=1 && (check_achievement_rev(39,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(39,1,$nn);
 		}
 	}
@@ -458,7 +459,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(40,$nn)>=1 && (check_achievement_rev(40,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(40,1,$nn);
 		}
 	}
@@ -482,7 +483,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(41,$nn)>=1 && (check_achievement_rev(41,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(41,1,$nn);
 		}
 	}
@@ -506,7 +507,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(42,$nn)>=1 && (check_achievement_rev(42,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(42,1,$nn);
 		}
 	}
@@ -530,7 +531,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(43,$nn)>=1 && (check_achievement_rev(43,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(43,1,$nn);
 		}
 	}
@@ -554,7 +555,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(44,$nn)>=1 && (check_achievement_rev(44,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(44,1,$nn);
 		}
 	}
@@ -578,7 +579,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(45,$nn)>=1 && (check_achievement_rev(45,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(45,1,$nn);
 		}
 	}
@@ -602,7 +603,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(46,$nn)>=1 && (check_achievement_rev(46,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(46,1,$nn);
 		}
 	}
@@ -626,7 +627,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(47,$nn)>=1 && (check_achievement_rev(47,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(47,1,$nn);
 		}
 	}
@@ -650,7 +651,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(48,$nn)>=1 && (check_achievement_rev(48,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(48,1,$nn);
 		}
 	}
@@ -667,7 +668,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(49,$nn)>=1 && (check_achievement_rev(49,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+100 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,100);
 		done_achievement_rev(49,1,$nn);
 		}
 	}
@@ -684,7 +685,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(50,$nn)>=1 && (check_achievement_rev(50,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+100 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,100);
 		done_achievement_rev(50,1,$nn);
 		}
 	}
@@ -701,7 +702,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(51,$nn)>=1 && (check_achievement_rev(51,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+100 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,100);
 		done_achievement_rev(51,1,$nn);
 		}
 	}
@@ -718,13 +719,13 @@ function check_mixitem_achievement_rev($nn,$item)
 		}
 		elseif ((int)fetch_achievement_rev(52,$nn)>=1 && (check_achievement_rev(52,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+100 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,100);
 		done_achievement_rev(52,1,$nn);
 		}
 	}
 	//新版成就切糕、积分结算汇总到此
 	if(!empty($c1)) $db->query("UPDATE {$gtablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
-	if(!empty($c2)) $db->query("UPDATE {$gtablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
+	if(!empty($c2)) wheelchair_award_credits2($nn,$c2);
 	if(!empty($atotal))
 	{
 		foreach($atotal as $aid => $anums) 
@@ -932,7 +933,7 @@ function check_end_achievement_rev($w,$m,$data=NULL)
 	}
 	//新版成就切糕、积分结算汇总到此
 	if(!empty($c1)) $db->query("UPDATE {$gtablepre}users SET credits=credits+$c1 WHERE username='".$w."'" );
-	if(!empty($c2)) $db->query("UPDATE {$gtablepre}users SET credits2=credits2+$c2 WHERE username='".$w."'" );
+	if(!empty($c2)) wheelchair_award_credits2($w,$c2);
 	if(!empty($atotal))
 	{
 		foreach($atotal as $aid => $anums) 
@@ -1287,7 +1288,7 @@ function check_battle_achievement_rev($pa,$pd)
 		if ((int)fetch_achievement_rev(3,$nn)>=10000 && (check_achievement_rev(3,$nn)<999)) {
 		done_achievement_rev(3,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+500 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+15 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,15);
 		
 		get_title("最后一步",$nn);
 		}
@@ -1300,7 +1301,7 @@ function check_battle_achievement_rev($pa,$pd)
 		}
 		elseif ((int)fetch_achievement_rev(3,$nn)>=100 && (check_achievement_rev(3,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,5);
 		done_achievement_rev(3,1,$nn);
 		}
 	}
@@ -1333,7 +1334,7 @@ function check_battle_achievement_rev($pa,$pd)
 		elseif ((int)fetch_achievement_rev(4,$nn)>=1 && (check_achievement_rev(4,$nn)<1)) {
 		done_achievement_rev(4,1,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+50 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+75 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,75);
 		}
 	}
 	//13. 推倒蓝凝成就
@@ -1348,7 +1349,7 @@ function check_battle_achievement_rev($pa,$pd)
 		elseif ((int)fetch_achievement_rev(13,$nn)>=1 && (check_achievement_rev(13,$nn)<1)) {
 		done_achievement_rev(13,1,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+50 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+75 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,75);
 		}
 	}
 	//20. 击破虚子成就
@@ -1358,7 +1359,7 @@ function check_battle_achievement_rev($pa,$pd)
 		if ((int)fetch_achievement_rev(20,$nn)>=1 && (check_achievement_rev(20,$nn)<999)) {
 		done_achievement_rev(20,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+268 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+263 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,263);
 		
 		get_title("寻星者",$nn);
 		}
@@ -1370,7 +1371,7 @@ function check_battle_achievement_rev($pa,$pd)
 		if ((int)fetch_achievement_rev(21,$nn)>=1 && (check_achievement_rev(21,$nn)<999)) {
 		done_achievement_rev(21,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+233 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+233 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,233);
 		
 		get_title("寂静洪流",$nn);
 		}
@@ -1394,7 +1395,7 @@ function check_battle_achievement_rev($pa,$pd)
 		if ((int)fetch_achievement_rev(23,$nn)>=1 && (check_achievement_rev(23,$nn)<999)) {
 		done_achievement_rev(23,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+888 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,888);
 		
 		get_title("赌玉狂魔",$nn);
 		}
@@ -1406,7 +1407,7 @@ function check_battle_achievement_rev($pa,$pd)
 		if ((int)fetch_achievement_rev(24,$nn)>=1 && (check_achievement_rev(24,$nn)<999)) {
 		done_achievement_rev(24,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+211 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+299 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,299);
 		
 		get_title("时代眼泪",$nn);
 		}
@@ -1418,7 +1419,7 @@ function check_battle_achievement_rev($pa,$pd)
 		if ((int)fetch_achievement_rev(25,$nn)>=1 && (check_achievement_rev(25,$nn)<999)) {
 		done_achievement_rev(25,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+111 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+333 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,333);
 		
 		get_title("卸腿者",$nn);
 		}
@@ -1430,7 +1431,7 @@ function check_battle_achievement_rev($pa,$pd)
 		if ((int)fetch_achievement_rev(26,$nn)>=1 && (check_achievement_rev(26,$nn)<999)) {
 		done_achievement_rev(26,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+1 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+111 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,111);
 		
 		get_title("吉祥物",$nn);
 		}
@@ -1453,7 +1454,7 @@ function check_battle_achievement_rev($pa,$pd)
 		}
 		elseif ((int)fetch_achievement_rev(27,$nn)>=1 && (check_achievement_rev(27,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(27,1,$nn);
 		}
 	}
@@ -1477,7 +1478,7 @@ function check_battle_achievement_rev($pa,$pd)
 		}
 		elseif ((int)fetch_achievement_rev(56,$nn)>=1 && (check_achievement_rev(56,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(56,1,$nn);
 		}
 	}
@@ -1518,14 +1519,14 @@ function check_battle_achievement_rev($pa,$pd)
 		}
 		elseif ((int)fetch_achievement_rev(57,$nn)>=1 && (check_achievement_rev(57,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement_rev(57,1,$nn);
 		}
 	}
 	
 	//切糕、积分结算汇总
 	if(!empty($c1)) $db->query("UPDATE {$gtablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
-	if(!empty($c2)) $db->query("UPDATE {$gtablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
+	if(!empty($c2)) wheelchair_award_credits2($nn,$c2);
 	//成就计数结算
 	if(!empty($atotal))
 	{
@@ -1666,20 +1667,20 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 		if (((int)fetch_achievement_rev(29,$nn)>=999983) && (check_achievement_rev(29,$nn))<999) {
 		done_achievement_rev(29,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,200);
 		
 		get_title("补给掠夺者",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(29,$nn)>=142857 && (check_achievement_rev(29,$nn)<2)) {
 		done_achievement_rev(29,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,50);
 		
 		get_title("美食家",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(29,$nn)>=32767 && (check_achievement_rev(29,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,5);
 		done_achievement_rev(29,1,$nn);
 		}
 	}
@@ -1691,20 +1692,20 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 		if (((int)fetch_achievement_rev(30,$nn)>=365) && (check_achievement_rev(30,$nn))<999) {
 		done_achievement_rev(30,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,200);
 		
 		get_title("贝爷",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(30,$nn)>=133 && (check_achievement_rev(30,$nn)<2)) {
 		done_achievement_rev(30,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,50);
 		
 		get_title("神农",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(30,$nn)>=5 && (check_achievement_rev(30,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,5);
 		done_achievement_rev(30,1,$nn);
 		}
 	}
@@ -1717,21 +1718,21 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 		if (((int)fetch_achievement_rev(34,$nn)>=101) && (check_achievement_rev(34,$nn))<999) {
 			done_achievement_rev(34,999,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,200);
 			
 			get_title("脚底抹油",$nn);
 			}
 			elseif ((int)fetch_achievement_rev(34,$nn)>=36 && (check_achievement_rev(34,$nn)<2)) {
 			done_achievement_rev(34,2,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits+50 WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,50);
 			
 			get_title("现实主义者",$nn);
 			}
 			elseif ((int)fetch_achievement_rev(34,$nn)>=1 && (check_achievement_rev(34,$nn)<1)) {
 			done_achievement_rev(34,1,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits+10 WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,5);
 			
 			get_title("实用主义者",$nn);
 			}
@@ -1745,20 +1746,20 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 		if (((int)fetch_achievement_rev(53,$nn)>=17777) && (check_achievement_rev(53,$nn))<999) {
 			done_achievement_rev(53,999,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,200);
 			
 			get_title("无情打钉者",$nn);
 			}
 			elseif ((int)fetch_achievement_rev(53,$nn)>=1777 && (check_achievement_rev(53,$nn)<2)) {
 			done_achievement_rev(53,2,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,50);
 			
 			get_title("棍棒爱好者",$nn);
 			}
 			elseif ((int)fetch_achievement_rev(53,$nn)>=777 && (check_achievement_rev(53,$nn)<1)) {
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,5);
 			done_achievement_rev(53,1,$nn);
 			}
 	}
@@ -1771,20 +1772,20 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 		if (((int)fetch_achievement_rev(54,$nn)>=17777) && (check_achievement_rev(54,$nn))<999) {
 			done_achievement_rev(54,999,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,200);
 			
 			get_title("无情磨刀者",$nn);
 			}
 			elseif ((int)fetch_achievement_rev(54,$nn)>=1777 && (check_achievement_rev(54,$nn)<2)) {
 			done_achievement_rev(54,2,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,50);
 			
 			get_title("磨刀爱好者",$nn);
 			}
 			elseif ((int)fetch_achievement_rev(54,$nn)>=777 && (check_achievement_rev(54,$nn)<1)) {
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,5);
 			done_achievement_rev(54,1,$nn);
 			}
 	}
@@ -1797,27 +1798,27 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 		if (((int)fetch_achievement_rev(55,$nn)>=17777) && (check_achievement_rev(55,$nn))<999) {
 		done_achievement_rev(55,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,200);
 		
 		get_title("无情补丁",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(55,$nn)>=1777 && (check_achievement_rev(55,$nn)<2)) {
 		done_achievement_rev(55,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,50);
 		
 		get_title("补丁爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(55,$nn)>=777 && (check_achievement_rev(55,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,5);
 		done_achievement_rev(55,1,$nn);
 		}
 	}
 
 	//新版成就切糕、积分结算汇总到此
 	if(!empty($c1)) $db->query("UPDATE {$gtablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
-	if(!empty($c2)) $db->query("UPDATE {$gtablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
+	if(!empty($c2)) wheelchair_award_credits2($nn,$c2);
 	//成就计数结算
 	if(!empty($atotal))
 	{
@@ -2061,7 +2062,7 @@ function check_misc_achievement_rev(&$pa)
 	}
 	//新版成就切糕、积分结算汇总到此
 	if(!empty($c1)) $db->query("UPDATE {$gtablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
-	if(!empty($c2)) $db->query("UPDATE {$gtablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
+	if(!empty($c2)) wheelchair_award_credits2($nn,$c2);
 	//成就计数结算
 	if(!empty($atotal))
 	{
@@ -2098,7 +2099,7 @@ function check_nums_achievement($nn,$aid,$anums=1)
 
 	//新版成就切糕、积分结算汇总到此
 	if(!empty($c1)) $db->query("UPDATE {$gtablepre}users SET credits=credits+$c1 WHERE username='".$nn."'" );
-	if(!empty($c2)) $db->query("UPDATE {$gtablepre}users SET credits2=credits2+$c2 WHERE username='".$nn."'" );
+	if(!empty($c2)) wheelchair_award_credits2($nn,$c2);
 	return;
 }
 
@@ -2223,7 +2224,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(0,$nn)>=1 && (check_achievement(0,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(0,1,$nn);
 		}
 	}
@@ -2235,7 +2236,7 @@ function check_mixitem_achievement($nn,$item)
 		if (!check_achievement(1,$nn) && $timeused<=300) {
 		done_achievement(1,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+30 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+16 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,16);
 		
 		get_title("KEY男",$nn);
 		}
@@ -2260,7 +2261,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(14,$nn)>=1 && (check_achievement(14,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(14,1,$nn);
 		}
 	}
@@ -2284,7 +2285,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(15,$nn)>=1 && (check_achievement(15,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(15,1,$nn);
 		}
 	}
@@ -2295,7 +2296,7 @@ function check_mixitem_achievement($nn,$item)
 		if ((int)fetch_achievement(33,$nn)>=1 && (check_achievement(33,$nn)<999)) {
 		done_achievement(33,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+522 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,522);
 		
 		get_title("剑圣",$nn);
 		}
@@ -2320,7 +2321,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(35,$nn)>=1 && (check_achievement(35,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(35,1,$nn);
 		}
 	}
@@ -2344,7 +2345,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(36,$nn)>=1 && (check_achievement(36,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(36,1,$nn);
 		}
 	}
@@ -2368,7 +2369,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(37,$nn)>=1 && (check_achievement(37,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(37,1,$nn);
 		}
 	}
@@ -2392,7 +2393,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(38,$nn)>=1 && (check_achievement(38,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(38,1,$nn);
 		}
 	}
@@ -2416,7 +2417,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(39,$nn)>=1 && (check_achievement(39,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(39,1,$nn);
 		}
 	}
@@ -2440,7 +2441,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(40,$nn)>=1 && (check_achievement(40,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(40,1,$nn);
 		}
 	}
@@ -2464,7 +2465,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(41,$nn)>=1 && (check_achievement(41,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(41,1,$nn);
 		}
 	}
@@ -2488,7 +2489,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(42,$nn)>=1 && (check_achievement(42,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(42,1,$nn);
 		}
 	}
@@ -2512,7 +2513,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(43,$nn)>=1 && (check_achievement(43,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(43,1,$nn);
 		}
 	}
@@ -2536,7 +2537,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(44,$nn)>=1 && (check_achievement(44,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(44,1,$nn);
 		}
 	}
@@ -2560,7 +2561,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(45,$nn)>=1 && (check_achievement(45,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(45,1,$nn);
 		}
 	}
@@ -2584,7 +2585,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(46,$nn)>=1 && (check_achievement(46,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(46,1,$nn);
 		}
 	}
@@ -2608,7 +2609,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(47,$nn)>=1 && (check_achievement(47,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(47,1,$nn);
 		}
 	}
@@ -2632,7 +2633,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(48,$nn)>=1 && (check_achievement(48,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(48,1,$nn);
 		}
 	}
@@ -2649,7 +2650,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(49,$nn)>=1 && (check_achievement(49,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+100 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,100);
 		done_achievement(49,1,$nn);
 		}
 	}
@@ -2666,7 +2667,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(50,$nn)>=1 && (check_achievement(50,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+100 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,100);
 		done_achievement(50,1,$nn);
 		}
 	}
@@ -2683,7 +2684,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(51,$nn)>=1 && (check_achievement(51,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+100 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,100);
 		done_achievement(51,1,$nn);
 		}
 	}
@@ -2700,7 +2701,7 @@ function check_mixitem_achievement($nn,$item)
 		}
 		elseif ((int)fetch_achievement(52,$nn)>=1 && (check_achievement(52,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+100 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,100);
 		done_achievement(52,1,$nn);
 		}
 	}
@@ -2728,7 +2729,7 @@ function check_end_achievement($w,$m)
 		update_achievement(17,$w,((int)fetch_achievement(17,$w))+1,$w);
 		if (!check_achievement(17,$w)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$w."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+100 WHERE username='".$w."'" );
+		wheelchair_award_credits2($w,100);
 		done_achievement(17,999,$w);
 		
 		get_title("叶子钦定！",$w);
@@ -2752,7 +2753,7 @@ function check_end_achievement($w,$m)
 		update_achievement(19,$w,((int)fetch_achievement(19,$w))+1);
 		if (!check_achievement(19,$w)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+1000 WHERE username='".$w."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+1000 WHERE username='".$w."'" );
+		wheelchair_award_credits2($w,1000);
 		done_achievement(19,999,$w);
 		
 		get_title("奇迹的篝火",$w);
@@ -2772,7 +2773,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		if ((int)fetch_achievement(2,$nn)>=1000 && (check_achievement(2,$nn)<999)) {
 		done_achievement(2,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,200);
 		
 		get_title("G.D.M",$nn);
 		}
@@ -2826,7 +2827,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		if ((int)fetch_achievement(3,$nn)>=10000 && (check_achievement(3,$nn)<999)) {
 		done_achievement(3,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+500 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+15 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,15);
 		
 		get_title("最后一步",$nn);
 		}
@@ -2839,7 +2840,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		}
 		elseif ((int)fetch_achievement(3,$nn)>=100 && (check_achievement(3,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,5);
 		done_achievement(3,1,$nn);
 		}
 	}
@@ -2855,7 +2856,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		elseif ((int)fetch_achievement(4,$nn)>=1 && (check_achievement(4,$nn)<1)) {
 		done_achievement(4,1,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+50 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+75 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,75);
 		}
 	}
 	//13. 推倒蓝凝成就
@@ -2870,7 +2871,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		elseif ((int)fetch_achievement(13,$nn)>=1 && (check_achievement(13,$nn)<1)) {
 		done_achievement(13,1,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+50 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+75 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,75);
 		}
 	}
 	//20. 击破虚子成就
@@ -2880,7 +2881,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		if ((int)fetch_achievement(20,$nn)>=1 && (check_achievement(20,$nn)<999)) {
 		done_achievement(20,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+268 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+263 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,263);
 		
 		get_title("寻星者",$nn);
 		}
@@ -2892,7 +2893,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		if ((int)fetch_achievement(21,$nn)>=1 && (check_achievement(21,$nn)<999)) {
 		done_achievement(21,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+233 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+233 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,233);
 		
 		get_title("寂静洪流",$nn);
 		}
@@ -2916,7 +2917,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		if ((int)fetch_achievement(23,$nn)>=1 && (check_achievement(23,$nn)<999)) {
 		done_achievement(23,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+888 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,888);
 		
 		get_title("赌玉狂魔",$nn);
 		}
@@ -2928,7 +2929,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		if ((int)fetch_achievement(24,$nn)>=1 && (check_achievement(24,$nn)<999)) {
 		done_achievement(24,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+211 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+299 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,299);
 		
 		get_title("时代眼泪",$nn);
 		}
@@ -2940,7 +2941,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		if ((int)fetch_achievement(25,$nn)>=1 && (check_achievement(25,$nn)<999)) {
 		done_achievement(25,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+111 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+333 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,333);
 		
 		get_title("卸腿者",$nn);
 		}
@@ -2952,7 +2953,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		if ((int)fetch_achievement(26,$nn)>=1 && (check_achievement(26,$nn)<999)) {
 		done_achievement(26,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+1 WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+111 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,111);
 		
 		get_title("吉祥物",$nn);
 		}
@@ -2975,7 +2976,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		}
 		elseif ((int)fetch_achievement(27,$nn)>=1 && (check_achievement(27,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(27,1,$nn);
 		}
 	}
@@ -2999,7 +3000,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		}
 		elseif ((int)fetch_achievement(56,$nn)>=1 && (check_achievement(56,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(56,1,$nn);
 		}
 	}
@@ -3023,7 +3024,7 @@ function check_battle_achievement($n,$is_npc,$killname,$wp)
 		}
 		elseif ((int)fetch_achievement(57,$nn)>=1 && (check_achievement(57,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+10 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,10);
 		done_achievement(57,1,$nn);
 		}
 	}
@@ -3058,20 +3059,20 @@ function check_item_achievement($nn,$i,$ie,$is,$ik,$isk)
 		if (((int)fetch_achievement(29,$nn)>=999983) && (check_achievement(29,$nn))<999) {
 		done_achievement(29,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,200);
 		
 		get_title("补给掠夺者",$nn);
 		}
 		elseif ((int)fetch_achievement(29,$nn)>=142857 && (check_achievement(29,$nn)<2)) {
 		done_achievement(29,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,50);
 		
 		get_title("美食家",$nn);
 		}
 		elseif ((int)fetch_achievement(29,$nn)>=32767 && (check_achievement(29,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,5);
 		done_achievement(29,1,$nn);
 		}
 	}
@@ -3083,20 +3084,20 @@ function check_item_achievement($nn,$i,$ie,$is,$ik,$isk)
 		if (((int)fetch_achievement(30,$nn)>=365) && (check_achievement(30,$nn))<999) {
 		done_achievement(30,999,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,200);
 		
 		get_title("贝爷",$nn);
 		}
 		elseif ((int)fetch_achievement(30,$nn)>=133 && (check_achievement(30,$nn)<2)) {
 		done_achievement(30,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,50);
 		
 		get_title("神农",$nn);
 		}
 		elseif ((int)fetch_achievement(30,$nn)>=5 && (check_achievement(30,$nn)<1)) {
 		$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-		$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+		wheelchair_award_credits2($nn,5);
 		done_achievement(30,1,$nn);
 		}
 	}
@@ -3109,21 +3110,21 @@ function check_item_achievement($nn,$i,$ie,$is,$ik,$isk)
 		if (((int)fetch_achievement(34,$nn)>=101) && (check_achievement(34,$nn))<999) {
 			done_achievement(34,999,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,200);
 			
 			get_title("脚底抹油",$nn);
 			}
 			elseif ((int)fetch_achievement(34,$nn)>=36 && (check_achievement(34,$nn)<2)) {
 			done_achievement(34,2,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits+50 WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,50);
 			
 			get_title("现实主义者",$nn);
 			}
 			elseif ((int)fetch_achievement(34,$nn)>=1 && (check_achievement(34,$nn)<1)) {
 			done_achievement(34,1,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits+10 WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,5);
 			
 			get_title("实用主义者",$nn);
 			}
@@ -3137,20 +3138,20 @@ function check_item_achievement($nn,$i,$ie,$is,$ik,$isk)
 		if (((int)fetch_achievement(53,$nn)>=17777) && (check_achievement(53,$nn))<999) {
 			done_achievement(53,999,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,200);
 			
 			get_title("无情打钉者",$nn);
 			}
 			elseif ((int)fetch_achievement(53,$nn)>=1777 && (check_achievement(53,$nn)<2)) {
 			done_achievement(53,2,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,50);
 			
 			get_title("棍棒爱好者",$nn);
 			}
 			elseif ((int)fetch_achievement(53,$nn)>=777 && (check_achievement(53,$nn)<1)) {
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,5);
 			done_achievement(53,1,$nn);
 			}
 	}
@@ -3163,20 +3164,20 @@ function check_item_achievement($nn,$i,$ie,$is,$ik,$isk)
 		if (((int)fetch_achievement(54,$nn)>=17777) && (check_achievement(54,$nn))<999) {
 			done_achievement(54,999,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,200);
 			
 			get_title("无情磨刀者",$nn);
 			}
 			elseif ((int)fetch_achievement(54,$nn)>=1777 && (check_achievement(54,$nn)<2)) {
 			done_achievement(54,2,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,50);
 			
 			get_title("磨刀爱好者",$nn);
 			}
 			elseif ((int)fetch_achievement(54,$nn)>=777 && (check_achievement(54,$nn)<1)) {
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,5);
 			done_achievement(54,1,$nn);
 			}
 	}
@@ -3189,20 +3190,20 @@ function check_item_achievement($nn,$i,$ie,$is,$ik,$isk)
 		if (((int)fetch_achievement(55,$nn)>=17777) && (check_achievement(55,$nn))<999) {
 			done_achievement(55,999,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+200 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,200);
 			
 			get_title("无情补丁",$nn);
 			}
 			elseif ((int)fetch_achievement(55,$nn)>=1777 && (check_achievement(55,$nn)<2)) {
 			done_achievement(55,2,$nn);
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+50 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,50);
 			
 			get_title("补丁爱好者",$nn);
 			}
 			elseif ((int)fetch_achievement(55,$nn)>=777 && (check_achievement(55,$nn)<1)) {
 			$db->query("UPDATE {$gtablepre}users SET credits=credits WHERE username='".$nn."'" );
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+5 WHERE username='".$nn."'" );
+			wheelchair_award_credits2($nn,5);
 			done_achievement(55,1,$nn);
 			}
 	}

@@ -3,6 +3,7 @@
 if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
+include_once GAME_ROOT.'./include/game/wheelchair.func.php';
 
 function rs_game($mode = 0) {
 	global $db,$gtablepre,$tablepre,$groomid,$gamecfg,$now,$gamestate,$plsinfo,$typeinfo,$areanum,$areaadd,$afktime,$combonum,$deathlimit;
@@ -1016,7 +1017,7 @@ function set_credits(){
 	}
 	foreach($clist as $key => $val){
 		$credits = get_credit_up($val,$winner,$winmode) + $val['credits'];
-		$credits2 = $val['credits2'] + 10;
+		$credits2 = $val['credits2'] + wheelchair_credit_gain(10,$key,$val);
 		$validgames = $val['validgames'] + 1;
 		$wingames = $key == $winner ? $val['wingames'] + 1 : $val['wingames'];
 		$updatelist[$key] = Array(
@@ -1195,12 +1196,14 @@ function get_gambling_result($clist, $winner='',$winmode=''){
 					$ext = $bpool - $bwsum;
 					foreach($bwlist as $key => $val){
 						$crup = ceil($ext * 0.9 * $val['wager'] * $val['odds'] / $bwsum2);
+						$crup = wheelchair_credit_gain($crup,$key);
 						$bwlist[$val['uname']]['crup'] = $crup;
 						$bwlist[$val['uname']]['crrst'] = $val['wager'] + $crup;
 						$credits2 = $val['credits2'] + $val['wager'] + $crup;
 						$updatelist[$key] = Array('username' => $key, 'credits2' => $credits2);
 					}
 					$wcrup = ceil($ext * 0.1);
+					$wcrup = wheelchair_credit_gain($wcrup,$winner);
 					$bwlist[] = Array('uname' => '获胜者', 'wager' => '', 'bname' => '', 'odds' => '', 'crup' => $wcrup, 'crrst' => $wcrup);
 					if(is_array($updatelist) && isset($updatelist[$winner]['credits2'])){
 						$updatelist[$winner]['credits2'] += $wcrup;
@@ -1220,6 +1223,7 @@ function get_gambling_result($clist, $winner='',$winmode=''){
 			}else{
 				$gblog .= '无判断正确者，奖池的20%归获胜者。';
 				$wcrup = ceil($bpool * 0.2);
+				$wcrup = wheelchair_credit_gain($wcrup,$winner);
 				$bwlist[] = Array('uname' => '获胜者', 'wager' => '', 'bname' => '', 'odds' => '', 'crup' => $wcrup, 'crrst' => $wcrup);
 				if(is_array($updatelist) && isset($updatelist[$winner]['credits2'])){
 					$updatelist[$winner]['credits2'] += $wcrup;

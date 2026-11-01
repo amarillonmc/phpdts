@@ -163,7 +163,7 @@ function raid_award_score_achievement($username, $score)
 			$db->query("UPDATE {$gtablepre}users SET credits=credits+{$credit1} WHERE username={$username_sql}");
 		}
 		if ($credit2 && isset($db, $gtablepre)) {
-			$db->query("UPDATE {$gtablepre}users SET credits2=credits2+{$credit2} WHERE username={$username_sql}");
+			wheelchair_award_credits2($username,$credit2);
         }
         if (function_exists('done_achievement_rev')) done_achievement_rev($achievement_id, 999, $username);
     }

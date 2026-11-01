@@ -12,6 +12,7 @@
 		if(isset($cskills[$sk]) && (empty($para['skill']) || !in_array($sk,$para['skill'])))
 		{
 			$para['skill'][] = $sk;
+			if(function_exists('wheelchair_learned')) wheelchair_learned($sk,$para);
 			# 获得指定技能时 定义预设参数（会覆盖原有参数）
 			if(!empty($cskills[$sk]['svars']))
 			{

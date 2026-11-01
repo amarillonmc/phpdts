@@ -67,6 +67,7 @@ init_playerdata();
 init_profile();
 
 $log = '';
+if(wheelchair_entry_notice($pdata)) player_save($pdata);
 //读取聊天信息
 $chatdata = getchat(0,$teamID);
 //读取表情信息
@@ -278,6 +279,7 @@ if(isset($opendialog))
 }
 
 //if (!strstr($_SERVER['HTTP_REFERER'], 'php') && $_SERVER['HTTP_REFERER'] != '') {
+$wheelchair_panel = wheelchair_panel($pdata);
 if (isset($_GET['is_new'])) {
 	include './api.php';
 } else {

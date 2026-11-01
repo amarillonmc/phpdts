@@ -6,7 +6,8 @@
 <input type="radio" name="command" id="sp_depot" value="sp_depot" checked><a onclick=sl('menu'); href="javascript:void(0);" onmouseover="status=' ';return true;">返回</a>
 <br><br>
 <!--{loop $saveitem_list $sid $siar}-->
-<input type="radio" name="command" id="loaditem_$sid" value="loaditem_$sid"><a onclick="$('loaditem_$sid').click();" href="javascript:void(0);">$siar['itm']/$siar['itme']/$siar['itms']</a><br>
+<!--{eval $depot_para = get_clbpara($siar['itmpara']);}-->
+<input type="radio" name="command" id="loaditem_$sid" value="loaditem_$sid"><a onclick="$('loaditem_$sid').click();" href="javascript:void(0);">$siar['itm']/$siar['itme']/$siar['itms']</a><!--{if !empty($depot_para['wheelchair_free_depot'])}--> <span class="lime">首次取出免费</span><!--{/if}--><br>
 <!--{/loop}-->
 <br><br>
 <input type="button" class="cmdbutton" name="submit" id="提交" value="提交" onclick="postCmd('gamecmd','command.php');this.disabled=true;">

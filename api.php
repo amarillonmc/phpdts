@@ -471,6 +471,14 @@
   }
   echo (json_encode(array(
     "page" => "game",
+    "assist" => array(
+      "power" => wheelchair_has($pdata,'wc_appraise') ? wheelchair_power($pdata) : null,
+      "fullPower" => wheelchair_has($pdata,'wc_appraise') ? wheelchair_power($pdata,true) : null,
+      "enemyPower" => wheelchair_has($pdata,'wc_appraise') ? ($wheelchair_enemy ?? null) : null,
+      "penaltyDivisor" => 1<<wheelchair_penalty_count($pdata),
+      "target" => $clbpara['wheelchair']['target'] ?? '',
+      "review" => $clbpara['wheelchair']['review'] ?? array(),
+    ),
     /** 玩家状态 */
     "playerState" => array(
       /** 玩家信息 */

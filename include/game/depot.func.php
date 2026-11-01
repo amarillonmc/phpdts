@@ -113,7 +113,7 @@
 
 	function depot_load($i)
 	{
-		global $db,$tablepre,$arealist,$areanum,$hack;
+		global $db,$tablepre,$arealist,$areanum,$hack,$now;
 		global $log,$pls,$name,$type,$money;
 		global $max_saveitem_num,$saveitem_cost,$loaditem_cost,$depots;	
 		global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$itmpara0;
@@ -129,30 +129,34 @@
 			$log.="<span class='red'>你所在的位置是禁区！还想着取东西，命不要啦！</span><br>";
 			return;
 		}
-		if($money < $loaditem_cost)
-		{
-			$log.="<span class='red'>你身上的钱不足以支付取出道具的保管费……卧槽竟然二次收费，太黑了吧！</span><br>";
-			return;
-		}
-
 		$idpt = depot_getlist($name,$type);
 		$idpt_num = sizeof($idpt);	
 
-		if(($max_saveitem_num>0 && $i>$max_saveitem_num) || $i<0 || ($idpt[$i]['itms']<=0 && $idpt[$i]['itms']!=='∞'))
+		if(!isset($idpt[$i]) || ($max_saveitem_num>0 && $i>=$max_saveitem_num) || $i<0 || ($idpt[$i]['itms']<=0 && $idpt[$i]['itms']!=='∞'))
 		{
 			$log.="<span class='red'>要取出的道具信息错误，请返回重新输入。</span><br>";
 			return;
 		}
+		if(!empty($itms0)) { $log.='请先处理手持物品，再从安全箱取出。<br>'; return; }
+		$depot_para = get_clbpara($idpt[$i]['itmpara']);
+		$cost = !empty($depot_para['wheelchair_free_depot']) ? 0 : $loaditem_cost;
+		if($money < $cost) {
+			$log.="<span class='red'>你身上的钱不足以支付取出道具的保管费……卧槽竟然二次收费，太黑了吧！</span><br>";
+			return;
+		}
+		// 优惠跟随这件入场寄存物，取出即移除；重新存入不再免费。
+		unset($depot_para['wheelchair_free_depot']);
 		$itm0= $idpt[$i]['itm'];
 		$itmk0= $idpt[$i]['itmk'];
 		$itme0= $idpt[$i]['itme'];
 		$itms0= $idpt[$i]['itms'];
 		$itmsk0= $idpt[$i]['itmsk'];
-		$itmpara0= $idpt[$i]['itmpara'];
+		$itmpara0= $depot_para;
 		$iid = $idpt[$i]['iid'];
 		addnews($now,'depot_load',$name,$itm0);
-		$log.="你成功将道具<span class='yellow'>{$itm0}</span>从安全箱中取了出来！<br>同时被迫支付了保管费<span class='yellow'>{$loaditem_cost}</span>元……你感觉自己的心在滴血。<br>";
-		$money -= $loaditem_cost;
+		$log.="你成功将道具<span class='yellow'>{$itm0}</span>从安全箱中取了出来！<br>";
+		$log.= $cost ? "同时支付了保管费<span class='yellow'>{$cost}</span>元。<br>" : '<span class="lime">本件入场寄存物首次取出免费。</span><br>';
+		$money -= $cost;
 		$db->query("DELETE FROM {$tablepre}itemdepot WHERE iid='$iid'");
 		include_once GAME_ROOT.'./include/game/itemmain.func.php';
 		itemget();

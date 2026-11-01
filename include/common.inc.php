@@ -160,6 +160,8 @@ require config('titles',$gamecfg);
 // 共用商城须能识别全部种火纪念品；是否发放入场技能仍由 RuleSet 的头衔开关决定。
 if(!isset($titles_list[9101])) require GAME_ROOT.'./gamedata/cache/fcg_titles.php';
 if(!isset($cskills['tl_fcg_attune'])) require GAME_ROOT.'./gamedata/cache/fcgskills_1.php';
+require GAME_ROOT.'./gamedata/cache/wheelchair.php';
+require_once GAME_ROOT.'./include/game/wheelchair.func.php';
 
 // 初始化RuleSet覆盖系统
 include_once GAME_ROOT.'./include/ruleset_override.func.php';
@@ -317,6 +319,7 @@ if(CURSCRIPT !== 'chat')
 	// 游戏指令及页面还会读取、保存玩家。保留初始化锁至请求结束，避免受击的
 	// subliminal/技能次数被并发探索或旧页面数据覆盖；进程退出自动释放。
 	// RAID/LAIKA 的请求钩子会自行取得同一把锁，沿用其原有释放与重取流程。
-	if(CURSCRIPT !== 'game' || function_exists('ruleset_command_request_begin_hook')) fclose($plock);
+	if((CURSCRIPT !== 'game' || function_exists('ruleset_command_request_begin_hook'))
+		&& !(CURSCRIPT === 'valid' && ($mode ?? '') === 'enter' && !function_exists('ruleset_valid_page_hook'))) fclose($plock);
 }
 ?>

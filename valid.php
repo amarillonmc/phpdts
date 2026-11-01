@@ -15,6 +15,11 @@ if(!$udata) { gexit($_ERROR['login_check'],__file__,__line__); }
 $wingames = $udata['wingames'];
 if($udata['password'] != $cpass) { gexit($_ERROR['wrong_pw'], __file__, __line__); }
 if($udata['groupid'] <= 0) { gexit($_ERROR['user_ban'], __file__, __line__); }
+// 显式、公开的 LLM 入场选项，沿用本页登录、房间、社团和重复入场检查。
+$llm_assist = $mode === 'enter' && isset($_POST['llm_assist']);
+if($llm_assist && ($_POST['llm_assist'] !== '1' || !wheelchair_supported())) {
+	gexit('LLM 辅助入场参数无效，或当前规则不支持社团技能。',__file__,__line__);
+}
 if(function_exists('ruleset_valid_page_hook') && ruleset_valid_page_hook()) exit;
 
 if($gamestate >= 30 && $udata['groupid'] < 6 && $cuser != $gamefounder) {
@@ -333,6 +338,10 @@ if($mode == 'enter') {
 	}
 
 	# 初始化套装信息
+	$wheelchair_depot_items = wheelchair_entry($ndata,$llm_assist);
+	$wheelchair_entry_text = $ndata['clbpara']['wheelchair']['entry_notice'] ?? '';
+	// 入场确认页展示替换后的背包，避免仍将已经寄存的物品显示为随身携带。
+	for($i=1;$i<=6;$i++) $itm[$i] = $ndata['itm'.$i];
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
 	reload_set_items($ndata);
 
@@ -342,6 +351,12 @@ if($mode == 'enter') {
 
 	$ndata = player_format_with_db_structure($ndata);
 	if(!empty($ndata)) $db->array_insert("{$tablepre}players", $ndata);
+	foreach($wheelchair_depot_items as $wheelchair_item) {
+		$wheelchair_item['itmpara'] = json_encode($wheelchair_item['itmpara'],JSON_UNESCAPED_UNICODE);
+		$wheelchair_item['itmowner'] = $name;
+		$wheelchair_item['itmpw'] = 0;
+		$db->array_insert("{$tablepre}itemdepot",$wheelchair_item);
+	}
 	
 	//$db->query("INSERT INTO {$tablepre}players (name,pass,type,endtime,validtime,gd,sNo,icon,club,hp,mhp,sp,msp,att,def,pls,lvl,`exp`,money,bid,inf,rage,pose,tactic,killnum,state,wp,wk,wg,wc,wd,wf,teamID,teamPass,wep,wepk,wepe,weps,arb,arbk,arbe,arbs,arh,arhk,arhe,arhs,ara,arak,arae,aras,arf,arfk,arfe,arfs,art,artk,arte,arts,itm0,itmk0,itme0,itms0,itm1,itmk1,itme1,itms1,itm2,itmk2,itme2,itms2,itm3,itmk3,itme3,itms3,itm4,itmk4,itme4,itms4,itm5,itmk5,itme5,itms5,itm6,itmk6,itme6,itms6,wepsk,arbsk,arhsk,arask,arfsk,artsk,itmsk0,itmsk1,itmsk2,itmsk3,itmsk4,itmsk5,itmsk6,nick,nicks) VALUES ('$name','$pass','$type','$endtime','$validtime','$gd','$sNo','$icon','$club','$hp','$mhp','$sp','$msp','$att','$def','$pls','$lvl','$exp','$money','$bid','$inf','$rage','$pose','$tactic','$state','$killnum','$wp','$wk','$wg','$wc','$wd','$wf','$teamID','$teamPass','$wep','$wepk','$wepe','$weps','$arb','$arbk','$arbe','$arbs','$arh','$arhk','$arhe','$arhs','$ara','$arak','$arae','$aras','$arf','$arfk','$arfe','$arfs','$art','$artk','$arte','$arts','$itm[0]','$itmk[0]','$itme[0]','$itms[0]','$itm[1]','$itmk[1]','$itme[1]','$itms[1]','$itm[2]','$itmk[2]','$itme[2]','$itms[2]','$itm[3]','$itmk[3]','$itme[3]','$itms[3]','$itm[4]','$itmk[4]','$itme[4]','$itms[4]','$itm[5]','$itmk[5]','$itme[5]','$itms[5]','$itm[6]','$itmk[6]','$itme[6]','$itms[6]','$wepsk','$arbsk','$arhsk','$arask','$arfsk','$artsk','$itmsk[0]','$itmsk[1]','$itmsk[2]','$itmsk[3]','$itmsk[4]','$itmsk[5]','$itmsk[6]','$nick','$nicks')");
 	$db->query("UPDATE {$gtablepre}users SET lastgame='$gamenum' WHERE username='$name'");
@@ -376,6 +391,9 @@ if($mode == 'enter') {
 			"weapon" => $wep,
 			"randomItem1" => $itm[3],
 			"randomItem2" => $itm[4],
+			"llmAssist" => $llm_assist,
+			"assistSkills" => $llm_assist ? array_keys($wheelchair_skills) : array(),
+			"assistNotice" => $wheelchair_entry_text,
 		));
 	} else {
 		include template('validover');

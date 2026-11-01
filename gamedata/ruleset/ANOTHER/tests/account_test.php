@@ -3,6 +3,7 @@ if (!defined('IN_GAME')) exit('Access Denied');
 error_reporting(E_ALL);
 set_error_handler(function($severity,$message,$file,$line) { throw new ErrorException($message,0,$severity,$file,$line); });
 if (!defined('GAME_ROOT')) define('GAME_ROOT', dirname(__DIR__,4).DIRECTORY_SEPARATOR);
+require_once GAME_ROOT.'include/global.func.php';
 require_once GAME_ROOT.'include/system.func.php';
 
 class AnotherAccountTestRows {

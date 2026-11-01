@@ -3,6 +3,7 @@ if(!defined('IN_GAME')) exit('Access Denied');
 
 // Initial catalog only. Once installed, the shopmng admin page owns prices and availability.
 $fcg_shop_seed = array(
+	array(46,'title','轮椅','入场获得六本灵魂绑定辅助技能书；复盘免费，其余五项学习后各使本局此后切糕减半。原入场补给寄存安全箱，首次取出免费。',1,'title',array('title'=>9301),0,1),
 	array(1,'fcg_pack','每日试手包','斯诺：今天也来陪小家伙们玩吧！每包一张普通未升级卡。',0,'fcg_pack',array('upgraded'=>false,'rare'=>false),5,0),
 	array(2,'fcg_pack','表象补充包','露比：先看清表面，再谈追根究底。非稀有未升级卡随机一张。',10,'fcg_pack',array('upgraded'=>false,'rare'=>false),0,0),
 	array(3,'fcg_pack','白色倾向包','器物与锚点。白色全池随机一张。',30,'fcg_pack',array('color'=>'W'),0,0),

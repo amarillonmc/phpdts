@@ -11,7 +11,7 @@ function an_native_file($relative,$contents) {
     $path=$temp.$relative; if(!is_dir(dirname($path))) mkdir(dirname($path),0777,true);
     file_put_contents($path,$contents); $copied[]=$path;
 }
-foreach(array('include/game/club23.func.php','include/game/itemmain.func.php',
+foreach(array('include/game/club23.func.php','include/game/itemmain.func.php','include/game/wheelchair.func.php','include/game/aievent_minion.func.php',
 	'include/vnworld/vncreation.func.php',
     'include/game/achievement.func.php','include/game/clubslct.func.php','include/game/depot.func.php','include/news.func.php',
     'gamedata/cache/resources_1.php','gamedata/cache/gamecfg_1.php','gamedata/cache/combatcfg_1.php',
@@ -73,6 +73,7 @@ class AnNativeDB {
             foreach($this->tables['bra_users'] as &$user) if($user['username']===$m[3]) $user[$m[1]]+=(int)$m[2]; unset($user); return true;
         }
         if(preg_match("/^SELECT \\* FROM bra_players WHERE name='([^']+)' AND type=0$/",$sql,$m)) return new AnNativeRows(array_filter($this->tables['bra_players'],function($p)use($m){return $p['name']===$m[1] && !$p['type'];}));
+        if(preg_match("/^SELECT clbpara FROM bra_players WHERE name='([^']+)' AND type=0 LIMIT 1$/",$sql,$m)) return new AnNativeRows(array_map(function($p){return array('clbpara'=>$p['clbpara']);},array_filter($this->tables['bra_players'],function($p)use($m){return $p['name']===$m[1] && !$p['type'];})));
         if(strpos($sql,'SELECT pid FROM bra_players WHERE')===0) {
             $rows=$this->tables['bra_players'];
             if(strpos($sql,'type=0')!==false) $rows=array_filter($rows,function($p){return !$p['type'];});

@@ -839,3 +839,8 @@ function displayRecordedData(file) {
     }
 };*/
 
+// 辅助技能按钮使用独立输入，兼容物品发现、尸体等没有相同隐藏字段的页面。
+function wheelchairCmd(command) {
+	postCmd('gamecmd', 'command.php', {data: {mode: command === 'wc_hunt_act' ? 'revcombat' : 'command', command: command}});
+}
+

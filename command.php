@@ -50,6 +50,9 @@ if($gamestate == 0) {
 $pdata['clbpara'] = get_clbpara($pdata['clbpara']);
 extract($pdata,EXTR_REFS);
 $log = $cmd = $main = '';
+wheelchair_entry_notice($pdata);
+$wheelchair_before = wheelchair_has($pdata,'wc_review',false) ? wheelchair_review_before($pdata) : null;
+$wheelchair_original_command = is_string($command ?? null) ? $command : '';
 $dialogue_skipped = false;
 $gamedata = array();
 init_playerdata();
@@ -145,7 +148,7 @@ if($hp > 0){
 		} else {
 			$opendialog = $clbpara['noskip_dialogue'];
 		}
-	}elseif($coldtimeon && $rmcdtime > 0 && (strpos($command,'move')===0 || strpos($command,'search')===0 || (strpos($command,'itm')===0)&&($command != 'itemget') || strpos($sp_cmd,'sp_weapon')===0 || strpos($command,'song')===0)){
+	}elseif($coldtimeon && $rmcdtime > 0 && ($command==='wc_continue' || strpos($command,'move')===0 || strpos($command,'search')===0 || (strpos($command,'itm')===0)&&($command != 'itemget') || strpos($sp_cmd,'sp_weapon')===0 || strpos($command,'song')===0)){
 		$log .= '<span class="yellow">冷却时间尚未结束！</span><br>';
 		cd_flag:
 		$mode = 'command';
@@ -169,6 +172,18 @@ if($hp > 0){
 		}
 
 		//进入指令判断
+		if($mode === 'command' && is_string($command) && (strpos($command,'wc_')===0 || ($command === 'search'
+			&& (wheelchair_has($pdata,'wc_prepare') || wheelchair_has($pdata,'wc_route') || wheelchair_has($pdata,'wc_hunt') || wheelchair_has($pdata,'wc_grow'))))) {
+			include_once GAME_ROOT.'./include/game/wheelchair_action.func.php';
+			include_once GAME_ROOT.'./include/game/item.func.php';
+			if(empty($action) || in_array($action,array('corpse','pacorpse'),true)) {
+				if(wheelchair_command($pdata,$command,$_POST)) goto wheelchair_command_finished;
+			} elseif(strpos($command,'wc_')===0) {
+				wheelchair_log('轮椅','请先处理当前遭遇，再调整辅助或继续探索。');
+				\revbattle\revbattle_prepare('chase');
+				goto wheelchair_command_finished;
+			}
+		}
 		$fcg_action_blocked = !empty($action);
 		if(!empty($itemindex))
 		{
@@ -834,7 +849,10 @@ if($hp > 0){
 			chase_flag:
 			include_once GAME_ROOT.'./include/game/revbattle.func.php';
 			if(!isset($message)) $message = '';
-			\revbattle\revbattle_prepare($command,$message);
+			if($command==='wc_hunt_act') {
+				include_once GAME_ROOT.'./include/game/wheelchair_action.func.php';
+				wheelchair_battle_command($pdata);
+			} else \revbattle\revbattle_prepare($command,$message);
 		} elseif($mode == 'rest') {
 			include_once GAME_ROOT.'./include/state.func.php';
 			// 如果在休息状态下点击钓鱼按钮，则进入钓鱼状态
@@ -998,6 +1016,7 @@ if($hp > 0){
 		}
 
 		//指令执行完毕，更新冷却时间
+		wheelchair_command_finished:
 		if($coldtimeon && isset($cmdcdtime)){
 			$nowmtime = floor(getmicrotime()*1000);
 			$cdsec = floor($nowmtime/1000);
@@ -1047,6 +1066,7 @@ if($hp > 0){
 	if($hp > 0 && $coldtimeon && $showcoldtimer && $rmcdtime){
 		$log .= "行动冷却时间：<span id=\"timer\" class=\"yellow\">0.0</span>秒<br>";
 	}
+	wheelchair_review_after($pdata,$wheelchair_before,$wheelchair_original_command);
 	player_save($pdata);
 }
 // RuleSet钩子：玩家数据持久化完成后释放指令级资源；死亡页面请求也需要释放。
@@ -1098,6 +1118,12 @@ if($hp <= 0) {
 }
 
 // 对话框不能只依赖 command.htm：物品发现、休息等界面同样可能触发强制对话。
+$gamedata['innerHTML']['cmd'] = wheelchair_panel($pdata).($gamedata['innerHTML']['cmd'] ?? '');
+$gamedata['assist'] = array('power'=>wheelchair_has($pdata,'wc_appraise') ? wheelchair_power($pdata) : null,
+	'fullPower'=>wheelchair_has($pdata,'wc_appraise') ? wheelchair_power($pdata,true) : null,
+	'enemyPower'=>wheelchair_has($pdata,'wc_appraise') ? ($wheelchair_enemy ?? null) : null,
+	'penaltyDivisor'=>1<<wheelchair_penalty_count($pdata), 'target'=>$clbpara['wheelchair']['target'] ?? '',
+	'review'=>$clbpara['wheelchair']['review'] ?? array());
 // Do not rely on command.htm alone: item-find, rest, and other screens can also trigger a mandatory dialogue.
 if (isset($dialogue_id) && isset($gamedata['innerHTML']['cmd'])
 	&& strpos($gamedata['innerHTML']['cmd'], 'id="dialogue"') === false) {

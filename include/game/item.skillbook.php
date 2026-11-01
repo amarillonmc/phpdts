@@ -139,14 +139,21 @@ function item_skillbook($itmn, &$data) {
 		$wsname = "灵击熟练度";
 	} elseif (strpos($itmk, 'VS') === 0) {
 		//global $cskills,$clbpara;
-		if(!empty($itmsk) && isset($cskills[$itmsk]))
+		$bookpara = get_clbpara($data['itmpara'.$itmn] ?? '');
+		$bookskill = $bookpara['wheelchair_skill'] ?? $itmsk;
+		if(isset($bookpara['wheelchair_skill']) && (!is_string($bookskill) || !isset($GLOBALS['wheelchair_skills'][$bookskill]) || !wheelchair_supported())) {
+			$log .= '当前规则不支持这本辅助技能书，书已保留。<br>';
+			return;
+		}
+		if(!empty($bookskill) && isset($cskills[$bookskill]))
 		{
 
-			$flag = getclubskill($itmsk,$clbpara);
+			$flag = getclubskill($bookskill,$clbpara);
 			if($flag)
 			{
-				$log.="哇！没想到这本书里竟然介绍了<span class='yellow'>「{$cskills[$itmsk]['name']}」</span>的原理！<br>获得了技能<span class='yellow'>「{$cskills[$itmsk]['name']}」</span>！<br>你心满意足地把<span class='red'>{$itm}</span>吃进了肚里。<br>";
-				addnews($now,'getsk_'.$itmsk,$name,$itm,$nick);
+				$log.="哇！没想到这本书里竟然介绍了<span class='yellow'>「{$cskills[$bookskill]['name']}」</span>的原理！<br>获得了技能<span class='yellow'>「{$cskills[$bookskill]['name']}」</span>！<br>你心满意足地把<span class='red'>{$itm}</span>吃进了肚里。<br>";
+				addnews($now,'getsk_'.$bookskill,$name,$itm,$nick);
+				if(isset($bookpara['wheelchair_skill'])) wheelchair_log($cskills[$bookskill]['name'],$bookskill==='wc_review' ? '复盘不产生惩罚。' : '从现在起，本局此后切糕收益为 1/'.(1<<wheelchair_penalty_count($data)).'，单笔向下取整。');
 			}
 			else 
 			{

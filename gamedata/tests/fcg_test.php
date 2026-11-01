@@ -111,6 +111,12 @@ fcg_buy($data,$user,$pack,86500);fcg_test($user['credits2']===480,'daily reset')
 $title=array_replace($pack,array('item_id'=>2,'daily_limit'=>0,'reward_type'=>'title','reward_payload'=>'{"title":9101}'));
 fcg_buy($data,$user,$title,86500);fcg_test(fcg_title_owned($user,9101),'title current nicksrev format');
 fcg_test_throws(function()use(&$data,&$user,$title){fcg_buy($data,$user,$title,86501);},'no duplicate title charge');
+$titles_list[9301]='轮椅';
+foreach($catalog as $seed) if(($seed[6]['title'] ?? 0)===9301) $wheelchair_shop=array('item_id'=>$seed[0],'price_credits2'=>$seed[4],'enabled'=>1,'daily_limit'=>$seed[7],'total_limit'=>$seed[8],'reward_type'=>$seed[5],'reward_payload'=>$seed[6]);
+$wheelchair_user=array('credits2'=>1,'nicksrev'=>''); $wheelchair_account=fcg_new_account();
+fcg_buy($wheelchair_account,$wheelchair_user,$wheelchair_shop,86500);
+fcg_test($wheelchair_user['credits2']===0 && fcg_title_owned($wheelchair_user,9301),'wheelchair title costs exactly one cutcake and is delivered');
+fcg_test_throws(function()use(&$wheelchair_account,&$wheelchair_user,$wheelchair_shop){fcg_buy($wheelchair_account,$wheelchair_user,$wheelchair_shop,86501);},'wheelchair title cannot be charged twice');
 $unknown=array_replace($pack,array('item_id'=>99,'reward_type'=>'custom'));
 fcg_test_throws(function()use(&$data,&$user,$unknown){fcg_buy($data,$user,$unknown,86501);},'unsupported delivery rejected');
 $data['match']=fcg_test_match();$data['match']['result']='win';$before=array_sum($data['collection']);fcg_settle($data,$user);fcg_settle($data,$user);

@@ -121,6 +121,7 @@ function init_profile($data=NULL)
 
 function init_battle_rev($pa,$pd,$ismeet=0)
 {
+	if(function_exists('wheelchair_observe')) wheelchair_observe($pa,$pd);
 	global $sdata,$tdata,$battle_title,$hpcolor;
 	include_once GAME_ROOT.'./include/init.func.php';
 	//初始化头像显示
