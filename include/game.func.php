@@ -296,7 +296,7 @@ function init_clubskillsdata($sk,$data)
 	return 0;
 }
 
-function check_add_searchmemory($id,$itp,$nm,&$data=NULL)
+function check_add_searchmemory($id,$itp,$nm,&$data=NULL,$tag='')
 {
 	global $allow_semo,$smeo_max,$log;
 
@@ -309,8 +309,9 @@ function check_add_searchmemory($id,$itp,$nm,&$data=NULL)
 
 	if($allow_semo)
 	{
+		$cur_smeo_max = (isset($data['nick']) && $data['nick'] == 1) ? $smeo_max + 1 : $smeo_max;
 		$now_smeo = empty($data['clbpara']['smeo']) ? 0 : count($data['clbpara']['smeo']);
-		if($now_smeo >= $smeo_max)
+		if($now_smeo >= $cur_smeo_max)
 		{
 			lost_searchmemory(NULL,$data);
 		}
@@ -333,7 +334,8 @@ function check_add_searchmemory($id,$itp,$nm,&$data=NULL)
 				}
 			}
 		}
-		array_push($data['clbpara']['smeo'], Array($id,$itp,$nm));
+		$entry = $tag !== '' ? Array($id,$itp,$nm,$tag) : Array($id,$itp,$nm);
+		array_push($data['clbpara']['smeo'], $entry);
 		if(!$flag) $log .= "<span class='grey'>你设法将{$nm_desc}保持在视野范围内。</span><br>";
 	}
 	return;

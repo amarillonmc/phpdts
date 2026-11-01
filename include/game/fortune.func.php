@@ -30,8 +30,8 @@ function fortuneCookie1($fortune){
 
     $fnumber = $fortune;
 
-    //If $nick is 69, we output the fortune number.
-    if($nick == 69){
+    //If $nick is 69 or 70, we output the fortune number.
+    if($nick == 69 || $nick == 70){
         $log .= "该命运的命运编号为：<br><span class=\"red\">$fnumber</span>！<br>";
     }
     //Start Generating Fortune Cookie contents.
@@ -332,8 +332,8 @@ function randomFortune($fortune){
 
     $fnumber = $fortune;
 
-    //If $nick is 69, we output the fortune number.
-    if($nick == 69){
+    //If $nick is 69 or 70, we output the fortune number.
+    if($nick == 69 || $nick == 70){
         $log .= "该命运的命运编号为：<br><span class=\"red\">$fnumber</span>！<br>";
     }
     //Start Generating Fortune Cookie contents.

@@ -12,7 +12,7 @@ if (! defined('IN_GAME')) {
  * @param array &$data 玩家数据
  */
 function item_special_effect($itmn, &$data) {
-    global $log, $now, $db, $tablepre;
+    global $log, $now, $db, $tablepre, $nosta;
     extract($data, EXTR_REFS);
     
     $itm = & ${'itm' . $itmn};
@@ -222,6 +222,18 @@ function item_special_effect($itmn, &$data) {
             if ($hp > 0) {$log .= "<span class=\"yellow\">{$itm}用完了。</span><br>";}
             $itm = $itmk = $itmsk = '';
             $itme = $itms = 0;
+        }
+    } elseif ($itm == '世界树形图的演算报告' || $itm == '世界树形图的核心终端') {
+        $rp_down = rand(120, 240);
+        $rp = max(0, $rp - $rp_down);
+        $log .= "你查阅了<span class=\"yellow\">{$itm}</span>，梳理了因果线的流向，心中的罪恶感减轻了！（RP降低了<span class=\"lime\">{$rp_down}</span>点）<br>";
+        if ($itms != $nosta) {
+            $itms--;
+            if ($itms <= 0) {
+                $log .= "<span class=\"yellow\">{$itm}用完了。</span><br>";
+                $itm = $itmk = $itmsk = '';
+                $itme = $itms = 0;
+            }
         }
     }
 }

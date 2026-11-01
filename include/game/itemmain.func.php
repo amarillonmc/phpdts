@@ -288,7 +288,7 @@ function trap(&$data=NULL){
 			if(!empty($data['skilllog'])) $log.= $data['skilllog'];
 			$log .= "受到<span class=\"dmg\">$damage</span>点伤害！<br>";
 			$trappara = get_itmpara($itmpara0);
-			if(ai93_enabled() && isset($trappara['ai93_inf']) && in_array($trappara['ai93_inf'],array('i','u','e','p','w'))) {
+			if(isset($trappara['ai93_inf']) && in_array($trappara['ai93_inf'],array('b','h','a','f','i','u','e','p','w'))) {
 				include_once GAME_ROOT.'./include/game/revattr.func.php';
 				if(\revattr\get_inf_rev($data,$trappara['ai93_inf'])) {
 					global $exdmginf;
@@ -1578,6 +1578,14 @@ function getcorpse($item,&$data=NULL)
 	if((empty($itms0) && $itms0 !== $nosta)||!$itmk0||$itmk0=='WN'||$itmk0=='DN') {
 		$log .= '该物品不存在！';
 	} else {
+		# 「搜刮」技能判定：从死去的NPC·玩家身上捡取补给时，有概率效果·耐久加倍
+		if(strpos($itmk0, 'H') === 0 && !empty($clbpara['skill']) && in_array('tl_supplyloot', $clbpara['skill'])) {
+			if(diceroll(99) < get_skillvars('tl_supplyloot', 'obbs')) {
+				$itme0 = $itme0 * 2;
+				if($itms0 !== $nosta) $itms0 = $itms0 * 2;
+				$log .= "<span class=\"lime\">「搜刮」使你从尸体上拾取的<span class=\"yellow\">{$itm0}</span>效果与耐久加倍了！</span><br>";
+			}
+		}
 		itemget($data);
 	}
 	$action = ''; $bid = 0;

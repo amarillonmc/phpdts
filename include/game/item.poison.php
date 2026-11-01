@@ -15,6 +15,29 @@ function item_poison($itmn, &$data) {
 	$itms = & ${'itms' . $itmn};
 	$itmsk = & ${'itmsk' . $itmn};
 
+	# 「贝爷」头衔效果：食用有毒补给时有一定概率不产生伤害并正常恢复
+	if (isset($nick) && $nick == 22 && diceroll(99) < 75) {
+		$log .= "<span class=\"lime\">这点毒素对你来说不过是鸡肉味嘎嘣脆！</span><br>";
+		if (substr($itmk, 1, 1) == 'H' || substr($itmk, 1, 1) == 'B') {
+			$hp = min($mhp, $hp + $itme);
+		}
+		if (substr($itmk, 1, 1) == 'S' || substr($itmk, 1, 1) == 'B') {
+			$sp = min($msp, $sp + $itme);
+		}
+		$log .= "你食用了<span class=\"red\">$itm</span>，恢复了<span class=\"yellow\">$itme</span>点属性！<br>";
+		if ($itm == '像围棋子一样的饼干') $clbpara['achvars']['eat_weiqi'] = 1;
+		if ($itm == '桔黄色的果酱') $clbpara['achvars']['eat_jelly'] = 1;
+		if ($itms != $nosta) {
+			$itms--;
+			if ($itms <= 0) {
+				$log .= "<span class=\"red\">$itm</span>用光了。<br>";
+				$itm = $itmk = $itmsk = '';
+				$itme = $itms = 0;
+			}
+		}
+		return;
+	}
+
 	if (strpos($itmk, '2') === 2) {
 		$damage = round($itme * 2);
 	} elseif (strpos($itmk, '1') === 2) {

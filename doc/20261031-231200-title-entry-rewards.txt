@@ -1,0 +1,71 @@
+# 20261031-231200 头衔入场奖励实装（第一批）与头衔相关 Bug 修复
+
+## 1. 改动背景与目的 (Why)
+根据头衔入场奖励盘点与官方论坛意见征集帖（`thread-177`）确认的第一批方案，为 20 个此前缺少入场奖励（或需补完机制）的头衔实装入场奖励、专属道具与专属技能，同步更新头衔悬浮提示（Tooltip），并修复盘点中发现的 4 处头衔/成就相关 Bug。未列入本批的其余头衔（含暂缓的 `21 神农`）与设定考据订正已整理归档至 `doc/20261031-231200-title-entry-rewards-backlog.md`。
+
+## 2. 具体改动内容 (What)
+
+### A. 已计划部分实装
+1. **`ID 105 KEY男`**
+   - 新增福袋配置 `gamedata/cache/randomKEY_1.php` 并在 `include/game/item.giftbox.php` 接入 `p0KEY` 类型；开局赠送 `KEY系催泪福袋`，开启后按概率产出『KEY系催泪弹』各阶段合成部件（半身像、雏菊、方块、提示纸条、咏叹调/覆唱诗等，小概率直接开出成品）。
+2. **`ID 7 树形图` & `ID 8 TERRA`**
+   - `7 树形图` 开局赠送 `世界树形图的演算报告`（`Y` / 1效 / 3耐）；`8 TERRA` 在原有胶带棍基础上额外赠送无限耐久的 `世界树形图的核心终端`（`Y` / 1效 / `∞`耐 / `v`）。
+   - 在 `include/game/item.special_effect.php` 中实装上述两件道具的使用逻辑：每次使用可降低 120～240 点 RP（最低至 0）。
+3. **`ID 9 素描本`**
+   - 开局赠送 `上月澪的素描本`（`Y` / 1效 / 3耐，捏他《ONE ～辉之季节～》上月澪的素描本）。
+   - 在 `include/game/item.npc.php` 中实装使用逻辑：翻开素描本可将战场上存活的数据碎片 NPC（`type = 14`：梦美、叶留佳、静流、库特）吸引至玩家当前所在地图。
+4. **`ID 22 贝爷`**
+   - 在 `include/game/item.poison.php` 中实装：佩戴 `贝爷` 头衔食用有毒补给时，有 75% 概率免疫毒性伤害与中毒状态，并按该补给的效果值正常恢复生命或体力。
+
+### B. 社区征集（`thread-177`）采纳部分实装
+5. **`ID 1 幻想`**
+   - 在 `include/game.func.php` (`check_add_searchmemory`) 与 `include/game/search.func.php` (`search`) 中实装：视野上限 +1，且每次探索时自动在额外视野格中刷新一个当前地图的随机道具。
+6. **`ID 2 流星`**
+   - 在 `include/game/search.func.php` (`calc_move_search_sp_cost`) 中实装：探索消耗体力 -20%，在清水池（`$pls == 7`）探索消耗体力 -40%。
+7. **`ID 3 黑客`**
+   - 在 `include/game/item2.func.php` (`hack`) 中实装：进行黑客操作触发小概率失败惩罚时，不会被控制系统远程消灭。
+8. **`ID 4 最后一步`**
+   - 在 `gamedata/cache/clubskills_1.php` 注册被动技能 `tl_finalloot`（「劫掠」），并在 `include/game/revattr.func.php` (`attack_finish_events`) 实装：攻击 NPC 命中时有 35% 概率直接汲取其携带金钱的 25%。
+9. **`ID 10 未来战士`**
+   - 注册主动技能 `tl_timescout`（「寻物」），在 `include/game/revclubskills_extra.func.php`、`command.php` 与 `include/game/search.func.php` (`focus_item`) 实装：消耗 35 点怒气，从全图随机地图抽取一件地面道具塞入视野；从视野点击拾取时直接跨地图拾取并从原地图移除。
+10. **`ID 17 吉祥物`**
+    - 开局赠送 `果酱面包便当盒`（`HB` / 101效 / `∞`耐）。
+11. **`ID 18 替天行道`**
+    - 开局佩戴饰品 `Untainted Glory`（`A` / 1效 / 1耐 / `HZ`），并在 `include/game/itemmix.func.php` 实装：佩戴 `Untainted Glory` 时合成 `Untainted Glory` 不会清空背包。
+12. **`ID 20 补给掠夺者`**
+    - 注册被动技能 `tl_supplyloot`（「搜刮」），在 `include/game/itemmain.func.php` (`getcorpse`) 实装：从尸体上拾取补给品（`H` 类）时有 40% 概率使其效果与耐久加倍。
+13. **`ID 61 生存者`**
+    - 开局获得 150 点初始经验值（`'exp' => '[:+=:]150'`）。
+14. **`ID 76 G.D.M`**
+    - 开局额外获得 100 点歌魂与歌魂上限（`'ss' => '[:+=:]100', 'mss' => '[:+=:]100'`）。
+15. **`ID 98 剑圣`**
+    - 开局获得 200 点 RP；在 `include/state.func.php` (`rpup_rev` & `check_swordmaster_rp`) 与 `include/game/revcombat.func.php` 实装：RP 获取量增加 50%，当 RP 达到 600 时自动消耗全部 RP，将当前装备的非空手主武器转化为斩系（`WK`），并按消耗 RP 的 50% / 25% 提升武器效果与耐久。
+16. **`ID 108 神触`**
+    - 开局装备灵魂绑定的 `『神触之笔』`（`WP` / 120效 / 200耐 / `v` / `weppara = '{"god_touch":1}'`），并赠送改名道具 `超臆想时空`。
+    - 在 `include/game/revattr.calc.php` (`get_clbskill_wep_skill`) 中实装：带有 `god_touch` 参数的武器在计算熟练度时取全系最高熟练度。
+17. **`ID 113 四面骰`**
+    - 在 `include/game/revattr.func.php` 实装：使用混沌伤害（`R`）武器时享受与奇迹属性相同的升格判定，不会为敌人恢复生命，且不会产生额外的随机耐久损耗。
+
+### C. 其余优先部分实装
+18. **`ID 60 暴雷骤雨`**
+    - 开局赠送 `「码语行人」称号卡`（`ZB` / 21效 / 1耐）。
+19. **`ID 70 开路的明火`**
+    - 在 `include/game/dice.func.php` 与 `include/game/fortune.func.php` 中继承 `69 奇迹的篝火` 的看穿检定骰点与命运编号效果。
+    - 注册主动技能 `tl_allin`（「孤注一掷」），在 `include/game/revclubskills.func.php`、`include/game/revclubskills_extra.func.php` 与 `include/game/dice.func.php` 实装：消耗 50 点怒气并输入指定数值，强行将自己的下一个检定骰结果锁定为该数值（不超过骰子上限）。
+20. **`ID 96 ★一发逆转！★`**
+    - 注册主动技能 `tl_turnabout`（「逆转布雷」），在 `include/game/revclubskills_extra.func.php` 实装：消耗全部怒气（至少 20 点），按怒气量在当前地图放置附带随机异常状态（`ai93_inf`）的 `★逆转地雷★`。
+    - 放宽 `include/game/itemmain.func.php` 与 `include/game/item.trap.php` 中 `ai93_inf` 异常地雷的判定限制，使其在常规模式下同样生效且支持全部 9 种异常状态。
+
+### D. Bug 修复与 Tooltip 补全
+1. 修复 `gamedata/cache/achievement_1.php` 中成就 52（`◎光之创造神◎`）二阶头衔名误写为 `'『ＥＸ』'` 的问题，更正为 `'◎胜利之光◎'`。
+2. 在 `gamedata/cache/titles_1.php` 的 `$titles_list` 与 `$title_desc` 中补登记 `121 => '◎胜利之光◎'` 与 `122 => '善有善报'`。
+3. 修复 `include/game/achievement.func.php` 中合成『迷你鲨』51 次（成就 38 二阶）时误将进度写入成就 37（`done_achievement_rev(37, 2, $nn)`）的 Bug，更正为 `38`。
+4. 更新 `gamedata/cache/titles_1.php` 中全部新实装头衔及六系爱好者（`24`/`26`/`30`/`38`/`40`/`44`）的 `$title_desc` 悬浮提示。
+
+## 3. 验证方式与结果 (How Verified)
+- 对全部 24 个新增/修改的 PHP 文件执行 `php -d short_open_tag=1 -l` 语法检查，全部通过。
+- 编写独立回归测试脚本对 `$title_valid` 入场操作符解析、新道具使用（树形图/TERRA 降 RP、KEY 男福袋配置）、新技能触发（孤注一掷锁骰、劫掠偷钱）、被动机制（幻想视野+1、流星探索体力减免、剑圣 RP 增幅与斩系重铸、神触最高熟计算、四面骰混沌伤害保底）逐项验证通过。
+- 执行 `git diff --check` 检查无空白字符或格式错误。
+
+## 4. 已知限制 (Known Limitations)
+- 尚未连接在线数据库进行完整网页端 UI 点击联调；剩余未实装头衔已归档至 `doc/20261031-231200-title-entry-rewards-backlog.md` 留待后续批次讨论。

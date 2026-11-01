@@ -40,6 +40,11 @@ function diceroll($dice){
         //set dice to 1
         $result = 1;
         $nikstatusa = $nikstatuse = 0;
+    }elseif($nikstatusa == 4 || (is_array($clbpara) && isset($clbpara['tl_allin_val']))){
+        $allin_val = (is_array($clbpara) && isset($clbpara['tl_allin_val'])) ? intval($clbpara['tl_allin_val']) : intval($nikstatuse);
+        $result = min($dice, max(0, $allin_val));
+        $nikstatusa = $nikstatuse = 0;
+        if(is_array($clbpara)) unset($clbpara['tl_allin_val']);
     }
 
     if($clbpara['BGMBrand'] == 'rixolamal'){
@@ -116,7 +121,7 @@ function diceroll($dice){
         $clbpara['traitorRoll'] = 0;
     }
 
-    if($nick == 69){
+    if($nick == 69 || $nick == 70){
         $log .= "<span class=\"lime\">你本次骰子的检定结果为：</span><span class=\"red\">$result</span>＼<span class=\"yellow\">$dice</span>！<br>";
     }
     //$log .= "【DEBUG】你本次骰子的检定结果为：<br><span class=\"red\">$result</span>＼<span class=\"yellow\">$dice</span>！<br>";

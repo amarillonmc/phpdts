@@ -747,10 +747,10 @@ namespace revattr
 			# 混沌武器耐久损耗：
 			$max_imp_times = $pa['weps'] == $nosta ? $pa['wepe'] : $pa['weps'];
 			$min_imp_times = $pa['weps'] == $nosta ? -$pa['wepe'] : -$pa['weps'];
-			# 奇迹属性可以将混沌伤害升格：伤害下限提升、耐久不再损耗
-			if(in_array('x',$pa['ex_keys']))
+			# 奇迹属性或「四面骰」头衔可以将混沌伤害升格：不会为敌人回血、耐久不再额外损耗
+			if(in_array('x',$pa['ex_keys']) || (isset($pa['nick']) && $pa['nick'] == 113))
 			{
-				$damage = rand($maxdmg*0.1,$maxdmg);
+				$damage = rand(max(1, round($maxdmg*0.1)), max(1, round($maxdmg)));
 			}
 			else
 			{
@@ -2492,6 +2492,19 @@ namespace revattr
 
 		# 检查成就502
 		if ($pa['wep_name'] == '翼人的羽毛') $pa['clbpara']['achvars']['ach502'] = $pa['final_damage'];
+
+		# 「劫掠」技能判定（最后一步头衔）：攻击NPC命中时有概率直接汲取NPC携带的金钱
+		if (isset($pa['skill_tl_finalloot']) && $pd['type'] > 0 && $pd['money'] > 0 && $pa['hitrate_times'] > 0)
+		{
+			if (diceroll(99) < get_skillvars('tl_finalloot', 'obbs'))
+			{
+				$loot_rate = get_skillvars('tl_finalloot', 'rate');
+				$loot_money = max(1, min($pd['money'], round($pd['money'] * ($loot_rate / 100))));
+				$pd['money'] -= $loot_money;
+				$pa['money'] += $loot_money;
+				$log .= "<span class=\"yellow\">「劫掠」使{$pa['nm']}从{$pd['nm']}身上直接汲取了{$loot_money}元金钱！</span><br>";
+			}
+		}
 
 		return;
 	}

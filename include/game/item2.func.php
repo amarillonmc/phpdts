@@ -187,10 +187,14 @@ function hack($itmn = 0) {
 		$itm = $itmk = $itmsk = '';
 		$itme = $itms = 0;
 	} elseif($hack_dice2 < 8 && $club != 7) {
+		if($nick == 3) {
+			$log .= "<span class=\"lime\">禁区系统试图反向追踪并远程消灭你，但被你熟练地用代理跳板甩开了！</span><br>";
+		} else {
 			$log .= "<span class=\"evergreen\">“小心隔墙有耳哦。”</span>——林无月<br>";
 			include_once GAME_ROOT.'./include/state.func.php';
 			$log .= '你擅自入侵禁区控制系统，被控制系统远程消灭！<br>';
 			death('hack');
+		}
 	} elseif($itme <= 0) {
 		$log .= "<span class=\"red\">$itm</span>的电池耗尽了。";
 	}

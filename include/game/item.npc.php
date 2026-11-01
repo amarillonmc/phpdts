@@ -257,10 +257,28 @@ function item_npc($itmn, &$data) {
             addnews($now, 'keyuu', $name, '', $pls, $nick);
             // 系统广播
             $db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【红暮】','','切，真是少见的要求，那么我会在【无月之影】等着你们的挑战！')");
-            $db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【蓝凝】','','英雄就该姗姗来迟，我会和姐姐一起迎接你们！')");
-            // 销毁物品
-            $itm = $itmk = $itmsk = '';
-            $itme = $itms = 0;
+        $db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【蓝凝】','','英雄就该姗姗来迟，我会和姐姐一起迎接你们！')");
+        // 销毁物品
+        $itm = $itmk = $itmsk = '';
+        $itme = $itms = 0;
 
+    } elseif ($itm == '上月澪的素描本') {
+        $npls = (int)$pls;
+        $db->query("UPDATE {$tablepre}players SET pls = '$npls' WHERE type = 14 AND hp > 0");
+        $moved_num = $db->affected_rows();
+        $log .= "你翻开了<span class=\"yellow\">{$itm}</span>，在纸页上素描出少女们的身影……<br>";
+        if ($moved_num > 0) {
+            $log .= "<span class=\"lime\">画纸上的轮廓仿佛与现实重叠，战场上的数据碎片们被吸引到了【{$plsinfo[$npls]}】！</span><br>";
+        } else {
+            $log .= "似乎没有存活的数据碎片响应你的描绘。<br>";
+        }
+        if ($itms != $nosta) {
+            $itms--;
+            if ($itms <= 0) {
+                $log .= "<span class=\"red\">$itm</span>用光了。<br>";
+                $itm = $itmk = $itmsk = '';
+                $itme = $itms = 0;
+            }
+        }
     }
 }

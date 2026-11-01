@@ -636,6 +636,7 @@ namespace revcombat
 		rgup_rev($pa,$pd,$active);
 		//计算武器损耗
 		if(!empty($pa['wep_imp_times'])) weapon_loss($pa,$pa['wep_imp_times']);
+		if(function_exists('check_swordmaster_rp')) check_swordmaster_rp($pa);
 		//发出声音
 		addnoise ( $pa['wep_kind'], $pa['wepsk'], $now, $pa['pls'], $pa['pid'], $pd['pid'], $pa['wep_kind'] );
 
