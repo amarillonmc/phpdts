@@ -495,11 +495,16 @@ function itemmix_events(&$data=NULL)
 
 	# If one attempts to mix Untainted Glory - clear their bag.
 	if($itm0 == 'Untainted Glory'){
-		$log .= "<span class='minirainbow'>一道强光闪过——<br>
-			你背包中的物品一瞬间全部消失了！<br>这是获得无毁荣光的必要代价！</span><br>";
-		$itm1 = $itmk1 = $itmsk1 = $itm2 = $itmk2 = $itmsk2 = $itm3 = $itmk3 = $itmsk3 = $itm4 = $itmk4 = $itmsk4 = $itm5 = $itmk5 = $itmsk5 = $itm6 = $itmk6 = $itmsk6 = '';
-		$itmpara1 = $itmpara2 = $itmpara3 = $itmpara4 = $itmpara5 = $itmpara6 = '';
-		$itme1 = $itms1 = $itme2 = $itms2 = $itme3 = $itms3 = $itme4 = $itms4 = $itme5 = $itms5 = $itme6 = $itms6 = 0;
+		if($art == 'Untainted Glory'){
+			$log .= "<span class='minirainbow'>一道强光闪过——<br>
+				你身上佩戴的无毁荣光与之共鸣，背包中的物品完好无损！</span><br>";
+		}else{
+			$log .= "<span class='minirainbow'>一道强光闪过——<br>
+				你背包中的物品一瞬间全部消失了！<br>这是获得无毁荣光的必要代价！</span><br>";
+			$itm1 = $itmk1 = $itmsk1 = $itm2 = $itmk2 = $itmsk2 = $itm3 = $itmk3 = $itmsk3 = $itm4 = $itmk4 = $itmsk4 = $itm5 = $itmk5 = $itmsk5 = $itm6 = $itmk6 = $itmsk6 = '';
+			$itmpara1 = $itmpara2 = $itmpara3 = $itmpara4 = $itmpara5 = $itmpara6 = '';
+			$itme1 = $itms1 = $itme2 = $itms2 = $itme3 = $itms3 = $itme4 = $itms4 = $itme5 = $itms5 = $itme6 = $itms6 = 0;
+		}
 	}
 
 	if($itm0 == '☢核子核心☢'){

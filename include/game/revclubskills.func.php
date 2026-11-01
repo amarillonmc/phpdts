@@ -138,7 +138,7 @@
 		{
 			foreach($cskill['events'] as $event)
 			{
-				$flag = upgclbskills_events($event,$sk,$pdata);
+				$flag = upgclbskills_events($event,$sk,$pdata,$nums);
 				if(!$flag) break;
 			}
 			# 会触发多个事件时，只要有一个事件成功触发就会继续升级流程 # 什么脑瘫设计，赶紧改成反过来
@@ -237,7 +237,7 @@
 		global $log,$gamecfg;
 		global $pdata,$club,$clbpara,$skillpoint;
 		global $cskills,$cskills_blist,$cskills_wlist;
-		if($nums <= 0)
+		if($nums < 0 || ($nums == 0 && $sk != 'tl_allin'))
 		{
 			$log.="输入了无效的升级指令。<br>";
 			return 0;

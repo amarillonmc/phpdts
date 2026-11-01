@@ -403,7 +403,7 @@ function check_mixitem_achievement_rev($nn,$item)
 		get_title("射系爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement_rev(38,$nn)>=51 && (check_achievement_rev(38,$nn)<2)) {
-		done_achievement_rev(37,2,$nn);
+		done_achievement_rev(38,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
 		
@@ -2385,7 +2385,7 @@ function check_mixitem_achievement($nn,$item)
 		get_title("射系爱好者",$nn);
 		}
 		elseif ((int)fetch_achievement(38,$nn)>=51 && (check_achievement(38,$nn)<2)) {
-		done_achievement(37,2,$nn);
+		done_achievement(38,2,$nn);
 		$db->query("UPDATE {$gtablepre}users SET credits=credits+100 WHERE username='".$nn."'" );
 		$db->query("UPDATE {$gtablepre}users SET credits2=credits2 WHERE username='".$nn."'" );
 		

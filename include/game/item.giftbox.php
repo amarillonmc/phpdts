@@ -61,6 +61,8 @@ function item_giftbox($itmn, &$data) {
 		} 
 		if(strpos($itmk, 'p0P') === 0){
 			include_once config('randomWP',$gamecfg);
+		}elseif(strpos($itmk, 'p0KEY') === 0){
+			include_once config('randomKEY',$gamecfg);
 		}elseif(strpos($itmk, 'p0K') === 0){
 			include_once config('randomWK',$gamecfg);
 		}elseif(strpos($itmk, 'p0G') === 0){

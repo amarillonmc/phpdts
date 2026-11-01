@@ -40,8 +40,9 @@ namespace revattr
 			}
 		}
 
-		#「人杰」技能判定
-		if(isset($pa['skill_c11_renjie']))
+		#「人杰」技能与「神触」武器判定
+		$weppara = get_itmpara($pa['weppara'] ?? '');
+		if(isset($pa['skill_c11_renjie']) || !empty($weppara['god_touch']))
 		{
 			foreach(Array('wp','wk','wc','wg','wd','wf') as $skw) $wep_skill = max($pa[$skw],$wep_skill);
 		}

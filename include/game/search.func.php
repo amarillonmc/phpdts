@@ -216,6 +216,26 @@ function search(&$data=NULL)
 
 	$log .= "{$actlog}，你搜索着周围的一切。。。<br>";
 
+	# 「幻想」头衔效果：增加的视野格每次探索刷新为当前地图的随机物品
+	if(isset($nick) && $nick == 1) {
+		global $db, $tablepre;
+		if(!empty($clbpara['smeo']) && is_array($clbpara['smeo'])) {
+			foreach($clbpara['smeo'] as $sid => $sm) {
+				if(isset($sm[3]) && $sm[3] === 'fantasy') {
+					unset($clbpara['smeo'][$sid]);
+				}
+			}
+			$clbpara['smeo'] = array_values($clbpara['smeo']);
+		}
+		$f_res = $db->query("SELECT iid,itm FROM {$tablepre}mapitem WHERE pls = '$pls' AND itms > 0");
+		$f_num = $db->num_rows($f_res);
+		if($f_num > 0) {
+			$db->data_seek($f_res, rand(0, $f_num - 1));
+			$f_mi = $db->fetch_array($f_res);
+			check_add_searchmemory($f_mi['iid'], 'itm', $f_mi['itm'], $data, 'fantasy');
+		}
+	}
+
 	# 探索指定地点，结算探索事件
 	move_search_events($data,'search');
 	if($hp <= 0) return;
@@ -288,6 +308,10 @@ function calc_move_search_sp_cost(&$data,$act)
 	}
 	# 宛如疾风消耗减少
 	if($club == 6) $costsp -= $lvl>=20 ? 14 : 10+floor($lvl/5);
+	# 「流星」头衔效果：探索消耗体力-20%，在清水池探索消耗体力-40%
+	if($act == 'search' && isset($nick) && $nick == 2) {
+		$costsp = max(1, round($costsp * ($pls == 7 ? 0.6 : 0.8)));
+	}
 	if(function_exists('elevator_sp_cost')) $costsp=elevator_sp_cost($data,$costsp);
 
 	if($$actpoint > $costsp)
@@ -1024,7 +1048,7 @@ function discover($schmode = 0,&$data=NULL)
 
 }
 
-function focus_item(&$data=NULL,$id=NULL)
+function focus_item(&$data=NULL,$id=NULL,$any_pls=false)
 {
 	global $db,$tablepre,$log;
 	if(!isset($data))
@@ -1036,7 +1060,8 @@ function focus_item(&$data=NULL,$id=NULL)
 
 	if(isset($id))
 	{
-		$result = $db->query("SELECT * FROM {$tablepre}mapitem WHERE pls = '$pls' AND iid = '$id'");
+		$where_pls = $any_pls ? '' : "pls = '$pls' AND ";
+		$result = $db->query("SELECT * FROM {$tablepre}mapitem WHERE {$where_pls}iid = '$id'");
 		if(!$db->num_rows($result))
 		{
 			// 这是特性

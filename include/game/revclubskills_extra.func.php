@@ -7,7 +7,7 @@
 	# 新社团技能 - 特殊社团技能处理：
 
 	# 升级指定技能会触发的事件，返回0时代表无法升级技能
-	function upgclbskills_events($event,$sk,&$data=NULL)
+	function upgclbskills_events($event,$sk,&$data=NULL,$nums=1)
 	{
 		global $log,$cskills,$now,$club_skillslist,$weather,$gamevars,$wthinfo,$db,$tablepre;
 		global $elements_info;
@@ -24,6 +24,72 @@
 			include_once GAME_ROOT.'./include/game/club23.func.php';
 			global $c23_patch_mode;
 			return club23_skill($sk,$data,isset($c23_patch_mode) ? $c23_patch_mode : '');
+		}
+
+		# 事件：未来战士·寻物
+		if($event == 'tl_timescout')
+		{
+			$ragecost = get_skillvars($sk,'ragecost');
+			if($rage < $ragecost)
+			{
+				$log .= "怒气不足，需要<span class=\"yellow\">{$ragecost}</span>点怒气！<br>";
+				return 0;
+			}
+			$res = $db->query("SELECT iid,itm,pls FROM {$tablepre}mapitem WHERE itms > 0");
+			$num = $db->num_rows($res);
+			if($num <= 0)
+			{
+				$log .= "当前战场上没有任何地图道具可供搜寻！<br>";
+				return 0;
+			}
+			$rage -= $ragecost;
+			$db->data_seek($res, rand(0, $num - 1));
+			$mi = $db->fetch_array($res);
+			check_add_searchmemory($mi['iid'], 'itm', $mi['itm'], $data, 'remote');
+			global $plsinfo;
+			$from_pls = isset($plsinfo[$mi['pls']]) ? $plsinfo[$mi['pls']] : '未知地点';
+			$log .= "<span class=\"lime\">你消耗了{$ragecost}点怒气发动「寻物」，将位于【{$from_pls}】的<span class=\"yellow\">{$mi['itm']}</span>拉入了你的视野中！</span><br>";
+			return 1;
+		}
+		# 事件：开路的明火·孤注一掷
+		if($event == 'tl_allin')
+		{
+			$ragecost = get_skillvars($sk,'ragecost');
+			if($rage < $ragecost)
+			{
+				$log .= "怒气不足，需要<span class=\"yellow\">{$ragecost}</span>点怒气！<br>";
+				return 0;
+			}
+			$rage -= $ragecost;
+			$target_val = max(0, intval($nums));
+			$nikstatusa = 4;
+			$nikstatuse = $target_val;
+			$clbpara['tl_allin_val'] = $target_val;
+			$log .= "<span class=\"lime\">你消耗了{$ragecost}点怒气发动「孤注一掷」，将下一次检定骰的点数锁定为了<span class=\"yellow\">{$target_val}</span>！</span><br>";
+			return 1;
+		}
+		# 事件：★一发逆转！★·逆转布雷
+		if($event == 'tl_turnabout')
+		{
+			$minrage = get_skillvars($sk,'minrage');
+			if($rage < $minrage)
+			{
+				$log .= "怒气不足，至少需要<span class=\"yellow\">{$minrage}</span>点怒气！<br>";
+				return 0;
+			}
+			$cost_rage = $rage;
+			$rage = 0;
+			$trap_num = max(1, floor($cost_rage / 25));
+			$trap_eff = $cost_rage * 5;
+			$inf_keys = array('b','h','a','f','p','u','i','e','w');
+			for($ti = 0; $ti < $trap_num; $ti++)
+			{
+				$r_inf = $inf_keys[array_rand($inf_keys)];
+				$tpara = json_encode(array('ai93_inf' => $r_inf));
+				$db->query("INSERT INTO {$tablepre}maptrap (itm, itmk, itme, itms, itmsk, pls, itmpara) VALUES ('★逆转地雷★', 'TO', '$trap_eff', '1', '$pid', '$pls', '$tpara')");
+			}
+			$log .= "<span class=\"lime\">你消耗了全部的<span class=\"yellow\">{$cost_rage}</span>点怒气发动「逆转布雷」，在当前地图秘密布下了<span class=\"red\">{$trap_num}</span>枚附带异常状态的<span class=\"yellow\">★逆转地雷★</span>（效果{$trap_eff}）！</span><br>";
+			return 1;
 		}
 
 		# 事件：激活技能

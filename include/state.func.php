@@ -687,7 +687,30 @@
 				$rpup = round($rpup*(1+($sk_var/100)));
 			}
 		}
+		# 「剑圣」头衔效果：报应点数获取量增加
+		if(isset($pa['nick']) && $pa['nick'] == 98 && $rpup > 0)
+		{
+			$rpup = round($rpup * 1.5);
+		}
 		$pa['rp'] += $rpup;
+		check_swordmaster_rp($pa);
+	}
+
+	# 「剑圣」头衔效果：报应点数达到特定值后，自动消耗所有报应点数，将主武器变为斩系并增加效果和耐久
+	function check_swordmaster_rp(&$pa)
+	{
+		global $log,$nosta;
+		if(isset($pa['nick']) && $pa['nick'] == 98 && $pa['rp'] >= 600 && !empty($pa['weps']) && $pa['wepk'] != 'WN')
+		{
+			$cost_rp = $pa['rp'];
+			$pa['rp'] = 0;
+			$pa['wepk'] = 'WK';
+			$add_e = max(1, round($cost_rp * 0.5));
+			$add_s = max(1, round($cost_rp * 0.25));
+			$pa['wepe'] += $add_e;
+			if($pa['weps'] != $nosta) $pa['weps'] += $add_s;
+			$log .= "<span class=\"yellow\">剑圣之道大成！你消耗了全部的{$cost_rp}点报应点数，将{$pa['wep']}化为斩系利刃，效果+{$add_e}，耐久+{$add_s}！</span><br>";
+		}
 	}
 
 	# 经验上涨事件

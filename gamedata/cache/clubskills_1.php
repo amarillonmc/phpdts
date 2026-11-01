@@ -2466,6 +2466,62 @@ $cskills = Array
 		'tags' => Array('inf'),
 		'desc' => '<span class="red b">你感觉自己要倒大霉了……</span>',
 	),
+	'tl_finalloot' => Array
+	(
+		'name' => '劫掠',
+		'tags' => Array('passive'),
+		'desc' => '攻击NPC命中时，有<span class="yellow">[:obbs:]%</span>概率直接汲取其携带金钱的<span class="yellow">[:rate:]%</span>',
+		'vars' => Array(
+			'obbs' => 35,
+			'rate' => 25,
+		),
+	),
+	'tl_timescout' => Array
+	(
+		'name' => '寻物',
+		'tags' => Array('active'),
+		'desc' => '消耗<span class="yellow">[:ragecost:]</span>点怒气，在视野中塞入一个来自随机地图的物品（可直接拾取）',
+		'input' => '发动',
+		'log' => '',
+		'events' => Array('tl_timescout'),
+		'vars' => Array(
+			'ragecost' => 35,
+		),
+	),
+	'tl_supplyloot' => Array
+	(
+		'name' => '搜刮',
+		'tags' => Array('passive'),
+		'desc' => '从死去的NPC或玩家身上拾取补给品时，有<span class="yellow">[:obbs:]%</span>概率使其效果与耐久加倍',
+		'vars' => Array(
+			'obbs' => 40,
+		),
+	),
+	'tl_allin' => Array
+	(
+		'name' => '孤注一掷',
+		'tags' => Array('active'),
+		'desc' => '消耗<span class="yellow">[:ragecost:]</span>点怒气，强行让自己的下一个检定骰出指定的数值（超过骰子上限则取上限）',
+		'input' => '指定',
+		'num_input' => 1,
+		'log' => '',
+		'events' => Array('tl_allin'),
+		'vars' => Array(
+			'ragecost' => 50,
+		),
+	),
+	'tl_turnabout' => Array
+	(
+		'name' => '逆转布雷',
+		'tags' => Array('active'),
+		'desc' => '消耗<span class="yellow">全部怒气</span>（至少<span class="yellow">[:minrage:]</span>点），根据消耗的怒气量在当前地图放置会对玩家造成异常状态的地雷',
+		'input' => '发动',
+		'log' => '',
+		'events' => Array('tl_turnabout'),
+		'vars' => Array(
+			'minrage' => 20,
+		),
+	),
 );
 
 

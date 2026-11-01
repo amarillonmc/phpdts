@@ -667,10 +667,11 @@ if($hp > 0){
 				$smn = substr($command,6);
 				if(!empty($clbpara['smeo'] && isset($clbpara['smeo'][$smn]))){
 					$iid = $clbpara['smeo'][$smn][0]; $itp = $clbpara['smeo'][$smn][1];
+					$is_remote = !empty($clbpara['smeo'][$smn][3]) && $clbpara['smeo'][$smn][3] === 'remote';
 					lost_searchmemory($smn,$pdata);
 					if($itp == 'itm'){
 						include_once GAME_ROOT.'./include/game/search.func.php';
-						focus_item($pdata,$iid);
+						focus_item($pdata,$iid,$is_remote);
 					}else{
 						$action = 'focus'; $bid = $iid; $command = 'focus';
 						goto chase_flag;
