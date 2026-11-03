@@ -284,7 +284,8 @@ function fcg_bootstrap($state, $csrf, $shop)
 		unset($card['ops']);
 	} unset($card);
 	$opponents=fcg_opponents(); foreach($opponents as &$o) unset($o['deck']); unset($o);
+	$emotes=array(); foreach(glob(GAME_ROOT.'img/emoticons/*.png') as $file) $emotes[]=basename($file,'.png');
 	return json_encode(array('state'=>$state,'csrf'=>$csrf,'shop'=>$shop,'cards'=>$cards,'opponents'=>array_values($opponents),
-		'quiz_defs'=>fcg_quiz_definitions(),'starter_decks_meta'=>fcg_color_starter_decks(),'bgm'=>fcg_load_bgm_config(),
+		'quiz_defs'=>fcg_quiz_definitions(),'starter_decks_meta'=>fcg_color_starter_decks(),'bgm'=>fcg_load_bgm_config(),'emotes'=>$emotes,
 		'catalog'=>array_values(fcg_catalog()),'draft_tiers'=>fcg_draft_tiers(),'titles'=>(object)$titles_list,'stickers'=>(object)fcg_stickers()),JSON_UNESCAPED_UNICODE|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_THROW_ON_ERROR);
 }

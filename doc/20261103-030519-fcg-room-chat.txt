@@ -1,0 +1,25 @@
+FCG 房间聊天恢复
+
+玩家行为
+- 进入 FCG 房后显示右侧「聊天」书签；公聊窗口支持 60 字输入、站内表情，最新消息置顶，最多保留 50 条。
+- 每 5 秒收取消息；新消息可自动展开，手动收起后停止自动展开，点击书签重新开启。
+- 当前牌局（包括结算）及远征战斗页隐藏聊天，但继续收取消息；返回可见页面可查看积累的消息。
+- 页面不可见时暂停轮询，恢复时立即收取；离房后清空并停止轮询，忽略离房前请求的迟到响应。
+
+实现
+- chat.php 原有 players 行放行路径保留；无 players 行时，核对账号登录状态、可用状态及当前房间确为 FCG，再使用本房聊天表发送。
+- 复用 chat.php/getchat 的消息格式和 lastcid 增量协议，无新表、字段或依赖。
+- include/fcg/presentation.php 向 bootstrap 提供公共表情名；fcg.js/fcg.css 新增聊天窗，模板更新资源版本戳。
+- 收发请求串行，避免增量消息重复；数字 cid 显式倒序。发送失败保留输入，重复提交期间禁用发送。
+- nouveau 使用 default/fcg.htm 回退模板，无需复制模板。
+
+验证
+- PHP 7.4.33：chat.php、include/fcg/presentation.php 语法检查通过；node --check 与 git diff --check 通过。
+- 真实 chat.php/getchat 配合隔离假数据库：21 项检查通过，覆盖常规 players 路径、FCG 房 0/非零房、未登录/封禁/非 FCG 拒绝、公聊、公告、表情与 HTML 转义、增量读取。
+- Edge 无头浏览器加载实际 fcg.js/css、FCG 模板及 PHP bootstrap，网络使用桩响应：68 项检查通过。覆盖 default/nouveau 样式、桌面/窄屏、倒序和 50 条上限、静音/展开、表情、错误保留输入、重叠收发和重复提交、经典/新牌桌与结算/远征显隐、后台接收、页面可见性、卡册状态刷新时离房、迟到响应与重新加载。
+- 已检查桌面及窄屏截图。
+- gamedata/tests/fcg_test.php 在既有 adaptive curve W 断言失败；使用修改前的 HEAD 脚本及 presentation.php 复现相同失败，本次未修改该断言或自适应牌组逻辑。
+
+限制
+- 使用现有 config.inc.php 的有效连接配置访问数据库返回 MySQL 1045（拒绝访问），尚未完成真实数据库存储与双账号同房联调；浏览器桩验不等于上线验证。
+- chat.php 既有共享协议（包括未提供 CSRF 校验）沿用，本次仅增加 FCG 成员发送路径。

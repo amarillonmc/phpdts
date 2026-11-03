@@ -297,6 +297,19 @@ body.fcg-tbl-collapsed>.title,body.fcg-tbl-collapsed>.headerlink,body.fcg-tbl-co
   .fcg-tbl-panel{top:12%;max-height:65dvh;padding:14px}.fcg-tbl-panel .fcg-log{height:44dvh}
 }
 .fcg-quiz-art{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;margin:16px 0;background:#252838}
+#fcg-chat-dock{position:fixed;right:0;top:38%;z-index:900;writing-mode:vertical-rl;padding:10px 8px;background:#1d1630ee;border:1px solid #b3925655;border-right:0;border-radius:8px 0 0 8px;color:#dbc697;font-size:13px;letter-spacing:2px;cursor:pointer}
+#fcg-chat-panel{position:fixed;right:48px;top:50%;transform:translateY(-50%);width:min(340px,calc(100vw - 64px));height:min(480px,70vh);display:flex;flex-direction:column;z-index:901;background:#191329f5;border:1px solid #b3925677;border-radius:10px;box-shadow:0 8px 32px #000a;text-align:left}
+#fcg-chat-dock[hidden],#fcg-chat-panel[hidden],.fcg-chat-emo[hidden]{display:none!important}
+.fcg-chat-head{display:flex;flex-shrink:0;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:1px solid #b3925633;color:#dbc697;font-size:13px}
+.fcg-chat-head button{padding:0 8px;font-size:18px;background:transparent}
+.fcg-chat-list{flex:1;min-height:0;overflow-y:auto;padding:8px 10px;font-size:13px;line-height:1.7;overflow-wrap:anywhere}
+.fcg-chat-list:empty:before{content:'还没有聊天消息。';color:var(--muted)}
+.fcg-chat-message img{max-width:100%;vertical-align:middle}
+.fcg-chat-form{display:flex;flex-shrink:0;gap:6px;padding:8px;border-top:1px solid #b3925633}
+.fcg-chat-form input{flex:1;min-width:0;width:0}.fcg-chat-form button{padding:6px 9px;white-space:nowrap}
+.fcg-chat-emo{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:4px;max-height:140px;flex-shrink:0;overflow-y:auto;padding:8px;border-top:1px solid #b3925633}
+.fcg-chat-emo button{padding:2px}.fcg-chat-emo img{display:block;width:100%;height:36px;object-fit:contain}
+.fcg-chat-status{flex-shrink:0;padding:0 10px;color:#edcf7c;font-size:12px}.fcg-chat-status:empty{display:none}
 .fcg-quiz-options{display:grid;gap:9px;margin-top:18px}.fcg-quiz-options button{text-align:left;padding:13px 16px;line-height:1.6}
 .fcg-starter-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}.fcg-starter-grid button{display:flex;flex-direction:column;text-align:left;gap:8px;padding:10px}.fcg-starter-grid img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:7px}.fcg-starter-grid span,.fcg-starter-grid small{font-size:12px;color:var(--muted)}
 .fcg-starter-style{color:var(--gold)}.fcg-color-lore p{padding:8px 12px;border-left:3px solid transparent;color:var(--muted);font-size:13px}.fcg-color-lore .selected{border-color:var(--gold);color:var(--ink);background:#3b3446}

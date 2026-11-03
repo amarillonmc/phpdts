@@ -11,7 +11,12 @@ if(!$cuser || !defined('IN_GAME')) {
 
 if(($sendmode == 'send')&&$chatmsg) {
 	$result = $db->query("SELECT pid FROM {$tablepre}players WHERE name='$cuser' AND type='0'");
-	if(!$db->num_rows($result)) exit('Not in game.');
+	if(!$db->num_rows($result)) {
+		// FCG 房成员没有 players 行，按已登录账号的当前房间判断。
+		if(!$udata || !$cpass || !hash_equals((string)$udata['password'],(string)$cpass) || (int)$udata['groupid']<=0) exit('Not in game.');
+		$result = $db->query("SELECT groomid FROM {$gtablepre}game WHERE groomid=".(int)$udata['roomid']." AND gruleset='FCG'");
+		if(!$db->num_rows($result)) exit('Not in game.');
+	}
 	if(strpos($chatmsg,'/') === 0) {
 		$result = $db->query("SELECT groupid FROM {$gtablepre}users WHERE username='$cuser'");
 		$groupid = $db->result($result);

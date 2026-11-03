@@ -55,6 +55,91 @@
     panel.hidden=!open;
     if(opening)raisePanel(panel);
   }
+  // 房间聊天复用 chat.php；收发串行，避免同一批增量消息重复插入。
+  const chatDock=document.createElement('button'); chatDock.type='button'; chatDock.id='fcg-chat-dock'; chatDock.textContent='聊天'; chatDock.hidden=true;
+  chatDock.setAttribute('aria-controls','fcg-chat-panel'); chatDock.setAttribute('aria-expanded','false'); app.append(chatDock);
+  const chatPanel=document.createElement('section'); chatPanel.id='fcg-chat-panel'; chatPanel.hidden=true; chatPanel.setAttribute('aria-label','房间聊天'); app.append(chatPanel);
+  chatPanel.innerHTML='<div class="fcg-chat-head"><span>房间聊天</span><button type="button" data-action="chat-close" aria-label="收拢聊天">×</button></div>'
+    +'<div class="fcg-chat-list" aria-live="polite" aria-relevant="additions"></div><div class="fcg-chat-emo" id="fcg-chat-emo" hidden></div>'
+    +'<div class="fcg-chat-status" role="status"></div><form class="fcg-chat-form"><button type="button" data-action="chat-emo" aria-label="表情" aria-controls="fcg-chat-emo" aria-expanded="false">😊</button>'
+    +'<input id="fcg-chat-msg" maxlength="60" autocomplete="off" aria-label="聊天内容，最多 60 字" placeholder="说点什么…"><button type="submit">发送</button></form>';
+  const chatList=chatPanel.querySelector('.fcg-chat-list'), chatInput=chatPanel.querySelector('input'), chatStatus=chatPanel.querySelector('.fcg-chat-status');
+  const chatEmotes=chatPanel.querySelector('.fcg-chat-emo'), chatEmoteButton=chatPanel.querySelector('[data-action="chat-emo"]'), chatSubmit=chatPanel.querySelector('[type="submit"]');
+  let chatLastCid=0, chatExpanded=false, chatMuted=false, chatInRoom=state.in_room, chatEpoch=0;
+  let chatRequest=Promise.resolve(), chatPolling=false, chatSending=false;
+  function chatSyncVisible() {
+    if(chatInRoom&&!state.in_room) {
+      chatEpoch++; chatLastCid=0; chatExpanded=false; chatMuted=false;
+      chatList.innerHTML=''; chatInput.value=''; chatStatus.textContent=''; chatEmotes.hidden=true; chatEmoteButton.setAttribute('aria-expanded','false');
+    }
+    chatInRoom=state.in_room;
+    const battleActive=(tab==='battle'&&state.match)||(tab==='draft'&&state.run&&state.run.stage==='battle');
+    const visible=state.in_room&&!battleActive;
+    chatDock.hidden=!visible; syncPanel(chatPanel,!!visible&&chatExpanded);
+    chatDock.setAttribute('aria-expanded',String(!chatPanel.hidden));
+  }
+  function chatOpen() {chatExpanded=true;chatMuted=false;chatSyncVisible();}
+  function chatClose() {chatExpanded=false;chatMuted=true;chatSyncVisible();}
+  function chatFetch(params) {
+    const epoch=chatEpoch;
+    const next=chatRequest.then(async()=>{
+      if(!state.in_room||epoch!==chatEpoch)return false;
+      const controller=new AbortController(), timeout=setTimeout(()=>controller.abort(),15000);
+      try {
+        const response=await fetch('chat.php',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({...params,lastcid:chatLastCid,teamID:''}),signal:controller.signal});
+        if(!response.ok)throw new Error('聊天连接中断，请稍后重试。');
+        const data=await response.json();
+        if(!state.in_room||epoch!==chatEpoch)return false;
+        if(!data||!Number.isFinite(Number(data.lastcid)))throw new Error('聊天状态已失效，请刷新页面。');
+        // 指令错误也使用 msg 数组返回，保留输入并显示原有提示。
+        if(Array.isArray(data.msg)&&data.msg.length) {
+          const error=document.createElement('div');error.innerHTML=data.msg.join('');throw new Error(error.textContent);
+        }
+        // JSON 的数字键会被 JS 按升序枚举，须显式按 cid 倒序。
+        const messages=Object.entries(data.msg||{}).filter(([cid])=>Number(cid)>chatLastCid).sort((a,b)=>Number(b[0])-Number(a[0]));
+        if(messages.length) {
+          chatList.insertAdjacentHTML('afterbegin',messages.map(([,html])=>'<div class="fcg-chat-message">'+html+'</div>').join(''));
+          while(chatList.children.length>50)chatList.lastElementChild.remove();
+          chatList.scrollTop=0;
+          if(!chatMuted)chatExpanded=true;
+        }
+        chatLastCid=Math.max(chatLastCid,Number(data.lastcid)); chatStatus.textContent=''; chatSyncVisible();
+        return true;
+      } catch(error) {
+        if(epoch!==chatEpoch)return false;
+        throw error;
+      } finally {clearTimeout(timeout);}
+    });
+    chatRequest=next.catch(()=>{});
+    return next;
+  }
+  async function chatPoll() {
+    if(!state.in_room||document.hidden||chatPolling||chatSending)return;
+    chatPolling=true;
+    try {await chatFetch({sendmode:'ref'});}
+    catch(error) {chatStatus.textContent='聊天暂时无法刷新，将自动重试。';}
+    finally {chatPolling=false;}
+  }
+  chatDock.addEventListener('click',()=>{if(chatPanel.hidden)chatOpen();else chatClose();});
+  chatPanel.querySelector('[data-action="chat-close"]').addEventListener('click',chatClose);
+  chatEmotes.innerHTML=(boot.emotes||[]).map(name=>'<button type="button" data-emote="'+esc(name)+'" title="'+esc(name)+'"><img src="img/emoticons/'+encodeURIComponent(name)+'.png" alt="'+esc(name)+'" loading="lazy"></button>').join('');
+  chatEmoteButton.addEventListener('click',()=>{chatEmotes.hidden=!chatEmotes.hidden;chatEmoteButton.setAttribute('aria-expanded',String(!chatEmotes.hidden));});
+  chatEmotes.addEventListener('click',event=>{
+    const button=event.target.closest('[data-emote]');if(!button)return;
+    const emote='['+button.dataset.emote+']';
+    if(chatInput.value.length+emote.length>chatInput.maxLength) {chatStatus.textContent='聊天内容最多 60 字。';return;}
+    chatInput.value+=emote;chatInput.focus();
+  });
+  chatPanel.querySelector('form').addEventListener('submit',async event=>{
+    event.preventDefault();
+    const original=chatInput.value, msg=original.trim();
+    if(!msg||chatSending||!state.in_room||chatPanel.hidden)return;
+    if(msg.length>chatInput.maxLength) {chatStatus.textContent='聊天内容最多 60 字。';return;}
+    chatSending=true;chatSubmit.disabled=true;
+    try {if(await chatFetch({sendmode:'send',chattype:'0',chatmsg:msg})&&chatInput.value===original)chatInput.value='';}
+    catch(error) {chatStatus.textContent=error.name==='SyntaxError'?'聊天状态已失效，请刷新页面。':error.name==='AbortError'||error.message==='Failed to fetch'?'聊天连接中断，请确认消息后重试。':error.message;}
+    finally {chatSending=false;chatSubmit.disabled=false;}
+  });
   function renderStickers() {
     const anchor=app.querySelector('[data-action="sticker-menu"]');
     if(!anchor)stickerOpen=false;
@@ -124,7 +209,7 @@
       // Do not replace a focused search field/deck editor during background polling.
       if(action!=='status' || tab==='lobby' || (tab==='draft' && JSON.stringify(state.run)!==lastRun) || (tab==='battle' && JSON.stringify(state.match)!==lastBattle)) render(); else {renderWallet();renderSocial();renderRun();}
       fitTable();
-      renderSettings();fcgSyncBgm();
+      renderSettings();fcgSyncBgm();chatSyncVisible();
       if(action==='buy' || action==='embers' || action==='draft_reward') reward(state.last_reward);
       return true;
     } catch(error) {
@@ -651,7 +736,7 @@
     fitTable();
     layoutHand();
     animateTable(oldRects);
-    tick();fcgSyncBgm();
+    tick();fcgSyncBgm();chatSyncVisible();
   }
   function tick() {
     document.querySelectorAll('.fcg-sticker-bubble').forEach(el=>{if(+el.dataset.expires<(Date.now()+clockOffset)/1000)el.remove();});
@@ -835,6 +920,7 @@
   if(!state.tutorial) tutorial();
   setInterval(tick,100);
   setInterval(()=>{if(!document.hidden && !busy && (state.in_room||state.match&&!state.match.result)) send('status');},1000);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)send('status');});
+  chatPoll();setInterval(chatPoll,5000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){send('status');chatPoll();}});
   window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
 })();
