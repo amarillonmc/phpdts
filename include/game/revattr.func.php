@@ -2057,7 +2057,7 @@ namespace revattr
 	}
 
 	//计算最终伤害的定值变化
-	function get_final_dmg_fix(&$pa,&$pd,$active,$fin_dmg)
+	function get_final_dmg_fix(&$pa,&$pd,$active,$fin_dmg,$pure=false)
 	{
 		global $log,$plsinfo,$now;
 
@@ -2116,6 +2116,9 @@ namespace revattr
 			$log.="<span class=\"yellow\">{$pa['nm']}在出手时保持了最大限度的克制！</span><br>";
 			return $fin_dmg;
 		}
+
+		// 纯粹伤害保留免死/逃生判定，跳过装备减伤、制御及额外武器伤害。
+		if($pure) goto c24_survival;
 
 		# 「闷棍」技能效果：
 		if(empty($pa['fcg_packet']) && isset($pa['bskill_c1_bjack']))
@@ -2373,6 +2376,7 @@ namespace revattr
 			}
 		}
 
+		c24_survival:
 		# 「火花」技能判定：救命
 		if($fin_dmg >= $pd['hp'] && isset($pd['askill_c20_sparkle']))
 		{
@@ -2391,6 +2395,8 @@ namespace revattr
 			addnews($now,'sparklerevival',$pd['name'],$pa['name'],$plsinfo[$sp_pls]);
 			return 0;
 		}
+
+		if($pure) return max(0,$fin_dmg);
 
 		# 「爆头」技能效果
 		if(isset($pa['skill_c4_headshot']) && $fin_dmg > $pd['hp']*0.85 && $fin_dmg < $pd['hp'])

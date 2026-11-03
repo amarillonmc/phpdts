@@ -416,6 +416,7 @@ function rs_sttime() {
 
 function add_once_area($atime) {
 	//实际上GAMEOVER的判断是在common.inc.php里
+	include_once GAME_ROOT.'./include/game/achievement.func.php';
 	global $db,$gtablepre,$tablepre,$now,$gamestate,$areaesc,$arealist,$areanum,$arealimit,$areaadd,$plsinfo,$weather,$hack,$validnum,$alivenum,$deathnum;
 	global $gamevars,$deepzones,$sentinel_typelist,$npc_away_from_deepzones;
 
@@ -441,6 +442,7 @@ function add_once_area($atime) {
 				$bid = 0;
 				$endtime = $atime;
 				$db->query("UPDATE {$tablepre}players SET hp='$hp', bid='$bid', state='$state', endtime='$endtime' WHERE pid=$pid");
+				check_club24_achievement($sub);
 				addnews($endtime,"death$state",$sub['name'],$sub['type'],$deathpls);
 			}
 			$db->free_result($query);
@@ -473,6 +475,7 @@ function add_once_area($atime) {
 					$bid = 0;
 					$endtime = $atime;
 					$db->query("UPDATE {$tablepre}players SET hp='$hp', bid='$bid', state='$state', endtime='$endtime' WHERE pid=$pid");
+					check_club24_achievement($sub);
 					addnews($endtime,"death$state",$sub['name'],$sub['type'],$deathpls);
 					$deathnum++;
 					} else {
@@ -687,6 +690,11 @@ function gameover($time = 0, $mode = '', $winname = '') {
 			check_end_achievement_rev($winner,$winmode,$pdata);
 		}
 	}
+
+	// 隐藏成就属于仍受歌单影响的参战者，不仅属于个人优胜者。
+	include_once GAME_ROOT.'./include/game/achievement.func.php';
+	$c24_result = $db->query("SELECT name,type,clbpara FROM {$tablepre}players WHERE type=0");
+	while($c24_player = $db->fetch_array($c24_result)) check_club24_achievement($c24_player);
 
 	rs_sttime();//重置游戏开始时间和当前游戏状态
 	$gamestate = 0;
@@ -988,13 +996,15 @@ function antiAFK($timelimit = 0){
 	$deadline=$now-$timelimit;
 	$result = $db->query("SELECT * FROM {$tablepre}players WHERE type=0 AND endtime < '$deadline' AND hp>'0' AND state<'10'");
 	while($al = $db->fetch_array($result)) {
-		$afkerlist[$al['pid']]=Array('name' => $al['name'] ,'pls' => $al['pls']);
+		$afkerlist[$al['pid']]=Array('name' => $al['name'] ,'pls' => $al['pls'], 'type'=>0, 'clbpara'=>$al['clbpara']);
 	}
 
 	if(empty($afkerlist)){return;}
 	foreach($afkerlist as $kid => $kcontent){
 		$db->query("UPDATE {$tablepre}players SET hp='0',state='32',bid='0' WHERE pid='$kid' AND type='0' AND hp>'0' AND state<'10'");
 		if($db->affected_rows()){
+			include_once GAME_ROOT.'./include/game/achievement.func.php';
+			check_club24_achievement($kcontent);
 			addnews($now,'death32',$kcontent['name'],'',$kcontent['pls']);
 			$alivenum--;
 			$deathnum++;

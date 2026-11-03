@@ -9,7 +9,7 @@
         <span>{$cskill['name']}</span>
     </td>
     <td>
-        <!--{eval $unlock_flag = check_skill_unlock($skid,$uidata);}-->
+        <!--{eval $unlock_flag = check_skill_unlock($skid,$uidata); if($unlock_flag === 'c24_unlearned') $unlock_flag = 0;}-->
         <!--{if $unlock_flag}-->
         <div style="position:relative; height:100%; width:100%;" onmouseover="skill_unacquired_mouseover.call(this,event)" onmouseout="skill_unacquired_mouseout.call(this,event)">
         <div class="skill_unacquired">
@@ -24,11 +24,21 @@
                     </td>
                     <td class="skilldesc_right b3">
                         <!--{if empty($no_skill_input)}-->
+							<!--{if $skid == 'c24_reforge' && get_skilllvl($skid,$uidata) > 0}-->
+								<input type="text" name="c24_reforge_target" size="3" maxlength="4" value="1" aria-label="重铸槽位及锁定项">
+								<input type="button" value="重铸" onclick="postCmd('gamecmd','command.php',{data:{mode:'revskpts',command:'actskill_c24_reforge'}});this.disabled=true;">
+							<!--{elseif $skid == 'c24_allin' && get_skilllvl($skid,$uidata) > 0}-->
+								<input type="button" value="开／关" onclick="postCmd('gamecmd','command.php',{data:{mode:'revskpts',command:'actskill_c24_allin'}});this.disabled=true;">
+							<!--{/if}-->
                             <!--{if !empty($cskill['num_input']) && empty($max_lvl_flag)}-->
                                 <input type="number" name="upgskill_{$skid}_nums" style="width:40px" value="1">		
                             <!--{/if}-->
                             <!--{if !empty($cskill['input']) && empty($max_lvl_flag)}-->
+                                <!--{if $uidata['club'] == 24}-->
+                                <input type="button" onclick="postCmd('gamecmd','command.php',{data:{mode:'revskpts',command:'upgskill_{$skid}'}});this.disabled=true;" value="{$cskill['input']}">
+                                <!--{else}-->
                                 <input type="button" onclick="$('mode').value='revskpts';$('command').value='upgskill_{$skid}';postCmd('gamecmd','command.php');this.disabled=true;" value="{$cskill['input']}">
+                                <!--{/if}-->
                             <!--{/if}-->
                         <!--{/if}-->
                     </td>

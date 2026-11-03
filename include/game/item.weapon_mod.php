@@ -35,7 +35,7 @@ function item_weapon_mod($itmn, &$data) {
                         $wepe += $check;
                     }
                 }
-                $wepe += $itme;                    
+                $wepe += $club == 24 ? diceroll(max(0,(int)$itme)) : $itme;
                 $log .= "使用了<span class=\"yellow\">$itm</span>，<span class=\"yellow\">$wep</span>的攻击力变成了<span class=\"yellow\">$wepe</span>。<br>";
                 if (strpos($wep, '锋利的') === false) {
                     $wep = '锋利的'.$wep;
@@ -82,7 +82,7 @@ function item_weapon_mod($itmn, &$data) {
                         $wepe += $check;
                     }
                 }
-                $wepe += $itme;
+                $wepe += $club == 24 ? diceroll(max(0,(int)$itme)) : $itme;
                 $log .= "使用了<span class=\"yellow\">$itm</span>，<span class=\"yellow\">$wep</span>的攻击力变成了<span class=\"yellow\">$wepe</span>。<br>";
                 if (strpos($wep, '钉') === false) {
                     $wep = str_replace('棍棒', '钉棍棒', $wep);
@@ -127,7 +127,8 @@ function item_weapon_mod($itmn, &$data) {
                     $arbe += $check;
                 }
             }
-            $arbe += (rand(0, 2) + $itme);
+            $gain = rand(0, 2) + $itme;
+            $arbe += $club == 24 ? diceroll(max(0,(int)$gain)) : $gain;
             $log .= "用<span class=\"yellow\">$itm</span>给防具打了补丁，<span class=\"yellow\">$arb</span>的防御力变成了<span class=\"yellow\">$arbe</span>。<br>";
             $itms--;
         }
@@ -174,13 +175,15 @@ function item_weapon_mod($itmn, &$data) {
             $log .= "<span class='lime'>天然呆四面</span>把玩了一会儿你的武器。<br>";
             $log .= "你的武器的耐久似乎稍微多了一点。<br>";
             if (strpos($wep, '-改') === false) $wep = $wep . '-改';
-            $weps += ceil($wepe / 200);
+            $gain = ceil($wepe / 200);
+            if($club != 24 || $weps !== $nosta) $weps += $club == 24 ? diceroll(max(0,(int)$gain)) : $gain;
             $itm = ""; $itmk = ""; $itme = 0; $itms = 0; $itmsk = "";
         } else {
             $log .= "<span class='lime'>天然呆四面</span>把玩了一会儿你的武器。<br>";
             $log .= "你的武器似乎稍微变强了一点。<br>";
             if (strpos($wep, '-改') === false) $wep = $wep . '-改';
-            $wepe += ceil($wepe / 200);
+            $gain = ceil($wepe / 200);
+            $wepe += $club == 24 ? diceroll(max(0,(int)$gain)) : $gain;
             $itm = ""; $itmk = ""; $itme = 0; $itms = 0; $itmsk = "";
         }
     } elseif ($itm == '武器师安雅的奖赏') {
@@ -218,10 +221,12 @@ function item_weapon_mod($itmn, &$data) {
             $wepk = substr_replace($wepk, $maxsk, 0, 2);
             $kind = "更改了{$wep}的<span class=\"yellow\">类别</span>！";
         } elseif (($weps != $nosta) && ($dice2 < 70)) {
-            $weps += ceil($wepe / 2);
+            $gain = ceil($wepe / 2);
+            $weps += $club == 24 ? diceroll(max(0,(int)$gain)) : $gain;
             $kind = "增强了{$wep}的<span class=\"yellow\">耐久</span>！";
         } else {
-            $wepe += ceil($wepe / 2);
+            $gain = ceil($wepe / 2);
+            $wepe += $club == 24 ? diceroll(max(0,(int)$gain)) : $gain;
             $kind = "提高了{$wep}的<span class=\"yellow\">攻击力</span>！";
         }
         $log .= "你使用了<span class=\"yellow\">$itm</span>，{$kind}";

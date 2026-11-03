@@ -6,6 +6,7 @@ if (! defined ( 'IN_GAME' )) {
 
 include_once GAME_ROOT.'./include/game/clubslct.func.php';
 include_once GAME_ROOT.'./include/game/aievent_minion.func.php';
+include_once GAME_ROOT.'./include/game/club24.func.php';
 
 // Main item use function that delegates to specific item type handlers
 function itemuse($itmn,&$data=NULL) {
@@ -75,6 +76,8 @@ function itemuse($itmn,&$data=NULL) {
 		extract($data, EXTR_REFS);
 		if($ruleset_item_handled === true) return;
 	}
+
+	if($itmn == 0) club24_pickup($data,'pickup');
 
 	// Include specific item type handlers
 	include_once GAME_ROOT.'./include/game/item.weapon.php';
@@ -263,6 +266,12 @@ function itemuse($itmn,&$data=NULL) {
 		$log .= "<span class=\"red\">$itm</span>用光了。<br>";
 		$itm = $itmk = $itmsk = '';
 		$itme = $itms = 0;
+	}
+
+	// 直接使用手上补给后，剩余数量变化不能导致下一次拾取重新投骰。
+	if($itmn == 0 && $club == 24) {
+		if(!empty($itms0)) $clbpara['c24_pickup'] = club24_item_signature($data);
+		else unset($clbpara['c24_pickup']);
 	}
 
 	// 检查成就

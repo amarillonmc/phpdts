@@ -980,6 +980,10 @@ if($hp > 0){
 					# 其他特殊技能按钮
 					include_once GAME_ROOT.'./include/game/revclubskills_extra.func.php';
 					if($sk == 'c4_roar' || $sk == 'c4_sniper'){skill_c4_unlock($sk);}
+					elseif($sk == 'c24_reforge' || $sk == 'c24_allin') {
+						club24_skill($sk,$pdata,isset($c24_reforge_target) ? $c24_reforge_target : '');
+						$opendialog = 'skillpage';
+					}
 					elseif($sk == 'c11_merc'){
 						if(isset(${$sk.'mkey'}) && isset(${$sk.'fire'}) && ${$sk.'fire'} == ${$sk.'mkey'}){
 							skill_merc_fire($sk,${$sk.'mkey'});

@@ -481,6 +481,11 @@ function press_bomb(){
 function shoplist($sn,$getlist=NULL) {
 	global $gamecfg,$mode,$itemdata,$areanum,$areaadd,$iteminfo,$itemspkinfo,$club,$horizon;
 	global $db,$tablepre;
+	global $pdata;
+	if($club == 24 && !isset($getlist)) {
+		club24_shop_price(1,$pdata,true);
+		$pdata['clbpara']['c24_shopkind'] = (int)$sn;
+	}
 	$arean = floor($areanum / $areaadd); 
 	$result=$db->query("SELECT * FROM {$tablepre}shopitem WHERE kind = '$sn' AND area <= '$arean' AND num > '0' AND price > '0' ORDER BY sid");
 	$shopnum = $db->num_rows($result);
@@ -491,6 +496,7 @@ function shoplist($sn,$getlist=NULL) {
 		$itemdata[$i]['kind']=$itemlist['kind'];
 		$itemdata[$i]['num']=$itemlist['num'];
 		$itemdata[$i]['price']= $club == 11 ? round($itemlist['price']*0.75) : $itemlist['price'];
+		if($club == 24) $itemdata[$i]['price'] = club24_shop_price($itemdata[$i]['price'],$pdata);
 		$itemdata[$i]['area']=$itemlist['area'];
 		$itemdata[$i]['item']=$itemlist['item'];
 		$itemdata[$i]['item_words']= parse_nameinfo_desc($itemdata[$i]['item'],$horizon);

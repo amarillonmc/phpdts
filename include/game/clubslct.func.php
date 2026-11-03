@@ -116,6 +116,11 @@ function getclub($who, &$c1, &$c2, &$c3)
 
 function changeclub($clb,&$data)
 {
+	if($data['club'] == 24 && $clb != 24) {
+		global $log;
+		$log .= '你已经加入神骰叛军，无法退出。<br>';
+		return;
+	}
 	lostclub($data);
 	$data['club'] = $clb;
 	updateskill($data);

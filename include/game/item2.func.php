@@ -602,7 +602,8 @@ function qianghua($itmn = 0) {
 	 $log .= "<span class=\"yellow\">『一道神圣的闪光照耀在你的眼睛上，当你恢复视力时，发现你的装备闪耀着彩虹般的光芒』</span><br>";
 	 $nzitmlv = $zitmlv +1;
 	 $itm = str_replace('[+'.$zitmlv.']','[+'.$nzitmlv.']',$itm);
-	 $itme = round($itme * (1.5 + 0.1 * $zitmlv));
+	 $enhanced = round($itme * (1.5 + 0.1 * $zitmlv));
+	 $itme = $club == 24 ? $itme + diceroll(max(0,(int)($enhanced-$itme))) : $enhanced;
 	}else{
 	 //$ran = rand(5,20);
 	 //$log .="<span class=\"yellow\">『一道神圣的闪光照耀在你的眼睛上，当你恢复视力时，发现你的装备变成了{$ran}块闪耀着彩虹光芒的碎片』</span><br>";

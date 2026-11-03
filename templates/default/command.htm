@@ -30,22 +30,22 @@
 	<!-- 背包栏 -->
 	<br />
 	<!--{if $itms1}-->
-	<input type="button" id="11" class="cmdbutton" <!--{if strpos($itmk1,'W')===0 || strpos($itmk1,'D')===0 || strpos($itmk1,'A')===0}-->value="[1]装备"<!--{else}-->value="[1]使用"<!--{/if}--> onclick="$('mode').value='command';$('command').value='itm1';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm1}</span>/{$itme1}/{$itms1}<br>
+	<input type="button" id="11" class="cmdbutton" <!--{if strpos($itmk1,'W')===0 || strpos($itmk1,'D')===0 || strpos($itmk1,'A')===0}-->value="[1]装备"<!--{else}-->value="[1]使用"<!--{/if}--> onclick="<!--{if $itmk1 == 'ZB' && $itme1 == 24}-->if(useClub24Card(1)) this.disabled=true;return false;<!--{/if}-->$('mode').value='command';$('command').value='itm1';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm1}</span>/{$itme1}/{$itms1}<br>
 	<!--{/if}-->
 	<!--{if $itms2}-->
-	<input type="button" id="22" class="cmdbutton" <!--{if strpos($itmk2,'W')===0 || strpos($itmk2,'D')===0 || strpos($itmk2,'A')===0}-->value="[2]装备"<!--{else}-->value="[2]使用"<!--{/if}--> onclick="$('mode').value='command';$('command').value='itm2';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm2}</span>/{$itme2}/{$itms2}<br>
+	<input type="button" id="22" class="cmdbutton" <!--{if strpos($itmk2,'W')===0 || strpos($itmk2,'D')===0 || strpos($itmk2,'A')===0}-->value="[2]装备"<!--{else}-->value="[2]使用"<!--{/if}--> onclick="<!--{if $itmk2 == 'ZB' && $itme2 == 24}-->if(useClub24Card(2)) this.disabled=true;return false;<!--{/if}-->$('mode').value='command';$('command').value='itm2';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm2}</span>/{$itme2}/{$itms2}<br>
 	<!--{/if}-->
 	<!--{if $itms3}-->
-	<input type="button" id="33" class="cmdbutton" <!--{if strpos($itmk3,'W')===0 || strpos($itmk3,'D')===0 || strpos($itmk3,'A')===0}-->value="[3]装备"<!--{else}-->value="[3]使用"<!--{/if}--> onclick="$('mode').value='command';$('command').value='itm3';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm3}</span>/{$itme3}/{$itms3}<br>
+	<input type="button" id="33" class="cmdbutton" <!--{if strpos($itmk3,'W')===0 || strpos($itmk3,'D')===0 || strpos($itmk3,'A')===0}-->value="[3]装备"<!--{else}-->value="[3]使用"<!--{/if}--> onclick="<!--{if $itmk3 == 'ZB' && $itme3 == 24}-->if(useClub24Card(3)) this.disabled=true;return false;<!--{/if}-->$('mode').value='command';$('command').value='itm3';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm3}</span>/{$itme3}/{$itms3}<br>
 	<!--{/if}-->
 	<!--{if $itms4}-->
-	<input type="button" id="44" class="cmdbutton" <!--{if strpos($itmk4,'W')===0 || strpos($itmk4,'D')===0 || strpos($itmk4,'A')===0}-->value="[4]装备"<!--{else}-->value="[4]使用"<!--{/if}--> onclick="$('mode').value='command';$('command').value='itm4';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm4}</span>/{$itme4}/{$itms4}<br>
+	<input type="button" id="44" class="cmdbutton" <!--{if strpos($itmk4,'W')===0 || strpos($itmk4,'D')===0 || strpos($itmk4,'A')===0}-->value="[4]装备"<!--{else}-->value="[4]使用"<!--{/if}--> onclick="<!--{if $itmk4 == 'ZB' && $itme4 == 24}-->if(useClub24Card(4)) this.disabled=true;return false;<!--{/if}-->$('mode').value='command';$('command').value='itm4';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm4}</span>/{$itme4}/{$itms4}<br>
 	<!--{/if}-->
 	<!--{if $itms5}-->
-	<input type="button" id="55" class="cmdbutton" <!--{if strpos($itmk5,'W')===0 || strpos($itmk5,'D')===0 || strpos($itmk5,'A')===0}-->value="[5]装备"<!--{else}-->value="[5]使用"<!--{/if}--> onclick="$('mode').value='command';$('command').value='itm5';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm5}</span>/{$itme5}/{$itms5}<br>
+	<input type="button" id="55" class="cmdbutton" <!--{if strpos($itmk5,'W')===0 || strpos($itmk5,'D')===0 || strpos($itmk5,'A')===0}-->value="[5]装备"<!--{else}-->value="[5]使用"<!--{/if}--> onclick="<!--{if $itmk5 == 'ZB' && $itme5 == 24}-->if(useClub24Card(5)) this.disabled=true;return false;<!--{/if}-->$('mode').value='command';$('command').value='itm5';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm5}</span>/{$itme5}/{$itms5}<br>
 	<!--{/if}-->
 	<!--{if $itms6}-->
-	<input type="button" id="66" class="cmdbutton" <!--{if strpos($itmk6,'W')===0 || strpos($itmk6,'D')===0 || strpos($itmk6,'A')===0}-->value="[6]装备"<!--{else}-->value="[6]使用"<!--{/if}--> onclick="$('mode').value='command';$('command').value='itm6';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm6}</span>/{$itme6}/{$itms6}<br>
+	<input type="button" id="66" class="cmdbutton" <!--{if strpos($itmk6,'W')===0 || strpos($itmk6,'D')===0 || strpos($itmk6,'A')===0}-->value="[6]装备"<!--{else}-->value="[6]使用"<!--{/if}--> onclick="<!--{if $itmk6 == 'ZB' && $itme6 == 24}-->if(useClub24Card(6)) this.disabled=true;return false;<!--{/if}-->$('mode').value='command';$('command').value='itm6';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm6}</span>/{$itme6}/{$itms6}<br>
 	<!--{/if}-->
 <br>
 

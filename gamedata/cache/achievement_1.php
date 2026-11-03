@@ -74,6 +74,7 @@ $diary_type = Array
 # 隐藏成就列表：（隐藏成就ID → 完成后会显示在哪个大类）只在完成时显示
 $hidden_ach_type = Array
 (
+	209 => 'explore', // 神骰叛军：完成前隐藏
 	//KEY系隐藏成就：吃下【像围棋子一样的饼干】【桔黄色的果酱】并且活下来
 	501 => 'explore',
 	//KEY系隐藏成就：使用【翼人的羽毛】打出7230点以上伤害
@@ -92,6 +93,11 @@ $hidden_ach_type = Array
 # 成就登记列表：
 $ach_list = Array
 (
+	209 => Array(
+		'lvl'=>1, 'name'=>Array('神骰叛军'), 'title'=>Array('神骰叛军'),
+		'c1'=>Array(233), 'c2'=>Array(100),
+		'desc'=>Array('死亡或游戏结束时，仍在【歌单】瑞克·拉玛尔的影响下。'),
+	),
 	620 => Array('lvl'=>1,'name'=>Array('电梯首乘'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(10),'desc'=>Array('完成第一次电梯行程结算。')),
 	621 => Array('lvl'=>1,'name'=>Array('阁楼来信'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(20),'desc'=>Array('首次在 +7 阁楼层下车。')),
 	622 => Array('lvl'=>1,'name'=>Array('留灯的人'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(20),'desc'=>Array('首次到达 −8 灰色会客厅。')),

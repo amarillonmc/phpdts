@@ -45,7 +45,7 @@ namespace revbattle
 		//$edata = $db->fetch_array($result);
 		$edata = fetch_playerdata_by_pid($enemyid);
 		# 检查敌人是否处于当前位置
-		if ($edata['pls'] != $pls) 
+		if ($edata['pls'] != $pls && !\club24_remote_npc($data,$edata,true))
 		{
 			$log .= "<span class=\"yellow\">" . $edata ['name'] . "</span>已经离开了<span class=\"yellow\">$plsinfo[$pls]</span>。<br>";
 			$action = ''; $bid = 0;

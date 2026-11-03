@@ -455,6 +455,11 @@
 	# 特殊死亡事件（灵魂绑定等）
 	function check_death_events(&$pa,&$pd,$active)
 	{
+		// 自然死亡与战斗最终死亡都会经过这里；复活成功不算死亡。
+		if(!$pd['type']) {
+			include_once GAME_ROOT.'./include/game/achievement.func.php';
+			check_club24_achievement($pd);
+		}
 		global $db,$tablepre,$log,$now,$nosta;
 		include_once GAME_ROOT.'./include/game/quest.func.php';
 

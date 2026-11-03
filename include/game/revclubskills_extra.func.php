@@ -18,6 +18,8 @@
 			$data = &$pdata;
 		}
 		extract($data,EXTR_REFS);
+		if($event == 'club24_upgrade') return club24_upgrade($sk,$data);
+		if($event == 'club24_skill') return club24_skill($sk,$data);
 
 		if($event == 'club23_skill')
 		{

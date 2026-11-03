@@ -13,6 +13,7 @@ if(!defined('IN_GAME')) {
 }
 
 include_once GAME_ROOT.'./include/game/aievent_minion.func.php';
+include_once GAME_ROOT.'./include/game/club24.func.php';
 
 
 # 计算发现陷阱后的“触发率”
@@ -464,6 +465,8 @@ function itemfind(&$data=NULL) {
 	if(strpos($itmk0,'TO')===0) {
 		trap($data);
 	}else{
+		// 拿到手上时即重投，发现页的直接使用/合并也不能绕过。
+		club24_pickup($data,'pickup');
 		if(CURSCRIPT == 'botservice')
 		{
 			echo "mode=itemfind\n";
@@ -476,7 +479,7 @@ function itemfind(&$data=NULL) {
 	}
 }
 
-function itemget(&$data=NULL)
+function itemget(&$data=NULL,$source='pickup')
 {
 	global $log,$nosta,$mode,$cmd;
 	if(!isset($data))
@@ -492,6 +495,7 @@ function itemget(&$data=NULL)
 		extract($data,EXTR_REFS); // 重新提取可能被修改的变量
 	}
 
+	club24_pickup($data,$source);
 	$log .= "获得了物品<span class=\"yellow\">$itm0</span>。<br>";
 
 	# 拾取诅咒物品时，触发霉运
@@ -677,6 +681,7 @@ function itemdrop($item,&$data=NULL) {
 		$itm = $itmk = $itmsk = $itmpara = '';
 		$itme = $itms = 0;
 	}
+	if($item == 'itm0') unset($clbpara['c24_pickup']);
 	$mode = 'command';
 	return;
 }
@@ -763,10 +768,12 @@ function itemadd(&$data=NULL)
 		$mode = 'command';
 		return;
 	}
+	club24_pickup($data,'pickup');
 	for($i = 1;$i <= 6;$i++){
 		//global ${'itm'.$i},${'itmk'.$i},${'itme'.$i},${'itms'.$i},${'itmsk'.$i};
 		if(empty(${'itms'.$i})){
 			$log .= "将<span class=\"yellow\">$itm0</span>放入包裹。<br>";
+			unset($clbpara['c24_pickup']);
 			${'itm'.$i} = $itm0;
 			${'itmk'.$i} = $itmk0;
 			${'itme'.$i} = $itme0;
@@ -1317,15 +1324,21 @@ function itembuy($item,$shop,$bnum=1,&$data=NULL)
 
 	$result=$db->query("SELECT * FROM {$tablepre}shopitem WHERE sid = '$item'");
 	$iteminfo = $db->fetch_array($result);
-	$price = $club == 11 ? round($iteminfo['price']*0.75) : $iteminfo['price'];
-	//$file = GAME_ROOT."./gamedata/shopitem/{$shop}shopitem.php";
-	//$itemlist = openfile($file);
-	//$iteminfo = $itemlist[$item];
 	if(!$iteminfo) {
 		$log .= '要购买的道具不存在！<br><br>';
 		$mode = 'command';
 		return;
 	}
+	$price = $club == 11 ? round($iteminfo['price']*0.75) : $iteminfo['price'];
+	if($club == 24) {
+		if(!isset($clbpara['c24_shopmult']) || ($clbpara['c24_shopkind'] ?? '') != $shop || (int)$iteminfo['kind'] != (int)$shop) {
+			$log .= '请先进入商店查看这一类商品的价格。<br>'; $mode = 'command'; return;
+		}
+		$price = club24_shop_price($price,$data);
+	}
+	//$file = GAME_ROOT."./gamedata/shopitem/{$shop}shopitem.php";
+	//$itemlist = openfile($file);
+	//$iteminfo = $itemlist[$item];
 
 //	if(!in_array($pls,$shops)) {
 //		$log .= '你所在的位置没有商店。<br>';
@@ -1377,6 +1390,7 @@ function itembuy($item,$shop,$bnum=1,&$data=NULL)
 	addnews($now,'itembuy',$name,$iteminfo['item']);
 	$log .= "购买成功。";
 	$itm0 = $iteminfo['item'];
+	unset($clbpara['c24_pickup']);
 	$itmk0 = $iteminfo['itmk'];
 	$itme0 = $iteminfo['itme'];
 	$itms0 = $iteminfo['itms']*$bnum;
@@ -1431,7 +1445,7 @@ function getcorpse($item,&$data=NULL)
 		$action = ''; $bid = 0;
 		$mode = 'command';
 		return;
-	} elseif($edata['pls'] != $pls) {
+	} elseif($edata['pls'] != $pls && !club24_remote_npc($data,$edata,true)) {
 		$log .= '对方跟你不在同一个地图！<br>';
 		$action = ''; $bid = 0;
 		$mode = 'command';
@@ -1578,6 +1592,7 @@ function getcorpse($item,&$data=NULL)
 	if((empty($itms0) && $itms0 !== $nosta)||!$itmk0||$itmk0=='WN'||$itmk0=='DN') {
 		$log .= '该物品不存在！';
 	} else {
+		unset($clbpara['c24_pickup']);
 		# 「搜刮」技能判定：从死去的NPC·玩家身上捡取补给时，有概率效果·耐久加倍
 		if(strpos($itmk0, 'H') === 0 && !empty($clbpara['skill']) && in_array('tl_supplyloot', $clbpara['skill'])) {
 			if(diceroll(99) < get_skillvars('tl_supplyloot', 'obbs')) {

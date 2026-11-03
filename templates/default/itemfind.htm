@@ -6,7 +6,7 @@
 <input type="hidden" id="mode" name="mode" value="itemmain">
 <input type="hidden" id="command" name="command" value="itemget">
 <input type="button" class="cmdbutton" id="zz" name="itemget" value="[Z]拾取" onclick="postCmd('gamecmd','command.php');this.disabled=true;">
-<input type="button" class="cmdbutton" id="aa" value="[A]使用" onclick="$('mode').value='command';$('command').value='itm0';postCmd('gamecmd','command.php');this.disabled=true;">
+<input type="button" class="cmdbutton" id="aa" value="[A]使用" onclick="<!--{if $itmk0 == 'ZB' && $itme0 == 24}-->if(useClub24Card(0)) this.disabled=true;return false;<!--{/if}-->$('mode').value='command';$('command').value='itm0';postCmd('gamecmd','command.php');this.disabled=true;">
 <!--{if $club==20}-->
 <input type="button" id="cc" class="cmdbutton" name="split_itm" value="[C]提炼" onclick="$('command').value='split_itm0';postCmd('gamecmd','command.php');this.disabled=true;">
 <!--{/if}-->

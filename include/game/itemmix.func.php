@@ -398,7 +398,8 @@ function itemmix_proc($mlist, $minfo, $itmstr, &$data=NULL)
 		if(strpos($itmsk0,'v')===false) $itmsk0.='v';
 	}
 
-	itemget($data);
+	unset($clbpara['c24_pickup']);
+	itemget($data,'mix');
 }
 
 //合成成功时会触发的额外事件

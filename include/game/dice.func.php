@@ -17,7 +17,7 @@ function diceroll($dice){
     global $log;
     global $nikstatusa, $nikstatuse;
     //Add Luck based gameplay.
-    global $clbpara;
+    global $clbpara, $club;
     global $mhp, $msp, $att, $def, $wc, $wd, $wp, $wk, $wf, $wg;
     if(version_compare(PHP_VERSION,'7.0.0','<')){
         $result = rand(0, $dice);
@@ -96,7 +96,7 @@ function diceroll($dice){
         $clbpara['traitorRoll'] += 1;
     }
 
-    if($clbpara['BGMBrand'] != 'rixolamal' && $clbpara['traitorRoll'] > 0){
+    if($clbpara['BGMBrand'] != 'rixolamal' && $clbpara['traitorRoll'] > 0 && $club != 24){
         //This won't be possible because I'll implement checks to make sure you cannot exit Luck Battle Mode.
         //But, *if* people somehow do reset it - such as those NPC Platforms in BUFFALO, maybe.
         //Then we take away all the gained points, then some.

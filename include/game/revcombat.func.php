@@ -13,6 +13,7 @@ namespace revcombat
 	include_once GAME_ROOT.'./include/game/revattr.calc.php';
 	include_once GAME_ROOT.'./include/game/revattr_extra.func.php';
 	include_once GAME_ROOT.'./include/game/club23.func.php';
+	include_once GAME_ROOT.'./include/game/club24.func.php';
 	include_once GAME_ROOT.'./include/game/fcg_skills.func.php';
 
 	# 战斗准备流程：
@@ -89,6 +90,8 @@ namespace revcombat
 		global $hdamage,$hplayer;
 		global $infinfo,$plsinfo,$hplsinfo,$nosta,$chase_obbs,$dfight_obbs;
 		unset($pa['ai93_panic_done'],$pd['ai93_panic_done']);
+		unset($pa['c24_verdict_done'],$pa['c24_rapid'],$pa['c24_selfshot'],$pa['c24_self_damage'],$pd['c24_verdict_done'],$pd['c24_rapid']);
+		if($pa['club'] == 24) unset($pa['is_counter']);
 
 		# 登记非功能性地点信息时合并隐藏地点
 		foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
@@ -132,7 +135,12 @@ namespace revcombat
 		$att_dmg = rev_attack($pa,$pd,$active);
 		$att_result = 1;
 		# 存在暴毙标识：进攻方(pa)在进攻过程中未造成伤害就暴毙，可能是因为触发了武器直死。
-		if(isset($pa['gg_flag']))
+		if(isset($pa['c24_self_damage'])) {
+			$pa['hp'] = max(0,$pa['hp']-$pa['c24_self_damage']);
+			unset($pa['c24_self_damage']);
+			if($pa['hp'] <= 0) $att_result = rev_combat_result($pd,$pa,1-$active);
+		}
+		elseif(isset($pa['gg_flag']))
 		{
 			$pa['hp'] = 0;
 			//提前进行战斗结果判断。注意：这里的pa、pd顺序。因为暴毙的是pa，所以pa放在第二个参数位置。
@@ -255,6 +263,7 @@ namespace revcombat
 
 		# 战斗准备事件中触发了跳过战斗标记，直接goto跳转到这个位置。
 		battle_finish_flag:
+		unset($pa['c24_verdict_done'],$pa['c24_rapid'],$pa['c24_selfshot'],$pd['c24_verdict_done'],$pd['c24_rapid']);
 		\fcg_battle_end($pa,$pd); \fcg_battle_end($pd,$pa);
 
 		#更新action标记
@@ -445,8 +454,11 @@ namespace revcombat
 
 		# 计算武器基础命中率 保存在$pa['hitrate']内
 		$pa['hitrate'] = \revattr\get_hitrate_rev($pa,$pd,$active);
+		if(isset($pa['bskill_c24_roulette'])) $pa['hitrate'] = 100;
 		# 计算命中次数 保存在$pa['hitrate_times']内
 		\revattr\get_hit_time_rev($pa,$pd,$active);
+		// 轮盘用弹膛判定命中，不再受武器命中率二次判定。
+		if(isset($pa['bskill_c24_roulette'])) $pa['hitrate_times'] = 1;
 
 		$log .= "{$pa['nm']}使用{$pa['wep']}<span class=\"yellow\">{$attinfo[$pa['wep_kind']]}</span>{$pd['nm']}！<br>";
 
@@ -460,8 +472,24 @@ namespace revcombat
 		{
 			$pa['club23_landed'] = true;
 			//检查是否存在造成不受其他因素影响的固定伤害（例：混沌伤害、直死）
-			$fix_dmg = \revattr\get_fix_damage($pa,$pd,$active);
-			if(isset($fix_dmg))
+			$c24_damage = \club24_battle_damage($pa,$pd,$active);
+			$fix_dmg = isset($c24_damage) ? NULL : \revattr\get_fix_damage($pa,$pd,$active);
+			if(isset($c24_damage)) {
+				if(!empty($pa['c24_selfshot'])) {
+					// 自伤也先结算反噬，再对剩余生命应用免死，避免反噬越过奇机。
+					$pa['final_damage'] = $c24_damage;
+					$pa['hitrate_times'] = 0;
+					\revattr\attack_finish_events($pa,$pa,$active);
+					$pa['c24_self_damage'] = \revattr\get_final_dmg_fix($pa,$pa,$active,$c24_damage,true);
+					$log .= "你受到了<span class=\"red\">{$pa['c24_self_damage']}</span>点纯粹伤害！<br>";
+					$pa['final_damage'] = 0;
+					$damage = 0;
+					goto attack_settlement;
+				}
+				$damage = \revattr\get_final_dmg_fix($pa,$pd,$active,$c24_damage,true);
+				$log .= "造成了<span class=\"red\">{$damage}</span>点纯粹伤害！<br>";
+			}
+			elseif(isset($fix_dmg))
 			{
 				$damage = $fix_dmg;
 				$pa['final_damage'] = $damage;
@@ -613,9 +641,10 @@ namespace revcombat
 			// 同伴追加攻击在原有伤害制御之后汇入，不能跳过守方的普通减伤计算。
 			if(function_exists('ruleset_attack_damage_hook')) $damage = ruleset_attack_damage_hook($pa,$pd,$active,$damage);
 			// 称号代价与旧痕同样覆盖常规固定伤害；记忆攻击已在上方独立返回。
-			$c23_damage = \club23_adjust_damage($pa,$pd,$damage);
+			$c23_damage = isset($c24_damage) ? $damage : \club23_adjust_damage($pa,$pd,$damage);
 			if($c23_damage != $damage) $log .= "<span class=\"yellow\">修正后的总伤害：{$c23_damage}。</span><br>";
 			$damage = \fcg_defend_damage($pa,$pd,$c23_damage);
+			$damage = \club24_verdict($pa,$pd,$damage);
 			//将造成的最终伤害登记在$pa['final_damage']内
 			$pa['final_damage'] = $damage;
 			//将伤害发送至进行状况
@@ -630,6 +659,7 @@ namespace revcombat
 			$pa['final_damage'] = $damage = 0;
 			$log .= "但是没有击中！<br>";
 		}
+		attack_settlement:
 		//经验结算
 		expup_rev($pa,$pd,$active);
 		//怒气结算

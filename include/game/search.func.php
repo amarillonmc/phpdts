@@ -138,6 +138,14 @@ function move($moveto = 99,&$data=NULL)
 		$log .= "<span class=\"lime\">你随节拍扭腰踏出一步，{$dance_msg}……（剩余{$steps}次）</span><br>";
 		if($moved) $pls = $moveto;
 	}
+	if($club == 24) {
+		$destinations = club24_places($data,true);
+		if($destinations) {
+			$moveto = $destinations[array_rand($destinations)];
+			$log .= '骰子把你丢到了别的地方！<br>';
+			if($moved) $pls = $moveto;
+		}
+	}
 	if(!$moved)
 	{
 		if(!$hpls_flag) $pgroup = 0;
@@ -847,7 +855,12 @@ function discover($schmode = 0,&$data=NULL)
 	{
 		global $fog,$gamestate;
 
-		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pls='$pls' AND pid!='$pid'");
+		if($club == 24) {
+			$c24_places = implode(',',club24_places($data));
+			$c24_places = $c24_places === '' ? '-1' : $c24_places;
+			$c24_group = (int)$pgroup;
+			$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid!='$pid' AND pgroup=$c24_group AND (pls='$pls' OR (type>0 AND hp>0 AND pls IN ($c24_places)))");
+		} else $result = $db->query("SELECT * FROM {$tablepre}players WHERE pls='$pls' AND pid!='$pid'");
 		if(!$db->num_rows($result)){
 			$log .= '<span class="yellow">周围一个人都没有。</span><br>';
 			if(CURSCRIPT == 'botservice') echo "noenemy=1\n";
@@ -873,7 +886,7 @@ function discover($schmode = 0,&$data=NULL)
 
 			# 不管是活人还是死人，都只会在处于相同视界的情况下遭遇
 			# 死斗模式无视视界限制
-			if(($horizon == $edata['horizon'] && $gamestate < 50) || (!$edata['type'] && $gamestate >= 50))
+			if(($horizon == $edata['horizon'] && $gamestate < 50) || (!$edata['type'] && $gamestate >= 50) || club24_remote_npc($data,$edata))
 			{
 				if($edata['hp'] <= 0)
 				{
@@ -1072,7 +1085,11 @@ function focus_item(&$data=NULL,$id=NULL,$any_pls=false)
 	}
 	else
 	{
-		$result = $db->query("SELECT * FROM {$tablepre}mapitem WHERE pls = '$pls'");
+		if($club == 24) {
+			$c24_places = implode(',',club24_places($data));
+			$c24_places = $c24_places === '' ? '-1' : $c24_places;
+			$result = $db->query("SELECT * FROM {$tablepre}mapitem WHERE pls IN ($c24_places) AND itms <> '0'");
+		} else $result = $db->query("SELECT * FROM {$tablepre}mapitem WHERE pls = '$pls'");
 		$itemnum = $db->num_rows($result);
 		if($itemnum <= 0) return 0;
 		$itemno = rand(0,$itemnum-1);
@@ -1080,6 +1097,7 @@ function focus_item(&$data=NULL,$id=NULL,$any_pls=false)
 		$mi=$db->fetch_array($result);
 	}
 	$itm0=$mi['itm'];
+	unset($clbpara['c24_pickup']);
 	$itmk0=$mi['itmk'];
 	$itme0=$mi['itme'];
 	$itms0=$mi['itms'];
@@ -1095,7 +1113,7 @@ function focus_item(&$data=NULL,$id=NULL,$any_pls=false)
 		}
 		else
 		{
-			itemfind();
+			itemfind($data);
 			return 1;
 		}
 	}

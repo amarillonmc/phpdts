@@ -382,6 +382,12 @@ namespace revcombat
 		global $log;
 		$loop = 0;
 
+		# 「裁决」追加一次攻击；行动内的掷骰标记保留，不能连锁。
+		if(!empty($pa['c24_rapid'])) {
+			unset($pa['c24_rapid']);
+			$loop = 1;
+		}
+
 		# 「双响」效果判定
 		if(!$loop && isset($pa['bskill_c5_double']))
 		{

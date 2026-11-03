@@ -149,6 +149,7 @@
 		{
 			# 检查当前社团是否存在特殊效果判定
 			$ceffect = isset($cskill['effect'][$club]) ? $cskill['effect'][$club] : $cskill['effect'][0];
+			$c24_factor = ($club == 24 && in_array($sk,Array('s_hp','s_ad'))) ? club24_allin_factor($pdata) : 1;
 			# 遍历该技能关联属性
 			foreach($cskill['status'] as $snm)
 			{
@@ -161,11 +162,14 @@
 				$seffect = parse_skilloperator($seffect);
 				$so = is_array($seffect) ? $seffect[0] : ''; 
 				$svars = is_array($seffect) ? $seffect[1] : $seffect;
+				if($club == 24 && in_array($sk,Array('s_hp','s_ad'))) $svars = (int)round($svars*$c24_factor);
 				# 计算属性变化
 				eval("$$snm_key = $$snm_key $so $svars*$nums;");
 				# 替换升级后文本
 				$clog = str_replace("[:{$snm}:]",$svars*$nums,$clog);
 			}
+			if($club == 24 && $sk == 's_hp') { $mhp = max(1,$pdata['mhp']); $pdata['mhp'] = $mhp; $pdata['hp'] = max(1,min($mhp,$pdata['hp'])); }
+			if($club == 24 && $sk == 's_ad') { $pdata['att'] = max(0,$pdata['att']); $pdata['def'] = max(0,$pdata['def']); }
 		}
 		# 扣除技能点
 		if(!empty($cost)) $skillpoint -= $cost;
@@ -264,7 +268,8 @@
 			return 0;
 		}
 		# 检查冷却技能是否解锁
-		if(check_skill_unlock($sk,$pdata))
+		$unlock_flag = check_skill_unlock($sk,$pdata);
+		if($unlock_flag && $unlock_flag !== 'c24_unlearned')
 		{
 			$cskill = $cskills[$sk];
 			if(is_array($unlock_flag))
@@ -288,6 +293,10 @@
 		{
 			//echo "技能{$sk}未解锁<br>";
 			return "noskill";
+		}
+		if(strpos($sk,'c24_') === 0) {
+			if($data['club'] != 24 || $data['type']) return 'noskill';
+			if(isset($cskills[$sk]['maxlvl']) && !get_skilllvl($sk,$data)) return 'c24_unlearned';
 		}
 		if(!empty($cskills[$sk]['unlock']))
 		{
@@ -330,6 +339,7 @@
 
 	function get_skillragecost($sk,$data)
 	{
+		if(strpos($sk,'c24_') === 0 && is_array($data)) return club24_skill_rage($sk,$data);
 		$ragecost = get_skillvars($sk,'ragecost');
 		if(is_array($ragecost))
 		{
@@ -359,6 +369,7 @@
 
 	function parse_skilllockdesc($sk,$lock)
 	{
+		if($lock === 'c24_unlearned') return '花费技能点学习后才能使用。';
 		global $cskills;
 		$cskill = $cskills[$sk];
 		# 检查冷却时间

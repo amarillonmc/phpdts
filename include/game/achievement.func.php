@@ -734,6 +734,25 @@ function check_mixitem_achievement_rev($nn,$item)
 	return;
 }
 
+// 死亡与整局结束共用阶段守卫；使用真实玩家数据，不能借用当前请求者的 clbpara。
+function check_club24_achievement($data)
+{
+	global $db,$gtablepre,$titles_list;
+	if(empty($data) || !isset($data['type']) || $data['type'] != 0 || empty($data['name'])) return;
+	$para = get_clbpara($data['clbpara']);
+	if(($para['BGMBrand'] ?? '') !== 'rixolamal') return;
+	$who = $data['name']; $aid = 209;
+	$ach = get_achlist($aid);
+	// 独立 RuleSet 的旧成就表可能未开放这个成就。
+	if(empty($ach['lvl']) || !isset($titles_list[123]) || check_achievement_rev($aid,$who)) return;
+	update_achievement_rev($aid,$who,1);
+	done_achievement_rev($aid,1,$who);
+	get_title($ach['title'][0],$who);
+	$c1 = (int)$ach['c1'][0]; $c2 = (int)$ach['c2'][0];
+	if($c1) $db->query("UPDATE {$gtablepre}users SET credits=credits+$c1 WHERE username='$who'");
+	if($c2) wheelchair_award_credits2($who,$c2);
+}
+
 //新版结局成就检测机制：加入团队胜利兼容
 //function check_end_achievement_rev($w,$m)
 function check_end_achievement_rev($w,$m,$data=NULL)
@@ -744,6 +763,7 @@ function check_end_achievement_rev($w,$m,$data=NULL)
 	$done = 0;
 	$atotal = Array();
 	if(!empty($data['clbpara']) && !is_array($data['clbpara'])) $data['clbpara'] = get_clbpara($data['clbpara']);
+	check_club24_achievement($data);
 
 	//16. 最后幸存成就
 	if ($m==2)

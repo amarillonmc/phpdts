@@ -1,0 +1,55 @@
+神骰叛军（Club 24）实装记录
+2026-11-03
+
+玩家流程
+使用瑞克·拉玛尔歌单后，在效果仍存在时死亡或结束游戏，可完成隐藏成就209，
+获得头衔123「神骰叛军」。奖励233积分、100切糕；切糕沿用已有轮椅折扣规则。
+装备该头衔入场获得第6格灵魂绑定称号卡。没有称号的玩家确认两段提示后入社，
+继承歌单、获得掷币/掷骰，不能转出。其余五个专属技能由传统技能点界面升级。
+
+已接入的行为
+随机移动只选同地图组当前合法目的地，保留禁区、门控判断。
+探索可发现同组远处物品及存活NPC，实际战斗入口允许交战；普通玩家和尸体搜索仍在本地。
+可以拾取自己远处击杀的NPC，保留视野后也可再次查看该尸体。
+装备、补给在获得时重投；发现页直接使用、满包重试、重新加载不能绕过或重复免费重投。
+普通合成只重投效果和耐久。重铸支持0～6格及单个E/D/S锁定，保留绑定、无限耐久和para。
+磨刀石、钉子、针线包、安雅/天然呆的数值强化及装备强化成功增量经diceroll结算。
+每次进店重投自己的价格倍率；显示与购买共用保存的倍率，不更改共享商品价格。
+裁决一行动只投一次，追加攻击继续消耗武器；轮盘自伤也走原有免死、复活和死亡流程。
+纯伤害保留奇机、起迹、反噬和HP制御。豪赌沿用原始伤害公式，防御系数按1计算后重掷，
+因此目标防御不影响其伤害；二级起两次取高。梭哈只改变升级数值，不改变等级和解锁权限。
+梭哈数值收益按整数四舍五入，同一条攻防/生命升级共用倍率和正负号；生命下限1、攻防下限0。
+
+实现位置与源码核对
+参数、装备合法属性池和剧情物品豁免：gamedata/cache/club24cfg_1.php。
+技能注册：gamedata/cache/club24skills_1.php；专属行为：include/game/club24.func.php。
+沿用revclubskills与revcombat链路，未引入新表、依赖或通用玩法框架。
+现有分类实际是W武器、D防具、A饰品，三种装备都纳入；其他非H/P类别默认不改。
+死亡并非全部经过death()，因此在战斗/自然死亡共用的check_death_events接入，
+另补禁区、AFK直接死亡路径；游戏结束检查全部玩家，避免只给胜者解锁。
+成就使用已有阶段守卫；默认游戏请求已有process.lock覆盖指令与保存，不额外建立锁系统。
+仅注册公共配置，独立RuleSet的资源表保持原样；未登记该成就或头衔的模式不错误结算奖励。
+现有clbpara保存技能数值、开关、个人商店倍率/类别及一个待拾取物品指纹，无增长历史。
+default模板增加确认及技能操作；nouveau对应页面沿用default回退，无新界面。
+原始HANDOFF保留；其中“不动源码/实装后删除”是文档交付阶段说明，本次依据用户要求实施。
+
+验证（PHP 7.4.33，启用short_open_tag）
+php -d short_open_tag=1 -r "define('IN_GAME',true); require 'gamedata/tests/club24_test.php';"
+php -d short_open_tag=1 -r "define('IN_GAME',true); require 'gamedata/tests/club24_test.php';" -- dice
+node gamedata/tests/club24_ui_test.js
+新脚本覆盖加入/拒绝、技能等级与扣点、重铸边界、物品重投与重新加载、合成、强化、
+随机目的地、实际跨地探索与摸尸、商店扣款、裁决追加攻击、轮盘自伤/免死/复活/死亡、
+豪赌、反噬、HP制御、公开喊话、成就持久化与防重复奖励。
+Club 24主回归102项断言、真实diceroll专项3项断言通过。
+原有club23_test.php、ai93_test.php、quest_q6_test.php，以及LAIKAADVENT、RAIDCAGEDBIRD回归通过。
+修改的PHP文件语法通过；command/itemfind/skill_temp使用实际模板编译器在临时目录编译通过。
+JS验证两段确认、取消零请求、背包及发现页入社、尸体页技能参数覆盖。git diff --check通过。
+数据库连接尝试被当前本地配置拒绝（MySQL 1045）；未创建临时表，未写现有对局。
+因此尚未验证真实数据库保存、浏览器登录后的局部刷新及完整真人对局，脚本通过不代表上线验证。
+尚未实装的真伪结局路线不能在本次验证；已按当前源码保留解禁/解离必需品，新增路线需同步补充豁免。
+
+成就图标
+img/ach/209_1.png，100×100 PNG，按现有成就图标命名自动加载。
+由内置image_gen生成，以System.Drawing等比缩小；无文字。原始生成文件保留在Codex生成目录。
+生成提示词：
+Use case: stylized-concept. Asset type: square achievement icon for a retro dark-themed browser survival RPG, final display about 80 by 80 pixels. Primary request: an emblem for 神骰叛军, rebels who entrust their fate to dice. Subject: one bold ivory six-sided die with crisp dark pips, caught in a vivid magenta and cyan fractured circular halo suggesting rebellion against fate; a subtle musical rhythm in the light trail. Style: polished hand-painted game inventory icon, strong silhouette, very simple readable composition, rich dark background, high contrast at tiny size. Composition: centered single die, generous border margin, square 1:1. No lettering, no words, no logos, no watermark, no characters, no birds, no wings, no aircraft.

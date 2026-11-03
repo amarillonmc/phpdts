@@ -12,7 +12,7 @@ if (! defined('IN_GAME')) {
  * @param array &$data 玩家数据
  */
 function item_club_card($itmn, &$data) {
-    global $log, $db, $tablepre, $now, $elements_info, $sparkle;
+    global $log, $db, $tablepre, $now, $elements_info, $sparkle, $event_bgm, $c24_confirm;
     extract($data, EXTR_REFS);
     
     $itm = & ${'itm' . $itmn};
@@ -22,6 +22,27 @@ function item_club_card($itmn, &$data) {
     $itmsk = & ${'itmsk' . $itmn};
     
     if ($itmk == 'ZB') { // 社团卡
+        if ($itme == 24) {
+            global $club_skillslist;
+            if ($club || $hp <= 0 || $type || empty($itms) || empty($club_skillslist[24])) {
+                $log .= '只有尚未选择称号的参战者，才能使用「神骰叛军」称号卡。<br>';
+                return;
+            }
+            if (!isset($c24_confirm) || $c24_confirm !== '1') {
+                $log .= '请点击称号卡的使用按钮，读完两段入社说明并确认后再入伙。<br>';
+                return;
+            }
+            changeclub(24, $data);
+            $clbpara['BGMBrand'] = 'rixolamal';
+            $clbpara['event_bgmbook'] = $event_bgm['rixolamaltracks'];
+            $clbpara['traitorRoll'] = 0;
+            getclubskill('c24_coin', $clbpara);
+            getclubskill('c24_dice', $clbpara);
+            $log .= '你打开了「神骰叛军」称号卡，熟悉的旋律在脑中炸响：<br><span class="orange">「哦！这次不是路过了，是正式入伙对吧！<br>很好——从今天起，你走的路、捡的宝、打的架，全部交给骰子裁决！<br>反叛随机数大神吧！欢迎加入神骰叛军！」<br>——瑞克·拉玛尔</span><br>你的音乐播放列表被替换了！你的世界开始发疯了！<br>';
+            $itm = $itmk = $itmsk = ${'itmpara'.$itmn} = '';
+            $itme = $itms = 0;
+            return;
+        }
         if ($itme == 23) {
             // 主动选择的特殊称号；已有称号或本规则集未开放时保留道具。
             global $club_skillslist;

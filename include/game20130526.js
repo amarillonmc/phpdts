@@ -298,6 +298,13 @@ function sl(id) {
 //	$('alivelist').innerHTML = alive;
 //}
 var lastRun = 0; var delay = 50;
+function useClub24Card(slot) {
+	var message = '——你确定要正式入伙吗？「神骰叛军」会接管你的一切：移动会把你丢到别处、捡到的东西属性全是乱的、商店价格与强化合成全听天由命。本社团不保证任何游戏体验。你依然坚持入伙吗？'
+		+ '\n\n「想好了吗？一旦入伙，骰子可不会听你的指挥——你的世界会变得和那首歌一样疯狂，而我不保证你还能好好玩下去。这样也要来吗？」——瑞克·拉玛尔';
+	if(!window.confirm(message)) return false;
+	return postCmd('gamecmd','command.php',{data:{mode:'command',command:'itm'+slot,c24_confirm:'1'}});
+}
+
 // 可选请求参数保持旧的两参数调用兼容；强制对话可安全覆盖临时页面的 mode/command。
 // Optional request settings preserve legacy calls while mandatory dialogues can safely override mode/command.
 function postCmd(formName,sendto,options){
