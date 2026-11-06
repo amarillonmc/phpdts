@@ -6,6 +6,7 @@ body.nouveau-ui #side-panel-button {
     z-index: 1160;
     width: 34px;
     height: 112px;
+    padding: 8px 6px;
     border-radius: 8px 0 0 8px;
     border: 1px solid var(--nv-border-lit, rgba(96, 232, 184, 0.45));
     border-right: 0;
@@ -25,8 +26,8 @@ body.nouveau-ui #side-panel-button:hover {
 
 body.nouveau-ui #sliding-panel {
     top: 58px;
-    right: -520px;
-    width: 520px;
+    right: -560px;
+    width: 550px;
     max-width: calc(100vw - 36px);
     height: calc(100vh - 102px);
     z-index: 1155;
@@ -42,33 +43,45 @@ body.nouveau-ui #sliding-panel {
     transition: right 0.28s ease;
 }
 
-body.nouveau-ui #sliding-panel h2,
-body.nouveau-ui #sliding-panel h3 {
-    color: var(--nv-accent, #3fe0a8);
-    text-shadow: 0 0 10px var(--nv-glow, rgba(63, 224, 168, 0.28));
+body.nouveau-ui #sliding-panel.open {
+    right: 0 !important;
 }
 
-body.nouveau-ui #sliding-panel .quest-block,
-body.nouveau-ui #sliding-panel .fireseed-card {
+body.nouveau-ui #sliding-panel .panel-header {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 49%, rgba(0, 0, 0, 0.25) 51%, rgba(0, 0, 0, 0.4) 100%),
+        linear-gradient(90deg, var(--nv-glow, rgba(63, 224, 168, 0.22)), var(--nv-glow-2, rgba(56, 200, 255, 0.16)));
+    border-bottom: 1px solid var(--nv-border-lit, rgba(96, 232, 184, 0.4));
+}
+
+body.nouveau-ui #sliding-panel .tab-button {
+    color: var(--nv-muted, #98b4ac);
+    border-color: transparent;
+}
+
+body.nouveau-ui #sliding-panel .tab-button.active,
+body.nouveau-ui #sliding-panel .tab-button:hover {
+    color: #ffffff;
+    border-bottom-color: var(--nv-accent, #3fe0a8);
+    text-shadow: 0 0 10px var(--nv-glow, rgba(63, 224, 168, 0.35));
+}
+
+body.nouveau-ui #sliding-panel .section-container {
     background: rgba(8, 16, 23, 0.78);
     border-color: var(--nv-border, rgba(126, 214, 188, 0.24));
-    border-radius: 6px;
+    border-radius: 7px;
 }
 
-body.nouveau-ui #sliding-panel .tab button {
+body.nouveau-ui #sliding-panel .section-title {
+    color: var(--nv-accent, #3fe0a8);
+    background: rgba(12, 24, 34, 0.78);
+    border-bottom-color: var(--nv-border, rgba(126, 214, 188, 0.24));
+}
+
+body.nouveau-ui #sliding-panel .update-button {
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 50%, rgba(0, 0, 0, 0.25) 100%),
-        rgba(14, 26, 36, 0.88);
-    color: var(--nv-text, #e8f3ef);
-    border: 1px solid var(--nv-border, rgba(126, 214, 188, 0.26));
-    border-radius: 5px;
-    margin-right: 4px;
-}
-
-body.nouveau-ui #sliding-panel .tab button.active,
-body.nouveau-ui #sliding-panel .tab button:hover {
-    border-color: var(--nv-accent, #3fe0a8);
-    color: #ffffff;
-    box-shadow: 0 0 12px var(--nv-glow, rgba(63, 224, 168, 0.28));
+        linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.05) 48%, rgba(0, 0, 0, 0.2) 52%, rgba(0, 0, 0, 0.38) 100%),
+        linear-gradient(135deg, var(--nv-glow, rgba(63, 224, 168, 0.34)), var(--nv-glow-2, rgba(56, 200, 255, 0.28)));
+    border: 1px solid var(--nv-border-lit, rgba(96, 232, 184, 0.5));
 }
 </style>

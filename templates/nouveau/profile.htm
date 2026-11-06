@@ -1,4 +1,5 @@
-<!--{eval $nv_hp_pct = $mhp > 0 ? max(0, min(100, round($hp / $mhp * 100))) : 0; $nv_sp_pct = $msp > 0 ? max(0, min(100, round($sp / $msp * 100))) : 0; $nv_ss_pct = $mss > 0 ? max(0, min(100, round($ss / $mss * 100))) : 0; $nv_exp_pct = $upexp > 0 ? max(0, min(100, round($exp / $upexp * 100))) : 0; $nv_danger_json = !empty($arealist) && isset($areanum) ? json_encode(array_values(array_slice($arealist, 0, $areanum + 1))) : '[]'; $nv_warn_json = !empty($arealist) && isset($areanum) && isset($areaadd) ? json_encode(array_values(array_slice($arealist, $areanum + 1, $areaadd))) : '[]';}-->
+{template paperdoll_state}
+<!--{eval $nickinfo = titles_get_desc($nick,1); $fcg_name_class = in_array((int)$nick,array(9111,9112,9113)) ? 'fcg-title fcg-title-'.(int)$nick : ''; $nv_hp_pct = $mhp > 0 ? max(0, min(100, round($hp / $mhp * 100))) : 0; $nv_sp_pct = $msp > 0 ? max(0, min(100, round($sp / $msp * 100))) : 0; $nv_ss_pct = $mss > 0 ? max(0, min(100, round($ss / $mss * 100))) : 0; $nv_exp_pct = $upexp > 0 ? max(0, min(100, round($exp / $upexp * 100))) : 0; $nv_danger_json = !empty($arealist) && isset($areanum) ? json_encode(array_values(array_slice($arealist, 0, $areanum + 1))) : '[]'; $nv_warn_json = !empty($arealist) && isset($areanum) && isset($areaadd) ? json_encode(array_values(array_slice($arealist, $areanum + 1, $areaadd))) : '[]';}-->
 <script>
 window.shwData = {
     locationName: {eval echo json_encode((string)($plsinfo[$pls] ?? ''), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG);},
@@ -127,7 +128,12 @@ window.shwData = {
             </div>
         </div>
         <div class="nv-paperdoll-wrap">
+            <!--{if CURSCRIPT == 'game'}-->
+            <!--{eval $pd_mode = 'normal'; $pd_width = 150; $pd_height = 210; $pd_draw_height = 200; $pd_fill = 0;}-->
             {template paperdoll_profile}
+            <!--{else}-->
+            <img src="img/$iconImg" data-fallback="avatar" alt="$name">
+            <!--{/if}-->
         </div>
     </div>
 </section>
