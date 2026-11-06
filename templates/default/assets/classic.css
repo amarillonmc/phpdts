@@ -1,0 +1,182 @@
+@font-face {
+    font-family: 'HZKPixel12px';
+    src: url('fonts/hzk-pixel-12px.woff2') format('woff2');
+    font-display: swap;
+}
+
+/* 原版字体保留各处的 8/10/12px 配置；自选字体同时覆盖旧 font 简写。 */
+html[data-classic-font="hzk"] {
+    --classic-font: 'HZKPixel12px', 'FusionPixel12px', monospace;
+}
+html[data-classic-font="yahei"] {
+    --classic-font: 'Microsoft YaHei', '微软雅黑', 'Microsoft YaHei UI', sans-serif;
+}
+html[data-classic-font="hzk"] body,
+html[data-classic-font="hzk"] body *,
+html[data-classic-font="hzk"] body *::before,
+html[data-classic-font="hzk"] body *::after,
+html[data-classic-font="yahei"] body,
+html[data-classic-font="yahei"] body *,
+html[data-classic-font="yahei"] body *::before,
+html[data-classic-font="yahei"] body *::after {
+    font-family: var(--classic-font) !important;
+}
+
+/* 12px 字模以原尺寸显示正文，保留标题、物品特效与小地图字号。 */
+html[data-classic-font="hzk"] body,
+html[data-classic-font="hzk"] td,
+html[data-classic-font="hzk"] th,
+html[data-classic-font="hzk"] a:not(.clit),
+html[data-classic-font="hzk"] li,
+html[data-classic-font="hzk"] input,
+html[data-classic-font="hzk"] select,
+html[data-classic-font="hzk"] textarea,
+html[data-classic-font="hzk"] button,
+html[data-classic-font="hzk"] .b1,
+html[data-classic-font="hzk"] .b2,
+html[data-classic-font="hzk"] .b3,
+html[data-classic-font="hzk"] .b4,
+html[data-classic-font="hzk"] .b5,
+html[data-classic-font="hzk"] :is(.yellow, .gold, .clan, .blue, .red, .green, .lime, .purple, .evergreen, .lightgreen, .magenta, .sienna, .orange, .darkviolet, .darkcyan, .seagreen, .dmg, .grey, .lightpink, .ltcrimson, .ltazure, .linen, .L5, .redseed, .blueseed, .tgrey, .tlime, .tclan, .tmagenta, .torange, .neonblue, .neonred, .neonyellow, .neonorange),
+html[data-classic-font="hzk"] span[tooltip]::before,
+html[data-classic-font="hzk"] span[tooltip2]::before,
+html[data-classic-font="hzk"] .classic-settings {
+    font-size: 12px;
+}
+html[data-classic-font="hzk"] body,
+html[data-classic-font="hzk"] td,
+html[data-classic-font="hzk"] th {
+    line-height: 1.333333;
+}
+
+/* 配色只覆盖界面容器，保留伤害、物品品质、禁区等语义颜色。 */
+html[data-classic-palette]:not([data-classic-palette="denpa"]) body {
+    background-color: var(--classic-background);
+    background-blend-mode: soft-light;
+    color: var(--classic-text);
+}
+html[data-classic-palette]:not([data-classic-palette="denpa"]) a:not([class]),
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .headerlink a {
+    color: var(--classic-link);
+}
+html[data-classic-palette]:not([data-classic-palette="denpa"]) a:not([class]):hover,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .headerlink a:hover,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .title,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .subtitle,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .ach-subtitle,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .ach-subdesc {
+    color: var(--classic-accent);
+}
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .b1,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .b2 {
+    background-color: var(--classic-heading);
+    color: var(--classic-text);
+    border-color: var(--classic-border);
+}
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .b3,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .map,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) table.dialogue,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) dialog,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .dropdown-menu,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .sliding-panel,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .panel-header,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .section-content,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) #quest-panel,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) #quest-content {
+    background-color: var(--classic-panel);
+    color: var(--classic-text);
+    border-color: var(--classic-border);
+}
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .b4,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .b5 {
+    color: var(--classic-text);
+}
+html[data-classic-palette]:not([data-classic-palette="denpa"]) table.infotable,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) table.infotable td,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) table.infotable th,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .map2 {
+    border-color: var(--classic-border);
+}
+html[data-classic-palette]:not([data-classic-palette="denpa"]) input:not([type="color"]):not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+html[data-classic-palette]:not([data-classic-palette="denpa"]) select,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) textarea,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) button:not([class]),
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .cmdbutton,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .tab-button,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .side-panel-button {
+    background-color: var(--classic-panel);
+    color: var(--classic-text);
+    border-color: var(--classic-border);
+}
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .tab-button.active,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .section-title,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) #quest-content h3 {
+    color: var(--classic-accent);
+    border-color: var(--classic-border);
+}
+html[data-classic-palette]:not([data-classic-palette="denpa"]) .dropdown-menu,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) span[tooltip]:hover::before,
+html[data-classic-palette]:not([data-classic-palette="denpa"]) span[tooltip2]:hover::before {
+    background-color: var(--classic-panel);
+    color: var(--classic-text);
+    -webkit-text-fill-color: currentColor;
+    text-shadow: none;
+    border-color: var(--classic-border);
+}
+
+.classic-settings {
+    max-width: 760px;
+    margin: 16px auto;
+    border: 1px solid var(--classic-border, #e17ce2);
+    background: var(--classic-panel, #111111);
+    color: var(--classic-text, #dddddd);
+    font: 12px/1.6 'FusionPixel12px', sans-serif;
+    text-align: left;
+}
+.classic-settings summary {
+    padding: 8px 12px;
+    cursor: pointer;
+    color: var(--classic-link, #dddddd);
+}
+.classic-settings-body {
+    padding: 4px 12px 12px;
+}
+.classic-settings-row,
+.classic-colors {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin: 8px 0;
+}
+.classic-settings select,
+.classic-settings button {
+    padding: 4px 8px;
+    border: 1px solid var(--classic-border, #e17ce2);
+    background: var(--classic-background, #111111);
+    color: var(--classic-text, #dddddd);
+    font: inherit;
+    cursor: pointer;
+    max-width: 100%;
+}
+.classic-colors label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.classic-colors input {
+    width: 38px;
+    height: 28px;
+    padding: 1px;
+    border: 1px solid var(--classic-border, #e17ce2);
+    background: transparent;
+    cursor: pointer;
+}
+.classic-settings :focus-visible {
+    outline: 2px solid var(--classic-link, #dddddd);
+    outline-offset: 2px;
+}
+.classic-settings-note {
+    margin: 8px 0 0;
+    line-height: 1.6;
+}
