@@ -9,10 +9,10 @@
 <link rel="stylesheet" href="include/fcg/titles.css?v=20261024">
 <!--{if isset($extrahead)}-->$extrahead<!--{/if}-->
 <style type="text/css" id="css">{template css}</style>
-<link rel="stylesheet" type="text/css" href="templates/nouveau/assets/css/nouveau.css">
-<link rel="stylesheet" type="text/css" href="templates/nouveau/assets/css/windows.css">
-<link rel="stylesheet" type="text/css" href="templates/nouveau/assets/css/game-panels.css">
-<link rel="stylesheet" type="text/css" href="templates/nouveau/assets/css/responsive.css">
+<link rel="stylesheet" type="text/css" href="templates/nouveau/assets/css/nouveau.css?v=20261106">
+<link rel="stylesheet" type="text/css" href="templates/nouveau/assets/css/windows.css?v=20261106">
+<link rel="stylesheet" type="text/css" href="templates/nouveau/assets/css/game-panels.css?v=20261106">
+<link rel="stylesheet" type="text/css" href="templates/nouveau/assets/css/responsive.css?v=20261106">
 <!--{if (CURSCRIPT == 'messages')}-->
 <link rel="stylesheet" type="text/css" href="gamedata/cache/style_buttons.20180118.css">
 <link rel="stylesheet" type="text/css" href="gamedata/cache/style_messages.20180221.css">
@@ -31,20 +31,20 @@
 <script type="text/javascript" src="include/dialogue.js?v=20261028"></script>
 <script type="text/javascript" src="include/record.js"></script>
 <!--{/if}-->
-<script type="text/javascript" src="templates/nouveau/assets/js/window-manager.js" defer></script>
-<script type="text/javascript" src="templates/nouveau/assets/js/image-fallback.js" defer></script>
-<script type="text/javascript" src="templates/nouveau/assets/js/panel-bindings.js" defer></script>
-<script type="text/javascript" src="templates/nouveau/assets/js/keyboard-shortcuts.js" defer></script>
-<script type="text/javascript" src="templates/nouveau/assets/js/nouveau.js" defer></script>
+<script type="text/javascript" src="templates/nouveau/assets/js/window-manager.js?v=20261106" defer></script>
+<script type="text/javascript" src="templates/nouveau/assets/js/image-fallback.js?v=20261106" defer></script>
+<script type="text/javascript" src="templates/nouveau/assets/js/panel-bindings.js?v=20261106" defer></script>
+<script type="text/javascript" src="templates/nouveau/assets/js/keyboard-shortcuts.js?v=20261106" defer></script>
+<script type="text/javascript" src="templates/nouveau/assets/js/nouveau.js?v=20261106" defer></script>
 </head>
-<body class="nouveau-ui" <!--{if CURSCRIPT == 'game' && $hotkeyon}-->onkeyup="hotkey(event);"<!--{/if}-->>
+<body class="nouveau-ui nv-page-{eval echo CURSCRIPT;}" data-nv-script="{eval echo CURSCRIPT;}" <!--{if CURSCRIPT == 'game' && $hotkeyon}-->onkeyup="hotkey(event);"<!--{/if}-->>
 <div class="nouveau-desktop-bg" aria-hidden="true"></div>
-<div class="nv-topbar">
-    <div class="nv-topbar__brand"><a href="index.php">{lang title}</a><span>Nouveau Terminal</span></div>
-    <div class="nv-topbar__links">
+<header class="nv-topbar">
+    <div class="title nv-header-title"><a href="index.php">{lang title}</a></div>
+    <nav class="nv-topbar__links" aria-label="主导航">
         <a href="index.php">{lang index}</a>
         <!--{if isset($cuser) && isset($cpass)}-->
-        <a href="messages.php">{lang messages}<!--{if !empty($new_messages)}--><b>NEW</b><!--{/if}--></a>
+        <a href="messages.php">{lang messages}<!--{if !empty($new_messages)}--><span class="L5">NEW!</span><!--{/if}--></a>
         <a href="user_profile.php">{lang user}</a>
         <!--{else}-->
         <a href="register.php">{lang register}</a>
@@ -57,14 +57,20 @@
         <a href="rank.php">{lang rank}</a>
         <a href="help.php">{lang help}</a>
         <a href="fireseed_shop.php">种火商店</a>
-        <details class="nv-vnworld-menu"><summary>{lang vnworld}</summary><div>
+        <details class="nv-vnworld-menu"><summary>{lang vnworld}</summary><div class="nv-vnworld-dropdown">
             <a href="vnworld.php">空想梦境</a>
             <a href="vn_create.php?kind=npc">幻影造物</a>
             <a href="vn_create.php?kind=item">万象投影</a>
         </div></details>
         <a href="admin.php">{lang admin}</a>
+        <a href="http://dts.gay" target="_blank">{lang report}</a>
+        <a href="https://afdian.com/a/sillycross" target="_blank">{lang donate}</a>
         <a href="record.php">回放录像</a>
-        <!--{if (CURSCRIPT == 'game')}--><a href="javascript:void(0)" onclick="stopRecording()">停止录像</a><!--{/if}-->
-    </div>
-</div>
+        <!--{if (CURSCRIPT == 'game')}-->
+        <a href="javascript:void(0)" onclick="stopRecording()">停止录像</a>
+        <a href="javascript:void(0)" class="nv-topbar__tool" onclick="if(window.NouveauWindows)window.NouveauWindows.resetAll();">重置布局</a>
+        <!--{/if}-->
+        <a href="javascript:void(0)" class="nv-topbar__tool" id="nv-theme-top-btn" onclick="if(window.NouveauTheme)window.NouveauTheme.togglePanel();">界面配色</a>
+    </nav>
+</header>
 <main class="nouveau-desktop" id="nouveau-desktop">

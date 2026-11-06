@@ -161,12 +161,8 @@ if($mode == 'paperdoll') {
 			}
 		} elseif($templateid == 2) {
 			# NOUVEAU模板对所有用户开放
-			//$gamedata['innerHTML']['info'] .= '已切换到NOUVEAU界面，刷新页面生效。<br>';
-			if($udata['groupid'] < 9)
-			{
-				$templateid = 0;
-				$gamedata['innerHTML']['info'] .= 'NOUVEAU界面尚在施工中。<br>';
-			}
+			$gamedata['innerHTML']['info'] .= 'NOUVEAU界面尚在施工中。有问题欢迎去官方论坛报告。<br>';
+			$templateid = 2;
 		} else {
 			# 其他值默认为经典界面
 			$templateid = 0;

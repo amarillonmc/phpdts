@@ -1,184 +1,214 @@
-{template paperdoll_state}
-<!--{eval $nickinfo = titles_get_desc($nick,1); $fcg_name_class = in_array((int)$nick,array(9111,9112,9113)) ? 'fcg-title fcg-title-'.(int)$nick : '';}-->
-<!--{eval $nv_hp_pct = $mhp ? round($hp * 100 / $mhp) : 0;}-->
-<!--{eval $nv_sp_pct = $msp ? round($sp * 100 / $msp) : 0;}-->
-<!--{eval $nv_rage_pct = min(100, $rage);}-->
-<!--{eval $nv_ss_pct = $mss ? round($ss * 100 / $mss) : 0;}-->
+<!--{eval $nv_hp_pct = $mhp > 0 ? max(0, min(100, round($hp / $mhp * 100))) : 0; $nv_sp_pct = $msp > 0 ? max(0, min(100, round($sp / $msp * 100))) : 0; $nv_ss_pct = $mss > 0 ? max(0, min(100, round($ss / $mss * 100))) : 0; $nv_exp_pct = $upexp > 0 ? max(0, min(100, round($exp / $upexp * 100))) : 0; $nv_danger_json = !empty($arealist) && isset($areanum) ? json_encode(array_values(array_slice($arealist, 0, $areanum + 1))) : '[]'; $nv_warn_json = !empty($arealist) && isset($areanum) && isset($areaadd) ? json_encode(array_values(array_slice($arealist, $areanum + 1, $areaadd))) : '[]';}-->
+<script>
+window.shwData = {
+    locationName: {eval echo json_encode((string)($plsinfo[$pls] ?? ''), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG);},
+    locationId: {eval echo (int)$pls;},
+    hp: {eval echo (int)$hp;},
+    mhp: {eval echo (int)$mhp;},
+    sp: {eval echo (int)$sp;},
+    msp: {eval echo (int)$msp;},
+    rage: {eval echo (int)$rage;},
+    dangerAreas: $nv_danger_json,
+    warnAreas: $nv_warn_json
+};
+</script>
+<span id="pls" style="display:none">$plsinfo[$pls]</span>
+<span id="weather" style="display:none">$wthinfo[$weather]</span>
 
-<section class="nv-window nv-window--status" id="nv-status" data-window-title="Status">
-    <div class="nv-window__titlebar">
-        <span class="nv-window__title">Status Window / 状态窗口</span>
-        <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
+<section class="nv-window" id="nv-status" data-window-id="nv-status" data-window-title="生命与状态" data-window-resizable="true">
+    <div class="nv-window__bar" data-window-drag-handle="true">
+        <span class="nv-window__title">生命与状态 · VITAL</span>
+        <span class="nv-window__controls">
+            <button type="button" class="nv-window__btn" data-window-minimize="nv-status" title="最小化">-</button>
+        </span>
     </div>
     <div class="nv-window__body">
-        {template club23_status}
-        <div class="nv-status-head">
-            <div>
-                <div class="nv-status-name {$fcg_name_class}">{$nickinfo} {$name}<!--{if !empty($clbpara['PlatformName'])}-->（$clbpara['PlatformName']）<!--{/if}--></div>
-                <div class="nv-status-id">{$sexinfo[$gd]}{$sNo}号 · Lv. $lvl · $clubinfo[$club]</div>
-            </div>
-            <div class="nv-status-id">{lang weather}: $wthinfo[$weather]</div>
-        </div>
-
-        <div class="nv-status-meters">
+        <div class="nv-meters">
             <div class="nv-meter">
-                <div class="nv-meter__label"><span>{lang hp}</span><span><!--{if !empty($clbpara['kimi_no_hp'])}-->已废除（{$clbpara['kimi_charge']}/{$clbpara['kimi_recorded_mss']}）<!--{else}--><!--{if isset($shield_info)}-->{$shield_info}<!--{/if}-->$hp / $mhp<!--{/if}--></span></div>
-                <div class="nv-meter__track"><span class="nv-meter__fill nv-meter__fill--hp" data-meter-value="$nv_hp_pct"></span></div>
+                <div class="nv-meter__label"><span>{lang hp}</span><strong class="$hpgroup">$hp / $mhp</strong></div>
+                <div class="nv-meter__track"><div class="nv-meter__fill is-hp" style="width: {$nv_hp_pct}%"></div></div>
             </div>
             <div class="nv-meter">
-                <div class="nv-meter__label"><span>{lang sp}</span><span>$sp / $msp</span></div>
-                <div class="nv-meter__track"><span class="nv-meter__fill nv-meter__fill--sp" data-meter-value="$nv_sp_pct"></span></div>
+                <div class="nv-meter__label"><span>{lang sp}</span><strong class="$spgroup">$sp / $msp</strong></div>
+                <div class="nv-meter__track"><div class="nv-meter__fill is-sp" style="width: {$nv_sp_pct}%"></div></div>
             </div>
             <div class="nv-meter">
-                <div class="nv-meter__label"><span>{lang rage}</span><span>$rage</span></div>
-                <div class="nv-meter__track"><span class="nv-meter__fill nv-meter__fill--rage" data-meter-value="$nv_rage_pct"></span></div>
+                <div class="nv-meter__label"><span>{lang rage}</span><strong class="yellow"><!--{if $rage}-->$rage<!--{else}-->0<!--{/if}--></strong></div>
+                <div class="nv-meter__track"><div class="nv-meter__fill is-rage" style="width: <!--{eval echo max(0, min(100, (int)$rage));}-->%"></div></div>
             </div>
+            <!--{if $mss > 0 || $ss > 0}-->
             <div class="nv-meter">
-                <div class="nv-meter__label"><span>{lang ss}</span><span><!--{if !empty($clbpara['kimi_no_ss'])}-->已废除<!--{else}-->$ss / $mss<!--{/if}--></span></div>
-                <div class="nv-meter__track"><span class="nv-meter__fill nv-meter__fill--ss" data-meter-value="$nv_ss_pct"></span></div>
+                <div class="nv-meter__label"><span>歌魂</span><strong>$ss / $mss</strong></div>
+                <div class="nv-meter__track"><div class="nv-meter__fill is-ss" style="width: {$nv_ss_pct}%"></div></div>
             </div>
-        </div>
-
-        <dl class="nv-kv">
-            <dt>{lang exp}</dt><dd>$exp / $upexp</dd>
-            <dt>{lang money}</dt><dd>$money {lang moneyunit}</dd>
-            <dt>{lang killnum}</dt><dd>$killnum</dd>
-            <dt>{lang att}</dt><dd>$atkinfo</dd>
-            <dt>{lang def}</dt><dd>$definfo</dd>
-            <dt>{lang team}</dt><dd><!--{if $teamID && $gamestate < 40 }-->$teamID<!--{else}-->无<!--{/if}--></dd>
-            <dt>{lang inf}</dt>
-            <dd>
-                <!--{if $inf}-->
-                    <!--{loop $infinfo $key $val}-->
-                        <!--{if strpos($inf,$key)!==false}-->$val <!--{/if}-->
-                    <!--{/loop}-->
-                <!--{else}-->
-                    无
-                <!--{/if}-->
-            </dd>
-        </dl>
-
-        <div class="nv-grid nv-grid--two" style="margin-top:10px">
-            <label>{lang pose}<br>
-                <select id="pose" name="pose" onchange="$('mode').value='special';$('command').value=$('pose').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
-                    <!--{loop $apose $key}-->
-                    <option value="pose$key"<!--{if $pose == $key}-->selected<!--{/if}-->>$poseinfo[$key]
-                    <!--{/loop}-->
-                </select>
-            </label>
-            <label>{lang tactic}<br>
-                <select id="tactic" name="tactic" onchange="$('mode').value='special';$('command').value=$('tactic').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
-                    <!--{loop $atac $key}-->
-                    <option value="tac$key"<!--{if $tactic == $key}-->selected<!--{/if}-->>$tacinfo[$key]
-                    <!--{/loop}-->
-                </select>
-            </label>
-            <label>战术界面<br>
-                <select id="horizon" name="horizon" onchange="$('mode').value='special';$('command').value=$('horizon').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
-                    <!--{loop $horizoninfo $key $value}-->
-                    <option value="hor$key"<!--{if $horizon == $key}-->selected<!--{/if}-->>$value
-                    <!--{/loop}-->
-                </select>
-            </label>
-            <!--{if $club==0 && function_exists('valid_getclublist_t1') && function_exists('valid_getclublist_t2')}-->
-            <label>{lang club}<br>
-                <!--{eval $t1_list = valid_getclublist_t1($udata); $t2_list = valid_getclublist_t2($udata);}-->
-                <select id="clubsel" name="clubsel" onchange="$('mode').value='special';$('command').value=$('clubsel').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
-                    <optgroup label="普通称号">
-                        <!--{loop $t2_list $key}--><option value="clubsel$key">$clubinfo[$key]<!--{/loop}-->
-                    </optgroup>
-                    <optgroup label="特殊称号">
-                        <!--{loop $t1_list $key}--><option value="clubsel$key">$clubinfo[$key]<!--{/loop}-->
-                    </optgroup>
-                </select>
-            </label>
             <!--{/if}-->
         </div>
-    </div>
-</section>
 
-<section class="nv-window nv-window--avatar" id="nv-avatar" data-window-title="Avatar">
-    <div class="nv-window__titlebar">
-        <span class="nv-window__title">Paperdoll / 纸娃娃</span>
-        <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
-    </div>
-    <div class="nv-window__body">
-        <div class="nv-paperdoll">
-            <div class="nv-paperdoll__stage">
-                <!--{if CURSCRIPT == 'game'}-->
-                <!--{eval $pd_mode = 'normal'; $pd_width = 150; $pd_height = 210; $pd_draw_height = 200; $pd_fill = 0;}-->
-                {template paperdoll_profile}
-                <!--{else}-->
-                <img src="img/$iconImg" data-fallback="avatar" alt="$name">
-                <!--{/if}-->
+        <div class="nv-stat-grid">
+            <div><span>{lang level}</span><strong>Lv.$lvl ($exp/$upexp)</strong></div>
+            <div><span>{lang club}</span><strong><!--{if $club == 24 && !empty($Testingma)}-->$Testingma<!--{else}-->$clubinfo[$club]<!--{/if}--></strong></div>
+            <div><span>{lang money}</span><strong class="yellow">$money {lang moneyunit}</strong></div>
+            <div><span>{lang killnum}</span><strong>$killnum<!--{if $skillpoint}--> · <em class="lime">技能点 $skillpoint</em><!--{/if}--></strong></div>
+            <div><span>{lang att}</span><strong>$att</strong></div>
+            <div><span>{lang def}</span><strong>$def</strong></div>
+            <div><span>{lang pose}</span><strong><span tooltip="{$posetips[$pose]}">$poseinfo[$pose]</span></strong></div>
+            <div><span>{lang tactic}</span><strong><span tooltip="{$tactips[$tactic]}">$tacinfo[$tactic]</span></strong></div>
+        </div>
+
+        <div class="nv-proficiency-bar" aria-label="熟练度">
+            <span>{lang wp} <strong>$wp</strong></span>
+            <span>{lang wk} <strong>$wk</strong></span>
+            <span>{lang wg} <strong>$wg</strong></span>
+            <span>{lang wc} <strong>$wc</strong></span>
+            <span>{lang wd} <strong>$wd</strong></span>
+            <span>{lang wf} <strong>$wf</strong></span>
+        </div>
+
+        <div class="nv-inf-section">
+            <div class="nv-inf-group">
+                <span class="nv-inf-label">{lang inf}：</span>
+                <div class="nv-inf-row">
+                    <!--{eval $nv_has_wound = false;}-->
+                    <!--{loop array('h'=>'头部','b'=>'胸部','a'=>'腕部','f'=>'足部') $nv_wk $nv_wname}-->
+                    <!--{if strpos($inf, $nv_wk) !== false}-->
+                    <!--{eval $nv_has_wound = true;}-->
+                    <!--{if CURSCRIPT == 'game' && $mode == 'command'}-->
+                    <button type="button" class="nv-inf-tag is-wound is-clickable" tooltip="消耗{$inf_sp}点体力，点击包扎{$nv_wname}伤口" onclick="$('mode').value='special';$('command').value='inf{$nv_wk}';postCmd('gamecmd','command.php');return false;">{$nv_wname}受伤 [包扎]</button>
+                    <!--{else}-->
+                    <span class="nv-inf-tag is-wound">{$nv_wname}受伤</span>
+                    <!--{/if}-->
+                    <!--{/if}-->
+                    <!--{/loop}-->
+                    <!--{if !$nv_has_wound}-->
+                    <span class="nv-inf-tag is-ok">无部位负伤</span>
+                    <!--{/if}-->
+                </div>
             </div>
-            <dl class="nv-kv">
-                <dt>编号</dt><dd>{$sexinfo[$gd]}{$sNo}号</dd>
-                <dt>状态</dt><dd><!--{if $hp <= 0}-->死亡<!--{elseif $hp <= $mhp*0.2}-->危险<!--{elseif $inf!=''}-->异常<!--{else}-->稳定<!--{/if}--></dd>
-                <dt>武器</dt><dd><!--{if $weps}-->$wep_words<!--{else}-->$nowep<!--{/if}--></dd>
-                <dt>防具</dt><dd><!--{if $arbs}-->$arb_words<!--{else}-->$noarb<!--{/if}--></dd>
-                <dt>饰品</dt><dd><!--{if $arts}-->$art_words<!--{else}-->$noitm<!--{/if}--></dd>
-            </dl>
+            <div class="nv-inf-group">
+                <span class="nv-inf-label">状态：</span>
+                <div class="nv-inf-row">
+                    <!--{eval $nv_has_ailment = false;}-->
+                    <!--{loop array('p','u','i','e','w') $nv_ak}-->
+                    <!--{if strpos($inf, $nv_ak) !== false}-->
+                    <!--{eval $nv_has_ailment = true;}-->
+                    <!--{if CURSCRIPT == 'game' && $mode == 'command' && $club == 16}-->
+                    <button type="button" class="nv-inf-tag is-ailment is-clickable" tooltip="点击处理该异常状态" onclick="$('mode').value='special';$('command').value='inf{$nv_ak}';postCmd('gamecmd','command.php');return false;">{$infinfo[$nv_ak]}</button>
+                    <!--{else}-->
+                    <span class="nv-inf-tag is-ailment">{$infinfo[$nv_ak]}</span>
+                    <!--{/if}-->
+                    <!--{/if}-->
+                    <!--{/loop}-->
+                    <!--{if !$nv_has_ailment}-->
+                    <span class="nv-inf-tag is-ok">正常</span>
+                    <!--{/if}-->
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="nv-window nv-window--inventory" id="nv-inventory" data-window-title="Inventory">
-    <div class="nv-window__titlebar">
-        <span class="nv-window__title">Inventory / 装备与背包</span>
-        <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
+<section class="nv-window" id="nv-avatar" data-window-id="nv-avatar" data-window-title="角色档案" data-window-resizable="true">
+    <div class="nv-window__bar" data-window-drag-handle="true">
+        <span class="nv-window__title">角色档案 · AGENT</span>
+        <span class="nv-window__controls">
+            <button type="button" class="nv-window__btn" data-window-minimize="nv-avatar" title="最小化">-</button>
+        </span>
     </div>
     <div class="nv-window__body">
-        <div class="nv-inventory-columns">
-            <div>
-                <div class="nv-section-title">Equipment Slots</div>
-                <div class="nv-slot-list">
-                    <div class="nv-slot">
-                        <span class="nv-slot__kind"><!--{if $wepk_words}-->$wepk_words<!--{else}-->$mltwk<!--{/if}--></span>
-                        <span class="nv-slot__name">
-                            <!--{if CURSCRIPT == 'game' && $mode == 'command' && $wepe}--><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offwep';postCmd('gamecmd','command.php');return false;"><!--{/if}-->
-                            <!--{if $weps}-->$wep_words<!--{else}-->$nowep<!--{/if}-->
-                        </span>
-                        <span class="nv-slot__stat">$wepe / $weps</span>
-                    </div>
-                    <div class="nv-slot">
-                        <span class="nv-slot__kind">$iteminfo['DB']</span>
-                        <span class="nv-slot__name"><!--{if CURSCRIPT == 'game' && $mode == 'command' && $arbe}--><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offarb';postCmd('gamecmd','command.php');return false;"><!--{/if}--><!--{if $arbs}-->$arb_words<!--{else}-->$noarb<!--{/if}--></span>
-                        <span class="nv-slot__stat">$arbe / $arbs</span>
-                    </div>
-                    <div class="nv-slot">
-                        <span class="nv-slot__kind">$iteminfo['DH']</span>
-                        <span class="nv-slot__name"><!--{if CURSCRIPT == 'game' && $mode == 'command' && $arhs}--><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offarh';postCmd('gamecmd','command.php');return false;"><!--{/if}--><!--{if $arhs}-->$arh_words<!--{else}-->$noitm<!--{/if}--></span>
-                        <span class="nv-slot__stat">$arhe / $arhs</span>
-                    </div>
-                    <div class="nv-slot">
-                        <span class="nv-slot__kind">$iteminfo['DA']</span>
-                        <span class="nv-slot__name"><!--{if CURSCRIPT == 'game' && $mode == 'command' && $aras}--><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offara';postCmd('gamecmd','command.php');return false;"><!--{/if}--><!--{if $aras}-->$ara_words<!--{else}-->$noitm<!--{/if}--></span>
-                        <span class="nv-slot__stat">$arae / $aras</span>
-                    </div>
-                    <div class="nv-slot">
-                        <span class="nv-slot__kind">$iteminfo['DF']</span>
-                        <span class="nv-slot__name"><!--{if CURSCRIPT == 'game' && $mode == 'command' && $arfs}--><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offarf';postCmd('gamecmd','command.php');return false;"><!--{/if}--><!--{if $arfs}-->$arf_words<!--{else}-->$noitm<!--{/if}--></span>
-                        <span class="nv-slot__stat">$arfe / $arfs</span>
-                    </div>
-                    <div class="nv-slot">
-                        <span class="nv-slot__kind"><!--{if $arts}-->$artk_words<!--{else}-->$iteminfo['A']<!--{/if}--></span>
-                        <span class="nv-slot__name"><!--{if CURSCRIPT == 'game' && $mode == 'command' && $arts}--><input type="button" value="卸下" onclick="$('mode').value='itemmain';$('command').value='offart';postCmd('gamecmd','command.php');return false;"><!--{/if}--><!--{if $arts}-->$art_words<!--{else}-->$noitm<!--{/if}--></span>
-                        <span class="nv-slot__stat">$arte / $arts</span>
-                    </div>
+        <div class="nv-agent-card">
+            <div class="nv-agent-card__portrait">
+                <img src="img/$iconImg" alt="$name" data-fallback-label="$name">
+                <!--{if $hp <= 0}--><div class="nv-agent-card__dead">已阵亡</div><!--{/if}-->
+            </div>
+            <div class="nv-agent-card__info">
+                <div class="nv-agent-card__name">$name</div>
+                <div class="nv-agent-card__sub">$sexinfo[$gd] · {$sNo}号<!--{if !empty($nickinfo)}--> · $nickinfo<!--{/if}--></div>
+                <div class="nv-agent-card__meta">{lang gamedate} · No.$gamenum<!--{if $gamestate == 40 }--> · <span class="yellow">{lang combo}</span><!--{/if}--><!--{if $gamestate == 50 }--> · <span class="red">{lang duel}</span><!--{/if}--></div>
+            </div>
+        </div>
+        <div class="nv-paperdoll-wrap">
+            {template paperdoll_profile}
+        </div>
+    </div>
+</section>
+
+<section class="nv-window" id="nv-inventory" data-window-id="nv-inventory" data-window-title="装备与背包" data-window-resizable="true">
+    <div class="nv-window__bar" data-window-drag-handle="true">
+        <span class="nv-window__title">装备与背包 · GEAR</span>
+        <span class="nv-window__controls">
+            <button type="button" class="nv-window__btn" data-window-minimize="nv-inventory" title="最小化">-</button>
+        </span>
+    </div>
+    <div class="nv-window__body">
+        <div class="nv-item-section">
+            <div class="nv-item-section__title">已装备 · EQUIPPED</div>
+            <div class="nv-item-grid">
+                <div class="nv-item-slot">
+                    <span class="nv-item-slot__type"><!--{if !empty($wep2c)}--><span class="lime" tooltip="副武器栏：{$wep2}  效果：{$wep2e} 耐久：{$wep2s}<!--{if $wep2sk_words}--> 属性：{$wep2sk_words}<!--{/if}-->">$wepk_words</span><!--{else}-->$wepk_words<!--{/if}--></span>
+                    <strong class="nv-item-slot__name">$wep_words</strong>
+                    <small class="nv-item-slot__meta"><!--{if ($wepsk) && !is_numeric($wepsk)}--><em class="nv-item-slot__sk">$wepsk_words</em> · <!--{/if}-->效 $wepe / 耐 $weps</small>
+                </div>
+                <div class="nv-item-slot">
+                    <span class="nv-item-slot__type"><!--{if $arbs}-->$arbk_words<!--{else}-->身体防具<!--{/if}--></span>
+                    <strong class="nv-item-slot__name"><!--{if $arbs}-->$arb_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="nv-item-slot__meta"><!--{if $arbs && ($arbsk) && !is_numeric($arbsk)}--><em class="nv-item-slot__sk">$arbsk_words</em> · <!--{/if}-->效 $arbe / 耐 $arbs</small>
+                </div>
+                <div class="nv-item-slot">
+                    <span class="nv-item-slot__type"><!--{if $arhs}-->$arhk_words<!--{else}-->头部防具<!--{/if}--></span>
+                    <strong class="nv-item-slot__name"><!--{if $arhs}-->$arh_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="nv-item-slot__meta"><!--{if $arhs && ($arhsk) && !is_numeric($arhsk)}--><em class="nv-item-slot__sk">$arhsk_words</em> · <!--{/if}-->效 $arhe / 耐 $arhs</small>
+                </div>
+                <div class="nv-item-slot">
+                    <span class="nv-item-slot__type"><!--{if $aras}-->$arak_words<!--{else}-->腕部防具<!--{/if}--></span>
+                    <strong class="nv-item-slot__name"><!--{if $aras}-->$ara_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="nv-item-slot__meta"><!--{if $aras && ($arask) && !is_numeric($arask)}--><em class="nv-item-slot__sk">$arask_words</em> · <!--{/if}-->效 $arae / 耐 $aras</small>
+                </div>
+                <div class="nv-item-slot">
+                    <span class="nv-item-slot__type"><!--{if $arfs}-->$arfk_words<!--{else}-->足部防具<!--{/if}--></span>
+                    <strong class="nv-item-slot__name"><!--{if $arfs}-->$arf_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="nv-item-slot__meta"><!--{if $arfs && ($arfsk) && !is_numeric($arfsk)}--><em class="nv-item-slot__sk">$arfsk_words</em> · <!--{/if}-->效 $arfe / 耐 $arfs</small>
+                </div>
+                <div class="nv-item-slot">
+                    <span class="nv-item-slot__type"><!--{if $arts}-->$artk_words<!--{else}-->饰品<!--{/if}--></span>
+                    <strong class="nv-item-slot__name"><!--{if $arts}-->$art_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="nv-item-slot__meta"><!--{if $arts && ($artsk) && !is_numeric($artsk)}--><em class="nv-item-slot__sk">$artsk_words</em> · <!--{/if}-->效 $arte / 耐 $arts</small>
                 </div>
             </div>
-            <div>
-                <div class="nv-section-title">Pack Slots</div>
-                <div class="nv-item-list">
-                    <div class="nv-slot"><span class="nv-item__kind"><!--{if $itmk1_words}-->$itmk1_words<!--{else}-->{lang pack}1<!--{/if}--></span><span class="nv-item__name"><!--{if $itms1}-->$itm1_words<!--{else}-->$noitm<!--{/if}--></span><span class="nv-item__stat">$itme1 / $itms1</span></div>
-                    <div class="nv-slot"><span class="nv-item__kind"><!--{if $itmk2_words}-->$itmk2_words<!--{else}-->{lang pack}2<!--{/if}--></span><span class="nv-item__name"><!--{if $itms2}-->$itm2_words<!--{else}-->$noitm<!--{/if}--></span><span class="nv-item__stat">$itme2 / $itms2</span></div>
-                    <div class="nv-slot"><span class="nv-item__kind"><!--{if $itmk3_words}-->$itmk3_words<!--{else}-->{lang pack}3<!--{/if}--></span><span class="nv-item__name"><!--{if $itms3}-->$itm3_words<!--{else}-->$noitm<!--{/if}--></span><span class="nv-item__stat">$itme3 / $itms3</span></div>
-                    <div class="nv-slot"><span class="nv-item__kind"><!--{if $itmk4_words}-->$itmk4_words<!--{else}-->{lang pack}4<!--{/if}--></span><span class="nv-item__name"><!--{if $itms4}-->$itm4_words<!--{else}-->$noitm<!--{/if}--></span><span class="nv-item__stat">$itme4 / $itms4</span></div>
-                    <div class="nv-slot"><span class="nv-item__kind"><!--{if $itmk5_words}-->$itmk5_words<!--{else}-->{lang pack}5<!--{/if}--></span><span class="nv-item__name"><!--{if $itms5}-->$itm5_words<!--{else}-->$noitm<!--{/if}--></span><span class="nv-item__stat">$itme5 / $itms5</span></div>
-                    <div class="nv-slot"><span class="nv-item__kind"><!--{if $itmk6_words}-->$itmk6_words<!--{else}-->{lang pack}6<!--{/if}--></span><span class="nv-item__name"><!--{if $itms6}-->$itm6_words<!--{else}-->$noitm<!--{/if}--></span><span class="nv-item__stat">$itme6 / $itms6</span></div>
+        </div>
+
+        <div class="nv-item-section">
+            <div class="nv-item-section__title">背包栏位 · BAG [1-6] (点击可直接使用)</div>
+            <div class="nv-item-grid">
+                <div class="nv-item-slot<!--{if !$itms1}--> is-empty<!--{elseif CURSCRIPT == 'game' && $mode == 'command'}--> is-usable<!--{/if}-->" <!--{if $itms1 && CURSCRIPT == 'game' && $mode == 'command'}-->onclick="<!--{if $itmk1 == 'ZB' && $itme1 == 24}-->useClub24Card(1);return false;<!--{else}-->$('mode').value='command';$('command').value='itm1';postCmd('gamecmd','command.php');return false;<!--{/if}-->"<!--{/if}-->>
+                    <span class="nv-item-slot__type">[1] <!--{if $itms1}-->$itmk1_words<!--{else}-->空栏位<!--{/if}--></span>
+                    <strong class="nv-item-slot__name"><!--{if $itms1}-->$itm1_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="nv-item-slot__meta"><!--{if $itms1}--><!--{if ($itmsk1) && !is_numeric($itmsk1)}--><em class="nv-item-slot__sk">$itmsk1_words</em> · <!--{/if}-->效 $itme1 / 耐 $itms1<!--{else}-->-<!--{/if}--></small>
                 </div>
-                <p class="nv-note">使用、装备、交换、合成和丢弃仍通过行动窗口中的原按钮执行。</p>
+                <div class="nv-item-slot<!--{if !$itms2}--> is-empty<!--{elseif CURSCRIPT == 'game' && $mode == 'command'}--> is-usable<!--{/if}-->" <!--{if $itms2 && CURSCRIPT == 'game' && $mode == 'command'}-->onclick="<!--{if $itmk2 == 'ZB' && $itme2 == 24}-->useClub24Card(2);return false;<!--{else}-->$('mode').value='command';$('command').value='itm2';postCmd('gamecmd','command.php');return false;<!--{/if}-->"<!--{/if}-->>
+                    <span class="nv-item-slot__type">[2] <!--{if $itms2}-->$itmk2_words<!--{else}-->空栏位<!--{/if}--></span>
+                    <strong class="nv-item-slot__name"><!--{if $itms2}-->$itm2_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="nv-item-slot__meta"><!--{if $itms2}--><!--{if ($itmsk2) && !is_numeric($itmsk2)}--><em class="nv-item-slot__sk">$itmsk2_words</em> · <!--{/if}-->效 $itme2 / 耐 $itms2<!--{else}-->-<!--{/if}--></small>
+                </div>
+                <div class="nv-item-slot<!--{if !$itms3}--> is-empty<!--{elseif CURSCRIPT == 'game' && $mode == 'command'}--> is-usable<!--{/if}-->" <!--{if $itms3 && CURSCRIPT == 'game' && $mode == 'command'}-->onclick="<!--{if $itmk3 == 'ZB' && $itme3 == 24}-->useClub24Card(3);return false;<!--{else}-->$('mode').value='command';$('command').value='itm3';postCmd('gamecmd','command.php');return false;<!--{/if}-->"<!--{/if}-->>
+                    <span class="nv-item-slot__type">[3] <!--{if $itms3}-->$itmk3_words<!--{else}-->空栏位<!--{/if}--></span>
+                    <strong class="nv-item-slot__name"><!--{if $itms3}-->$itm3_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="nv-item-slot__meta"><!--{if $itms3}--><!--{if ($itmsk3) && !is_numeric($itmsk3)}--><em class="nv-item-slot__sk">$itmsk3_words</em> · <!--{/if}-->效 $itme3 / 耐 $itms3<!--{else}-->-<!--{/if}--></small>
+                </div>
+                <div class="nv-item-slot<!--{if !$itms4}--> is-empty<!--{elseif CURSCRIPT == 'game' && $mode == 'command'}--> is-usable<!--{/if}-->" <!--{if $itms4 && CURSCRIPT == 'game' && $mode == 'command'}-->onclick="<!--{if $itmk4 == 'ZB' && $itme4 == 24}-->useClub24Card(4);return false;<!--{else}-->$('mode').value='command';$('command').value='itm4';postCmd('gamecmd','command.php');return false;<!--{/if}-->"<!--{/if}-->>
+                    <span class="nv-item-slot__type">[4] <!--{if $itms4}-->$itmk4_words<!--{else}-->空栏位<!--{/if}--></span>
+                    <strong class="nv-item-slot__name"><!--{if $itms4}-->$itm4_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="nv-item-slot__meta"><!--{if $itms4}--><!--{if ($itmsk4) && !is_numeric($itmsk4)}--><em class="nv-item-slot__sk">$itmsk4_words</em> · <!--{/if}-->效 $itme4 / 耐 $itms4<!--{else}-->-<!--{/if}--></small>
+                </div>
+                <div class="nv-item-slot<!--{if !$itms5}--> is-empty<!--{elseif CURSCRIPT == 'game' && $mode == 'command'}--> is-usable<!--{/if}-->" <!--{if $itms5 && CURSCRIPT == 'game' && $mode == 'command'}-->onclick="<!--{if $itmk5 == 'ZB' && $itme5 == 24}-->useClub24Card(5);return false;<!--{else}-->$('mode').value='command';$('command').value='itm5';postCmd('gamecmd','command.php');return false;<!--{/if}-->"<!--{/if}-->>
+                    <span class="nv-item-slot__type">[5] <!--{if $itms5}-->$itmk5_words<!--{else}-->空栏位<!--{/if}--></span>
+                    <strong class="nv-item-slot__name"><!--{if $itms5}-->$itm5_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="nv-item-slot__meta"><!--{if $itms5}--><!--{if ($itmsk5) && !is_numeric($itmsk5)}--><em class="nv-item-slot__sk">$itmsk5_words</em> · <!--{/if}-->效 $itme5 / 耐 $itms5<!--{else}-->-<!--{/if}--></small>
+                </div>
+                <div class="nv-item-slot<!--{if !$itms6}--> is-empty<!--{elseif CURSCRIPT == 'game' && $mode == 'command'}--> is-usable<!--{/if}-->" <!--{if $itms6 && CURSCRIPT == 'game' && $mode == 'command'}-->onclick="<!--{if $itmk6 == 'ZB' && $itme6 == 24}-->useClub24Card(6);return false;<!--{else}-->$('mode').value='command';$('command').value='itm6';postCmd('gamecmd','command.php');return false;<!--{/if}-->"<!--{/if}-->>
+                    <span class="nv-item-slot__type">[6] <!--{if $itms6}-->$itmk6_words<!--{else}-->空栏位<!--{/if}--></span>
+                    <strong class="nv-item-slot__name"><!--{if $itms6}-->$itm6_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="nv-item-slot__meta"><!--{if $itms6}--><!--{if ($itmsk6) && !is_numeric($itmsk6)}--><em class="nv-item-slot__sk">$itmsk6_words</em> · <!--{/if}-->效 $itme6 / 耐 $itms6<!--{else}-->-<!--{/if}--></small>
+                </div>
             </div>
         </div>
     </div>

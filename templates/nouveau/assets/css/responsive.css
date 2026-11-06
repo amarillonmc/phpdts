@@ -1,74 +1,59 @@
-@media (max-width: 900px), (pointer: coarse) {
-    .nouveau-ui {
-        padding-bottom: 58px;
+@media (max-width: 1100px) {
+    body.nouveau-ui.nv-page-index {
+        height: auto;
+        overflow: auto;
     }
 
-    .nouveau-desktop {
-        width: calc(100vw - 14px);
-        margin-top: 7px;
-    }
-
-    .nv-topbar {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    .nv-game-shell {
-        min-height: 0;
-        display: grid;
-        gap: 10px;
-    }
-
-    .nv-window,
-    .nv-window--status,
-    .nv-window--avatar,
-    .nv-window--map,
-    .nv-window--action,
-    .nv-window--inventory,
-    .nv-window--log,
-    .nv-window--chat,
-    .nv-window--battle {
-        position: relative !important;
-        left: auto !important;
-        top: auto !important;
-        width: auto !important;
-        min-width: 0;
-        transform: none !important;
-        height: auto !important;
-    }
-
-    .nv-window__resize {
-        display: none;
-    }
-
-    .nv-window__titlebar {
-        cursor: default;
-    }
-
-    .nv-window__body {
+    .nv-index-grid {
+        grid-template-columns: 1fr;
         max-height: none;
     }
 
-    .nv-inventory-columns,
-    .nv-grid--two {
+    .nv-game-workspace {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        min-height: 0;
+    }
+
+    #nv-status,
+    #nv-avatar,
+    #nv-action,
+    #nv-log-window,
+    #nv-chat-window,
+    #nv-inventory,
+    #nv-map {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0;
+    }
+}
+
+@media (max-width: 680px) {
+    .nouveau-desktop {
+        padding: 8px;
+    }
+
+    .nv-header-title {
+        font-size: 20px !important;
+    }
+
+    .nv-stat-grid,
+    .nv-meters,
+    .nv-item-grid,
+    .nv-index-counters {
         grid-template-columns: 1fr;
     }
 
-    .nv-slot {
-        grid-template-columns: 72px minmax(0, 1fr);
+    .nv-proficiency-bar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .nv-slot__stat {
-        grid-column: 1 / -1;
-        text-align: left;
-    }
-
-    .nv-taskbar {
-        height: 48px;
-    }
-
-    .nv-taskbar__status {
-        display: none;
+    .nv-map-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }

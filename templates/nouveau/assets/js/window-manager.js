@@ -1,291 +1,269 @@
 (function () {
     'use strict';
 
-    var storageKey = 'phpdts:nouveau:windows';
-    var zBase = 40;
-    var state = {};
+    var STORAGE_KEY = 'phpdts:nouveau:windows:v2';
+    var topZ = 20;
 
-    function loadState() {
+    function isIndexPage() {
+        return document.body && document.body.getAttribute('data-nv-script') === 'index';
+    }
+
+    function isCompactViewport() {
+        return window.matchMedia && window.matchMedia('(max-width: 1100px)').matches;
+    }
+
+    function readState() {
         try {
-            state = JSON.parse(localStorage.getItem(storageKey) || '{}') || {};
-        } catch (err) {
-            state = {};
+            return JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}') || {};
+        } catch (e) {
+            return {};
         }
     }
 
-    function saveState() {
+    function writeState(state) {
         try {
-            localStorage.setItem(storageKey, JSON.stringify(state));
-        } catch (err) {
-            // localStorage can be unavailable in private contexts.
+            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+            // Storage may be disabled in private browsing; dragging still works for the session.
         }
-    }
-
-    function isMobileLayout() {
-        return window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
     }
 
     function windowId(win, index) {
-        if (!win.id) {
-            win.id = 'nv-window-' + index;
-        }
-        return win.id;
+        return win.getAttribute('data-window-id') || win.id || ('nv-window-' + index);
     }
 
-    function activate(win) {
-        document.querySelectorAll('.nv-window.is-active').forEach(function (node) {
-            node.classList.remove('is-active');
+    function windowTitle(win, id) {
+        var attr = win.getAttribute('data-window-title');
+        if (attr) return attr;
+        var title = win.querySelector('.nv-window__title');
+        return title ? title.textContent.replace(/\s+/g, ' ').trim() : id;
+    }
+
+    function focusWindow(win) {
+        Array.prototype.forEach.call(document.querySelectorAll('.nv-window.is-active'), function (active) {
+            active.classList.remove('is-active');
         });
-        zBase += 1;
-        win.style.zIndex = zBase;
+        topZ += 1;
+        win.style.zIndex = String(topZ);
         win.classList.add('is-active');
     }
 
-    function minimize(win) {
-        var id = win.id;
-        win.classList.add('is-minimized');
-        state[id] = state[id] || {};
-        state[id].minimized = true;
-        saveState();
-        updateTaskbar();
+    function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
     }
 
-    function restore(win) {
-        var id = win.id;
-        win.classList.remove('is-minimized');
-        state[id] = state[id] || {};
-        state[id].minimized = false;
-        saveState();
-        activate(win);
-        updateTaskbar();
-    }
+    function applyWindowState(win, id, state) {
+        var item = state[id];
+        win.classList.toggle('is-minimized', Boolean(item && item.minimized));
+        if (!item || isCompactViewport()) return;
 
-    function updateTaskbar() {
-        var holder = document.getElementById('nv-taskbar-buttons');
-        if (!holder) {
-            return;
+        if (typeof item.left === 'number' && typeof item.top === 'number') {
+            var maxLeft = Math.max(0, window.innerWidth - 180);
+            var maxTop = Math.max(0, window.innerHeight - 120);
+            win.style.position = 'absolute';
+            win.style.left = clamp(item.left, 0, maxLeft) + 'px';
+            win.style.top = clamp(item.top, 0, maxTop) + 'px';
+            win.style.right = 'auto';
         }
-        holder.innerHTML = '';
-        document.querySelectorAll('.nv-window').forEach(function (win) {
-            var title = win.getAttribute('data-window-title');
-            var titleNode = win.querySelector('.nv-window__title');
-            if (!title && titleNode) {
-                title = titleNode.textContent;
-            }
-            var button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'nv-taskbar-button';
-            if (win.classList.contains('is-minimized')) {
-                button.className += ' is-minimized';
-            }
-            button.textContent = title || win.id;
-            button.addEventListener('click', function () {
-                if (win.classList.contains('is-minimized')) {
-                    restore(win);
-                } else {
-                    activate(win);
-                    win.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-                }
-            });
-            holder.appendChild(button);
+        if (typeof item.width === 'number' && typeof item.height === 'number') {
+            win.style.width = Math.max(220, item.width) + 'px';
+            win.style.height = Math.max(110, item.height) + 'px';
+            win.classList.add('is-resized');
+        }
+    }
+
+    function saveWindowPatch(id, patch) {
+        var state = readState();
+        var next = state[id] || {};
+        Object.keys(patch).forEach(function (key) {
+            next[key] = patch[key];
         });
+        state[id] = next;
+        writeState(state);
     }
 
-    function attachDrag(win) {
-        if (win.getAttribute('data-nv-drag-ready')) {
-            return;
-        }
-        win.setAttribute('data-nv-drag-ready', '1');
-        var bar = win.querySelector('.nv-window__titlebar');
-        if (!bar) {
-            return;
-        }
-
-        var drag = null;
-        bar.addEventListener('pointerdown', function (event) {
-            if (isMobileLayout() || event.target.closest('.nv-window__actions')) {
-                return;
-            }
-            activate(win);
-            drag = {
-                pointerId: event.pointerId,
-                x: event.clientX,
-                y: event.clientY,
-                left: win.offsetLeft,
-                top: win.offsetTop
-            };
-            bar.setPointerCapture(event.pointerId);
-        });
-
-        bar.addEventListener('pointermove', function (event) {
-            if (!drag || drag.pointerId !== event.pointerId) {
-                return;
-            }
-            var left = Math.max(0, drag.left + event.clientX - drag.x);
-            var top = Math.max(0, drag.top + event.clientY - drag.y);
-            win.style.left = left + 'px';
-            win.style.top = top + 'px';
-        });
-
-        function endDrag(event) {
-            if (!drag || drag.pointerId !== event.pointerId) {
-                return;
-            }
-            state[win.id] = state[win.id] || {};
-            state[win.id].left = win.offsetLeft;
-            state[win.id].top = win.offsetTop;
-            saveState();
-            drag = null;
-        }
-
-        bar.addEventListener('pointerup', endDrag);
-        bar.addEventListener('pointercancel', endDrag);
+    function setMinimized(win, id, minimized) {
+        if (isIndexPage()) return;
+        win.classList.toggle('is-minimized', minimized);
+        saveWindowPatch(id, { minimized: Boolean(minimized) });
+        rebuildTaskbar();
+        if (!minimized) focusWindow(win);
     }
 
-    function attachResize(win) {
-        if (!win.hasAttribute('data-window-resizable') || win.getAttribute('data-nv-resize-ready')) {
-            return;
-        }
-        win.setAttribute('data-nv-resize-ready', '1');
-        win.classList.add('is-resizable');
+    function bindDrag(win, id) {
+        var handle = win.querySelector('[data-window-drag-handle]');
+        if (!handle || handle._nvDragBound) return;
+        handle._nvDragBound = true;
 
-        var handle = win.querySelector('.nv-window__resize');
-        if (!handle) {
-            handle = document.createElement('span');
-            handle.className = 'nv-window__resize';
-            handle.setAttribute('aria-hidden', 'true');
-            win.appendChild(handle);
-        }
+        handle.addEventListener('mousedown', function (event) {
+            if (event.button !== 0 || isCompactViewport()) return;
+            if (event.target.closest('button, a, input, select, textarea, label')) return;
 
-        var resize = null;
-        handle.addEventListener('pointerdown', function (event) {
-            if (isMobileLayout()) {
-                return;
+            var parent = win.offsetParent || document.getElementById('nouveau-desktop') || document.body;
+            var parentRect = parent.getBoundingClientRect();
+            var rect = win.getBoundingClientRect();
+            var startX = event.clientX;
+            var startY = event.clientY;
+            var baseLeft = rect.left - parentRect.left;
+            var baseTop = rect.top - parentRect.top;
+
+            focusWindow(win);
+            win.style.position = 'absolute';
+            win.style.width = rect.width + 'px';
+            win.style.left = baseLeft + 'px';
+            win.style.top = baseTop + 'px';
+            win.style.right = 'auto';
+
+            function onMove(moveEvent) {
+                var left = Math.max(0, baseLeft + moveEvent.clientX - startX);
+                var top = Math.max(0, baseTop + moveEvent.clientY - startY);
+                win.style.left = left + 'px';
+                win.style.top = top + 'px';
             }
-            activate(win);
-            resize = {
-                pointerId: event.pointerId,
-                x: event.clientX,
-                y: event.clientY,
-                width: win.offsetWidth,
-                height: win.offsetHeight
-            };
-            handle.setPointerCapture(event.pointerId);
+
+            function onUp() {
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+                saveWindowPatch(id, {
+                    left: parseInt(win.style.left, 10) || 0,
+                    top: parseInt(win.style.top, 10) || 0
+                });
+            }
+
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
             event.preventDefault();
         });
-
-        handle.addEventListener('pointermove', function (event) {
-            if (!resize || resize.pointerId !== event.pointerId) {
-                return;
-            }
-            var width = Math.max(260, resize.width + event.clientX - resize.x);
-            var height = Math.max(160, resize.height + event.clientY - resize.y);
-            win.style.width = width + 'px';
-            win.style.height = height + 'px';
-            win.classList.add('is-resized');
-        });
-
-        function endResize(event) {
-            if (!resize || resize.pointerId !== event.pointerId) {
-                return;
-            }
-            state[win.id] = state[win.id] || {};
-            state[win.id].width = win.offsetWidth;
-            state[win.id].height = win.offsetHeight;
-            saveState();
-            resize = null;
-        }
-
-        handle.addEventListener('pointerup', endResize);
-        handle.addEventListener('pointercancel', endResize);
     }
 
-    function hydrateWindow(win, index) {
-        var id = windowId(win, index);
-        var saved = state[id];
-        if (win.getAttribute('data-nv-window-ready')) {
-            return;
+    function bindResize(win, id) {
+        if (win.getAttribute('data-window-resizable') === 'false') return;
+        var resizer = win.querySelector('.nv-window__resize');
+        if (!resizer) {
+            resizer = document.createElement('div');
+            resizer.className = 'nv-window__resize';
+            resizer.title = '拖拽调整窗口尺寸';
+            win.appendChild(resizer);
         }
-        win.setAttribute('data-nv-window-ready', '1');
-        if (saved && !isMobileLayout()) {
-            if (typeof saved.left === 'number') {
-                win.style.left = saved.left + 'px';
-            }
-            if (typeof saved.top === 'number') {
-                win.style.top = saved.top + 'px';
-            }
-            if (typeof saved.width === 'number') {
-                win.style.width = saved.width + 'px';
-                win.classList.add('is-resized');
-            }
-            if (typeof saved.height === 'number') {
-                win.style.height = saved.height + 'px';
-                win.classList.add('is-resized');
-            }
-        }
-        if (saved && saved.minimized) {
-            win.classList.add('is-minimized');
-        }
+        if (resizer._nvResizeBound) return;
+        resizer._nvResizeBound = true;
 
-        win.addEventListener('pointerdown', function () {
-            activate(win);
+        resizer.addEventListener('mousedown', function (event) {
+            if (event.button !== 0 || isCompactViewport()) return;
+            var rect = win.getBoundingClientRect();
+            var startX = event.clientX;
+            var startY = event.clientY;
+
+            focusWindow(win);
+
+            function onMove(moveEvent) {
+                var width = Math.max(220, Math.round(rect.width + moveEvent.clientX - startX));
+                var height = Math.max(110, Math.round(rect.height + moveEvent.clientY - startY));
+                win.style.width = width + 'px';
+                win.style.height = height + 'px';
+                win.classList.add('is-resized');
+            }
+
+            function onUp() {
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+                saveWindowPatch(id, {
+                    width: parseInt(win.style.width, 10) || rect.width,
+                    height: parseInt(win.style.height, 10) || rect.height
+                });
+            }
+
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
+            event.preventDefault();
+            event.stopPropagation();
         });
+    }
 
-        var minButton = win.querySelector('[data-window-minimize]');
-        if (minButton) {
-            minButton.addEventListener('click', function (event) {
-                event.preventDefault();
-                minimize(win);
+    function rebuildTaskbar() {
+        var bar = document.getElementById('nv-taskbar-buttons');
+        if (!bar) return;
+        bar.textContent = '';
+        if (isIndexPage()) return;
+
+        Array.prototype.forEach.call(document.querySelectorAll('.nv-window'), function (win, index) {
+            var id = windowId(win, index);
+            var btn = document.createElement('button');
+            var minimized = win.classList.contains('is-minimized');
+            btn.type = 'button';
+            btn.className = 'nv-taskbar__btn' + (minimized ? ' is-minimized' : '');
+            btn.textContent = windowTitle(win, id);
+            btn.title = minimized ? '点击还原窗口' : '点击激活或最小化窗口';
+            btn.addEventListener('click', function () {
+                if (win.classList.contains('is-minimized')) {
+                    setMinimized(win, id, false);
+                } else if (win.classList.contains('is-active')) {
+                    setMinimized(win, id, true);
+                } else {
+                    focusWindow(win);
+                }
             });
-        }
-
-        attachDrag(win);
-        attachResize(win);
+            bar.appendChild(btn);
+        });
     }
 
-    function refresh(options) {
-        document.querySelectorAll('.nv-window').forEach(hydrateWindow);
-        if (!options || options.activateFirst !== false) {
-            var first = document.querySelector('.nv-window:not(.is-minimized):not(.is-active)');
-            if (first && !document.querySelector('.nv-window.is-active')) {
-                activate(first);
+    function initWindows() {
+        if (isIndexPage()) return;
+        var state = readState();
+        Array.prototype.forEach.call(document.querySelectorAll('.nv-window'), function (win, index) {
+            var id = windowId(win, index);
+            win.setAttribute('data-window-id', id);
+            applyWindowState(win, id, state);
+            bindDrag(win, id);
+            bindResize(win, id);
+
+            if (!win._nvFocusBound) {
+                win._nvFocusBound = true;
+                win.addEventListener('mousedown', function () {
+                    focusWindow(win);
+                });
             }
-        }
-        updateTaskbar();
-    }
 
-    function init() {
-        loadState();
-        refresh();
-    }
-
-    function forget(id) {
-        if (state[id]) {
-            delete state[id];
-            saveState();
-        }
+            Array.prototype.forEach.call(win.querySelectorAll('[data-window-minimize]'), function (btn) {
+                if (btn._nvMinBound) return;
+                btn._nvMinBound = true;
+                btn.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setMinimized(win, id, !win.classList.contains('is-minimized'));
+                });
+            });
+        });
+        rebuildTaskbar();
     }
 
     function resetAll() {
-        state = {};
-        saveState();
-        document.querySelectorAll('.nv-window').forEach(hydrateWindow);
-        var first = document.querySelector('.nv-window:not(.is-minimized)');
-        if (first) {
-            activate(first);
+        try {
+            window.localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {
+            // Ignore storage errors.
         }
-        updateTaskbar();
+        Array.prototype.forEach.call(document.querySelectorAll('.nv-window'), function (win) {
+            win.classList.remove('is-minimized', 'is-resized', 'is-active');
+            win.style.left = '';
+            win.style.top = '';
+            win.style.right = '';
+            win.style.width = '';
+            win.style.height = '';
+            win.style.position = '';
+            win.style.zIndex = '';
+        });
+        rebuildTaskbar();
     }
 
     window.NouveauWindows = {
-        init: init,
-        refresh: refresh,
-        restore: restore,
-        minimize: minimize,
-        updateTaskbar: updateTaskbar,
-        forget: forget,
+        refresh: initWindows,
         resetAll: resetAll
     };
 
-    document.addEventListener('DOMContentLoaded', init);
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initWindows);
+    } else {
+        initWindows();
+    }
 })();

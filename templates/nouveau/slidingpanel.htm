@@ -1,0 +1,74 @@
+<!--{eval include template('slidingpanel', 1, './templates/default');}-->
+<style>
+body.nouveau-ui #side-panel-button {
+    top: 50%;
+    right: 0;
+    z-index: 1160;
+    width: 34px;
+    height: 112px;
+    border-radius: 8px 0 0 8px;
+    border: 1px solid var(--nv-border-lit, rgba(96, 232, 184, 0.45));
+    border-right: 0;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.04) 48%, rgba(0, 0, 0, 0.28) 52%, rgba(0, 0, 0, 0.45) 100%),
+        var(--nv-panel-strong, rgba(10, 20, 28, 0.92));
+    color: var(--nv-accent, #3fe0a8);
+    box-shadow: -4px 0 18px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(10px);
+    transition: right 0.28s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+body.nouveau-ui #side-panel-button:hover {
+    color: #ffffff;
+    box-shadow: -4px 0 22px var(--nv-glow, rgba(63, 224, 168, 0.35)), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+body.nouveau-ui #sliding-panel {
+    top: 58px;
+    right: -520px;
+    width: 520px;
+    max-width: calc(100vw - 36px);
+    height: calc(100vh - 102px);
+    z-index: 1155;
+    border: 1px solid var(--nv-border-lit, rgba(96, 232, 184, 0.4));
+    border-right: 0;
+    border-radius: 10px 0 0 10px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 140px),
+        var(--nv-panel-strong, rgba(9, 17, 24, 0.95));
+    color: var(--nv-text, #e8f3ef);
+    box-shadow: -12px 0 36px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(14px);
+    transition: right 0.28s ease;
+}
+
+body.nouveau-ui #sliding-panel h2,
+body.nouveau-ui #sliding-panel h3 {
+    color: var(--nv-accent, #3fe0a8);
+    text-shadow: 0 0 10px var(--nv-glow, rgba(63, 224, 168, 0.28));
+}
+
+body.nouveau-ui #sliding-panel .quest-block,
+body.nouveau-ui #sliding-panel .fireseed-card {
+    background: rgba(8, 16, 23, 0.78);
+    border-color: var(--nv-border, rgba(126, 214, 188, 0.24));
+    border-radius: 6px;
+}
+
+body.nouveau-ui #sliding-panel .tab button {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 50%, rgba(0, 0, 0, 0.25) 100%),
+        rgba(14, 26, 36, 0.88);
+    color: var(--nv-text, #e8f3ef);
+    border: 1px solid var(--nv-border, rgba(126, 214, 188, 0.26));
+    border-radius: 5px;
+    margin-right: 4px;
+}
+
+body.nouveau-ui #sliding-panel .tab button.active,
+body.nouveau-ui #sliding-panel .tab button:hover {
+    border-color: var(--nv-accent, #3fe0a8);
+    color: #ffffff;
+    box-shadow: 0 0 12px var(--nv-glow, rgba(63, 224, 168, 0.28));
+}
+</style>

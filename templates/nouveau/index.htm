@@ -1,82 +1,120 @@
 {template header}
-<div class="nv-page nv-page--center">
-    <section class="nv-window" id="nv-index-status" data-window-title="System">
-        <div class="nv-window__titlebar">
-            <span class="nv-window__title">System Board / 系统看板</span>
-            <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
-        </div>
-        <div class="nv-window__body">
-            <dl class="nv-kv">
-                <dt>{lang gameversion}</dt><dd>$gameversion</dd>
-                <dt>{lang now}</dt><dd>{lang gamedate}</dd>
-                <dt>{lang systemmsg}</dt><dd>$systemmsg</dd>
-                <dt>{lang gameinfo}</dt><dd>{lang numinfo}{$gstate[$gamestate]}</dd>
-                <dt>激活人数</dt><dd>$validnum</dd>
-                <dt>生存人数</dt><dd>$alivenum</dd>
-                <dt>死亡总数</dt><dd>$deathnum</dd>
-            </dl>
-            <div style="margin-top:12px">
-                <!--{if $gamestate > 10 }-->
-                本局游戏已经进行 <span id="timing"></span><script type="text/javascript">updateTime($timing,1);</script><br>
-                <!--{if $hplayer}-->当前最高伤害 $hplayer ($hdamage)<br><!--{/if}-->
-                <!--{else}-->
-                <!--{if $starttime > $now}-->
-                下局游戏开始于 <span id="timing"></span><script type="text/javascript">updateTime($timing,0);</script> 后<br>
-                <!--{else}-->
-                下局游戏开始时间 <span id="timing"></span>未定<br>
-                <!--{/if}-->
-                <!--{if $hplayer}-->上局最高伤害 $hplayer ($hdamage)<br><!--{/if}-->
-                <!--{/if}-->
-                <!--{if $groomid}-->
-                <span class="yellow">当前房间：{$groomid} 号</span>
-                <!--{else}-->
-                上局结果：<span id="lastwin">$gwin[$winmode]</span><!--{if $winner}-->，优胜者：<span id="lastwinner">$winner</span><!--{/if}-->
-                <!--{/if}-->
+<div class="nv-index-stage">
+    <div class="nv-index-grid">
+        <section class="nv-index-card nv-index-card--main" aria-label="战场总览与进入游戏">
+            <div class="nv-index-card__head">
+                <span class="nv-index-card__title">战场总览 · BATTLEFIELD OVERVIEW</span>
+                <span class="nv-index-card__meta">
+                    <span class="yellow">{lang gameversion}：</span><span class="evergreen">$gameversion</span>
+                </span>
             </div>
-        </div>
-    </section>
+            <div class="nv-index-card__body">
+                <div class="nv-index-info-list">
+                    <div class="nv-index-info-row">
+                        <span class="yellow">{lang now}：</span>
+                        <span class="evergreen">{lang gamedate}</span>
+                    </div>
+                    <div class="nv-index-info-row">
+                        <span class="yellow">{lang systemmsg}：</span>
+                        <span class="evergreen">$systemmsg</span>
+                    </div>
+                    <div class="nv-index-info-row">
+                        <span class="yellow">{lang gameinfo}：</span>
+                        <span class="evergreen"><span class="evergreen2">{lang numinfo}{$gstate[$gamestate]}</span></span>
+                    </div>
+                </div>
 
-    <section class="nv-window" id="nv-index-entry" data-window-title="Entry">
-        <div class="nv-window__titlebar">
-            <span class="nv-window__title">Entry Gate / 进入游戏</span>
-            <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
-        </div>
-        <div class="nv-window__body">
-            <!--{if $cuser}-->
-            <p>{lang welcome}</p>
-            <form method="post" name="togame" action="game.php">
-                <input type="hidden" name="mode" value="main">
-                <input type="submit" name="enter" value="{lang enter}">
-            </form>
-            <form method="post" name="quitgame" action="game.php" style="margin-top:8px">
-                <input type="hidden" name="mode" value="quit">
-                <input type="submit" name="quit" value="{lang quit}">
-            </form>
-            <!--{else}-->
-            <form method="post" name="login" action="login.php">
-                <input type="hidden" name="mode" value="main">
-                <label>{lang username}<br><input type="text" name="username" size="20" maxlength="20" value="$cuser"></label><br>
-                <label>{lang password}<br><input type="password" name="password" size="20" maxlength="20" value="$cpass"></label><br><br>
-                <input type="submit" name="enter" value="{lang login}">
-            </form>
-            <!--{/if}-->
-            <p class="nv-note">新手玩家或初次游玩玩家，务必先阅读 <a href="help.php">{lang help}</a>。</p>
-        </div>
-    </section>
+                <div class="nv-index-status-box">
+                    <div class="nv-index-timing">
+                        <!--{if $gamestate > 10 }-->
+                        本局游戏已经进行 <span id="timing" class="yellow"></span><script type="text/javascript">updateTime($timing,1);</script>
+                        <!--{elseif $starttime > $now}-->
+                        下局游戏开始于 <span id="timing" class="yellow"></span><script type="text/javascript">updateTime($timing,0);</script> 后
+                        <!--{else}-->
+                        下局游戏开始时间 <span id="timing"></span>未定
+                        <!--{/if}-->
+                    </div>
+                    <!--{if $hplayer}-->
+                    <div class="nv-index-hplayer">
+                        <!--{if $gamestate > 10}-->当前最高伤害<!--{else}-->上局最高伤害<!--{/if}-->：<span class="clan">$hplayer ($hdamage)</span>
+                    </div>
+                    <!--{/if}-->
+                    <div class="nv-index-roomline">
+                        <!--{if $groomid}-->
+                        <span class="yellow">当前房间：{$groomid} 号</span>
+                        <!--{else}-->
+                        上局结果：<span id="lastwin">$gwin[$winmode]</span><!--{if $winner}-->，优胜者：<span id="lastwinner" class="yellow">$winner</span><!--{/if}-->
+                        <!--{/if}-->
+                    </div>
+                </div>
 
-    <section class="nv-window" id="nv-index-adminmsg" data-window-title="Message">
-        <div class="nv-window__titlebar">
-            <span class="nv-window__title">Admin Message / 站长留言</span>
-            <span class="nv-window__actions"><button type="button" class="nv-window__action" data-window-minimize title="Minimize">_</button></span>
-        </div>
-        <div class="nv-window__body nv-compat">
-            $adminmsg
-            <div style="margin-top:12px">
-                当前房间列表：
-                <input type="button" value="点击查看房间列表" onclick="showModalDialog($('roomlist'));">
-                {template roomlist}
+                <div class="nv-index-rules">
+                    <div>禁区间隔时间：<strong>$areahour</strong> 分钟 ， <strong>$arealimit</strong> 禁后停止激活</div>
+                    <div>每次增加禁区：<strong>$areaadd</strong> 个 ， 当前禁区数：<strong>$areanum</strong></div>
+                    <div>自动逃避禁区功能：<!--{if $areaesc && $gamestate < 40}--><span class="yellow">开放</span><!--{else}--><span class="red">关闭</span><!--{/if}--> <span class="red">（注意：进入连斗后，自动逃避功能自动关闭。）</span></div>
+                </div>
+
+                <div class="nv-index-counters">
+                    <div class="nv-index-counter"><span>激活人数</span><strong id="alivenum">$validnum</strong></div>
+                    <div class="nv-index-counter"><span>生存人数</span><strong class="lime">$alivenum</strong></div>
+                    <div class="nv-index-counter"><span>死亡总数</span><strong class="red">$deathnum</strong></div>
+                </div>
+
+                <div class="nv-index-auth">
+                    <!--{if $cuser}-->
+                    <div class="nv-index-user-bar">
+                        <span class="nv-index-greeting">{lang welcome}</span>
+                        <div class="nv-index-actions">
+                            <form method="post" name="togame" action="game.php" class="nv-inline-form">
+                                <input type="hidden" name="mode" value="main">
+                                <input type="submit" name="enter" class="cmdbutton nv-btn-primary" value="{lang enter}">
+                            </form>
+                            <form method="post" name="quitgame" action="game.php" class="nv-inline-form">
+                                <input type="hidden" name="mode" value="quit">
+                                <input type="submit" name="quit" class="cmdbutton" value="{lang quit}">
+                            </form>
+                        </div>
+                    </div>
+                    <!--{else}-->
+                    <form method="post" name="login" action="login.php" class="nv-index-login-form">
+                        <input type="hidden" name="mode" value="main">
+                        <label class="nv-index-field">
+                            <span>{lang username}</span>
+                            <input type="text" name="username" size="20" maxlength="20" value="$cuser">
+                        </label>
+                        <label class="nv-index-field">
+                            <span>{lang password}</span>
+                            <input type="password" name="password" size="20" maxlength="20" value="$cpass">
+                        </label>
+                        <div class="nv-index-actions">
+                            <input type="submit" name="enter" class="cmdbutton nv-btn-primary" value="{lang login}">
+                            <a href="register.php" class="cmdbutton nv-btn-link">{lang register}</a>
+                        </div>
+                    </form>
+                    <!--{/if}-->
+                </div>
+
+                <div class="nv-index-help evergreen2">
+                    新手玩家或初次游玩玩家，务必先阅读 <a href="help.php" class="clit yellow">【{lang help}】</a> ！！！！
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <section class="nv-index-card nv-index-card--side" aria-label="站长留言与房间列表">
+            <div class="nv-index-card__head">
+                <span class="nv-index-card__title">{lang adminmsg}</span>
+                <div class="nv-index-room-trigger">
+                    <span>当前房间列表：</span>
+                    <input type="button" class="cmdbutton nv-btn-primary" value="点击查看房间列表" onclick="showModalDialog($('roomlist'));">
+                </div>
+            </div>
+            <div class="nv-index-card__body nv-index-card__body--side">
+                <div id="adminmsg" class="nv-index-adminmsg evergreen">
+                    $adminmsg
+                </div>
+            </div>
+        </section>
+    </div>
+    {template roomlist}
 </div>
 {template footer}

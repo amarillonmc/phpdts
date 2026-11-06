@@ -1,15 +1,84 @@
 </main>
+
+<aside class="nv-theme-panel" id="nv-theme-panel" hidden aria-label="界面配色设置">
+    <div class="nv-theme-panel__header">
+        <span class="nv-theme-panel__title">AERO / EGO 界面配色调整</span>
+        <button type="button" class="nv-window__btn" onclick="if(window.NouveauTheme)window.NouveauTheme.togglePanel(false);" title="关闭">×</button>
+    </div>
+    <div class="nv-theme-panel__body">
+        <div class="nv-theme-section">
+            <div class="nv-theme-label">预设主题 (Presets)</div>
+            <div class="nv-theme-presets" id="nv-theme-presets">
+                <button type="button" class="nv-theme-preset" data-nv-preset="aero-emerald">
+                    <span class="nv-theme-swatch" style="background:linear-gradient(135deg,#3fe0a8,#35b8ff);"></span>
+                    <span>翡翠流光</span>
+                </button>
+                <button type="button" class="nv-theme-preset" data-nv-preset="frutiger-aqua">
+                    <span class="nv-theme-swatch" style="background:linear-gradient(135deg,#38d6ff,#5ce6b8);"></span>
+                    <span>极光水蓝</span>
+                </button>
+                <button type="button" class="nv-theme-preset" data-nv-preset="cobalt-ego">
+                    <span class="nv-theme-swatch" style="background:linear-gradient(135deg,#5a9bff,#8f7dff);"></span>
+                    <span>深海钴晶</span>
+                </button>
+                <button type="button" class="nv-theme-preset" data-nv-preset="amethyst-glass">
+                    <span class="nv-theme-swatch" style="background:linear-gradient(135deg,#c07cff,#52d1ff);"></span>
+                    <span>紫晶幻夜</span>
+                </button>
+                <button type="button" class="nv-theme-preset" data-nv-preset="amber-pulse">
+                    <span class="nv-theme-swatch" style="background:linear-gradient(135deg,#f5b942,#ff6b4a);"></span>
+                    <span>琥珀金辉</span>
+                </button>
+                <button type="button" class="nv-theme-preset" data-nv-preset="crimson-core">
+                    <span class="nv-theme-swatch" style="background:linear-gradient(135deg,#ff5c7c,#ffb347);"></span>
+                    <span>绯红核心</span>
+                </button>
+            </div>
+        </div>
+        <div class="nv-theme-section">
+            <div class="nv-theme-label">自定义色彩 (Custom Palette)</div>
+            <div class="nv-theme-custom-grid">
+                <label class="nv-theme-color-field">
+                    <span>主强调色</span>
+                    <input type="color" id="nv-color-accent" value="#3fe0a8">
+                </label>
+                <label class="nv-theme-color-field">
+                    <span>副光晕色</span>
+                    <input type="color" id="nv-color-accent2" value="#38c8ff">
+                </label>
+                <label class="nv-theme-color-field">
+                    <span>面板底色</span>
+                    <input type="color" id="nv-color-panel" value="#0c151d">
+                </label>
+            </div>
+        </div>
+        <div class="nv-theme-actions">
+            <button type="button" class="cmdbutton" onclick="if(window.NouveauTheme)window.NouveauTheme.reset();">恢复默认配色</button>
+            <!--{if CURSCRIPT == 'game'}-->
+            <button type="button" class="cmdbutton" onclick="if(window.NouveauWindows)window.NouveauWindows.resetAll();">重置窗口位置</button>
+            <!--{/if}-->
+        </div>
+    </div>
+</aside>
+
 <div class="nv-taskbar" id="nv-taskbar" aria-label="Nouveau taskbar">
-    <div class="nv-taskbar__start">NOUVEAU</div>
+    <button type="button" class="nv-taskbar__start" onclick="if(window.NouveauTheme)window.NouveauTheme.togglePanel();" title="打开界面配色面板">NOUVEAU</button>
+    <!--{if CURSCRIPT != 'index'}-->
     <div class="nv-taskbar__buttons" id="nv-taskbar-buttons"></div>
+    <!--{else}-->
+    <div class="nv-taskbar__index-hint">常磐大逃杀 · 准备大厅</div>
+    <!--{/if}-->
     <div class="nv-taskbar__status">
-        <span>{lang gameversion}</span>
-        <span>$gameversion</span>
+        <!--{if CURSCRIPT == 'game'}-->
+        <button type="button" class="nv-taskbar__tool" onclick="if(window.NouveauWindows)window.NouveauWindows.resetAll();" title="将所有窗口恢复到默认位置">重置窗口</button>
+        <!--{/if}-->
+        <button type="button" class="nv-taskbar__tool" onclick="if(window.NouveauTheme)window.NouveauTheme.togglePanel();" title="调整界面配色">配色</button>
+        <span>{lang gameversion} $gameversion</span>
     </div>
 </div>
 <div class="nv-footer">
     <span>DTS $gameversion</span>
-    <span>Experimental interface; mechanics are provided by the original PHPDTS command flow.</span>
+    <span>Nouveau Dark Aero Interface</span>
     <span id="error">$error</span>
 </div>
 </body>
