@@ -125,21 +125,50 @@ html[data-classic-palette]:not([data-classic-palette="denpa"]) span[tooltip2]:ho
 }
 
 .classic-settings {
-    max-width: 760px;
-    margin: 16px auto;
-    border: 1px solid var(--classic-border, #e17ce2);
-    background: var(--classic-panel, #111111);
+    float: right;
+    position: relative;
+    max-width: calc(100% - 24px);
+    margin: 4px 12px 8px 16px;
     color: var(--classic-text, #dddddd);
     font: 12px/1.6 'FusionPixel12px', sans-serif;
     text-align: left;
 }
 .classic-settings summary {
-    padding: 8px 12px;
+    display: block;
+    padding: 5px 12px;
+    border: 1px solid var(--classic-border, #e17ce2);
+    background: var(--classic-panel, #111111);
+    list-style: none;
     cursor: pointer;
     color: var(--classic-link, #dddddd);
 }
+.classic-settings summary::-webkit-details-marker {
+    display: none;
+}
+.classic-settings ~ .ver {
+    clear: right;
+}
+.classic-settings summary:hover,
+.classic-settings[open] summary {
+    border-color: var(--classic-link, #dddddd);
+}
 .classic-settings-body {
-    padding: 4px 12px 12px;
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    z-index: 1100;
+    box-sizing: border-box;
+    width: 760px;
+    max-width: calc(100vw - 24px);
+    max-height: calc(100vh - 80px);
+    overflow: auto;
+    padding: 12px;
+    border: 1px solid var(--classic-border, #e17ce2);
+    background: var(--classic-panel, #111111);
+}
+.classic-settings-below .classic-settings-body {
+    bottom: auto;
+    top: calc(100% + 8px);
 }
 .classic-settings-row,
 .classic-colors {

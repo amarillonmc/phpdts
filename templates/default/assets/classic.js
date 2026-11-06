@@ -82,6 +82,19 @@
         var panel = document.getElementById('classic-settings');
         if (!panel) return;
         syncControls();
+        function positionPanel() {
+            if (!panel.open) return;
+            var button = panel.querySelector('summary').getBoundingClientRect();
+            var body = panel.querySelector('.classic-settings-body');
+            var above = button.top - 16;
+            var below = window.innerHeight - button.bottom - 16;
+            // 短页面的页脚可能靠近顶部，此时向下展开以免遮掉控件。
+            var openBelow = above < body.scrollHeight + 2 && below > above;
+            panel.classList.toggle('classic-settings-below', openBelow);
+            body.style.maxHeight = Math.max(60, openBelow ? below : above) + 'px';
+        }
+        panel.addEventListener('toggle', positionPanel);
+        window.addEventListener('resize', positionPanel);
         // 下拉选择与按钮上的字母键不能传到游戏的 body.onkeyup。
         panel.addEventListener('keyup', function (event) { event.stopPropagation(); });
         document.getElementById('classic-font').addEventListener('change', function () {
