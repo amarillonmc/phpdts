@@ -14,11 +14,11 @@
 - **`templates/nouveau/header.htm` & `footer.htm` & `css.htm`**：
   - 顶部主标题 `.nv-header-title` 与页面内 `.title`、`.subtitle` 改为大字居中。
   - 修复幻想世界菜单 `<details class="nv-vnworld-menu">` 展开时撑高顶栏的问题，改为悬浮毛玻璃下拉菜单。
-  - 在 `css.htm` 中补齐 `span[tooltip]`、`span[tooltip2]`、`button[tooltip]` 悬停提示框及稀有度/特效文字样式（`.gold`、`.spitem`、`.rainbow`、`.minirainbow`、`.glitch1`、`.mtg*`、`.ach_box`、`.glow_buttons` 等）。
+  - 在 `css.htm` 中补齐 `span[tooltip]`、`span[tooltip2]`、`button[tooltip]` 悬停提示框及稀有度/特效文字样式（`.gold`、`.spitem`、`.rainbow`、`.minirainbow`、`.glitch1`、`.mtg*`、`.ach_box`、`.glow_buttons` 等）；移除首行 CSS 注释中的 `{template css}` 字样（避免 `parse_template()` 将注释内的 `{template css}` 编译为 `include template('css')` 导致无限递归自包含并引发 HTTP 503）。
   - 新增界面配色面板（`#nv-theme-panel`），支持 6 套预设配色与自定义主色/副光晕色/面板底色，并保存在 `localStorage`。
 - **`templates/nouveau/slidingpanel.htm`**：新增正式模板文件，复用 `default/slidingpanel.htm` 的完整功能（任务、充能 1-4、种火管理、电梯/闪光同伴任务集成），并补充 Nouveau 风格与右侧收拢定位样式（`right: -520px` 至 `0px`），覆盖旧环境残留文件。
 - **`templates/nouveau/game.htm` & `profile.htm` & `assets/js/panel-bindings.js`**：
-  - 修复 `game.htm` 顶部 `{eval ...}` 花括号编译截断问题与 `[$xyinfo[$key]]` 正则吞括号问题。
+  - 修复 `game.htm` 顶部 `{eval ...}` 花括号编译截断问题、`[$xyinfo[$key]]` 正则吞括号问题，以及移除底部引用不存在的 `{template bgm}`（BGM 实际由 `sp_terminal` 承载）。
   - 地图节点 `.nv-map-node` 改为可点击移动按钮（调用 `NouveauPanels.moveTo(plsId)` 提交移动指令），并在每次 AJAX 刷新后根据 `window.shwData` 实时同步当前位置、禁区与即将禁区状态。
   - `profile.htm` 补齐六系熟练度、技能点、部位包扎点击按钮、异常状态点击按钮、装备与背包属性词条、副武器提示，并修正原模板缺失语言键导致的 `!hurt!`、`!none!` 等显示问题。
 - **Dark Aero / Frutiger Ego 美学与窗口管理（`nouveau.css`、`windows.css`、`game-panels.css`、`responsive.css`、`window-manager.js`、`nouveau.js`）**：
