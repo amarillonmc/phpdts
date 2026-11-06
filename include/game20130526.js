@@ -430,6 +430,7 @@ function showData(sdata){
 				}
 			}
 		}
+		if(window.PHPDTSPaperdoll) window.PHPDTSPaperdoll.refresh();
 		if(shwData['clbpara']) {
 			window.clbpara_data = shwData['clbpara'];
 			window.clbpara = shwData['clbpara'];

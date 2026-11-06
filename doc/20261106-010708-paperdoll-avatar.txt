@@ -1,0 +1,37 @@
+账户纸娃娃与双色生命／体力显示
+
+玩家体验
+- 账户页新增纸娃娃编辑器。发型、上身、下身、饰品各16款，共64款；每个部件有8种预设配色，也可自选主色。下身包含配套鞋袜。
+- 饰品按眼镜、帽子与头饰、颈部、背部、腰部、下身六个位置组合；同一位置最多一件。帽子会遮住头发上部，长发、背包等沿用固定图层顺序。
+- 第一次实际改变默认形象免费，之后按本次实际改变的部件数收费，每件20切糕。换款与换色算同一部件的一次修改；同一位置更换／摘下饰品算一次。原样保存不收费，切换经典显示方式不收费且不消耗首次资格。恢复默认不会恢复免费资格。
+- 保存后自己的对局窗口立即使用账户外观。nouveau直接显示全彩纸娃娃；经典默认保留人形线框，可在账户页勾选纸娃娃。经典人物左半黄色填充体力，右半红色填充生命，均由脚底向上填充，耗尽部分变暗。伤口仍走既有包扎指令。
+- 这是账户装扮，未绑定局内武器／防具，也不替换对手头像、NPC或赢家历史形象。
+
+实现位置
+- gamedata/paperdoll/catalog.json：目录、默认形象、价格、主色预设和帽子遮挡位置。
+- img/paperdoll/：一张底模及64张透明PNG，统一110×160画布。两套界面共用素材；nouveau按200px人物高度显示。
+- include/paperdoll.js、include/paperdoll.css：分层、保留明暗的主色替换、双色填充和账户编辑；接入showData刷新后的重绘。
+- include/paperdoll.func.php、user.php：服务端部件／颜色校验与保存。新增users.paperdoll TEXT NULL，记录当前外观、显示偏好、首次免费是否已用，以及防止旧页面在A→B→A后重新生效的一次保存计数。未另建衣柜表或购买历史。
+- 安装SQL已包含字段；已有站点第一次打开账户编辑页时，在既有process.lock内二次检查并补字段。对局只读取默认或已存外观，不在游戏请求执行DDL。账户数据库需允许此次ALTER；失败只关闭编辑器，不改原有外观。
+- 外观、首次标记和扣费使用同一users行的条件UPDATE，检查旧状态及余额，兼容MyISAM。CSRF、重试、陈旧页面、余额不足均由服务端处理。
+- 普通资料保存删除了无必要的旧credits/credits2回写，避免其覆盖并发发生的换装扣费。
+- profile被winner详情复用，只有CURSCRIPT=game显示当前账户纸娃娃，其他入口保留原图。
+
+素材制作与参考
+- 使用内置image_gen生成四头身底模及四张4×4部件图集，然后切出独立透明图层、对齐头部／腰线／袖口并缩到正式尺寸；游戏运行不解析PSD，也不依赖图像生成工具或第三方前端包。
+- ZIP RJ01006818：参考了ブラウス、学ラン、セーラー服、スーツ、ベスト、ダウンベスト、ジャージ、長ズボン、ゆったりズボン、ミニプリーツ、タイトスカート、スカート、フリルスカート、スリットスカート等部件的分类与服装轮廓；未把原始商业授权卡或整份编辑器打包进游戏。
+- 设定库参考：GA系列角色.md中的林苍月（高领连帽衫、格纹卷边裤）、林仙凤（开襟连帽外套、短裤）、林天星（衬衫马甲）；善德恶德与动物团角色.md中的Blasty（皮夹克）、Holly（贴身运动服）、Albert（工装与护目镜）；EA-772与默晚.md中的高领毛衣与战术眼镜；掣之断章组.md中的贴袋长裙、星纹裙与魔女帽要素。部件使用通用名称，不作为角色专属套装。
+- 共同生成约束：front orthographic four-head adult paper doll; neutral standing pose; crisp chunky pixel clusters; dark stepped outline; transparent background; no labels or cast shadows; clothing and hair in grayscale for recoloring; no skin in replaceable garment layers.
+- 发型图集提示词条目：short tousled / neat side part / blunt fringe bob / asymmetric swept fringe / short spikes / slicked back / curtain part / rounded bob / straight shoulder length / wavy shoulder length / high ponytail / twin low ponytails / twin buns / side braid / long straight / swept undercut。
+- 上身图集提示词条目：collared shirt / ribbon school jacket / sailor blouse / business blazer / shirt waistcoat / padded vest / tracksuit / hoodie over turtleneck / open hooded windbreaker / biker jacket / fitted athletic hoodie / utility jacket / turtleneck sweater / bomber jacket / asymmetric high collar jacket / crewneck sweatshirt。
+- 下身图集提示词条目：straight trousers / cargo pants / slim jeans / wide legs / joggers / checked turn-up cuffs / casual shorts / utility shorts / calf-length pants / pleated mini skirt / knee-length straight skirt / A-line skirt / tiered ruffles / patch-pocket long skirt / star-patterned skirt / side-slit overskirt trousers。每项搭配鞋袜，裸露腿部留透明。
+- 饰品图集提示词条目：round eyeglasses / narrow sunglasses / tactical visor / baseball cap / beanie / compact witch hat / hair ribbon / forehead goggles / scarf / choker / ribbon tie / daily backpack / tool backpack / hip satchel / talisman belt / knee pad。
+
+验证与限制
+- 实际运行时为PHP 7.4.33；本次PHP文件开启short_open_tag检查。
+- 独立回归：php -d short_open_tag=1 -r "define('IN_GAME',true); require 'gamedata/tests/paperdoll_test.php';"
+- 上述命令共41项通过，包含重复保存、陈旧页面、并发余额变化、首次资格、非法输入，以及正式目录的64个选项、65张PNG和真实默认形象的保存／重载。
+- 浏览器使用真实素材及原模板编译结果，检查账户选款、配色、费用、保存失败恢复、桌面与窄屏，以及classic/nouveau重绘与包扎提交；保存接口的浏览器交互测试使用假API，不等同于线上端到端联调。
+- 已目视检查16套覆盖全部64部件的组合和小尺寸显示；固定一副底模、一个站姿，不支持改变身高／姿势或逐部件多区域独立染色。
+- 本机mysqld可连接到认证阶段，但现有本机站点配置返回1045（Access denied）。没有更换凭据、创建隔离测试表或对现有站点执行DDL／UPDATE，因此真实数据库保存与完整站点联调尚未验证。
+- 未修改部署配置、既有账户、房间运行数据或编译模板缓存；本次不发布或推送。

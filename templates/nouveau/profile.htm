@@ -1,3 +1,4 @@
+{template paperdoll_state}
 <!--{eval $nickinfo = titles_get_desc($nick,1); $fcg_name_class = in_array((int)$nick,array(9111,9112,9113)) ? 'fcg-title fcg-title-'.(int)$nick : '';}-->
 <!--{eval $nv_hp_pct = $mhp ? round($hp * 100 / $mhp) : 0;}-->
 <!--{eval $nv_sp_pct = $msp ? round($sp * 100 / $msp) : 0;}-->
@@ -104,7 +105,12 @@
     <div class="nv-window__body">
         <div class="nv-paperdoll">
             <div class="nv-paperdoll__stage">
+                <!--{if CURSCRIPT == 'game'}-->
+                <!--{eval $pd_mode = 'normal'; $pd_width = 150; $pd_height = 210; $pd_draw_height = 200; $pd_fill = 0;}-->
+                {template paperdoll_profile}
+                <!--{else}-->
                 <img src="img/$iconImg" data-fallback="avatar" alt="$name">
+                <!--{/if}-->
             </div>
             <dl class="nv-kv">
                 <dt>编号</dt><dd>{$sexinfo[$gd]}{$sNo}号</dd>

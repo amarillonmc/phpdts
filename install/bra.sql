@@ -71,6 +71,7 @@ CREATE TABLE bra_users (
   `killmsg` char(30) NOT NULL DEFAULT '',
   `lastword` char(30) NOT NULL DEFAULT '',
   `u_templateid` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `paperdoll` text NULL,
   PRIMARY KEY  (uid),
   UNIQUE KEY username (username)
 

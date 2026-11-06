@@ -4,8 +4,18 @@ define('CURSCRIPT', 'user');
 
 require './include/common.inc.php';
 require './include/masterslave.func.php';
+require_once GAME_ROOT.'./include/paperdoll.func.php';
 //require './include/user.func.php';
 
+// 形象编辑使用独立 JSON 请求，登录失效时也返回可读的 JSON 错误。
+if(($mode ?? '') === 'paperdoll' && (!is_string($cuser) || $cuser === '' || !is_string($cpass) || $cpass === '' || empty($udata) || !hash_equals((string)$udata['password'], $cpass) || (int)$udata['groupid'] <= 0)) {
+	ob_clean();
+	header('Content-Type: application/json; charset=utf-8');
+	header('Cache-Control: no-store');
+	http_response_code(401);
+	echo paperdoll_json(array('error' => '登录状态已失效，请重新登录。'));
+	exit;
+}
 
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
 if(!$udata) { gexit($_ERROR['login_check'],__file__,__line__); }
@@ -16,7 +26,30 @@ if(!isset($mode)){
 	$mode = 'show';
 }
 
-if($mode == 'sync_master') {
+if($mode == 'paperdoll') {
+	header('Content-Type: application/json; charset=utf-8');
+	header('Cache-Control: no-store');
+	ob_clean();
+	try {
+		if(($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') throw new InvalidArgumentException('请从账户页面保存形象。');
+		$raw = file_get_contents('php://input', false, null, 0, 8193);
+		if(strlen($raw) > 8192) throw new InvalidArgumentException('形象设置过长。');
+		$input = json_decode($raw, true);
+		$csrf = hash_hmac('sha256', 'paperdoll:'.$udata['uid'], (string)$cpass);
+		if(!is_array($input) || !isset($input['csrf']) || !is_string($input['csrf']) || !hash_equals($csrf, $input['csrf'])) throw new InvalidArgumentException('页面校验已失效，请刷新。');
+		paperdoll_ensure_storage();
+		$paperdoll_user = paperdoll_current_user($udata['uid'], $cpass);
+		echo paperdoll_json(paperdoll_save($paperdoll_user, $input));
+	} catch(InvalidArgumentException $e) {
+		http_response_code(409);
+		echo paperdoll_json(array('error' => $e->getMessage()));
+	} catch(Throwable $e) {
+		error_log('Paperdoll: '.$e->getMessage());
+		http_response_code(503);
+		echo paperdoll_json(array('error' => '形象暂时无法保存，请稍后重试。'));
+	}
+	exit;
+} elseif($mode == 'sync_master') {
 	// 处理主从数据同步
 	$gamedata=Array();$gamedata['innerHTML']['info'] = '';
 
@@ -139,7 +172,7 @@ if($mode == 'sync_master') {
 			$templateid = 0;
 		}
 	}
-	$db->query("UPDATE {$gtablepre}users SET gender='$gender', icon='$icon',{$passqry}motto='$motto',  killmsg='$killmsg', lastword='$lastword', credits='$credits', credits2='$credits2' ,nick='$nick', u_templateid='$templateid' WHERE username='$cuser'");
+	$db->query("UPDATE {$gtablepre}users SET gender='$gender', icon='$icon',{$passqry}motto='$motto',  killmsg='$killmsg', lastword='$lastword', nick='$nick', u_templateid='$templateid' WHERE username='$cuser'");
 	if($db->affected_rows()){
 		$gamedata['innerHTML']['info'] .= $_INFO['data_success'];
 	}else{
@@ -155,10 +188,22 @@ if($mode == 'sync_master') {
 	
 } else {
 	//$ustate = 'edit';
+	header('Cache-Control: no-store');
 	extract($udata);
 	$nickinfo = titles_get_desc($nick);
 	$iconarray = get_iconlist($icon);
 	$select_icon = $icon;
+	try {
+		paperdoll_ensure_storage();
+		$paperdoll_user = paperdoll_current_user($udata['uid'], $cpass);
+		$paperdoll_boot = paperdoll_json(paperdoll_account_state($paperdoll_user) + array(
+			'catalog' => paperdoll_catalog(), 'csrf' => hash_hmac('sha256', 'paperdoll:'.$udata['uid'], (string)$cpass),
+			'endpoint' => 'user.php?mode=paperdoll'
+		));
+	} catch(Throwable $e) {
+		error_log('Paperdoll: '.$e->getMessage());
+		$paperdoll_boot = paperdoll_json(array('error' => '形象编辑暂时不可用，请稍后重试。'));
+	}
 	//这里假定player表里有usertitle字段而且储存方式是这样蛋疼的。具体程序虚子你写。
 	$utlist = get_utitlelist();//然后去接收用户传来的$
 
@@ -181,4 +226,4 @@ if($mode == 'sync_master') {
 	include template('user');
 }
 
-?> 
+?>
