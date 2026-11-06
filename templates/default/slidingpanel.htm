@@ -13,6 +13,7 @@
         <div class="tab-container">
             <button class="tab-button active" onclick="showTab('misc-tab', event)">任务窗体</button>
             <button class="tab-button" onclick="showTab('misc-tab2', event)">其他信息</button>
+            <button id="c25-tab-button" class="tab-button" style="display:<!--{if $club != 25}-->none<!--{else}-->inline-block<!--{/if}-->" onclick="showTab('c25-tab', event);club25Cmd('board');">可怜猫</button>
             <!--{if $club==22}-->
             <button class="tab-button" onclick="showTab('fireseed-tab', event)">种火管理</button>
             <!--{/if}-->
@@ -101,6 +102,8 @@
                 </div>
             </div>
         </div>
+
+        <div id="c25-tab" class="tab-pane"><div id="c25-board">{template club25_panel}</div></div>
 
         <!-- 种火管理标签页 -->
         <!--{if $club==22}-->

@@ -3,6 +3,7 @@
 if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
+include_once GAME_ROOT.'./include/game/club25.func.php';
 /* ————————————————设计思路———————————————— */
 //关于背包的设定：
 //依然是使用json_encode将背包内的道具信息的数组变成一个字符串，储存在$itembag内，以实现尽量多的扩展背包大小的功能
@@ -190,7 +191,7 @@ function item_get(){
 			$full_stk = false;
 			for($i=0;$i<=sizeof(array_keys($item_list));$i++){
 				//四个判定 道具名相同/道具类相同/属于可堆叠道具/背包内的相同道具数未超过堆叠限制
-				if(($git == $item_list[$i]['itm']) && ($gitk == $item_list[$i]['itmk']) && (in_array($gitk,array_keys($itmstkinfo))) && (($item_list[$i]['itms'])<$itmstkinfo[$gitk]) && !$over){
+				if(($git == $item_list[$i]['itm']) && ($gitk == $item_list[$i]['itmk']) && (in_array($gitk,array_keys($itmstkinfo))) && (($item_list[$i]['itms'])<$itmstkinfo[$gitk]) && !$over && !club25_item_marked($gitpara) && !club25_item_marked($item_list[$i]['itmpara'] ?? '')){
 					if(($item_list[$i]['itms']+$gits)>$itmstkinfo[$gitk]){
 						//获得道具数+原有道具数超过堆叠限制时，多出来的部分将作为新一组道具继续走完item_get()
 						$add_git = $itmstkinfo[$gitk] - $item_list[$i]['itms'];
@@ -300,7 +301,7 @@ function drop_itembag(){
 //拾取背包时对是否替换进行判断
 function replace_itembag(&$keep){
 	global $itm0,$itmk0,$itme0,$itms0,$itmsk0,$itmpara0;
-	global $arb,$arbk,$arbe,$arbs,$arbsk;
+	global $arb,$arbk,$arbe,$arbs,$arbsk,$arbpara,$pdata;
 	global $itmnumlimit,$log,$mode;
 	global $pls,$db,$tablepre;
 	if(strpos($itmsk0,'^')!==false){
@@ -315,7 +316,7 @@ function replace_itembag(&$keep){
 		}
 		if($r_flag && ($itms0>$itmnumlimit)){
 			if($r_flag == 'arb'){
-				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk ,pls) VALUES ('$arb', '$arbk', '$arbe', '$arbs', '$arbsk', '$pls')");
+				$db->array_insert($tablepre.'mapitem',Array('itm'=>$arb,'itmk'=>$arbk,'itme'=>$arbe,'itms'=>$arbs,'itmsk'=>$arbsk,'itmpara'=>is_array($arbpara) ? json_encode($arbpara,JSON_UNESCAPED_UNICODE) : $arbpara,'pls'=>$pls));
 				$arb = $itm0;
 				$arbk = $itmk0;
 				$arbe = $itme0;
@@ -324,10 +325,12 @@ function replace_itembag(&$keep){
 				$arbpara = $itmpara0;
 				$itm0 = $itmk0 = $itmsk0 = $itmpara0 = '';
 				$itme0 = $itms0 = 0;
+				club25_item_trip($pdata,'arb');
 			}else{
 				$i = $r_flag;
-				global ${'itm'.$i},${'itmk'.$i},${'itme'.$i},${'itms'.$i},${'itmsk'.$i};
-				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk ,pls) VALUES ({${'itm'.$i}}, {${'itmk'.$i}}, {${'itme'.$i}}, {${'itms'.$i}}, {${'itmsk'.$i}}, '$pls')");
+				global ${'itm'.$i},${'itmk'.$i},${'itme'.$i},${'itms'.$i},${'itmsk'.$i},${'itmpara'.$i};
+				$oldpara = ${'itmpara'.$i};
+				$db->array_insert($tablepre.'mapitem',Array('itm'=>${'itm'.$i},'itmk'=>${'itmk'.$i},'itme'=>${'itme'.$i},'itms'=>${'itms'.$i},'itmsk'=>${'itmsk'.$i},'itmpara'=>is_array($oldpara) ? json_encode($oldpara,JSON_UNESCAPED_UNICODE) : $oldpara,'pls'=>$pls));
 				${'itm'.$i} = $itm0;
 				${'itmk'.$i} = $itmk0;
 				${'itme'.$i} = $itme0;
@@ -336,10 +339,11 @@ function replace_itembag(&$keep){
 				${'itmpara'.$i} = $itmpara0;
 				$itm0 = $itmk0 = $itmsk0 = $itmpara0 = '';
 				$itme0 = $itms0 = 0;
+				club25_item_trip($pdata,$i);
 			}
 			$log.="由于只能携带一个背包，你用拾到的品质较高的背包替换掉了身上的背包。<br>";
 		}elseif($r_flag){
-			$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk ,pls) VALUES ('$itm0', '$itmk0', '$itme0', '$itms0', '$itmsk0', '$pls')");
+			$db->array_insert($tablepre.'mapitem',Array('itm'=>$itm0,'itmk'=>$itmk0,'itme'=>$itme0,'itms'=>$itms0,'itmsk'=>$itmsk0,'itmpara'=>is_array($itmpara0) ? json_encode($itmpara0,JSON_UNESCAPED_UNICODE) : $itmpara0,'pls'=>$pls));
 			$itm0 = $itmk0 = $itmsk0 = $itmpara0 = '';
 			$itme0 = $itms0 = 0;
 			$log.="由于只能携带一个背包，你扔掉了这个品质较差的背包。<br>";

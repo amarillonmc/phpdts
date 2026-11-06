@@ -7,6 +7,7 @@ if (! defined ( 'IN_GAME' )) {
 include_once GAME_ROOT.'./include/game/clubslct.func.php';
 include_once GAME_ROOT.'./include/game/aievent_minion.func.php';
 include_once GAME_ROOT.'./include/game/club24.func.php';
+include_once GAME_ROOT.'./include/game/club25.func.php';
 
 // Main item use function that delegates to specific item type handlers
 function itemuse($itmn,&$data=NULL) {

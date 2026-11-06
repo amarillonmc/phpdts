@@ -1,0 +1,57 @@
+可怜猫（社团25）实装记录
+
+玩家体验
+无社团的存活玩家可在1禁后花20元购买「沾着猫毛的粉黑蝴蝶结」加入上级者向社团。
+入社即获得暗业、改装、捉迷藏、投喂、布场、诡雷、复线、收网；保留通用成长和自疗。
+玩家通过改装武器布雷、用补给藏幻影、在物品上装拾取诡雷制造实际伤害，获得经验和爆熟。
+副面板显示全图自有地面布置及当地可借用机关；遇敌时收网消耗现场机关攻击，仍须承担反击。
+
+本次数值与边界
+- 暗业：普通武器最终伤害保留30%，不惩罚经验/熟练；陷阱、食用毒物、幻影和诡雷直接伤害减半。
+  不减免战斗毒属性或后续行动中毒伤害。
+- 改装：每次消耗武器3耐久，无限耐久武器消耗整件；效果为原效果×3×种类倍率。
+  默认殴/斩/投/灵1，射/重枪0.6，爆1.5；混合武器取主类别，不继承原武器属性。
+- 捉迷藏：20体力，制作时快照基础攻击×0.4＋爆熟×0.6，无需毒药。
+  普通命/体/命体补给首次实际食用先咬后恢复，造成伤害后尝试足伤；整堆只触发一次，可与原毒并存。
+- 诡雷：20体力，对物品选择半份幻影伤害或中毒；成功入包、装备、拾取合并才触发。
+  仅发现、拒绝拾取和满包不触发；探雷属性M提供细线提示。不同机关参数不能合并洗掉状态。
+- 投喂：25怒气生成70效、3份普通命体补给，可自食或加工；制作本身不提供成长/返怒。
+- 复线：普通雷增加制作时爆熟×0.5威力，附带两枚半效副雷。
+  回收重布不增殖、不重算威力；同次探索最多一枚，普通猫雷统一接触率下限15%，不单独逐枚掷骰。
+  比例雷、直死雷等特殊雷不复制、不受接触率下限提升，也不能用于收网。
+- 猫步：成功主动布置后，下一次成功移动跳过该移动引发的AI遇敌、活人遭遇和踩雷。
+  不叠层；失败移动保留，原地搜索不消耗也不保护，异常/天气/禁区照常，别人仍可找到自己。
+- 收网：必须是当前同地点、同地图组的遭遇；可消耗他人/无主普通雷。
+  对NPC也可消耗现场毒物或捉迷藏补给，对玩家不强制喂食。
+  有主机关伤害和击杀归原作者，无主归施术者；普通回避、免伤、反击、复活和NPC反应继续适用。
+  自动选择会挑一件当地可用机关，也可显式指定；无效选择在开战前拒绝。
+- 有效被动触发给可怜猫一次正常命中经验及2爆熟；自己、队友、无伤且未新增异常不计。
+  收网只给施术者一次行动成长，不再向原作者重复发成长；原作者实际伤害记录仍可计成就。
+
+资源
+- 商店卡：公共shopitem，分类18，库存10，价格20，禁数1；开局社团选择列表不加入25。
+- 成就210「请勿投喂」：同局自己的地雷和食用机关均实际伤害敌对玩家，并活着获胜。
+  传统地雷/毒物也能完成；拾取诡雷不能冒充地雷进度；重复结算不重复发奖。
+- 奖励头衔124「请勿投喂」：入场获得灵魂绑定社团卡。
+- 死法51「被补给咬死」：幻影致死文案、死亡新闻、幻影与诡雷触发新闻。
+- 图像：img/ach/210_0.png，100×100 PNG；黑猫、粉黑蕾丝蝴蝶结、零食幻影及卡通阔剑雷。
+
+实现位置
+club25.func.php负责制作、布场、实物领取及成长；club25.items.php处理物品机关与来源结算；
+club25.combat.php处理收网、普通攻击代价、接触率和猫步。数值集中club25cfg_1.php。
+接入现有物品、搜索、战斗、成就和死亡流程，沿用clbpara/itmpara、mapitem/maptrap与请求锁。
+没有新增表或外部依赖。修正拾取背包替换丢para的相关路径，防止机关状态消失或拆分复用。
+command.php和default副面板沿用原有AJAX，nouveau缺省回退同一模板；不修改编译模板缓存。
+
+验证
+运行环境PHP 7.4.33，启用short_open_tag；36个本次PHP文件通过语法检查，git diff --check通过。
+新增club25_core_test.php、club25_items_test.php、club25_combat_test.php、club25_resources_test.php、
+club25_command_test.php及club25_ui_test.js，128项PHP行为断言及JS回归通过，覆盖真实技能、物品、战斗、入口保存、重复提交和失败分支。
+资源脚本的templates分支编译8个真实模板，检查布场内容及转义；JS脚本执行现有postCmd验证请求。
+已有club23_test.php、club24_test.php、quest_q6_test.php通过。
+wheelchair_battle_test.php断言通过，但既有battle.func.php:87的can_lootdepot_type作用域警告仍在，未扩改无关逻辑。
+以上使用假数据库和外围桩；未连接真实数据库或进行浏览器多人联调，不代表线上玩法/平衡验证通过。
+
+图像生成
+使用内置image_gen生成，随后仅缩放导出适配既有成就图目录。最终提示词如下：
+Use case: stylized-concept. Asset type: square achievement badge for a Chinese browser battle royale game, achievement '请勿投喂' (Do not feed), club '可怜猫' (a playful pun on CLAYMORE and jirai-kei fashion). Primary request: polished humorous anime game achievement icon. A mischievous cute black cat with an innocent pleading face, a large pink-and-black lace ribbon with a small heart charm, tiny exposed fang and sly eyes, hugging a wrapped snack; a clearly fictional cartoon olive-green claymore-shaped trap with a cat-paw emblem sits underneath, with a small curled fuse/cord. Suggest a ghostly miniature cat face peeking out of the snack. Tone: darkly cute, absurd slapstick, jirai-kei pink/black aesthetic, no gore. Composition: bold compact centered silhouette readable as a 100px square game achievement icon; thick clean illustrated outlines, limited details, soft dramatic highlights; dark plum background, pink accents and olive green prop. Keep all main features well inside frame, no lettering, no text, no watermark. Fully opaque square image.

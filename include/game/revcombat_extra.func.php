@@ -37,6 +37,13 @@ namespace revcombat
 		# 初始化pa、pd熟练度相关参数
 		$pd['wep_skill'] = \revattr\get_wep_skill($pd);
 		$pa['wep_skill'] = \revattr\get_wep_skill($pa);
+		if(isset($pa['bskill_c25_net'])) {
+			// 拨动现场机关按近距动作应对，不借手中远射武器规避反击。
+			$pa['wep_kind'] = 'D';
+			$pa['wep_range'] = 1;
+			$pa['wep_skill'] = $pa['wd'];
+			$pa['wep_name'] = '现场的机关';
+		}
 	}
 
 	# 正式进入rev_combat战斗状态后，在判定伤害、反击流程前的事件执行阶段；

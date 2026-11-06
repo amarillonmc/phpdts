@@ -73,6 +73,7 @@ $clubinfo = Array(
 	22=>'枫火歌者', #暂定名，「除错大师」头衔奖励
 	23=>'崩坏心核', # 使用无主的补缀匣主动加入
 	24=>'神骰叛军',
+	25=>'可怜猫',
 	98=>'换装迷宫',
 	99=>'第一形态'
 );
@@ -214,6 +215,7 @@ $stateinfo = Array
 	44 => '自我崩解',
 	45 => '舍身证道',
 	50 => '成为乐子',
+	51 => '被补给咬死',
 	60 => '玩家杀害'
 );
 $lwinfo = Array(
@@ -1361,6 +1363,7 @@ $dinfo = Array(
 	44 => '在你想着要获取更大，更多的力量时。<br>你没想到这将让你的身体承担不起。<br>在你身体里面肆虐的<span class="glitchb">数据风暴</span>终于无法制御，<br>从你的体内破体而出……<br><div class="seedhint">………………<br>…………<br><span class="redseed">【Ｅ】这里有个教训——</span><br><span class="blueseed">【Ｐ】在使用所谓的第三方库之前，最好先将它的底细摸清楚……</span><br><span class="redseed">【Ｅ】要说明白的话，那这个「🥚」其实并不是林氏出品的东西……</span><br><span class="blueseed">【Ｐ】总之，下次注意点吧！</span><br></div>',
 	45 => '你怀着必死的决心，向你的对手撞了上去，<br>丝毫未注意到<span class="glitchb">数据风暴</span>穿体而出所带来的疼痛。<br>各种颜色的<span class="glitchb">数据风暴</span>围绕着你们，<br>当一切结束后，战场上已经是一片狼藉……<br><div class="seedhint">………………<br>…………<br><span class="redseed">【Ｅ】热血漫画固有戏码——自爆！</span><br><span class="blueseed">【Ｐ】这是你自己的选择，我们也不评价了。</span><br><span class="redseed">【Ｅ】希望被你干掉的人值得你这么做。</span><br><span class="blueseed">【Ｐ】那么下次再见！</span><br></div>',
 	50 => '你的身体化作了天边的红霞。<br>想必会为虚拟幻境中的各位带来笑容吧。<br><div class="seedhint">………………<br>…………<br><span class="redseed">【Ｅ】…………………………？</span><br><span class="blueseed">【Ｐ】……………………。</span><br></div>',
+	51 => '你原本只是想吃口东西。<br>谁知道补给先吃了你一口。<br>幻影抱着粉黑蝴蝶结，笑得在地上打滚：<br><span class="purple">“果然，力是相互的！……咦，怎么不动了？不是说好陪我玩吗？”</span><br>你最后的念头是：这到底算食物中毒，还是食物中你？',
 	60 => '一切……都结束了吧……<br>你无力地倒在地上，<br>眼睁睁地看着血液从致命的伤口喷涌而出。<br>一个手持弓箭的身影，在你失神的瞳孔中逐渐淡去……<br><br>',
 );
 

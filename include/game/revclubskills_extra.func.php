@@ -108,6 +108,7 @@
 			if(!empty($inf))
 			{
 				$inf = ''; 
+				unset($clbpara['c25_poison_owner']);
 				$heal_flag = 1;
 				$log .= "你的所有异常状态全部解除了！<br>";
 			}

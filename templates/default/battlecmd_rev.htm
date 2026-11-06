@@ -52,6 +52,17 @@
                 <!--{/if}-->
             </td>
         </tr>
+        <!--{if $club == 25}-->
+        <!--{eval $c25netrows = club25_board($pdata);}-->
+        <tr><td colspan="3"><label>收网目标：<select name="c25_net_item" style="max-width:290px;">
+            <option value="">自动选择当地可用机关</option>
+            <!--{loop $c25netrows $c25netrow}-->
+            <!--{if $c25netrow['can_net']}-->
+            <option value="<!--{echo htmlspecialchars($c25netrow['key'],ENT_QUOTES,'UTF-8');}-->"><!--{echo htmlspecialchars($c25netrow['name'].'（'.$c25netrow['kind'].'）',ENT_QUOTES,'UTF-8');}--></option>
+            <!--{/if}-->
+            <!--{/loop}-->
+        </select></label></td></tr>
+        <!--{/if}-->
         <!-- 第2~n行：战斗技（每行3个） -->  
         <!--{if !empty($battle_skills)}-->
         <!--{loop $battle_skills $key $skar}-->

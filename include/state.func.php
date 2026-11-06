@@ -91,6 +91,8 @@
 			$state = 26;
 		} elseif ($death == 'trap') {
 			$state = 27;
+		} elseif ($death == 'c25_hide') {
+			$state = 51;
 		} elseif ($death == 'event') {
 			$state = 13;
 		} elseif ($death == 'hack') {
@@ -216,6 +218,10 @@
 			$pd['state'] = 26;
 		} elseif ($death == 'trap') {
 			$pd['state'] = 27;
+		} elseif ($death == 'c25_hide') {
+			$pd['state'] = 51;
+		} elseif ($death == 'pmove') {
+			$pd['state'] = 12;
 		} elseif ($death == 'dn') {
 			$pd['state'] = 28;
 		} else {

@@ -128,6 +128,7 @@ if(!defined('IN_GAME')) exit('Access Denied');
     121 => '◎胜利之光◎',
     122 => '善有善报',
     123 => '神骰叛军',
+    124 => '请勿投喂',
 
     # 第一期社区意见征询活动纪念称号：
     6001 => 'Lv.1 柠檬水',
@@ -370,6 +371,12 @@ if(!defined('IN_GAME')) exit('Access Denied');
       - 获取方式：完成隐藏成就「神骰叛军」
     "),
 
+    # 124. 请勿投喂
+    124 => Array('class'=>'tmagenta', 'title'=>"“禁止投喂？可是它先咬我的！”
+      - 入场奖励：开局获得灵魂绑定的「沾着猫毛的粉黑蝴蝶结」社团卡
+      - 获取方式：完成成就「请勿投喂」
+    "),
+
     # 120. 弱子
     120 => Array('img'=>"img/nicktest.png",),
 
@@ -578,6 +585,7 @@ if(!defined('IN_GAME')) exit('Access Denied');
 
 require GAME_ROOT.'./gamedata/cache/fcg_titles.php';
 $title_valid[123] = Array('itm6'=>'「神骰叛军」称号卡','itmk6'=>'ZB','itme6'=>24,'itms6'=>1,'itmsk6'=>'v');
+$title_valid[124] = Array('itm6'=>'沾着猫毛的粉黑蝴蝶结','itmk6'=>'ZB','itme6'=>25,'itms6'=>1,'itmsk6'=>'v');
 $titles_list += Array(9201=>'电梯常客',9202=>'帧间行者',9203=>'温柔的见证者',9204=>'深渊来客',9205=>'阁楼居民');
 $title_desc += Array(
     9201=>Array('class'=>'tclan','title'=>'完成10局电梯行程。纯荣誉，无入场加成。'),

@@ -14,6 +14,7 @@ namespace revcombat
 	include_once GAME_ROOT.'./include/game/revattr_extra.func.php';
 	include_once GAME_ROOT.'./include/game/club23.func.php';
 	include_once GAME_ROOT.'./include/game/club24.func.php';
+	include_once GAME_ROOT.'./include/game/club25.combat.php';
 	include_once GAME_ROOT.'./include/game/fcg_skills.func.php';
 
 	# 战斗准备流程：
@@ -135,7 +136,12 @@ namespace revcombat
 		$att_dmg = rev_attack($pa,$pd,$active);
 		$att_result = 1;
 		# 存在暴毙标识：进攻方(pa)在进攻过程中未造成伤害就暴毙，可能是因为触发了武器直死。
-		if(isset($pa['c24_self_damage'])) {
+		if(!empty($pa['c25_net_settled'])) {
+			// 收网的机关已经扣血并按原制作者结算，不能再当作武器伤害扣一次。
+			$att_result = empty($pa['c25_net_stop']) ? 1 : 0;
+			if($att_result && (\ai93_hitrun($pa,$pd) || \ai93_react($pa,$pd))) $att_result = 0;
+		}
+		elseif(isset($pa['c24_self_damage'])) {
 			$pa['hp'] = max(0,$pa['hp']-$pa['c24_self_damage']);
 			unset($pa['c24_self_damage']);
 			if($pa['hp'] <= 0) $att_result = rev_combat_result($pd,$pa,1-$active);
@@ -162,7 +168,7 @@ namespace revcombat
 
 		if($att_result && !\fcg_battle_after_attack($pa,$pd,max(0,$att_dmg),$active)) $att_result=0;
 		# 检查是否循环打击流程：一些特殊技能可能需要此效果
-		if(!empty($att_result))
+		if(!empty($att_result) && empty($pa['c25_net_settled']))
 		{
 			$att_loop = attack_check_can_loop($pa,$pd,$active);
 			if($att_loop) goto att_loop_flag;
@@ -263,6 +269,8 @@ namespace revcombat
 
 		# 战斗准备事件中触发了跳过战斗标记，直接goto跳转到这个位置。
 		battle_finish_flag:
+		unset($pa['c25_net_input'],$pa['c25_net_settled'],$pa['c25_net_stop'],$pa['bskill_c25_net']);
+		unset($pd['c25_net_input'],$pd['c25_net_settled'],$pd['c25_net_stop'],$pd['bskill_c25_net']);
 		unset($pa['c24_verdict_done'],$pa['c24_rapid'],$pa['c24_selfshot'],$pd['c24_verdict_done'],$pd['c24_rapid']);
 		\fcg_battle_end($pa,$pd); \fcg_battle_end($pd,$pa);
 
@@ -395,6 +403,8 @@ namespace revcombat
 		global $now,$nosta,$log,$infobbs,$infinfo,$attinfo,$skillinfo,$wepimprate,$specialrate;
 		global $db,$tablepre;
 		
+		if(isset($pa['bskill_c25_net'])) return \club25_net_attack($pa,$pd);
+
 		unset($pa['fcg_critical']);
 		# 获取属性
 		$pa['ex_equip_keys'] = $pa['ex_wep_keys'] = Array();
@@ -645,6 +655,9 @@ namespace revcombat
 			if($c23_damage != $damage) $log .= "<span class=\"yellow\">修正后的总伤害：{$c23_damage}。</span><br>";
 			$damage = \fcg_defend_damage($pa,$pd,$c23_damage);
 			$damage = \club24_verdict($pa,$pd,$damage);
+			$cat_damage = \club25_weapon_damage($pa,$damage);
+			if($cat_damage != $damage) $log .= "<span class=\"yellow\">「暗业」让正面攻击只留下了{$cat_damage}点伤害。</span><br>";
+			$damage = $cat_damage;
 			//将造成的最终伤害登记在$pa['final_damage']内
 			$pa['final_damage'] = $damage;
 			//将伤害发送至进行状况

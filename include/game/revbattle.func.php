@@ -208,6 +208,30 @@ namespace revbattle
 			}
 			return;
 		}
+		if($command === 'bskill_c25_net') {
+			global $c25_net_item;
+			if((int)$club !== 25 || check_skill_unlock('c25_net',$data) || $hp <= 0 || $edata['pls'] != $pls || (int)$edata['pgroup'] !== (int)$pgroup) {
+				$log .= '只有可怜猫才能在当前敌人面前收网。<br>';
+				findenemy_rev($edata);
+				return;
+			}
+			if(isset($c25_net_item) && !is_string($c25_net_item)) {
+				$log .= '请选择一份现场机关。<br>';
+				findenemy_rev($edata);
+				return;
+			}
+			$net_input = $c25_net_item ?? '';
+			$net_found = false;
+			foreach(\club25_board($data) as $row) {
+				if($row['can_net'] && ($edata['type'] || $row['source'] === 'trap') && ($net_input === '' || $net_input === $row['key'])) { $net_found = true; break; }
+			}
+			if(!$net_found) {
+				$log .= '这里没有能借来收网的普通机关。<br>';
+				findenemy_rev($edata);
+				return;
+			}
+			$data['c25_net_input'] = $net_input;
+		}
 		if(!empty($message)) $data['message'] = $message;
 		# 上述流程没有拦截，直接进入标准战斗流程……可能会有问题？
 		\revcombat\rev_combat_prepare($data,$edata,1,$command);

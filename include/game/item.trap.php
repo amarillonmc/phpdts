@@ -7,6 +7,11 @@ if (! defined ( 'IN_GAME' )) {
 // Handle trap items
 function item_trap($itmn, &$data) {
 	global $log, $mode, $nosta, $db, $tablepre, $upexp;
+	if(($data['club'] ?? 0) == 25) {
+		include_once GAME_ROOT.'./include/game/club25.func.php';
+		club25_deploy($data,(string)$itmn,1);
+		return;
+	}
 	extract($data, EXTR_REFS);
 	
 	$itm = & ${'itm' . $itmn};

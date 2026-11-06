@@ -753,6 +753,26 @@ function check_club24_achievement($data)
 	if($c2) wheelchair_award_credits2($who,$c2);
 }
 
+// 只在胜利结算时检查；团队结算没有传入数据时，读取获胜者本人而非当前请求者。
+function check_club25_achievement($who,$winmode,$data=NULL)
+{
+	global $db,$tablepre,$titles_list;
+	if(!in_array((int)$winmode,Array(2,3,7),true) || !isset($titles_list[124])) return;
+	$ach = get_achlist(210);
+	if(empty($ach['lvl']) || check_achievement_rev(210,$who)) return;
+	if(empty($data)) {
+		$escwho = addslashes($who);
+		$result = $db->query("SELECT * FROM {$tablepre}players WHERE name='$escwho' AND type=0");
+		$data = $db->fetch_array($result);
+	}
+	if(empty($data) || $data['name'] !== $who || !isset($data['type']) || $data['type'] != 0 || $data['hp'] <= 0) return;
+	$para = get_clbpara($data['clbpara']);
+	if(empty($para['achvars']['c25_trap_hit']) || empty($para['achvars']['c25_food_hit'])) return;
+	update_achievement_rev(210,$who,1);
+	done_achievement_rev(210,1,$who);
+	get_title($ach['title'][0],$who);
+}
+
 //新版结局成就检测机制：加入团队胜利兼容
 //function check_end_achievement_rev($w,$m)
 function check_end_achievement_rev($w,$m,$data=NULL)
@@ -764,6 +784,7 @@ function check_end_achievement_rev($w,$m,$data=NULL)
 	$atotal = Array();
 	if(!empty($data['clbpara']) && !is_array($data['clbpara'])) $data['clbpara'] = get_clbpara($data['clbpara']);
 	check_club24_achievement($data);
+	check_club25_achievement($w,$m,$data);
 
 	//16. 最后幸存成就
 	if ($m==2)

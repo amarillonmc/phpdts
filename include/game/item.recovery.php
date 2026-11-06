@@ -3,6 +3,7 @@
 if (! defined ( 'IN_GAME' )) {
 	exit ( 'Access Denied' );
 }
+include_once GAME_ROOT.'./include/game/club25.items.php';
 
 // Handle stamina recovery items
 function item_recovery_stamina($itmn, &$data) {
@@ -16,6 +17,7 @@ function item_recovery_stamina($itmn, &$data) {
 	$itmsk = & ${'itmsk' . $itmn};
 
 	if ($sp < $msp) {
+		if(!club25_item_hide($itmn,$data)) return;
 		$oldsp = $sp;
 		if($club == 12){
 			$spup = round($itme*1.25);
@@ -66,6 +68,7 @@ function item_recovery_health($itmn, &$data) {
 	$itmsk = & ${'itmsk' . $itmn};
 
 	if ($hp < $mhp) {
+		if(!club25_item_hide($itmn,$data)) return;
 		$oldhp = $hp;
 		if($club == 12){
 			$hpup = round($itme*1.25);
@@ -224,6 +227,7 @@ function item_recovery_both($itmn, &$data) {
 	$itmsk = & ${'itmsk' . $itmn};
 
 	if (($hp < $mhp) || ($sp < $msp)) {
+		if(!club25_item_hide($itmn,$data)) return;
 		if($club == 12){
 			$bpup = round($itme*1.25);
 		}else{

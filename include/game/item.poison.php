@@ -3,6 +3,7 @@
 if (! defined ( 'IN_GAME' )) {
 	exit ( 'Access Denied' );
 }
+include_once GAME_ROOT.'./include/game/club25.func.php';
 
 // Handle poison items
 function item_poison($itmn, &$data) {
@@ -14,6 +15,8 @@ function item_poison($itmn, &$data) {
 	$itme = & ${'itme' . $itmn};
 	$itms = & ${'itms' . $itmn};
 	$itmsk = & ${'itmsk' . $itmn};
+	$itmpara = & ${'itmpara' . $itmn};
+	if(!club25_item_hide($itmn,$data)) return;
 
 	# 「贝爷」头衔效果：食用有毒补给时有一定概率不产生伤害并正常恢复
 	if (isset($nick) && $nick == 22 && diceroll(99) < 75) {
@@ -31,7 +34,7 @@ function item_poison($itmn, &$data) {
 			$itms--;
 			if ($itms <= 0) {
 				$log .= "<span class=\"red\">$itm</span>用光了。<br>";
-				$itm = $itmk = $itmsk = '';
+				$itm = $itmk = $itmsk = $itmpara = '';
 				$itme = $itms = 0;
 			}
 		}
@@ -45,14 +48,21 @@ function item_poison($itmn, &$data) {
 	} else {
 		$damage = round($itme);
 	}
-	if (strpos($inf, 'p') === false) {
+	$new_poison = strpos($inf,'p') === false;
+	if ($new_poison) {
 		$inf .= 'p';
+		unset($clbpara['c25_poison_owner']);
+		if(is_numeric($itmsk) && intval($itmsk) > 0) $clbpara['c25_poison_owner'] = intval($itmsk);
 	}
 
 	# 「种火IV」效果判定：
 	if(!empty($data['clbpara']['skill']) && in_array('fireseed4', $data['clbpara']['skill'])) {
 		$log .= "<span class='yellow'>「种火IV」使{$name}受到的所有伤害变为0！</span><br>";
 		$damage = 0;
+	}
+	if(intval($club) == 25) {
+		$cfg = club25_config();
+		$damage = intval(round($damage * $cfg['hazard_percent'] / 100));
 	}
 	# RuleSet钩子：模式技能可复用种火IV式的非战斗伤害免疫。
 	# RuleSet hook: mode skills may reuse Fireseed-IV-style non-combat immunity.
@@ -62,6 +72,12 @@ function item_poison($itmn, &$data) {
 	}
 
 	$hp -= $damage;
+	$poison_para = get_itmpara($data['itmpara'.$itmn] ?? '');
+	if(empty($poison_para['c25_poison_done']) && ($damage > 0 || $new_poison)) {
+		$poison_para['c25_poison_done'] = 1;
+		club25_item_write_para($data['itmpara'.$itmn],$poison_para);
+		club25_effect_reward($data,is_numeric($itmsk) ? intval($itmsk) : 0,'food',$damage,$new_poison,$itm);
+	}
 	if ($itmsk && is_numeric($itmsk)) {
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$itmsk'");
 		$wdata = $db->fetch_array($result);
@@ -71,31 +87,8 @@ function item_poison($itmn, &$data) {
 		$log .= "糟糕，<span class=\"yellow\">$itm</span>有毒！你受到了<span class=\"dmg\">$damage</span>点伤害！<br>";
 	}
 	if ($hp <= 0) {
-		if ($itmsk && is_numeric($itmsk)) {
-			$bid = $itmsk;
-			$result = $db->query("SELECT * FROM {$tablepre}players WHERE pid='$itmsk'");
-			$edata = $db->fetch_array($result);
-			//include_once GAME_ROOT . './include/state.func.php';
-			//$killmsg = death('poison', $wdata['name'], $wdata['type'], $itm);
-			//$log .= "你被<span class=\"red\">" . $wdata['name'] . "</span>毒死了！";
-			//if($killmsg){$log .= "<span class=\"yellow\">{$wdata['name']}对你说："{$killmsg}"</span><br>";}
-			if(!$edata['type'])
-			{
-				$w_log = "<span class=\"yellow\">{$name}误食了你下毒的补给<span class=\"red\">{$itm}</span>被毒死！</span><br>";
-				logsave($itmsk, $now, $w_log, 'b');
-			}
-			$edata['wep_name'] = $itm;
-			include_once GAME_ROOT.'./include/state.func.php';
-			$last = pre_kill_events($edata, $data, 0, 'poison');
-			if($itmsk == $data['pid']) $last = 0;
-			final_kill_events($edata, $data, 0, $last);
-			player_save($edata); //current_player_save();
-		} else {
-			//$bid = 0;
-			include_once GAME_ROOT . './include/state.func.php';
-			death('poison', '', 0, $itm);
-			$log .= "你被毒死了！";
-		}
+		club25_item_kill($data,is_numeric($itmsk) ? intval($itmsk) : 0,$itm,'poison');
+		if($hp <= 0) $log .= '你被毒死了！';
 	}
 	else
 	{
@@ -107,7 +100,7 @@ function item_poison($itmn, &$data) {
 		$itms --;
 		if ($itms <= 0) {
 			$log .= "<span class=\"red\">$itm</span>用光了。<br>";
-			$itm = $itmk = $itmsk = '';
+			$itm = $itmk = $itmsk = $itmpara = '';
 			$itme = $itms = 0;
 		}
 	}

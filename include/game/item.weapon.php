@@ -3,6 +3,7 @@
 if (! defined ( 'IN_GAME' )) {
 	exit ( 'Access Denied' );
 }
+include_once GAME_ROOT.'./include/game/club25.items.php';
 
 // Handle weapons and equipment
 function item_weapon($itmn, &$data) {
@@ -119,4 +120,5 @@ function item_weapon($itmn, &$data) {
 		${'itmpara' . $itmn} = $itmparat;
 		$log .= "卸下了<span class=\"red\">$itm</span>，装备了<span class=\"yellow\">{${$eqp}}</span>。<br>";
 	}
+	club25_item_trip($data,$eqp);
 }

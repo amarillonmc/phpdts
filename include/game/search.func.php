@@ -178,7 +178,8 @@ function move($moveto = 99,&$data=NULL)
 	}
 
 	$enemyrate =  \revbattle\calc_meetman_rate($data);
-	discover($enemyrate,$data);
+	$catstep = club25_take_catstep($data);
+	discover($enemyrate,$data,$catstep);
 	quest_try_assign($data);
 	club23_move_search($data);
 	# RuleSet钩子：仅在普通移动完整执行成功后登记动作。
@@ -497,6 +498,7 @@ function move_search_events(&$data,$act)
 		$data = &$pdata;
 	}
 	extract($data,EXTR_REFS);
+	if(strpos($inf,'p') === false) unset($clbpara['c25_poison_owner']);
 
 	if($act == 'move')
 	{
@@ -597,7 +599,14 @@ function move_search_events(&$data,$act)
 				if($damage > 0) $log .= "{$infwords[$inf_ky]}减少了<span class=\"red\">$damage</span>点生命！<br>";
 				elseif($damage < 0) $log .= "{$infwords[$inf_ky]}恢复了<span class=\"lime\">".abs($damage)."</span>点生命！<br>";
 				if($hp <= 0 ){
-					death($inf_ky.'move','',0,'',$data);
+					if($inf_ky === 'p' && !empty($clbpara['c25_poison_owner'])) {
+						include_once GAME_ROOT.'./include/game/club25.items.php';
+						$poison_owner = (int)$clbpara['c25_poison_owner'];
+						$poison_data = fetch_playerdata_by_pid($poison_owner);
+						if($poison_data) $poison_data['final_damage'] = $damage;
+						club25_item_kill($data,$poison_owner,'毒物','pmove',$poison_data);
+						if($poison_data && $poison_owner !== (int)$pid) player_save($poison_data);
+					} else death($inf_ky.'move','',0,'',$data);
 					return;
 				}
 			}
@@ -752,7 +761,7 @@ function move_search_events(&$data,$act)
 	return;
 }
 
-function discover($schmode = 0,&$data=NULL)
+function discover($schmode = 0,&$data=NULL,$catstep=false)
 {
 	//global $pdata;
 	//global $art,$pls,$now,$log,$mode,$command,$cmd,$event_obbs,$weather,$pls,$club,$pose,$tactic,$inf,$item_obbs,$enemy_obbs,$trap_min_obbs,$trap_max_obbs,$bid,$db,$tablepre,$gamestate,$corpseprotect,$action,$skills,$rp,$aidata;
@@ -782,7 +791,7 @@ function discover($schmode = 0,&$data=NULL)
 
 	include_once GAME_ROOT. './include/game/aievent.func.php';//AI事件
 	$aidata = false;//用于判断天然呆AI（冴冴这样的）是否已经来到你身后并且很生气
-	aievent(ai93_enabled() ? ai93_cfg('event_rate') : 20,$data);//触发AI事件的概率
+	if(!$catstep) aievent(ai93_enabled() ? ai93_cfg('event_rate') : 20,$data);//猫步只保护本次移动引起的遭遇
 	if(is_array($aidata))
 	{
 		//触发了AI追击事件
@@ -814,40 +823,25 @@ function discover($schmode = 0,&$data=NULL)
 
 	$trap_dice=diceroll(99);
 	// 计算陷阱“发现率”
-	if($trap_dice < $trap_max_obbs)
+	if(!$catstep && $trap_dice < $trap_max_obbs)
 	{
 		//echo "进入踩陷阱判定<br>";
 		$trapresult = $db->query("SELECT * FROM {$tablepre}maptrap WHERE pls = '$pls' ORDER BY itmk DESC");
-		$trpnum = $db->num_rows($trapresult);
-		//看地图上有没有陷阱
-		if($trpnum)
+		$traprows = array();
+		while($traprow = $db->fetch_array($trapresult)) $traprows[] = $traprow;
+		$fstrp = club25_pick_trap($data,$traprows,$trap_dice,$trap_max_obbs);
+		if($fstrp)
 		{
-			$fstrp = $db->fetch_array($trapresult);
-			//奇迹雷
-			$xtrpflag = $fstrp['itmk'] == 'TOc' ? true : false;
-			//计算 或不计算陷阱“触发率”：
-			$real_trap_obbs = $xtrpflag ? 100 : calc_real_trap_obbs($data,$trpnum);
-			//echo "realtrapobbs = {$real_trap_obbs}<br>";
-			if($trap_dice < $real_trap_obbs)
-			{
-				if(!$xtrpflag)
-				{
-					$itemno = rand(0,$trpnum-1);
-					$db->data_seek($trapresult,$itemno);
-					$fstrp = $db->fetch_array($trapresult);
-				}
-				//global $itm0,$itmk0,$itme0,$itms0,$itmsk0;
-				$itm0=$fstrp['itm'];
-				$itmk0=$fstrp['itmk'];
-				$itme0=$fstrp['itme'];
-				$itms0=$fstrp['itms'];
-				$itmsk0=$fstrp['itmsk'];
-				$itmpara0 = $fstrp['itmpara'];
-				$tid = $fstrp['tid'];
-				$db->query("DELETE FROM {$tablepre}maptrap WHERE tid='$tid'");
-				itemfind($data);
-				return;
-			}
+			$itm0=$fstrp['itm'];
+			$itmk0=$fstrp['itmk'];
+			$itme0=$fstrp['itme'];
+			$itms0=$fstrp['itms'];
+			$itmsk0=$fstrp['itmsk'];
+			$itmpara0 = $fstrp['itmpara'];
+			$tid = $fstrp['tid'];
+			$db->query("DELETE FROM {$tablepre}maptrap WHERE tid='$tid'");
+			itemfind($data);
+			return;
 		}
 	}
 	$mode_dice = rand(0,99);
@@ -920,6 +914,7 @@ function discover($schmode = 0,&$data=NULL)
 				}
 				else
 				{
+					if($catstep) continue;
 					# 略过决斗者
 					if ((!$edata['type'])&&($artk=='XX')&&(($edata['artk']!='XX')||($edata['art']!=$name))&&($gamestate<50)) continue;
 					if (($artk!='XX')&&($edata['artk']=='XX')&&($gamestate<50)) continue;

@@ -25,7 +25,7 @@ $ach_type = Array
 		'name' => '猎人成就',
 		'desc' => '<font color="olive">这里是与其他玩家战斗相关的成就。<br>
 		专注，战斗，取得胜利！<br></font>',
-		'ach' => Array(2,60,61,62,63,64,65,66,67,68,69),
+		'ach' => Array(2,60,61,62,63,64,65,66,67,68,69,210),
 	),
 	'battle' => Array(
 		'name' => '战斗成就',
@@ -93,6 +93,11 @@ $hidden_ach_type = Array
 # 成就登记列表：
 $ach_list = Array
 (
+	210 => Array(
+		'lvl'=>1, 'name'=>Array('请勿投喂'), 'title'=>Array('请勿投喂'),
+		'c1'=>Array(0), 'c2'=>Array(0),
+		'desc'=>Array('同一局中，自己布置的地雷与食用机关（毒补给或捉迷藏）分别实际伤害过敌对玩家，并活着取得胜利。不要求使用可怜猫社团。'),
+	),
 	209 => Array(
 		'lvl'=>1, 'name'=>Array('神骰叛军'), 'title'=>Array('神骰叛军'),
 		'c1'=>Array(233), 'c2'=>Array(100),

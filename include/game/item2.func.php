@@ -50,7 +50,13 @@ function poison($itmn = 0) {
 	elseif($art == '毒物说明书'){$itmk = substr_replace($itmk,'1',2,1);};
 	if($art == '妖精的羽翼') {$itmk = substr_replace($itmk,'H',0,1);$log .= "一种神秘的力量净化了毒药，你的毒药变成了解毒剂！";}
 	$itmsk = $pid;
-	if(strpos($itmk,'P') === 0) ai93_trigger(3);
+	if(strpos($itmk,'P') === 0) {
+		include_once GAME_ROOT.'./include/game/club25.func.php';
+		$para = get_itmpara($itmpara);
+		unset($para['c25_poison_done']);
+		club25_item_write_para($itmpara,$para);
+		ai93_trigger(3);
+	}
 	if($art == '妖精的羽翼') {$log .= "使用了 <span class=\"red\">$poison</span> ，<span class=\"yellow\">{${'itm'.$itmn}}</span> 被净化了！<br>";}
 	else {$log .= "使用了 <span class=\"red\">$poison</span> ，<span class=\"yellow\">{${'itm'.$itmn}}</span> 被下毒了！<br>";}
 	$poisons--;

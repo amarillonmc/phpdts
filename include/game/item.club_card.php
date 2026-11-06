@@ -22,6 +22,18 @@ function item_club_card($itmn, &$data) {
     $itmsk = & ${'itmsk' . $itmn};
     
     if ($itmk == 'ZB') { // 社团卡
+        if ($itme == 25) {
+            global $club_skillslist;
+            if ($club || $hp <= 0 || $type || empty($itms) || empty($club_skillslist[25])) {
+                $log .= '只有尚未选择称号的参战者，才能戴上这枚粉黑蝴蝶结。<br>';
+                return;
+            }
+            changeclub(25, $data);
+            $log .= '<span class="purple">你把沾着猫毛的粉黑蝴蝶结别好。口袋里的补给忽然笑了一声。</span><br>“别紧张呀，人家只是只可怜猫。<br>你脚下那个？送你的。你手里那个？也是送你的。<br>……怎么不吃呢？是不喜欢我吗？”<br>获得称号<span class="yellow">可怜猫</span>。打开副面板的「可怜猫」，开始改装、投喂和布场。<br><span class="red">普通武器伤害只保留30%，经验与熟练成长照常。</span><br>';
+            $itm = $itmk = $itmsk = ${'itmpara'.$itmn} = '';
+            $itme = $itms = 0;
+            return;
+        }
         if ($itme == 24) {
             global $club_skillslist;
             if ($club || $hp <= 0 || $type || empty($itms) || empty($club_skillslist[24])) {

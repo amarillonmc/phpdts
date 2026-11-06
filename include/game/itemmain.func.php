@@ -14,6 +14,7 @@ if(!defined('IN_GAME')) {
 
 include_once GAME_ROOT.'./include/game/aievent_minion.func.php';
 include_once GAME_ROOT.'./include/game/club24.func.php';
+include_once GAME_ROOT.'./include/game/club25.func.php';
 
 
 # 计算发现陷阱后的“触发率”
@@ -132,6 +133,8 @@ function calc_trap_damage(&$pa,$pd=NULL,$playerflag=0,$selflag=0)
 	}
 
 	$damage = round(rand(0,$pa['itme0']/2)+($pa['itme0']/2));
+	$trappara = get_itmpara($pa['itmpara0'] ?? '');
+	if(in_array($pa['itmk0'],array('TO','TN')) && !empty($trappara['c25_mine']['bonus'])) $damage += max(0,(int)$trappara['c25_mine']['bonus']);
 
 	# 防御姿态可以降低陷阱伤害
 	$damage = $pa['tactic'] == 2 ? round($damage * 0.75) : $damage;
@@ -151,6 +154,7 @@ function calc_trap_damage(&$pa,$pd=NULL,$playerflag=0,$selflag=0)
 # 计算触发陷阱后的伤害减免事件
 function check_trap_def_event(&$pa,$damage,$playerflag=0,$selflag=0)
 {
+	global $log;
 	# 奇迹雷、神力雷不能迎击
 	if($pa['itmk0'] == 'TOc' || $pa['itmk0'] == 'TO8' || $pa['itmk0'] == 'TOd') return $damage;
 	# 检查是否有迎击属性
@@ -274,12 +278,14 @@ function trap(&$data=NULL){
 			$ruleset_damage = ruleset_damage_immunity_hook($data,'trap',$damage);
 			if($ruleset_damage !== NULL) $damage = max(0,intval($ruleset_damage));
 		}
+		if((int)$club === 25) $damage = round($damage * club25_config()['hazard_percent'] / 100);
 
 		if($damage)
 		{
 			$tmp_club=$club;
 			$hp -= $damage;
 			$trapkill = false;
+			if(!empty($wdata)) club25_effect_reward($data,(int)$itmsk0,'trap',$damage,false,$itm0,$wdata);
 
 			if($playerflag)
 			{
@@ -292,6 +298,7 @@ function trap(&$data=NULL){
 			if(isset($trappara['ai93_inf']) && in_array($trappara['ai93_inf'],array('b','h','a','f','i','u','e','p','w'))) {
 				include_once GAME_ROOT.'./include/game/revattr.func.php';
 				if(\revattr\get_inf_rev($data,$trappara['ai93_inf'])) {
+					if($trappara['ai93_inf'] === 'p' && $itmsk0) $data['clbpara']['c25_poison_owner'] = (int)$itmsk0;
 					global $exdmginf;
 					$log .= '<span class="yellow">陷阱中弥漫的诡异物质使你'.$exdmginf[$trappara['ai93_inf']].'了！</span><br>';
 				}
@@ -361,6 +368,7 @@ function trap(&$data=NULL){
 				$w_log = "<span class=\"yellow\">{$name}触发了你设置的陷阱{$itm0}！</span><br>";
 				logsave ( $itmsk0, $now, $w_log ,'b');
 			}
+			if(!empty($wdata) && !$trapkill) player_save($wdata);
 		}
 		# 陷阱迎击
 		else
@@ -467,6 +475,12 @@ function itemfind(&$data=NULL) {
 	}else{
 		// 拿到手上时即重投，发现页的直接使用/合并也不能绕过。
 		club24_pickup($data,'pickup');
+		$c25_para = get_itmpara($itmpara0);
+		if(!empty($c25_para['c25_trip'])) {
+			include_once GAME_ROOT.'./include/game/revattr.func.php';
+			if(in_array('M',array_merge(\revattr\get_equip_ex_array($data),\revattr\get_wep_ex_array($data))))
+				$log .= '<span class="yellow">探雷装备提示：物品边缘藏着一根细线，拿取时似乎会把它绷紧。</span><br>';
+		}
 		if(CURSCRIPT == 'botservice')
 		{
 			echo "mode=itemfind\n";
@@ -522,6 +536,7 @@ function itemget(&$data=NULL,$source='pickup')
 			$itm0 = $itmk0 = $itmsk0 = $itmpara0 = '';
 			$itme0 = $itms0 = 0;
 			$mode = 'command';
+			club25_item_trip($data,'wep');
 			return;
 		}else{
 			for($i = 1;$i <= 6;$i++){
@@ -533,6 +548,7 @@ function itemget(&$data=NULL,$source='pickup')
 					$itme0 = $itms0 = 0;
 					$itmpara0 = '';
 					$mode = 'command';
+					club25_item_trip($data,$i);
 					return;
 				}
 			}
@@ -541,7 +557,7 @@ function itemget(&$data=NULL,$source='pickup')
 		$sameitem = array(); $scnt=0;
 		for($i = 1;$i <= 6;$i++){
 			global ${'itm'.$i},${'itmk'.$i},${'itme'.$i},${'itms'.$i};
-			if(${'itms'.$i}&&($itm0 == ${'itm'.$i})&&($itme0 == ${'itme'.$i})&&(preg_match('/^(H|P)/',${'itmk'.$i}))){
+			if(${'itms'.$i}&&($itm0 == ${'itm'.$i})&&($itme0 == ${'itme'.$i})&&(preg_match('/^(H|P)/',${'itmk'.$i}))&&club25_item_merge_allowed($itmpara0,${'itmpara'.$i})){
 				$sameitem[] = $i; $scnt++;
 			}
 		}
@@ -783,6 +799,7 @@ function itemadd(&$data=NULL)
 			$itm0 = $itmk0 = $itmsk0 = $itmpara0 = '';
 			$itme0 = $itms0 = 0;
 			$mode = 'command';
+			club25_item_trip($data,$i);
 			return;
 		}
 	}
@@ -826,6 +843,7 @@ function itemmerge($itn1,$itn2){
 	$itsk2 = & ${'itmsk'.$itn2};
 	$itpara2 = & ${'itmpara'.$itn2};
 	if(fcg_phantom($itpara1) || fcg_phantom($itpara2)) { $log.='幻影器物不能合并。<br>'; $mode='command'; return; }
+	if(!club25_item_merge_allowed($itpara1,$itpara2)) { $log.='这些物品里面藏着不同的小心思，暂时不能合并。<br>'; $mode='command'; return; }
 
 	if((empty($its1) && $its1 !== $nosta) || (empty($its2) && $its2 !== $nosta)) {
 		$log .= '请选择正确的物品进行合并！';
@@ -846,6 +864,7 @@ function itemmerge($itn1,$itn2){
 			$ite1 = $its1 = 0;
 			$log .= "你合并了<span class=\"yellow\">$it2</span>。";
 			$mode = 'command';
+			if($itn1 == 0) { global $pdata; club25_item_trip($pdata,$itn2); }
 			return;
 		} elseif(preg_match('/^(H|P)/',$itk1)&&preg_match('/^(H|P)/',$itk2)) {
 			if((strpos($itk1,'P') === 0)||(strpos($itk1,'P') === 0)){
@@ -864,6 +883,7 @@ function itemmerge($itn1,$itn2){
 
 			$log .= "你合并了 <span class=\"yellow\">$it2</span>。";
 			$mode = 'command';
+			if($itn1 == 0) { global $pdata; club25_item_trip($pdata,$itn2); }
 			return;
 		} elseif($itk1!=$itk2||$itsk1!=$itsk2) {
 			$log .= "<span class=\"yellow\">$it1</span>与<span class=\"yellow\">$it2</span>不是同类型同属性物品，不能合并！";

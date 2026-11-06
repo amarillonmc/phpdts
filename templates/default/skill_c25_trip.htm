@@ -1,0 +1,11 @@
+<!--{eval $skid = 'c25_trip'; $cskill = $cskills[$skid];}-->
+<tr>
+    <td class="b1" width="40"><span>{$cskill['name']}</span></td>
+    <td class="b3">
+        <!--{eval $cdesc = parse_skilldesc($skid,$uidata);}-->
+        <span class="skilldesc">{$cdesc}</span>
+        <!--{if empty($no_skill_input)}-->
+        <br><input type="button" value="打开可怜猫" onclick="club25Open();">
+        <!--{/if}-->
+    </td>
+</tr>

@@ -50,6 +50,7 @@ function item_cure($itmn, &$data) {
 		$log .= "服用了<span class=\"red\">$itm</span>……发生了什么？<br>";
 	}
 
+	if(strpos($inf,'p') === false) unset($clbpara['c25_poison_owner']);
 	if ($itms != $nosta) {
 		$itms --;
 	}

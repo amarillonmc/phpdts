@@ -852,3 +852,30 @@ function wheelchairCmd(command) {
 	postCmd('gamecmd', 'command.php', {data: {mode: command === 'wc_hunt_act' ? 'revcombat' : 'command', command: command}});
 }
 
+function club25Cmd(command, target) {
+	var select = document.getElementById('c25-target');
+	var count = document.getElementById('c25-count');
+	var kind = document.getElementById('c25-kind');
+	postCmd('gamecmd', 'command.php', {data: {
+		mode: 'club25', command: command,
+		c25_target: target === undefined ? (select ? select.value : '') : target,
+		c25_count: count ? count.value : 1,
+		c25_kind: kind ? kind.value : 'damage'
+	}});
+}
+
+function club25Open() {
+	var panel = document.getElementById('sliding-panel');
+	var button = document.getElementById('c25-tab-button');
+	if (!panel || !button) return;
+	panel.classList.add('open');
+	var sideButton = document.getElementById('side-panel-button');
+	if (sideButton) sideButton.style.display = 'none';
+	showTab('c25-tab', {target: button});
+	club25Cmd('board');
+}
+
+function club25Net(key) {
+	postCmd('gamecmd', 'command.php', {data: {mode: 'revcombat', command: 'bskill_c25_net', c25_net_item: key}});
+}
+

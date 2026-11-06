@@ -2710,6 +2710,7 @@ namespace revattr
 
 		if(strpos($pa['inf'],$infnm) === false)
 		{
+			if($infnm === 'p') unset($pa['clbpara']['c25_poison_owner']);
 			$pa['inf'] .= $infnm;
 			//$pa['combat_inf'] .= $infnm;
 			return 1;
@@ -2734,6 +2735,7 @@ namespace revattr
 		if(strpos($pa['inf'],$infnm) !== false)
 		{
 			$pa['inf'] = str_replace($infnm,"",$pa['inf']);
+			if($infnm === 'p') unset($pa['clbpara']['c25_poison_owner']);
 			//$pa['combat_inf'] .= $infnm;
 			return 1;
 		}

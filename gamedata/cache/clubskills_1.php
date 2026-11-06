@@ -2528,5 +2528,6 @@ $cskills = Array
 
 require config('club23skills',1);
 require config('club24skills',1);
+require config('club25skills',1);
 require config('fcgskills',1);
 ?>

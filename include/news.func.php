@@ -235,6 +235,8 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>在战斗中引爆代码片段而炸死了自己";
 			} elseif($news == 'death50'){
 				$newsinfo .= "<li><span class=\"rainbow\">{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>牺牲了自己，在虚拟幻境的天空中炸出了一片红霞</span>！";
+			} elseif($news == 'death51'){
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>刚准备吃下<span class=\"yellow\">$d</span>，就被<span class=\"purple\">$c</span>的幻影反咬一口，成为了补给的补给！";
 			} else {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因<span class=\"red\">不明原因</span>死亡";
 			}
@@ -254,6 +256,16 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 				$newsinfo .= "<span class=\"yellow\">【{$dname} 什么都没说就死去了】</span><br>\n";
 			}else{
 				$newsinfo .= "<span class=\"yellow\">【{$dname}：“{$e}”】</span><br>\n";
+			}
+		} elseif($news == 'c25_hide' || $news == 'c25_trip') {
+			$a = htmlspecialchars($a,ENT_QUOTES,'UTF-8');
+			$b = htmlspecialchars($b,ENT_QUOTES,'UTF-8');
+			$c = htmlspecialchars($c,ENT_QUOTES,'UTF-8');
+			$d = (int)$d;
+			if($news == 'c25_hide') {
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"purple\">{$a}准备吃下{$c}时，被{$b}藏在里面的幻影咬了一口，受到{$d}点伤害。果然，力是相互的！</span><br>\n";
+			} else {
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"purple\">{$a}伸手拿起{$c}，触发了{$b}留下的诡雷机关。“拿了我的东西，就要陪我玩哦？”</span><br>\n";
 			}
 		} elseif($news == 'poison') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"purple\">{$a}食用了{$b}下毒的{$c}</span><br>\n";
