@@ -342,6 +342,11 @@
         right: 0; /* 显示 */
     }
 
+    /* 带滤镜的页面中，右移的面板仍会撑宽窄屏视口；收起时从布局中隐藏。 */
+    .sliding-panel:not(.open) {
+        display: none;
+    }
+
     /* 面板头部样式 */
     .panel-header {
         display: flex;
@@ -713,6 +718,7 @@
                 !panel.contains(event.target) &&
                 !event.target.closest('[data-el-quest-open]') &&
                 !event.target.closest('[data-flash-quest-open]') &&
+                !event.target.closest('[data-c25-panel-open]') &&
                 event.target !== button) {
                 closePanel();
             }
