@@ -28,6 +28,8 @@ function club25_consume_slot(&$data,$slot,$amount)
 function club25_owned($item,$pid)
 {
 	$para = get_itmpara($item['itmpara'] ?? '');
+	// 撤回归最后一次布场的玩家；下毒和机关制作者仍用于原有伤害结算。
+	if(isset($para['c25_ground_owner'])) return (int)$para['c25_ground_owner'] === (int)$pid;
 	foreach(Array('c25_mine','c25_hide','c25_trip') as $key)
 		if(isset($para[$key]['owner']) && (int)$para[$key]['owner'] === (int)$pid) return true;
 	return preg_match('/^(TO|P)/',$item['itmk']) && is_numeric($item['itmsk']) && (int)$item['itmsk'] === (int)$pid;
@@ -94,6 +96,7 @@ function club25_deploy(&$data,$slot,$count=1)
 		if(!club25_food($item) && empty($para['c25_trip'])) { $log .= '先藏好幻影或装上诡雷，再把礼物留下吧。<br>'; return false; }
 		// 一堆只藏一次机关，投放时整堆搬运，不拆出多个同样的幻影。
 		$para['c25_ground_group'] = (int)$data['pgroup'];
+		$para['c25_ground_owner'] = (int)$data['pid'];
 		$item['itmpara'] = json_encode($para,JSON_UNESCAPED_UNICODE);
 		$item['pls'] = (int)$data['pls'];
 		$db->array_insert($tablepre.'mapitem',$item);

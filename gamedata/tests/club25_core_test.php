@@ -131,4 +131,34 @@ club25_effect_reward($victim,1,'food',10,false,'异步补给');
 c25_assert($players[1]['wd']===102 && $players[1]['clbpara']['achvars']['c25_food_hit']===1,'非当前来源玩家成长和成就实际保存');
 $players[1]['club']=0; $before=$players[1]['wd']; club25_effect_reward($victim,1,'trap',10,false,'传统雷');
 c25_assert($players[1]['wd']===$before && $players[1]['clbpara']['achvars']['c25_trap_hit']===1,'普通社团的传统地雷也可计成就但不获额外熟练');
+// 原生毒补给或他人加工的补给也能布场；撤回归投放者，伤害来源不改写。
+$db=new Club25GroundDB;
+foreach(Array(
+	Array('PH','',Array('custom'=>'kept'),3),
+	Array('PS1','2',Array('c25_ground_owner'=>3),2),
+	Array('PB2','2',Array('c25_hide'=>Array('owner'=>2,'damage'=>100),'c25_trip'=>Array('owner'=>2,'mode'=>'poison')), $nosta)
+) as $case) {
+	$data=c25_player(); c25_slot($data,0,'测试毒补给',$case[0],70,$case[3],$case[2],$case[1]);
+	c25_assert(club25_skill('deploy',$data,'0')===1 && $data['itms0']===0,'毒补给可从发现槽完整投放');
+	$food=end($db->rows['test_mapitem']); $key='i'.$food['iid'];
+	player_save($data); $data=fetch_playerdata_by_pid(1);
+	$rows=club25_board($data);
+	c25_assert(count($rows)===1 && $rows[0]['key']===$key && $rows[0]['owned'],'重新读取后，布场列表把毒补给识别为投放者自有');
+	c25_assert($food['itmsk']===$case[1],'投放不覆盖下毒者');
+	$para=get_itmpara($food['itmpara']);
+	foreach($case[2] as $field=>$value) if($field!=='c25_ground_owner') c25_assert($para[$field]===$value,'原有机关及物品参数保留');
+	$other=c25_player(2); $before=$db->rows;
+	c25_assert(!club25_skill('withdraw',$other,$key) && $db->rows===$before,'原下毒者或机关作者不能撤回别人重新投放的补给');
+	$away=$data; $away['pls']=3;
+	c25_assert(!club25_skill('withdraw',$away,$key) && $db->rows===$before,'投放者不能跨地点撤回毒补给');
+	$away=$data; $away['pgroup']=9;
+	c25_assert(!club25_skill('withdraw',$away,$key) && $db->rows===$before,'投放者不能跨地图组撤回毒补给');
+	$full=$data; for($i=1;$i<=6;$i++) c25_slot($full,$i,'占位','Y',1,1);
+	c25_assert(!club25_skill('withdraw',$full,$key) && $db->rows===$before,'背包满时保留整堆毒补给');
+	c25_assert(club25_skill('withdraw',$data,$key)===1,'投放者可撤回原生或他人加工的毒补给');
+	foreach(Array('itm','itmk','itme','itms','itmsk','itmpara') as $field) c25_assert($data[$field.'1']===$food[$field],'撤回完整保留'.$field);
+	player_save($data); $data=fetch_playerdata_by_pid(1); $before=$data;
+	c25_assert(!club25_skill('withdraw',$data,$key) && $data===$before && !$db->rows['test_mapitem'],'重复撤回不复制物品，重新读取后不再显示地面布置');
+}
+
 echo "All club25 core tests passed.\n";

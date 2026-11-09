@@ -35,8 +35,30 @@ if(($argv[1] ?? '') === 'templates') {
 		c25_resource_assert(strpos($html,'<script>bad</script>') === false && strpos($html,'&lt;script&gt;bad&lt;/script&gt;') !== false,'布场物品名转义');
 		c25_resource_assert(strpos($html,'&lt;place&gt;') !== false && strpos($html,'&lt;tag&gt;') !== false,'地点与分类转义');
 		c25_resource_assert(strpos($html,'value="撤回"') !== false && strpos($html,'value="收网"') !== false,'当地自有布置可撤回及收网');
+		preg_match_all('/data-c25-key="([^"]*)"/',$html,$keys);
+		c25_resource_assert($keys[1]===Array('i3','i3'),'撤回及侧栏收网按钮输出完整编号，不夹带模板编译换行');
 		$club=0; ob_start(); include template('club25_panel'); $html=ob_get_clean();
 		c25_resource_assert(trim($html) === '', '其他社团无可怜猫控制内容');
+		// 战斗模板由 findenemy_rev() 在函数作用域包含，只有 pdata，没有局部 club。
+		$render_battle = function($pdata,$edata) {
+			$w1='K'; $w2=''; $attinfo=Array('K'=>'斩击');
+			$cskills=Array('c25_net'=>Array('name'=>'收网'));
+			$battle_skills=Array(Array(0,'c25_net','选择现场机关'));
+			ob_start(); include template('battlecmd_rev'); return ob_get_clean();
+		};
+		$testrows=Array(
+			Array('key'=>'t1','name'=>'测试雷','kind'=>'地雷','source'=>'trap','can_net'=>true),
+			Array('key'=>'i2','name'=>'<毒补给>','kind'=>'有毒补给','source'=>'food','can_net'=>true),
+			Array('key'=>'t3','name'=>'外地雷','kind'=>'地雷','source'=>'trap','can_net'=>false)
+		);
+		$html=$render_battle(Array('club'=>25,'wep2s'=>0),Array('type'=>1));
+		c25_resource_assert(strpos($html,'name="c25_net_item"')!==false,'真实函数作用域中可怜猫仍显示收网选择框');
+		c25_resource_assert(strpos($html,'value="t1"')!==false && strpos($html,'value="i2"')!==false && strpos($html,'value="t3"')===false,'NPC战斗可选择当地雷或毒补给，排除不可用布置');
+		c25_resource_assert(strpos($html,'&lt;毒补给&gt;')!==false && strpos($html,'<毒补给>')===false,'收网下拉选项转义物品名');
+		$html=$render_battle(Array('club'=>25,'wep2s'=>0),Array('type'=>0));
+		c25_resource_assert(strpos($html,'value="t1"')!==false && strpos($html,'value="i2"')===false,'玩家战斗只列可引爆的雷，不提供强制喂食选项');
+		$html=$render_battle(Array('club'=>0,'wep2s'=>0),Array('type'=>1));
+		c25_resource_assert(strpos($html,'name="c25_net_item"')===false,'其他社团战斗界面不显示收网选择框');
 	} finally {
 		foreach($files as $file) {
 			@unlink($testroot.'templates/default/'.$file.'.htm'); @unlink(template($file));

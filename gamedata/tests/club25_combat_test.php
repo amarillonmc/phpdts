@@ -51,6 +51,11 @@ function fetch_playerdata_by_pid($pid) {
 	if(!isset($db->players[$pid])) return NULL;
 	$row = $db->players[$pid]; $row['clbpara'] = get_clbpara($row['clbpara']); return $row;
 }
+function fetch_playerdata_by_name($name) {
+	global $db;
+	foreach($db->players as $pid=>$row) if($row['name']===$name) return fetch_playerdata_by_pid($pid);
+	return NULL;
+}
 function player_save($data) {
 	global $db;
 	$row = array_intersect_key($data,c25c_player(0));
@@ -229,6 +234,16 @@ $a=c25c_player(1,25); $a['action']='enemy'; $a['bid']=2; $pdata=&$a; $b=c25c_pla
 c25c_assert(count($db->maptrap)==1 && $a['hp']==2000,'恶意数组输入被实际战斗指令入口拒绝且不消耗地雷');
 $c25_net_item='t999'; \revbattle\revbattle_prepare('bskill_c25_net');
 c25c_assert(count($db->maptrap)==1 && $a['hp']==2000,'不存在的收网编号在开战前拒绝，不招致反击');
+$db->maptrap=Array(1=>$cat,2=>c25c_mine(2)); $c25_net_item='t2';
+\revbattle\revbattle_prepare('bskill_c25_net');
+c25c_assert(isset($db->maptrap[1]) && !isset($db->maptrap[2]),'战斗指令按显式选择消耗第二枚雷，不退回自动选择');
+$a=c25c_player(1,25); $a['action']='enemy'; $a['bid']=2;
+$b=c25c_player(2); $b['type']=1; player_save($b);
+$food['iid']=2; $food['itms']=2; $food['itmpara']=json_encode(Array('c25_ground_owner'=>1,'c25_ground_group'=>0));
+$db->mapitem=Array(2=>$food); $c25_net_item='i2';
+\revbattle\revbattle_prepare('bskill_c25_net');
+$remaining=reset($db->mapitem);
+c25c_assert(isset($db->maptrap[1]) && $remaining['itms']==1 && $db->players[2]['hp']<2000,'NPC战斗指令按显式选择消耗毒补给，保留未选地雷');
 unset($pdata); unset($GLOBALS['pdata']);
 
 $p=c25c_player(2,25); $p['inf']='p'; $p['hp']=1; $p['clbpara']['c25_poison_owner']=3; $maker=c25c_player(3,25); player_save($maker);
