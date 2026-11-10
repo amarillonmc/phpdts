@@ -6,6 +6,7 @@
 		<form method="post" name="message_cmd" onsubmit="messages.php">
 			<input type="hidden" id="mode" name="mode" value="show">
 			<input type="hidden" id="extracmd" name="extracmd" value="">
+			<input type="hidden" name="reward_csrf" value="$message_csrf">
 			<div id="messages">
 				{template messages}
 			</div> 

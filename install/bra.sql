@@ -72,6 +72,7 @@ CREATE TABLE bra_users (
   `lastword` char(30) NOT NULL DEFAULT '',
   `u_templateid` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `paperdoll` text NULL,
+  `boons` mediumtext NULL,
   PRIMARY KEY  (uid),
   UNIQUE KEY username (username)
 
@@ -264,6 +265,34 @@ CREATE TABLE `bra_del_messages` (
   INDEX `SENDER` (`sender`)
   
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+-- 账户激活码与兑换记录跨局保留，删除邮件不解除使用限制。
+CREATE TABLE IF NOT EXISTS bra_activation_codes (
+  id int unsigned NOT NULL AUTO_INCREMENT,
+  code char(32) NOT NULL,
+  bound_uid mediumint unsigned NOT NULL DEFAULT 0,
+  per_account_once tinyint unsigned NOT NULL DEFAULT 1,
+  limited tinyint unsigned NOT NULL DEFAULT 0,
+  enabled tinyint unsigned NOT NULL DEFAULT 1,
+  title varchar(255) NOT NULL,
+  content text NOT NULL,
+  enclosure text NOT NULL,
+  created_at int unsigned NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY code (code)
+) ENGINE=MyISAM;
+
+CREATE TABLE IF NOT EXISTS bra_activation_uses (
+  id int unsigned NOT NULL AUTO_INCREMENT,
+  code_id int unsigned NOT NULL,
+  uid mediumint unsigned NOT NULL,
+  request_key char(32) NOT NULL,
+  mid int unsigned NOT NULL,
+  used_at int unsigned NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY request_key (uid, request_key),
+  KEY code_account (code_id, uid)
+) ENGINE=MyISAM;
+
 -- 跨局保留投稿、装备随机结果及审核状态，不放入会重建的 players/mapitem 表。
 CREATE TABLE bra_vncreation (
   id int unsigned NOT NULL AUTO_INCREMENT,

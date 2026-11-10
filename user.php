@@ -5,6 +5,7 @@ define('CURSCRIPT', 'user');
 require './include/common.inc.php';
 require './include/masterslave.func.php';
 require_once GAME_ROOT.'./include/paperdoll.func.php';
+require_once GAME_ROOT.'./include/activation.func.php';
 //require './include/user.func.php';
 
 // 形象编辑使用独立 JSON 请求，登录失效时也返回可读的 JSON 错误。
@@ -26,7 +27,23 @@ if(!isset($mode)){
 	$mode = 'show';
 }
 
-if($mode == 'paperdoll') {
+if($mode == 'redeem') {
+	$gamedata = array('innerHTML'=>array('activation_info'=>''));
+	try {
+		account_reward_post_check('activation', $_POST);
+		$gamedata['innerHTML']['activation_info'] = account_reward_html(activation_redeem($udata['uid'], $cpass, $_POST['activation_code'] ?? '', $_POST['activation_request'] ?? ''));
+		$gamedata['value']['activation_request'] = bin2hex(random_bytes(16));
+		$gamedata['value']['activation_code'] = '';
+	} catch(Throwable $e) {
+		$gamedata['innerHTML']['activation_info'] = account_reward_html($e->getMessage());
+		if(!($e instanceof InvalidArgumentException)) error_log('Activation: '.$e->getMessage());
+	}
+	ob_clean();
+	header('Content-Type: application/json; charset=utf-8');
+	header('Cache-Control: no-store');
+	echo compatible_json_encode($gamedata);
+	exit;
+} elseif($mode == 'paperdoll') {
 	header('Content-Type: application/json; charset=utf-8');
 	header('Cache-Control: no-store');
 	ob_clean();
@@ -189,6 +206,17 @@ if($mode == 'paperdoll') {
 	$nickinfo = titles_get_desc($nick);
 	$iconarray = get_iconlist($icon);
 	$select_icon = $icon;
+	$activation_csrf = hash_hmac('sha256', 'activation:'.$udata['uid'], (string)$cpass);
+	$activation_request = bin2hex(random_bytes(16));
+	$activation_queue = array(); $activation_info = '';
+	try {
+		account_boons_ensure_storage();
+		$boon_user = $db->fetch_array($db->query("SELECT boons FROM {$gtablepre}users WHERE uid=".(int)$udata['uid']));
+		foreach(account_boons_load($boon_user['boons']) as $boon) $activation_queue[] = account_reward_html(account_boon_describe($boon));
+	} catch(Throwable $e) {
+		$activation_info = '赐福队列暂时无法读取，请稍后重试。';
+		error_log('Account boons: '.$e->getMessage());
+	}
 	try {
 		paperdoll_ensure_storage();
 		$paperdoll_user = paperdoll_current_user($udata['uid'], $cpass);

@@ -18,26 +18,37 @@ if(!isset($mode)){
 	$mode = 'show';
 }
 
-$messages = init_messages($mode);
-
-$editflag = 0;
 $info = array();
+$message_csrf = hash_hmac('sha256', 'messages:'.$udata['uid'], (string)$cpass);
+$message_locked = false;
+try {
+	account_boons_ensure_storage();
+	if(in_array($mode, array('check','del','del2','recover'), true)) {
+		account_reward_post_check('messages', $_POST);
+		if(!$db->query("LOCK TABLES {$gtablepre}users WRITE, {$gtablepre}messages WRITE, {$gtablepre}del_messages WRITE", 'SILENT')) throw new RuntimeException('邮箱繁忙，请稍后重试。');
+		$message_locked = true;
+		$message_user = $db->fetch_array($db->query("SELECT * FROM {$gtablepre}users WHERE uid=".(int)$udata['uid']));
+		if(!$message_user || (int)$message_user['groupid'] <= 0 || !hash_equals((string)$message_user['password'], (string)$cpass)) throw new InvalidArgumentException('登录状态已失效，请重新登录。');
+		$udata = format_userdata($message_user);
+	}
+$messages = init_messages($mode);
+$editflag = 0;
 if($mode == 'del' || $mode == 'del2') {//删除
 	$dellist = array();
 	foreach(array_keys($messages) as $mi){
-		if(!empty(${'sl'.$mi})) $dellist[] = $mi;
+		if(!empty($_POST['sl'.$mi])) $dellist[] = $mi;
 	}
 	if(!empty($dellist)) $editflag = 1;
 }elseif($mode == 'check') {//查看并收取附件
 	$checklist = array();
 	foreach(array_keys($messages) as $mi){
-		if(!empty(${'sl'.$mi}) && !$messages[$mi]['checked'] && !empty($messages[$mi]['enclosure'])) $checklist[] = $mi;
+		if(!empty($_POST['sl'.$mi]) && !$messages[$mi]['checked'] && !empty($messages[$mi]['enclosure'])) $checklist[] = $mi;
 	}
 	if(!empty($checklist)) $editflag = 1;
 }elseif($mode == 'recover') {//恢复删除邮件
 	$reclist = array();
 	foreach(array_keys($messages) as $mi){
-		if(!empty(${'sl'.$mi})) $reclist[] = $mi;
+		if(!empty($_POST['sl'.$mi])) $reclist[] = $mi;
 	}
 	if(!empty($reclist)) {
 		$cost = $message_rec_cost * sizeof($reclist);
@@ -54,11 +65,8 @@ if($mode == 'del' || $mode == 'del2') {//删除
 
 if($editflag) {
 	if(!empty($checklist)){
-		message_check($checklist, $messages);
-		$checkc = implode(',',$checklist);
-		if(count($checklist) > 1)	$info[] = '已查收'.count($checklist).'条消息！';
-		else $info[] = '消息已查收！';
-		$db->query("UPDATE {$gtablepre}messages SET checked='1' WHERE mid IN ($checkc) AND receiver='$username'");
+		$checked_count = message_check($checklist, $messages);
+		if($checked_count) $info[] = '已查收'.$checked_count.'条消息！';
 	}
 	if(!empty($dellist)){
 		$ins_arr = array();
@@ -112,6 +120,15 @@ if('show' == $mode){
 			break;
 		}
 	}
+}
+
+} catch(Throwable $e) {
+	$info[] = account_reward_html($e->getMessage());
+	if(!($e instanceof InvalidArgumentException)) error_log('Messages: '.$e->getMessage());
+	if($mode !== 'show') $mode = 'showmail';
+	$messages = init_messages($mode);
+} finally {
+	if($message_locked) $db->query('UNLOCK TABLES');
 }
 
 $messages = message_disp($messages);

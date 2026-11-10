@@ -1,0 +1,31 @@
+<div style="text-align:left;line-height:2">
+	<label>邮件标题 <input type="text" name="stitle" size="35" maxlength="100" value="$reward_form['stitle']"></label><br>
+	<label>邮件正文 <textarea name="scontent" rows="2" cols="65" maxlength="3000">$reward_form['scontent']</textarea></label><br>
+	<label>积分 <input type="number" name="reward_credits" min="0" max="2147483647" value="$reward_form['reward_credits']"></label>
+	<label>切糕 <input type="number" name="reward_credits2" min="0" max="8388607" value="$reward_form['reward_credits2']"></label><br>
+	<label>头衔编号 <input type="text" name="reward_titles" size="40" value="$reward_form['reward_titles']" placeholder="多个编号用逗号分隔"></label><br>
+	<label>成就编号 <input type="text" name="reward_achievements" size="40" value="$reward_form['reward_achievements']" placeholder="编号，或 编号:阶段；多个用逗号分隔"></label>
+	<div>成就默认授予完成阶段，已有更高阶段会保留；附带的积分和头衔请在上方另行填写。重复头衔沿用邮件的切糕补偿。</div>
+	<details><summary>一次性赐福（可选）</summary>
+		<label>赐福名称 <input type="text" name="boon_name" maxlength="40" value="$reward_form['boon_name']"></label><br>
+		<!--{loop $reward_boon_stats $key $label}-->
+		<!--{eval $field = 'boon_'.$key;}-->
+		<label style="display:inline-block;margin-right:12px">$label + <input type="number" name="$field" min="0" value="$reward_form[$field]" style="width:100px"></label>
+		<!--{/loop}-->
+		<div>各项加成可组合。生命、体力上限增加时同步增加当前值。领取邮件后排队，每次传统大房间战斗入场只使用一份，效果持续该次角色生涯。独立入场模式保留赐福。</div>
+	</details>
+	<details><summary>旧附件填写方式</summary>
+		<input type="text" name="senclosure" size="75" maxlength="4000" value="$reward_form['senclosure']">
+		<div>例如 getcredits_100;getqiegao_20;gettitle_1;getachievement_0_1，可与上方奖励合用。</div>
+	</details>
+	<details><summary>查看头衔及成就编号</summary>
+		<div style="max-height:240px;overflow:auto">
+		<!--{loop $reward_catalog['titles'] $id $label}-->
+		<div>头衔 {$id}：<!--{eval echo account_reward_html($label);}--></div>
+		<!--{/loop}-->
+		<!--{loop $reward_catalog['achievements'] $id $achievement}-->
+		<div>成就 {$id}（共 $achievement['lvl'] 阶段）：<!--{eval echo account_reward_html(implode(' / ', $achievement['name']));}--></div>
+		<!--{/loop}-->
+		</div>
+	</details>
+</div>

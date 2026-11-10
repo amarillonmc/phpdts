@@ -5,6 +5,11 @@ if(!defined('IN_ADMIN')) {
 
 // 引入主从同步功能
 include_once './include/masterslave.func.php';
+require_once GAME_ROOT.'./include/account_rewards.func.php';
+$reward_csrf = hash_hmac('sha256', 'admin-rewards:'.$udata['uid'], (string)$cpass);
+$reward_form = account_reward_form_values($_POST);
+$reward_boon_stats = account_boon_stats();
+$reward_catalog = account_reward_catalog();
 if(!isset($urcmd)){$urcmd = '';}
 if($urcmd){
 	if(!isset($start)){$start = 0;}
@@ -78,12 +83,25 @@ if($urcmd == 'ban' || $urcmd == 'unban' || $urcmd == 'del' || $urcmd == 'sendmes
 		if($operlist){
 			if($urcmd == 'sendmessage'){
 				include_once './include/messages.func.php';
-				foreach($operlist as $receiver){
-					message_create($receiver, $stitle, $scontent, $senclosure, $from='sys');
+				$sent = array();
+				try {
+					account_reward_post_check('admin-rewards', $_POST);
+					$stitle = $_POST['stitle'] ?? ''; $scontent = $_POST['scontent'] ?? '';
+					list($mail_title, $mail_content) = account_reward_mail_text($stitle, $scontent);
+					$senclosure = account_reward_encode(account_reward_from_form($_POST));
+					foreach($operlist as $receiver) {
+						message_create($receiver, $mail_title, $mail_content, $senclosure);
+						$sent[] = $receiver;
+					}
+				} catch(Throwable $e) {
+					$cmd_info .= account_reward_html($e->getMessage()).'<br>';
+					if(!($e instanceof InvalidArgumentException)) error_log('Admin messages: '.$e->getMessage());
 				}
-				$opernames = implode(',',($operlist));
-				$cmd_info .= " 给帐户 $opernames 发送了邮件 。<br>";
-				adminlog($urcmd.'ur',$opernames,json_encode($stitle,$scontent,$senclosure));
+				if($sent) {
+					$opernames = implode(',', $sent);
+					$cmd_info .= '已给账户 '.account_reward_html($opernames).' 发送邮件。<br>';
+					adminlog('sendmessageur', $opernames, json_encode(array($stitle,$scontent,$senclosure), JSON_UNESCAPED_UNICODE));
+				}
 			}elseif($urcmd == 'reverse_migrate'){
 				// 处理反向迁移
 				if(!is_reverse_migration_mode()) {

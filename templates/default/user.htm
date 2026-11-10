@@ -45,6 +45,21 @@
 		<input type="reset" id="reset" name="reset" value="{lang reset}">
 	</div>
 </form>
+	<div style="margin:20px auto;max-width:850px;text-align:left">
+		<form method="post" action="user.php" name="activation_form" id="activation_form" onsubmit="postCmd('activation_form','user.php');return false;">
+			<input type="hidden" name="mode" value="redeem">
+			<input type="hidden" name="reward_csrf" value="$activation_csrf">
+			<input type="hidden" name="activation_request" id="activation_request" value="$activation_request">
+			<label>激活码 <input type="text" name="activation_code" id="activation_code" maxlength="80" size="40" autocomplete="off" required></label>
+			<input type="submit" value="兑换奖励">
+		</form>
+		<div id="activation_info" class="yellow">$activation_info</div>
+		<div>奖励将发送至<a href="messages.php">站内邮箱</a>，查收附件后到账。</div>
+		<p>待用赐福：按领取顺序，每次传统大房间战斗入场自动使用一份。小房间，以及种火卡牌、AN:OTHER、帧间电梯、闪回等独立入场模式均会保留赐福。</p>
+		<!--{if $activation_queue}-->
+		<ol><!--{loop $activation_queue $boon_text}--><li>$boon_text</li><!--{/loop}--></ol>
+		<!--{else}--><div>暂无待用赐福。</div><!--{/if}-->
+	</div>
 	{template user_paperdoll}
 	<!--{if $show_sync_button && !$show_reverse_migrate_button}-->
 	<div style="margin-top: 20px; padding: 15px; border: 2px solid #FFD700; background-color: #FFFACD; border-radius: 5px;">

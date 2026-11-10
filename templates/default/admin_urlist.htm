@@ -2,6 +2,7 @@
 <form method="post" name="urpage" onsubmit="admin.php">
 	<input type="hidden" name="mode" value="urlist">
 	<input type="hidden" id="urcmd" name="urcmd" value="list">
+	<input type="hidden" name="reward_csrf" value="$reward_csrf">
 	<!--{if $pagecmd=='check'}-->
 		<input type="hidden" name="pagecmd" value="check">
 		<input type="hidden" name="urorder" value="$urorder">
@@ -123,12 +124,7 @@
 		<tr>
 			<td colspan=2></td>
 			<td colspan=12 style="text-align:center;">
-				标题：
-				<input type="text" name="stitle" size="6" maxlength="20" value="发放奖励">&nbsp;&nbsp;&nbsp;
-				正文：
-				<input type="text" name="scontent" size="20" maxlength="30" value="您获得了奖励，请查收！">&nbsp;&nbsp;&nbsp;
-				附件：
-				<input type="text" name="senclosure" size="20" maxlength="30" value="getqiegao_0;gettitle_0">&nbsp;&nbsp;&nbsp;
+				{template admin_reward_fields}
 				<input type="submit" name="submit" value="发送站内邮件" onclick="$('urcmd').value='sendmessage'">
 			</td>
 		</tr>

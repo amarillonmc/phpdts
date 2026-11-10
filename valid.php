@@ -350,7 +350,20 @@ if($mode == 'enter') {
 	fcg_skills_initialize($ndata,$udata);
 
 	$ndata = player_format_with_db_structure($ndata);
-	if(!empty($ndata)) $db->array_insert("{$tablepre}players", $ndata);
+	if(!empty($ndata)) {
+		$db->array_insert("{$tablepre}players", $ndata);
+		$ndata['pid'] = (int)$db->insert_id();
+	}
+	$entry_boon_notice = '';
+	try {
+		$entry_boon_notice = account_boon_enter($udata['uid'], $ndata);
+		foreach(array_merge(array_keys(account_boon_stats()), array('hp','sp','clbpara')) as $key) {
+			if(isset($ndata[$key])) $$key = $key === 'clbpara' ? get_clbpara($ndata[$key]) : $ndata[$key];
+		}
+	} catch(Throwable $e) {
+		$entry_boon_notice = '赐福暂未生效，已保留至下次入场。';
+		error_log('Entry boon: '.$e->getMessage());
+	}
 	foreach($wheelchair_depot_items as $wheelchair_item) {
 		$wheelchair_item['itmpara'] = json_encode($wheelchair_item['itmpara'],JSON_UNESCAPED_UNICODE);
 		$wheelchair_item['itmowner'] = $name;
@@ -394,6 +407,7 @@ if($mode == 'enter') {
 			"llmAssist" => $llm_assist,
 			"assistSkills" => $llm_assist ? array_keys($wheelchair_skills) : array(),
 			"assistNotice" => $wheelchair_entry_text,
+			"boonNotice" => $entry_boon_notice,
 		));
 	} else {
 		include template('validover');

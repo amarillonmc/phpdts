@@ -1,0 +1,37 @@
+<form method="post" action="admin.php">
+	<input type="hidden" name="mode" value="activation">
+	<input type="hidden" name="activation_action" value="generate">
+	<input type="hidden" name="reward_csrf" value="$reward_csrf">
+	<table class="admin">
+		<tr><th colspan="2">生成激活码</th></tr>
+		<tr><td>绑定登录账户</td><td><input type="text" name="bound_username" maxlength="15"> 留空则任何账户都可兑换。绑定依据账户编号和登录名，不使用密码。</td></tr>
+		<tr><td>生成种子</td><td><input type="text" name="seed" size="70" minlength="16" maxlength="200" value="$activation_seed"><br>默认已随机生成。种子请保密；同一种子及账户可重现同一批代码。</td></tr>
+		<tr><td>数量</td><td><input type="number" name="count" min="1" max="200" value="1"> 每批最多 200 个。</td></tr>
+		<tr><td>每个账户</td><td><select name="per_account_once"><option value="1">只能兑换一次</option><option value="0">可以多次兑换</option></select></td></tr>
+		<tr><td>全服限制</td><td><select name="limited"><option value="0">不限制总次数</option><option value="1">限量：被兑换一次后立即失效</option></select><br>限量限制优先；绑定账户和以上选项可任意组合。</td></tr>
+		<tr><td colspan="2">{template admin_reward_fields}</td></tr>
+		<tr><td colspan="2"><input type="submit" value="生成激活码"></td></tr>
+	</table>
+</form>
+<!--{if $generated_codes}-->
+<p>本次代码（每行一个）：</p>
+<textarea rows="8" cols="45" readonly><!--{loop $generated_codes $code}-->$code
+<!--{/loop}--></textarea>
+<!--{/if}-->
+<table class="admin">
+	<tr><th>最近 100 个代码</th><th>账户</th><th>规则</th><th>奖励</th><th>已兑换</th><th>状态</th></tr>
+	<!--{loop $activation_rows $row}-->
+	<tr>
+		<td>$row['code']</td><td>$row['bound_name']</td>
+		<td><!--{if $row['per_account_once']}-->每账户一次<!--{else}-->可重复<!--{/if}--><!--{if $row['limited']}-->；全服一次<!--{/if}--></td>
+		<td>$row['reward_text']</td><td>$row['used_count']</td>
+		<td><!--{if !$row['enabled']}-->已停用<!--{elseif $row['limited'] && $row['used_count']}-->已失效<!--{else}-->
+			<form method="post" action="admin.php">
+				<input type="hidden" name="mode" value="activation"><input type="hidden" name="activation_action" value="disable">
+				<input type="hidden" name="reward_csrf" value="$reward_csrf"><input type="hidden" name="code_id" value="$row['id']">
+				<input type="submit" value="停用">
+			</form>
+		<!--{/if}--></td>
+	</tr>
+	<!--{/loop}-->
+</table>
