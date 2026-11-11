@@ -21,6 +21,7 @@ $event_bgm = Array
 	'christracks' => Array('christtracks'),
 	'altchristracks' => Array('altchristracks'),
 	'rixolamaltracks' => Array('rixolamaltracks'),
+	'sunisshiningtracks' => Array('sunisshiningtracks'),
 );
 
 # 会播放BGM的地图（优先级高——会覆盖默认曲集）
@@ -58,7 +59,8 @@ $bgmbook = Array
 	'fleurtracks' => Array(75,76,77,78,79,80,81,82,83),
 	'christracks' => Array(84,85,86,87,88,89,90,91,92,93,94,95,96),
 	'altchristracks' => Array(97,98,99,100,101,102,103,104,105,106,107,108,109),
-	'rixolamaltracks' => Array(110,111,112,113,114,115,116,117,118,119,120,121,122,123)
+	'rixolamaltracks' => Array(110,111,112,113,114,115,116,117,118,119,120,121,122,123,132),
+	'sunisshiningtracks' => Array(124,125,126,127,128,129,130,131),
 );
 
 # 所有bgm编号清单：
@@ -685,8 +687,48 @@ $bgmlist = Array
 		'type' => 'audio/mpeg',		
 	),
 	124 => Array(
-		'name' => '',
-		'url' => '',
+		'name' => 'Axwell Λ Ingrosso - Sun Is Shining',
+		'url' => 'https://help.dts.gay/media/Sun%20Is%20Shining.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	125 => Array(
+		'name' => 'Axwell Λ Ingrosso - Sun Is Shining Extended Mix',
+		'url' => 'https://help.dts.gay/media/Sun%20Is%20Shining_Extended%20Mix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	126 => Array(
+		'name' => 'Sun Is Shining Band of Gold Mix',
+		'url' => 'https://help.dts.gay/media/Sun%20Is%20Shining_Band%20Of%20Gold.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	127 => Array(
+		'name' => 'Sun Is Shining Lavern Remix',
+		'url' => 'https://help.dts.gay/media/Sun%20Is%20Shining_Lavern%20Remix_Extended%20Mix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	128 => Array(
+		'name' => 'Sun Is Shining M22 Remix',
+		'url' => 'https://help.dts.gay/media/Sun%20Is%20Shining_M-22%20Remix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	129 => Array(
+		'name' => 'Sun Is Shining Marcus and Years Remix',
+		'url' => 'https://help.dts.gay/media/Sun%20Is%20Shining_Marcus%20Schossow_Years%20Remix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	130 => Array(
+		'name' => 'Sun Is Shining R3hab Remix',
+		'url' => 'https://help.dts.gay/media/Sun%20Is%20Shining_R3hab%20Remix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	131 => Array(
+		'name' => 'Sun Is Shining W&W Remix',
+		'url' => 'https://help.dts.gay/media/Sun%20Is%20Shining_W&W%20Remix.mp3',
+		'type' => 'audio/mpeg',		
+	),
+	132 => Array(
+		'name' => 'Turbo - Moonlight Shadow - Eurobeat Remix',
+		'url' => 'https://res.dts.gay/BGM/Tracks/rixolamaltracks/moonlight%20shadow%20eurobeat%20remix.mp3',
 		'type' => 'audio/mpeg',		
 	),
 );

@@ -112,7 +112,8 @@ namespace revcombat
 		$pa['club23_memory_hit'] = $pd['club23_memory_hit'] = false;
 		$att_result = 1;
 		$def_dmg = 0;
-		$att_dmg = \club23_death_damage($pa,$pd);
+		$sis_pvp_peace = empty($pa['type']) && empty($pd['type']) && !empty($GLOBALS['gamevars']['sunisshining'][$pa['pls']]);
+		$att_dmg = $sis_pvp_peace ? 0 : \club23_death_damage($pa,$pd);
 		if($att_dmg > 0)
 		{
 			$pd['hp'] = 0;
@@ -120,7 +121,7 @@ namespace revcombat
 			$att_result = rev_combat_result($pa,$pd,$active);
 			goto combat_damage_finished;
 		}
-		$def_dmg = \club23_death_damage($pd,$pa);
+		$def_dmg = $sis_pvp_peace ? 0 : \club23_death_damage($pd,$pa);
 		if($def_dmg > 0)
 		{
 			$pa['hp'] = 0;
@@ -458,6 +459,10 @@ namespace revcombat
 		if(\club23_is_memory($pa)) {
 			$damage=\club23_memory_attack($pa,$pd,$active);
 			$damage=\fcg_defend_damage($pa,$pd,$damage);
+			if(empty($pa['type']) && empty($pd['type']) && !empty($GLOBALS['gamevars']['sunisshining'][$pa['pls']])) {
+				$damage = 0;
+				$log .= '<span class="lime">《Sun Is Shining》的温暖阳光化解了敌意，玩家之间的伤害归零！</span><br>';
+			}
 			$pa['final_damage']=$damage;
 			return $damage;
 		}
@@ -658,6 +663,10 @@ namespace revcombat
 			$cat_damage = \club25_weapon_damage($pa,$damage);
 			if($cat_damage != $damage) $log .= "<span class=\"yellow\">「暗业」让正面攻击只留下了{$cat_damage}点伤害。</span><br>";
 			$damage = $cat_damage;
+			if(empty($pa['type']) && empty($pd['type']) && !empty($GLOBALS['gamevars']['sunisshining'][$pa['pls']])) {
+				$damage = 0;
+				$log .= '<span class="lime">《Sun Is Shining》的温暖阳光化解了敌意，玩家之间的伤害归零！</span><br>';
+			}
 			//将造成的最终伤害登记在$pa['final_damage']内
 			$pa['final_damage'] = $damage;
 			//将伤害发送至进行状况

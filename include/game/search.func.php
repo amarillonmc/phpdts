@@ -498,7 +498,7 @@ function move_search_events(&$data,$act)
 		$data = &$pdata;
 	}
 	extract($data,EXTR_REFS);
-	if(strpos($inf,'p') === false) unset($clbpara['c25_poison_owner']);
+	if(is_array($clbpara) && strpos($inf,'p') === false) unset($clbpara['c25_poison_owner']);
 
 	if($act == 'move')
 	{
@@ -576,6 +576,46 @@ function move_search_events(&$data,$act)
 			death('event', '', 0, '【きみは帰る場所】', $data);
 			return;
 		}
+	}
+
+	# 《Sun Is Shining》阳光圣域探索回复与净化
+	if ($act == 'search' && empty($type) && !empty($gamevars['sunisshining'][$pls])) {
+		$sis_extra = max(0, min(6, intval($gamevars['sunisshining'][$pls]['extra'] ?? 0)));
+		$sis_rate = 0.15 + 0.05 * $sis_extra;
+		$sis_min = 30 + 15 * $sis_extra;
+		$hp_gain = max($sis_min, (int)round($mhp * $sis_rate));
+		$sp_gain = max($sis_min, (int)round($msp * $sis_rate));
+		if (empty($clbpara['kimi_no_hp'])) {
+			if ($sis_extra >= 6) {
+				$hp += $hp_gain;
+			} elseif ($hp < $mhp) {
+				$hp = min($mhp, $hp + $hp_gain);
+			}
+		}
+		if ($sis_extra >= 6) {
+			$sp += $sp_gain;
+		} elseif ($sp < $msp) {
+			$sp = min($msp, $sp + $sp_gain);
+		}
+		$sis_cleanse = '';
+		if ($sis_extra >= 4) {
+			if (!empty($inf)) {
+				$inf = '';
+				$sis_cleanse .= '，全异常状态得以净化';
+			}
+			if ($rp > 0) {
+				$rp = max(0, $rp - 15);
+				$sis_cleanse .= '，RP减轻了15点';
+			}
+		} elseif ($sis_extra >= 2 && !empty($inf)) {
+			$inf_len = strlen($inf);
+			$rm_idx = rand(0, $inf_len - 1);
+			$rm_ch = $inf[$rm_idx];
+			$inf = str_replace($rm_ch, '', $inf);
+			$sis_cleanse .= '，身上的一处异常状态在阳光下消散了';
+		}
+		$over_tag = $sis_extra >= 6 ? '超量' : '';
+		$log .= "<span class=\"lime\">【Sun Is Shining】温暖的阳光照耀着你，{$over_tag}恢复了<span class=\"yellow\">{$hp_gain}</span>点生命与<span class=\"yellow\">{$sp_gain}</span>点体力{$sis_cleanse}！</span><br>";
 	}
 
 	if($inf)
@@ -791,7 +831,7 @@ function discover($schmode = 0,&$data=NULL,$catstep=false)
 
 	include_once GAME_ROOT. './include/game/aievent.func.php';//AI事件
 	$aidata = false;//用于判断天然呆AI（冴冴这样的）是否已经来到你身后并且很生气
-	if(!$catstep) aievent(ai93_enabled() ? ai93_cfg('event_rate') : 20,$data);//猫步只保护本次移动引起的遭遇
+	if(!$catstep && empty($GLOBALS['gamevars']['sunisshining'][$pls])) aievent(ai93_enabled() ? ai93_cfg('event_rate') : 20,$data);//猫步与阳光圣域保护本次行动不招来AI追击
 	if(is_array($aidata))
 	{
 		//触发了AI追击事件
@@ -915,6 +955,17 @@ function discover($schmode = 0,&$data=NULL,$catstep=false)
 				else
 				{
 					if($catstep) continue;
+					if(!empty($GLOBALS['gamevars']['sunisshining'][$pls]) && !empty($edata['type'])) {
+						include_once GAME_ROOT.'./include/game/song.inc.php';
+						$sis_dest = song_sis_non_sanctuary_places($pls);
+						if($sis_dest) {
+							$edata['pls'] = $sis_dest[array_rand($sis_dest)];
+							$edata['bid'] = 0;
+							$edata['action'] = '';
+							player_save($edata);
+						}
+						continue;
+					}
 					# 略过决斗者
 					if ((!$edata['type'])&&($artk=='XX')&&(($edata['artk']!='XX')||($edata['art']!=$name))&&($gamestate<50)) continue;
 					if (($artk!='XX')&&($edata['artk']=='XX')&&($gamestate<50)) continue;
@@ -1087,9 +1138,27 @@ function focus_item(&$data=NULL,$id=NULL,$any_pls=false)
 		} else $result = $db->query("SELECT * FROM {$tablepre}mapitem WHERE pls = '$pls'");
 		$itemnum = $db->num_rows($result);
 		if($itemnum <= 0) return 0;
-		$itemno = rand(0,$itemnum-1);
-		$db->data_seek($result,$itemno);
-		$mi=$db->fetch_array($result);
+		$mi = null;
+		include_once GAME_ROOT.'./include/game/song.inc.php';
+		if(song_sis_panel_visible($data) && rand(1,100) <= 35) {
+			$slip_rows = Array();
+			for($si=0;$si<$itemnum;$si++) {
+				$db->data_seek($result,$si);
+				$cand = $db->fetch_array($result);
+				if(!empty($cand['itms']) && strpos((string)$cand['itmk'],'Y') === 0 && song_sis_can_use_slip($cand['itm'],$clbpara)) {
+					$slip_rows[] = $cand;
+				}
+			}
+			if($slip_rows) {
+				$mi = $slip_rows[array_rand($slip_rows)];
+				$log .= '<span class="yellow">金色阳光的指引让你在角落里注意到了一张纸条！</span><br>';
+			}
+		}
+		if(!$mi) {
+			$itemno = rand(0,$itemnum-1);
+			$db->data_seek($result,$itemno);
+			$mi=$db->fetch_array($result);
+		}
 	}
 	$itm0=$mi['itm'];
 	unset($clbpara['c24_pickup']);

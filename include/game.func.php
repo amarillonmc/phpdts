@@ -153,7 +153,7 @@ function init_bgm($force_update=0)
 	if(isset($clbpara['event_bgmbook']))
 	{
 		# 检查是否需要更新播放列表
-		if(array_diff($clbpara['bgmbook'],$clbpara['event_bgmbook']))
+		if(empty($clbpara['bgmbook']) || !is_array($clbpara['bgmbook']) || array_diff($clbpara['bgmbook'],$clbpara['event_bgmbook']) || array_diff($clbpara['event_bgmbook'],$clbpara['bgmbook']))
 		{
 			# 重置当前播放列表
 			$clbpara['bgmbook'] = $clbpara['event_bgmbook'];

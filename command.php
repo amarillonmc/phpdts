@@ -172,6 +172,37 @@ if($hp > 0){
 		}
 
 		//进入指令判断
+		if($mode === 'sis') {
+			include_once GAME_ROOT.'./include/game/song.inc.php';
+			$sis_order_in = isset($sis_order) && is_scalar($sis_order) ? (string)$sis_order : '';
+			if($command === 'sort' || $command === 'sort_silent') {
+				if(song_sis_apply_order($pdata,$sis_order_in) && $command === 'sort') {
+					$log .= '<span class="lime">【Sun Is Shining】歌词顺序已保存。</span><br>';
+				}
+			} elseif($command === 'sing') {
+				if($coldtimeon && $rmcdtime > 0) {
+					$log .= '<span class="yellow">冷却时间尚未结束！</span><br>';
+				} else {
+					song_sis_final_sing($pdata,$sis_order_in);
+				}
+			}
+			if($action === 'enemy' && $bid) {
+				$edata = fetch_playerdata_by_pid($bid);
+				if($edata && $edata['hp'] > 0 && $edata['pls'] == $pls && $edata['pgroup'] == $pgroup) {
+					include_once GAME_ROOT.'./include/game/revbattle.func.php';
+					\revbattle\findenemy_rev($edata);
+				} else {
+					$action = ''; $bid = 0; $mode = 'command';
+				}
+			} elseif(in_array($action,Array('corpse','pacorpse','focus'),true) && $bid && !$itms0) {
+				$edata = fetch_playerdata_by_pid($bid);
+				if($edata && $edata['hp'] <= 0 && $edata['pls'] == $pls && $edata['pgroup'] == $pgroup) {
+					include_once GAME_ROOT.'./include/game/battle.func.php';
+					findcorpse($edata);
+				} else $mode = 'command';
+			} else $mode = 'command';
+			goto wheelchair_command_finished;
+		}
 		if($mode === 'club25') {
 			include_once GAME_ROOT.'./include/game/club25.func.php';
 			if($coldtimeon && $rmcdtime > 0 && $command !== 'board') {
@@ -1190,6 +1221,8 @@ if(isset($error)){$gamedata['innerHTML']['error'] = $error;}
 $gamedata['clbpara'] = $clbpara;
 // 同一面板用于default/nouveau；每次操作后刷新地面实物，不跟踪携带者位置。
 $gamedata['display']['c25-tab-button'] = $club == 25 ? '' : 'none';
+include_once GAME_ROOT.'./include/game/song.inc.php';
+$gamedata['display']['sis-tab-button'] = song_sis_panel_visible($pdata) ? 'inline-block' : 'none';
 if($club == 25) {
 	include_once GAME_ROOT.'./include/game/club25.func.php';
 	$c25_rows = club25_board($pdata);

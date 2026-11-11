@@ -103,6 +103,10 @@ class Ai93TestDb
 		if(preg_match('/^DELETE FROM test_(mapitem|maptrap) WHERE (?:iid|tid)=\'?(\d+)/',$sql,$m)) {
 			unset($this->{$m[1]}[$m[2]]); return true;
 		}
+		if(preg_match('/^DELETE FROM test_maptrap WHERE pls=\'?(\d+)/',$sql,$m)) {
+			foreach($this->maptrap as $tid=>$trow) if($trow['pls'] == $m[1]) unset($this->maptrap[$tid]);
+			return true;
+		}
 		if(preg_match('/^INSERT INTO test_(mapitem|maptrap) \((.*?)\) VALUES \((.*)\)$/s',$sql,$m)) {
 			$keys = array_map('trim',explode(',',$m[2]));
 			foreach(preg_split('/\),\s*\(/',$m[3]) as $tuple) {
@@ -1036,12 +1040,110 @@ $hplsinfo=$hidden_before; $arealist=$saved_areas; $areanum=$saved_areanum;
 ai93_test_reset(); $areanum=0; rs_game(16);
 $new_songs=array_slice(song_costs(),4,15,true);
 $new_songs['春日影']=song_costs()['春日影'];
+$new_songs['Sun Is Shining']=song_costs()['Sun Is Shining'];
 foreach($new_songs as $song=>$cost) {
 	$cards=array_filter($db->mapitem,function($item) use($song) { return $item['itm'] === '【'.$song.'】'; });
 	ai93_test_assert(count($cards) === 7 && count(array_unique(array_column($cards,'pls'))) > 1,'开局随机投放七张歌词卡 '.$song);
 	$valid_cards=array_filter($cards,function($card) use($cost) { return $card['itmk'] === 'ss' && $card['itme'] == $cost && $card['itms'] == 1 && $card['itmpara'] === ''; });
 	ai93_test_assert(count($valid_cards) === 7,'歌词卡完整字段 '.$song);
 }
+
+// Sun Is Shining：首唱切歌单不入永久歌簿、提示纸条解锁歌词与商店ABCD去重、排序与副歌等价、最终歌唱圣域及6段尾奏加成。
+include config('audio');
+ai93_test_reset();
+$pdata['art']='【Sun Is Shining】'; $pdata['artk']='ss'; $pdata['arts']=1; $pdata['arte']=80;
+$pdata['ss']=79;
+sing('Sun Is Shining');
+ai93_test_assert($pdata['ss'] === 79 && empty($pdata['clbpara']['sis']) && !song_sis_panel_visible($pdata) && !$gamevars,'Sun Is Shining不足80歌魂不激活');
+$pdata['ss']=100;
+sing('Sun Is Shining'); player_save($pdata); $pdata=fetch_playerdata_by_pid(1);
+ai93_test_assert($pdata['ss'] === 20 && empty($pdata['clbpara']['songbook']['Sun Is Shining'])
+	&& $pdata['clbpara']['BGMBrand'] === 'sunisshining' && $pdata['clbpara']['event_bgmbook'] === $event_bgm['sunisshiningtracks']
+	&& song_sis_panel_visible($pdata) && count($pdata['clbpara']['sis']['pool']) === 8 && empty($pdata['clbpara']['sis']['segments'])
+	&& $gamevars['songecho'][1]['power'] === 80,'Sun Is Shining首唱扣80歌魂、切歌单、不写入永久歌簿并开启副面板');
+$pdata['art']=''; $pdata['artk']=''; $pdata['arts']=0;
+ai93_test_assert(!song_sis_panel_visible($pdata) && !isset(song_list($pdata)['Sun Is Shining']),'卸下【Sun Is Shining】后副面板隐藏且不可无卡演唱');
+$pdata['art']='【Sun Is Shining】'; $pdata['artk']='ss'; $pdata['arts']=1; $pdata['arte']=80;
+
+// 商店纸条ABCD每种限用一次，野外纸条E~U不限重复；集齐8段主歌后继续消费追加最多6段尾奏。
+include_once GAME_ROOT.'include/game/item.test.php';
+ai93_test_item($pdata,'提示纸条A','Y',1,2,1);
+item_test(1,$pdata); song_sis_use_slip_item(1,$pdata);
+ai93_test_assert($pdata['itms1'] === 1 && count($pdata['clbpara']['sis']['segments']) === 1 && $pdata['clbpara']['sis']['used_shop'] === array('A'),'首次使用提示纸条A消耗1耐久并解锁第1段主歌');
+item_test(1,$pdata); song_sis_use_slip_item(1,$pdata);
+ai93_test_assert($pdata['itms1'] === 1 && count($pdata['clbpara']['sis']['segments']) === 1,'重复使用商店提示纸条A不消耗耐久也不解锁新段落');
+$db->mapitem = array();
+for($i=0;$i<15;$i++) $db->array_insert('test_mapitem',array('itm'=>'杂物'.$i,'itmk'=>'X','itme'=>1,'itms'=>1,'itmsk'=>'','itmpara'=>'','pls'=>1));
+$db->array_insert('test_mapitem',array('itm'=>'提示纸条A','itmk'=>'Y','itme'=>1,'itms'=>1,'itmsk'=>'','itmpara'=>'','pls'=>1));
+$db->array_insert('test_mapitem',array('itm'=>'提示纸条E','itmk'=>'Y','itme'=>1,'itms'=>1,'itmsk'=>'','itmpara'=>'','pls'=>1));
+for($seed=0;$seed<1000;$seed++) { srand($seed); if(rand(1,100) <= 35) { srand($seed); break; } }
+focus_item($pdata);
+ai93_test_assert($pdata['itm0'] === '提示纸条E','阳光指引35%概率优先拾取可用提示纸条并跳过已用过的商店纸条');
+$pdata['itm0']=$pdata['itmk0']=''; $pdata['itme0']=$pdata['itms0']=0;
+foreach(array('提示纸条B','提示纸条C','提示纸条D','提示纸条E','提示纸条E','提示纸条F','提示纸条G') as $slip) {
+	ai93_test_item($pdata,$slip,'Y',1,1,1);
+	item_test(1,$pdata); song_sis_use_slip_item(1,$pdata);
+}
+ai93_test_assert($pdata['itms1'] === 0 && $pdata['itm1'] === '' && count($pdata['clbpara']['sis']['segments']) === 8
+	&& count($pdata['clbpara']['sis']['pool']) === 0,'商店BCD各一次加野外纸条（含重复字母E）集齐8段主歌并清空耗尽槽位');
+
+// 顺序错误时不能完成最终歌唱，不销毁饰品也不扣歌魂。
+$wrong_order=array(1,0,2,3,4,5,6,7);
+ai93_test_assert(song_sis_apply_order($pdata,$wrong_order) && !song_sis_check_order($pdata['clbpara']['sis']['segments']),'乱序主歌通不过校验');
+$ss_before=$pdata['ss'];
+ai93_test_assert(!song_sis_final_sing($pdata) && $pdata['ss'] === $ss_before && $pdata['art'] === '【Sun Is Shining】' && empty($gamevars['sunisshining']),'歌词顺序错误时拒绝最终歌唱且保留饰品');
+
+// 继续使用6张野外纸条追加6段尾奏，第15张不消耗。
+for($i=0;$i<6;$i++) {
+	ai93_test_item($pdata,'提示纸条H','Y',1,1,1);
+	item_test(1,$pdata); song_sis_use_slip_item(1,$pdata);
+}
+ai93_test_assert(count($pdata['clbpara']['sis']['segments']) === 14 && song_sis_segment_text(13) === 'Sun is shining and so are you','追加满6段尾奏歌词');
+ai93_test_item($pdata,'提示纸条I','Y',1,1,1);
+item_test(1,$pdata); song_sis_use_slip_item(1,$pdata);
+ai93_test_assert($pdata['itms1'] === 1 && count($pdata['clbpara']['sis']['segments']) === 14,'达到14段上限后不再消耗提示纸条');
+
+// 两段相同副歌（2与6、3与7）互换位置同样视为正确排序；伪造段落列表被拒绝。
+ai93_test_assert(!song_sis_apply_order($pdata,array(0,1,2,3,4,5,6,99)),'拒绝不匹配的伪造段落列表');
+$swapped_chorus_order=array(0,1,6,7,4,5,2,3,8,9,10,11,12,13);
+ai93_test_assert(song_sis_apply_order($pdata,$swapped_chorus_order) && song_sis_check_order($pdata['clbpara']['sis']['segments']),'两段相同副歌互换顺序仍判定为正确');
+
+// 最终歌唱：驱散同地存活NPC、清陷阱、天气转大晴、推迟禁区顺位、销毁饰品、赋予6段满额奖励。
+$npc_stay=ai93_test_npc(7,100); $npc_stay['pls']=1; $npc_stay['bid']=1; $npc_stay['action']='chase'; player_save($npc_stay);
+$p2_stay=ai93_test_player(2); $p2_stay['pls']=1; $p2_stay['bid']=1; $p2_stay['action']='enemy'; player_save($p2_stay);
+$db->array_insert('test_maptrap',array('itm'=>'地雷','itmk'=>'TO','itme'=>200,'itms'=>1,'itmsk'=>'','itmpara'=>'','pls'=>1));
+$db->array_insert('test_maptrap',array('itm'=>'地雷','itmk'=>'TO','itme'=>200,'itms'=>1,'itmsk'=>'','itmpara'=>'','pls'=>2));
+$weather=5; $saved_areas=$arealist; $saved_areanum=$areanum;
+$arealist=array(0,1,2,3); $areanum=0;
+$pdata['hp']=500; $pdata['sp']=200;
+sing('Sun Is Shining'); player_save($pdata); $pdata=fetch_playerdata_by_pid(1);
+ai93_test_assert($pdata['ss'] === $ss_before && $pdata['art'] === '' && $pdata['arts'] === 0 && empty($pdata['clbpara']['sis'])
+	&& !song_sis_panel_visible($pdata),'最终歌唱不额外扣歌魂，销毁【Sun Is Shining】并关闭副面板');
+ai93_test_assert($gamevars['sunisshining'][1]['extra'] === 6 && $weather === 1 && end($arealist) === 1
+	&& count($db->maptrap) === 1 && reset($db->maptrap)['pls'] === 2,'最终歌唱记录6段圣域、天气转大晴、推迟禁区并清除当地陷阱');
+ai93_test_assert($db->players[100]['pls'] !== 1 && $db->players[100]['bid'] === 0 && $db->players[2]['bid'] === 0,'同地存活NPC被随机驱散至其他地点并解除交战锁定');
+ai93_test_assert($pdata['mhp'] === 2060 && $pdata['hp'] === 2060 && $pdata['msp'] === 1060 && $pdata['sp'] === 1060
+	&& $pdata['wp'] === 130 && $pdata['wk'] === 130 && $pdata['wg'] === 130 && $pdata['wc'] === 130 && $pdata['wd'] === 130 && $pdata['wf'] === 130,'6段尾奏赋予唱者生命体力上限+60并回满、全系熟练+30');
+
+// 圣域永久场地效果：探索回复45%生命与体力（6段可突破上限）、全清异常状态、消减15点RP；玩家间互殴0伤害；NPC不再刷入或移入。
+$explorer=ai93_test_player(2); $explorer['pls']=1; $explorer['hp']=1000; $explorer['mhp']=2000; $explorer['sp']=200; $explorer['msp']=1000;
+$explorer['inf']='hb'; $explorer['rp']=50;
+move_search_events($explorer,'search');
+ai93_test_assert($explorer['hp'] === 1900 && $explorer['sp'] === 650 && $explorer['inf'] === '' && $explorer['rp'] === 35,'圣域探索按尾奏段数回复45%生命与体力、净化全部异常状态并消减15点RP');
+$explorer['hp']=2000; $explorer['sp']=1000;
+move_search_events($explorer,'search');
+ai93_test_assert($explorer['hp'] === 2900 && $explorer['sp'] === 1450,'6段尾奏圣域探索可突破上限回复生命与体力');
+
+$pa=ai93_test_player(1); $pb=ai93_test_player(2); $pa['pls']=$pb['pls']=1; $pa['wp']=$pb['wp']=1000;
+$test_dice=1; \revcombat\rev_combat_prepare($pa,$pb,1,'',0);
+ai93_test_assert($pa['hp'] === 2000 && $pb['hp'] === 2000,'阳光圣域内玩家之间互相伤害变为0');
+$npc_enemy=ai93_test_npc(7,101); $npc_enemy['pls']=1;
+\revcombat\rev_combat_prepare($pa,$npc_enemy,1,'',0);
+ai93_test_assert($npc_enemy['hp'] < $npc_enemy['mhp'],'阳光圣域不影响对NPC的伤害');
+ai93_test_assert(!in_array(1,ai93_safe_plslist()),'AI安全落点列表排除阳光圣域');
+$spawned_pids=addnpc(93,0,1);
+ai93_test_assert($db->players[$spawned_pids[0]]['pls'] !== 1,'addnpc刷怪不会落入阳光圣域');
+$arealist=$saved_areas; $areanum=$saved_areanum;
 
 // 配置默认值与可调参数都走实际读取；其余默认行为已由上面的既有用例覆盖。
 unset($ai93cfg);

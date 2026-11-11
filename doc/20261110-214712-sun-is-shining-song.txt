@@ -1,0 +1,45 @@
+# 2026-11-10 新歌曲【Sun Is Shining】（Axwell Λ Ingrosso - Sun Is Shining）实装记录
+
+## 改动摘要（Summary）
+实装歌词卡片【Sun Is Shining】（消耗 80 歌魂）及其配套的提示纸条歌词收集、副面板拖拽解谜、最终歌唱与「阳光圣域」永久场地效果。
+Implemented the new song card `【Sun Is Shining】` (cost: 80 song soul), its `提示纸条` lyric-unlocking puzzle, `slidingpanel` drag-and-drop sorting tab, final singing, and permanent sanctuary location effects.
+
+## 具体改动内容
+1. **资源与音频配置**
+   - `gamedata/cache/mapitem_1.php`：新增全图随机刷新的歌词卡片 `0,99,7,【Sun Is Shining】,ss,80,1,,`。
+   - `gamedata/cache/resources_1.php`：在 `$noiseinfo` 中登记 `'Sun Is Shining' => 'Sun Is Shining'`。
+   - `gamedata/cache/audio_1.php` & `include/game.func.php`：新增 `$event_bgm['sunisshiningtracks']`、`$bgmbook['sunisshiningtracks']` 与 `$bgmlist[124]`（指向 `audio/Axwell_Ingrosso-Sun_Is_Shining.mp3`），并修正 `init_bgm()` 使首次设置 `event_bgmbook` 时立即刷新播放器曲目列表。
+
+2. **初次歌唱与提示纸条收集（方案B + 选项1）**
+   - `include/game/song.inc.php`：
+     - `song_costs()` 登记 `'Sun Is Shining' => 80`。
+     - 初次歌唱消耗 80 歌魂，将 `$clbpara['BGMBrand']` 设为 `'sunisshining'` 并启用 `$event_bgm['sunisshiningtracks']`；**不写入** `$clbpara['songbook']`（不可无卡重唱）。
+     - 初始化 `$clbpara['sis']`（含打乱的 8 段主歌池 `pool`、已解锁段落 `segments`、已用商店纸条 `used_shop`）。
+   - `include/game/item.main.php` & `include/game/song.inc.php`（`song_sis_use_slip_item` / `song_sis_consume_slip`）：
+     - 当玩家开启了旋律且饰品栏佩戴 `【Sun Is Shining】` 时，每次使用 `提示纸条` 消耗 1 点耐久并解锁 1 段歌词。
+     - 商店纸条（`提示纸条A` ~ `D`）每种仅可生效 1 次，重复使用同字母不扣耐久并提示；野外纸条（`提示纸条E` ~ `U`）不限重复。
+     - 前 8 张有效纸条依次解锁 8 段主歌（两段主歌 + 两段副歌）；集齐 8 段主歌后，继续使用纸条每次追加 1 段 `"Sun is shining and so are you"` 尾奏（最多追加 6 段，总计 14 段封顶）。
+   - `include/game/search.func.php`（`focus_item`）：
+     - 在开启【Sun Is Shining】歌词收集期间，当地面存在当前可用的 `提示纸条` 时，探索发现道具有 35% 概率触发「阳光指引」优先拾取该纸条。
+
+3. **副面板（slidingpanel）歌词拖拽排序与最终歌唱**
+   - `templates/default/slidingpanel.htm`、`include/game20130526.js`、`command.php`：
+     - 只要 `$clbpara['sis']['active']` 且饰品栏佩戴 `【Sun Is Shining】`，右侧副面板显示 `Sun Is Shining` 标签页。
+     - 支持 HTML5 拖拽排序与 `↑`/`↓` 按钮移动，自动同步顺序至服务端（`mode=sis&command=sort_silent`）。
+     - 集齐 8 段主歌后显示 `★ 最终歌唱 ★` 按钮（或直接点击左侧【歌唱】指令触发），校验 8 段主歌 + 已解锁尾奏顺序（两段相同歌词的副歌 `2↔6`、`3↔7` 可互换）。
+
+4. **最终歌唱与永久「阳光圣域」效果**
+   - 排序正确完成最终歌唱后，销毁饰品栏的 `【Sun Is Shining】` 并清理 `$clbpara['sis']`，在 `$gamevars['sunisshining'][$pls]` 登记本局永久阳光圣域（记录尾奏段数 `extra` $N \in [0,6]$）：
+     - **驱散并禁入 NPC**：当前停留在该地点的存活 NPC 随机驱散至其他非禁区非圣域地点；之后 `addnpc()`、`add_once_area()`、`aievent()`、`ai93_safe_plslist()` 与 `discover()` 均不再向该地点刷出或移入 NPC。
+     - **探索回复**：停留在该地点的玩家每次探索回复 `max(30 + 15*N, round(mhp * (0.15 + 0.05*N)))` 点生命与等比例体力。
+     - **玩家间免伤**：`include/game/revcombat.func.php` 中处于阳光圣域地点的玩家与玩家之间互相伤害强制归零（不影响对 NPC 伤害）。
+     - **尾奏追加强化（$N = 0 \dots 6$）**：
+       - $N \ge 1$：最终歌唱时若天气为普通恶劣天气（`1 < $weather < 17`），立即转为 `1`（大晴）。
+       - $N \ge 2$：最终歌唱时清空该地点所有地图陷阱（`maptrap`），且玩家在此探索时每次额外解除 1 项异常状态。
+       - $N \ge 4$：最终歌唱时将该地点在 `$arealist` 中的禁区顺位推迟到最后，且玩家在此探索时清除全部异常状态并减少 15 点 `rp`。
+       - $N = 6$：最终歌唱者立即获得生命与体力上限 `+60` 并回满、全系熟练度 `+30`，且该圣域的探索回复可突破生命与体力上限。
+
+## 验证情况
+- 对全部涉及的 PHP 文件执行 `php -d short_open_tag=1 -l` 语法检查通过。
+- 在 `gamedata/tests/ai93_test.php` 中补充了 `【Sun Is Shining】` 的开局投放、首唱切歌单且不入永久歌簿、卸下饰品隐藏面板、商店纸条去重与野外纸条收集、35% 阳光指引拾取、乱序拦截与副歌等价校验、最终歌唱圣域生成、6 段尾奏满额加成、圣域探索回复/破限/清异常/降 RP、圣域内 PvP 零伤害及 NPC 驱散与刷怪禁入回归测试，运行 `ai93_test.php` 与 `quest_q6_test.php` 全部通过。
+- 已知限制：翻唱音频文件 `audio/Axwell_Ingrosso-Sun_Is_Shining.mp3` 需由作者自行放入 `audio/` 目录。

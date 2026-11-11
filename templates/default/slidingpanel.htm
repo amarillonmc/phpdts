@@ -14,6 +14,8 @@
             <button class="tab-button active" onclick="showTab('misc-tab', event)">任务窗体</button>
             <button class="tab-button" onclick="showTab('misc-tab2', event)">其他信息</button>
             <button id="c25-tab-button" class="tab-button" style="display:<!--{if $club != 25}-->none<!--{else}-->inline-block<!--{/if}-->" onclick="showTab('c25-tab', event);club25Cmd('board');">可怜猫</button>
+            <!--{eval include_once GAME_ROOT.'./include/game/song.inc.php'; $sis_tab_show = song_sis_panel_visible($pdata);}-->
+            <button id="sis-tab-button" class="tab-button" style="display:<!--{if !$sis_tab_show}-->none<!--{else}-->inline-block<!--{/if}-->" onclick="showTab('sis-tab', event);updateSisPanel();">Sun Is Shining</button>
             <!--{if $club==22}-->
             <button class="tab-button" onclick="showTab('fireseed-tab', event)">种火管理</button>
             <!--{/if}-->
@@ -104,6 +106,16 @@
         </div>
 
         <div id="c25-tab" class="tab-pane"><div id="c25-board">{template club25_panel}</div></div>
+
+        <!-- Sun Is Shining 歌词解谜标签页 -->
+        <div id="sis-tab" class="tab-pane">
+            <div class="section-container">
+                <h4 class="section-title">【Sun Is Shining】歌词解谜</h4>
+                <div id="sis-board" class="section-content">
+                    <div class="quest-item">正在读取旋律……</div>
+                </div>
+            </div>
+        </div>
 
         <!-- 种火管理标签页 -->
         <!--{if $club==22}-->
@@ -677,6 +689,91 @@
         font: 10pt "FusionPixel10px";
         margin: 10px 0;
     }
+
+    /* Sun Is Shining 歌词拖拽样式 */
+    .sis-status-box {
+        background: rgba(30, 30, 30, 0.75);
+        border: 1px solid rgba(255, 215, 0, 0.35);
+        border-radius: 5px;
+        padding: 8px 10px;
+        margin-bottom: 10px;
+        font-size: 9.5pt;
+        line-height: 1.5;
+    }
+    .sis-lyric-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 8px 0 12px 0;
+    }
+    .sis-lyric-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        background: rgba(40, 42, 48, 0.88);
+        border: 1px solid rgba(255, 215, 0, 0.38);
+        border-radius: 5px;
+        padding: 7px 9px;
+        cursor: grab;
+        user-select: none;
+        transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+    .sis-lyric-item:hover {
+        border-color: rgba(255, 215, 0, 0.8);
+        background: rgba(55, 58, 66, 0.92);
+    }
+    .sis-lyric-item.sis-dragging {
+        opacity: 0.5;
+        border-style: dashed;
+    }
+    .sis-lyric-item.sis-drag-over {
+        border-color: #3fe0a8;
+        box-shadow: 0 0 8px rgba(63, 224, 168, 0.45);
+    }
+    .sis-lyric-index {
+        flex-shrink: 0;
+        min-width: 44px;
+        font-size: 8.5pt;
+        color: #ffd700;
+        font-weight: bold;
+    }
+    .sis-lyric-text {
+        flex: 1;
+        font-size: 9pt;
+        color: #e8f3ef;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+    .sis-lyric-actions {
+        flex-shrink: 0;
+        display: flex;
+        gap: 4px;
+    }
+    .sis-move-btn {
+        background: rgba(70, 70, 80, 0.9);
+        color: #ffd700;
+        border: 1px solid rgba(255, 215, 0, 0.4);
+        border-radius: 3px;
+        padding: 2px 6px;
+        font-size: 9pt;
+        cursor: pointer;
+    }
+    .sis-move-btn:hover:not(:disabled) {
+        background: rgba(255, 215, 0, 0.25);
+    }
+    .sis-move-btn:disabled {
+        opacity: 0.35;
+        cursor: default;
+    }
+    .sis-sing-bar {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255, 215, 0, 0.25);
+    }
 </style>
 
 <script>
@@ -699,6 +796,9 @@
 
         // 初始更新任务窗体
         updateQuestPanel();
+
+        // 初始更新 Sun Is Shining 歌词面板
+        updateSisPanel();
     });
 
     // 初始化面板
@@ -719,6 +819,7 @@
                 !event.target.closest('[data-el-quest-open]') &&
                 !event.target.closest('[data-flash-quest-open]') &&
                 !event.target.closest('[data-c25-panel-open]') &&
+                !event.target.closest('[data-sis-panel]') &&
                 event.target !== button) {
                 closePanel();
             }
@@ -2050,5 +2151,160 @@
 
         // 更新种火数据
         updateFireseedTab();
+    }
+
+    // Sun Is Shining 歌词面板逻辑
+    var SIS_MAIN_LYRICS = [
+        'A simple band of gold / Wrapped around my soul / Hard forgiving, hard forget',
+        'Faith is in our hands / Castles made of sand / No more guessing, no regrets',
+        'Then you came my way on a winter\'s day / Shouted loudly, "Come out and play" / Can\'t you tell I got news for you? / Sun is shining and so are you',
+        'And we\'re gonna be alright / Dry your tears and hold tight / Can\'t you tell I got news for you? / Sun is shining and so are you',
+        'Diamonds to behold / Waiting to unfold / Bite the bullet, bite your tongue',
+        'Love beyond belief / Raid the seven seas / Come uneven, come undone',
+        'Then you came my way on a winter\'s day / Shouted loudly, "Come out and play" / Can\'t you tell I got news for you? / Sun is shining and so are you',
+        'And we\'re gonna be alright / Dry your tears and hold tight / Can\'t you tell I got news for you? / Sun is shining and so are you'
+    ];
+    var SIS_OUTRO_LYRIC = 'Sun is shining and so are you';
+    var sisDragSrcIdx = null;
+
+    function sisSegmentText(segId) {
+        var idx = parseInt(segId, 10);
+        if (!isNaN(idx)) {
+            if (idx >= 0 && idx < SIS_MAIN_LYRICS.length) return SIS_MAIN_LYRICS[idx];
+            if (idx >= 8 && idx < 14) return SIS_OUTRO_LYRIC;
+        }
+        return String(segId || '');
+    }
+
+    function sisCurrentSegments() {
+        var activeClb = (window.clbpara && window.clbpara.sis) ? window.clbpara : clbpara;
+        if (!activeClb || !activeClb.sis || !Array.isArray(activeClb.sis.segments)) return [];
+        return activeClb.sis.segments.slice();
+    }
+
+    function sisSetSegments(newSegs) {
+        if (window.clbpara && window.clbpara.sis) window.clbpara.sis.segments = newSegs.slice();
+        if (clbpara && clbpara.sis) clbpara.sis.segments = newSegs.slice();
+    }
+
+    function sisSyncOrderSilent(orderArr) {
+        var xhr = new XMLHttpRequest();
+        var fd = new FormData();
+        fd.append('mode', 'sis');
+        fd.append('command', 'sort_silent');
+        fd.append('sis_order', orderArr.join(','));
+        xhr.open('POST', 'command.php', true);
+        xhr.send(fd);
+    }
+
+    function sisMoveSegment(fromIdx, toIdx, ev) {
+        if (ev) ev.stopPropagation();
+        var segs = sisCurrentSegments();
+        if (fromIdx < 0 || fromIdx >= segs.length || toIdx < 0 || toIdx >= segs.length || fromIdx === toIdx) return;
+        var moved = segs.splice(fromIdx, 1)[0];
+        segs.splice(toIdx, 0, moved);
+        sisSetSegments(segs);
+        updateSisPanel();
+        sisSyncOrderSilent(segs);
+    }
+
+    function updateSisPanel() {
+        var board = document.getElementById('sis-board');
+        if (!board) return;
+        var activeClb = (window.clbpara && typeof window.clbpara === 'object') ? window.clbpara : clbpara;
+        var sis = (activeClb && activeClb.sis && activeClb.sis.active) ? activeClb.sis : null;
+        var tabBtn = document.getElementById('sis-tab-button');
+        var tabPane = document.getElementById('sis-tab');
+        if (!sis || (tabBtn && tabBtn.style.display === 'none')) {
+            board.innerHTML = '<div class="quest-item">当前未处于【Sun Is Shining】解谜状态，或未佩戴歌词卡片。</div>';
+            if (tabPane && tabPane.classList.contains('active')) {
+                var firstBtn = document.querySelector('.tab-button[onclick*="misc-tab"]');
+                if (firstBtn) showTab('misc-tab', { target: firstBtn });
+            }
+            return;
+        }
+        var segs = Array.isArray(sis.segments) ? sis.segments : [];
+        var usedShop = Array.isArray(sis.used_shop) ? sis.used_shop : [];
+        var mainCount = Math.min(8, segs.length);
+        var extraCount = Math.max(0, segs.length - 8);
+        var shopText = usedShop.length > 0 ? usedShop.join('、') : '尚未使用';
+
+        var html = '<div class="sis-status-box" data-sis-panel="1">';
+        html += '<div><span class="yellow">♪ 主歌收集进度：</span><span class="lime">' + mainCount + ' / 8</span> 段';
+        if (mainCount >= 8) {
+            html += ' &nbsp;|&nbsp; <span class="yellow">追加尾奏：</span><span class="lime">' + extraCount + ' / 6</span> 段';
+        }
+        html += '</div>';
+        html += '<div class="grey" style="margin-top:3px;">已用商店纸条(A~D各限1次)：<span class="yellow">' + shopText + '</span>；野生纸条(E~U)不限。</div>';
+        if (mainCount < 8) {
+            html += '<div class="clan" style="margin-top:4px;">提示：佩戴【Sun Is Shining】时使用提示纸条可解锁歌词片段。集齐8段主歌并按BGM旋律排好顺序后即可发动最终歌唱！</div>';
+        } else {
+            var healPct = 15 + 5 * extraCount;
+            html += '<div class="lime" style="margin-top:4px;">★ 主歌已集齐！请将前8段主歌按原曲顺序排列，并将追加的「Sun is shining and so are you」排在末尾，即可在任意地点发动最终歌唱（当前圣域探索回复率：' + healPct + '%）。</div>';
+        }
+        html += '</div>';
+
+        if (segs.length === 0) {
+            html += '<div class="quest-item" data-sis-panel="1">尚未解锁歌词片段，快去使用一张<span class="yellow">提示纸条</span>吧！</div>';
+        } else {
+            html += '<div class="sis-lyric-list" id="sis-lyric-list" data-sis-panel="1">';
+            for (var i = 0; i < segs.length; i++) {
+                var segId = segs[i];
+                var text = sisSegmentText(segId).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                var label = i < 8 ? ('#' + (i + 1)) : ('尾奏+' + (i - 7));
+                html += '<div class="sis-lyric-item" draggable="true" data-sis-panel="1" data-idx="' + i + '" data-seg="' + segId + '">';
+                html += '<span class="sis-lyric-index">' + label + '</span>';
+                html += '<span class="sis-lyric-text">♪ ' + text + '</span>';
+                html += '<span class="sis-lyric-actions">';
+                html += '<button type="button" class="sis-move-btn" data-sis-panel="1" ' + (i === 0 ? 'disabled' : '') + ' onclick="sisMoveSegment(' + i + ',' + (i - 1) + ',event)" title="上移">↑</button>';
+                html += '<button type="button" class="sis-move-btn" data-sis-panel="1" ' + (i === segs.length - 1 ? 'disabled' : '') + ' onclick="sisMoveSegment(' + i + ',' + (i + 1) + ',event)" title="下移">↓</button>';
+                html += '</span>';
+                html += '</div>';
+            }
+            html += '</div>';
+            html += '<div class="sis-sing-bar" data-sis-panel="1">';
+            html += '<button type="button" class="cmdbutton" data-sis-panel="1" onclick="sisCmd(\'sort\', sisCurrentSegments().join(\',\'));">保存顺序</button>';
+            if (mainCount >= 8) {
+                html += '<button type="button" class="update-button" data-sis-panel="1" onclick="sisCmd(\'sing\', sisCurrentSegments().join(\',\'));">★ 最终歌唱 ★</button>';
+            }
+            html += '</div>';
+        }
+        board.innerHTML = html;
+
+        var items = board.querySelectorAll('.sis-lyric-item');
+        for (var j = 0; j < items.length; j++) {
+            (function(item) {
+                item.addEventListener('dragstart', function(e) {
+                    sisDragSrcIdx = parseInt(item.getAttribute('data-idx'), 10);
+                    item.classList.add('sis-dragging');
+                    if (e.dataTransfer) {
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/plain', String(sisDragSrcIdx));
+                    }
+                });
+                item.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+                    item.classList.add('sis-drag-over');
+                });
+                item.addEventListener('dragleave', function() {
+                    item.classList.remove('sis-drag-over');
+                });
+                item.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    item.classList.remove('sis-drag-over');
+                    var targetIdx = parseInt(item.getAttribute('data-idx'), 10);
+                    if (sisDragSrcIdx !== null && !isNaN(targetIdx) && sisDragSrcIdx !== targetIdx) {
+                        sisMoveSegment(sisDragSrcIdx, targetIdx, e);
+                    }
+                    sisDragSrcIdx = null;
+                });
+                item.addEventListener('dragend', function() {
+                    item.classList.remove('sis-dragging');
+                    sisDragSrcIdx = null;
+                });
+            })(items[j]);
+        }
     }
 </script>

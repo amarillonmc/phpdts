@@ -486,17 +486,20 @@ function add_once_area($atime) {
 				//} elseif($sub['type'] != 1 && $sub['type'] != 7 && $sub['type'] != 9 && $sub['type'] != 13 && $sub['type'] != 20 && $sub['type'] != 21 && $sub['type'] != 88 && $sub['type'] != 22 && $sub['type'] != 92) {
 				// Let's try giving NPCs less human rights to migrate the leak problem
 				}elseif(!in_array($sub['type'],$sentinel_typelist) && $gamestate <= 40){
+					$sis_places = (!empty($gamevars['sunisshining']) && is_array($gamevars['sunisshining'])) ? array_map('intval',array_keys($gamevars['sunisshining'])) : Array();
 					if($npc_away_from_deepzones)
 					{	//开启了NPC不会因躲避禁区移动到危险地图的功能
+						$guard = 0;
 						do{
 							$pls = $arealist[rand($areanum+1,$plsnum)];
-						}while (in_array($pls,$deepzones));
+						}while ((in_array($pls,$deepzones) || in_array((int)$pls,$sis_places,true)) && $guard++ < 50);
 					}
 					else
 					{
+						$guard = 0;
 						do{
 							$pls = $arealist[rand($areanum+1,$plsnum)];
-						}while ($pls==34);
+						}while (($pls==34 || in_array((int)$pls,$sis_places,true)) && $guard++ < 50);
 					}
 					$db->query("UPDATE {$tablepre}players SET pls='$pls' WHERE pid=$pid");
 				}
@@ -791,12 +794,13 @@ function movehtm($atime = 0) {
 }
 
 function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
-	global $now,$db,$gtablepre,$tablepre,$log,$plsinfo,$typeinfo,$arealist,$areanum,$gamecfg;
+	global $now,$db,$gtablepre,$tablepre,$log,$plsinfo,$typeinfo,$arealist,$areanum,$gamecfg,$gamevars;
 	global $hidding_typelist,$deepzones;
 	include_once GAME_ROOT."./include/game/clubslct.func.php";
 
 	$time = $time == 0 ? $now : $time;
 	$plsnum = sizeof($plsinfo);
+	$sis_places = (!empty($gamevars['sunisshining']) && is_array($gamevars['sunisshining'])) ? array_map('intval',array_keys($gamevars['sunisshining'])) : Array();
 	/*if(empty($anpcinfo) || empty($npcinit)){
 		include_once config('addnpc',$gamecfg);
 	}*/
@@ -842,11 +846,16 @@ function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
 				# 位置信息为数组时，在两地中择一随机刷新
 				if(is_array($npc['pls']))
 				{
-					$npc['pls'] = $npc['pls'][array_rand($npc['pls'])];
+					$pls_choices = $sis_places ? array_values(array_diff(array_map('intval',$npc['pls']),$sis_places)) : $npc['pls'];
+					$npc['pls'] = $pls_choices ? $pls_choices[array_rand($pls_choices)] : $npc['pls'][array_rand($npc['pls'])];
 				}
 				elseif($npc['pls'] == 99)
 				{
 					$areaarr = array_slice($arealist,$areanum+1);
+					if($sis_places) {
+						$filtered_area = array_values(array_diff(array_map('intval',$areaarr),$sis_places));
+						if($filtered_area) $areaarr = $filtered_area;
+					}
 					if(empty($areaarr)){
 						$npc['pls'] = 0;
 					}else{
@@ -855,7 +864,8 @@ function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
 						$npc['pls'] = $areaarr[0];
 						if(in_array($npc['type'],$hidding_typelist))
 						{
-							while(in_array($npc['pls'],$deepzones))
+							$guard = 0;
+							while(in_array($npc['pls'],$deepzones) && $guard++ < 50)
 							{
 								shuffle($areaarr);
 								$npc['pls'] = $areaarr[0];
@@ -863,6 +873,11 @@ function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
 						}
 					}
 					//$npc['pls'] = rand(1,$plsnum-1);
+				}
+
+				if($sis_places && in_array((int)$npc['pls'],$sis_places,true)) {
+					$fallback_arr = array_values(array_diff(array_map('intval',array_slice($arealist,$areanum+1)),array_merge($sis_places,Array(0,34))));
+					if($fallback_arr) $npc['pls'] = $fallback_arr[array_rand($fallback_arr)];
 				}
 			}
 

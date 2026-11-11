@@ -208,7 +208,7 @@ function aievent($rate,&$data=NULL){
 				shuffle($cht); $cht = $cht[0];
 				$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【SANMA_TK】','','{$cht}')");				
 				
-			}elseif(rand(0,99) < $rate && in_array($pid,array_keys($rplist)) && $rp >= 50){//如果玩家的RP比值在平均线上，那么静流以玩家为目标$rptopdata['pid'] == $pid && 
+			}elseif(rand(0,99) < $rate && in_array($pid,array_keys($rplist)) && $rp >= 50 && empty($gamevars['sunisshining'][$pls])){//如果玩家的RP比值在平均线上，那么静流以玩家为目标$rptopdata['pid'] == $pid &&
 				$mvflg = $cmbtflg = false;
 				//RP/游戏时间比值的判断
 				$myrprate = $rp / ($now - $validtime);
@@ -258,7 +258,8 @@ function aievent($rate,&$data=NULL){
 				if($sdata['pls'] == $pls){//静流和玩家位置相同
 					$sdata['pose'] = 0;$sdata['tactic'] = 4;//静流姿态变为普通+躲避
 					if(rand(0,99) < 50){//50%概率移动到别的位置
-						while($sdata['pls'] == $pls){
+						$guard = 0;
+						while(($sdata['pls'] == $pls || !empty($gamevars['sunisshining'][$sdata['pls']])) && $guard++ < 50){
 							$sdata['pls'] = rand(1,count($plsinfo)-1);
 						}
 						$newsflag = true;

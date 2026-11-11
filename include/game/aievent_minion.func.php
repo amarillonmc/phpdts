@@ -68,10 +68,13 @@ function ai93_branch($npc)
 
 function ai93_safe_plslist()
 {
-	global $areawarn,$arealist,$areanum,$areaadd,$hack;
+	global $areawarn,$arealist,$areanum,$areaadd,$hack,$gamevars;
 	if(!function_exists('get_safe_plslist')) include_once GAME_ROOT.'./include/game.func.php';
 	$safe = get_safe_plslist();
 	if(!empty($areawarn) && !$hack) $safe = array_diff($safe,array_slice($arealist,$areanum+1,$areaadd));
+	if(!empty($gamevars['sunisshining']) && is_array($gamevars['sunisshining'])) {
+		$safe = array_diff($safe, array_map('intval', array_keys($gamevars['sunisshining'])));
+	}
 	return $safe;
 }
 

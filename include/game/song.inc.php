@@ -10,7 +10,7 @@ function song_costs()
 		'ようこそジャパリパークへ'=>49, '星をつなげて'=>69,
 		'乗ってけ！ジャパリビート'=>68, '大空ドリーマー'=>70,
 		'水手'=>50, '挪威的森林'=>100, '当'=>117, '忘忧草'=>200, 'きみは帰る場所'=>1,
-		'春日影'=>60,
+		'春日影'=>60, 'Sun Is Shining'=>80,
 		'一剪梅'=>233, '棺材舞'=>233, 'Caramelldansen'=>233, 'Moonlight Shadow'=>233,
 	);
 	return $songcost;
@@ -182,6 +182,328 @@ function song_showcase_reward(&$data)
 	$log .= "<span class=\"clan\">四场演出落幕，反叛随机数大神的旋律悄然响起——你获得了<span class=\"yellow\">【歌单】瑞克·拉玛尔</span>！{$where}。</span><br>";
 }
 
+function song_sis_main_lyrics()
+{
+	return Array(
+		'A simple band of gold / Wrapped around my soul / Hard forgiving, hard forget',
+		'Faith is in our hands / Castles made of sand / No more guessing, no regrets',
+		'Then you came my way on a winter\'s day / Shouted loudly, "Come out and play" / Can\'t you tell I got news for you? / Sun is shining and so are you',
+		'And we\'re gonna be alright / Dry your tears and hold tight / Can\'t you tell I got news for you? / Sun is shining and so are you',
+		'Diamonds to behold / Waiting to unfold / Bite the bullet, bite your tongue',
+		'Love beyond belief / Raid the seven seas / Come uneven, come undone',
+		'Then you came my way on a winter\'s day / Shouted loudly, "Come out and play" / Can\'t you tell I got news for you? / Sun is shining and so are you',
+		'And we\'re gonna be alright / Dry your tears and hold tight / Can\'t you tell I got news for you? / Sun is shining and so are you',
+	);
+}
+
+function song_sis_outro_lyric()
+{
+	return 'Sun is shining and so are you';
+}
+
+function song_sis_segment_text($seg_id)
+{
+	if(is_int($seg_id) || (is_string($seg_id) && ctype_digit($seg_id))) {
+		$idx = intval($seg_id);
+		$main = song_sis_main_lyrics();
+		if(isset($main[$idx])) return $main[$idx];
+		if($idx >= 8 && $idx < 14) return song_sis_outro_lyric();
+	}
+	return is_string($seg_id) ? $seg_id : '';
+}
+
+function song_sis_card_equipped($data)
+{
+	return !empty($data['arts']) && strpos((string)($data['artk'] ?? ''),'ss') === 0
+		&& ($data['art'] ?? '') === '【Sun Is Shining】';
+}
+
+function song_sis_panel_visible($data)
+{
+	if(!song_sis_card_equipped($data)) return false;
+	$para = get_clbpara($data['clbpara'] ?? Array());
+	return !empty($para['sis']['active']);
+}
+
+function song_sis_can_use_slip($itm,$para)
+{
+	if(strpos((string)$itm,'提示纸条') !== 0) return false;
+	$sis = $para['sis'] ?? Array();
+	if(empty($sis['active'])) return false;
+	$segments = isset($sis['segments']) && is_array($sis['segments']) ? $sis['segments'] : Array();
+	if(count($segments) >= 14) return false;
+	if(preg_match('/^提示纸条([ABCD])$/u',(string)$itm,$m)) {
+		$used_shop = isset($sis['used_shop']) && is_array($sis['used_shop']) ? $sis['used_shop'] : Array();
+		if(in_array($m[1],$used_shop,true)) return false;
+	}
+	return true;
+}
+
+function song_sis_consume_slip($itm,&$data)
+{
+	global $log;
+	if(!song_sis_panel_visible($data) || strpos((string)$itm,'提示纸条') !== 0) return false;
+	$data['clbpara'] = get_clbpara($data['clbpara']);
+	$sis = &$data['clbpara']['sis'];
+	if(!isset($sis['segments']) || !is_array($sis['segments'])) $sis['segments'] = Array();
+	if(!isset($sis['used_shop']) || !is_array($sis['used_shop'])) $sis['used_shop'] = Array();
+	if(count($sis['segments']) >= 14) {
+		$log .= '<span class="yellow">【Sun Is Shining】的全部8段主歌与6段尾奏歌词已经收集完毕，无需再消耗提示纸条！快去副面板完成最终歌唱吧。</span><br>';
+		return false;
+	}
+	if(preg_match('/^提示纸条([ABCD])$/u',(string)$itm,$m)) {
+		$letter = $m[1];
+		if(in_array($letter,$sis['used_shop'],true)) {
+			$log .= "<span class=\"yellow\">你已经用过「{$itm}」解读过一段歌词了，同一种商店纸条无法再提供新的灵感。请寻找其他编号的提示纸条！</span><br>";
+			return false;
+		}
+		$sis['used_shop'][] = $letter;
+	}
+	if(count($sis['segments']) < 8) {
+		if(empty($sis['pool']) || !is_array($sis['pool'])) {
+			$sis['pool'] = array_values(array_diff(range(0,7),array_map('intval',$sis['segments'])));
+		}
+		$seg_id = intval(array_shift($sis['pool']));
+		$sis['segments'][] = $seg_id;
+		$unlocked_main = min(8,count($sis['segments']));
+		$lyric_text = htmlspecialchars(song_sis_segment_text($seg_id),ENT_QUOTES,'UTF-8');
+		$log .= "<span class=\"lime\">纸条上的字迹在阳光下化作跃动的音符——你在副面板【Sun Is Shining】中解锁了一段歌词（主歌进度：<span class=\"yellow\">{$unlocked_main}/8</span>）：</span><br><span class=\"clan\">♪ {$lyric_text} ♪</span><br>";
+		if($unlocked_main >= 8) {
+			$log .= '<span class="yellow">★【Sun Is Shining】的全部8段主歌歌词已收集齐全！现在你可以在副面板中将歌词拖拽排序并进行【最终歌唱】，或继续使用提示纸条追加「Sun is shining and so are you」尾奏强化效果（最多6段）！</span><br>';
+		}
+	} else {
+		$seg_id = count($sis['segments']);
+		$sis['segments'][] = $seg_id;
+		$extra_cnt = count($sis['segments']) - 8;
+		$log .= "<span class=\"lime\">纸条化作了尾奏的金色回响——在副面板中追加了一段「<span class=\"yellow\">Sun is shining and so are you</span>」（当前追加尾奏：<span class=\"yellow\">{$extra_cnt}/6</span>段）！</span><br>";
+	}
+	return true;
+}
+
+function song_sis_use_slip_item($itmn,&$data,$already_consumed=false)
+{
+	global $log,$nosta;
+	$itm = &$data['itm'.$itmn];
+	$itmk = &$data['itmk'.$itmn];
+	$itme = &$data['itme'.$itmn];
+	$itms = &$data['itms'.$itmn];
+	$itmsk = &$data['itmsk'.$itmn];
+	if(empty($itms) || strpos((string)$itmk,'Y') !== 0 || strpos((string)$itm,'提示纸条') !== 0) return false;
+	if(!song_sis_panel_visible($data) || !song_sis_consume_slip($itm,$data)) return false;
+	if(!$already_consumed && $itms != $nosta) {
+		$itms--;
+		if($itms <= 0 && $itm) {
+			$log .= "<span class=\"red\">{$itm}</span>用光了。<br>";
+			$itm = $itmk = $itmsk = '';
+			$itme = $itms = 0;
+		}
+	}
+	return true;
+}
+
+function song_sis_apply_order(&$data,$submitted_order)
+{
+	$data['clbpara'] = get_clbpara($data['clbpara']);
+	if(empty($data['clbpara']['sis']['active']) || empty($data['clbpara']['sis']['segments']) || !is_array($data['clbpara']['sis']['segments'])) return false;
+	$current = array_values(array_map('intval',$data['clbpara']['sis']['segments']));
+	if(is_string($submitted_order)) {
+		$submitted_order = trim($submitted_order) === '' ? Array() : explode(',',$submitted_order);
+	}
+	if(!is_array($submitted_order) || count($submitted_order) !== count($current)) return false;
+	$parsed = Array();
+	foreach($submitted_order as $v) {
+		if(!is_int($v) && !(is_string($v) && preg_match('/^\d+$/',$v))) return false;
+		$parsed[] = intval($v);
+	}
+	$sorted_cur = $current;
+	$sorted_new = $parsed;
+	sort($sorted_cur);
+	sort($sorted_new);
+	if($sorted_cur !== $sorted_new) return false;
+	$data['clbpara']['sis']['segments'] = $parsed;
+	return true;
+}
+
+function song_sis_check_order($segments)
+{
+	if(!is_array($segments) || count($segments) < 8 || count($segments) > 14) return false;
+	$vals = array_values($segments);
+	$main = song_sis_main_lyrics();
+	for($i=0;$i<8;$i++) {
+		if(song_sis_segment_text($vals[$i]) !== $main[$i]) return false;
+	}
+	$outro = song_sis_outro_lyric();
+	for($i=8;$i<count($vals);$i++) {
+		if(song_sis_segment_text($vals[$i]) !== $outro) return false;
+	}
+	return true;
+}
+
+function song_sis_non_sanctuary_places($exclude_pls=-1)
+{
+	global $plsinfo,$arealist,$areanum,$hack,$gamevars;
+	$sanctuaries = (!empty($gamevars['sunisshining']) && is_array($gamevars['sunisshining']))
+		? array_map('intval',array_keys($gamevars['sunisshining'])) : Array();
+	$exclude = array_unique(array_merge($sanctuaries, Array(intval($exclude_pls), 0, 34)));
+	$safe = is_array($arealist) ? ($hack ? $arealist : array_slice($arealist,$areanum+1)) : array_keys($plsinfo);
+	$candidates = array_values(array_diff(array_map('intval',$safe), $exclude));
+	if(!$candidates && is_array($plsinfo)) {
+		$candidates = array_values(array_diff(array_map('intval',array_keys($plsinfo)), Array(intval($exclude_pls), 0, 34)));
+	}
+	if(!$candidates && is_array($plsinfo)) {
+		$candidates = array_values(array_diff(array_map('intval',array_keys($plsinfo)), Array(intval($exclude_pls))));
+	}
+	return $candidates;
+}
+
+function song_sis_final_sing(&$data,$submitted_order=null)
+{
+	global $log,$now,$db,$tablepre,$plsinfo,$weather,$gamevars,$arealist,$areanum;
+	$data['clbpara'] = get_clbpara($data['clbpara']);
+	if(!song_sis_panel_visible($data)) {
+		$log .= '<span class="red">你尚未佩戴【Sun Is Shining】或还未开启这首歌的旋律！</span><br>';
+		return false;
+	}
+	if(!empty($data['type']) || $data['hp'] <= 0) return false;
+	if(!empty($data['clbpara']['kimi_no_ss'])) {
+		$log .= '<span class="grey">你的歌魂槽已经废除，再也无法歌唱了……</span><br>';
+		return false;
+	}
+	if(!empty($data['clbpara']['setsuna_mute'])) {
+		$log .= "<span class=\"cyan\">刹那的余韵尚未散去，你在接下来的<span class=\"yellow\">{$data['clbpara']['setsuna_mute']}</span>次探索或移动内无法发声歌唱。</span><br>";
+		return false;
+	}
+	if($submitted_order !== null && $submitted_order !== '') {
+		song_sis_apply_order($data,$submitted_order);
+	}
+	$segments = isset($data['clbpara']['sis']['segments']) && is_array($data['clbpara']['sis']['segments'])
+		? array_values($data['clbpara']['sis']['segments']) : Array();
+	if(count($segments) < 8) {
+		$log .= '<span class="yellow">歌词尚未收集齐备（当前主歌进度：'.count($segments).'/8），请继续使用提示纸条收集歌词！</span><br>';
+		return false;
+	}
+	if(!song_sis_check_order($segments)) {
+		$log .= '<span class="yellow">歌词的顺序似乎不对……仔细聆听背景音乐中的旋律，在副面板【Sun Is Shining】中将8段主歌（以及副歌后的尾奏）排列正确后再试吧！</span><br>';
+		return false;
+	}
+
+	$extra = max(0,min(6,count($segments)-8));
+	$pls = intval($data['pls']);
+	$pid = intval($data['pid']);
+	$plsname = isset($plsinfo[$pls]) ? $plsinfo[$pls] : "地点#{$pls}";
+
+	$log .= "♪Then you came my way on a winter's day♪<br>
+			♪Shouted loudly, \"Come out and play\"♪<br>
+			♪Can't you tell I got news for you?♪<br>
+			♪Sun is shining and so are you♪<br>
+			♪And we're gonna be alright♪<br>
+			♪Dry your tears and hold tight♪<br>
+			♪Can't you tell I got news for you?♪<br>
+			♪Sun is shining and so are you♪<br>";
+	for($i=0;$i<$extra;$i++) {
+		$log .= "♪Sun is shining and so are you♪<br>";
+	}
+
+	global $database;
+	$chat = Array('type'=>0,'time'=>$now,'send'=>htmlspecialchars($data['name'],ENT_QUOTES,'UTF-8'),'recv'=>'','msg'=>'♪Can\'t you tell I got news for you? Sun is shining and so are you!♪');
+	if($database === 'mysql') {
+		$chat['send'] = mysql_real_escape_string($chat['send']);
+		$chat['msg'] = mysql_real_escape_string($chat['msg']);
+	}
+	$db->array_insert($tablepre.'chat',$chat);
+
+	if(empty($gamevars['sunisshining']) || !is_array($gamevars['sunisshining'])) {
+		$gamevars['sunisshining'] = Array();
+	}
+	$prev_extra = isset($gamevars['sunisshining'][$pls]['extra']) ? intval($gamevars['sunisshining'][$pls]['extra']) : 0;
+	$gamevars['sunisshining'][$pls] = Array(
+		'extra' => max($prev_extra, $extra),
+		'singer' => $data['name'],
+		'time' => $now,
+	);
+
+	// 驱散此地停留的所有NPC到其他安全地点，并清除此地交战锁定状态
+	$dest_places = song_sis_non_sanctuary_places($pls);
+	$dispersed_cnt = 0;
+	$result = $db->query("SELECT * FROM {$tablepre}players WHERE pls='$pls' AND hp>0 AND pid!='$pid'");
+	while($odata = $db->fetch_array($result)) {
+		$odata['clbpara'] = get_clbpara($odata['clbpara']);
+		if(!empty($odata['type'])) {
+			if($dest_places) {
+				$odata['pls'] = $dest_places[array_rand($dest_places)];
+			}
+			$odata['bid'] = 0;
+			$odata['action'] = '';
+			$odata['smeo'] = '';
+			player_save($odata);
+			$dispersed_cnt++;
+		} else {
+			if(!empty($odata['bid']) || !empty($odata['action']) || !empty($odata['smeo'])) {
+				$odata['bid'] = 0;
+				$odata['action'] = '';
+				$odata['smeo'] = '';
+				player_save($odata);
+			}
+		}
+	}
+	if(in_array($data['action'] ?? '', Array('enemy','chase','pchase','dfight'), true)) {
+		$data['bid'] = 0;
+		$data['action'] = '';
+	}
+
+	$bonus_msgs = Array();
+	if($extra >= 1 && $weather > 1 && $weather < 17) {
+		$weather = 1;
+		$bonus_msgs[] = '阴霾散尽，天气转为了大晴';
+	}
+	if($extra >= 2) {
+		$db->query("DELETE FROM {$tablepre}maptrap WHERE pls='$pls'");
+		$bonus_msgs[] = "此地的陷阱被尽数净化，探索时还将净化异常状态";
+	}
+	if($extra >= 4 && is_array($arealist)) {
+		$pos = array_search($pls,$arealist);
+		if($pos !== false && $pos > $areanum) {
+			unset($arealist[$pos]);
+			$arealist[] = $pls;
+			$arealist = array_values($arealist);
+			if(function_exists('movehtm')) movehtm();
+		}
+		$bonus_msgs[] = "{$plsname}的禁区顺位被推迟到了最后，且此地探索将净化全部异常状态并消减RP";
+	}
+	if($extra >= 6) {
+		$data['mhp'] += 60;
+		$data['msp'] += 60;
+		if(empty($data['clbpara']['kimi_no_hp'])) {
+			$data['hp'] = max($data['hp'],$data['mhp']);
+		}
+		$data['sp'] = max($data['sp'],$data['msp']);
+		foreach(Array('wp','wk','wg','wc','wd','wf') as $sk_field) {
+			$data[$sk_field] += 30;
+		}
+		$bonus_msgs[] = '完美的6段尾奏共鸣使你生命与体力上限+60并回满、全系熟练度+30，且在此地探索可突破上限回复生命与体力';
+	}
+
+	save_gameinfo();
+	song_echo_place('Sun Is Shining', 80 + 10 * $extra, $pls);
+
+	if(function_exists('reload_single_set_item')) {
+		reload_single_set_item($data,'art',$data['art']);
+	}
+	$data['art'] = $data['artk'] = $data['artsk'] = '';
+	$data['arte'] = $data['arts'] = 0;
+	$data['artpara'] = '';
+	unset($data['clbpara']['sis']);
+
+	$heal_pct = 15 + 5 * $extra;
+	$bonus_str = $bonus_msgs ? '；'.implode('；',$bonus_msgs) : '';
+	$log .= "<span class=\"lime\">「Sun is shining and so are you!」金色的阳光洒满<span class=\"yellow\">{$plsname}</span>，将此地化作了本局永久的阳光圣域！停留于此的<span class=\"yellow\">{$dispersed_cnt}</span>名NPC被驱散至他处且不再有NPC踏入此地；在此探索将回复<span class=\"yellow\">{$heal_pct}%</span>生命与体力，且玩家之间的互相伤害归零{$bonus_str}！</span><br>";
+	$log .= '<span class="yellow">歌词卡片【Sun Is Shining】化作漫天金色的光屑消散了。</span><br>';
+
+	addnoise('Sun Is Shining','__',$now,$pls,0,0,'Sun Is Shining');
+	addnews($now,'song',$data['name'],$plsname,'Sun Is Shining',$data['nick']);
+	return true;
+}
+
 function sing($sn){
 	global $log,$msg,$now,$pls,$name,$nick,$plsinfo,$hplsinfo,$ss,$mss,$noiseinfo,$arte;
 	global $db,$tablepre;
@@ -219,6 +541,16 @@ function sing($sn){
 	if($sn === '忘忧草') $r = max(200,$r);
 	$song_title = isset($noiseinfo[$sn]) ? $noiseinfo[$sn] : $sn;
 	include_once GAME_ROOT.'./include/game/revcombat.func.php';
+
+	if ($sn === 'Sun Is Shining' && !empty($clbpara['sis']['active'])) {
+		$sis_segs = isset($clbpara['sis']['segments']) && is_array($clbpara['sis']['segments']) ? $clbpara['sis']['segments'] : Array();
+		if (count($sis_segs) >= 8) {
+			song_sis_final_sing($pdata);
+		} else {
+			$log .= '<span class="yellow">《Sun Is Shining》的旋律已经在耳畔回响（当前主歌收集进度：'.count($sis_segs).'/8）！请使用提示纸条收集歌词，并在右侧【副面板 → Sun Is Shining】中拖拽排序后完成最终歌唱。</span><br>';
+		}
+		return;
+	}
 	
 	if ($ss>=$r){
 		$ss-=$r;
@@ -230,12 +562,12 @@ function sing($sn){
 
 	// 记录唱歌动作
 	$pdata['clbpara']['achvars']['sing'] = 1;
-	if(empty($clbpara['songbook'][$sn])) {
+	if($sn !== 'Sun Is Shining' && empty($clbpara['songbook'][$sn])) {
 		$clbpara['songbook'][$sn] = 1;
 		$log .= '这首歌已铭刻在你的歌簿之中，今后无需装备卡片也能歌唱。<br>';
 	}
 	$showcase_songs = song_showcase_songs();
-	$learned = array_diff(array_keys($clbpara['songbook']),$showcase_songs);
+	$learned = array_diff(array_keys($clbpara['songbook'] ?? Array()),$showcase_songs);
 	if(count($learned) >= 10 && empty($clbpara['showcase'])) {
 		$clbpara['showcase'] = 1;
 		$log .= '<span class="clan">歌簿的第十页悄然翻开——你听见了来自远方的、不属于任何歌手的旋律。四首【演出】曲目已向你敞开。</span><br>';
@@ -1049,6 +1381,28 @@ function sing($sn){
 			$wine_msg = "行囊中的美酒与豪情共鸣（对酒当歌），你的怒气沸腾至极限，基础攻击力+100、全系熟练度+50！";
 		}
 		$log.="<span class=\"lime\">「当山峰没有棱角的时候，当时间停住日夜不分！」此地他人的锐器尽皆失去锋芒化作钝器，下一次禁区时间被推迟了5分钟，你的武器与防具缔结了灵魂绑定且效能提升25%！{$wine_msg}</span><br>";
+
+		addnoise($sn,'__',$now,$pls,0,0,$sn);
+		addnews($now,'song',$name,$plsinfo[$pls],$song_title,$nick);
+		return;
+	}elseif ($sn=="Sun Is Shining"){
+		global $event_bgm;
+		$clbpara['BGMBrand'] = 'sunisshining';
+		$clbpara['event_bgmbook'] = isset($event_bgm['sunisshiningtracks']) ? $event_bgm['sunisshiningtracks'] : Array('sunisshiningtracks');
+		$pool = range(0,7);
+		shuffle($pool);
+		if($pool === range(0,7)) {
+			$tmp = $pool[0]; $pool[0] = $pool[1]; $pool[1] = $tmp;
+		}
+		$clbpara['sis'] = Array(
+			'active' => 1,
+			'pool' => $pool,
+			'segments' => Array(),
+			'used_shop' => Array(),
+		);
+		$log .= "♪A simple band of gold / Wrapped around my soul……♪<br>";
+		$log .= '<span class="yellow">你的音乐播放列表被替换为了《Sun Is Shining》！</span><br>';
+		$log .= '<span class="lime">只要饰品栏佩戴着【Sun Is Shining】，每次使用<span class="yellow">提示纸条</span>都会将其消费并在右侧【副面板 → Sun Is Shining】中解锁一段歌词。集齐8段主歌歌词并拖拽排列正确后，即可在任意地点进行最终歌唱！</span><br>';
 
 		addnoise($sn,'__',$now,$pls,0,0,$sn);
 		addnews($now,'song',$name,$plsinfo[$pls],$song_title,$nick);

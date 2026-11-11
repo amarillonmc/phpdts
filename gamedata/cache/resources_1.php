@@ -337,6 +337,7 @@ $noiseinfo = Array(
 	'挪威的森林'=>'挪威的森林',
 	'当'=>'当',
 	'春日影'=>'春日影',
+	'Sun Is Shining'=>'Sun Is Shining',
 	'一剪梅'=>'一剪梅',
 	'棺材舞'=>'棺材舞',
 	'Caramelldansen'=>'Caramelldansen',

@@ -236,6 +236,7 @@ function itemuse($itmn,&$data=NULL) {
 	}
 
 	//元素大师使用提示纸条的特殊效果：
+	$slip_consumed_by_c20 = false;
 	if(strpos($ik,'💝')!==0 && !platform_is_recorder_item($ipara) && $club == 20 && strpos($itmk,'Y')===0 && strpos($itm,'提示纸条')!==false)
 	{
 		$log.="<br>就在你读完内容打算把纸条收起来时，你愕然发现纸条背面竟然还有字！<br><br>";
@@ -257,9 +258,17 @@ function itemuse($itmn,&$data=NULL) {
 		if ($itms != $nosta) {
 			$itms--;
 		}
+		$slip_consumed_by_c20 = true;
 		# 将提示给到的次要特征组合加入笔记内
 		if(empty($clbpara['elements']['info']['sd']['sd'.$s_id]))
 			$clbpara['elements']['info']['sd']['sd'.$s_id] = 1;
+	}
+
+	// 【Sun Is Shining】开启期间使用提示纸条解锁歌词：
+	if(strpos($ik,'💝')!==0 && !platform_is_recorder_item($ipara) && strpos($itmk,'Y')===0 && strpos($itm,'提示纸条')===0)
+	{
+		include_once GAME_ROOT.'./include/game/song.inc.php';
+		song_sis_use_slip_item($itmn, $data, $slip_consumed_by_c20);
 	}
 
 	// 消耗物品

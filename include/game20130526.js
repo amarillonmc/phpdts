@@ -443,6 +443,9 @@ function showData(sdata){
 			if(typeof updateFireseedTab === 'function') {
 				updateFireseedTab();
 			}
+			if(typeof updateSisPanel === 'function') {
+				updateSisPanel();
+			}
 		}
 		sDd = shwData['display'] || {};
 		for(var id in sDd){
@@ -877,5 +880,12 @@ function club25Open() {
 
 function club25Net(key) {
 	postCmd('gamecmd', 'command.php', {data: {mode: 'revcombat', command: 'bskill_c25_net', c25_net_item: key}});
+}
+
+function sisCmd(command, order) {
+	postCmd('gamecmd', 'command.php', {data: {
+		mode: 'sis', command: command,
+		sis_order: order === undefined ? '' : order
+	}});
 }
 
