@@ -4,6 +4,8 @@
 		exit ( 'Access Denied' );
 	}
 
+	require_once GAME_ROOT.'./include/game/mianhuping.func.php';
+
 	# 新社团技能：
 	# 获得指定技能 $sk：技能名；$para：$clbpara
 	function getclubskill($sk,&$para)

@@ -161,6 +161,7 @@ require config('titles',$gamecfg);
 if(!isset($titles_list[9101])) require GAME_ROOT.'./gamedata/cache/fcg_titles.php';
 if(!isset($cskills['tl_fcg_attune'])) require GAME_ROOT.'./gamedata/cache/fcgskills_1.php';
 require GAME_ROOT.'./gamedata/cache/wheelchair.php';
+if(!isset($titles_list[9302])) require GAME_ROOT.'./gamedata/cache/mianhuping.php';
 require_once GAME_ROOT.'./include/game/wheelchair.func.php';
 
 // 初始化RuleSet覆盖系统

@@ -219,6 +219,7 @@ function fcg_direct_hit(&$p,&$enemy,$damage,$active,$label,$react=true,$snapshot
     unset($p['fcg_packet']);
     $damage=club23_adjust_damage($p,$enemy,$damage);
     $damage=fcg_defend_damage($p,$enemy,$damage,$react);
+    $damage=binglai_absorb($enemy,$damage);
     $enemy['hp']=max(0,$enemy['hp']-$damage); fcg_skill_log($p,$label.'造成'.$damage.'点独立伤害。');
     \revcombat\checkdmg($p['name'],$enemy['name'],$damage);
     $result=\revcombat\rev_combat_result($p,$enemy,$active);

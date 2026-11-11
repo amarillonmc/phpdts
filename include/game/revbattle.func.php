@@ -232,6 +232,15 @@ namespace revbattle
 			}
 			$data['c25_net_input'] = $net_input;
 		}
+		if($command === 'bskill_tl_binglai') {
+			$locked = check_skill_unlock('tl_binglai',$data);
+			$cost = check_skill_cost('tl_binglai',$data);
+			if($locked || $cost || $hp <= 0) {
+				$log .= ($locked ? parse_skilllockdesc('tl_binglai',$locked) : ($cost ?: '现在无法发动「饼来」')).'<br>';
+				findenemy_rev($edata);
+				return;
+			}
+		}
 		if(!empty($message)) $data['message'] = $message;
 		# 上述流程没有拦截，直接进入标准战斗流程……可能会有问题？
 		\revcombat\rev_combat_prepare($data,$edata,1,$command);

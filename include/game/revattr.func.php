@@ -160,6 +160,10 @@ namespace revattr
 			{
 				$bsk = $pa['bskill'];
 				$bsk_name = $cskills[$bsk]['name'];
+				if($bsk === 'tl_binglai' && !\binglai_prepare($pa)) {
+					unset($pa['bskill']);
+					return;
+				}
 				# 扣除怒气
 				$bsk_cost = get_skillragecost($bsk,$pa);
 				if($bsk_cost) $pa['rage'] -= $bsk_cost;
@@ -1885,6 +1889,9 @@ namespace revattr
 	{
 		global $log;
 		$fin_dmg_p = Array();
+		if(empty($pa['fcg_packet']) && !empty($pa['binglai_roll']) && $pa['binglai_roll']['mult'] != 1) {
+			$fin_dmg_p[] = $pa['binglai_roll']['mult'];
+		}
 		if(empty($pa['fcg_packet'])) {
 			if(\fcg_attuned($pa,'R')) $fin_dmg_p[]=1.12;
 			if(!empty($pa['is_counter']) && !empty($pa['fcg_battle']['crit'])) {
@@ -2491,6 +2498,7 @@ namespace revattr
 			if($hp_d > 0 && function_exists('ruleset_backlash_damage_hook')) $hp_d = ruleset_backlash_damage_hook($pa,$pd,$hp_d);
 			if($hp_d > 0)
 			{
+				$hp_d = \binglai_absorb($pa,$hp_d);
 				$log .= "惨无人道的攻击对{$pa['nm']}自身造成了<span class=\"red\">$hp_d</span>点<span class=\"red\">反噬伤害！</span><br>";
 				$pa['hp'] -= $hp_d;
 			}
@@ -2561,6 +2569,7 @@ namespace revattr
 
 				// 计算新伤害
 				$reflected_damage = round($pa['final_damage'] * 777.77);
+				$reflected_damage = \binglai_absorb($pa,$reflected_damage);
 
 				// 对攻击者造成伤害
 				$pa['hp'] -= $reflected_damage;
@@ -2589,10 +2598,11 @@ namespace revattr
 				$log .= "<span class='minirainbow'>{$pa['nm']}被卷入了{$pd['nm']}的弹幕之中！</span><br>";
 
 				// 对攻击者造成伤害
-				$pa['hp'] -= $pa['final_damage'];
+				$reflected_damage = \binglai_absorb($pa,$pa['final_damage']);
+				$pa['hp'] -= $reflected_damage;
 				if($pa['hp'] < 0) $pa['hp'] = 0;
 
-				$log .= "<span class='yellow'>{$pa['nm']}被弹幕击中，受到了{$pa['final_damage']}点伤害！</span><br>";
+				$log .= "<span class='yellow'>{$pa['nm']}被弹幕击中，受到了{$reflected_damage}点伤害！</span><br>";
 
 				// 处理攻击者被弹死
 				if($pa['hp'] <= 0)
@@ -2615,7 +2625,7 @@ namespace revattr
 		}
 
 		# 核武器效果判定
-		if(!empty($pa['weppara']['isNuclearWeapon']))
+		if(!empty($pa['weppara']['isNuclearWeapon']) && empty($pa['binglai_roll']['aoe']))
 		{
 			// 计算伤害池
 			$damage_pool = $pa['final_damage'];
@@ -2669,7 +2679,9 @@ namespace revattr
 			// 应用伤害
 			foreach($players as $player)
 			{
+				if($player['hp'] <= 0) continue;
 				$actual_damage = $damage_per_player;
+				$player['clbpara'] = get_clbpara($player['clbpara']);
 
 				// 特殊条件检查
 				if(!empty($player['clbpara']['skill']) &&
@@ -2678,23 +2690,21 @@ namespace revattr
 				   $player['def'] > 10000)
 				{
 					$actual_damage = 1;
-					$log .= "{$player['name']}受到了<span class='yellow'>1</span>点伤害！<br>";
 				}
-				else
-				{
-					// 生命值不能低于1
-					$new_hp = max(1, $player['hp'] - $actual_damage);
-					$actual_damage = $player['hp'] - $new_hp;
-					$player['hp'] = $new_hp;
-
-					$log .= "{$player['name']}受到了<span class='yellow'>{$actual_damage}</span>点伤害！<br>";
-
-					// 如果不是攻击者或防守者，更新数据库
-					if($player['pid'] != $pa['pid'] && $player['pid'] != $pd['pid'])
-					{
-						$query = "UPDATE {$tablepre}players SET hp='{$player['hp']}' WHERE pid='{$player['pid']}'";
-						$db->query($query);
-					}
+				$actual_damage = \binglai_absorb($player,$actual_damage);
+				$new_hp = max(1,$player['hp']-$actual_damage);
+				$actual_damage = $player['hp']-$new_hp;
+				$player['hp'] = $new_hp;
+				$log .= "{$player['name']}受到了<span class='yellow'>{$actual_damage}</span>点伤害！<br>";
+				// 战斗双方须回写当前数组，否则稍后的 player_save 会覆盖扣血与盾消耗。
+				if($player['pid'] == $pa['pid']) {
+					$pa['hp'] = $player['hp']; $pa['clbpara'] = $player['clbpara'];
+				} elseif($player['pid'] == $pd['pid']) {
+					$pd['hp'] = $player['hp']; $pd['clbpara'] = $player['clbpara'];
+				} else {
+					$hp = (int)$player['hp']; $pid = (int)$player['pid'];
+					$para = bin2hex(json_encode($player['clbpara'],JSON_UNESCAPED_UNICODE));
+					$db->query("UPDATE {$tablepre}players SET hp='$hp',clbpara=X'$para' WHERE pid='$pid'");
 				}
 			}
 		}

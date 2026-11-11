@@ -25,6 +25,7 @@ function c25_command_file($path,$content) {
 }
 c25_command_file('include/common.inc.php','<?php');
 c25_command_file('include/game.func.php','<?php');
+c25_command_file('include/game/song.inc.php','<?php function song_sis_panel_visible($data) { return false; }');
 foreach(Array('club25.func.php','club25.items.php') as $file)
 	c25_command_file('include/game/'.$file,'<?php require '.var_export($repo.'include/game/'.$file,true).';');
 c25_command_file('include/game/revbattle.func.php', <<<'PHP'

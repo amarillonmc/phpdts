@@ -53,6 +53,7 @@ namespace revattr
 				if($event_dice==1)
 				{
 					$damage = min($pd['hp']-1,round($pd['mhp']*0.5)); //罪不至死
+					$damage = \binglai_absorb($pd,$damage);
 					$pd['hp'] -= $damage;
 					//$log .= "<span class=\"yellow\">“虽说我不是什么超能力者，但是最高级的科技也和超能力无异了！”红暮大笑。</span><br>";
 					$log .= "<span class=\"yellow\">红色的光球直击你的心脏！</span><br>";
@@ -101,8 +102,9 @@ namespace revattr
 				$log .= "<span class=\"neonred\">红暮高高一跃，跳到空中！</span><br>";
 				if($event_dice==1)
 				{
-					$pd['hp']-=1107;
-					$log .= "<span class=\"yellow\">巨大的机甲一下便将你碾压！造成了<span class=\"red\">1107</span>点伤害！</span><br>";
+					$damage = \binglai_absorb($pd,1107);
+					$pd['hp']-=$damage;
+					$log .= "<span class=\"yellow\">巨大的机甲一下便将你碾压！造成了<span class=\"red\">{$damage}</span>点伤害！</span><br>";
 				}
 				else
 				{

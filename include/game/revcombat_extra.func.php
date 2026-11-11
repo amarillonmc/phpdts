@@ -389,8 +389,17 @@ namespace revcombat
 		global $log;
 		$loop = 0;
 
+		# 「饼来」每段重新判命中，末段打完才移除倍率，不借用武器连击总倍率。
+		if(isset($pa['binglai_roll'])) {
+			if(!empty($pa['binglai_hits'])) {
+				$pa['binglai_hits']--;
+				$log .= "<span class=\"lime\">{$pa['nm']}翻动平底锅，再度攻向{$pd['nm']}！</span><br>";
+				$loop = 1;
+			} else unset($pa['binglai_roll'],$pa['binglai_hits']);
+		}
+
 		# 「裁决」追加一次攻击；行动内的掷骰标记保留，不能连锁。
-		if(!empty($pa['c24_rapid'])) {
+		if(!$loop && !empty($pa['c24_rapid'])) {
 			unset($pa['c24_rapid']);
 			$loop = 1;
 		}

@@ -158,6 +158,7 @@ namespace revcombat
 		elseif(!empty($att_dmg))
 		{
 			//扣血
+			$att_dmg = \binglai_absorb($pd,$att_dmg);
 			$pd['hp'] = max(0,$pd['hp']-$att_dmg);
 			//判断是否触发击杀或复活：1-继续战斗；0-中止战斗
 			$att_result = rev_combat_result($pa,$pd,$active);
@@ -219,6 +220,7 @@ namespace revcombat
 		elseif(!empty($def_dmg))
 		{
 			//扣血
+			$def_dmg = \binglai_absorb($pa,$def_dmg);
 			$pa['hp'] = max(0,$pa['hp']-$def_dmg);
 			//判断是否触发击杀或复活。增补：$active已经没有用了，不用管它。
 			$def_result = rev_combat_result($pd,$pa,1-$active);
@@ -270,6 +272,11 @@ namespace revcombat
 
 		# 战斗准备事件中触发了跳过战斗标记，直接goto跳转到这个位置。
 		battle_finish_flag:
+		$pa['clbpara'] = get_clbpara($pa['clbpara']); $pd['clbpara'] = get_clbpara($pd['clbpara']);
+		unset($pa['binglai_roll'],$pa['binglai_hits'],$pa['bskill_tl_binglai'],$pa['clbpara']['binglai_shield']);
+		unset($pd['binglai_roll'],$pd['binglai_hits'],$pd['bskill_tl_binglai'],$pd['clbpara']['binglai_shield']);
+		if(($pa['bskill'] ?? '') === 'tl_binglai') unset($pa['bskill'],$pa['bskilllog']);
+		if(($pd['bskill'] ?? '') === 'tl_binglai') unset($pd['bskill'],$pd['bskilllog']);
 		unset($pa['c25_net_input'],$pa['c25_net_settled'],$pa['c25_net_stop'],$pa['bskill_c25_net']);
 		unset($pd['c25_net_input'],$pd['c25_net_settled'],$pd['c25_net_stop'],$pd['bskill_c25_net']);
 		unset($pa['c24_verdict_done'],$pa['c24_rapid'],$pa['c24_selfshot'],$pd['c24_verdict_done'],$pd['c24_rapid']);
@@ -456,7 +463,7 @@ namespace revcombat
 		$flag = \revattr\hitrate_prepare_events($pa,$pd,$active);
 		if($flag < 0) return $flag;
 
-		if(\club23_is_memory($pa)) {
+		if(\club23_is_memory($pa) && empty($pa['binglai_roll'])) {
 			$damage=\club23_memory_attack($pa,$pd,$active);
 			$damage=\fcg_defend_damage($pa,$pd,$damage);
 			if(empty($pa['type']) && empty($pd['type']) && !empty($GLOBALS['gamevars']['sunisshining'][$pa['pls']])) {
@@ -507,6 +514,7 @@ namespace revcombat
 			elseif(isset($fix_dmg))
 			{
 				$damage = $fix_dmg;
+				if(!empty($pa['binglai_roll'])) $damage = round($damage*$pa['binglai_roll']['mult']);
 				$pa['final_damage'] = $damage;
 				$log .= "<span class=\"yellow\">造成的总伤害：<span class=\"red\">{$damage}</span>。</span><br>";
 			}
@@ -674,6 +682,10 @@ namespace revcombat
 			//攻击方(pa)造成伤害后的事件（计算反噬伤害）
 			\revattr\attack_finish_events($pa,$pd,$active);
 			//防守方(pd)受到伤害后的事件（防具耐久下降、受伤）
+			if(!empty($pa['binglai_roll']['aoe'])) {
+				$damage = \binglai_splash($pa,$pd,$damage);
+				$pa['final_damage'] = $damage;
+			}
 			\revattr\get_hurt_events($pa,$pd,$active);
 		}
 		else 
