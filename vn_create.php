@@ -14,6 +14,7 @@ $vtitle = $vkind === 'npc' ? '幻影造物' : '万象投影';
 $vstatus = array('等待审核','已采纳','未采纳');
 $vmessage = $_SESSION['vncreation_message'] ?? '';
 unset($_SESSION['vncreation_message']);
+$verror = false;
 $vid = 0;
 $vrow = null;
 $vinput = array();
@@ -50,16 +51,47 @@ try {
 	}
 } catch(Exception $e) {
 	$vmessage = $e->getMessage();
+	$verror = true;
+	if(!$vrow) $vid = 0;
 }
+$vmode = isset($_GET['mode']) && is_scalar($_GET['mode']) ? (string)$_GET['mode'] : '';
+$vpostmode = ($vmode === 'post' || $vmode === 'edit' || $vid > 0 || $_SERVER['REQUEST_METHOD'] === 'POST');
+$vnotice = $vkind === 'npc' ? $vcfg['npc_notice'] : $vcfg['item_notice'];
+$vtop_tips = $vkind === 'npc' ? $vcfg['npc_tips'] : $vcfg['item_tips'];
 $vcanedit = $vcfg['enabled'] && (!$vid || ($vrow && (int)$vrow['uid'] === (int)$udata['uid']));
 $vform = vncreation_form_data($vkind,$vinput,$vcfg);
-$vlines = $vrow ? vncreation_describe($vkind,json_decode($vrow['content'],true),$vcfg) : array();
-$vformtoken = $vcanedit ? vncreation_form_token($vkind.':'.$vid.':save',$vrow) : '';
+$vold_data = $vrow ? json_decode($vrow['content'],true) : null;
+$vlines = $vrow ? vncreation_describe($vkind,$vold_data,$vcfg) : array();
+$vformtoken = ($vpostmode && $vcanedit) ? vncreation_form_token($vkind.':'.$vid.':save',$vrow) : '';
 $vrerolls = array();
-if($vcanedit && $vrow && $vkind === 'npc') {
-	$vstored = json_decode($vrow['content'],true);
-	foreach($vstored['equip'] as $vslot=>$vpart) {
+if($vpostmode && $vcanedit && $vrow && $vkind === 'npc') {
+	foreach($vold_data['equip'] as $vslot=>$vpart) {
 		if($vpart['tier'] > 1) $vrerolls[$vslot] = array('label'=>$vcfg['equip_slots'][$vslot], 'cost'=>$vpart['tier']*$vcfg['reroll_cost'], 'token'=>vncreation_form_token($vkind.':'.$vid.':reroll',$vrow));
+	}
+}
+if($vrow) $vrow = vncreation_format_record($vrow,$vcfg);
+$vinitial_quote = $vquote !== null ? $vquote : ($vrow ? 0 : ($vkind === 'npc' ? $vcfg['npc_levels'][$vform['level']]['cost'] : $vcfg['item_base']));
+$vjs_cfg = json_encode(array(
+	'kind' => $vkind,
+	'max_sk' => $vcfg['max_sk'],
+	'item_base' => $vcfg['item_base'],
+	'bag_base' => $vcfg['bag_base'],
+	'effect_cost' => $vcfg['effect_cost'],
+	'durability_cost' => $vcfg['durability_cost'],
+	'attribute_cost' => $vcfg['attribute_cost'],
+	'infinite_cost' => $vcfg['infinite_cost'],
+	'reroll_cost' => $vcfg['reroll_cost'],
+	'npc_levels' => $vcfg['npc_levels'],
+	'equip_levels' => $vcfg['equip_levels'],
+	'equip_slots' => array_keys($vcfg['equip_slots']),
+	'old' => $vold_data,
+), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
+$temp_item_namelist = array();
+if($vpostmode && $vcanedit && $vcfg['name_assoc']) {
+	$in_file = config('itmlist',$gamecfg);
+	if(file_exists($in_file)) {
+		include $in_file;
+		if(isset($item_namelist) && is_array($item_namelist)) $temp_item_namelist = $item_namelist;
 	}
 }
 $vpage = isset($_GET['page']) && is_scalar($_GET['page']) ? max(0,min(100000,(int)$_GET['page'])) : 0;
@@ -67,10 +99,11 @@ $vprevpage = $vpage-1;
 $vnextpage = $vpage+1;
 $voffset = $vpage*20;
 $vlist = array();
-$vquery = $db->query("SELECT * FROM {$gtablepre}vncreation WHERE kind='$vkind' ORDER BY id DESC LIMIT $voffset,21");
-while($vrecord = $db->fetch_array($vquery)) {
-	$vrecord['data'] = json_decode($vrecord['content'],true);
-	$vlist[] = $vrecord;
+if(!$vpostmode) {
+	$vquery = $db->query("SELECT * FROM {$gtablepre}vncreation WHERE kind='$vkind' ORDER BY id DESC LIMIT $voffset,21");
+	while($vrecord = $db->fetch_array($vquery)) {
+		$vlist[] = vncreation_format_record($vrecord,$vcfg);
+	}
 }
 $vnext = count($vlist) > 20;
 if($vnext) array_pop($vlist);

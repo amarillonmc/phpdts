@@ -1,89 +1,545 @@
 {template header}
-<div style="max-width:1100px;margin:20px auto;padding:12px;text-align:left">
-<h2>{$vtitle}</h2>
-<p><a href="vnworld.php">空想梦境</a> · <a href="vn_create.php?kind=npc">幻影造物</a> · <a href="vn_create.php?kind=item">万象投影</a></p>
-<p class="yellow">{echo vncreation_html($vmessage)}</p>
-<!--{if !$vcfg['enabled']}--><p class="yellow">当前大房间规则集使用独立的角色和物品系统，暂不接收或投放此类投稿。已有投稿保留。</p><!--{/if}-->
-<p>当前切糕：{$udata['credits2']}。保存后等待管理员审核，采纳后从下一局大房间开始投放。未采纳不退费，可修改后重新提交。</p>
-<!--{if $vkind === 'npc'}-->
-<p>每局从已采纳的 NPC 池中随机抽取 {$vcfg['npc_count']} 名，不重复抽取，池不足时全部投放。装备属性在付费保存时随机生成，此后保持不变；额外掉落放在六个背包槽内。</p>
+<div id="notice"></div>
+<div class="subtitle">{$vtitle}</div>
+<center>
+<!--{if !$vpostmode}-->
+	<div class="ach_box" style="min-height: min-content; width: max-content; max-width: 560px;">
+		<table>
+			<tr>
+				<td>
+					<IMG width=140px src="{$vcfg['img']}" valign="middle"/>
+				</td>
+				<td class="ach-cont">
+					<span class="evergreen">{$vnotice}</span>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="vnlogs">
+		<div id="vlog">
+			<!--{if $vmessage !== ''}-->
+				<!--{if $verror}--><span class="red">错误：{echo vncreation_html($vmessage)}</span><br><!--{else}--><span class="yellow">{echo vncreation_html($vmessage)}</span><br><!--{/if}-->
+			<!--{/if}-->
+			<!--{if !$vcfg['enabled']}-->
+				<span class="yellow">当前大房间规则集使用独立的角色和物品系统，暂不接收或投放此类投稿。已有投稿保留。</span><br>
+			<!--{/if}-->
+		</div>
+		<!--{if $vkind === 'npc'}-->
+			所有提交的幻影造物列表（每局大房间从已采纳池中随机抽取 {$vcfg['npc_count']} 名入场，池不足时全部投放）：<br>
+			<span class="grey">（造物保存、修改或重掷后均需等待管理员审核，采纳后将从下一局大房间开始入场。）</span><br>
+			<!--{if $vcfg['enabled']}-->
+			<a href="vn_create.php?kind=npc&amp;mode=post"><input type="button" value="创建一个新的造物"></a>
+			<!--{/if}-->
+		<!--{else}-->
+			所有提交的万象投影列表（每份已采纳的投影将在每局大房间开局时按设定投放一次）：<br>
+			<span class="grey">（投影保存或修改后均需等待管理员审核，采纳后将从下一局大房间开始投放。）</span><br>
+			<!--{if $vcfg['enabled']}-->
+			<a href="vn_create.php?kind=item&amp;mode=post"><input type="button" value="创建一个新的投影"></a>
+			<!--{/if}-->
+		<!--{/if}-->
+		<br><br>
+		<!--{if !empty($vlist)}-->
+		<table cellSpacing=3 cellPadding=2>
+			<!--{if $vkind === 'npc'}-->
+			<tr>
+				<td class="b1" height=20px width="100px">{lang vcreator}</td>
+				<td class="b1">{lang vstatus}</td>
+				<td class="b1" style="padding-left: 6px; padding-right: 6px;">造物名称</td>
+				<td class="b1" width="90px">战斗阶位</td>
+				<td class="b1" style="padding-left: 6px; padding-right: 6px;">装备配置</td>
+				<td class="b1" style="padding-left: 6px; padding-right: 6px;">背包掉落</td>
+				<td class="b1" width="75px">累计切糕</td>
+				<td class="b1" width="55px">{lang vedit}</td>
+			</tr>
+			<!--{loop $vlist $vrecord}-->
+			<!--{eval $vbtn_label = $vrecord['uid'] == $udata['uid'] ? '编辑' : '查看';}-->
+			<tr>
+				<td class="b3">{$vrecord['creator_html']}</td>
+				<td class="b3">{$vrecord['status_html']}</td>
+				<td class="b3"><span class="b">{$vrecord['npc_name_html']}</span></td>
+				<td class="b3">{$vrecord['level_desc']}</td>
+				<td class="b3" style="max-width:280px">{$vrecord['equip_desc']}</td>
+				<td class="b3" style="max-width:240px">{$vrecord['bag_desc']}</td>
+				<td class="b3"><span class="yellow">{$vrecord['spent']}</span></td>
+				<td class="b3">
+					<a href="vn_create.php?kind=npc&amp;id={$vrecord['id']}"><input type="button" value="{$vbtn_label}"></a>
+				</td>
+			</tr>
+			<!--{/loop}-->
+			<!--{else}-->
+			<tr>
+				<td class="b1" height=20px width="100px">{lang vcreator}</td>
+				<td class="b1">{lang vstatus}</td>
+				<td class="b1" style="padding-left: 6px; padding-right: 6px;">投影道具</td>
+				<td class="b1" style="padding-left: 6px; padding-right: 6px;">{lang vitmsk}</td>
+				<td class="b1" width="70px">每局数量</td>
+				<td class="b1" width="100px">投放地点</td>
+				<td class="b1" width="75px">累计切糕</td>
+				<td class="b1" width="55px">{lang vedit}</td>
+			</tr>
+			<!--{loop $vlist $vrecord}-->
+			<!--{eval $vbtn_label = $vrecord['uid'] == $udata['uid'] ? '编辑' : '查看';}-->
+			<tr>
+				<td class="b3">{$vrecord['creator_html']}</td>
+				<td class="b3">{$vrecord['status_html']}</td>
+				<td class="b3">{$vrecord['itm_desc']}</td>
+				<td class="b3" style="max-width:260px">{$vrecord['result_desc']}</td>
+				<td class="b3">{$vrecord['data']['count']}</td>
+				<td class="b3">{$vrecord['place_desc']}</td>
+				<td class="b3"><span class="yellow">{$vrecord['spent']}</span></td>
+				<td class="b3">
+					<a href="vn_create.php?kind=item&amp;id={$vrecord['id']}"><input type="button" value="{$vbtn_label}"></a>
+				</td>
+			</tr>
+			<!--{/loop}-->
+			<!--{/if}-->
+		</table>
+		<!--{if $vpage > 0 || $vnext}-->
+		<br>
+		<!--{if $vpage > 0}--><a href="vn_create.php?kind={$vkind}&amp;page={$vprevpage}"><input type="button" value="上一页"></a><!--{/if}-->
+		<!--{if $vnext}--><a href="vn_create.php?kind={$vkind}&amp;page={$vnextpage}"><input type="button" value="下一页"></a><!--{/if}-->
+		<!--{/if}-->
+		<!--{else}-->
+		<br>暂时还没有人提交过<!--{if $vkind === 'npc'}-->幻影造物<!--{else}-->万象投影<!--{/if}-->！<br>
+		<!--{/if}-->
+	</div>
 <!--{else}-->
-<p>每份已采纳的物品投稿在每局开局按指定数量和地点投放一次；选择全图随机时，每件物品分别随机地点。</p>
+	<span class="grey"><div id="vmixtips">{$vtop_tips}</div></span>
+	<span class="yellow"><div id="vmixc2">所持切糕数：{$udata['credits2']}<!--{if $vcanedit}-->　|　预计本次消耗：<span id="vquote_live">{$vinitial_quote}</span> 切糕<!--{/if}--><!--{if $vrow}-->　|　累计已消耗：{$vrow['spent']} 切糕<!--{/if}--></div></span>
+	<!--{if !$vcfg['enabled']}-->
+	<span class="yellow">当前大房间规则集使用独立的角色和物品系统，暂不接收或投放此类投稿。已有投稿保留。</span><br>
+	<!--{/if}-->
+	<details style="margin: 4px 0 8px;">
+		<summary style="cursor:pointer;" class="evergreen">查看详细计价规则<!--{if $vkind === 'npc'}-->与阶位数值表<!--{/if}--></summary>
+		<span class="grey">
+			地图物品每件基础价 {$vcfg['item_base']} 切糕，背包物品每槽基础价 {$vcfg['bag_base']} 切糕；效果每增加 1 加 {$vcfg['effect_cost']} 切糕，耐久每增加 1 加 {$vcfg['durability_cost']} 切糕，每个额外属性加 {$vcfg['attribute_cost']} 切糕（地图物品总价再乘刷出数量）。<br>
+			耐久设为 0 表示无限耐久（∞），按 65535 点耐久另加 {$vcfg['infinite_cost']} 切糕计价。编辑时按各项增加值补费，降低数值或移除物品不退款、不抵扣其他项目。<br>
+			<!--{if $vkind === 'npc'}-->已保存装备改品级或换种类，另收“新品级 × {$vcfg['reroll_cost']}”切糕的重掷费；仅改名保留原有随机结果。<!--{/if}-->修改或重掷后均回到提交中状态等待审核。
+		</span>
+		<!--{if $vkind === 'npc'}-->
+		<table cellSpacing=3 cellPadding=2 style="margin-top:4px;">
+			<tr>
+				<td class="b1">战斗阶位</td>
+				<td class="b1">基础费用</td>
+				<td class="b1">等级</td>
+				<td class="b1">生命 / 体力</td>
+				<td class="b1">攻防 / 熟练</td>
+				<td class="b1">携带金钱</td>
+			</tr>
+			<!--{loop $vcfg['npc_levels'] $vl $vs}-->
+			<tr>
+				<td class="b3">{$vs['name']}</td>
+				<td class="b3"><span class="yellow">{$vs['cost']}</span></td>
+				<td class="b3">Lv.{$vs['lvl']}</td>
+				<td class="b3">{$vs['mhp']} / {$vs['msp']}</td>
+				<td class="b3">{$vs['att']} / {$vs['skill']}</td>
+				<td class="b3">{$vs['money']}</td>
+			</tr>
+			<!--{/loop}-->
+		</table>
+		<table cellSpacing=3 cellPadding=2 style="margin-top:4px;">
+			<tr>
+				<td class="b1">装备品级</td>
+				<td class="b1">每部位费用</td>
+				<td class="b1">固定效果 / 耐久</td>
+				<td class="b1">随机普通 / 稀有属性数</td>
+				<td class="b1">单件重掷费用</td>
+			</tr>
+			<!--{loop $vcfg['equip_levels'] $vl $vs}-->
+			<!--{eval $vrcost = $vl > 1 ? ($vl * $vcfg['reroll_cost']).' 切糕' : '-';}-->
+			<tr>
+				<td class="b3">{$vs['name']}</td>
+				<td class="b3"><span class="yellow">{$vs['cost']}</span></td>
+				<td class="b3">{$vs['e']} / {$vs['s']}</td>
+				<td class="b3">{$vs['basic']} / {$vs['rare']}</td>
+				<td class="b3">{$vrcost}</td>
+			</tr>
+			<!--{/loop}-->
+		</table>
+		<!--{/if}-->
+	</details>
+	<div id="vmixlog">
+		<!--{if $vmessage !== ''}-->
+			<!--{if $verror}--><span class="red">错误：{echo vncreation_html($vmessage)}</span><br><!--{else}--><span class="yellow">{echo vncreation_html($vmessage)}</span><br><!--{/if}-->
+		<!--{/if}-->
+		<!--{if $vquote !== null}-->
+			<span class="yellow">试算结果：本次保存需要 {$vquote} 切糕。<!--{if $vkind === 'npc'}-->装备的具体随机属性在保存后显示。<!--{/if}--></span><br>
+		<!--{/if}-->
+	</div>
+	<!--{if $vrow}-->
+	<table cellSpacing=3 cellPadding=2 style="margin-top:4px;">
+		<!--{if $vkind === 'npc'}-->
+		<tr>
+			<td class="b1" width="90px">{lang vcreator}</td>
+			<td class="b1" width="80px">{lang vstatus}</td>
+			<td class="b1">造物名称</td>
+			<td class="b1">战斗阶位</td>
+			<td class="b1">能力数值</td>
+			<td class="b1" width="80px">累计切糕</td>
+			<td class="b1">审核说明</td>
+		</tr>
+		<tr>
+			<td class="b3">{$vrow['creator_html']}</td>
+			<td class="b3">{$vrow['status_html']}</td>
+			<td class="b3"><span class="b">{$vrow['npc_name_html']}</span></td>
+			<td class="b3">{$vrow['level_desc']}</td>
+			<td class="b3">{$vrow['level_detail']}</td>
+			<td class="b3"><span class="yellow">{$vrow['spent']}</span></td>
+			<td class="b3"><!--{if $vrow['note_html'] !== ''}--><span class="yellow">{$vrow['note_html']}</span><!--{else}--><span class="grey">-</span><!--{/if}--></td>
+		</tr>
+		<!--{else}-->
+		<tr>
+			<td class="b1" width="90px">{lang vcreator}</td>
+			<td class="b1" width="80px">{lang vstatus}</td>
+			<td class="b1">投影道具</td>
+			<td class="b1">{lang vitmsk}</td>
+			<td class="b1" width="70px">每局数量</td>
+			<td class="b1" width="100px">投放地点</td>
+			<td class="b1" width="80px">累计切糕</td>
+			<td class="b1">审核说明</td>
+		</tr>
+		<tr>
+			<td class="b3">{$vrow['creator_html']}</td>
+			<td class="b3">{$vrow['status_html']}</td>
+			<td class="b3">{$vrow['itm_desc']}</td>
+			<td class="b3">{$vrow['result_desc']}</td>
+			<td class="b3">{$vrow['data']['count']}</td>
+			<td class="b3">{$vrow['place_desc']}</td>
+			<td class="b3"><span class="yellow">{$vrow['spent']}</span></td>
+			<td class="b3"><!--{if $vrow['note_html'] !== ''}--><span class="yellow">{$vrow['note_html']}</span><!--{else}--><span class="grey">-</span><!--{/if}--></td>
+		</tr>
+		<!--{/if}-->
+	</table>
+	<!--{if $vkind === 'npc' && (!empty($vrow['equip_rows']) || !empty($vrow['bag_rows']))}-->
+	<table cellSpacing=3 cellPadding=2 style="margin-top:4px;">
+		<tr>
+			<td class="b1" width="110px">已存部位 / 槽位</td>
+			<td class="b1" style="min-width:130px">名称</td>
+			<td class="b1" style="min-width:240px">已生成属性（用途 / 效果 / 耐久 / 词条）</td>
+			<!--{if $vcanedit && !empty($vrerolls)}--><td class="b1" width="160px">词条重掷</td><!--{/if}-->
+		</tr>
+		<!--{loop $vrow['equip_rows'] $vslot $veq}-->
+		<tr>
+			<td class="b3">{$veq['slot_label']}（<span class="{$veq['tier_cls']}">{$veq['tier_name']}</span>）</td>
+			<td class="b3">{$veq['name_desc']}</td>
+			<td class="b3">{$veq['result_desc']}</td>
+			<!--{if $vcanedit && !empty($vrerolls)}-->
+			<td class="b3">
+				<!--{if isset($vrerolls[$vslot])}-->
+				<form method="post" action="vn_create.php?kind=npc&amp;id={$vid}" style="margin:0">
+					<input type="hidden" name="action" value="reroll">
+					<input type="hidden" name="slot" value="{$vslot}">
+					<input type="hidden" name="token" value="{$vrerolls[$vslot]['token']}">
+					<button type="submit">重掷{$vrerolls[$vslot]['label']}（{$vrerolls[$vslot]['cost']}切糕）</button>
+				</form>
+				<!--{else}-->
+				<span class="grey">无随机词条</span>
+				<!--{/if}-->
+			</td>
+			<!--{/if}-->
+		</tr>
+		<!--{/loop}-->
+		<!--{loop $vrow['bag_rows'] $vslot $vbag}-->
+		<tr>
+			<td class="b3">背包 {$vslot}</td>
+			<td class="b3">{$vbag['name_desc']}</td>
+			<td class="b3">{$vbag['result_desc']}</td>
+			<!--{if $vcanedit && !empty($vrerolls)}--><td class="b3"><span class="grey">-</span></td><!--{/if}-->
+		</tr>
+		<!--{/loop}-->
+	</table>
+	<!--{/if}-->
+	<br>
+	<!--{/if}-->
+	<!--{if $vcanedit}-->
+	<form method="post" name="vn_creation_form" action="vn_create.php?kind={$vkind}&amp;id={$vid}">
+		<input type="hidden" name="token" value="{$vformtoken}">
+		<!--{if $vkind === 'npc'}-->
+		<!--{eval $vnpcname = vncreation_html($vform['name']); $vcur_lvl = $vcfg['npc_levels'][$vform['level']] ?? reset($vcfg['npc_levels']);}-->
+		<table cellSpacing=3 cellPadding=2>
+			<tr>
+				<td class="b1" height=20px><span>造物名称</span></td>
+				<td class="b1"><span>战斗阶位</span></td>
+				<td class="b1" width="60px"><span>等级</span></td>
+				<td class="b1" width="110px"><span>生命 / 体力</span></td>
+				<td class="b1" width="110px"><span>攻防 / 熟练</span></td>
+				<td class="b1" width="80px"><span>携带金钱</span></td>
+			</tr>
+			<tr>
+				<td class="b3">
+					<input type="text" name="data[name]" maxlength="40" required placeholder="在此填写造物名称" value="{$vnpcname}" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+				</td>
+				<td class="b3">
+					<select name="data[level]" id="vn_npc_level" onchange="vnUpdateNpcLevel();vnUpdateQuote();">
+						<!--{loop $vcfg['npc_levels'] $vl $vs}-->
+						<option value="{$vl}" <!--{if $vform['level'] == $vl}-->selected<!--{/if}-->>{$vs['name']}（{$vs['cost']} 切糕）</option>
+						<!--{/loop}-->
+					</select>
+				</td>
+				<td class="b3"><span id="vn_lvl_lv">Lv.{$vcur_lvl['lvl']}</span></td>
+				<td class="b3"><span id="vn_lvl_hp">{$vcur_lvl['mhp']} / {$vcur_lvl['msp']}</span></td>
+				<td class="b3"><span id="vn_lvl_att">{$vcur_lvl['att']} / {$vcur_lvl['skill']}</span></td>
+				<td class="b3"><span id="vn_lvl_money">{$vcur_lvl['money']}</span></td>
+			</tr>
+		</table>
+		<br>
+		<table cellSpacing=3 cellPadding=2>
+			<tr>
+				<td class="b1" height=20px width="75px"><span>装备部位</span></td>
+				<td class="b1"><span>装备品级</span></td>
+				<td class="b1"><span>装备种类</span></td>
+				<td class="b1"><span>装备名称</span></td>
+				<td class="b1" style="min-width:200px"><span>品级效果 / 耐久 / 随机属性数</span></td>
+			</tr>
+			<!--{loop $vcfg['equip_slots'] $vslot $vlabel}-->
+			<!--{eval $vpart = $vform['equip'][$vslot]; $vpart_name = vncreation_html($vpart['name']); $veq_tier = (int)$vpart['tier']; $veq_lv = $veq_tier ? ($vcfg['equip_levels'][$veq_tier] ?? null) : null;}-->
+			<tr>
+				<td class="b3">{$vlabel}</td>
+				<td class="b3">
+					<select name="data[equip][{$vslot}][tier]" id="vn_eq_tier_{$vslot}" aria-label="{$vlabel}等级" onchange="vnUpdateEquipRow('{$vslot}');vnUpdateQuote();">
+						<option value="0">不装备</option>
+						<!--{loop $vcfg['equip_levels'] $vl $vs}-->
+						<option value="{$vl}" <!--{if $vpart['tier'] == $vl}-->selected<!--{/if}-->>{$vs['name']}（{$vs['cost']} 切糕）</option>
+						<!--{/loop}-->
+					</select>
+				</td>
+				<td class="b3">
+					<select name="data[equip][{$vslot}][k]" id="vn_eq_k_{$vslot}" aria-label="{$vlabel}种类" onchange="vnUpdateQuote();">
+						<!--{loop $vcfg['equip_kinds'][$vslot] $vk}-->
+						<option value="{$vk}" <!--{if $vpart['k'] === $vk}-->selected<!--{/if}-->>{$vcfg['kinds'][$vk]}</option>
+						<!--{/loop}-->
+					</select>
+				</td>
+				<td class="b3">
+					<input type="text" name="data[equip][{$vslot}][name]" id="vn_eq_name_{$vslot}" list="vsnamelist" maxlength="30" value="{$vpart_name}" <!--{if $veq_tier > 0}-->required placeholder="请填写{$vlabel}名称"<!--{else}-->placeholder="未装备可留空"<!--{/if}--> onkeydown="if(event.keyCode==13){event.preventDefault();}">
+				</td>
+				<td class="b3" id="vn_eq_info_{$vslot}">
+					<!--{if $veq_lv}-->
+					效果 {$veq_lv['e']} / 耐久 {$veq_lv['s']} / 普通属性 {$veq_lv['basic']} + 稀有属性 {$veq_lv['rare']}
+					<!--{else}-->
+					<span class="grey">未装备</span>
+					<!--{/if}-->
+				</td>
+			</tr>
+			<!--{/loop}-->
+		</table>
+		<br>
+		<table cellSpacing=3 cellPadding=2>
+			<tr>
+				<td class="b1" height=20px width="75px"><span>背包槽位</span></td>
+				<td class="b1"><span>道具名称（留空不携带）</span></td>
+				<td class="b1"><span>{lang vitmk}</span></td>
+				<td class="b1"><span>{lang vitme}</span></td>
+				<td class="b1"><span>{lang vitms}</span></td>
+				<td class="b1"><span>{lang vitmsk}（最多 {$vcfg['max_sk']} 个）</span></td>
+				<td class="b1"><span>{lang veitmsk}</span></td>
+			</tr>
+			<!--{loop $vform['bag'] $vslot $vitem}-->
+			<tr>
+				<td class="b3">背包 {$vslot}</td>
+				<!--{eval $vprefix = 'data[bag]['.$vslot.']'; $vsk_id = 'bag_'.$vslot; $vitem_req = 0;}-->
+				{template vn_creation_item}
+			</tr>
+			<!--{/loop}-->
+		</table>
+		<!--{else}-->
+		<!--{eval $vitem = $vform; $vprefix = 'data'; $vsk_id = 'main'; $vitem_req = 1; $vcount = vncreation_html($vform['count']);}-->
+		<table cellSpacing=3 cellPadding=2>
+			<tr>
+				<td class="b1" height=20px><span>投影道具名称</span></td>
+				<td class="b1"><span>{lang vitmk}</span></td>
+				<td class="b1"><span>{lang vitme}</span></td>
+				<td class="b1"><span>{lang vitms}</span></td>
+				<td class="b1"><span>{lang vitmsk}（最多 {$vcfg['max_sk']} 个）</span></td>
+				<td class="b1"><span>{lang veitmsk}</span></td>
+			</tr>
+			<tr>
+				{template vn_creation_item}
+			</tr>
+		</table>
+		<br>
+		<table cellSpacing=3 cellPadding=2>
+			<tr>
+				<td class="b1" height=20px width="25px"></td>
+				<td class="b1"><span>每局刷出数量（1～{$vcfg['max_count']}）</span></td>
+				<td class="b1"><span>投放地点</span></td>
+			</tr>
+			<tr>
+				<td class="b3">↪</td>
+				<td class="b3">
+					<input type="number" name="data[count]" id="vn_item_count" style="width:70px" min="1" max="{$vcfg['max_count']}" required value="{$vcount}" oninput="if(value>{$vcfg['max_count']})value={$vcfg['max_count']};if(value<1&&value!=='')value=1;vnUpdateQuote();" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+				</td>
+				<td class="b3">
+					<select name="data[place]">
+						<option value="-1">全图随机</option>
+						<!--{loop $vcfg['places'] $vp $vlabel}-->
+						<option value="{$vp}" <!--{if $vform['place'] == $vp}-->selected<!--{/if}-->>{$vlabel}</option>
+						<!--{/loop}-->
+					</select>
+				</td>
+			</tr>
+		</table>
+		<!--{/if}-->
+		<!--{if !empty($temp_item_namelist)}-->
+		<datalist id="vsnamelist">
+			<!--{loop $temp_item_namelist $vin}-->
+			<option value="{$vin}">
+			<!--{/loop}-->
+		</datalist>
+		<!--{/if}-->
+		<br>
+		<button type="submit" name="action" value="quote">试算费用</button>
+		<button type="submit" name="action" value="save">保存并提交审核</button>
+		<a href="vn_create.php?kind={$vkind}"><input type="button" value="返回"></a>
+		<br>
+	</form>
+	<script>
+	var vnCfg = {$vjs_cfg};
+	function vnGetSkCount(skId) {
+		var box = document.getElementById('vrsk_inputs_' + skId);
+		return box ? box.querySelectorAll('input[type="hidden"]').length : 0;
+	}
+	function vnChangeSk(skId, prefix, dir) {
+		var box = document.getElementById('vrsk_inputs_' + skId);
+		var disp = document.getElementById('tmpsk_' + skId);
+		var sel = document.getElementById('evrsk_' + skId);
+		if (!box || !disp || !sel) return;
+		var inputs = box.querySelectorAll('input[type="hidden"]');
+		if (dir > 0) {
+			if (inputs.length >= vnCfg.max_sk) {
+				window.alert('不能添加超过' + vnCfg.max_sk + '个属性');
+				return;
+			}
+			var opt = sel.options[sel.selectedIndex];
+			if (!opt) return;
+			for (var i = 0; i < inputs.length; i++) {
+				if (inputs[i].value === opt.value) {
+					window.alert('该属性已添加');
+					return;
+				}
+			}
+			var inp = document.createElement('input');
+			inp.type = 'hidden';
+			inp.name = prefix + '[sk][]';
+			inp.value = opt.value;
+			inp.setAttribute('data-label', opt.text);
+			box.appendChild(inp);
+		} else if (inputs.length > 0) {
+			box.removeChild(inputs[inputs.length - 1]);
+		}
+		var updated = box.querySelectorAll('input[type="hidden"]');
+		if (updated.length === 0) {
+			disp.innerHTML = '<span class="grey">-</span>';
+		} else {
+			var labels = [];
+			for (var j = 0; j < updated.length; j++) {
+				labels.push(updated[j].getAttribute('data-label') || updated[j].value);
+			}
+			disp.textContent = labels.join('+');
+		}
+		vnUpdateQuote();
+	}
+	function vnUpdateNpcLevel() {
+		var sel = document.getElementById('vn_npc_level');
+		if (!sel || !vnCfg.npc_levels) return;
+		var lv = vnCfg.npc_levels[sel.value];
+		if (!lv) return;
+		document.getElementById('vn_lvl_lv').textContent = 'Lv.' + lv.lvl;
+		document.getElementById('vn_lvl_hp').textContent = lv.mhp + ' / ' + lv.msp;
+		document.getElementById('vn_lvl_att').textContent = lv.att + ' / ' + lv.skill;
+		document.getElementById('vn_lvl_money').textContent = lv.money;
+	}
+	function vnUpdateEquipRow(slot) {
+		var tierSel = document.getElementById('vn_eq_tier_' + slot);
+		var nameInp = document.getElementById('vn_eq_name_' + slot);
+		var infoTd = document.getElementById('vn_eq_info_' + slot);
+		if (!tierSel || !infoTd) return;
+		var tier = parseInt(tierSel.value, 10) || 0;
+		if (tier > 0 && vnCfg.equip_levels && vnCfg.equip_levels[tier]) {
+			var elv = vnCfg.equip_levels[tier];
+			infoTd.textContent = '效果 ' + elv.e + ' / 耐久 ' + elv.s + ' / 普通属性 ' + elv.basic + ' + 稀有属性 ' + elv.rare;
+			if (nameInp) {
+				nameInp.required = true;
+				nameInp.placeholder = '请填写装备名称';
+			}
+		} else {
+			infoTd.innerHTML = '<span class="grey">未装备</span>';
+			if (nameInp) {
+				nameInp.required = false;
+				nameInp.placeholder = '未装备可留空';
+			}
+		}
+	}
+	function vnDurCost(s) {
+		return s > 0 ? (s - 1) * vnCfg.durability_cost : 65535 * vnCfg.durability_cost + vnCfg.infinite_cost;
+	}
+	function vnItemCost(e, s, skCount, base) {
+		return base + Math.max(0, e - 1) * vnCfg.effect_cost + vnDurCost(s) + skCount * vnCfg.attribute_cost;
+	}
+	function vnItemUpgradeCost(e, s, skCount, oldItem) {
+		var oldSk = (oldItem && oldItem.sk) ? oldItem.sk.length : 0;
+		var oldE = oldItem ? parseInt(oldItem.e, 10) : 1;
+		var oldS = oldItem ? parseInt(oldItem.s, 10) : 1;
+		return Math.max(0, e - oldE) * vnCfg.effect_cost + Math.max(0, vnDurCost(s) - vnDurCost(oldS)) + Math.max(0, skCount - oldSk) * vnCfg.attribute_cost;
+	}
+	function vnUpdateQuote() {
+		var out = document.getElementById('vquote_live');
+		if (!out) return;
+		var old = vnCfg.old;
+		var cost = 0;
+		if (vnCfg.kind === 'item') {
+			var e = Math.max(1, parseInt((document.getElementById('vn_e_main') || { value: 1 }).value, 10) || 1);
+			var sRaw = (document.getElementById('vn_s_main') || { value: 1 }).value;
+			var s = sRaw === '0' ? 0 : Math.max(0, parseInt(sRaw, 10) || 0);
+			var cnt = Math.max(1, parseInt((document.getElementById('vn_item_count') || { value: 1 }).value, 10) || 1);
+			var skCnt = vnGetSkCount('main');
+			var unit = vnItemCost(e, s, skCnt, vnCfg.item_base);
+			if (!old) {
+				cost = unit * cnt;
+			} else {
+				var oldCnt = parseInt(old.count, 10) || 1;
+				cost = Math.max(0, cnt - oldCnt) * unit + Math.min(cnt, oldCnt) * vnItemUpgradeCost(e, s, skCnt, old);
+			}
+		} else {
+			var lvSel = document.getElementById('vn_npc_level');
+			var lvKey = lvSel ? parseInt(lvSel.value, 10) : 1;
+			var curLvCost = (vnCfg.npc_levels[lvKey] || { cost: 0 }).cost;
+			var oldLvCost = (old && vnCfg.npc_levels[old.level]) ? vnCfg.npc_levels[old.level].cost : 0;
+			cost += old ? Math.max(0, curLvCost - oldLvCost) : curLvCost;
+			for (var i = 0; i < vnCfg.equip_slots.length; i++) {
+				var slot = vnCfg.equip_slots[i];
+				var tSel = document.getElementById('vn_eq_tier_' + slot);
+				var kSel = document.getElementById('vn_eq_k_' + slot);
+				var tier = tSel ? (parseInt(tSel.value, 10) || 0) : 0;
+				if (!tier) continue;
+				var tierCost = (vnCfg.equip_levels[tier] || { cost: 0 }).cost;
+				var prev = (old && old.equip && old.equip[slot]) ? old.equip[slot] : null;
+				var prevCost = (prev && vnCfg.equip_levels[prev.tier]) ? vnCfg.equip_levels[prev.tier].cost : 0;
+				cost += old ? Math.max(0, tierCost - prevCost) : tierCost;
+				if (prev && (parseInt(prev.tier, 10) !== tier || prev.k !== (kSel ? kSel.value : ''))) {
+					cost += tier * vnCfg.reroll_cost;
+				}
+			}
+			for (var b = 1; b <= 6; b++) {
+				var bName = document.getElementById('vn_name_bag_' + b);
+				if (!bName || bName.value.replace(/^\s+|\s+$/g, '') === '') continue;
+				var bE = Math.max(1, parseInt((document.getElementById('vn_e_bag_' + b) || { value: 1 }).value, 10) || 1);
+				var bSRaw = (document.getElementById('vn_s_bag_' + b) || { value: 1 }).value;
+				var bS = bSRaw === '0' ? 0 : Math.max(0, parseInt(bSRaw, 10) || 0);
+				var bSk = vnGetSkCount('bag_' + b);
+				var prevBag = (old && old.bag && old.bag[b]) ? old.bag[b] : null;
+				cost += prevBag ? vnItemUpgradeCost(bE, bS, bSk, prevBag) : vnItemCost(bE, bS, bSk, vnCfg.bag_base);
+			}
+		}
+		out.textContent = cost;
+	}
+	vnUpdateQuote();
+	</script>
+	<!--{else}-->
+	<br>
+	<a href="vn_create.php?kind={$vkind}"><input type="button" value="返回"></a>
+	<br>
+	<!--{/if}-->
 <!--{/if}-->
-<details><summary>查看计价规则与等级数值</summary>
-<p>地图物品每件基础价 {$vcfg['item_base']}，背包物品每槽基础价 {$vcfg['bag_base']}。效果每增加 1 加 {$vcfg['effect_cost']} 切糕；耐久每增加 1 加 {$vcfg['durability_cost']} 切糕；每个额外属性加 {$vcfg['attribute_cost']} 切糕。地图物品总价再乘刷出数量。</p>
-<p>耐久 0 表示无限耐久，按 65535 点耐久另加 {$vcfg['infinite_cost']} 切糕计价。编辑按各项增加值补费，降低数值或移除物品不退款，也不能抵扣其他项目。已保存装备改级或换种类，另外收取“新等级 × {$vcfg['reroll_cost']}”的重掷费。只改名不会改变随机结果。</p>
-<p>修改或重掷都会回到等待审核，暂停后续投放；当局已生成的内容保持原样。重掷可能得到相同结果。</p>
-<!--{if $vkind === 'npc'}-->
-<table class="admin"><tr><th>战斗等级</th><th>费用</th><th>Lv.</th><th>生命 / 体力</th><th>攻防 / 熟练</th><th>金钱</th></tr>
-<!--{loop $vcfg['npc_levels'] $vl $vs}-->
-<tr><td>{$vs['name']}</td><td>{$vs['cost']}</td><td>{$vs['lvl']}</td><td>{$vs['mhp']} / {$vs['msp']}</td><td>{$vs['att']} / {$vs['skill']}</td><td>{$vs['money']}</td></tr>
-<!--{/loop}-->
-</table>
-<table class="admin"><tr><th>装备等级</th><th>每部位费用</th><th>效果 / 耐久</th><th>普通 / 稀有属性数</th></tr>
-<!--{loop $vcfg['equip_levels'] $vl $vs}-->
-<tr><td>{$vs['name']}</td><td>{$vs['cost']}</td><td>{$vs['e']} / {$vs['s']}</td><td>{$vs['basic']} / {$vs['rare']}</td></tr>
-<!--{/loop}-->
-</table>
-<!--{/if}-->
-</details>
-<!--{if $vrow}-->
-<h3>已保存内容 · {$vstatus[$vrow['status']]}</h3>
-<!--{loop $vlines $vline}--><p>{echo vncreation_html($vline)}</p><!--{/loop}-->
-<p>累计消耗：{$vrow['spent']} 切糕。审核说明：{echo vncreation_html($vrow['note'])}</p>
-<!--{loop $vrerolls $vslot $vr}-->
-<form method="post" action="vn_create.php?kind=npc&amp;id={$vid}" style="display:inline-block">
-<input type="hidden" name="action" value="reroll"><input type="hidden" name="slot" value="{$vslot}"><input type="hidden" name="token" value="{$vr['token']}">
-<button type="submit">重掷{$vr['label']}（{$vr['cost']} 切糕）</button>
-</form>
-<!--{/loop}-->
-<!--{/if}-->
-<!--{if $vcanedit}-->
-<h3><!--{if $vid}-->编辑投稿<!--{else}-->创建投稿<!--{/if}--></h3>
-<form method="post" action="vn_create.php?kind={$vkind}&amp;id={$vid}">
-<input type="hidden" name="token" value="{$vformtoken}">
-<!--{if $vkind === 'npc'}-->
-<!--{eval $vnpcname = vncreation_html($vform['name']);}-->
-<p><label>NPC 名称 <input name="data[name]" maxlength="40" required value="{$vnpcname}"></label>
-<label>战斗等级 <select name="data[level]">
-<!--{loop $vcfg['npc_levels'] $vl $vs}--><option value="{$vl}" <!--{if $vform['level'] == $vl}-->selected<!--{/if}-->>{$vs['name']}（{$vs['cost']} 切糕）</option><!--{/loop}-->
-</select></label></p>
-<p>选择“不装备”可留空该部位；背包槽名称留空则不添加额外掉落。</p>
-<!--{loop $vcfg['equip_slots'] $vslot $vlabel}-->
-<!--{eval $vpart = $vform['equip'][$vslot]; $vpart_name = vncreation_html($vpart['name']);}-->
-<p><label>{$vlabel}名称 <input name="data[equip][{$vslot}][name]" maxlength="30" value="{$vpart_name}"></label>
-<select name="data[equip][{$vslot}][k]" aria-label="{$vlabel}种类">
-<!--{loop $vcfg['equip_kinds'][$vslot] $vk}--><option value="{$vk}" <!--{if $vpart['k'] === $vk}-->selected<!--{/if}-->>{$vcfg['kinds'][$vk]}</option><!--{/loop}-->
-</select>
-<select name="data[equip][{$vslot}][tier]" aria-label="{$vlabel}等级"><option value="0">不装备</option>
-<!--{loop $vcfg['equip_levels'] $vl $vs}--><option value="{$vl}" <!--{if $vpart['tier'] == $vl}-->selected<!--{/if}-->>{$vs['name']}（{$vs['cost']} 切糕）</option><!--{/loop}-->
-</select></p>
-<!--{/loop}-->
-<!--{loop $vform['bag'] $vslot $vitem}-->
-<fieldset style="margin:12px 0"><legend>背包 {$vslot}（可留空）</legend>
-<!--{eval $vprefix = 'data[bag]['.$vslot.']';}-->
-{template vn_creation_item}
-</fieldset>
-<!--{/loop}-->
-<!--{else}-->
-<!--{eval $vitem = $vform; $vprefix = 'data'; $vcount = vncreation_html($vform['count']);}-->
-{template vn_creation_item}
-<p><label>每局刷出数量 <input type="number" name="data[count]" min="1" max="{$vcfg['max_count']}" required value="{$vcount}"></label>
-<label>地点 <select name="data[place]"><option value="-1">全图随机</option>
-<!--{loop $vcfg['places'] $vp $vlabel}--><option value="{$vp}" <!--{if $vform['place'] == $vp}-->selected<!--{/if}-->>{$vlabel}</option><!--{/loop}-->
-</select></label></p>
-<!--{/if}-->
-<!--{if $vquote !== null}--><p class="yellow">本次保存需要 {$vquote} 切糕。<!--{if $vkind === 'npc'}-->装备的具体随机属性在保存后显示。<!--{/if}--></p><!--{/if}-->
-<p><button type="submit" name="action" value="quote">试算费用</button> <button type="submit" name="action" value="save">保存并提交审核</button></p>
-</form>
-<!--{/if}-->
-<h3>投稿列表</h3>
-<p><a href="vn_create.php?kind={$vkind}">创建新投稿</a></p>
-<table class="admin"><tr><th>名称</th><th>作者</th><th>审核状态</th><th>查看</th></tr>
-<!--{loop $vlist $vrecord}-->
-<tr><td>{echo vncreation_html($vrecord['data']['name'])}</td><td>{echo vncreation_html($vrecord['creator'])}</td><td>{$vstatus[$vrecord['status']]}</td><td><a href="vn_create.php?kind={$vkind}&amp;id={$vrecord['id']}">查看<!--{if $vrecord['uid'] == $udata['uid']}--> / 编辑<!--{/if}--></a></td></tr>
-<!--{/loop}-->
-</table>
-<p><!--{if $vpage > 0}--><a href="vn_create.php?kind={$vkind}&amp;page={$vprevpage}">上一页</a><!--{/if}--> <!--{if $vnext}--><a href="vn_create.php?kind={$vkind}&amp;page={$vnextpage}">下一页</a><!--{/if}--></p>
-</div>
+</center>
 {template footer}

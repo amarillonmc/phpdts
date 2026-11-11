@@ -198,6 +198,51 @@ vncreation_review($admin,$fixed['id'],2,'退回',vncreation_stamp(vncreation_get
 $gamevars = array(); $db->items = array(); vncreation_spawn('item');
 vc_assert(count($db->items) === 3,'后台退回后停止后续物品投放');
 vc_assert(vncreation_html('<script>"') === '&lt;script&gt;&quot;','审核说明按HTML上下文转义');
+vc_assert(!empty($cfg['img']) && !empty($cfg['npc_notice']) && !empty($cfg['item_notice']) && !empty($cfg['npc_tips']) && !empty($cfg['item_tips']),'幻想世界看板娘文案与页面提示加载完整');
+$npcFormatted = vncreation_format_record(vncreation_get($id),$cfg);
+vc_assert(strpos($npcFormatted['level_desc'],'精锐') !== false && isset($npcFormatted['equip_rows']['wep']) && isset($npcFormatted['bag_rows'][6]),'NPC列表与详情格式化包含阶位、装备与第六槽战利品');
+$itemFormatted = vncreation_format_record(vncreation_get($fixed['id']),$cfg);
+vc_assert(strpos($itemFormatted['status_html'],'审核说明：退回') !== false && strpos($itemFormatted['result_desc'],'/50/3') !== false,'物品列表格式化包含审核说明悬浮提示与属性摘要');
+vc_assert(vncreation_sk_display(array('q','v'),$cfg) === '防毒+灵魂绑定' && vncreation_sk_display(array(),$cfg) === '<span class="grey">-</span>','属性加减器初始显示格式与空值回退正确');
+if(!function_exists('language')) {
+	function language($file,$templateid=1,$tpldir='./templates/default') { return GAME_ROOT.'templates/default/'.$file.'.lang.php'; }
+	function template($name) {
+		if($name === 'header' || $name === 'footer') return GAME_ROOT.'gamedata/templates/998_stub.tpl.php';
+		return GAME_ROOT.'gamedata/templates/998_'.$name.'.tpl.php';
+	}
+}
+require_once GAME_ROOT.'include/template.func.php';
+$tplFiles = array(
+	GAME_ROOT.'gamedata/templates/998_vn_creation.tpl.php',
+	GAME_ROOT.'gamedata/templates/998_vn_creation_item.tpl.php',
+	GAME_ROOT.'gamedata/templates/998_stub.tpl.php',
+);
+register_shutdown_function(function() use($tplFiles) { foreach($tplFiles as $f) if(file_exists($f)) @unlink($f); });
+file_put_contents($tplFiles[2],"<?php if(!defined('IN_GAME')) exit('Access Denied'); ?>");
+parse_template('vn_creation',998,'./templates/default');
+parse_template('vn_creation_item',998,'./templates/default');
+$udata = $user;
+$vkind = 'npc'; $vtitle = '幻影造物'; $vpostmode = false; $vmessage = ''; $verror = false;
+$vnotice = $cfg['npc_notice']; $vcfg = $cfg; $vlist = array($npcFormatted);
+$vpage = 0; $vprevpage = -1; $vnextpage = 1; $vnext = false;
+ob_start(); include template('vn_creation'); $npcListHtml = ob_get_clean();
+vc_assert(strpos($npcListHtml,'ach_box') !== false && strpos($npcListHtml,'创建一个新的造物') !== false && strpos($npcListHtml,'改名后的守卫') !== false,'幻影造物列表页渲染看板娘、新建入口与造物列表');
+$vkind = 'item'; $vtitle = '万象投影'; $vnotice = $cfg['item_notice']; $vlist = array($itemFormatted);
+ob_start(); include template('vn_creation'); $itemListHtml = ob_get_clean();
+vc_assert(strpos($itemListHtml,'ach_box') !== false && strpos($itemListHtml,'创建一个新的投影') !== false && strpos($itemListHtml,'星光药剂') !== false,'万象投影列表页渲染看板娘、新建入口与投影列表');
+$vkind = 'npc'; $vtitle = '幻影造物'; $vpostmode = true; $vid = $id; $vtop_tips = $cfg['npc_tips']; $vcanedit = true;
+$vrow = $npcFormatted; $vold_data = $vrow['data']; $vform = vncreation_form_data('npc',$vold_data,$cfg);
+$vformtoken = 'tok1'; $vquote = null; $vinitial_quote = 0; $temp_item_namelist = array('星光药剂');
+$vrerolls = array('wep'=>array('label'=>'武器','cost'=>60,'token'=>'rtok'));
+$vjs_cfg = json_encode(array('kind'=>'npc','max_sk'=>7,'old'=>$vold_data));
+ob_start(); include template('vn_creation'); $npcFormHtml = ob_get_clean();
+vc_assert(strpos($npcFormHtml,'重掷武器（60切糕）') !== false && strpos($npcFormHtml,'vnChangeSk') !== false && strpos($npcFormHtml,'防毒+灵魂绑定') !== false,'幻影造物编辑页渲染单件重掷、表格表单与背包属性加减器');
+$vkind = 'item'; $vtitle = '万象投影'; $vpostmode = true; $vid = $fixed['id']; $vtop_tips = $cfg['item_tips'];
+$vrow = $itemFormatted; $vold_data = $vrow['data']; $vform = vncreation_form_data('item',$vold_data,$cfg);
+$vquote = 400; $vinitial_quote = 400; $vrerolls = array();
+$vjs_cfg = json_encode(array('kind'=>'item','max_sk'=>7,'old'=>$vold_data));
+ob_start(); include template('vn_creation'); $itemFormHtml = ob_get_clean();
+vc_assert(strpos($itemFormHtml,'试算结果：本次保存需要 400 切糕') !== false && strpos($itemFormHtml,'data[place]') !== false && strpos($itemFormHtml,'vnChangeSk') !== false,'万象投影编辑页渲染试算提示、投放参数与属性加减器');
 $disabled = $cfg; $disabled['enabled'] = false;
 vc_reject(function() use($user,$npc,$disabled) { vncreation_save($user,'npc',0,'save',$npc,'',$disabled); },'独立规则集不接收原生付费投稿');
 echo "幻想世界回归完成。\n";

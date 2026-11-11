@@ -31,6 +31,15 @@ function vncreation_config()
 		$vncreation_cfg['place_count'] = count($plsinfo);
 		unset($plsinfo[0], $plsinfo[34]);
 		$vncreation_cfg['places'] = $plsinfo;
+		$vncreation_cfg['img'] = $vnworld_img ?? 'img/Crimzonnews.gif';
+		$vncreation_cfg['npc_notice'] = $vncreation_npc_notice ?? $vnworld_notice ?? '';
+		$vncreation_cfg['item_notice'] = $vncreation_item_notice ?? $vnworld_notice ?? '';
+		$vncreation_cfg['npc_tips'] = $vncreation_npc_tips ?? '';
+		$vncreation_cfg['item_tips'] = $vncreation_item_tips ?? '';
+		$vncreation_cfg['check_tips'] = $check_tips ?? array('<span class="yellow">提交中</span>','<span class="lime">已采纳</span>','<span class="red">未采纳</span>');
+		$vncreation_cfg['name_assoc'] = !empty($vnmix_name_assoc);
+		$vncreation_cfg['iteminfo'] = $iteminfo ?? array();
+		$vncreation_cfg['itemspkinfo'] = $itemspkinfo ?? array();
 		return $vncreation_cfg;
 	} finally {
 		$groomid = $previous_room;
@@ -40,6 +49,122 @@ function vncreation_config()
 function vncreation_html($value)
 {
 	return htmlspecialchars(is_scalar($value) ? (string)$value : '', ENT_QUOTES, 'UTF-8');
+}
+
+function vncreation_sk_display($sk, $cfg)
+{
+	$labels = array();
+	if(!empty($sk) && is_array($sk)) {
+		foreach($sk as $code) {
+			if(isset($cfg['attributes'][$code])) $labels[] = vncreation_html($cfg['attributes'][$code]);
+		}
+	}
+	return $labels ? implode('+', $labels) : '<span class="grey">-</span>';
+}
+
+function vncreation_format_item_view($part, $cfg)
+{
+	global $iteminfo,$itemspkinfo;
+	$prev_iteminfo = $iteminfo ?? null;
+	$prev_itemspkinfo = $itemspkinfo ?? null;
+	if(!empty($cfg['iteminfo'])) $iteminfo = $cfg['iteminfo'];
+	if(!empty($cfg['itemspkinfo'])) $itemspkinfo = $cfg['itemspkinfo'];
+	try {
+		$safe_name = vncreation_html($part['name'] ?? '');
+		$k = $part['k'] ?? 'HH';
+		$sk = isset($part['sk']) && is_array($part['sk']) ? $part['sk'] : array();
+		$name_desc = function_exists('parse_nameinfo_desc') ? parse_nameinfo_desc($safe_name, '', '', '', '', $k) : $safe_name;
+		if(function_exists('parse_kinfo_desc') && !empty($iteminfo)) {
+			$k_desc = parse_kinfo_desc($k, $sk);
+		} else {
+			$k_desc = vncreation_html($cfg['kinds'][$k] ?? $k);
+		}
+		$e_val = (int)($part['e'] ?? 1);
+		$s_desc = !empty($part['s']) ? (string)(int)$part['s'] : '∞';
+		$sk_desc = '';
+		if(!empty($sk)) {
+			if(function_exists('parse_skinfo_desc') && !empty($itemspkinfo)) {
+				$sk_desc = parse_skinfo_desc($sk, $k);
+			} else {
+				$labels = array();
+				foreach($sk as $code) $labels[] = vncreation_html($cfg['attributes'][$code] ?? $code);
+				$sk_desc = implode('+', $labels);
+			}
+		}
+		$result_desc = $k_desc.'/'.$e_val.'/'.$s_desc.($sk_desc !== '' ? '/'.$sk_desc : '');
+		return array(
+			'name_desc' => $name_desc,
+			'k_desc' => $k_desc,
+			'e' => $e_val,
+			's_desc' => $s_desc,
+			'sk_desc' => $sk_desc !== '' ? $sk_desc : '<span class="grey">-</span>',
+			'result_desc' => $result_desc,
+		);
+	} finally {
+		$iteminfo = $prev_iteminfo;
+		$itemspkinfo = $prev_itemspkinfo;
+	}
+}
+
+function vncreation_format_record($row, $cfg)
+{
+	$data = isset($row['data']) && is_array($row['data']) ? $row['data'] : json_decode($row['content'], true);
+	$row['data'] = $data;
+	$row['creator_html'] = vncreation_html($row['creator'] ?? '');
+	$status_badge = $cfg['check_tips'][$row['status']] ?? '';
+	$row['note_html'] = isset($row['note']) && $row['note'] !== '' ? vncreation_html($row['note']) : '';
+	$row['status_html'] = $row['note_html'] !== '' ? '<span tooltip="审核说明：'.$row['note_html'].'">'.$status_badge.'</span>' : $status_badge;
+	if($row['kind'] === 'item') {
+		$iview = vncreation_format_item_view($data, $cfg);
+		$row['itm_desc'] = $iview['name_desc'];
+		$row['result_desc'] = $iview['result_desc'];
+		$row['place_desc'] = $data['place'] === -1 ? '全图随机' : (isset($cfg['places'][$data['place']]) ? vncreation_html($cfg['places'][$data['place']]) : '<span class="grey">当前地图不可用</span>');
+		return $row;
+	}
+	$row['npc_name_html'] = vncreation_html($data['name'] ?? '');
+	$lvl = $cfg['npc_levels'][$data['level']] ?? reset($cfg['npc_levels']);
+	$tier_colors = array(1=>'linen', 2=>'lime', 3=>'clan', 4=>'purple', 5=>'gold');
+	$lvl_cls = $tier_colors[$data['level']] ?? 'yellow';
+	$lvl_tip = 'Lv.'.$lvl['lvl'].' | 生命 '.$lvl['mhp'].' / 体力 '.$lvl['msp']."\r".'攻防 '.$lvl['att'].' / 熟练 '.$lvl['skill'].' | 金钱 '.$lvl['money'].' 元';
+	$row['level_desc'] = '<span class="'.$lvl_cls.'" tooltip="'.vncreation_html($lvl_tip).'">'.$lvl['name'].' (Lv.'.$lvl['lvl'].')</span>';
+	$row['level_detail'] = 'Lv.'.$lvl['lvl'].' / 生命 '.$lvl['mhp'].' / 体力 '.$lvl['msp'].' / 攻防 '.$lvl['att'].' / 熟练 '.$lvl['skill'].' / 金钱 '.$lvl['money'].' 元';
+	$equip_rows = $equip_parts = array();
+	if(!empty($data['equip']) && is_array($data['equip'])) {
+		foreach($data['equip'] as $slot => $part) {
+			$item = isset($part['roll']) && is_array($part['roll']) ? array_merge($part, $part['roll']) : $part;
+			$iview = vncreation_format_item_view($item, $cfg);
+			$tier_name = $cfg['equip_levels'][$part['tier']]['name'] ?? '';
+			$tier_cls = $tier_colors[$part['tier']] ?? 'linen';
+			$slot_label = $cfg['equip_slots'][$slot] ?? $slot;
+			$equip_rows[$slot] = array(
+				'slot' => $slot,
+				'slot_label' => $slot_label,
+				'tier' => $part['tier'],
+				'tier_name' => $tier_name,
+				'tier_cls' => $tier_cls,
+				'name_desc' => $iview['name_desc'],
+				'result_desc' => $iview['result_desc'],
+			);
+			$equip_parts[] = '<span class="grey">['.$slot_label.'·</span><span class="'.$tier_cls.'">'.$tier_name.'</span><span class="grey">]</span> '.$iview['name_desc'].' <span class="grey">(</span>'.$iview['result_desc'].'<span class="grey">)</span>';
+		}
+	}
+	$row['equip_rows'] = $equip_rows;
+	$row['equip_desc'] = $equip_parts ? implode('<br>', $equip_parts) : '<span class="grey">-</span>';
+	$bag_rows = $bag_parts = array();
+	if(!empty($data['bag']) && is_array($data['bag'])) {
+		foreach($data['bag'] as $slot => $part) {
+			$iview = vncreation_format_item_view($part, $cfg);
+			$bag_rows[$slot] = array(
+				'slot' => $slot,
+				'name_desc' => $iview['name_desc'],
+				'result_desc' => $iview['result_desc'],
+			);
+			$bag_parts[] = '<span class="grey">[背包'.$slot.']</span> '.$iview['name_desc'].' <span class="grey">(</span>'.$iview['result_desc'].'<span class="grey">)</span>';
+		}
+	}
+	$row['bag_rows'] = $bag_rows;
+	$row['bag_desc'] = $bag_parts ? implode('<br>', $bag_parts) : '<span class="grey">-</span>';
+	return $row;
 }
 
 function vncreation_describe_item($part, $cfg)

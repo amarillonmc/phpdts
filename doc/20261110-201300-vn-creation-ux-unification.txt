@@ -1,0 +1,19 @@
+幻想世界“幻影造物”与“万象投影”UX统一及文案补充
+Unify UX and add flavor copy for VN Creation pages (vn_create.php?kind=npc / item)
+
+改动内容：
+1. 文案补充（gamedata/cache/vnworld_1.php）：
+   - 沿用“空想梦境”看板娘（红暮代班）口吻，新增“幻影造物”（$vncreation_npc_notice）与“万象投影”（$vncreation_item_notice）的看板娘迎宾文案，以及对应投稿编辑页顶部提示（$vncreation_npc_tips / $vncreation_item_tips）。
+2. 列表与投稿页分流及格式化（vn_create.php、include/vnworld/vncreation.func.php）：
+   - 将 /vn_create.php?kind=npc 与 /vn_create.php?kind=item 的交互流统一为与 /vnworld.php + /vn_postitem.php 一致的双阶段体验：默认进入带看板娘（ach_box）、新建按钮与 b1/b3 投稿列表的主页面；点击新建、查看/编辑或提交表单时进入编辑详情页，并提供返回列表按钮。
+   - 新增 vncreation_format_item_view()、vncreation_format_record()、vncreation_sk_display()，复用原生 parse_nameinfo_desc / parse_kinfo_desc / parse_skinfo_desc 与 $check_tips 彩色状态标签、悬浮提示（tooltip），在列表与详情中直接展示道具用途、效果、耐久、属性、NPC阶位能力及审核说明。
+3. 模板与属性选择器改造（templates/default/vn_creation.htm、templates/default/vn_creation_item.htm）：
+   - 移除原有的左对齐裸 div、fieldset、浅色底 table.admin 及多达数十项的复选框列表；统一采用居中 subtitle、b1/b3 表格布局。
+   - 额外属性选择统一为与 vn_postitem.htm 一致的“- [下拉选择] +”交互，同时通过隐藏域保持原有 data[sk][] / data[bag][N][sk][] POST 数组结构不变，并支持道具名 datalist 联想与前端实时切糕费用预估（保留服务端“试算费用”校验）。
+
+验证方式：
+- PHP 7.4.33（启用 mbstring 与 short_open_tag）对 vn_create.php、include/vnworld/vncreation.func.php、gamedata/cache/vnworld_1.php 及编译后的模板文件执行 php -l 语法检查通过。
+- 运行 gamedata/tests/vncreation_test.php，全部 61 项断言（含原有计价、扣费、互斥、重掷、开局投放及新增的看板娘配置、列表/详情格式化、四个视图模板实际编译渲染）通过。
+
+已知限制：
+- 本次未连接真实 MySQL/MariaDB 站点，已在回归脚本中通过假数据库及真实模板编译验证渲染结果。

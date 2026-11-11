@@ -1,14 +1,39 @@
-<!--{eval $vitem_name = vncreation_html($vitem['name']); $vitem_e = vncreation_html($vitem['e']); $vitem_s = vncreation_html($vitem['s']);}-->
-<label>名称 <input name="{$vprefix}[name]" maxlength="30" value="{$vitem_name}"></label>
-<label>种类 <select name="{$vprefix}[k]">
-<!--{loop $vcfg['kinds'] $vk $vlabel}-->
-<option value="{$vk}" <!--{if $vitem['k'] === $vk}-->selected<!--{/if}-->>{$vlabel}</option>
-<!--{/loop}-->
-</select></label>
-<label>效果 <input type="number" name="{$vprefix}[e]" min="1" max="16777214" value="{$vitem_e}" style="width:100px"></label>
-<label>耐久 <input type="number" name="{$vprefix}[s]" min="0" max="65535" value="{$vitem_s}" style="width:90px"></label>
-<details><summary>额外属性（最多 {$vcfg['max_sk']} 个）</summary>
-<!--{loop $vcfg['attributes'] $vsk $vlabel}-->
-<label style="display:inline-block;margin:4px"><input type="checkbox" name="{$vprefix}[sk][]" value="{$vsk}" <!--{if is_array($vitem['sk']) && in_array($vsk,$vitem['sk'],true)}-->checked<!--{/if}-->>{$vlabel}</label>
-<!--{/loop}-->
-</details>
+<!--{eval $vitem_name = vncreation_html($vitem['name']); $vitem_e = vncreation_html($vitem['e']); $vitem_s = vncreation_html($vitem['s']); $vsk_display = vncreation_sk_display($vitem['sk'], $vcfg);}-->
+<td class="b3">
+	<input type="text" name="{$vprefix}[name]" id="vn_name_{$vsk_id}" list="vsnamelist" maxlength="30" <!--{if !empty($vitem_req)}-->required placeholder="在此填写道具名"<!--{else}-->placeholder="留空则不携带"<!--{/if}--> value="{$vitem_name}" oninput="vnUpdateQuote();" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+</td>
+<td class="b3">
+	<select name="{$vprefix}[k]" aria-label="种类">
+		<!--{loop $vcfg['kinds'] $vk $vlabel}-->
+		<option value="{$vk}" <!--{if $vitem['k'] === $vk}-->selected<!--{/if}-->>{$vlabel}</option>
+		<!--{/loop}-->
+	</select>
+</td>
+<td class="b3">
+	<input type="number" name="{$vprefix}[e]" id="vn_e_{$vsk_id}" style="width:65px" min="1" max="16777214" value="{$vitem_e}" oninput="if(value>16777214)value=16777214;if(value<1&&value!=='')value=1;vnUpdateQuote();" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+</td>
+<td class="b3">
+	<span tooltip2="输入值为0时耐久度为“∞”">
+	<input type="number" name="{$vprefix}[s]" id="vn_s_{$vsk_id}" style="width:60px" min="0" max="65535" value="{$vitem_s}" oninput="if(value>65535)value=65535;if(value<0&&value!=='')value=0;vnUpdateQuote();" onkeydown="if(event.keyCode==13){event.preventDefault();}">
+	</span>
+</td>
+<td class="b3" style="min-width: 190px;">
+	<div id="tmpsk_{$vsk_id}">{$vsk_display}</div>
+	<div id="vrsk_inputs_{$vsk_id}">
+		<!--{loop $vitem['sk'] $vsk}-->
+		<!--{if isset($vcfg['attributes'][$vsk])}-->
+		<!--{eval $vsk_val = vncreation_html($vsk); $vsk_lbl = vncreation_html($vcfg['attributes'][$vsk]);}-->
+		<input type="hidden" name="{$vprefix}[sk][]" value="{$vsk_val}" data-label="{$vsk_lbl}">
+		<!--{/if}-->
+		<!--{/loop}-->
+	</div>
+</td>
+<td class="b3">
+	<span tooltip2="删除最后一个添加的属性"><input type="button" value="-" onclick="vnChangeSk('{$vsk_id}', '{$vprefix}', -1);"></span>
+	<select id="evrsk_{$vsk_id}" aria-label="选择额外属性">
+		<!--{loop $vcfg['attributes'] $vsk $vlabel}-->
+		<option value="{$vsk}">{$vlabel}</option>
+		<!--{/loop}-->
+	</select>
+	<span tooltip2="添加当前选择的属性"><input type="button" value="+" onclick="vnChangeSk('{$vsk_id}', '{$vprefix}', 1);"></span>
+</td>
