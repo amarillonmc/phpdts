@@ -1,14 +1,15 @@
-<form method="post" action="admin.php">
+<form method="post" action="admin.php" name="activation_generate_form" id="activation_generate_form">
 	<input type="hidden" name="mode" value="activation">
 	<input type="hidden" name="activation_action" value="generate">
 	<input type="hidden" name="reward_csrf" value="$reward_csrf">
 	<table class="admin">
 		<tr><th colspan="2">生成激活码</th></tr>
-		<tr><td>绑定登录账户</td><td><input type="text" name="bound_username" maxlength="15"> 留空则任何账户都可兑换。绑定依据账户编号和登录名，不使用密码。</td></tr>
-		<tr><td>生成种子</td><td><input type="text" name="seed" size="70" minlength="16" maxlength="200" value="$activation_seed"><br>默认已随机生成。种子请保密；同一种子及账户可重现同一批代码。</td></tr>
-		<tr><td>数量</td><td><input type="number" name="count" min="1" max="200" value="1"> 每批最多 200 个。</td></tr>
+		<tr><td>指定激活码（可选）</td><td><input type="text" name="custom_code" id="activation_custom" maxlength="32" size="40" value="$activation_custom" oninput="var custom=this.value!=='';$('activation_bound').disabled=custom;$('activation_seed').disabled=custom;$('activation_count').disabled=custom;"><br>例如“新手福利”“vip777”。填写后只生成此码，固定不限账户；留空则按下方设置自动生成。<br>支持 1～32 个中文字、英文字母、数字、下划线或连字符；英文字母不区分大小写，统一显示为大写。</td></tr>
+		<tr><td>绑定登录账户</td><td><input type="text" name="bound_username" id="activation_bound" maxlength="15" <!--{if $activation_custom !== ''}-->disabled<!--{/if}-->> 自动生成时留空则任何账户都可兑换。绑定依据账户编号和登录名，不使用密码。</td></tr>
+		<tr><td>生成种子</td><td><input type="text" name="seed" id="activation_seed" size="70" minlength="16" maxlength="200" value="$activation_seed" <!--{if $activation_custom !== ''}-->disabled<!--{/if}-->><br>自动生成时使用，默认已随机填写。种子请保密；同一种子及账户可重现同一批代码。</td></tr>
+		<tr><td>数量</td><td><input type="number" name="count" id="activation_count" min="1" max="200" value="1" <!--{if $activation_custom !== ''}-->disabled<!--{/if}-->> 自动生成每批最多 200 个，指定码每次只生成一个。</td></tr>
 		<tr><td>每个账户</td><td><select name="per_account_once"><option value="1">只能兑换一次</option><option value="0">可以多次兑换</option></select></td></tr>
-		<tr><td>全服限制</td><td><select name="limited"><option value="0">不限制总次数</option><option value="1">限量：被兑换一次后立即失效</option></select><br>限量限制优先；绑定账户和以上选项可任意组合。</td></tr>
+		<tr><td>全服限制</td><td><select name="limited"><option value="0">持续生效，不限制总次数</option><option value="1">限量：被兑换一次后全服失效</option></select><br>指定码和自动生成的代码都可配置以上两项限制；全服一次的限制优先。</td></tr>
 		<tr><td colspan="2">{template admin_reward_fields}</td></tr>
 		<tr><td colspan="2"><input type="submit" value="生成激活码"></td></tr>
 	</table>

@@ -205,6 +205,52 @@ try {
 		}
 	}
 	reward_assert(true, '绑定、每账户次数、全服限量的全部八种组合');
+	foreach(array(0,1) as $once_flag) foreach(array(0,1) as $limited_flag) {
+		$custom_input = array('custom_code'=>'新手福利-'.$once_flag.$limited_flag, 'seed'=>'', 'count'=>200, 'bound_username'=>'不存在的账户', 'per_account_once'=>$once_flag, 'limited'=>$limited_flag);
+		$before_codes = reward_count('activation_codes');
+		$custom = reward_code($custom_input);
+		$row = $db->fetch_array($db->query("SELECT * FROM {$gtablepre}activation_codes WHERE code=".account_reward_sql($custom)));
+		reward_assert($custom === $custom_input['custom_code'] && (int)$row['bound_uid'] === 0 && reward_count('activation_codes') === $before_codes+1, '中文指定码只生成一个且不绑定账户 '.$once_flag.$limited_flag);
+		$token = bin2hex(random_bytes(16)); $before_mail = reward_count('messages');
+		activation_redeem(1,'test-pass',$custom,$token); activation_redeem(1,'test-pass',$custom,$token);
+		reward_assert(reward_count('messages') === $before_mail+1, '指定码重复提交只发一封邮件 '.$once_flag.$limited_flag);
+		reward_assert(reward_code($custom_input) === $custom && reward_count('activation_codes') === $before_codes+1, '指定码重复生成不重置使用记录 '.$once_flag.$limited_flag);
+		foreach(array(1,2) as $uid) {
+			$blocked = $limited_flag || ($uid === 1 && $once_flag);
+			try { activation_redeem($uid,'test-pass',$custom,bin2hex(random_bytes(16))); $accepted = true; }
+			catch(InvalidArgumentException $e) { $accepted = false; }
+			reward_assert($accepted !== (bool)$blocked, '指定码次数规则 '.$once_flag.$limited_flag.' 账户 '.$uid);
+		}
+	}
+	$custom_input = array('custom_code'=>'vip777', 'stitle'=>'字母指定码', 'scontent'=>'', 'reward_credits'=>1);
+	$vip = activation_generate($custom_input);
+	reward_assert($vip === array('VIP777'), '指定码无需种子且英文字母统一大写');
+	activation_redeem(1,'test-pass','  vIp777  ',bin2hex(random_bytes(16)));
+	reward_reject(function(){ activation_redeem(1,'test-pass','VIP777',bin2hex(random_bytes(16))); }, '改变字母大小写不能绕过单次限制');
+	$before_codes = reward_count('activation_codes');
+	reward_assert(activation_generate(array_merge($custom_input,array('custom_code'=>'VIP777'))) === $vip && reward_count('activation_codes') === $before_codes, '大小写不同的指定码不会重复生成');
+	foreach(array('reward_credits'=>2,'per_account_once'=>0,'limited'=>1) as $key=>$value) {
+		reward_reject(function()use($custom_input,$key,$value){ activation_generate(array_merge($custom_input,array($key=>$value))); }, '指定码冲突不覆盖 '.$key);
+	}
+	$db->query("UPDATE {$gtablepre}activation_codes SET enabled=0 WHERE code=".account_reward_sql($vip[0]));
+	activation_generate($custom_input);
+	reward_reject(function()use($vip){ activation_redeem(2,'test-pass',$vip[0],bin2hex(random_bytes(16))); }, '重新生成已停用指定码不会恢复兑换');
+	reward_reject(function()use($bound){ reward_code(array('custom_code'=>$bound)); }, '指定码不能覆盖已有绑定码');
+	$hyphen = reward_code(array('custom_code'=>'vip-777'));
+	activation_redeem(1,'test-pass',$hyphen,bin2hex(random_bytes(16)));
+	reward_assert($hyphen === 'VIP-777', '短码中的连字符保留，不会指向另一个代码');
+	$long_code = str_repeat('福',32);
+	reward_assert(reward_code(array('custom_code'=>$long_code)) === $long_code, '32 个中文字完整保存');
+	activation_redeem(1,'test-pass',$long_code,bin2hex(random_bytes(16)));
+	foreach(array(' ',str_repeat('福',33),"vip' OR 1=1",'<script>',"vip\0",'vip 777',array('vip777'),"\xff") as $bad_code) {
+		reward_reject(function()use($bad_code){ reward_code(array('custom_code'=>$bad_code)); }, '非法指定码被拒绝');
+		reward_reject(function()use($bad_code){ activation_redeem(1,'test-pass',$bad_code,bin2hex(random_bytes(16))); }, '非法兑换码被拒绝');
+	}
+	$legacy = reward_code();
+	activation_redeem(1,'test-pass',implode(' - ',str_split(strtolower($legacy),4)),bin2hex(random_bytes(16)));
+	reward_assert(true, '原随机码的小写及带分隔符输入继续可用');
+	$custom_limited = reward_code(array('custom_code'=>'shared-once', 'limited'=>1, 'per_account_once'=>0));
+	reward_assert(reward_parallel('redeem',array(array('1',$custom_limited,bin2hex(random_bytes(16))),array('2',$custom_limited,bin2hex(random_bytes(16))))) === array('ok','reject'), '指定码跨账户并发限量只发送一封奖励邮件');
 	$failure_code = reward_code(); $failure_token = bin2hex(random_bytes(16));
 	$old_mail_count = reward_count('messages'); $old_use_count = reward_count('activation_uses');
 	foreach(array('messages','activation_uses') as $table) {
@@ -223,7 +269,7 @@ try {
 	reward_assert(count(account_boons_load(reward_user()['boons'])) === 1, '赐福保存失败不消耗队列');
 	account_boon_enter(1,$p);
 	reward_assert(!account_boons_load(reward_user()['boons']), '同一角色赐福保存重试仅消耗一份');
-	$endpoint_code = reward_code(array('reward_credits'=>17));
+	$endpoint_code = reward_code(array('custom_code'=>'账户入口福利', 'reward_credits'=>17));
 	$endpoint_post = array('mode'=>'redeem','activation_code'=>$endpoint_code,'activation_request'=>bin2hex(random_bytes(16)),'reward_csrf'=>hash_hmac('sha256','activation:1','test-pass'));
 	$response = reward_endpoint('user.php',$endpoint_post);
 	reward_assert(strpos($response['innerHTML']['activation_info'],'兑换成功') !== false && strlen($response['value']['activation_request']) === 32, '实际账户入口返回兑换结果并刷新请求凭据');

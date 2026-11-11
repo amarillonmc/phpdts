@@ -8,6 +8,7 @@ $reward_boon_stats = account_boon_stats();
 $reward_catalog = account_reward_catalog();
 $generated_codes = $activation_rows = array();
 $activation_seed = bin2hex(random_bytes(32));
+$activation_custom = is_string($_POST['custom_code'] ?? null) ? account_reward_html($_POST['custom_code']) : '';
 try {
 	activation_ensure_storage();
 	$action = $_POST['activation_action'] ?? '';
@@ -15,8 +16,9 @@ try {
 		account_reward_post_check('admin-rewards', $_POST);
 		if($action === 'generate') {
 			$generated_codes = activation_generate($_POST);
-			$cmd_info = '已生成 '.count($generated_codes).' 个激活码。相同种子、账户及序号会得到相同代码，重复提交不会额外生成。';
-			adminlog('activation_generate', count($generated_codes), account_reward_html($_POST['bound_username'] ?? ''));
+			$cmd_info = '已生成或找到 '.count($generated_codes).' 个激活码，重复提交不会覆盖奖励、重置使用次数或恢复已停用的代码。';
+			adminlog('activation_generate', count($generated_codes), $activation_custom !== '' ? '指定码：不限账户' : account_reward_html($_POST['bound_username'] ?? ''));
+			$generated_codes = array_map('account_reward_html', $generated_codes);
 		} elseif($action === 'disable') {
 			$id = account_reward_int($_POST['code_id'] ?? '', 1, 4294967295);
 			$db->query("UPDATE {$gtablepre}activation_codes SET enabled=0 WHERE id=$id");
@@ -30,6 +32,7 @@ try {
 }
 $result = $db->query("SELECT c.*,u.username AS bound_username,(SELECT COUNT(*) FROM {$gtablepre}activation_uses r WHERE r.code_id=c.id) AS used_count FROM {$gtablepre}activation_codes c LEFT JOIN {$gtablepre}users u ON u.uid=c.bound_uid ORDER BY c.id DESC LIMIT 100", 'SILENT');
 if($result) while($row = $db->fetch_array($result)) {
+	$row['code'] = account_reward_html($row['code']);
 	$row['bound_name'] = $row['bound_uid'] ? account_reward_html($row['bound_username'] ?? ('已删除账户 #'.$row['bound_uid'])) : '不限账户';
 	try { $row['reward_text'] = account_reward_html(implode('；', account_reward_describe(account_reward_decode($row['enclosure'])))); }
 	catch(Throwable $e) { $row['reward_text'] = '附件配置无效'; }

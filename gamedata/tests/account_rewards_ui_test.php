@@ -32,8 +32,10 @@ try {
 		$payload[$theme]['claimed'] = ui_render('messages',array('mode'=>'check','info'=>array(),'messages'=>message_disp($raw)));
 		$raw[7]['checked'] = 0;
 		$payload[$theme]['user'] = ui_render('user',array('groomid'=>0,'activation_csrf'=>'code-csrf','activation_request'=>str_repeat('a',32),'activation_info'=>'','activation_queue'=>array('初行（攻击 +10）'),'show_sync_button'=>false,'show_reverse_migrate_button'=>false));
-		$vars = array('reward_csrf'=>'admin-csrf','reward_form'=>account_reward_form_values(array('stitle'=>'标题 " <标签>')),'reward_boon_stats'=>account_boon_stats(),'reward_catalog'=>account_reward_catalog(),'activation_seed'=>str_repeat('b',64),'generated_codes'=>array(str_repeat('A',32)),'activation_rows'=>array());
+		$vars = array('reward_csrf'=>'admin-csrf','reward_form'=>account_reward_form_values(array('stitle'=>'标题 " <标签>')),'reward_boon_stats'=>account_boon_stats(),'reward_catalog'=>account_reward_catalog(),'activation_seed'=>str_repeat('b',64),'activation_custom'=>'','generated_codes'=>array(str_repeat('A',32),'新手福利','VIP777'),'activation_rows'=>array());
 		$payload[$theme]['admin'] = ui_render('admin_activation',$vars);
+		$payload[$theme]['admin_custom'] = ui_render('admin_activation',array_merge($vars,array('activation_custom'=>account_reward_html('新手福利'))));
+		$payload[$theme]['admin_invalid'] = ui_render('admin_activation',array_merge($vars,array('activation_custom'=>account_reward_html('" onfocus="alert(1)'))));
 		$vars += array('urcmd'=>'list','pagecmd'=>'check','urorder'=>'uid','urorder2'=>'DESC','start'=>0,'resultinfo'=>'测试','urgroup'=>array('封停','正常'),'ursex'=>array('0'=>'未定','m'=>'男','f'=>'女'),'mygroup'=>9,'show_reverse_migration'=>false,'titles_list'=>array(0=>'参展者',1=>'幻想'),'urdata'=>array(array('uid'=>1,'username'=>'测试玩家','groupid'=>1,'gender'=>'m','lastgame'=>0,'ip'=>'127.0.0.1','credits'=>0,'credits2'=>0,'icon'=>1,'motto'=>'','killmsg'=>'','lastword'=>'','nicksrev'=>array('nicks'=>array(0)))));
 		$payload[$theme]['admin_users'] = ui_render('admin_urlist',$vars);
 	}
