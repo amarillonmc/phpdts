@@ -548,7 +548,7 @@
 		global $cskills,$cskills_tags,$now;
 		# 初始化技能描述
 		$cskill = $cskills[$sk];
-		$sk_desc = $shortdesc && isset($cskill['bdesc']) ? $cskill['bdesc'] : $cskill['desc'];
+		$sk_desc = $shortdesc && isset($cskill['bdesc']) ? $cskill['bdesc'] : (empty($data['type']) ? $cskill['desc'] : (($cskill['ndesc'] ?? '') ?: $cskill['desc']));
 		# 技能存在标签时
 		if(isset($cskill['tags']) && !$shortdesc)
 		{
