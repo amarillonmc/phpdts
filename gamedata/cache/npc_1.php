@@ -2616,4 +2616,7 @@ $npcdescription = array
 	),
 );
 
+if(function_exists('ending_routes_enabled') && ending_routes_enabled()) {
+	$npcinfo[1]['sub'][0]['itm3']='红杀教头挑战状';
+}
 ?>

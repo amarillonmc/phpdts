@@ -6,6 +6,7 @@ require './include/common.inc.php';
 require './include/masterslave.func.php';
 require_once GAME_ROOT.'./include/paperdoll.func.php';
 require_once GAME_ROOT.'./include/activation.func.php';
+require_once GAME_ROOT.'./include/talent.func.php';
 //require './include/user.func.php';
 
 // 形象编辑使用独立 JSON 请求，登录失效时也返回可读的 JSON 错误。
@@ -25,6 +26,19 @@ if($udata['groupid'] <= 0) { gexit($_ERROR['user_ban'], __file__, __line__); }
 
 if(!isset($mode)){
 	$mode = 'show';
+}
+
+$talent_notice = '';
+if($mode === 'talent' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+	try {
+		$expected = hash_hmac('sha256','talent:'.$udata['uid'],(string)$cpass);
+		if(!isset($_POST['talent_csrf']) || !is_string($_POST['talent_csrf']) || !hash_equals($expected,$_POST['talent_csrf'])) throw new InvalidArgumentException('页面校验已失效，请刷新后重试。');
+		$talent_notice = talent_save_action($udata['uid'],(string)$cpass,$_POST);
+	} catch(Throwable $e) {
+		$talent_notice = $e instanceof InvalidArgumentException ? $e->getMessage() : '天赋暂时无法保存，原有记录已保留。';
+		if(!($e instanceof InvalidArgumentException)) error_log('Talent: '.$e->getMessage());
+	}
+	$udata = fetch_userdata_by_username($cuser);
 }
 
 if($mode == 'redeem') {
@@ -203,6 +217,20 @@ if($mode == 'redeem') {
 	//$ustate = 'edit';
 	header('Cache-Control: no-store');
 	extract($udata);
+	$talent_available = false;
+	try {
+		talent_ensure_storage();
+		$talent_user = talent_current_user($udata['uid'],(string)$cpass);
+		$talent_data = talent_load($talent_user['talentdata']);
+		talent_sync_earned($talent_data,$talent_user['achrev']);
+		$talent_base = hash('sha256',(string)$talent_user['talentdata']);
+		$talent_csrf = hash_hmac('sha256','talent:'.$udata['uid'],(string)$cpass);
+		$talent_used = talent_cost($talent_data); $talent_limit = talent_cap();
+		$talent_free = max(0,min($talent_limit,$talent_data['earned_points']+$talent_data['bought_points'])-$talent_used);
+		$talent_buy_price = talent_price($talent_data); $talent_reset_price = talent_price($talent_data,true);
+		$talent_trees = talent_catalog(); $talent_available = true;
+	} catch(Throwable $e) { $talent_notice = '天赋暂时无法读取，原有记录已保留。'; error_log('Talent: '.$e->getMessage()); }
+	$talent_notice = htmlspecialchars($talent_notice,ENT_QUOTES,'UTF-8');
 	$nickinfo = titles_get_desc($nick);
 	$iconarray = get_iconlist($icon);
 	$select_icon = $icon;

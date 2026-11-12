@@ -166,6 +166,7 @@ function rs_game($mode = 0) {
 					}
 
 					$npc['state'] = 0;
+					if(function_exists('ending_routes_enabled') && ending_routes_enabled() && (int)$npc['pls']===34) { $npc['pls']=134; $npc['pgroup']=4; }
 					$npc=player_format_with_db_structure($npc);
 					$db->array_insert("{$tablepre}players", $npc);
 					//$npcqry .= "('".$npc['name']."','".$npc['pass']."','".$npc['type']."','".$npc['endtime']."','".$npc['gd']."','".$npc['sNo']."','".$npc['icon']."','".$npc['club']."','".$npc['rp']."','".$npc['hp']."','".$npc['mhp']."','".$npc['sp']."','".$npc['msp']."','".$npc['att']."','".$npc['def']."','".$npc['pls']."','".$npc['lvl']."','".$npc['exp']."','".$npc['money']."','".$npc['bid']."','".$npc['inf']."','".$npc['rage']."','".$npc['pose']."','".$npc['tactic']."','".$npc['killnum']."','".$npc['state']."','".$npc['wp']."','".$npc['wk']."','".$npc['wg']."','".$npc['wc']."','".$npc['wd']."','".$npc['wf']."','".$npc['teamID']."','".$npc['teamPass']."','".$npc['wep']."','".$npc['wepk']."','".$npc['wepe']."','".$npc['weps']."','".$npc['arb']."','".$npc['arbk']."','".$npc['arbe']."','".$npc['arbs']."','".$npc['arh']."','".$npc['arhk']."','".$npc['arhe']."','".$npc['arhs']."','".$npc['ara']."','".$npc['arak']."','".$npc['arae']."','".$npc['aras']."','".$npc['arf']."','".$npc['arfk']."','".$npc['arfe']."','".$npc['arfs']."','".$npc['art']."','".$npc['artk']."','".$npc['arte']."','".$npc['arts']."','".$npc['itm0']."','".$npc['itmk0']."','".$npc['itme0']."','".$npc['itms0']."','".$npc['itm1']."','".$npc['itmk1']."','".$npc['itme1']."','".$npc['itms1']."','".$npc['itm2']."','".$npc['itmk2']."','".$npc['itme2']."','".$npc['itms2']."','".$npc['itm3']."','".$npc['itmk3']."','".$npc['itme3']."','".$npc['itms3']."','".$npc['itm4']."','".$npc['itmk4']."','".$npc['itme4']."','".$npc['itms4']."','".$npc['itm5']."','".$npc['itmk5']."','".$npc['itme5']."','".$npc['itms5']."','".$npc['itm6']."','".$npc['itmk6']."','".$npc['itme6']."','".$npc['itms6']."','".$npc['wepsk']."','".$npc['arbsk']."','".$npc['arhsk']."','".$npc['arask']."','".$npc['arfsk']."','".$npc['artsk']."','".$npc['itmsk0']."','".$npc['itmsk1']."','".$npc['itmsk2']."','".$npc['itmsk3']."','".$npc['itmsk4']."','".$npc['itmsk5']."','".$npc['itmsk6']."','".$npc['skills']."'),";
@@ -237,6 +238,8 @@ function rs_game($mode = 0) {
 				}
 
 				list($iarea,$imap,$inum,$iname,$ikind,$ieff,$ista,$iskind) = array_slice($item_parts, 0, 8);
+				if(function_exists('ending_routes_enabled') && ending_routes_enabled() && (int)$imap===34) $imap=134;
+				if($iname==='【动物团的七封请柬】' && !(function_exists('ending_routes_enabled') && ending_routes_enabled())) continue;
 
 				if(($iarea == $an)||($iarea == 99)) {
 					for($j = $inum; $j>0; $j--) {
@@ -360,6 +363,7 @@ function rs_game($mode = 0) {
 					}
 				}
 				list($kind,$num,$price,$area,$item,$itmk,$itme,$itms,$itmsk)=$lst;
+				if(in_array((int)$kind,array(19,30),true) && !(function_exists('ending_routes_enabled') && ending_routes_enabled())) continue;
 				if($kind != 0){
 					$qry .= "('$kind','$num','$price','$area','$item','$itmk','$itme','$itms','$itmsk','$itmpara'),";
 				}
@@ -435,22 +439,25 @@ function add_once_area($atime) {
 			systemputchat($atime,'areaadd',$areaaddlist);
 			$query = $db->query("SELECT * FROM {$tablepre}players WHERE type=0 AND hp>0");
 			while($sub = $db->fetch_array($query)) {
+				if(function_exists('ending_routes_enabled') && ending_routes_enabled() && (int)$sub['pgroup']===3) continue;
 				$pid = $sub['pid'];
 				$hp = 0;
 				$state = 11;
 				$deathpls = $sub['pls'];
 				$bid = 0;
 				$endtime = $atime;
-				$db->query("UPDATE {$tablepre}players SET hp='$hp', bid='$bid', state='$state', endtime='$endtime' WHERE pid=$pid");
+				$db->query("UPDATE {$tablepre}players SET hp='$hp', bid='$bid', state='$state', endtime='$endtime' WHERE pid=$pid AND hp>0");
+				if(!$db->affected_rows()) continue;
+				race_ai_world_death($sub,$state,$endtime);
 				check_club24_achievement($sub);
 				addnews($endtime,"death$state",$sub['name'],$sub['type'],$deathpls);
 			}
 			$db->free_result($query);
-			$alivenum = 0;
+			$alivenum = function_exists('race_alive_accounts') ? race_alive_accounts() : 0;
 			$dquery = $db->query("SELECT pid FROM {$tablepre}players WHERE hp<=0");
 			$deathnum = $db->num_rows($dquery);
 			$db->free_result($dquery);
-			gameover($atime,'end1');
+			if(!(function_exists('dissociation_alive') && dissociation_alive())) gameover($atime,'end1');
 			return;
 		} else {
 			if($weather <= 9) $weather = rand(0,9);
@@ -474,7 +481,9 @@ function add_once_area($atime) {
 					$deathpls = $sub['pls'];
 					$bid = 0;
 					$endtime = $atime;
-					$db->query("UPDATE {$tablepre}players SET hp='$hp', bid='$bid', state='$state', endtime='$endtime' WHERE pid=$pid");
+					$db->query("UPDATE {$tablepre}players SET hp='$hp', bid='$bid', state='$state', endtime='$endtime' WHERE pid=$pid AND hp>0");
+					if(!$db->affected_rows()) continue;
+					race_ai_world_death($sub,$state,$endtime);
 					check_club24_achievement($sub);
 					addnews($endtime,"death$state",$sub['name'],$sub['type'],$deathpls);
 					$deathnum++;
@@ -504,7 +513,7 @@ function add_once_area($atime) {
 					$db->query("UPDATE {$tablepre}players SET pls='$pls' WHERE pid=$pid");
 				}
 			}
-			$alivenum = $db->result($db->query("SELECT COUNT(*) FROM {$tablepre}players WHERE hp>0 AND type=0"), 0);
+			$alivenum = race_alive_accounts();
 			$should_auto_gameover = $alivenum <= 1;
 			# RuleSet钩子：允许规则集覆盖禁区结算后的自动结局判断。
 			# RuleSet hook: allow rulesets to override automatic game over after area updates.
@@ -567,6 +576,7 @@ function duel($time = 0,$keyitm = ''){
 //------游戏结束------
 //模式：0保留：程序故障；1：全部死亡；2：最后幸存；3：禁区解除；4：无人参加；5：核爆全灭；6：GM中止
 function gameover($time = 0, $mode = '', $winname = '') {
+	if(!$mode && function_exists('dissociation_alive') && dissociation_alive()) return;
 	global $gamestate,$winmode,$alivenum,$winner,$now,$gamenum,$db,$gtablepre,$tablepre,$gamenum,$starttime,$validnum,$hdamage,$hplayer;
 	global $groomid;
     //遍历./records/$gamenum/下的所有txt文件
@@ -591,13 +601,18 @@ function gameover($time = 0, $mode = '', $winname = '') {
 
 		} else {//判断谁是最后幸存者
 			$result = $db->query("SELECT * FROM {$tablepre}players WHERE hp>0 AND type=0");
-			$alivenum = $db->num_rows($result);
+			$surviving_accounts = array();
+			while($survivor = $db->fetch_array($result)) {
+				$survivor_para = get_clbpara($survivor['clbpara']);
+				if(empty($survivor_para['ai_master'])) $surviving_accounts[] = $survivor;
+			}
+			$alivenum = count($surviving_accounts);
 			if(!$alivenum) {//全部死亡
 				$winmode = 1;
 				$winner = '';
 			} elseif($alivenum == 1) {//最后幸存
 				$winmode = 2;
-				$wdata = $db->fetch_array($result);
+				$wdata = $surviving_accounts[0];
 				$winner = $wdata['name'];
 				$db->query("UPDATE {$tablepre}players SET state='5' where pid='{$wdata['pid']}'");
 			} else {//不满足游戏结束条件，返回
@@ -666,7 +681,8 @@ function gameover($time = 0, $mode = '', $winname = '') {
 				}
 			}
 		}
-		$result2 = $db->query("SELECT motto FROM {$gtablepre}users WHERE username='$winner'");
+		$winner_account = race_account_name($pdata);
+		$result2 = $db->query("SELECT motto FROM {$gtablepre}users WHERE username=X'".bin2hex($winner_account)."'");
 		$pdata['motto'] = $db->result($result2, 0);
 		$result3 = $db->query("SELECT name,killnum FROM {$tablepre}players WHERE type=0 order by killnum desc, lvl desc limit 1");
 		$hk = $db->fetch_array($result3);
@@ -911,6 +927,8 @@ function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
 					$npc['clbpara'] = is_array($npc['clbpara']) ? array_merge($npc['clbpara'],$anpcdata['clbpara']) : $anpcdata['clbpara'];
 				}
 			}
+			// 固定驻守旧英灵殿的召唤 NPC 随殿堂迁入隐藏组；随机刷到代码洪流者不迁移。
+			if(function_exists('ending_routes_enabled') && ending_routes_enabled() && !is_array($anpc['pls']) && (int)$anpc['pls']===34 && empty($anpcdata['pls'])) { $npc['pls']=134; $npc['pgroup']=4; }
 			# RuleSet钩子：随机化NPC数值
 			if(function_exists('ruleset_randomize_npc_stats')) ruleset_randomize_npc_stats($npc);
 
@@ -943,7 +961,7 @@ function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
 	return isset($summon_ids) ? $summon_ids : array();
 }
 
-function evonpc($type,$name){
+function evonpc($type,$name,$source=NULL){
 	global $now,$db,$gtablepre,$tablepre,$log,$plsinfo,$typeinfo,$enpcinfo,$gamecfg;
 	if(!$type || !$name){return false;}
 	if(empty($enpcinfo)){
@@ -986,6 +1004,12 @@ function evonpc($type,$name){
 		}
 	}
 	unset($npc['clubskill']);unset($npc['clubskillpara']);
+	// 湾城的 Dark Force 仍用原进化面板，保留当前实例的位置、视界和路线归属。
+	$city_evolution=is_array($source) && function_exists('ending_routes_enabled') && ending_routes_enabled() && (int)($source['pgroup'] ?? 0)===3;
+	if($city_evolution) {
+		$npc['pgroup']=$source['pgroup']; $npc['pls']=$source['pls']; $npc['horizon']=$source['horizon'];
+		$npc['clbpara']=array_replace(get_clbpara($source['clbpara']),isset($npc['clbpara']) ? get_clbpara($npc['clbpara']) : array());
+	}
 	# RuleSet钩子：随机化NPC数值
 	if(function_exists('ruleset_randomize_npc_stats')) ruleset_randomize_npc_stats($npc);
 	# todo:整理下这堆烂摊子
@@ -996,7 +1020,8 @@ function evonpc($type,$name){
 	}
 	if(!empty($qry)){
 		$qry = substr($qry,0,-1);
-		$db->query( "UPDATE {$tablepre}players SET $qry WHERE type = '$type' AND name = '$name'" );
+		$where=$city_evolution ? 'pid='.(int)$source['pid'] : "type = '$type' AND name = '$name'";
+		$db->query( "UPDATE {$tablepre}players SET $qry WHERE $where" );
 	}
 
 	return $npc;
@@ -1011,7 +1036,9 @@ function antiAFK($timelimit = 0){
 	$deadline=$now-$timelimit;
 	$result = $db->query("SELECT * FROM {$tablepre}players WHERE type=0 AND endtime < '$deadline' AND hp>'0' AND state<'10'");
 	while($al = $db->fetch_array($result)) {
-		$afkerlist[$al['pid']]=Array('name' => $al['name'] ,'pls' => $al['pls'], 'type'=>0, 'clbpara'=>$al['clbpara']);
+		if(function_exists('ending_routes_enabled') && ending_routes_enabled() && (int)$al['pgroup']===3) continue;
+		if(race_ai_recent_activity($al,$deadline)) continue;
+		$afkerlist[$al['pid']]=$al;
 	}
 
 	if(empty($afkerlist)){return;}
@@ -1023,7 +1050,7 @@ function antiAFK($timelimit = 0){
 			addnews($now,'death32',$kcontent['name'],'',$kcontent['pls']);
 			$alivenum--;
 			$deathnum++;
-
+			race_ai_world_death($kcontent,32,$now);
 
 		}
 	}
@@ -1036,15 +1063,18 @@ function set_credits(){
 	// 双控模式按实际账户结算，避免将第二角色当作独立用户。
 	if(function_exists('ruleset_set_credits_hook') && ruleset_set_credits_hook() === true) return;
 	$clist = $creditlist = $updatelist = Array();
+	$account_winner = function_exists('race_account_name') ? race_account_name($winner) : $winner;
 	$result = $db->query("SELECT * FROM {$gtablepre}users RIGHT JOIN {$tablepre}players ON {$tablepre}players.name={$gtablepre}users.username WHERE {$tablepre}players.type='0'");
 	while($data = $db->fetch_array($result)){
+		$account_para = get_clbpara($data['clbpara'] ?? '');
+		if(!empty($account_para['ai_master']) || empty($data['username'])) continue;
 		$clist[$data['name']] = $data;
 	}
 	foreach($clist as $key => $val){
-		$credits = get_credit_up($val,$winner,$winmode) + $val['credits'];
+		$credits = get_credit_up($val,$account_winner,$winmode) + $val['credits'];
 		$credits2 = $val['credits2'] + wheelchair_credit_gain(10,$key,$val);
 		$validgames = $val['validgames'] + 1;
-		$wingames = $key == $winner ? $val['wingames'] + 1 : $val['wingames'];
+		$wingames = $key == $account_winner ? $val['wingames'] + 1 : $val['wingames'];
 		$updatelist[$key] = Array(
 			'username' => $key,
 			'credits' => $credits,
@@ -1055,7 +1085,7 @@ function set_credits(){
 	}
 	$db->multi_update("{$gtablepre}users", $updatelist,'username');
 	if($gamblingon){//赌注系统开启
-		$updatelist2 = get_gambling_result($clist,$winner,$winmode);
+		$updatelist2 = get_gambling_result($clist,$account_winner,$winmode);
 		if($updatelist2){//必须分两次，因为涉及字段不同
 			$db->multi_update("{$gtablepre}users", $updatelist2,'username');
 		}

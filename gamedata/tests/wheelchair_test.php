@@ -52,7 +52,7 @@ class WheelchairDb {
 		}
 		if(preg_match("/SET num = '(-?\d+)' WHERE sid = '(\d+)'/",$sql,$m)) $this->shop[$m[2]]['num']=(int)$m[1];
 		if(preg_match('/SET credits2=credits2\+(\d+)/',$sql,$m)) $this->credits+=(int)$m[1];
-		if(preg_match("/SELECT clbpara FROM test_players WHERE name='([^']+)'/",$sql,$m)) return new WheelchairResult(isset($this->players[$m[1]]) ? array($this->players[$m[1]]) : array());
+		if(preg_match("/SELECT name,type,race,clbpara FROM test_players WHERE name=X'([a-f0-9]*)'/",$sql,$m)) { $name=hex2bin($m[1]); return new WheelchairResult(isset($this->players[$name]) ? array($this->players[$name]) : array()); }
 		if(strpos($sql,'FROM test_chat')!==false) {
 			$rows=array(); for($i=0;$i<4;$i++) $rows[]=array('time'=>1000-$i,'send'=>'小兵'.$i,'recv'=>16);
 			return new WheelchairResult($rows);

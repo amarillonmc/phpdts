@@ -1,0 +1,10 @@
+<!--{if function_exists('ending_routes_enabled') && ending_routes_enabled()}-->
+<!--{if !empty($clbpara['dissociation_deadline']) && $pgroup==3}-->
+<!--{eval $projection_seconds=max(0,$clbpara['dissociation_deadline']-$now);}-->
+<div class="yellow">湾城投影 · 剩余 <span id="projection-clock" data-remaining="{$projection_seconds}">{$projection_seconds}</span> 秒<!--{if !empty($clbpara['ex_lock'])}--> · 模式ＥＸ（视界已锁定）<!--{/if}--></div>
+<script>(function(){var e=document.getElementById('projection-clock');if(!e)return;var until=Date.now()+Number(e.getAttribute('data-remaining'))*1000;window.clearInterval(window.projectionClock);window.projectionClock=window.setInterval(function(){if(!document.documentElement.contains(e)){clearInterval(window.projectionClock);return;}e.textContent=Math.max(0,Math.ceil((until-Date.now())/1000));},1000);})();</script>
+<!--{/if}-->
+<!--{if $horizon==2}--><style>body{background-color:#1c1017}.nv-panel,.game-table{border-color:#914855}.yellow{color:#ffc9b5}</style><!--{/if}-->
+<!--{eval $route_status=severe_visible_status($pdata);}-->
+<!--{if $route_status}--><div class="yellow">当前状态：<!--{eval echo implode(' ／ ',$route_status);}--></div><!--{/if}-->
+<!--{/if}-->

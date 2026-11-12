@@ -1,0 +1,1586 @@
+{
+  "mode": "built-in image_gen",
+  "asset_count": 146,
+  "generated_count": 131,
+  "preparation": "Every job is a separate generated composition. Final files are whole-image mechanical resizes; no character sheet cropping. Talent emblems below reuse the matching generated achievement icon.",
+  "reused_assets": [
+    {
+      "path": "img/talent/blasty.png",
+      "source": "img/ach/642_1.png",
+      "width": 100,
+      "height": 100,
+      "method": "byte-identical reuse of the generated character achievement emblem"
+    },
+    {
+      "path": "img/talent/dante.png",
+      "source": "img/ach/643_1.png",
+      "width": 100,
+      "height": 100,
+      "method": "byte-identical reuse of the generated character achievement emblem"
+    },
+    {
+      "path": "img/talent/akane.png",
+      "source": "img/ach/644_1.png",
+      "width": 100,
+      "height": 100,
+      "method": "byte-identical reuse of the generated character achievement emblem"
+    },
+    {
+      "path": "img/talent/holly.png",
+      "source": "img/ach/645_1.png",
+      "width": 100,
+      "height": 100,
+      "method": "byte-identical reuse of the generated character achievement emblem"
+    },
+    {
+      "path": "img/talent/sandy.png",
+      "source": "img/ach/646_1.png",
+      "width": 100,
+      "height": 100,
+      "method": "byte-identical reuse of the generated character achievement emblem"
+    },
+    {
+      "path": "img/talent/albert.png",
+      "source": "img/ach/647_1.png",
+      "width": 100,
+      "height": 100,
+      "method": "byte-identical reuse of the generated character achievement emblem"
+    },
+    {
+      "path": "img/talent/kiko.png",
+      "source": "img/ach/648_1.png",
+      "width": 100,
+      "height": 100,
+      "method": "byte-identical reuse of the generated character achievement emblem"
+    },
+    {
+      "path": "img/talent/rook.png",
+      "source": "img/ach/634_1.png",
+      "width": 100,
+      "height": 100,
+      "method": "byte-identical reuse of the generated character achievement emblem"
+    },
+    {
+      "path": "img/talent/bishop.png",
+      "source": "img/ach/635_1.png",
+      "width": 100,
+      "height": 100,
+      "method": "byte-identical reuse of the generated character achievement emblem"
+    },
+    {
+      "path": "img/talent/knight.png",
+      "source": "img/ach/636_1.png",
+      "width": 100,
+      "height": 100,
+      "method": "byte-identical reuse of the generated character achievement emblem"
+    },
+    {
+      "path": "img/talent/pawn.png",
+      "source": "img/ach/637_1.png",
+      "width": 100,
+      "height": 100,
+      "method": "byte-identical reuse of the generated character achievement emblem"
+    },
+    {
+      "path": "img/talent/king.png",
+      "source": "img/ach/638_1.png",
+      "width": 100,
+      "height": 100,
+      "method": "byte-identical reuse of the generated character achievement emblem"
+    },
+    {
+      "path": "img/talent/queen.png",
+      "source": "img/ach/639_1.png",
+      "width": 100,
+      "height": 100,
+      "method": "byte-identical reuse of the generated character achievement emblem"
+    },
+    {
+      "path": "img/talent/cannon.png",
+      "source": "img/ach/640_1.png",
+      "width": 100,
+      "height": 100,
+      "method": "byte-identical reuse of the generated character achievement emblem"
+    },
+    {
+      "path": "img/talent/guard.png",
+      "source": "img/ach/641_1.png",
+      "width": 100,
+      "height": 100,
+      "method": "byte-identical reuse of the generated character achievement emblem"
+    }
+  ],
+  "jobs": [
+    {
+      "key": "type34_0a",
+      "name": "铁城",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type34_0a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/铁城.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/铁城_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Tiecheng, adult tall black-haired horned muscular man in black-orange jacket, gray chest armor, huge sword sheathed on back. Guarded fist-fighting stance. Backdrop: Industrial moonlit battlefield, orange rim light. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type34_0",
+      "name": "铁城",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type34_0.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/铁城.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/铁城_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Tiecheng, adult tall black-haired horned muscular man in black-orange jacket, gray chest armor, huge sword sheathed on back. Guarded fist-fighting stance. Backdrop: Industrial moonlit battlefield, orange rim light. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type34_1a",
+      "name": "灵翼",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type34_1a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/灵翼.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/灵翼_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Bishop Lingyi, adult tall blond man with small halo, long white-gray coat and mint trim, carrying his cross-shaped long sniper rifle. Calm confident expression. Backdrop: Moonlit high platform, mint and silver light. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type34_1",
+      "name": "灵翼",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type34_1.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/灵翼.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/灵翼_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Bishop Lingyi, adult tall blond man with small halo, long white-gray coat and mint trim, carrying his cross-shaped long sniper rifle. Calm confident expression. Backdrop: Moonlit high platform, mint and silver light. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type34_2a",
+      "name": "破石",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type34_2a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/破石.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/破石_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Knight Poshi, adult silver-green-haired man with glasses, white coat with green panels, composite bow. Analytical expression. Backdrop: Dark stone courtyard, green scanning geometries. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type34_2",
+      "name": "破石",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type34_2.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/破石.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/破石_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Knight Poshi, adult silver-green-haired man with glasses, white coat with green panels, composite bow. Analytical expression. Backdrop: Dark stone courtyard, green scanning geometries. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type34_3a",
+      "name": "银锤",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type34_3a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/银锤.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/银锤_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Pawn Yinchui, adult blonde woman with ponytail, white-yellow cropped futuristic jacket and black sportswear, oversized metal suitcase. Determined energetic expression. Backdrop: Smoky workshop, yellow sparks. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type34_3",
+      "name": "银锤",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type34_3.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/银锤.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/银锤_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Pawn Yinchui, adult blonde woman with ponytail, white-yellow cropped futuristic jacket and black sportswear, oversized metal suitcase. Determined energetic expression. Backdrop: Smoky workshop, yellow sparks. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type34_4a",
+      "name": "电反",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type34_4a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/电反.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/电反_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: King Dianfan, adult black long-haired bespectacled maid with small curved horns, white apron black dress, two tiny steam sheep beside her. Backdrop: Dark machine room, violet static glow. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type34_4",
+      "name": "电反",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type34_4.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/电反.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/电反_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: King Dianfan, adult black long-haired bespectacled maid with small curved horns, white apron black dress, two tiny steam sheep beside her. Backdrop: Dark machine room, violet static glow. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type34_5a",
+      "name": "三步",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type34_5a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/三步.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/三步_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Queen Sanbu, brown-haired gothic-dressed young woman carrying a lantern, black-red jacket, white skirt, red tights. Backdrop: Ruined street in violet fog, warm lantern. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type34_5",
+      "name": "三步",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type34_5.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/三步.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/三步_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Queen Sanbu, brown-haired gothic-dressed young woman carrying a lantern, black-red jacket, white skirt, red tights. Backdrop: Ruined street in violet fog, warm lantern. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type34_6a",
+      "name": "白凰",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type34_6a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/白凰.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/白凰_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Cannon Baihuang, white-haired fox-eared young woman, black top with blue trim, gray skirt, long talisman staff. Backdrop: Blue-white magical shrine with floating paper talismans. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type34_6",
+      "name": "白凰",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type34_6.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/白凰.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/白凰_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Cannon Baihuang, white-haired fox-eared young woman, black top with blue trim, gray skirt, long talisman staff. Backdrop: Blue-white magical shrine with floating paper talismans. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type34_7a",
+      "name": "绯刹",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type34_7a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/绯刹.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/绯刹_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Guard Feicha, adult deep red long-haired woman, tiny demon tail, white-gray coat with black and red details, twin daggers. Backdrop: Crimson dusk alley, stealthy confident pose. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type34_7",
+      "name": "绯刹",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type34_7.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/绯刹.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/绯刹_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Guard Feicha, adult deep red long-haired woman, tiny demon tail, white-gray coat with black and red details, twin daggers. Backdrop: Crimson dusk alley, stealthy confident pose. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type35_0a",
+      "name": "善德",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type35_0a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/善德/1.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/善德_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Grace, sakura pink twin-tailed young woman, gray-purple eyes, white long coat with pastel trim, navy lapel, pink rabbit charm, gentle fist stance. Backdrop: Quiet twilight academy courtyard, warm pink-gold light. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type35_0",
+      "name": "善德",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type35_0.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/善德/1.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/善德_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Grace, sakura pink twin-tailed young woman, gray-purple eyes, white long coat with pastel trim, navy lapel, pink rabbit charm, gentle fist stance. Backdrop: Quiet twilight academy courtyard, warm pink-gold light. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type35_1a",
+      "name": "恶德",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type35_1a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/恶德/1.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/恶德_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Disgrace, silver-white bob with purple inner color, violet-cyan eyes, deep purple hood, white cropped top with cyan laces, mechanical ear-like horns, sword held low. Backdrop: Quiet twilight academy courtyard, indigo and cyan light. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type35_1",
+      "name": "恶德",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type35_1.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/恶德/1.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/恶德_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Disgrace, silver-white bob with purple inner color, violet-cyan eyes, deep purple hood, white cropped top with cyan laces, mechanical ear-like horns, sword held low. Backdrop: Quiet twilight academy courtyard, indigo and cyan light. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type36_0a",
+      "name": "Blasty",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type36_0a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Blasty.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/便服与差分/Blasty_街头运动便服.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Blasty_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Blasty, long black hair with white streak, goose feather wings, brown-black sports trousers, alloy boxing gloves. Wear the casual outfit of the second reference, preserving identity from first.  Backdrop: Welcoming animal street food stall at dusk, warm lantern glow, relaxed noncombat posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type36_0",
+      "name": "Blasty",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type36_0.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Blasty.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/便服与差分/Blasty_街头运动便服.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Blasty_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Blasty, long black hair with white streak, goose feather wings, brown-black sports trousers, alloy boxing gloves. Wear the casual outfit of the second reference, preserving identity from first.  Backdrop: Welcoming animal street food stall at dusk, warm lantern glow, relaxed noncombat posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type36_1a",
+      "name": "Dante",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type36_1a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Dante.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/便服与差分/Dante_战术夹克便服.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Dante_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Dante, adult muscular dark-haired mastiff-eared man, dog tail, military green cargo trousers and arm shield. Wear the casual outfit of the second reference, preserving identity from first.  Backdrop: Welcoming animal street food stall at dusk, warm lantern glow, relaxed noncombat posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type36_1",
+      "name": "Dante",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type36_1.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Dante.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/便服与差分/Dante_战术夹克便服.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Dante_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Dante, adult muscular dark-haired mastiff-eared man, dog tail, military green cargo trousers and arm shield. Wear the casual outfit of the second reference, preserving identity from first.  Backdrop: Welcoming animal street food stall at dusk, warm lantern glow, relaxed noncombat posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type36_2a",
+      "name": "Akane",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type36_2a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Akane.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/便服与差分/Akane_和风羽织便服.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Akane_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Akane, golden-blonde long-haired fox-eared young woman with a fluffy golden tail; preserve golden hair and fox features from the first reference. Graceful unarmed martial artist. Wear the casual outfit of the second reference, preserving identity from first. Deep navy haori, white shirt and dark cropped trousers; NOT brown hair, NOT dog ears. Backdrop: Welcoming animal street food stall at dusk, warm lantern glow, relaxed noncombat posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type36_2",
+      "name": "Akane",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type36_2.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Akane.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/便服与差分/Akane_和风羽织便服.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Akane_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Akane, golden-blonde long-haired fox-eared young woman with a fluffy golden tail; preserve golden hair and fox features from the first reference. Graceful unarmed martial artist. Wear the casual outfit of the second reference, preserving identity from first. Deep navy haori, white shirt and dark cropped trousers; NOT brown hair, NOT dog ears. Backdrop: Welcoming animal street food stall at dusk, warm lantern glow, relaxed noncombat posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type36_3a",
+      "name": "Holly",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type36_3a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Holly.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/便服与差分/Holly_冬日针织便服.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Holly_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Holly, white-haired rabbit-eared young woman, cool blue eyes, snowy white-blue clothing, thoughtful expression. Wear the casual outfit of the second reference, preserving identity from first.  Backdrop: Welcoming animal street food stall at dusk, warm lantern glow, relaxed noncombat posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type36_3",
+      "name": "Holly",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type36_3.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Holly.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/便服与差分/Holly_冬日针织便服.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Holly_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Holly, white-haired rabbit-eared young woman, cool blue eyes, snowy white-blue clothing, thoughtful expression. Wear the casual outfit of the second reference, preserving identity from first.  Backdrop: Welcoming animal street food stall at dusk, warm lantern glow, relaxed noncombat posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type36_4a",
+      "name": "Sandy",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type36_4a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Sandy.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/便服与差分/Sandy_新中式折扇便服.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Sandy_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Sandy, long white-haired fox-eared young woman with fluffy white tails, orange-white garments and folding fan, amber eyes. Wear the casual outfit of the second reference, preserving identity from first.  Backdrop: Welcoming animal street food stall at dusk, warm lantern glow, relaxed noncombat posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type36_4",
+      "name": "Sandy",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type36_4.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Sandy.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/便服与差分/Sandy_新中式折扇便服.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Sandy_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Sandy, long white-haired fox-eared young woman with fluffy white tails, orange-white garments and folding fan, amber eyes. Wear the casual outfit of the second reference, preserving identity from first.  Backdrop: Welcoming animal street food stall at dusk, warm lantern glow, relaxed noncombat posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type36_5a",
+      "name": "Albert",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type36_5a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Albert.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/便服与差分/Albert_工匠学徒便服.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Albert_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Albert, golden-brown-haired hamster-eared boy, goggles, worker coveralls, small tools and a backpack. Fully clothed, playful engineer. Wear the casual outfit of the second reference, preserving identity from first.  Backdrop: Welcoming animal street food stall at dusk, warm lantern glow, relaxed noncombat posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type36_5",
+      "name": "Albert",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type36_5.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Albert.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/便服与差分/Albert_工匠学徒便服.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Albert_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Albert, golden-brown-haired hamster-eared boy, goggles, worker coveralls, small tools and a backpack. Fully clothed, playful engineer. Wear the casual outfit of the second reference, preserving identity from first.  Backdrop: Welcoming animal street food stall at dusk, warm lantern glow, relaxed noncombat posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type36_6a",
+      "name": "Kiko",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type36_6a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Kiko.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/便服与差分/Kiko_田园脱线背心裙便服.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Kiko_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Kiko, long light brown-haired roe-deer-eared girl with clutter on her head, cheerful distracted expression, fully clothed. Wear the casual outfit of the second reference, preserving identity from first.  Backdrop: Welcoming animal street food stall at dusk, warm lantern glow, relaxed noncombat posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type36_6",
+      "name": "Kiko",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type36_6.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Kiko.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/便服与差分/Kiko_田园脱线背心裙便服.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Kiko_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Kiko, long light brown-haired roe-deer-eared girl with clutter on her head, cheerful distracted expression, fully clothed. Wear the casual outfit of the second reference, preserving identity from first.  Backdrop: Welcoming animal street food stall at dusk, warm lantern glow, relaxed noncombat posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type37_0a",
+      "name": "Blasty",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type37_0a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Blasty.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Blasty_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Blasty, long black hair with white streak, goose feather wings, brown-black sports trousers, alloy boxing gloves. Wear the battle outfit of the first reference. Backdrop: Bay-city night street, dramatic elemental rim light, battle-ready posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type37_0",
+      "name": "Blasty",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type37_0.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Blasty.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Blasty_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Blasty, long black hair with white streak, goose feather wings, brown-black sports trousers, alloy boxing gloves. Wear the battle outfit of the first reference. Backdrop: Bay-city night street, dramatic elemental rim light, battle-ready posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type37_1a",
+      "name": "Dante",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type37_1a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Dante.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Dante_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Dante, adult muscular dark-haired mastiff-eared man, dog tail, military green cargo trousers and arm shield. Wear the battle outfit of the first reference. Backdrop: Bay-city night street, dramatic elemental rim light, battle-ready posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type37_1",
+      "name": "Dante",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type37_1.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Dante.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Dante_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Dante, adult muscular dark-haired mastiff-eared man, dog tail, military green cargo trousers and arm shield. Wear the battle outfit of the first reference. Backdrop: Bay-city night street, dramatic elemental rim light, battle-ready posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type37_2a",
+      "name": "Akane",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type37_2a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Akane.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Akane_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Akane, golden-blonde long-haired fox-eared young woman with a fluffy golden tail; preserve golden hair and fox features from the first reference. Graceful unarmed martial artist. Wear the battle outfit of the first reference. Backdrop: Bay-city night street, dramatic elemental rim light, battle-ready posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type37_2",
+      "name": "Akane",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type37_2.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Akane.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Akane_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Akane, golden-blonde long-haired fox-eared young woman with a fluffy golden tail; preserve golden hair and fox features from the first reference. Graceful unarmed martial artist. Wear the battle outfit of the first reference. Backdrop: Bay-city night street, dramatic elemental rim light, battle-ready posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type37_3a",
+      "name": "Holly",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type37_3a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Holly.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Holly_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Holly, white-haired rabbit-eared young woman, cool blue eyes, snowy white-blue clothing, thoughtful expression. Wear the battle outfit of the first reference. Backdrop: Bay-city night street, dramatic elemental rim light, battle-ready posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type37_3",
+      "name": "Holly",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type37_3.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Holly.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Holly_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Holly, white-haired rabbit-eared young woman, cool blue eyes, snowy white-blue clothing, thoughtful expression. Wear the battle outfit of the first reference. Backdrop: Bay-city night street, dramatic elemental rim light, battle-ready posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type37_4a",
+      "name": "Sandy",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type37_4a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Sandy.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Sandy_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Sandy, long white-haired fox-eared young woman with fluffy white tails, orange-white garments and folding fan, amber eyes. Wear the battle outfit of the first reference. Backdrop: Bay-city night street, dramatic elemental rim light, battle-ready posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type37_4",
+      "name": "Sandy",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type37_4.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Sandy.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Sandy_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Sandy, long white-haired fox-eared young woman with fluffy white tails, orange-white garments and folding fan, amber eyes. Wear the battle outfit of the first reference. Backdrop: Bay-city night street, dramatic elemental rim light, battle-ready posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type37_5a",
+      "name": "Albert",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type37_5a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Albert.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Albert_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Albert, golden-brown-haired hamster-eared boy, goggles, worker coveralls, small tools and a backpack. Fully clothed, playful engineer. Wear the battle outfit of the first reference. Backdrop: Bay-city night street, dramatic elemental rim light, battle-ready posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type37_5",
+      "name": "Albert",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type37_5.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Albert.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Albert_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Albert, golden-brown-haired hamster-eared boy, goggles, worker coveralls, small tools and a backpack. Fully clothed, playful engineer. Wear the battle outfit of the first reference. Backdrop: Bay-city night street, dramatic elemental rim light, battle-ready posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type37_6a",
+      "name": "Kiko",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type37_6a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Kiko.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Kiko_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Kiko, long light brown-haired roe-deer-eared girl with clutter on her head, cheerful distracted expression, fully clothed. Wear the battle outfit of the first reference. Backdrop: Bay-city night street, dramatic elemental rim light, battle-ready posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type37_6",
+      "name": "Kiko",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type37_6.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Kiko.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Kiko_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Kiko, long light brown-haired roe-deer-eared girl with clutter on her head, cheerful distracted expression, fully clothed. Wear the battle outfit of the first reference. Backdrop: Bay-city night street, dramatic elemental rim light, battle-ready posture. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type38_0a",
+      "name": "鹅群",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type38_0a.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: A cohesive flock of three Canada geese, black necks, white chinstraps, brown gray wings, alert lively birds on the ground. Backdrop: Dark black background with clearly visible cascading luminous green computer code rain directly behind the character, matching classic PHPDTS minion NPC avatars. No framing or name labels. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type38_0",
+      "name": "鹅群",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type38_0.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; plain dark negative space to one side, no badges, no crests. Subject: A cohesive flock of three Canada geese, black necks, white chinstraps, brown gray wings, alert lively birds on the ground. Backdrop: Dark black background with clearly visible cascading luminous green computer code rain directly behind the character, matching classic PHPDTS minion NPC avatars. No framing or name labels. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type38_1a",
+      "name": "袭击者",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type38_1a.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: An adult male masked street raider in dark tactical jacket, cargo trousers, a long rusty steel plumbing pipe weapon held low, never a tobacco smoking pipe. Backdrop: Dark black background with clearly visible cascading luminous green computer code rain directly behind the character, matching classic PHPDTS minion NPC avatars. No framing or name labels. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type38_1",
+      "name": "袭击者",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type38_1.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; plain dark negative space to one side, no badges, no crests. Subject: An adult male masked street raider in dark tactical jacket, cargo trousers, a long rusty steel plumbing pipe weapon held low, never a tobacco smoking pipe. Backdrop: Dark black background with clearly visible cascading luminous green computer code rain directly behind the character, matching classic PHPDTS minion NPC avatars. No framing or name labels. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type38_2a",
+      "name": "恶霸",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type38_2a.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: An imposing adult male street bully, muscular build, worn sleeveless coat, gloved fists, stern expression. Backdrop: Dark black background with clearly visible cascading luminous green computer code rain directly behind the character, matching classic PHPDTS minion NPC avatars. No framing or name labels. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type38_2",
+      "name": "恶霸",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type38_2.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; plain dark negative space to one side, no badges, no crests. Subject: An imposing adult male street bully, muscular build, worn sleeveless coat, gloved fists, stern expression. Backdrop: Dark black background with clearly visible cascading luminous green computer code rain directly behind the character, matching classic PHPDTS minion NPC avatars. No framing or name labels. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type38_3a",
+      "name": "高隐猎手",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type38_3a.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: An adult female camouflaged hunter with winter hood, binocular scope and long rifle, sharp watchful eyes. Backdrop: Dark black background with clearly visible cascading luminous green computer code rain directly behind the character, matching classic PHPDTS minion NPC avatars. No framing or name labels. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type38_3",
+      "name": "高隐猎手",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type38_3.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; plain dark negative space to one side, no badges, no crests. Subject: An adult female camouflaged hunter with winter hood, binocular scope and long rifle, sharp watchful eyes. Backdrop: Dark black background with clearly visible cascading luminous green computer code rain directly behind the character, matching classic PHPDTS minion NPC avatars. No framing or name labels. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type38_4a",
+      "name": "雾影",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type38_4a.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: A mysterious faceless hooded humanoid made of dark fog, flowing cloak, pale violet eyes and mistlike limbs. Backdrop: Dark black background with clearly visible cascading luminous green computer code rain directly behind the character, matching classic PHPDTS minion NPC avatars. No framing or name labels. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type38_4",
+      "name": "雾影",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type38_4.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; plain dark negative space to one side, no badges, no crests. Subject: A mysterious faceless hooded humanoid made of dark fog, flowing cloak, pale violet eyes and mistlike limbs. Backdrop: Dark black background with clearly visible cascading luminous green computer code rain directly behind the character, matching classic PHPDTS minion NPC avatars. No framing or name labels. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type38_5a",
+      "name": "猎人团",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type38_5a.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: An adult masked poacher with a weathered gray-green hunting jacket, boots and shotgun, with faint distant companions. Backdrop: Dark black background with clearly visible cascading luminous green computer code rain directly behind the character, matching classic PHPDTS minion NPC avatars. No framing or name labels. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type38_5",
+      "name": "猎人团",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type38_5.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; plain dark negative space to one side, no badges, no crests. Subject: An adult masked poacher with a weathered gray-green hunting jacket, boots and shotgun, with faint distant companions. Backdrop: Dark black background with clearly visible cascading luminous green computer code rain directly behind the character, matching classic PHPDTS minion NPC avatars. No framing or name labels. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type38_6a",
+      "name": "猎人首领",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type38_6a.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: An adult veteran poacher leader with scarred face, heavy brown hunting coat, shoulder ammunition bandolier and scoped rifle. Backdrop: Dark black background with clearly visible cascading luminous green computer code rain directly behind the character, matching classic PHPDTS minion NPC avatars. No framing or name labels. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type38_6",
+      "name": "猎人首领",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type38_6.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; plain dark negative space to one side, no badges, no crests. Subject: An adult veteran poacher leader with scarred face, heavy brown hunting coat, shoulder ammunition bandolier and scoped rifle. Backdrop: Dark black background with clearly visible cascading luminous green computer code rain directly behind the character, matching classic PHPDTS minion NPC avatars. No framing or name labels. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_0a",
+      "name": "裂堡",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type39_0a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Liefort, massive adult bald scarred man with burn marks, reinforced industrial exoskeleton and exposed hydraulic joints, silent intimidating stance. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_0",
+      "name": "裂堡",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type39_0.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Liefort, massive adult bald scarred man with burn marks, reinforced industrial exoskeleton and exposed hydraulic joints, silent intimidating stance. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_1a",
+      "name": "弑翼",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type39_1a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Shiyi, gaunt tall adult man in a breathing mask, both arms ending in firearm interfaces, broken mechanical glider wings on back. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_1",
+      "name": "弑翼",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type39_1.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Shiyi, gaunt tall adult man in a breathing mask, both arms ending in firearm interfaces, broken mechanical glider wings on back. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_2a",
+      "name": "黑岩",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type39_2a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/黑岩/刀おじさん1.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Heiyan, lean adult man around thirty, short dark burgundy hair, modified dark kimono armor and red inner scarf, flaming Japanese katana. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_2",
+      "name": "黑岩",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type39_2.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/黑岩/刀おじさん1.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Heiyan, lean adult man around thirty, short dark burgundy hair, modified dark kimono armor and red inner scarf, flaming Japanese katana. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_3a",
+      "name": "烬锤",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type39_3a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Jinchui, adult woman in a charred heat-resistant cloak, heavy mechanical arm, cradling a glowing high-temperature bomb. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_3",
+      "name": "烬锤",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type39_3.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Jinchui, adult woman in a charred heat-resistant cloak, heavy mechanical arm, cradling a glowing high-temperature bomb. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_4a",
+      "name": "断序",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type39_4a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Duanxu, adult androgynous cybernetic operative in a data-patterned bodysuit, featureless dark screen mask, floating data sphere behind. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_4",
+      "name": "断序",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type39_4.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Duanxu, adult androgynous cybernetic operative in a data-patterned bodysuit, featureless dark screen mask, floating data sphere behind. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_5a",
+      "name": "瞬刃",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type39_5a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Shunren, athletic adult short-haired woman in black fitted combat suit, short blade, many steel-wire grappling hooks at belt. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_5",
+      "name": "瞬刃",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type39_5.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Shunren, athletic adult short-haired woman in black fitted combat suit, short blade, many steel-wire grappling hooks at belt. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_6a",
+      "name": "魇凰",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type39_6a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Yanhuang, adult pale white-haired shaman with loose hair, nightmare mask, chain-wrapped scepter, ominous psychic aura. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_6",
+      "name": "魇凰",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type39_6.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Yanhuang, adult pale white-haired shaman with loose hair, nightmare mask, chain-wrapped scepter, ominous psychic aura. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_7a",
+      "name": "血翎",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type39_7a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Xueling, adult assassin in crimson feather cloak, poisoned dagger, concealed sleeve crossbow and small poison powder pouches. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type39_7",
+      "name": "血翎",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type39_7.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: Xueling, adult assassin in crimson feather cloak, poisoned dagger, concealed sleeve crossbow and small poison powder pouches. Backdrop: Dark ruined city, ominous crimson rim light. ALL old Crimson members use ONLY the exact black-red old organization crest reference; no new personal badge. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry. Old Crimson emblem only. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type40_0a",
+      "name": "林无月",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type40_0a.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Lin Wuyue, an original anime young adult woman knight, long lavender hair, purple irises, dignified determined face. Elegant polished knight plate armor with a flowing black cloak and gold crown ornament, carrying a Neo Axe Remote futuristic remote-control axe weapon. Her requested current character design takes priority over old game portraits. Backdrop: Retrofuturistic moonlit digital control chamber. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type40_0",
+      "name": "林无月",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type40_0.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; plain dark negative space to one side, no badges, no crests. Subject: Lin Wuyue, an original anime young adult woman knight, long lavender hair, purple irises, dignified determined face. Elegant polished knight plate armor with a flowing black cloak and gold crown ornament, carrying a Neo Axe Remote futuristic remote-control axe weapon. Her requested current character design takes priority over old game portraits. Backdrop: Retrofuturistic moonlit digital control chamber. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type40_1a",
+      "name": "传承翼人·神奈备命",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type40_1a.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Kanna, dignified winged shrine maiden inspired by the classic AIR visual novel: long lavender hair, violet eyes, vast white feather wings, flowing white and purple ceremonial robes with red sash, fully clothed, serene solemn face. Backdrop: Moonlit ruins, sacred feather light, airy violet background. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type40_1",
+      "name": "传承翼人·神奈备命",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type40_1.jpg",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; plain dark negative space to one side, no badges, no crests. Subject: Kanna, dignified winged shrine maiden inspired by the classic AIR visual novel: long lavender hair, violet eyes, vast white feather wings, flowing white and purple ceremonial robes with red sash, fully clothed, serene solemn face. Backdrop: Moonlit ruins, sacred feather light, airy violet background. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type40_2a",
+      "name": "钥刃装甲·残留的思念",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type40_2a.jpg",
+      "refs": [
+        "D:/Github/phpdts/gamedata/ruleset/ACDTS_2011/img/n_51.gif"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: Lingering Will-inspired armored keyblade knight, fully enclosed bronze gold angular helmet with long narrow horns, dark faceplate, bronze and dark burgundy armor, flowing torn earth-toned cape, oversized key-shaped greatblade. No exposed face. Backdrop: Barren moonlit rocky plain, dusky gold light. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type40_2",
+      "name": "钥刃装甲·残留的思念",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type40_2.jpg",
+      "refs": [
+        "D:/Github/phpdts/gamedata/ruleset/ACDTS_2011/img/n_51.gif"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; plain dark negative space to one side, no badges, no crests. Subject: Lingering Will-inspired armored keyblade knight, fully enclosed bronze gold angular helmet with long narrow horns, dark faceplate, bronze and dark burgundy armor, flowing torn earth-toned cape, oversized key-shaped greatblade. No exposed face. Backdrop: Barren moonlit rocky plain, dusky gold light. No invented organization emblem. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type41_0a",
+      "name": "DIAMOND",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type41_0a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/DIAMOND.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/黑衣少女.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: DIAMOND, adult tall broad-shouldered man, short black-blue hair and thin gold headband, pale golden eyes, open-collar dark blue-black shirt sleeves rolled, layered belts with silver-gold bow buckle, gloves, long coat draped on shoulders with white mottled pattern. Masculine face, not a woman. Backdrop: Tower summit surrounded by frozen holographic probability matrix. Gold-blue lighting. The last reference is ONLY for its gold mirrored-double-Z hourglass emblem on the hat/suitcase. DO NOT include that reference's girl. Clearly integrate this exact two mirrored Z hourglass symbol on clothing and as large background heraldry. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type41_0",
+      "name": "DIAMOND",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type41_0.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/DIAMOND.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/黑衣少女.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: DIAMOND, adult tall broad-shouldered man, short black-blue hair and thin gold headband, pale golden eyes, open-collar dark blue-black shirt sleeves rolled, layered belts with silver-gold bow buckle, gloves, long coat draped on shoulders with white mottled pattern. Masculine face, not a woman. Backdrop: Tower summit surrounded by frozen holographic probability matrix. Gold-blue lighting. The last reference is ONLY for its gold mirrored-double-Z hourglass emblem on the hat/suitcase. DO NOT include that reference's girl. Clearly integrate this exact two mirrored Z hourglass symbol on clothing and as large background heraldry. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type41_1a",
+      "name": "OMICRON",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type41_1a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/OMICRON.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/黑衣少女.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: OMICRON, adult woman with long light golden-brown hair fading to cyan-blue-purple ends, visible left purple eye, spiked silver and blue-purple jewel eyepatch on RIGHT eye, glossy black outfit, black fishnet stockings, blue-black cape with wine-red lining and black feathers. Natural human arms, NO mechanical arm. Backdrop: Dark purple dimensional rift, drifting black feathers. The last reference is ONLY for its gold mirrored-double-Z hourglass emblem on the hat/suitcase. DO NOT include that reference's girl. Clearly integrate this exact two mirrored Z hourglass symbol on clothing and as large background heraldry. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type41_1",
+      "name": "OMICRON",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type41_1.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/OMICRON.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/黑衣少女.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: OMICRON, adult woman with long light golden-brown hair fading to cyan-blue-purple ends, visible left purple eye, spiked silver and blue-purple jewel eyepatch on RIGHT eye, glossy black outfit, black fishnet stockings, blue-black cape with wine-red lining and black feathers. Natural human arms, NO mechanical arm. Backdrop: Dark purple dimensional rift, drifting black feathers. The last reference is ONLY for its gold mirrored-double-Z hourglass emblem on the hat/suitcase. DO NOT include that reference's girl. Clearly integrate this exact two mirrored Z hourglass symbol on clothing and as large background heraldry. Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type42_0a",
+      "name": "蒸汽羊·白",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type42_0a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/电反.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/电反_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: One cute mechanical steam sheep from the maid reference: round white wool, dark metallic face, polished golden curved horns, short brass mechanical legs, small steam exhaust, violet electrical arcs. ONLY the sheep, no human. Backdrop: Dark machine floor, soft violet static light. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type42_0",
+      "name": "蒸汽羊·白",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type42_0.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/电反.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/电反_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: One cute mechanical steam sheep from the maid reference: round white wool, dark metallic face, polished golden curved horns, short brass mechanical legs, small steam exhaust, violet electrical arcs. ONLY the sheep, no human. Backdrop: Dark machine floor, soft violet static light. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type42_1a",
+      "name": "蒸汽羊·黑",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/type42_1a.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/电反.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/电反_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC vertical full-body portrait, exact composition ratio 7:17, displayed at 280x680. Full body head to boots entirely visible. Subject: One cute mechanical steam sheep paired with the reference: round charcoal-black wool, silver metallic face, polished golden curved horns, short brass mechanical legs, small steam exhaust, violet electrical arcs. ONLY the sheep, no human. Backdrop: Dark machine floor, soft violet static light. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "type42_1",
+      "name": "蒸汽羊·黑",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/type42_1.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/红杀教头/电反.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/电反_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: anime visual-novel game NPC wide compact face-and-shoulders avatar, exact aspect ratio 7:4, displayed at 140x80. Face large and recognizable; heraldic emblem clearly visible to one side. Subject: One cute mechanical steam sheep paired with the reference: round charcoal-black wool, silver metallic face, polished golden curved horns, short brass mechanical legs, small steam exhaust, violet electrical arcs. ONLY the sheep, no human. Backdrop: Dark machine floor, soft violet static light. The last reference is the EXACT heraldic emblem for this character. Clearly integrate this emblem as part of the background design and as a clothing patch, preserving its geometry.  Style: detailed clean anime cel shading with subtle painterly lighting, matching supplied reference identity; coherent polished PC game art. Single character unless explicitly a flock. Preserve exact hair, ears, eyes, outfit from character reference; use outfit-only reference when specified. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_630",
+      "name": "成就630",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/630_1.png",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. Three silver employee ID cards dissolve into one luminous silver key, dawn light beyond an opened lock, white-red-blue gentle glow. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_631",
+      "name": "成就631",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/631_1.png",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. Two keys, one glowing red fire and one glowing blue ice, join into a single interlocking key, dramatic black backdrop. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_632",
+      "name": "成就632",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/632_1.png",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. Warm amber and cool indigo seals merge above a miniature city dissolving into golden leaves and translucent sand. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_633",
+      "name": "成就633",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/633_1.png",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. Two luminous dimensional keys split a black digital sky, gold and violet light, fallen feathers, a sense of hard-won transcendence. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_634",
+      "name": "成就634",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/634_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/铁城_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A heroic metallic victory medallion based on the exact personal badge in the reference, the emblem large and crisp with a subtle laurel glow. Capture the distinctive colors and emblem silhouette, not a character portrait. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_635",
+      "name": "成就635",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/635_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/灵翼_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A heroic metallic victory medallion based on the exact personal badge in the reference, the emblem large and crisp with a subtle laurel glow. Capture the distinctive colors and emblem silhouette, not a character portrait. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_636",
+      "name": "成就636",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/636_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/破石_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A heroic metallic victory medallion based on the exact personal badge in the reference, the emblem large and crisp with a subtle laurel glow. Capture the distinctive colors and emblem silhouette, not a character portrait. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_637",
+      "name": "成就637",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/637_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/银锤_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A heroic metallic victory medallion based on the exact personal badge in the reference, the emblem large and crisp with a subtle laurel glow. Capture the distinctive colors and emblem silhouette, not a character portrait. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_638",
+      "name": "成就638",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/638_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/电反_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A heroic metallic victory medallion based on the exact personal badge in the reference, the emblem large and crisp with a subtle laurel glow. Capture the distinctive colors and emblem silhouette, not a character portrait. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_639",
+      "name": "成就639",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/639_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/三步_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A heroic metallic victory medallion based on the exact personal badge in the reference, the emblem large and crisp with a subtle laurel glow. Capture the distinctive colors and emblem silhouette, not a character portrait. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_640",
+      "name": "成就640",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/640_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/白凰_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A heroic metallic victory medallion based on the exact personal badge in the reference, the emblem large and crisp with a subtle laurel glow. Capture the distinctive colors and emblem silhouette, not a character portrait. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_641",
+      "name": "成就641",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/641_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/绯刹_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A heroic metallic victory medallion based on the exact personal badge in the reference, the emblem large and crisp with a subtle laurel glow. Capture the distinctive colors and emblem silhouette, not a character portrait. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_642",
+      "name": "成就642",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/642_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Blasty_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A warm luminous victory medallion based on the exact personal animal-team badge in the reference, the emblem large and clear, subtle star-shaped golden sparkles. Capture the distinctive colors and emblem silhouette, not a character portrait. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_643",
+      "name": "成就643",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/643_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Dante_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A warm luminous victory medallion based on the exact personal animal-team badge in the reference, the emblem large and clear, subtle star-shaped golden sparkles. Capture the distinctive colors and emblem silhouette, not a character portrait. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_644",
+      "name": "成就644",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/644_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Akane_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A warm luminous victory medallion based on the exact personal animal-team badge in the reference, the emblem large and clear, subtle star-shaped golden sparkles. Capture the distinctive colors and emblem silhouette, not a character portrait. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_645",
+      "name": "成就645",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/645_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Holly_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A warm luminous victory medallion based on the exact personal animal-team badge in the reference, the emblem large and clear, subtle star-shaped golden sparkles. Capture the distinctive colors and emblem silhouette, not a character portrait. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_646",
+      "name": "成就646",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/646_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Sandy_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A warm luminous victory medallion based on the exact personal animal-team badge in the reference, the emblem large and clear, subtle star-shaped golden sparkles. Capture the distinctive colors and emblem silhouette, not a character portrait. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_647",
+      "name": "成就647",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/647_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Albert_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A warm luminous victory medallion based on the exact personal animal-team badge in the reference, the emblem large and clear, subtle star-shaped golden sparkles. Capture the distinctive colors and emblem silhouette, not a character portrait. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_648",
+      "name": "成就648",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/648_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/Kiko_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A warm luminous victory medallion based on the exact personal animal-team badge in the reference, the emblem large and clear, subtle star-shaped golden sparkles. Capture the distinctive colors and emblem silhouette, not a character portrait. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_649",
+      "name": "成就649",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/649_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/善德_个人徽标_v1.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/恶德_个人徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. Two symbolic medallions interlock: pink-gold graceful cupped-hand and heart flask crest from reference one, purple-cyan blade and flask crest from reference two. Both clearly recognizable, warm and cold light in harmony. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_650",
+      "name": "成就650",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/650_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A dark battle achievement medal, a hydraulic armored fist cracking a fortress wall. Integrate the exact old Crimson black-red organization badge from the reference as the medallion base. Foreground symbol large and legible. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_651",
+      "name": "成就651",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/651_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A dark battle achievement medal, a broken glider wing crossed with a gun barrel. Integrate the exact old Crimson black-red organization badge from the reference as the medallion base. Foreground symbol large and legible. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_652",
+      "name": "成就652",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/652_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A dark battle achievement medal, a flaming Japanese katana over dark stone. Integrate the exact old Crimson black-red organization badge from the reference as the medallion base. Foreground symbol large and legible. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_653",
+      "name": "成就653",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/653_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A dark battle achievement medal, a heavy mechanical hammer over glowing bomb embers. Integrate the exact old Crimson black-red organization badge from the reference as the medallion base. Foreground symbol large and legible. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_654",
+      "name": "成就654",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/654_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A dark battle achievement medal, a faceless screen mask with a broken luminous data ring. Integrate the exact old Crimson black-red organization badge from the reference as the medallion base. Foreground symbol large and legible. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_655",
+      "name": "成就655",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/655_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A dark battle achievement medal, a swift short blade crossing grappling wires. Integrate the exact old Crimson black-red organization badge from the reference as the medallion base. Foreground symbol large and legible. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_656",
+      "name": "成就656",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/656_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A dark battle achievement medal, a nightmare mask entwined in a chain scepter. Integrate the exact old Crimson black-red organization badge from the reference as the medallion base. Foreground symbol large and legible. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "achievement_657",
+      "name": "成就657",
+      "width": 100,
+      "height": 100,
+      "path": "img/ach/657_1.png",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/徽标/旧红杀_组织徽标_v1.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: square game achievement icon, designed to remain legible at 100x100 pixels. A dark battle achievement medal, a crimson feather crossed with a venom-coated dagger. Integrate the exact old Crimson black-red organization badge from the reference as the medallion base. Foreground symbol large and legible. Rich anime game painted enamel and metallic light, bold simple silhouette, dark vignette, generous safe margin, single square composition, no surrounding UI. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "ending_jiejin_Zv_1",
+      "name": "ending_jiejin_Zv_1",
+      "width": 960,
+      "height": 540,
+      "path": "img/ending_routes/ending_jiejin_Zv_1.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/紅暮3f.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/蓝凝.png"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: 16:9 widescreen anime visual novel ending CG. Scene: Ruined moonlit battlefield. Two young adult women stand side by side before the viewer: CRIMSON from reference one (long crimson hair, red eyes, dark sleeveless top with crimson-pink tie, crimson-pink long coat slipping off shoulders) sheathing a sword; AZURE from reference two (long ice-blue hair, blue-cyan gradient eyes, pale blue-white kimono top, pleated skirt) hugging a magic staff, tiny electric sparks on her skirt. Burning light orbs fade into the dark sky like fireflies. Low angle, both facing viewer, confident small smiles. Preserve exact character appearance and clothes from references. Detailed luminous anime game painting, cinematic depth, clean hands and faces, no inset panels. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "ending_jiejin_Zv_2",
+      "name": "ending_jiejin_Zv_2",
+      "width": 960,
+      "height": 540,
+      "path": "img/ending_routes/ending_jiejin_Zv_2.jpg",
+      "refs": [],
+      "prompt": "Use case: illustration-story. Asset type: 16:9 widescreen anime visual novel ending CG. Scene: Close-up of two glowing keys floating and merging in mid-air, one wreathed in red flame and one sheathed in blue ice, their patterns interlocking into a single key. Background a collapsing digital sky of abstract luminous code fragments. Foreground the player's two outstretched hands seen from behind, anatomically natural. Dramatic rim light. Detailed luminous anime game painting, cinematic depth, clean hands and faces, no inset panels. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "ending_jieli_phantom_1",
+      "name": "ending_jieli_phantom_1",
+      "width": 960,
+      "height": 540,
+      "path": "img/ending_routes/ending_jieli_phantom_1.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/善德/1.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/恶德/1.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Blasty.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Holly.png",
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/Kiko.png"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: 16:9 widescreen anime visual novel ending CG, wide cinematic view. Foreground in a quiet academy courtyard at dusk: exactly two women GRACE and DISGRACE. GRACE from reference 1 (light sakura-pink twin tails with pink ribbons, grey-purple eyes, white long coat with pink-blue-purple trim, pink rabbit charm bag) bows slightly with a gentle smile. DISGRACE from reference 2 (silver-white bob, violet-cyan eyes, deep purple hood, white cropped top, mechanical ear-like horns) stands arms crossed. In the mid-ground, exactly FOUR distinct friendly animal people wave goodbye: 1) Blasty goose girl from reference 3, long black hair with white streak, dark brown sporty pants and leather jacket; 2) Holly rabbit girl from reference 4, long white hair, tall white rabbit ears, white hooded sports outfit; 3) Albert hamster boy, short golden-brown hair, round hamster ears, goggles on head, work overalls; 4) Kiko roe-deer girl from reference 5, very long light brown hair, broad deer ears, small antlers decorated with flowers and trinkets, wearing a modest floral sundress. Six people total, all distinct, all fully clothed. The courtyard and surrounding city fade into translucent light with falling golden leaves. Warm melancholy sunset lighting, luminous anime game painting, beautiful cinematic atmosphere, clear distinct silhouettes, anatomically clean hands and faces, no inset panels. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "ending_jieli_phantom_2",
+      "name": "ending_jieli_phantom_2",
+      "width": 960,
+      "height": 540,
+      "path": "img/ending_routes/ending_jieli_phantom_2.jpg",
+      "refs": [],
+      "prompt": "Use case: illustration-story. Asset type: 16:9 widescreen anime visual novel ending CG. Extreme close-up, first-person point of view of ONE outstretched human hand, palm facing up, entering the image from the bottom foreground. Two small magical seals, one warm glowing amber, the other cold glowing indigo, hover immediately above the open palm and merge into one softly shining small paper certificate with abstract non-letter patterns. The hand and these glowing objects occupy the lower center half of the composition. In the background only: the ten districts of an empty night city dissolve like thin gauze, layers of buildings becoming translucent, drifting golden leaves. Warm melancholy light, luminous detailed anime game painting. This is a solitary first-person object-and-hand shot. NO visible characters, NO figures, NO faces, NO bodies, NO group portrait, NO ceremony, NO person holding a certificate up for the viewer. Only ONE hand is visible. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "ending_jieli_true_1",
+      "name": "ending_jieli_true_1",
+      "width": 960,
+      "height": 540,
+      "path": "img/ending_routes/ending_jieli_true_1.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/DIAMOND.png"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: 16:9 widescreen anime visual novel ending CG. Scene: Atop a high tower on an island at night. DIAMOND, a tall broad-shouldered adult man from reference (short black-blue hair with thin gold headband, pale golden eyes, dark blue-black open-collar shirt rolled sleeves, silver-gold bow belt buckle with layered leather straps, black gloves, dark blue-black long coat draped on shoulders with white mottled pattern), smiles faintly as colossal holographic matrix of countless frozen abstract screens collapses into light fragments. His tall figure is small against giant broken matrix. Cold dramatic lighting. Masculine, NOT a woman. Detailed luminous anime game painting, cinematic depth, clean hands and faces, no inset panels. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "ending_jieli_true_2",
+      "name": "ending_jieli_true_2",
+      "width": 960,
+      "height": 540,
+      "path": "img/ending_routes/ending_jieli_true_2.jpg",
+      "refs": [
+        "D:/Github/dts-creative-consultation/dts-creative-consultation/knowledge/98-人设图/OMICRON.png"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: 16:9 widescreen anime visual novel ending CG. Scene: A dark dimensional rift tears open in the air. OMICRON, adult woman from reference (long light golden-brown hair with cyan-blue-purple tips, visible purple LEFT eye, spiked silver blue-purple gem eyepatch over RIGHT eye, glossy black outfit, dark blue-black long cape with black feathers), steps back as black feathers scatter, reaching one empty palm toward viewer as if returning something. Natural human arms, NO mechanical arm. Dramatic purple rim light, melancholy expression. Detailed luminous anime game painting, cinematic depth, clean hands and faces, no inset panels. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "horou1a",
+      "name": "HOROU",
+      "width": 280,
+      "height": 680,
+      "path": "img/horou1a.jpg",
+      "refs": [
+        "C:/Users/mapodoufu/Documents/HOROU.png"
+      ],
+      "prompt": "Use case: identity-preserve. Asset type: vertical full-body anime game portrait, 7:17 aspect ratio, displayed at 280x680. Repaint the exact supplied character HOROU in matching clean flat cel-shaded hand-drawn anime style. Keep every distinguishing feature, hair colors, eyes, clothes, ribbons, hat or ornaments, wings and accessories exactly consistent. Full body head to shoes visible, confident welcoming pose, center character in the tall format. Soft magical twilight backdrop with subtle colorful light, prioritize readable character. Fully clothed, no sexual framing. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "orihime1a",
+      "name": "ORIHIME",
+      "width": 280,
+      "height": 680,
+      "path": "img/orihime1a.jpg",
+      "refs": [
+        "C:/Users/mapodoufu/Documents/ORIHIME.png"
+      ],
+      "prompt": "Use case: identity-preserve. Asset type: vertical full-body anime game portrait, 7:17 aspect ratio, displayed at 280x680. Repaint the exact supplied character ORIHIME in matching clean flat cel-shaded hand-drawn anime style. Keep every distinguishing feature, hair colors, eyes, clothes, ribbons, hat or ornaments, wings and accessories exactly consistent. Full body head to shoes visible, confident welcoming pose, center character in the tall format. Soft magical twilight backdrop with subtle colorful light, prioritize readable character. Fully clothed, no sexual framing. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "sayaa",
+      "name": "SAYA",
+      "width": 280,
+      "height": 680,
+      "path": "img/ending_routes/sayaa.jpg",
+      "refs": [
+        "D:/Github/phpdts/img/saya1.jpg",
+        "C:/Users/mapodoufu/Documents/HOROU.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: vertical full-body anime game NPC portrait, aspect ratio7:17, full figure head to boots visible. Character: SAYA, a young adult blonde blue-eyed secret-agent heroine inspired by Tokido Saya from Little Busters. Long golden hair, small white hair clips, black practical tactical dress over opaque leggings, dark boots, red ribbon at collar, fitted black jacket, two compact handguns held safely down. First reference supplies face identity; second is ONLY for the simple clean hand-drawn cel-shaded anime art style, do not copy its costume/wings. A bright determined smile with a hint of mischievousness. Subtle navy digital background, fully clothed, no sexual framing. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "saya",
+      "name": "SAYA",
+      "width": 140,
+      "height": 80,
+      "path": "img/ending_routes/saya.jpg",
+      "refs": [
+        "D:/Github/phpdts/img/saya1.jpg",
+        "C:/Users/mapodoufu/Documents/HOROU.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: wide face-and-shoulders game NPC avatar, aspect ratio7:4. Character: SAYA, a young adult blonde blue-eyed secret-agent heroine inspired by Tokido Saya from Little Busters. Long golden hair, small white hair clips, black practical tactical dress over opaque leggings, dark boots, red ribbon at collar, fitted black jacket, two compact handguns held safely down. First reference supplies face identity; second is ONLY for the simple clean hand-drawn cel-shaded anime art style, do not copy its costume/wings. A bright determined smile with a hint of mischievousness. Subtle navy digital background, fully clothed, no sexual framing. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    },
+    {
+      "key": "talent_electro",
+      "name": "电掣树",
+      "width": 100,
+      "height": 100,
+      "path": "img/talent/electro.png",
+      "refs": [],
+      "prompt": "Use case: stylized-concept. Asset type: square 100x100 game talent tree icon. A luminous cyan lightning seed branching into seven tiny abstract sparks, surrounded by a delicate circuit ring, dark blue background, polished painted enamel game badge. Bold simple readable silhouette, generous safe margin. NO text, NO letters, NO nameplates, NO signature, NO UI frames, no words anywhere in the image."
+    }
+  ]
+}

@@ -482,6 +482,13 @@ function shoplist($sn,$getlist=NULL) {
 	global $gamecfg,$mode,$itemdata,$areanum,$areaadd,$iteminfo,$itemspkinfo,$club,$horizon;
 	global $db,$tablepre;
 	global $pdata;
+	if(function_exists('ending_routes_enabled') && ending_routes_enabled()) {
+		$city=(int)($pdata['pgroup'] ?? 0)===3;
+		if($city) {
+			if(!in_array((int)$pdata['pls'],array(120,126),true)) { $GLOBALS['log'].='这里没有湾城黑市。<br>'; $mode='command'; return; }
+			$sn=30; $GLOBALS['shop']=30;
+		} elseif((int)$sn===30) { $mode='command'; return; }
+	} elseif(in_array((int)$sn,array(19,30),true)) { $mode='command'; return; }
 	if($club == 24 && !isset($getlist)) {
 		club24_shop_price(1,$pdata,true);
 		$pdata['clbpara']['c24_shopkind'] = (int)$sn;

@@ -3,6 +3,16 @@
 <input type="hidden" id="subcmd" name="subcmd" value="">
 <input type="hidden" id="subcmd2" name="subcmd2" value="">
 现在想要做什么？<br /><br />
+{template race_command}
+<!--{if function_exists('ending_routes_enabled') && ending_routes_enabled()}-->
+<!--{if $pls==34 && $pgroup==0}--><input type="button" value="进入动物大排档" onclick="$('command').value='sendo';postCmd('gamecmd','command.php');"><!--{if $art=='Untainted Glory' && $arts}--><input type="button" value="走进旧日殿堂" onclick="$('command').value='legacy_hall';postCmd('gamecmd','command.php');"><!--{/if}--><!--{/if}-->
+<!--{if $pgroup==4}--><input type="button" value="返回代码洪流" onclick="$('command').value='legacy_leave';postCmd('gamecmd','command.php');"><!--{/if}-->
+<!--{if !empty($clbpara['platform']['active'])}--><input type="button" value="解除投射" onclick="$('command').value='projection_off';postCmd('gamecmd','command.php');"><!--{/if}-->
+<!--{if !empty($clbpara['animal_debuff'][2])}--><input type="button" value="挣脱关节锁" onclick="$('command').value='ending_struggle';postCmd('gamecmd','command.php');"><!--{/if}-->
+<!--{if erc_has($pdata,'npc_talisman')}--><input type="button" value="贴符（400体力）" onclick="$('command').value='ending_talisman';postCmd('gamecmd','command.php');"><!--{/if}-->
+<!--{if !empty($clbpara['curses'])}--><input type="button" value="除咒（2技能点）" onclick="$('command').value='severe_cleanse';postCmd('gamecmd','command.php');"><!--{/if}-->
+<!--{if $pgroup==3 && in_array($pls,array(120,126))}--><input type="button" value="湾城黑市" onclick="$('mode').value='special';$('command').value='shop30';postCmd('gamecmd','command.php');"><!--{/if}--><br>
+<!--{/if}-->
 
 <input type="button" class="cmdbutton" id="zz" name="search" value="[Z]搜寻" onclick="$('command').value='search';postCmd('gamecmd','command.php');this.disabled=true;" <!--{if (array_search($pls,$arealist) <= $areanum && !$hack) && (isset($plsinfo[$pls]) && !isset($hplsinfo[$pgroup]))}-->disabled<!--{/if}-->>
 <select id="moveto" name="moveto" id="d" onchange="$('command').value='move';postCmd('gamecmd','command.php');this.disabled=true;">

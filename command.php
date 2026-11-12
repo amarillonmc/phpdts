@@ -47,6 +47,7 @@ if($gamestate == 0) {
 }
 
 //初始化各变量
+$pdata=race_ai_resolve_active($pdata);
 $pdata['clbpara'] = get_clbpara($pdata['clbpara']);
 extract($pdata,EXTR_REFS);
 $log = $cmd = $main = '';
@@ -56,6 +57,7 @@ $wheelchair_original_command = is_string($command ?? null) ? $command : '';
 $dialogue_skipped = false;
 $gamedata = array();
 init_playerdata();
+if(ending_routes_enabled()) dissociation_tick($pdata);
 
 //读取玩家互动信息
 $result = $db->query("SELECT lid,time,log FROM {$tablepre}log WHERE toid = '$pid' AND prcsd = 0 ORDER BY time,lid");
@@ -172,6 +174,23 @@ if($hp > 0){
 		}
 
 		//进入指令判断
+		if(ending_routes_enabled() && is_string($command) && !in_array($action,array('chase','pchase','dfight','cover'),true) && $mode!=='revcombat') {
+			$ending_handled=true;
+			if(strpos($command,'sendo')===0) sendo_command($pdata,$command);
+			elseif($command==='projection_off') { include_once GAME_ROOT.'./include/game/item.platform.php'; restorePlayerOriginalData($pdata); }
+			elseif($command==='legacy_hall') ending_routes_legacy_enter($pdata);
+			elseif($command==='legacy_leave' && $pgroup==4) { $pgroup=0; $pls=34; lost_searchmemory('all',$pdata); }
+			elseif($command==='race_ai_deploy') race_ai_create_body($pdata);
+			elseif($command==='race_ai_switch') { race_ai_switch($pdata,$_POST['body'] ?? ''); extract($pdata,EXTR_REFS); }
+			elseif($command==='race_sell') race_sell($pdata,$_POST['sell_slot'] ?? '');
+			elseif($command==='ending_struggle') erc_struggle($pdata);
+			elseif($command==='ending_talisman') erc_active_skill($pdata,'npc_talisman');
+			elseif($command==='severe_cleanse') {
+				if($skillpoint>=2) { $skillpoint-=2; severe_cleanse($pdata); $log.='你花费两点技能点，静下心清除了诅咒。<br>'; }
+				else $log.='除咒需要两点技能点。<br>';
+			} else $ending_handled=false;
+			if($ending_handled) { $mode='command'; goto ruleset_command_finished; }
+		}
 		if($mode === 'sis') {
 			include_once GAME_ROOT.'./include/game/song.inc.php';
 			$sis_order_in = isset($sis_order) && is_scalar($sis_order) ? (string)$sis_order : '';
@@ -652,7 +671,8 @@ if($hp > 0){
 					$choice_index = $choice_parts[2];
 
 					// 检查对话 ID 和选择索引是否有效
-					if(isset($dialogue_branch[$dialogue_id]) && isset($dialogue_branch[$dialogue_id][$choice_index])) {
+					if(isset($dialogue_branch[$dialogue_id]) && isset($dialogue_branch[$dialogue_id][$choice_index]) && ($clbpara['dialogue'] ?? '')===$dialogue_id) {
+						if($dialogue_id==='xharmer_meet') ending_routes_xharmer($pdata,(int)$choice_index===0);
 						// 记录玩家的选择
 						$clbpara['dialogue_choice'] = array(
 							'dialogue_id' => $dialogue_id,
@@ -862,7 +882,9 @@ if($hp > 0){
 				}
 			} elseif(strpos($command,'hor') === 0) {
 				$chor = substr($command,3,1);
-				if(isset($horizoninfo[$chor])){
+				if(ending_routes_enabled() && (!empty($clbpara['ex_lock']) || !severe_can_horizon($pdata) || (int)$chor===2)) {
+					$log.='现在无法切换视界。<br>';
+				} elseif(isset($horizoninfo[$chor])){
 					$horizon = $chor;
 					$log .= "视界切换为<span class=\"yellow\">$horizoninfo[$chor]</span>。<br> ";
 					# 切换视界后，丢失所有视野
@@ -954,7 +976,7 @@ if($hp > 0){
 			if ($command=="teamjoin") teamjoin($nteamID,$nteamPass);
 			if ($command=="teamquit") teamquit($nteamID,$nteamPass);
 		} elseif($mode == 'shop') {
-			if(in_array($pls,$shops) || !check_skill_unlock('c11_ebuy',$pdata)){
+			if((ending_routes_enabled() && $pgroup==3 && in_array((int)$pls,array(120,126),true)) || in_array($pls,$shops) || !check_skill_unlock('c11_ebuy',$pdata)){
 				if($command == 'shop') {
 					$mode = 'sp_shop';
 				} else {
@@ -1128,12 +1150,20 @@ if($hp > 0){
 		$log .= "行动冷却时间：<span id=\"timer\" class=\"yellow\">0.0</span>秒<br>";
 	}
 	wheelchair_review_after($pdata,$wheelchair_before,$wheelchair_original_command);
+	race_ai_sync_master($pdata);
 	player_save($pdata);
 }
 // RuleSet钩子：玩家数据持久化完成后释放指令级资源；死亡页面请求也需要释放。
 // RuleSet hook: release command-scoped resources after persistence, including death-page requests.
 if(function_exists('ruleset_command_post_save_hook')) {
 	ruleset_command_post_save_hook($pdata, isset($command) ? $command : '');
+}
+// 活动分体损毁后，当次响应就回到仍存活的主机，不能把账户送进死亡界面。
+if(race_ai_reconnect($pdata)) {
+	extract($pdata,EXTR_REFS);
+	$mode='command'; $cmd='';
+	$log.='分体连接中断，控制权已自动切回主机体。<br>';
+	init_playerdata();
 }
 init_profile();
 if($hp <= 0) {

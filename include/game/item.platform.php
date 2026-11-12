@@ -116,6 +116,7 @@ function item_platform($itmn, &$data)
     $duration = platform_get_duration($itmpara);
     $is_stat_persistent = platform_bool(platform_config_value($itmpara, array('isStatPersistent', 'IsStatPersistent'), false));
     $project_data = platform_filter_projectable_data($source['data']);
+    if(!empty($data['clbpara']['ex_lock']) || (function_exists('severe_can_horizon') && !severe_can_horizon($data))) unset($project_data['horizon']);
 
     if (empty($project_data)) {
         $log .= '投射平台没有可套用的数据。<br>';
@@ -126,12 +127,24 @@ function item_platform($itmn, &$data)
 
     if ($duration > 0) {
         platform_save_state($data, $project_data, $target_name, $duration, $is_stat_persistent);
-        $log .= "投射平台启动：你的本体数据已被暂存，投射稳定度阈值为<span class=\"yellow\">{$duration}</span>。<br>";
+        if(!empty($itmpara['platformHideDuration'])) {
+            $data['clbpara']['platform']['hide_duration']=1;
+            $log .= '投射平台启动：指示灯忽明忽暗，没人能保证这台测试机还能稳定运行多久。<br>';
+        } else $log .= "投射平台启动：你的本体数据已被暂存，投射稳定度阈值为<span class=\"yellow\">{$duration}</span>。<br>";
     } else {
         $log .= '投射平台启动：未设置生效时间，本次投射将永久写入当前角色数据。<br>';
     }
 
     platform_apply_data($data, $project_data, $target_name);
+    if($duration>0 && !empty($itmpara['platformSkills']) && is_array($itmpara['platformSkills'])) {
+        $allowed=array('npc_overrainbow','npc_7colour','npc_wrelease','npc_flying','npc_mecstasy','npc_perfectspy');
+        foreach(array_intersect($allowed,$itmpara['platformSkills']) as $skill) {
+            if(!in_array($skill,$data['clbpara']['skill'] ?? array(),true)) {
+                getclubskill($skill,$data['clbpara']);
+                $data['clbpara']['platform']['added_skills'][]=$skill;
+            }
+        }
+    }
     $log .= "投射完成。当前投射对象：<span class=\"yellow\">{$target_name}</span>。<br>";
 }
 
@@ -201,10 +214,10 @@ function platform_tick(&$data, $act = '')
 
     $randver = !empty($data['clbpara']['randver1']) ? intval($data['clbpara']['randver1']) : 10;
     $roll_max = max(1, intval(ceil($randver / 10)));
-    $increase = rand(1, $roll_max);
+    $increase = !empty($state['hide_duration']) ? 1 : rand(1, $roll_max);
     $data['clbpara']['platform']['progress'] = isset($state['progress']) ? $state['progress'] + $increase : $increase;
 
-    if ($data['clbpara']['platform']['progress'] > $state['duration']) {
+    if (!empty($state['hide_duration']) ? $data['clbpara']['platform']['progress'] >= $state['duration'] : $data['clbpara']['platform']['progress'] > $state['duration']) {
         restorePlayerOriginalData($data);
         $log .= "投射稳定度耗尽，平台投射已经结束。<br>";
         return true;
@@ -239,6 +252,7 @@ function restorePlayerOriginalData(&$data)
     }
 
     foreach ($restore_data as $field => $value) {
+        if($field==='horizon' && (!empty($data['clbpara']['ex_lock']) || (function_exists('severe_can_horizon') && !severe_can_horizon($data)))) continue;
         $data[$field] = $value;
     }
 
@@ -378,6 +392,7 @@ function platform_clear_state(&$data)
         $data['clbpara'] = get_clbpara(isset($data['clbpara']) ? $data['clbpara'] : array());
     }
 
+    foreach($data['clbpara']['platform']['added_skills'] ?? array() as $skill) lostclubskill($skill,$data['clbpara']);
     unset($data['clbpara']['platform']);
     unset($data['clbpara']['PlatformName']);
 

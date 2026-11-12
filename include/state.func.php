@@ -26,6 +26,7 @@
 		$bid = 0; $action = '';
 
 		if (!$death) return;
+		if($death==='dissociation_timeout') goto natural_death_commit;
 
 		# 《Philosophyz》改写护盾：抵御一次雏菊/救济事件抹杀
 		if (!$type && in_array($death, array('kagari1', 'kagari2', 'kagari3', 'salv')) && !empty($clbpara['rewrite_kagari_shield'])) {
@@ -72,7 +73,7 @@
 			$target_pls = intval($clbpara['star_mark_pls']);
 			unset($clbpara['star_mark_pls']);
 			include_once GAME_ROOT.'./include/game/search.func.php';
-			$safepls = get_safe_plslist(0);
+			$safepls = function_exists('erc_teleport_places') ? erc_teleport_places($data,0) : get_safe_plslist(0);
 			if (!in_array($target_pls, $safepls) && !empty($safepls)) {
 				$target_pls = $safepls[array_rand($safepls)];
 			}
@@ -81,13 +82,19 @@
 			$sp = max($sp, round($msp * 0.5));
 			$state = 0;
 			if (function_exists('lost_searchmemory')) lost_searchmemory('all', $data);
-			$log .= "<span class=\"clan\">【星をつなげて】致命危机之下，夜空中的星标骤然亮起，将你紧急传送回了<span class=\"yellow\">{$plsinfo[$pls]}</span>！</span><br>";
+			$star_place_name=function_exists('erc_place_name') ? erc_place_name($data,$pls) : $plsinfo[$pls];
+			$log .= "<span class=\"clan\">【星をつなげて】致命危机之下，夜空中的星标骤然亮起，将你紧急传送回了<span class=\"yellow\">{$star_place_name}</span>！</span><br>";
 			player_save($data);
 			return '';
 		}
 
+		natural_death_commit:
 		$hp = 0;
-		if ($death == 'poison') {
+		if ($death == 'dissociation_timeout') {
+			$state = 62;
+		} elseif ($death == 'head_destroyed') {
+			$state = 61;
+		} elseif ($death == 'poison') {
 			$state = 26;
 		} elseif ($death == 'trap') {
 			$state = 27;
@@ -167,7 +174,8 @@
 
 		# 执行死亡事件（灵魂绑定等）
 		if(!$data['type'] && empty($data['nm'])) $data['nm'] = '你';
-		check_death_events(create_dummy_playerdata(),$data,1);
+		$death_source=create_dummy_playerdata();
+		check_death_events($death_source,$data,1);
 
 		player_save($data);
 
@@ -256,6 +264,7 @@
 	# 重要的事情要说三次：这里的第一个参数指的是杀人者(敌对方)视角，第二个参数指的是死者(受到伤害者)视角。
 	function revive_process(&$pa,&$pd,$active)
 	{
+		if(function_exists('erc_revive') && erc_revive($pd)) { severe_revival($pd); return 'ending_talent'; }
 		global $log,$weather,$now,$gamevars;
 
 		# RuleSet钩子：非NULL返回值直接作为本次复活判定结果。
@@ -263,7 +272,7 @@
 		if(function_exists('ruleset_revive_process_hook'))
 		{
 			$ruleset_revival = ruleset_revive_process_hook($pa,$pd,$active);
-			if($ruleset_revival !== NULL) return $ruleset_revival;
+			if($ruleset_revival !== NULL) { if($ruleset_revival && function_exists('severe_revival')) severe_revival($pd); return $ruleset_revival; }
 		}
 
 		include_once GAME_ROOT.'./include/game/clubslct.func.php';
@@ -289,7 +298,7 @@
 			} else {
 				$log .= "<span class=\"clan\">【きみは帰る場所】已废除HP槽的{$pd['nm']}无视了这次死亡判定！</span><br>";
 			}
-			return $revival_flag;
+			if($revival_flag && function_exists('severe_revival')) severe_revival($pd); return $revival_flag;
 		}
 
 		# 《ローリンガール》翻滚免死
@@ -300,7 +309,7 @@
 			$pd['hp'] = 1;
 			$pd['state'] = 0;
 			$log .= "<span class=\"lime\">「もう一回、もう一回！」翻滚的惯性让{$pd['nm']}在倒下的瞬间再度翻身站起！</span><br>";
-			return $revival_flag;
+			if($revival_flag && function_exists('severe_revival')) severe_revival($pd); return $revival_flag;
 		}
 
 		# 《星をつなげて》星标紧急脱离
@@ -311,7 +320,7 @@
 			$target_pls = intval($pd['clbpara']['star_mark_pls']);
 			unset($pd['clbpara']['star_mark_pls']);
 			include_once GAME_ROOT.'./include/game/search.func.php';
-			$safepls = get_safe_plslist(0);
+			$safepls = function_exists('erc_teleport_places') ? erc_teleport_places($pd,0) : get_safe_plslist(0);
 			if (!in_array($target_pls, $safepls) && !empty($safepls)) {
 				$target_pls = $safepls[array_rand($safepls)];
 			}
@@ -321,8 +330,9 @@
 			$pd['state'] = 0;
 			$pd['bid'] = 0; $pd['action'] = '';
 			if (function_exists('lost_searchmemory')) lost_searchmemory('all', $pd);
-			$log .= "<span class=\"clan\">【星をつなげて】致命危机之下，夜空中的星标骤然亮起，将{$pd['nm']}紧急传送回了<span class=\"yellow\">{$plsinfo[$target_pls]}</span>！</span><br>";
-			return $revival_flag;
+			$star_place_name=function_exists('erc_place_name') ? erc_place_name($pd,$target_pls) : $plsinfo[$target_pls];
+			$log .= "<span class=\"clan\">【星をつなげて】致命危机之下，夜空中的星标骤然亮起，将{$pd['nm']}紧急传送回了<span class=\"yellow\">{$star_place_name}</span>！</span><br>";
+			if($revival_flag && function_exists('severe_revival')) severe_revival($pd); return $revival_flag;
 		}
 
 		#光玉雨天气下，提供者有概率复活
@@ -345,7 +355,7 @@
 				$pd['sp'] = max($wth18_obbs,1);
 				$pd['state'] = 0;
 				$log.= "<span class=\"lime\">但是，飞舞着的光玉们钻进了{$pd['nm']}的身体，让{$pd['nm']}重新站了起来！</span><br>";;
-				return $revival_flag;
+				if($revival_flag && function_exists('severe_revival')) severe_revival($pd); return $revival_flag;
 			}
 		}
 
@@ -363,7 +373,7 @@
 				$pd['sp'] = max($aurora_dice,1);
 				$pd['state'] = 0;
 				$log.= "<span class=\"lime\">但是，空气中弥漫着的奥罗拉让{$pd['nm']}重新站了起来！</span><br>";;
-				return $revival_flag;
+				if($revival_flag && function_exists('severe_revival')) severe_revival($pd); return $revival_flag;
 			}
 		}
 
@@ -388,10 +398,10 @@
 				$pd['rp'] = 0;
 			}
 			$log .= '<span class="lime">但是，'.$pd['nm'].'涅槃重生了！</span><br>';
-			return $revival_flag;
+			if($revival_flag && function_exists('severe_revival')) severe_revival($pd); return $revival_flag;
 		}
 
-		return $revival_flag;
+		if($revival_flag && function_exists('severe_revival')) severe_revival($pd); return $revival_flag;
 	}
 
 	# 执行死透了后的事件：
@@ -454,6 +464,12 @@
 		}
 		# 保存游戏进行状态
 		player_save($pd);
+		if(function_exists('erc_final_death') && severe_enabled()) {
+			$pd['clbpara']=get_clbpara($pd['clbpara']);
+			erc_final_death($pa,$pd);
+			// 窃盗仓库清空、诅咒结算标记及阶段回调的状态也必须落盘。
+			player_save($pd);
+		}
 		save_gameinfo();
 		return;
 	}
@@ -461,6 +477,7 @@
 	# 特殊死亡事件（灵魂绑定等）
 	function check_death_events(&$pa,&$pd,$active)
 	{
+		if(function_exists('race_ai_true_death')) race_ai_true_death($pd);
 		// 自然死亡与战斗最终死亡都会经过这里；复活成功不算死亡。
 		if(!$pd['type']) {
 			include_once GAME_ROOT.'./include/game/achievement.func.php';
@@ -659,6 +676,7 @@
 		$rgup = min(15,max(1,$rgup));
 		# 「灭气」技能效果
 		if(isset($pd['skill_c1_burnsp'])) $rgup += rand(1,2);
+		if(function_exists('severe_has') && severe_has($pd,'frenzy')) $rgup=(int)ceil($rgup*1.5);
 		$pd['rage'] = min(255,$pd['rage']+$rgup);
 		return;
 	}
@@ -1077,13 +1095,14 @@
 	function calculate_rest_upsp($rtime,&$pa)
 	{
 		global $sleep_time,$db,$tablepre,$log;
+		if(function_exists('dissociation_rest_bonus')) $rtime+=dissociation_rest_bonus($pa,$rtime);
 
 		# 治疗姿态下恢复速率变为3倍
 		if($pa['pose'] == 5) $rtime *= 3;
 		$upsp = round ($pa['msp'] * $rtime / $sleep_time / 100 );
 
 		# 灵子视界下，恢复速率受种火数量加成
-		if($pa['horizon'] && $pa['sp'] < $pa['msp'])
+		if($pa['horizon']==1 && $pa['sp'] < $pa['msp'])
 		{
 			$result = $db->query("SELECT pid FROM {$tablepre}players WHERE type=92 AND pls={$pa['pls']} AND hp>0 ");
 			$nums = $db->num_rows($result);
@@ -1098,12 +1117,13 @@
 	function calculate_rest_uphp($rtime,&$pa)
 	{
 		global $heal_time,$db,$tablepre,$log;
+		if(function_exists('dissociation_rest_bonus')) $rtime+=dissociation_rest_bonus($pa,$rtime);
 		# 治疗姿态下恢复速率变为3倍
 		if($pa['pose'] == 5) $rtime *= 3;
 		$uphp = round ($pa['mhp'] * $rtime / $heal_time / 100 );
 
 		# 灵子视界下，恢复速率受种火数量加成
-		if($pa['horizon'] && $pa['hp'] < $pa['mhp'])
+		if($pa['horizon']==1 && $pa['hp'] < $pa['mhp'])
 		{
 			$result = $db->query("SELECT pid FROM {$tablepre}players WHERE type=92 AND pls={$pa['pls']} AND hp>0 ");
 			$nums = $db->num_rows($result);
@@ -1139,6 +1159,7 @@
 		extract($data,EXTR_REFS);
 
 		$resttime = $now - $endtime;
+		if(in_array((int)$state,array(1,2,3),true) && function_exists('severe_rest')) severe_rest($data,$resttime);
 		$endtime = $now;
 
 		//If you are dead, resting won't do you any good!
@@ -1155,6 +1176,7 @@
 			$oldsp = $sp;
 			$upsp = calculate_rest_upsp($resttime,$data);
 			$sp += $upsp; $sp = min($sp, $msp);
+			if(function_exists('erc_cap_sp')) erc_cap_sp($data);
 			$upsp = $sp - $oldsp;
 			$upsp=max(0,$upsp);
 			if(!$upsp && $sp >= $msp) $log .= "已经不需要休息了。";

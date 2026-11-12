@@ -21,10 +21,11 @@ function init_playerdata($data=NULL)
 	$upexp = round(($lvl*$baseexp)+(($lvl+1)*$baseexp));
 	$lvlupexp = $upexp - $exp;
 
-	$iconImg = $gd.'_'.$icon.'.gif';
-	if(file_exists('img/'.$gd.'_'.$icon.'a.gif')) $iconImgB = $gd.'_'.$icon.'a.gif';
+	$iconImg = is_file(GAME_ROOT.'./img/'.$icon) ? $icon : $gd.'_'.$icon.'.gif';
+	$portrait = preg_replace('/\.(gif|png|jpe?g)$/i','a.$1',$iconImg);
+	$iconImgB = is_file(GAME_ROOT.'./img/'.$portrait) ? $portrait : '';
 
-	if(($weather == 8)||($weather == 9)||($weather == 12))
+	if(($weather == 8)||($weather == 9)||($weather == 12) || (function_exists('severe_curse') && severe_curse($data,'darkness')))
 	{
 		$fog = true;
 	}
@@ -600,6 +601,7 @@ function npc_changewep_rev(&$pa,&$pd,$acitve)
 	global $rangeinfo,$ex_dmg_def;
 
 	if(!$pa['type'] || $pa['club'] != 98) return;
+	if(function_exists('erc_has') && erc_has($pa,'npc_arsenal')) { erc_arsenal_swap($pa,$pd); return; }
 
 	$dice = diceroll(99);
 

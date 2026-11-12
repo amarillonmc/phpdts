@@ -127,3 +127,13 @@ $quest_anpcinfo = array(
         ),
     ),
 );
+
+if(function_exists('ending_routes_enabled') && ending_routes_enabled()) {
+$quest_anpcinfo[38]=array('num'=>0,'mhp'=>5000,'msp'=>5000,'att'=>650,'def'=>400,'lvl'=>50,'skill'=>500,'club'=>0,'money'=>200,'pls'=>99,'sub'=>array(
+0=>array('name'=>'迁徙的加拿大鹅','gd'=>'m','icon'=>'ending_routes/type38_0.jpg','wep'=>'事件武装','wepk'=>'WP','wepe'=>500,'weps'=>999,'clbpara'=>array('er_sub'=>0)),
+1=>array('name'=>'大排档袭击者','gd'=>'m','icon'=>'ending_routes/type38_1.jpg','wep'=>'事件武装','wepk'=>'WK','wepe'=>500,'weps'=>999,'clbpara'=>array('er_sub'=>1)),
+2=>array('name'=>'失控的恶霸','gd'=>'m','icon'=>'ending_routes/type38_2.jpg','wep'=>'事件武装','wepk'=>'WP','wepe'=>500,'weps'=>999,'clbpara'=>array('er_sub'=>2)),
+3=>array('name'=>'高隐猎手','gd'=>'m','icon'=>'ending_routes/type38_3.jpg','wep'=>'事件武装','wepk'=>'WG','wepe'=>500,'weps'=>999,'clbpara'=>array('er_sub'=>3)),
+4=>array('name'=>'雾影','gd'=>'m','icon'=>'ending_routes/type38_4.jpg','wep'=>'事件武装','wepk'=>'WF','wepe'=>500,'weps'=>999,'clbpara'=>array('er_sub'=>4)),
+));
+}

@@ -394,4 +394,9 @@
 		8 => '“你有没有试着分解过‘手机’和‘笔记本电脑’？”<br>“虽然不知道为什么这些东西上也会有元素。但寄宿在其上的元素数量与种类似乎是固定的。如果把这些固定的元素重新组合起来的话……？”<br>',
 		9 => '“你有没有试过把带有‘生命恢复’与‘体力恢复’特征的元素组合起来？”<br>“嘛，就算没试过，你应该一眼就能看出来会发生什么了。但是如果把它们分别与更有‘攻击性’的元素组合起来的话……？”<br>',
 	);
+if(function_exists('ending_routes_enabled') && ending_routes_enabled()) {
+ foreach($emix_fixlist as $key=>$recipe) if(($recipe['result'][0] ?? '')==='Untainted Glory') unset($emix_fixlist[$key]);
+ $emix_fixlist=array_values($emix_fixlist);
+ $split_spcorpse_fix[7]=array('FP-T0KI 「HOROU」'=>'r_1-0','FP-TOK1 「ORIHIME」'=>'r_1-1','FP-TO2I 「SAYA」'=>'r_1-2');
+}
 ?>

@@ -747,7 +747,7 @@ $anpcinfo = array(
 			),
 			5 => array(
 				'name' => 'FP-TO2I 「SAYA」',
-				'icon' => 'saya1.jpg',
+				'icon' => 'ending_routes/saya.jpg',
 				'club' => 4,
 				'gd' => 'f',
 				'pls' => 6,
@@ -3161,3 +3161,8 @@ $anpcinfo = array(
 		),
 	),
 );
+
+if(function_exists('ending_routes_enabled') && ending_routes_enabled()) {
+	require config('ending_npc',1);
+	$anpcinfo[19]['sub'][0]['mhp'] = 100000;
+}

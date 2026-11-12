@@ -4,6 +4,7 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 include_once GAME_ROOT.'./include/game/wheelchair.func.php';
+include_once GAME_ROOT.'./include/game/achievement_routes.func.php';
 
 # 初始化单个成就页面
 function init_achtabledata($ach)
@@ -168,6 +169,7 @@ function reset_daily_achievement($who)
 function check_mixitem_achievement_rev($nn,$item)
 {
 	global $now,$validtime,$starttime,$gamecfg,$name,$db,$gtablepre;
+	if(function_exists('race_account_name')) $nn = race_account_name($nn);
 	
 	$done = 0;
 	$atotal = Array();
@@ -741,7 +743,7 @@ function check_club24_achievement($data)
 	if(empty($data) || !isset($data['type']) || $data['type'] != 0 || empty($data['name'])) return;
 	$para = get_clbpara($data['clbpara']);
 	if(($para['BGMBrand'] ?? '') !== 'rixolamal') return;
-	$who = $data['name']; $aid = 209;
+	$who = ending_routes_achievement_account($data); $aid = 209;
 	$ach = get_achlist($aid);
 	// 独立 RuleSet 的旧成就表可能未开放这个成就。
 	if(empty($ach['lvl']) || !isset($titles_list[123]) || check_achievement_rev($aid,$who)) return;
@@ -757,6 +759,7 @@ function check_club24_achievement($data)
 function check_club25_achievement($who,$winmode,$data=NULL)
 {
 	global $db,$tablepre,$titles_list;
+	if(function_exists('race_account_name')) $who = race_account_name($who);
 	if(!in_array((int)$winmode,Array(2,3,7),true) || !isset($titles_list[124])) return;
 	$ach = get_achlist(210);
 	if(empty($ach['lvl']) || check_achievement_rev(210,$who)) return;
@@ -765,7 +768,7 @@ function check_club25_achievement($who,$winmode,$data=NULL)
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE name='$escwho' AND type=0");
 		$data = $db->fetch_array($result);
 	}
-	if(empty($data) || $data['name'] !== $who || !isset($data['type']) || $data['type'] != 0 || $data['hp'] <= 0) return;
+	if(empty($data) || ending_routes_achievement_account($data) !== $who || !isset($data['type']) || $data['type'] != 0 || $data['hp'] <= 0) return;
 	$para = get_clbpara($data['clbpara']);
 	if(empty($para['achvars']['c25_trap_hit']) || empty($para['achvars']['c25_food_hit'])) return;
 	update_achievement_rev(210,$who,1);
@@ -778,6 +781,8 @@ function check_club25_achievement($who,$winmode,$data=NULL)
 function check_end_achievement_rev($w,$m,$data=NULL)
 {
 	global $now,$validtime,$starttime,$gamecfg,$name,$db,$gtablepre;
+	$w = ending_routes_achievement_account($data, $w);
+	$new_route = ending_routes_check_end_achievement($w, $m, $data);
 	$c1 = $c2 = 0;
 
 	$done = 0;
@@ -832,7 +837,7 @@ function check_end_achievement_rev($w,$m,$data=NULL)
 		$done = 0;
 	}
 	//18. 锁定解除成就
-	if ($m==3)
+	if ($m==3 && !$new_route)
 	{
 		// 初始化
 		$aid = 18;
@@ -853,7 +858,7 @@ function check_end_achievement_rev($w,$m,$data=NULL)
 		$done = 0;
 	}
 	//202. 25分钟内解禁挑战（仅个人可完成）
-	if ($m==3 && !empty($data))
+	if ($m==3 && !$new_route && !empty($data))
 	{
 		$aid = 202;
 		$alvl = check_achievement_rev($aid,$w);
@@ -914,7 +919,7 @@ function check_end_achievement_rev($w,$m,$data=NULL)
 		$done = 0;
 	}
 	//19. 幻境解离成就
-	if ($m==7)
+	if ($m==7 && !$new_route)
 	{
 		// 初始化
 		$aid = 19;
@@ -935,7 +940,7 @@ function check_end_achievement_rev($w,$m,$data=NULL)
 		$done = 0;
 	}
 	//203. 55分钟内解离挑战（仅个人可完成）
-	if ($m==7 && !empty($data))
+	if ($m==7 && !$new_route && !empty($data))
 	{
 		$aid = 203;
 		$alvl = check_achievement_rev($aid,$w);
@@ -988,11 +993,12 @@ function check_end_achievement_rev($w,$m,$data=NULL)
 function check_battle_achievement_rev($pa,$pd)
 {
 	global $gamestate,$gamecfg,$db,$gtablepre;
+	ending_routes_check_kill_achievement($pa, $pd);
 	
 
 	// 旧版成就参数兼容
 	$is_npc = $pd['type'];
-	$nn = $pa['name'];
+	$nn = ending_routes_achievement_account($pa);
 	$killname = $pd['name'];
 	$wp = isset($pa['wep_name']) ? $pa['wep_name'] : $pa['wep'];
 	// 判断是否为活跃玩家：暂时只要IP不一样就算活跃玩家
@@ -1579,6 +1585,7 @@ function check_battle_achievement_rev($pa,$pd)
 
 function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 {
+	if(function_exists('race_account_name')) $nn = race_account_name($nn);
 	global $gamecfg,$name,$db,$gtablepre,$now,$starttime,$gamestate;
 	
 	$atotal = Array();
@@ -1614,7 +1621,7 @@ function check_item_achievement_rev($nn,$i,$ie,$is,$ik,$isk)
 	}
 
 	//解禁相关
-	if ($i == "游戏解除钥匙")
+	if ($i == "游戏解除钥匙" && !(ending_routes_achievement_enabled() && strpos($isk, 'v') !== false))
 	{
 		// 初始化
 		$done = 0;
@@ -1879,7 +1886,7 @@ function check_misc_achievement_rev(&$pa)
 	$atotal = Array();
 	// 旧版成就参数兼容
 	$is_player = $pa['type'] ? 0 : 1;
-	$nn = $pa['name'];
+	$nn = ending_routes_achievement_account($pa);
 
 	# 防呆：只会检查玩家成就完成情况
 	if ($is_player)
@@ -2116,6 +2123,7 @@ function check_misc_achievement_rev(&$pa)
 //为其他成就计数的成就
 function check_nums_achievement($nn,$aid,$anums=1)
 {
+	if(function_exists('race_account_name')) $nn = race_account_name($nn);
 	global $gamestate,$gamecfg,$db,$gtablepre;
 	
 

@@ -44,6 +44,7 @@ namespace revbattle
 		# 获取敌人数据
 		//$edata = $db->fetch_array($result);
 		$edata = fetch_playerdata_by_pid($enemyid);
+		if(function_exists('ending_routes_encounter_allowed') && !ending_routes_encounter_allowed($data,$edata)) { $log.='现在无法锁定这个目标。<br>'; $action=''; $bid=0; $mode='command'; return; }
 		# 检查敌人是否处于当前位置
 		if ($edata['pls'] != $pls && !\club24_remote_npc($data,$edata,true))
 		{
@@ -374,10 +375,14 @@ namespace revbattle
 		global $fog,$action,$bid,$clbpara,$chase_escape_obbs,$log;
 		//include_once GAME_ROOT.'./include/game/dice.func.php';
 		# 在受追击/鏖战状态下逃跑有概率失败
-		if($action == 'pchase' || $action == 'dfight')
+		if($action == 'pchase' || $action == 'dfight' || !empty($pa['clbpara']['hydraulic_mark']) || !empty($pa['clbpara']['wire']) || strpos($pa['inf'] ?? '','l')!==false)
 		{
 			$escape_dice = diceroll(99);
-			if($escape_dice < $chase_escape_obbs)
+			$escape_success=100-$chase_escape_obbs;
+			if(function_exists('erc_escape_rate')) $escape_success=erc_escape_rate($pa,$escape_success);
+			if(function_exists('race_escape_rate')) $escape_success=race_escape_rate($pa,$escape_success);
+			if(!empty($pa['clbpara']['hydraulic_mark'])) $escape_success=0;
+			if($escape_dice >= $escape_success)
 			{
 				$log .= "你尝试逃跑，但是敌人在你身后紧追不舍！<br>";
 				$pa['fail_escape'] = 1;
@@ -385,6 +390,7 @@ namespace revbattle
 			}
 		}
 		$log .= "你逃跑了。<br>";
+		if(function_exists('erc_escape')) erc_escape($pa,$pd);
 		$action = ''; $bid = 0;
 		//逃跑后在视野里记录敌人
 		$nm = $fog ? '？？？' : $pd['name'];

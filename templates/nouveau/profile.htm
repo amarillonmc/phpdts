@@ -1,8 +1,9 @@
 {template paperdoll_state}
+{template ending_routes_status}
 <!--{eval $nickinfo = titles_get_desc($nick,1); $fcg_name_class = in_array((int)$nick,array(9111,9112,9113)) ? 'fcg-title fcg-title-'.(int)$nick : ''; $nv_hp_pct = $mhp > 0 ? max(0, min(100, round($hp / $mhp * 100))) : 0; $nv_sp_pct = $msp > 0 ? max(0, min(100, round($sp / $msp * 100))) : 0; $nv_ss_pct = $mss > 0 ? max(0, min(100, round($ss / $mss * 100))) : 0; $nv_exp_pct = $upexp > 0 ? max(0, min(100, round($exp / $upexp * 100))) : 0; $nv_danger_json = !empty($arealist) && isset($areanum) ? json_encode(array_values(array_slice($arealist, 0, $areanum + 1))) : '[]'; $nv_warn_json = !empty($arealist) && isset($areanum) && isset($areaadd) ? json_encode(array_values(array_slice($arealist, $areanum + 1, $areaadd))) : '[]';}-->
 <script>
 window.shwData = {
-    locationName: {eval echo json_encode((string)($plsinfo[$pls] ?? ''), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG);},
+    locationName: {eval echo json_encode((string)($hplsinfo[$pgroup][$pls] ?? $plsinfo[$pls] ?? ''), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG);},
     locationId: {eval echo (int)$pls;},
     hp: {eval echo (int)$hp;},
     mhp: {eval echo (int)$mhp;},
@@ -13,7 +14,7 @@ window.shwData = {
     warnAreas: $nv_warn_json
 };
 </script>
-<span id="pls" style="display:none">$plsinfo[$pls]</span>
+<span id="pls" style="display:none"><!--{eval echo $hplsinfo[$pgroup][$pls] ?? $plsinfo[$pls] ?? '';}--></span>
 <span id="weather" style="display:none">$wthinfo[$weather]</span>
 
 <section class="nv-window" id="nv-status" data-window-id="nv-status" data-window-title="生命与状态" data-window-resizable="true">

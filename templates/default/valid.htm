@@ -27,6 +27,7 @@
 			</table>
 		</center>
 		<input type="submit" name="enter" value="{lang submit}">
+		<!--{if talent_enabled()}--><label>种族：<select name="race"><!--{loop $entry_races $race_id $race_name}--><option value="$race_id">$race_name</option><!--{/loop}--></select></label><br><!--{/if}-->
 		<input type="reset" name="reset" value="{lang reset}">
 	</form>
 	<br />

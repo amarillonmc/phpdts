@@ -74,6 +74,9 @@
         <!-- 当前阶段达成奖励 -->
         <font color="olive">
             奖励：
+            <!--{if !empty($alist[$aid]['talent']) }-->
+                天赋点 {$alist[$aid]['talent']}（永久，仅首次完成）
+            <!--{/if}-->
             <!--{if $alist[$aid]['c1'][$rlvl] }-->
                 积分{$alist[$aid]['c1'][$rlvl]}
             <!--{/if}-->

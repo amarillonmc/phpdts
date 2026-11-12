@@ -1,4 +1,9 @@
 <?php
+
+$ending_routes_v2 = 1;
+$talent_point_prices = array(100,200,400,800,1200);
+$talent_price_step = 10;
+$talent_reset_prices = array(100,300,600,1000);
 /*Game Config*/
 
 //禁区间隔时间,单位 小时

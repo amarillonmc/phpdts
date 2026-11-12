@@ -21,6 +21,12 @@ if($pdata['pass'] != $cpass) {
 	}
 }
 
+// 分体触发结局时，账户查看实际获胜机体的胜者页。
+if(race_ai_is($pdata) && !empty($winner) && race_account_name($winner)===$cuser) {
+	$ai_winner = $db->fetch_array($db->query("SELECT * FROM {$tablepre}players WHERE name=X'".bin2hex($winner)."' AND type=0 LIMIT 1"));
+	if($ai_winner && race_account_name($ai_winner)===$cuser) $pdata=fetch_playerdata_by_pid($ai_winner['pid']);
+}
+
 extract($pdata);
 init_playerdata();
 

@@ -59,6 +59,7 @@ function itemuse($itmn,&$data=NULL) {
 		$mode = 'command';
 		return;
 	}
+	if(function_exists('erc_can_electronic') && !erc_can_electronic($data,$itmk,$itm)) return;
 
 	// RuleSet钩子：在具体道具逻辑执行前记录剧情物品的使用。
 	// RuleSet hook: observe story-item use before the concrete handler runs.
@@ -79,6 +80,10 @@ function itemuse($itmn,&$data=NULL) {
 	}
 
 	if($itmn == 0) club24_pickup($data,'pickup');
+	if(function_exists('ending_routes_enabled') && ending_routes_enabled()) {
+		if(function_exists('severe_can_use_item') && !severe_can_use_item($data,$itmk,$itm)) return;
+		if(sendo_item($data,$itmn) || dissociation_item($data,$itmn)) return;
+	}
 
 	// Include specific item type handlers
 	include_once GAME_ROOT.'./include/game/item.weapon.php';

@@ -1,0 +1,14 @@
+<!--{if talent_enabled()}-->
+{template race_equip}
+<!--{if race_is($pdata,3)}-->
+<select name="sell_slot"><!--{loop array(1,2,3,4,5,6) $sell_id}--><!--{if !empty($pdata['itms'.$sell_id])}--><option value="$sell_id">{$sell_id}：{$pdata['itm'.$sell_id]}</option><!--{/if}--><!--{/loop}--></select>
+<input type="button" class="cmdbutton" value="变现" onclick="if(confirm('将所选物品出售给系统？')){$('mode').value='command';$('command').value='race_sell';postCmd('gamecmd','command.php');this.disabled=true;}"><br>
+<!--{/if}-->
+<!--{if race_ai_is($pdata)}-->
+<!--{eval $ai_family = race_ai_family($pdata);}-->
+<select name="body"><!--{loop $ai_family $body_id $ai_body}--><!--{if $ai_body['hp'] > 0 && $body_id != $pid}--><option value="$body_id">{$ai_body['name']}（{$ai_body['hp']}/{$ai_body['mhp']}）</option><!--{/if}--><!--{/loop}--></select>
+<input type="button" class="cmdbutton" value="切换机体" onclick="$('mode').value='command';$('command').value='race_ai_switch';postCmd('gamecmd','command.php');this.disabled=true;">
+<input type="button" class="cmdbutton" value="部署分体（20 技能点）" onclick="if(confirm('消耗 20 技能点，在当前位置部署一个独立分体？')){$('mode').value='command';$('command').value='race_ai_deploy';postCmd('gamecmd','command.php');this.disabled=true;}"><br>
+<span class="grey">待机机体留在原地。切换后需等待 30 秒才能再次切换；主机体被击破将失去全部机体。</span><br>
+<!--{/if}-->
+<!--{/if}-->

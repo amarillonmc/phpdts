@@ -469,6 +469,8 @@ $ruleset_config = Array(
 
 // 保留独立的完整注册表，避免页面/流程中的单条配置临时变量覆盖它。
 // Keep the canonical registry separate from per-ruleset temporary variables.
+foreach($ruleset_config as &$ending_ruleset_entry) $ending_ruleset_entry['ending_routes_v2']=0;
+unset($ending_ruleset_entry);
 $ruleset_definitions = $ruleset_config;
 
 

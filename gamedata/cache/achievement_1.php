@@ -19,7 +19,7 @@ $ach_type = Array
 		'name' => '结局成就',
 		'desc' => '<font color="olive">这里是与游戏结局相关的成就。<br>
 		虽说有些看起来帮助中没提到，但找寻它们也正是这游戏的醍醐味之一。<br></font>',
-		'ach' => Array(16,17,18,34,19,100,101,102),
+		'ach' => Array(16,17,34,630,631,632,633),
 	),
 	'hunt' => Array(
 		'name' => '猎人成就',
@@ -31,7 +31,7 @@ $ach_type = Array
 		'name' => '战斗成就',
 		'desc' => '<font color="olive">这里是与击破特定NPC相关的成就。<br>
 		打倒他们来证明自己吧！<br></font>',
-		'ach' => Array(3,56,57,27,4,13,22,23,25,20,21,24,26,255),
+		'ach' => Array(3,56,57,4,13,634,635,636,637,638,639,640,641,642,643,644,645,646,647,648,649,650,651,652,653,654,655,656,657,255),
 	),
 	'mixitem' => Array(
 		'name' => '合成成就',
@@ -55,7 +55,12 @@ $ach_type = Array
 		'name' => '挑战成就',
 		'desc' => '<font color="olive">这里是与特定游戏中挑战相关的成就。<br>
 		虽然颇为浮云，但毕竟山就在那里。<br></font>',
-		'ach' => Array(1,200,201,28,202,203,204,205,206,207,255),
+		'ach' => Array(1,200,201,28,204,205,255),
+	),
+	'legacy' => Array(
+		'name' => '传承成就',
+		'desc' => '<font color="olive">旧日的战场已经远去，留下的足迹仍属于你。<br>这里收录旧结局、英灵殿与武神、天神相关的成就。已获得的进度与奖励永久保留；部分仍可在历史规则集或隐藏的旧路线中续写。</font>',
+		'ach' => Array(18,19,100,101,102,20,21,22,23,24,25,26,27,202,203,206,207),
 	),
 );
 
@@ -87,12 +92,40 @@ $hidden_ach_type = Array
 	505 => 'explore',
 
 	//元素大师隐藏成就：通过元素合成获得G.A.M.E.O.V.E.R
-	103 => 'explore',
+	103 => 'legacy',
 );
 
 # 成就登记列表：
 $ach_list = Array
 (
+	630 => Array('lvl'=>1,'name'=>Array('锁外的第一束光'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次完成伪·解禁。集齐三位朱鹮执行官的ID卡，让熟悉的钥匙重新转动。')),
+	631 => Array('lvl'=>1,'name'=>Array('冰炎合璧'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次完成真·解禁。跨过八位教头的考验，将冰与炎合为通往明日的钥匙。')),
+	632 => Array('lvl'=>1,'name'=>Array('沙盘一梦'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次完成伪·解离。在湾城的暮色消散前，取得善与恶共同认可的凭证。')),
+	633 => Array('lvl'=>1,'name'=>Array('真实解离'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次完成真·解离。走过旧日的残响与终局两柱，将真实从幻境深处剥离。')),
+	634 => Array('lvl'=>1,'name'=>Array('越过铁城'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破教头·铁城。拳锋可以锁住退路，却锁不住前行的意志。')),
+	635 => Array('lvl'=>1,'name'=>Array('折翼之刻'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破教头·灵翼。穿过交错的火线，在准星合拢前抵达答案。')),
+	636 => Array('lvl'=>1,'name'=>Array('无隙可乘'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破教头·破石。看破弱点的人，也终于露出了一线破绽。')),
+	637 => Array('lvl'=>1,'name'=>Array('踏过火花'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破教头·银锤。雷光与进化都未能阻止你的下一步。')),
+	638 => Array('lvl'=>1,'name'=>Array('静电归零'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破教头·电反。蒸汽散尽，嘈杂的干扰终于归于安静。')),
+	639 => Array('lvl'=>1,'name'=>Array('影前一步'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破教头·三步。在第三道影子落下之前，追上提灯的身影。')),
+	640 => Array('lvl'=>1,'name'=>Array('符尽天明'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破教头·白凰。穿过符盾与弹幕，等到噩梦之外的晨光。')),
+	641 => Array('lvl'=>1,'name'=>Array('识破绯影'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破教头·绯刹。让潜伏在暗处的毒刃，第一次无处藏身。')),
+	642 => Array('lvl'=>1,'name'=>Array('拳下有风'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破湾城的 Blasty。接住荣誉的一拳，也赢得坦荡的敬意。')),
+	643 => Array('lvl'=>1,'name'=>Array('长战终歇'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破湾城的 Dante。与坚守者熬过长战，让沉重的臂盾落下。')),
+	644 => Array('lvl'=>1,'name'=>Array('解结之手'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破湾城的 Akane。在关节与呼吸都被锁住时，找到挣脱的余地。')),
+	645 => Array('lvl'=>1,'name'=>Array('雪中余火'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破湾城的 Holly。风雪可以磨去战意，最后的火星仍未熄灭。')),
+	646 => Array('lvl'=>1,'name'=>Array('狐灯照归途'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破湾城的 Sandy。拨开摇曳的狐火，看清灯影之后的道路。')),
+	647 => Array('lvl'=>1,'name'=>Array('齿轮仍转'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破湾城的 Albert。装备留下了齿痕，你的脚步却没有停下。')),
+	648 => Array('lvl'=>1,'name'=>Array('好运有尽时'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破湾城的 Kiko。追上一次次幸运的跃步，在偶然之外赢得胜利。')),
+	649 => Array('lvl'=>1,'name'=>Array('善恶同印'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('分别首次击破善德与恶德的湾城投影。拳与剑收起时，两枚印记给出了同一个答案。'),'request'=>Array('两位投影均已击破即可完成。')),
+	650 => Array('lvl'=>1,'name'=>Array('裂堡崩落'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破旧教头·裂堡。在液压与钢铁的重压下，凿开旧堡的城墙。')),
+	651 => Array('lvl'=>1,'name'=>Array('弑翼坠地'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破旧教头·弑翼。枪口沉寂，破裂的滑翔翼终于落向地面。')),
+	652 => Array('lvl'=>1,'name'=>Array('黑岩断焰'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破旧教头·黑岩。在燃烧的刀锋前站稳，接下旧将军的一礼。')),
+	653 => Array('lvl'=>1,'name'=>Array('烬锤熄火'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破旧教头·烬锤。踏过高温的余烬，让锻炉停止轰鸣。')),
+	654 => Array('lvl'=>1,'name'=>Array('断序重连'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破旧教头·断序。无面的屏幕暗下去，错乱的讯号重归寂静。')),
+	655 => Array('lvl'=>1,'name'=>Array('瞬刃停锋'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破旧教头·瞬刃。在钢丝划出的狭缝里，截住一瞬即逝的刀光。')),
+	656 => Array('lvl'=>1,'name'=>Array('魇凰梦醒'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破旧教头·魇凰。锁链与咒怨散落，噩梦再也无法替你决定结局。')),
+	657 => Array('lvl'=>1,'name'=>Array('血翎归尘'),'title'=>Array(''),'c1'=>Array(0),'c2'=>Array(0),'talent'=>1,'desc'=>Array('首次击破旧教头·血翎。红羽落尽之后，暗藏的毒锋终于无所遁形。')),
 	210 => Array(
 		'lvl'=>1, 'name'=>Array('请勿投喂'), 'title'=>Array('请勿投喂'),
 		'c1'=>Array(0), 'c2'=>Array(0),

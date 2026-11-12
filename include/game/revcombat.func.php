@@ -16,6 +16,7 @@ namespace revcombat
 	include_once GAME_ROOT.'./include/game/club24.func.php';
 	include_once GAME_ROOT.'./include/game/club25.combat.php';
 	include_once GAME_ROOT.'./include/game/fcg_skills.func.php';
+	include_once GAME_ROOT.'./include/game/ending_combat.func.php';
 
 	# 战斗准备流程：
 	# pa、pd分别代表先制发现者与被先制发现者；
@@ -72,6 +73,8 @@ namespace revcombat
 		$pa['nm'] = (!$pa['type'] && $active) ? '你' : $pa['name']; 
 		$pd['nm'] = (!$pd['type'] && !$active && $pa['nm']!=='你') ? '你' : $pd['name']; 
 
+		\erc_prepare($pa,$pd);
+		if(function_exists('race_action')) { \race_action($pa,'combat'); \race_action($pd,'combat'); }
 		# 初始化双方的攻击相关参数：
 		# 依以下次序判定：
 		# 1.防守方防守方式、武器射程、攻击熟练度、武器名； 
@@ -116,7 +119,8 @@ namespace revcombat
 		$att_dmg = $sis_pvp_peace ? 0 : \club23_death_damage($pa,$pd);
 		if($att_dmg > 0)
 		{
-			$pd['hp'] = 0;
+			$att_dmg = \erc_damage($pa,$pd,$att_dmg);
+			$pd['hp'] = max(0,$pd['hp']-$att_dmg);
 			checkdmg($pa['name'],$pd['name'],$att_dmg);
 			$att_result = rev_combat_result($pa,$pd,$active);
 			goto combat_damage_finished;
@@ -124,7 +128,8 @@ namespace revcombat
 		$def_dmg = $sis_pvp_peace ? 0 : \club23_death_damage($pd,$pa);
 		if($def_dmg > 0)
 		{
-			$pa['hp'] = 0;
+			$def_dmg = \erc_damage($pd,$pa,$def_dmg);
+			$pa['hp'] = max(0,$pa['hp']-$def_dmg);
 			checkdmg($pd['name'],$pa['name'],$def_dmg);
 			$def_result = rev_combat_result($pd,$pa,1-$active);
 			goto combat_damage_finished;
@@ -140,6 +145,7 @@ namespace revcombat
 		if(!empty($pa['c25_net_settled'])) {
 			// 收网的机关已经扣血并按原制作者结算，不能再当作武器伤害扣一次。
 			$att_result = empty($pa['c25_net_stop']) ? 1 : 0;
+			if($att_result && \erc_after_damage($pa,$pd)) $att_result=0;
 			if($att_result && (\ai93_hitrun($pa,$pd) || \ai93_react($pa,$pd))) $att_result = 0;
 		}
 		elseif(isset($pa['c24_self_damage'])) {
@@ -159,6 +165,7 @@ namespace revcombat
 		{
 			//扣血
 			$att_dmg = \binglai_absorb($pd,$att_dmg);
+			if(($pd['gg_flag'] ?? 0)==61 && $att_dmg<$pd['hp']) unset($pd['gg_flag'],$pd['clbpara']['severe_head']);
 			$pd['hp'] = max(0,$pd['hp']-$att_dmg);
 			//判断是否触发击杀或复活：1-继续战斗；0-中止战斗
 			$att_result = rev_combat_result($pa,$pd,$active);
@@ -210,7 +217,12 @@ namespace revcombat
 		}
 
 		# 存在暴毙标识：反击方(pd)在反击过程中未造成伤害就暴毙，可能是因为触发了武器直死。
-		if(isset($pd['gg_flag']))
+		if(isset($pd['c24_self_damage'])) {
+			$pd['hp']=max(0,$pd['hp']-$pd['c24_self_damage']);
+			unset($pd['c24_self_damage']);
+			if($pd['hp']<=0) $def_result=rev_combat_result($pa,$pd,$active);
+		}
+		elseif(isset($pd['gg_flag']))
 		{
 			$pd['hp'] = 0;
 			//提前进行战斗结果判断。注意：这里的pa、pd顺序。
@@ -221,6 +233,7 @@ namespace revcombat
 		{
 			//扣血
 			$def_dmg = \binglai_absorb($pa,$def_dmg);
+			if(($pa['gg_flag'] ?? 0)==61 && $def_dmg<$pa['hp']) unset($pa['gg_flag'],$pa['clbpara']['severe_head']);
 			$pa['hp'] = max(0,$pa['hp']-$def_dmg);
 			//判断是否触发击杀或复活。增补：$active已经没有用了，不用管它。
 			$def_result = rev_combat_result($pd,$pa,1-$active);
@@ -234,7 +247,7 @@ namespace revcombat
 
 		combat_damage_finished:
 		# 攻击、反击的战斗结果判断均非0时：检查是否触发追击/鏖战事件
-		if($att_result && (!isset($def_result)||!empty($def_result)) && ($chase_obbs || $dfight_obbs))
+		if($att_result && (!isset($def_result)||!empty($def_result)) && ($chase_obbs || $dfight_obbs || \erc_chase($pa,$pd)))
 		{
 			check_can_chase($pa,$pd,$active);
 		}
@@ -273,6 +286,7 @@ namespace revcombat
 		# 战斗准备事件中触发了跳过战斗标记，直接goto跳转到这个位置。
 		battle_finish_flag:
 		$pa['clbpara'] = get_clbpara($pa['clbpara']); $pd['clbpara'] = get_clbpara($pd['clbpara']);
+		\erc_finish($pa,$pd); \erc_finish($pd,$pa);
 		unset($pa['binglai_roll'],$pa['binglai_hits'],$pa['bskill_tl_binglai'],$pa['clbpara']['binglai_shield']);
 		unset($pd['binglai_roll'],$pd['binglai_hits'],$pd['bskill_tl_binglai'],$pd['clbpara']['binglai_shield']);
 		if(($pa['bskill'] ?? '') === 'tl_binglai') unset($pa['bskill'],$pa['bskilllog']);
@@ -412,6 +426,17 @@ namespace revcombat
 		global $db,$tablepre;
 		
 		if(isset($pa['bskill_c25_net'])) return \club25_net_attack($pa,$pd);
+		if(!\erc_before_attack($pa,$pd)) {
+			$pa['final_damage']=0;
+			if(!empty($pa['erc_afterimage_miss'])) {
+				unset($pa['erc_afterimage_miss']); $damage=0;
+				$pa['hitrate_times']=0;
+				$wear=$wepimprate[$pa['wep_kind']] ?? 0;
+				$pa['wep_imp_times']=$wear<=0 || diceroll(99)<$wear ? 1 : 0;
+				goto attack_settlement;
+			}
+			return 0;
+		}
 
 		unset($pa['fcg_critical']);
 		# 获取属性
@@ -466,11 +491,13 @@ namespace revcombat
 		if(\club23_is_memory($pa) && empty($pa['binglai_roll'])) {
 			$damage=\club23_memory_attack($pa,$pd,$active);
 			$damage=\fcg_defend_damage($pa,$pd,$damage);
+			$damage=\erc_damage($pa,$pd,$damage);
 			if(empty($pa['type']) && empty($pd['type']) && !empty($GLOBALS['gamevars']['sunisshining'][$pa['pls']])) {
 				$damage = 0;
 				$log .= '<span class="lime">《Sun Is Shining》的温暖阳光化解了敌意，玩家之间的伤害归零！</span><br>';
 			}
 			$pa['final_damage']=$damage;
+			\erc_hit($pa,$pd,$damage);
 			return $damage;
 		}
 
@@ -675,6 +702,8 @@ namespace revcombat
 				$damage = 0;
 				$log .= '<span class="lime">《Sun Is Shining》的温暖阳光化解了敌意，玩家之间的伤害归零！</span><br>';
 			}
+			$damage = \erc_damage($pa,$pd,$damage);
+			\erc_hit($pa,$pd,$damage);
 			//将造成的最终伤害登记在$pa['final_damage']内
 			$pa['final_damage'] = $damage;
 			//将伤害发送至进行状况
@@ -706,6 +735,7 @@ namespace revcombat
 
 		# 增加熟练度
 		$pa[$skillinfo[$pa['wep_kind']]] += 1;
+		if(\severe_has($pa,'frenzy') && diceroll(99)<50) $pa[$skillinfo[$pa['wep_kind']]] += 1;
 		# 天赋异禀额外+1熟练度
 		if($pa['club'] == 10) $pa[$skillinfo[$pa['wep_kind']]] += 1;
 		# 「拳法」效果判定
@@ -749,11 +779,11 @@ namespace revcombat
 		{
 			# NPC二阶段处理：
 			# Adding additional check for 百命猫 here to prevent she coming back if she's killed enough times.
-			if($pd['club'] == 99 && $pd['type'] && $pd['clbpara']['lifedestroyed'] < 111)
+			if($pd['club'] == 99 && $pd['type'] && ($pd['clbpara']['lifedestroyed'] ?? 0) < 111)
 			{
 				$log .= npc_chat_rev ($pd,$pa, 'death' );
 				include_once GAME_ROOT . './include/system.func.php';
-				$npcdata = evonpc ($pd['type'],$pd['name']);
+				$npcdata = evonpc ($pd['type'],$pd['name'],$pd);
 				$log .= '<span class="yellow">'.$pd['name'].'却没死去，反而爆发出真正的实力！</span><br>';
 				# add additional logic for 百命猫
 				if($pd['name']=='是TSEROF啦！'){
@@ -808,6 +838,7 @@ namespace revcombat
 			# 执行扣血后的战斗结算阶段事件
 			$event_flag = attack_result_events($pa,$pd,$active);
 			if($event_flag < 0) return 0;
+			if(\erc_after_damage($pa,$pd)) return 0;
 		}
 		return 1;
 	}

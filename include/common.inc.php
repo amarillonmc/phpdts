@@ -177,6 +177,14 @@ if($current_ruleset_config && ($current_ruleset_config['title_system'] ?? 2)<2) 
 // 加载RuleSet覆盖函数
 load_ruleset_override_functions();
 
+require_once GAME_ROOT.'./include/game/ending_routes.func.php';
+require_once GAME_ROOT.'./include/game/ending_combat.func.php';
+require_once GAME_ROOT.'./include/game/dissociation.func.php';
+require_once GAME_ROOT.'./include/game/quest_sendo.func.php';
+require_once GAME_ROOT.'./include/talent.func.php';
+require_once GAME_ROOT.'./include/game/race.func.php';
+ending_routes_setup();
+
 // 现在加载system.func.php
 require GAME_ROOT.'./include/system.func.php';
 
@@ -288,8 +296,7 @@ if(CURSCRIPT !== 'chat')
 	}
 	
 	if($gamestate >= 40) {
-		$result = $db->query("SELECT pid FROM {$tablepre}players WHERE hp>0 AND type=0");
-		$alivenum = $db->num_rows($result);
+		$alivenum = race_alive_accounts();
 		save_gameinfo();
 		$should_auto_gameover = $alivenum <= 1;
 		# RuleSet钩子：允许规则集覆盖连斗阶段的自动结局判断。

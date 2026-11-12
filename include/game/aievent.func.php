@@ -6,6 +6,8 @@ if(!defined('IN_GAME')) {
 include_once GAME_ROOT.'./include/game/aievent_minion.func.php';
 
 function aievent($rate,&$data=NULL){
+	if(function_exists('sendo_tick')) sendo_tick($data);
+	if(function_exists('ending_routes_sanbu') && ending_routes_sanbu($data)) return;
 	if(function_exists('ruleset_ai_event_hook') && ruleset_ai_event_hook($rate,$data) === true) return;
 	global $log,$now,$plsinfo,$db,$tablepre,$gamevars,$validnum,$chatlimit;
 	global $validtime,$killnum;

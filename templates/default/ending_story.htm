@@ -14,6 +14,7 @@
 		<br>
 		<!--{if $dinfo[$state]}-->
 			$dinfo[$state]
+			<!--{if $state==62 && !empty($clbpara['dissociation_taunt'])}--><br>「你的时间，我收下了。」黑羽掠过最后一丝光。<!--{/if}-->
 		<!--{else}-->
 			你莫名地死了。这应该是BUG，请通知管理员。
 		<!--{/if}-->
@@ -29,6 +30,8 @@
 <!--///////////////////////////////////////////////////-->
 <!--////////////////////  最后幸存  ////////////////////-->
 <!--///////////////////////////////////////////////////-->
+<!--{elseif ($winmode==3 || $winmode==7) && in_array($gamevars['ending_subroute'] ?? '',array('jiejin_Zv','jieli_phantom','jieli_true'))}-->
+{template ending_routes_story}
 <!--{elseif $winmode == 2}-->
 	<!--{if $state == 5}-->
 	<div id="op_sht_endpage" class="shootings">5</div>

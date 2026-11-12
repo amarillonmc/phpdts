@@ -400,4 +400,13 @@ $mixinfo = array
 		//$mixinfo += $vn_mixinfo;
 		$mixinfo = array_merge($mixinfo,$vn_mixinfo);
 	}*/
+if(function_exists('ending_routes_enabled') && ending_routes_enabled()) {
+ foreach($mixinfo as $key=>$recipe) {
+  if(($recipe['result'][0] ?? '')==='Untainted Glory' && in_array('矿泉水',$recipe['stuff'])) unset($mixinfo[$key]);
+  elseif(($recipe['result'][0] ?? '')==='游戏解除钥匙') $mixinfo[$key]['class']='hidden';
+ }
+ $mixinfo[]=array('class'=>'hidden','stuff'=>array('善之印','恶之印'),'result'=>array('【解离凭证·幻境】','Y',1,1,'v'));
+ $mixinfo[]=array('class'=>'hidden','stuff'=>array('命运之钥','维度之钥'),'result'=>array('【解离凭证·真实】','Y',1,1,'Zv'));
+ $mixinfo=array_values($mixinfo);
+}
 ?>

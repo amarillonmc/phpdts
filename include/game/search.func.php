@@ -278,6 +278,9 @@ function calc_move_search_sp_cost(&$data,$act)
 {
 	global $log,$movesp,$movehp,$inf_move_sp,$actlog;
 	extract($data,EXTR_REFS);
+	if(function_exists('ending_routes_enabled') && ending_routes_enabled()) {
+		if(dissociation_timeout($data) || !erc_can_action($data,$act==='move') || ($act==='move' && !severe_can_move($data))) return false;
+	}
 
 	$flag = 0;
 	# 移动&探索的消耗基数
@@ -286,7 +289,7 @@ function calc_move_search_sp_cost(&$data,$act)
 	$costspr = $movehp;
 
 	# 「飞行」技能判定：移动不消耗体力
-	if($act == 'move' && !empty($clbpara['skill']) && in_array('npc_flying', $clbpara['skill']))
+	if($act == 'move' && !empty($clbpara['skill']) && in_array('npc_flying', $clbpara['skill']) && !(function_exists('severe_effective') && severe_effective($data,'lower')))
 	{
 		$actlog = "你展开双翼，飞向了目的地";
 		return 'sp';
@@ -303,6 +306,7 @@ function calc_move_search_sp_cost(&$data,$act)
 	$actpoint = $horizon == 1 ? 'hp' : 'sp';
 	# 代偿移动&探索要消耗的属性类型
 	$subpoint = $horizon == 1 ? 'sp' : 'hp';
+	if($horizon==2 && function_exists('ending_routes_enabled') && ending_routes_enabled() && erc_config('ex_reverse_cost',false)) { $actpoint='hp'; $subpoint='sp'; }
 
 	# 受伤时消耗增加
 	if($inf)
@@ -322,8 +326,18 @@ function calc_move_search_sp_cost(&$data,$act)
 		$costsp = max(1, round($costsp * ($pls == 7 ? 0.6 : 0.8)));
 	}
 	if(function_exists('elevator_sp_cost')) $costsp=elevator_sp_cost($data,$costsp);
+	if(function_exists('race_move_cost')) $costsp=race_move_cost($data,$costsp,$act);
+	if(function_exists('severe_action_cost')) $costsp=severe_action_cost($data,$costsp,$act==='move');
+	if(function_exists('erc_action_cost')) $costsp=erc_action_cost($data,$costsp,$act==='move');
 
-	if($$actpoint > $costsp)
+	// 下肢破坏是固定体力支出，不能用视界反转、飞行或生命代偿绕过。
+	if($act==='move' && function_exists('severe_effective') && severe_effective($data,'lower'))
+	{
+		$costsp=(int)ceil($msp*.8);
+		if($sp<$costsp) { $log.='双腿受到严重损伤，需要至少八成体力才能移动。<br>'; return false; }
+		$sp-=$costsp; $flag='sp';
+	}
+	elseif($$actpoint > $costsp)
 	{
 		$$actpoint -= $costsp;
 		$flag = $actpoint;
@@ -347,7 +361,7 @@ function calc_move_search_sp_cost(&$data,$act)
 function pre_move_search_events(&$data,$act)
 {
 	global $log,$inf_move_hp,$inf_move_sp,$infwords,$now,$elements_info;
-	global $hpls_flag,$moveto,$hack,$areanum,$arealist,$plsinfo,$weather,$gamevars;
+	global $hpls_flag,$moveto,$hack,$areanum,$arealist,$plsinfo,$hplsinfo,$weather,$gamevars;
 
 	if(!isset($data))
 	{
@@ -357,6 +371,8 @@ function pre_move_search_events(&$data,$act)
 	extract($data,EXTR_REFS);
 
 	$moved = 0;
+	// 移动调用方的局部旗标不会自动传进来；传送必须从玩家当前地图组判定。
+	$hpls_flag = !isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup]);
 
 	# 天气事件
 	# 龙卷风
@@ -478,7 +494,8 @@ function pre_move_search_events(&$data,$act)
 				$pls = $safepls[array_rand($safepls)];
 				$moveto_info = $plsinfo[$pls];
 			}
-			$meta_act = $act == 'move' ? "走在前往{$plsinfo[$moveto]}的路上" : "在附近探索";
+			$destination_name = $hpls_flag ? ($hplsinfo[$pgroup][$moveto] ?? $moveto_info) : ($plsinfo[$moveto] ?? $moveto_info);
+			$meta_act = $act == 'move' ? "走在前往{$destination_name}的路上" : "在附近探索";
 			$log .= "<span class='red'>你正哼着小曲{$meta_act}，忽然眼前一黑！<br>回过神来时，你发现自己竟然走到了<span class=\"yellow\">$moveto_info</span>！</span><br>……<br>";
 			$moved = true;
 		}
@@ -497,8 +514,15 @@ function move_search_events(&$data,$act)
 		global $pdata;
 		$data = &$pdata;
 	}
+	if(function_exists('ending_routes_enabled') && ending_routes_enabled()) {
+		severe_action($data,$act==='move'); erc_action($data,$act==='move');
+		if($data['hp']<=0) return;
+		dissociation_growth($data);
+		race_action($data,$act); sendo_action($data,$act);
+	}
 	extract($data,EXTR_REFS);
 	if(is_array($clbpara) && strpos($inf,'p') === false) unset($clbpara['c25_poison_owner']);
+	if(is_array($clbpara) && strpos($inf,'u') === false) unset($clbpara['phosphorus_burn']);
 
 	if($act == 'move')
 	{
@@ -624,6 +648,7 @@ function move_search_events(&$data,$act)
 			if(strpos($inf,$inf_ky)!==false)
 			{
 				$damage = round($mhp * $o_dmg) + rand(0,10);
+				if($inf_ky==='u' && function_exists('severe_enabled') && severe_enabled()) $damage=round($damage*(1+0.25*min(5,(int)($clbpara['phosphorus_burn'] ?? 0))));
 				# 「死疗」效果判定： TODO：之后要把异常状态扣血效果单独做一个函数
 				if($inf_ky == 'p' && !check_skill_unlock('c8_deadheal',$data))
 				{
@@ -847,6 +872,7 @@ function discover($schmode = 0,&$data=NULL,$catstep=false)
 		$event_hp_before = $hp;
 		$event_flag = event();
 		$event_damage = max(0, intval($event_hp_before) - intval($hp));
+		if($event_damage>0 && function_exists('severe_negative_damage')) $hp=$event_hp_before-severe_negative_damage($data,$event_damage);
 		if($event_damage > 0 && function_exists('ruleset_damage_immunity_hook')) {
 			$ruleset_damage = ruleset_damage_immunity_hook($data, 'event', $event_damage);
 			if($ruleset_damage !== NULL) {
@@ -917,10 +943,11 @@ function discover($schmode = 0,&$data=NULL,$catstep=false)
 			$eid = $edata['pid'];
 			# 使用fetch_playerdata_by_pid重新获取敌人数据，以应用各种在载入玩家数据时进行的判定
 			$edata = fetch_playerdata_by_pid($eid);
+			if(function_exists('ending_routes_encounter_allowed') && !ending_routes_encounter_allowed($data,$edata)) continue;
 
 			# 不管是活人还是死人，都只会在处于相同视界的情况下遭遇
 			# 死斗模式无视视界限制
-			if(($horizon == $edata['horizon'] && $gamestate < 50) || (!$edata['type'] && $gamestate >= 50) || club24_remote_npc($data,$edata))
+			if(($horizon == $edata['horizon'] && ($gamestate < 50 || (int)$pgroup===3)) || (!$edata['type'] && $gamestate >= 50) || club24_remote_npc($data,$edata))
 			{
 				if($edata['hp'] <= 0)
 				{
@@ -1154,6 +1181,7 @@ function focus_item(&$data=NULL,$id=NULL,$any_pls=false)
 				$log .= '<span class="yellow">金色阳光的指引让你在角落里注意到了一张纸条！</span><br>';
 			}
 		}
+		if(!$mi && function_exists('race_is') && race_is($data,3)) $mi=race_dragon_pick_item($result,$itemnum);
 		if(!$mi) {
 			$itemno = rand(0,$itemnum-1);
 			$db->data_seek($result,$itemno);

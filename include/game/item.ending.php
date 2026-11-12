@@ -12,7 +12,7 @@ if (! defined('IN_GAME')) {
  * @param array &$data 玩家数据
  */
 function item_ending($itmn, &$data) {
-    global $log, $url, $state, $now;
+    global $log, $url, $state, $now, $gamevars;
     extract($data, EXTR_REFS);
 
     $itm = & ${'itm' . $itmn};
@@ -22,11 +22,37 @@ function item_ending($itmn, &$data) {
     $itmsk = & ${'itmsk' . $itmn};
 
     if ($itm == '游戏解除钥匙') {
+        if(function_exists('ending_routes_enabled') && ending_routes_enabled()) {
+            $true_key = strpos($itmsk,'Zv')!==false;
+            if($true_key && wheelchair_penalty_count($data)>0) {
+                $true_key=false;
+                $log.='【中枢协议警报】「扶手还没松，就急着摸世界的底牌？先走这边吧。」你将转入【伪·解禁】路线。<br>';
+            }
+            $gamevars['ending_subroute']=$true_key ? 'jiejin_Zv' : 'jiejin_v';
+            $clbpara['ending_subroute']=$gamevars['ending_subroute'];
+            destory_single_item($data,$itmn);
+            $state = 6;
+            player_save($data);
+            save_gameinfo();
+        }
         $state = 6;
         $url = 'end.php';
         include_once GAME_ROOT . './include/system.func.php';
         gameover($now, 'end3', $name);
+    } elseif (function_exists('ending_routes_enabled') && ending_routes_enabled() && in_array($itm,array('【解离凭证·幻境】','【解离凭证·真实】'),true)) {
+        $route=$itm==='【解离凭证·真实】' ? 'true' : 'phantom';
+        if(!dissociation_active($data) || ($clbpara['dissociation_route'] ?? '')!==$route || dissociation_timeout($data)) {
+            $log.='这份凭证尚不能在这里开启出口。<br>'; return;
+        }
+        if(empty($gamevars['dissociation'][$route]['collapsed'])) { $log.='最终守望者仍未全部退场，凭证尚未点亮。<br>'; return; }
+        $gamevars['ending_subroute']='jieli_'.$route;
+        $clbpara['ending_subroute']=$gamevars['ending_subroute'];
+        destory_single_item($data,$itmn);
+        $state=6; $url='end.php'; player_save($data); save_gameinfo();
+        include_once GAME_ROOT.'./include/system.func.php';
+        gameover($now,'end7',$name);
     } elseif ($itm == '『G.A.M.E.O.V.E.R』') {
+        unset($gamevars['ending_subroute']);
         $state = 6;
         $url = 'end.php';
         include_once GAME_ROOT . './include/system.func.php';

@@ -18,6 +18,10 @@
 			$data = &$pdata;
 		}
 		extract($data,EXTR_REFS);
+		if($event == 'ending_talisman') {
+			include_once GAME_ROOT.'./include/game/ending_combat.func.php';
+			return erc_active_skill($data,'npc_talisman');
+		}
 		if($event == 'club24_upgrade') return club24_upgrade($sk,$data);
 		if($event == 'club24_skill') return club24_skill($sk,$data);
 
@@ -105,6 +109,10 @@
 		{
 			# 事件效果：回复满生命、体力，并清空所有异常状态
 			$heal_flag = 0;
+			if(function_exists('severe_enabled') && severe_enabled()) {
+				if(!empty($clbpara['curses'])) { unset($clbpara['curses'],$clbpara['illluck']); severe_cure($data,array('frenzy')); $heal_flag=1; $log.='你身上的诅咒消散了。<br>'; }
+				if((int)$club==8 && (severe_has($data,'bleeding') || severe_has($data,'rupture'))) { severe_cure($data,array('bleeding','rupture')); $heal_flag=1; $log.='自愈的力量修复了体内的损伤。<br>'; }
+			}
 			if(!empty($inf))
 			{
 				$inf = ''; 

@@ -27,6 +27,14 @@ function wheelchair_penalty_count($data)
 {
 	$para = get_clbpara($data['clbpara'] ?? array());
 	$skills = array_unique(array_merge($para['skill'] ?? array(),array_keys($para['wheelchair']['learned'] ?? array())));
+	// 同一ＡＩ账户不能通过切到未学辅助技能的旧分体绕过本局分流和奖励折算。
+	if(function_exists('race_ai_is') && race_ai_is($data) && !empty($data['name'])) {
+		foreach(race_ai_family($data) as $body) {
+			$body_para=get_clbpara($body['clbpara']);
+			$skills=array_merge($skills,$body_para['skill'] ?? array(),array_keys($body_para['wheelchair']['learned'] ?? array()));
+		}
+		$skills=array_unique($skills);
+	}
 	return count(array_intersect($skills,array('wc_appraise','wc_prepare','wc_route','wc_hunt','wc_grow')));
 }
 
@@ -35,9 +43,9 @@ function wheelchair_credit_gain($amount,$name='', $data=null)
 	global $pdata,$db,$tablepre;
 	$amount = max(0,(int)$amount);
 	if($data === null) {
-		if(!empty($pdata) && ($pdata['name'] ?? '') === $name && empty($pdata['type'])) $data = $pdata;
+		if(!empty($pdata) && empty($pdata['type']) && (($pdata['name'] ?? '') === $name || (function_exists('race_account_name') && race_account_name($pdata)===$name))) $data = $pdata;
 		elseif($name !== '' && isset($db,$tablepre)) {
-			$result = $db->query("SELECT clbpara FROM {$tablepre}players WHERE name='".addslashes($name)."' AND type=0 LIMIT 1");
+			$result = $db->query("SELECT name,type,race,clbpara FROM {$tablepre}players WHERE name=X'".bin2hex($name)."' AND type=0 LIMIT 1");
 			$data = $db->fetch_array($result);
 		}
 	}
@@ -47,6 +55,7 @@ function wheelchair_credit_gain($amount,$name='', $data=null)
 function wheelchair_award_credits2($name,$amount)
 {
 	global $db,$gtablepre,$pdata,$log;
+	if(function_exists('race_account_name')) $name=race_account_name($name);
 	$gain = wheelchair_credit_gain($amount,$name);
 	if($gain) $db->query("UPDATE {$gtablepre}users SET credits2=credits2+$gain WHERE username='".addslashes($name)."'");
 	if($gain != $amount && ($pdata['name'] ?? '') === $name) wheelchair_log('切糕','本次奖励 '.$amount.' 切糕，经本局轮椅折扣实际获得 '.$gain.'。');

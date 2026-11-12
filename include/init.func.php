@@ -69,7 +69,7 @@ function init_icon_states(&$pa,$pd,$ismeet=0)
 	} else {
 		# 默认头像逻辑
 		if(file_exists('img/'.$pa['icon'])) {
-			$iconImg = $pa['icon'];
+			$iconImg = 'img/'.$pa['icon'];
 		} else {
 			$itype = $pa['type'] > 0 ? 'n' : $pa['gd'];
 			$iconImg = 'img/'.$itype.'_'.$pa['icon'].'.gif';
@@ -257,6 +257,11 @@ function init_inf_states(&$pa,$pd,$ismeet=0)
 	{
 		$pa['infdata'] = '无';
 	}
+	if(function_exists('severe_visible_status')) {
+		$severe=severe_visible_status($pa);
+		if($severe) $pa['infdata']=($pa['infdata']=='无' ? '' : $pa['infdata'].' ').implode('、',$severe);
+	}
+	if(strpos($pa['inf'] ?? '','l')!==false) $pa['infdata'].=' 锁缚';
 }
 
 function init_friedship_states($pa,$sk,$mid)

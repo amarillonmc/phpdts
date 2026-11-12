@@ -4,6 +4,7 @@ if (! defined ( 'IN_GAME' )) {
 	exit ( 'Access Denied' );
 }
 include_once GAME_ROOT.'./include/game/club25.items.php';
+require_once GAME_ROOT.'./include/game/race.func.php';
 
 // Handle weapons and equipment
 function item_weapon($itmn, &$data) {
@@ -44,6 +45,17 @@ function item_weapon($itmn, &$data) {
 	} elseif(strpos($itmk, 'XY') === 0) {
 		$eqp = 'art';
 		$noeqp = '';
+	}
+	if(!race_can_remove($data,$eqp)) {
+		$log .= '妖精羽翼是身体的一部分，无法用防具替换。<br>'; $mode='command'; return;
+	}
+	if(race_is($data,1) && in_array($eqp,array('ara','arf'),true)) {
+		$chosen = $_POST['equip_slot'] ?? '';
+		if(is_string($chosen) && in_array($chosen,array('ara','arf'),true)) $eqp=$chosen;
+		elseif(!empty($data[$eqp.'s'])) {
+			$other = $eqp==='ara' ? 'arf' : 'ara';
+			if(empty($data[$other.'s'])) $eqp=$other;
+		}
 	}
 
 	//global ${$eqp}, ${$eqp.'k'}, ${$eqp.'e'}, ${$eqp.'s'}, ${$eqp.'sk'};

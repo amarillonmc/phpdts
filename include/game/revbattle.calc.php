@@ -6,6 +6,7 @@ namespace revbattle
 	if(!defined('IN_GAME')) {
 		exit('Access Denied');
 	}
+	include_once GAME_ROOT.'./include/game/ending_combat.func.php';
 
 	# 计算pa在探索/移动时会遭遇敌人的概率（遇敌率越低，道具发现率越高）
 	function calc_meetman_rate(&$pa)
@@ -56,7 +57,11 @@ namespace revbattle
 		$hide_r = calc_clbskill_hide_rate($pa,$pd,$hide_r); 
 		
 		if(($pd['clbpara']['fcg_stealth_until'] ?? 0)>($GLOBALS['now'] ?? 0)) $hide_r+=30;
-		return $hide_r;
+		if(function_exists('ending_routes_enabled') && ending_routes_enabled() && (int)$pd['type']===38 && !empty($pd['clbpara']['sendo_hidden'])) {
+			if(!empty($pa['clbpara']['sendo']['bait']) || (int)($pa['clbpara']['sendo']['located'] ?? 0)===(int)$pd['pid']) $hide_r=0;
+			else $hide_r+=60;
+		}
+		return \erc_hide($pa,$pd,$hide_r);
 	}
 
 	# pd没能躲避pa时，双方进入战斗；计算pa对pd作出先制攻击的概率；
@@ -100,7 +105,7 @@ namespace revbattle
 		# 计算先攻率上下限：
 		$active_r = max(min($active_r,96),4);
 		
-		return $active_r;
+		return \erc_active($pa,$pd,$active_r);
 	}
 
 	# 计算社团技能对pa遇敌率的修正

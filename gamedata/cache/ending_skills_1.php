@@ -1,0 +1,70 @@
+<?php
+if(!defined('IN_GAME')) exit('Access Denied');
+
+$er_skills=array(
+	'npc_honor_fist'=>array('荣誉之拳','NPC把尚有余力的对手打至生命底线，交战越久底线越高；玩家命中时有30%概率耗30体力使伤害提高25%。'),
+	'npc_honor_guard'=>array('守礼','受到攻击时有25%概率耗50体力，减少20%伤害。'),
+	'npc_endurance'=>array('熬战','NPC交战令对手行动耗体递增、有效体力上限递减；玩家命中时耗40体力，概率令对手增加一层消耗。'),
+	'npc_stalwart'=>array('守门人','受到攻击时消耗30体力，使这次伤害降低10%。'),
+	'npc_joint_lock'=>array('关节锁','NPC依次锁住腕、腿、颈；三锁瘫痪，可挣脱。玩家命中时25%概率耗80体力施加关节锁，最多两处。'),
+	'npc_joint_escape'=>array('柔术脱身','挣脱关节锁只需20体力，逃离追击成功率增加15个百分点。'),
+	'npc_fighting_spirit'=>array('战意','命中消磨对手战意；对手反击可恢复战意，战意耗尽则无法再搜索发现持有者。'),
+	'npc_snow_sight'=>array('雪原目击','消耗20体力探查，忽略目标部分隐匿；首次交锋命中提高10个百分点。'),
+	'npc_foxfire'=>array('狐火','NPC交战逐渐压低对手命中并提高自身先制；玩家命中时30%概率耗30体力叠加3个百分点干扰，最多四层。'),
+	'npc_foxstep'=>array('狐步','拥有狐火时每次脱离成功额外恢复少量体力；先制率提高8个百分点。'),
+	'npc_gnaw'=>array('啮噬','命中有机会损坏一件防具的耐久，每名目标最多六次；玩家发动消耗50体力。'),
+	'npc_toolcare'=>array('器物保养','每次有效行动有10%概率耗10体力修复一件未损毁装备的1点耐久。'),
+	'npc_luck_charge'=>array('天运','交锋积蓄运气，最多80%。致死时按积蓄概率残血存活，同时消耗60点运气。'),
+	'npc_lucky_escape'=>array('幸运脱险','持有天运时充能更快；脱离追击成功率提高10个百分点。'),
+	'npc_rook_chase'=>array('追击本能','NPC持续追击；玩家交战后35%概率耗40体力追击，追击中先制率提高10个百分点。'),
+	'npc_rook_lock'=>array('锁技·擒抱','消耗250体力，命中后锁住目标90秒，使逃跑成功率降低30个百分点。NPC反击可无消耗发动。'),
+	'npc_arsenal'=>array('武器库','NPC按对手防御切换备用武器并保持远程压制；玩家每次攻击耗30体力，武器射程提高2。'),
+	'npc_headshot'=>array('穿杨·狙杀','消耗300体力狙击，命中提高30、无视30%防御。超过目标当前生命一半时15%概率造成头部破坏；本场所受伤害提高30%。NPC阈值85%，无需消耗。'),
+	'npc_weak_analysis'=>array('弱点解析','每次命中同一目标增加一层破绽，每层削减8%防御，最多五层；他人偷袭令层数减半。玩家每击耗20体力且承伤增加15%。'),
+	'npc_weak_break'=>array('破绽贯通','弱点解析达到五层时完全忽略目标防御。'),
+	'npc_stage_mine'=>array('爆破签名','NPC受击后布下烟花雷；玩家布雷伤害提高50%，与同类社团加成取高。'),
+	'npc_pawn_evolve'=>array('压轴烟花','NPC半血时过河进化；玩家布雷10%概率成为更强的压轴烟花。'),
+	'npc_interference'=>array('干扰','NPC依赖存活蒸汽羊压制武器特效、命中与电子道具；玩家30%概率耗40体力施加短暂干扰。'),
+	'npc_steam_guard'=>array('蒸汽维护','蒸汽羊每次交锋前修复生命；玩家战斗结束耗30体力恢复3%生命。'),
+	'npc_shadow_step'=>array('落影步','NPC游走偷袭；玩家移动耗体减半，移动后首次先制率提高10个百分点。'),
+	'npc_shadow_mark'=>array('三影','NPC第三次命中处决；玩家连续三次先制命中同一目标，第三击伤害翻倍，每击耗30体力。'),
+	'npc_talisman'=>array('护符','消耗400体力贴上两层护符，每层抵挡一次攻击。符盾耗尽后冷却120秒。NPC有四层，跨交战保留剩余层数。'),
+	'npc_nightmare'=>array('符术梦魇','命中时概率施加黑暗或迷惑诅咒，并可能引发噩梦。玩家发动消耗40体力。'),
+	'npc_stealth'=>array('九宫潜行','NPC隐匿至少75，出手后现形；玩家隐匿至少30，与同类潜行效果取高。'),
+	'npc_blood_poison'=>array('淬毒','命中时概率令目标中毒，玩家发动耗20体力。血翎的血毒层满触发处决，提前解毒能清层。'),
+	'npc_spark'=>array('种火花','命中时概率耗20体力点燃火花，附加少量火焰伤害。'),
+	'npc_electrofox'=>array('电子狐','消耗20体力探查，提升10个百分点遇敌先制。'),
+	'npc_lifecat'=>array('百命猫','每局一次，在致死时保留1生命。'),
+	'npc_groundsheep'=>array('走地羊','移动耗体降低20%，与其他移动修正共同结算。'),
+	'npc_bookworm'=>array('书中虫','受到攻击时耗20体力，最终伤害降低15%。'),
+	'npc_magicbee'=>array('魔法蜂','命中时概率耗20体力使对手中毒。'),
+	'npc_cagedbird'=>array('笼中鸟','有效行动后有机会耗10体力恢复少量生命。'),
+	'npc_hydraulic'=>array('液压处刑','NPC命中施加无法逃跑、治疗减半的处刑标记，三层后处决并破拆装备；玩家命中耗80体力叠标记，伤害递增，三层后下一击贯穿防御且伤害翻倍。'),
+	'npc_bonearmor'=>array('骨甲','NPC免疫普通受伤与属性异常；玩家受异常影响时50%概率耗30体力抵御。'),
+	'npc_ammo_roulette'=>array('弹幕织机','NPC四段弹幕轮换破甲、干扰、燃烧与凝血；玩家至少两段攻击，命中耗60体力附加一种弹种效果。'),
+	'npc_lockhead'=>array('制空锁头','NPC保持远程压制，单次攻击超过目标当前生命四成时爆头；玩家先制提高15，怒气150以上时15%概率耗150体力对低血目标爆头。'),
+	'npc_deathomen'=>array('死兆拔刀','命中叠加死兆与难愈灼伤，满层下一击伤害提高至三倍；NPC另有爆头判定，玩家每击耗50体力。'),
+	'npc_blood_draw'=>array('饮血俯冲','对手生命越低，伤害与先制越高。'),
+	'npc_white_phosphorus'=>array('白磷工房','NPC受击布下高热雷，对灼伤目标伤害翻倍；玩家布雷耗80体力附灼伤，白磷雷对已灼伤目标伤害提高50%。'),
+	'npc_sequence'=>array('序列学习','NPC令同一手段第二次伤害减半、第三次无效；玩家每击耗30体力，对同一目标连续攻击伤害每次递增8%，最多80%。'),
+	'npc_afterimage'=>array('残影','NPC交锋留下残影，攻击须先消除残影；玩家移动获得残影，下次遇袭35%概率耗30体力令其落空。'),
+	'npc_wire'=>array('钢丝','命中叠加钢丝，增加移动耗体、降低脱离概率；NPC第三次命中处决。玩家40%概率耗50体力缠绕，最多两层。'),
+	'npc_nightmare_domain'=>array('魇域','NPC令交战者积累梦魇，十层夺取攻击，并有精神屏障与锁链；玩家命中耗50体力叠至五层，下一击必中且伤害翻倍。'),
+	'npc_retro_barrier'=>array('时光锚定','交战者的数值与装备属性暂时回到旧日的上限，现代社团技能暂时失效。'),
+	'npc_fate_record'=>array('命运演算','NPC记录并否定高度相似的攻击，施加不断增长的真实反噬；玩家每击耗30体力，连续攻击同一目标附加真伤每次增加20，最多200。'),
+	'npc_dimension_theft'=>array('跨维度窃盗','NPC命中偷装备并使用，最多六件、每人三件，击破归还；战后可能与远处被标记者换位。玩家击杀时35%概率耗40体力，直接收起一件可拾取战利品。'),
+	'npc_prefetch'=>array('预取','NPC概率截取攻击作为反击加成；玩家第一次对每名目标争夺先制时耗20体力，先制率提高10个百分点。'),
+);
+foreach($er_skills as $er_key=>$er_value) $cskills[$er_key]=array('name'=>$er_value[0],'tags'=>array('passive'),'desc'=>$er_value[1]);
+$cskills['npc_rook_lock']['tags']=array('battle');
+$cskills['npc_weak_analysis']['tags']=array('switch');
+$cskills['npc_weak_analysis']['input']='切换';
+$cskills['npc_weak_analysis']['events']=array('active|npc_weak_analysis');
+$cskills['npc_weak_analysis']['svars']=array('active'=>1);
+$cskills['npc_weak_analysis']['pvars']=array('skill-active');
+$cskills['npc_weak_analysis']['desc'].='可切换关闭解析与承伤代价。[^skill-active^]';
+$cskills['npc_headshot']['tags']=array('battle');
+$cskills['npc_talisman']['tags']=array('active');
+$cskills['npc_talisman']['input']='贴符';
+$cskills['npc_talisman']['events']=array('ending_talisman');
+unset($er_skills,$er_key,$er_value);

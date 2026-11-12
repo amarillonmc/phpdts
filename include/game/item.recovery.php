@@ -33,8 +33,10 @@ function item_recovery_stamina($itmn, &$data) {
 			$addsp = diceroll($itme);
 			$log .= "随机数大神不喜欢给定值，你回复的体力被骰子改动了！<br>";
 		}
+		if(function_exists('severe_heal_ratio')) $addsp=(int)floor($addsp*severe_heal_ratio($data));
 		if($addsp > 0) $sp += $addsp;
 		else $addsp = 0;
+		if(function_exists('erc_cap_sp')) { erc_cap_sp($data); $addsp=max(0,$sp-$oldsp); }
 		$log .= "你使用了<span class=\"red\">$itm</span>，恢复了<span class=\"yellow\">$addsp</span>点体力。<br>";
 		//吃了无毒果酱
 		if($itm == '桔黄色的果酱') $clbpara['achvars']['eat_jelly'] = 1;
@@ -83,6 +85,7 @@ function item_recovery_health($itmn, &$data) {
 			$addhp = diceroll($itme);
 			$log .= "随机数大神不喜欢给定值，你回复的生命被骰子改动了！<br>";
 		}
+		if(function_exists('severe_heal_ratio')) $addhp=(int)floor($addhp*severe_heal_ratio($data));
 		if($addhp > 0) {
 			$hp += $addhp;
 
@@ -233,7 +236,7 @@ function item_recovery_both($itmn, &$data) {
 		}else{
 			$bpup = $itme;
 		}
-		//$oldsp = $sp;
+		$oldsp = $sp;
 		//$sp += $bpup;
 		//$sp = $sp > $msp ? $msp : $sp;
 		//$oldsp = $sp - $oldsp;
@@ -242,8 +245,10 @@ function item_recovery_both($itmn, &$data) {
 			$addsp = diceroll($itme);
 			$log .= "随机数大神不喜欢给定值，你回复的体力被骰子改动了！<br>";
 		}
+		if(function_exists('severe_heal_ratio')) $addsp=(int)floor($addsp*severe_heal_ratio($data));
 		if($addsp > 0) $sp += $addsp;
 		else $addsp = 0;
+		if(function_exists('erc_cap_sp')) { erc_cap_sp($data); $addsp=max(0,$sp-$oldsp); }
 		//$oldhp = $hp;
 		//$hp += $bpup;
 		//$hp = $hp > $mhp ? $mhp : $hp;
@@ -253,6 +258,7 @@ function item_recovery_both($itmn, &$data) {
 			$addhp = diceroll($itme);
 			$log .= "随机数大神不喜欢给定值，你回复的生命被骰子改动了！<br>";
 		}
+		if(function_exists('severe_heal_ratio')) $addhp=(int)floor($addhp*severe_heal_ratio($data));
 		if($addhp > 0) {
 			$hp += $addhp;
 

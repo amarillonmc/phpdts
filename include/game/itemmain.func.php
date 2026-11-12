@@ -15,6 +15,7 @@ if(!defined('IN_GAME')) {
 include_once GAME_ROOT.'./include/game/aievent_minion.func.php';
 include_once GAME_ROOT.'./include/game/club24.func.php';
 include_once GAME_ROOT.'./include/game/club25.func.php';
+require_once GAME_ROOT.'./include/game/race.func.php';
 
 
 # 计算发现陷阱后的“触发率”
@@ -78,6 +79,7 @@ function calc_trap_escape_rate(&$pa,$playerflag=0,$selflag=0)
 		$escrate *= 1+(get_skillvars('c5_caution','evgain',$sk_lvl)/100);
 	}
 	if(fcg_attuned($pa,'Y')) $escrate+=15;
+	if(talent_enabled()) $escrate += (int)($pa['clbpara']['talent_bonus']['trap_detect'] ?? 0);
 	return min($escrate,$max_escrate);
 }
 
@@ -134,6 +136,7 @@ function calc_trap_damage(&$pa,$pd=NULL,$playerflag=0,$selflag=0)
 
 	$damage = round(rand(0,$pa['itme0']/2)+($pa['itme0']/2));
 	$trappara = get_itmpara($pa['itmpara0'] ?? '');
+	if(function_exists('severe_enabled') && severe_enabled() && !empty($trappara['phosphorus']) && strpos($pa['inf'] ?? '','u')!==false) $damage=(int)ceil($damage*1.5);
 	if(in_array($pa['itmk0'],array('TO','TN')) && !empty($trappara['c25_mine']['bonus'])) $damage += max(0,(int)$trappara['c25_mine']['bonus']);
 
 	# 防御姿态可以降低陷阱伤害
@@ -279,6 +282,7 @@ function trap(&$data=NULL){
 			if($ruleset_damage !== NULL) $damage = max(0,intval($ruleset_damage));
 		}
 		if((int)$club === 25) $damage = round($damage * club25_config()['hazard_percent'] / 100);
+		if(function_exists('severe_negative_damage')) $damage=severe_negative_damage($data,$damage);
 
 		if($damage)
 		{
@@ -295,6 +299,10 @@ function trap(&$data=NULL){
 			if(!empty($data['skilllog'])) $log.= $data['skilllog'];
 			$log .= "受到<span class=\"dmg\">$damage</span>点伤害！<br>";
 			$trappara = get_itmpara($itmpara0);
+			if(function_exists('severe_enabled') && severe_enabled() && !empty($trappara['phosphorus'])) {
+				$clbpara['phosphorus_burn']=min(5,($clbpara['phosphorus_burn'] ?? 0)+1);
+				$clbpara['searing_until']=$now+120;
+			}
 			if(isset($trappara['ai93_inf']) && in_array($trappara['ai93_inf'],array('b','h','a','f','i','u','e','p','w'))) {
 				include_once GAME_ROOT.'./include/game/revattr.func.php';
 				if(\revattr\get_inf_rev($data,$trappara['ai93_inf'])) {
@@ -704,6 +712,7 @@ function itemdrop($item,&$data=NULL) {
 
 function itemoff($item){
 	global $log,$mode,$cmd,$itm0,$itmk0,$itme0,$itms0,$itmsk0,$itmpara0,$nosta,$pdata;
+	if(!race_can_remove($pdata,$item)) { $log .= '妖精羽翼是身体的一部分，不能卸下。<br>'; $mode='command'; return; }
 
 	if($item == 'wep'){
 		global $wep,$wepk,$wepe,$weps,$wepsk, $weppara;
@@ -1344,6 +1353,10 @@ function itembuy($item,$shop,$bnum=1,&$data=NULL)
 
 	$result=$db->query("SELECT * FROM {$tablepre}shopitem WHERE sid = '$item'");
 	$iteminfo = $db->fetch_array($result);
+	if(function_exists('ending_routes_enabled') && ending_routes_enabled()) {
+		$city=(int)$pgroup===3;
+		if(($city && (!in_array((int)$pls,array(120,126),true) || (int)($iteminfo['kind'] ?? 0)!==30)) || (!$city && (int)($iteminfo['kind'] ?? 0)===30)) { $log.='这件货物只在湾城黑市出售。<br>'; $mode='command'; return; }
+	} elseif(in_array((int)($iteminfo['kind'] ?? 0),array(19,30),true)) { $mode='command'; return; }
 	if(!$iteminfo) {
 		$log .= '要购买的道具不存在！<br><br>';
 		$mode = 'command';
@@ -1554,6 +1567,7 @@ function getcorpse($item,&$data=NULL)
 	}
 
 	$is_corpse_item = ($item == 'wep' || $item == 'wep2' || strpos($item,'ar') === 0 || strpos($item,'itm') === 0);
+	if(!race_can_remove($edata,$item)) { $log .= '羽翼随着妖精的生命熄灭，无法作为装备取走。<br>'; $mode='command'; return; }
 	$fcg_corpse_para = strpos($item,'itm')===0 ? ($edata['itmpara'.substr($item,3,1)] ?? '') : ($edata[$item.'para'] ?? '');
 	if($is_corpse_item && fcg_phantom($fcg_corpse_para)) { $log.='幻影器物已随原主的记忆消散，无法拾取。<br>'; $mode='command'; return; }
 	if($is_corpse_item && !empty($itms0))

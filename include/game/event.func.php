@@ -67,6 +67,13 @@ function event(){
 		$event = 1;	
 	} elseif($pls == 4) { //索拉利斯
 	} elseif($pls == 5) { //指挥中心
+		global $pdata;
+		if(function_exists('ending_routes_enabled') && ending_routes_enabled() && empty($pdata['clbpara']['xharmer_event']) && rand(1,100)<=25) {
+			$pdata['clbpara']['xharmer_event']=1;
+			$pdata['clbpara']['dialogue']='xharmer_meet';
+			$pdata['clbpara']['noskip_dialogue']=1;
+			$event=1;
+		}
 	} elseif($pls == 6) { //梦幻馆
 	} elseif($pls == 7) { //清水池
 		$log = ($log . "糟糕，脚下滑了一下！<BR>");
@@ -612,7 +619,7 @@ function event(){
 		}
 		$event = 1;
 		//echo $rp;
-	}elseif ($pls==34){//英灵殿
+	}elseif ($pls==34 && !(function_exists('ending_routes_enabled') && ending_routes_enabled())){//旧英灵殿
 		global $art,$plsinfo,$gamestate,$hack,$arealist,$areanum;
 		if (($art!='Untainted Glory')&&($gamestate != 50)){
 			$rpls=-1;

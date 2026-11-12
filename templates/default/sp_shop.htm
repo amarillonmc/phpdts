@@ -4,6 +4,9 @@
 <input type="button" class="cmdbutton" value="离开" onclick="$('command').value='menu';postCmd('gamecmd','command.php');this.disabled=true;">
 <br>
 <!--{eval $raid_cagedbird_shop = function_exists('get_current_ruleset_id') && get_current_ruleset_id() === 'RAIDCAGEDBIRD';}-->
+<!--{if function_exists('ending_routes_enabled') && ending_routes_enabled() && $pgroup==3}-->
+<input type="button" class="cmdbutton" value="湾城黑市" onclick="$('command').value='shop30';postCmd('gamecmd','command.php');this.disabled=true;">
+<!--{else}-->
 <!--{loop Array(1=>'补给品',2=>'药剂',3=>$iteminfo['WP'],4=>$iteminfo['WK'],5=>$iteminfo['WG'],6=>$iteminfo['WC'],7=>$iteminfo['WD'],8=>$iteminfo['WF'].'材料',9=>'防具',10=>'书籍',11=>'电子装备',20=>'弹药和箭矢',12=>'杂物',17=>'限量福袋',13=>'埃克法轻工特供武器',14=>'林苍月的提示',15=>'Key社纪念品专卖',16=>'NPC解锁钥匙',18=>'上级者向物品') $sid $scmt}-->
 <!--{if !($raid_cagedbird_shop && $sid == 16)}-->
 <!--{if $sid % 2}--><br><!--{/if}-->
@@ -13,3 +16,6 @@
 onclick="$('command').value='shop{$sid}';postCmd('gamecmd','command.php');this.disabled=true;">
 <!--{/if}-->
 <!--{/loop}-->
+
+<!--{if function_exists('ending_routes_enabled') && ending_routes_enabled() && $pgroup!=3}--><input type="button" class="cmdbutton" value="七日送行" onclick="$('command').value='shop19';postCmd('gamecmd','command.php');"><!--{/if}-->
+<!--{/if}-->

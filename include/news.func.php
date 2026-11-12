@@ -235,6 +235,10 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>在战斗中引爆代码片段而炸死了自己";
 			} elseif($news == 'death50'){
 				$newsinfo .= "<li><span class=\"rainbow\">{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>牺牲了自己，在虚拟幻境的天空中炸出了一片红霞</span>！";
+			} elseif($news == 'death61'){
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>因<span class=\"red\">头部受到致命破坏</span>而倒下";
+			} elseif($news == 'death62'){
+				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>的时空锚定归零，身影随<span class=\"purple\">湾城投影</span>一同消散";
 			} elseif($news == 'death51'){
 				$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">$a</span>刚准备吃下<span class=\"yellow\">$d</span>，就被<span class=\"purple\">$c</span>的幻影反咬一口，成为了补给的补给！";
 			} else {
@@ -354,6 +358,11 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$a}乱入战场！</span><br>\n";
 		} elseif($news == 'addnpcs') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">{$b}名{$a}乱入战场！</span><br>\n";
+		} elseif($news == 'yinchui_bomb') {
+			$newsinfo.="<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">银锤引爆了战场上的埋雷，冲击波席卷了周围！</span><br>\n";
+		} elseif(in_array($news,array('jiaotou_challenge','jiaotou_final','hongmu_retreat','dissociation_enter','retro_jiaotou','dissociation_final'),true)) {
+			$ending_news=array('jiaotou_challenge'=>'八位红杀教头已接受挑战，散布在战场各处。','jiaotou_final'=>'八位教头全部败退。无月之影响起冰与炎的共鸣，红暮与蓝凝已到场。','hongmu_retreat'=>'红暮在受创后撤离，追逐战仍在继续。','dissociation_enter'=>'一位挑战者走进了湾城投影。七十五分钟的时空锚定已经启动。','retro_jiaotou'=>'历史残响已消退。旧红杀八位教头同时现身湾城。','dissociation_final'=>'旧红杀教头全部退场。寂山书院与东洲岛亮起了最后两道光。');
+			$newsinfo.="<li>{$hour}时{$min}分{$sec}秒，<span class=\"yellow\">".$ending_news[$news]."</span><br>\n";
 		} elseif($news == 'secphase') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}使用了挑战者之证，让3名幻影执行官加入了战场！打倒他们去获得ID卡来解除游戏吧！</span><br>\n";
 		} elseif($news == 'thiphase') {

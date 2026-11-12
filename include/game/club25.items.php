@@ -45,6 +45,10 @@ function club25_item_damage(&$victim,$owner,$damage,$kind,$item,$cause='trap',&$
 		$adjusted = ruleset_damage_immunity_hook($victim,$kind == 'food' ? 'poison' : 'trap',$damage);
 		if($adjusted !== NULL) $damage = max(0,intval($adjusted));
 	}
+	if(function_exists('severe_enabled') && severe_enabled()) {
+		$damage=severe_negative_damage($victim,$damage);
+		if(!empty($victim['c25_net_active']) && is_array($owner_data)) $damage=erc_damage($owner_data,$victim,$damage);
+	}
 	$victim['hp'] -= $damage;
 	$maker = is_array($owner_data) ? $owner_data['name'] : '不知躲在哪里的可怜猫';
 	$safe_maker = htmlspecialchars($maker,ENT_QUOTES,'UTF-8');

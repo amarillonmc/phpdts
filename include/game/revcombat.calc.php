@@ -150,6 +150,7 @@ namespace revcombat
 	function check_can_chase(&$pa,&$pd,$active)
 	{
 		global $chase_obbs,$dfight_obbs,$log;
+		if(\erc_force_chase($pa,$pd,$active)) { \revattr\change_battle_turns($pa,$pd,$active); return; }
 		if(!$pa['type'] && !$pd['type']) return;
 		$chase_flag = 0;
 		$dice = diceroll(99);

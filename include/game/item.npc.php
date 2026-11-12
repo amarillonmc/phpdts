@@ -21,6 +21,8 @@ function item_npc($itmn, &$data) {
     $itms = & ${'itms' . $itmn};
     $itmsk = & ${'itmsk' . $itmn};
 
+    if(function_exists('ending_routes_summon') && ending_routes_summon($data,$itmn)) return;
+
     if ($itm == '杏仁豆腐的ID卡') {
         include_once GAME_ROOT . './include/system.func.php';
         $duelstate = duel($now, $itm);

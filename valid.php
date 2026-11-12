@@ -3,6 +3,8 @@
 define('CURSCRIPT', 'valid');
 
 require './include/common.inc.php';
+require_once GAME_ROOT.'./include/talent.func.php';
+require_once GAME_ROOT.'./include/game/race.func.php';
 //require './include/user.func.php';
 
 if(!$cuser||!$cpass) { gexit($_ERROR['no_login'],__file__,__line__); }
@@ -31,7 +33,19 @@ include_once GAME_ROOT.'./include/game/clubslct.func.php';
 $t1_list = valid_getclublist_t1($udata);
 $t2_list = valid_getclublist_t2($udata);
 
+$entry_races = array(0=>'人类');
+if(talent_enabled()) {
+	talent_ensure_storage();
+	$entry_talent_user = talent_current_user($udata['uid'],(string)$cpass);
+	$udata['talentdata'] = $entry_talent_user['talentdata'];
+	$entry_talent = talent_load($udata['talentdata']);
+	foreach($entry_talent['unlocked_races'] as $entry_race) if(isset($raceinfo[$entry_race])) $entry_races[$entry_race] = $raceinfo[$entry_race];
+}
+
 if($mode == 'enter') {
+	$selected_race = $_POST['race'] ?? '0';
+	if(!is_scalar($selected_race) || !preg_match('/\A[0-5]\z/',(string)$selected_race) || !isset($entry_races[(int)$selected_race])) gexit('请选择已解锁的种族。',__file__,__line__);
+	$selected_race = (int)$selected_race;
 	if($iplimit) {
 		$result = $db->query("SELECT * FROM {$gtablepre}users AS u, {$tablepre}players AS p WHERE u.ip='{$udata['ip']}' AND ( u.username=p.name AND p.type=0)");
 		if($db->num_rows($result) > $iplimit) { gexit($_ERROR['ip_limit'],__file__,__line__); }
@@ -348,12 +362,14 @@ if($mode == 'enter') {
 	# 初始化称号技能
 	if($ndata['club']) updateskill($ndata);
 	fcg_skills_initialize($ndata,$udata);
+	talent_entry($ndata,$udata,$selected_race);
 
 	$ndata = player_format_with_db_structure($ndata);
 	if(!empty($ndata)) {
 		$db->array_insert("{$tablepre}players", $ndata);
 		$ndata['pid'] = (int)$db->insert_id();
 	}
+	if(talent_enabled() && $selected_race === 5) race_ai_create_body($ndata,true);
 	$entry_boon_notice = '';
 	try {
 		$entry_boon_notice = account_boon_enter($udata['uid'], $ndata);
@@ -462,6 +478,7 @@ if($mode == 'enter') {
 			"gender" => $gender,  // 性别
 			"nick" => $udata['nick'], // 头衔
 			"nickList" => $nickList,  // 可选头衔
+			"raceList" => $entry_races,
 			"normalGiftList" => $normalGiftList,  // 可选普通内定称号
 			"specialGiftList" => $specialGiftList,  // 可选特殊内定称号
 			"motto" => $motto,  // 口头禅

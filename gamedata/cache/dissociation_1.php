@@ -1,0 +1,37 @@
+<?php
+if(!defined('IN_GAME')) exit('Access Denied');
+
+// 大房间四路线的数值档。只由开启新路线的调用方读取。
+$dissociation = array(
+	'duration' => 4500,
+	'ex_damage' => 1.5,
+	'ex_reverse_cost' => false,
+	'ex_rest_bonus' => 1.5,
+	'stage_time_direction' => 'fast',
+	'stage_time_target' => 900,
+	'stage_time_ratio' => 0.5,
+	'honor_start' => 0.20,
+	'honor_step' => 0.05,
+	'honor_max' => 0.85,
+	'spirit_loss' => 8,
+	'spirit_recover' => 0.003,
+	'endurance_cost' => 0.10,
+	'endurance_maxsp' => 0.04,
+	'foxfire' => 8,
+	'foxfire_inherited' => 5,
+	'gnaw_limit' => 6,
+	'luck_charge' => 20,
+	'luck_max' => 80,
+	'luck_consume' => 60,
+	'diamond_similarity' => 0.90,
+	'diamond_true_damage' => 150,
+	'omicron_prefetch' => 20,
+	'omicron_swap' => 25,
+	'omicron_taunt' => true,
+	'shield_cooldown' => 120,
+	'sanbu_interval' => 90,
+	'beast_physical' => 0.35,
+	'beast_element' => 1.30,
+	'beast_fire' => 2.0,
+	'fairy_spirit' => 1.25,
+);

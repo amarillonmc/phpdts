@@ -1,5 +1,6 @@
 {template club23_status}
 {template paperdoll_state}
+{template ending_routes_status}
 <table border="0" width="720" height="100%" cellspacing="0" cellpadding="0"  valign="middle">
 	<tr>
 		<td>
@@ -179,9 +180,9 @@
 				<tr>
 					<td class="b2">战术界面</td>
 					<td class="b3">
-						<select id="horizon" name="horizon" onchange="$('mode').value='special';$('command').value=$('horizon').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
-							<!--{loop $horizoninfo $key $value}-->
-								<option value="hor$key"<!--{if $horizon == $key}-->selected<!--{/if}-->>$value
+						<select <!--{if !empty($clbpara['ex_lock']) || (function_exists('severe_can_horizon') && !severe_can_horizon($pdata))}-->disabled<!--{/if}--> id="horizon" name="horizon" onchange="$('mode').value='special';$('command').value=$('horizon').value;postCmd('gamecmd','command.php');return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
+							<!--{loop $horizoninfo $key $value}--><!--{if $key!=2 || $horizon==2}-->
+								<option value="hor$key"<!--{if $horizon == $key}-->selected<!--{/if}-->>$value<!--{/if}-->
 							<!--{/loop}-->
 						</select>
 					</td>

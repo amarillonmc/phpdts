@@ -585,6 +585,7 @@ if(!defined('IN_GAME')) exit('Access Denied');
 
 require GAME_ROOT.'./gamedata/cache/fcg_titles.php';
 require GAME_ROOT.'./gamedata/cache/mianhuping.php';
+require GAME_ROOT.'./gamedata/cache/talent_titles.php';
 $title_valid[123] = Array('itm6'=>'「神骰叛军」称号卡','itmk6'=>'ZB','itme6'=>24,'itms6'=>1,'itmsk6'=>'v');
 $title_valid[124] = Array('itm6'=>'沾着猫毛的粉黑蝴蝶结','itmk6'=>'ZB','itme6'=>25,'itms6'=>1,'itmsk6'=>'v');
 $titles_list += Array(9201=>'电梯常客',9202=>'帧间行者',9203=>'温柔的见证者',9204=>'深渊来客',9205=>'阁楼居民');

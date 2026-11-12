@@ -165,3 +165,8 @@ $questiteminfo = array(
         'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q7', 'QuestAction' => 'reward'),
     ),
 );
+
+if(function_exists('ending_routes_enabled') && ending_routes_enabled()) {
+	$questiteminfo['sendo_ticket']=array('itm'=>'【动物团的七封请柬】','itmk'=>'ticket','itme'=>1,'itms'=>1,'itmsk'=>'','itmpara'=>array('QuestID'=>'QD'));
+	$questiteminfo['sendo_pass']=array('itm'=>'【湾城通票】','itmk'=>'ticket','itme'=>1,'itms'=>1,'itmsk'=>'','itmpara'=>array('QuestID'=>'QD'));
+}

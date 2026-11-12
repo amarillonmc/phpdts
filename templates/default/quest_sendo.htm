@@ -1,0 +1,29 @@
+<input type="hidden" id="mode" name="mode" value="command">
+<input type="hidden" id="command" name="command" value="menu">
+<div class="yellow b">动物大排档 · 七日送行</div>
+<p>七项送行同时进行，不占普通任务名额。温柔送行四至六项可往幻境湾城，七项全达成可挑战真实湾城；请先完成全部七项。</p>
+<!--{loop $sendo_view $qid $task}-->
+<p><span class="yellow">{$task['title']}</span>：{$task['desc']}<br>
+<!--{if !empty($sendo_state['gentle'][$qid])}--><span class="lime">温柔送行已完成</span>
+<!--{elseif !empty($sendo_state['done'][$qid])}--><span class="yellow">普通完成，可重做温柔送行</span>
+<!--{else}-->进行中<!--{/if}-->
+<!--{if empty($sendo_state['gentle'][$qid])}--><input type="button" value="下轮重做" onclick="$('command').value='sendo_reset_{$qid}';postCmd('gamecmd','command.php');this.disabled=true;"><!--{/if}--></p>
+<!--{/loop}-->
+<!--{eval $sendo_places=$sendo_world['points'];}-->
+<p>本轮地点：南飞 {$plsinfo[$sendo_places[0]]}／守护之牙 {$plsinfo[$sendo_places[1]]}／不杀之武 {$plsinfo[$sendo_places[2]]}／雪原目击 {$plsinfo[$sendo_places[3]]}／雾影 {$plsinfo[$sendo_places[4]]}。<br>告别地点：{$plsinfo[$sendo_world['bye']]}，封锁前前往探索。</p>
+<input type="button" value="领取捕绳" onclick="$('command').value='sendo_tool_rope';postCmd('gamecmd','command.php');">
+<input type="button" value="领取侦探眼镜" onclick="$('command').value='sendo_tool_glasses';postCmd('gamecmd','command.php');">
+<input type="button" value="领取引路灯" onclick="$('command').value='sendo_tool_lantern';postCmd('gamecmd','command.php');">
+<input type="button" value="让 Holly 充当诱饵" onclick="$('command').value='sendo_bait';postCmd('gamecmd','command.php');">
+<!--{if !empty($sendo_state['lantern_route'])}--><p>引路灯检查点（须装备在腕部）：<!--{loop $sendo_state['lantern_route'] $point}-->{$plsinfo[$point]} → <!--{/loop}-->完成。已到达 {$sendo_state['lantern_step']} 处。</p><!--{/if}-->
+<p><input type="button" value="交付三枚电池" onclick="$('command').value='sendo_batteries';postCmd('gamecmd','command.php');"></p>
+<!--{if !empty($sendo_state['batteries']) && empty($sendo_state['gentle']['QD6'])}-->
+<p>电台已经启动。还愿意留下一件背包中的自有装备吗？</p>
+<!--{loop array(1,2,3,4,5,6) $slot}-->
+<!--{if !empty($pdata['itms'.$slot]) && preg_match('/^[WDA]/',$pdata['itmk'.$slot])}-->
+<input type="button" value="捐出 {$pdata['itm'.$slot]}" onclick="$('command').value='sendo_donate_{$slot}';postCmd('gamecmd','command.php');">
+<!--{/if}--><!--{/loop}-->
+<!--{if !empty($sendo_state['donate_confirm'])}--><p>确认将「{$sendo_state['donate_confirm']['item'][0]}」整件留给电台？交付后无法取回。</p><input type="button" value="确认交付装备" onclick="$('command').value='sendo_donate_confirm';postCmd('gamecmd','command.php');this.disabled=true;"><!--{/if}-->
+<!--{/if}-->
+<p><input type="button" value="领取湾城通票" onclick="$('command').value='sendo_ticket';postCmd('gamecmd','command.php');this.disabled=true;">
+<input type="button" value="离开大排档" onclick="$('command').value='menu';postCmd('gamecmd','command.php');"></p>

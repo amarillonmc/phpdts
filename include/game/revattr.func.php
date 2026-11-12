@@ -9,6 +9,7 @@ namespace revattr
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
 	include_once GAME_ROOT.'./include/game/revattr.calc.php';
 	include_once GAME_ROOT.'./include/game/revattr_extra.func.php';
+	include_once GAME_ROOT.'./include/game/ending_combat.func.php';
 
 	# 获取真实攻击类别
 	function get_wep_kind(&$pa,$wep_kind='',$pd_range=NULL)
@@ -101,6 +102,7 @@ namespace revattr
 
 		# 获取社团技能对武器射程的修正
 		$range = get_clbskill_wep_range($pa,$range);
+		if(!empty($pa['type']) && (\erc_has($pa,'npc_arsenal') || \erc_has($pa,'npc_lockhead'))) $range=max(9,$range);
 
 		return $range;
 	}
@@ -134,6 +136,7 @@ namespace revattr
 		global $log,$cskills,$now;
 
 		# 检查先攻者是否有要发动的主动技能：
+		if(\erc_battle_skill($pa,$pd)) return;
 		# 1.玩家：须自主发动
 		# 2.NPC：如满足条件则随机发动
 		if($pa['type'] && !empty($pa['clbpara']['skill']))
@@ -307,7 +310,7 @@ namespace revattr
 	function get_wep_ex_array(&$pa)
 	{
 		$skarr = Array();
-		if(!isset($pa['is_wpg']) && $pa['weps'] && !empty($pa['wepsk']))
+		if(!\erc_jam_strength($pa) && !isset($pa['is_wpg']) && $pa['weps'] && !empty($pa['wepsk']))
 		{
 			$skarr = array_merge($skarr,get_itmsk_array($pa['wepsk']));
 		}
@@ -492,7 +495,7 @@ namespace revattr
 		if($weather == 12) $hitrate += 20;
 		//属性修正
 		if(function_exists('ruleset_attribute_value_hook')) $hitrate=ruleset_attribute_value_hook($pa,'hit',$hitrate);
-		return $hitrate;
+		return \erc_hitrate($pa,$pd,$hitrate);
 	}
 
 	//获取命中次数
@@ -549,6 +552,7 @@ namespace revattr
 		{
 			$atk_t = $pa['wep_skill'] >= 800 ? 6 : 2 + floor($pa['wep_skill']/200);
 		}
+		if(\erc_has($pa,'npc_ammo_roulette')) $atk_t=!empty($pa['type']) ? 4 : max(2,$atk_t);
 		// 模式只调整段数，命中衰减、耐久和每段伤害仍走下面的公共计算。
 		if(function_exists('ruleset_hit_count_hook')) $atk_t = max(1,(int)ruleset_hit_count_hook($pa,$pd,$active,$atk_t));
 		//对于消耗型武器，命中次数不能超过武器耐久
@@ -829,7 +833,7 @@ namespace revattr
 		$base_att = get_base_att_modifier($pa,$pd,$active,$base_att,$tooltip);
 		if(!empty($pa['fcg_battle'])) $base_att=max($pa['fcg_battle']['floor'],round($base_att*$pa['fcg_battle']['att']));
 		if(function_exists('ruleset_attribute_value_hook')) $base_att=ruleset_attribute_value_hook($pa,'att',$base_att);
-		return $base_att;
+		return $tooltip ? $base_att : \erc_base_att($pa,$base_att);
 	}
 
 	//获取pa的攻击力修正
@@ -975,7 +979,7 @@ namespace revattr
 		if(!empty($pd['fcg_battle'])) $total_def=round($total_def*$pd['fcg_battle']['def']);
 		if(!empty($pa['fcg_battle']['pierce'])) $total_def=round($total_def*(1-$pa['fcg_battle']['pierce']));
 		if(function_exists('ruleset_attribute_value_hook')) $total_def=ruleset_attribute_value_hook($pd,'def',$total_def);
-		return $total_def;
+		return $tooltip ? $total_def : \erc_base_def($pa,$pd,$total_def);
 	}
 
 	//获取pd的防御力修正
@@ -1125,6 +1129,8 @@ namespace revattr
 		//每一条伤害倍率判定变化提示会以$dmg_p[]= $r;的形式放入伤害倍率数组内，
 		//在输出成log时会显示为：总计造成了100x0.5x1.2...=111点伤害 的形式
 		$dmg_p = Array();
+		$erc_ratio = \erc_physical_ratio($pa,$pd);
+		if($erc_ratio != 1) $dmg_p[]=$erc_ratio;
 
 		# 灵力武器伤害↔体力消耗系数判定：
 		if($pa['wep_kind'] == 'F')
@@ -1780,6 +1786,7 @@ namespace revattr
 			$ex_dmg = round($ex_dmg * rand(100-$ex_dmg_fluc[$ex],100+$ex_dmg_fluc[$ex])/100);
 			//计算单个属性的属性伤害变化：
 			$ex_dmg = get_ex_base_dmg_p($pa,$pd,$active,$ex,$ex_dmg);
+			$ex_dmg *= \erc_element_ratio($pa,$pd,$ex);
 			//pd身上保有「护盾」的情况下 计算会对护盾造成的损害
 			if(isset($pd['skill_buff_shield']))
 			{
@@ -1802,7 +1809,7 @@ namespace revattr
 				}
 			}
 			//计算是否能够施加属性异常
-			if(empty($pd['ex_def_flag']) && empty($pd['skill_buff_shield']) && isset($ex_inf[$ex]) && strpos($pd['inf'],$ex_inf[$ex])===false)
+			if(empty($pd['ex_def_flag']) && empty($pd['skill_buff_shield']) && isset($ex_inf[$ex]) && strpos($pd['inf'],$ex_inf[$ex])===false && !\erc_bone_immune($pd))
 			{
 				$dice = diceroll(99);
 				//获取属性施加异常的基础概率 + 熟练度修正
@@ -2389,7 +2396,7 @@ namespace revattr
 		{
 			$sk = 'c20_sparkle';
 			unset($pa['askill_c20_sparkle']);
-			$plslist = get_safe_plslist();
+			$plslist = \erc_teleport_places($pd);
 			$sp_pls = $plslist[array_rand($plslist)];
 			# 注销技能状态
 			set_skillpara($sk,'active',0,$pd['clbpara']);
@@ -2399,7 +2406,7 @@ namespace revattr
 			$pd['tp_by_sparkle'] = $sp_pls;
 			$log .= "<span class=\"yellow\">千钧一发之际，{$pd['nm']}点燃火花传送到了别处！</span><br>";
 			if(!$pa['type']) $pa['log_save'] .= "{$pd['name']}在千钧一发之际点燃了火花，传送到不知道哪去了！";
-			addnews($now,'sparklerevival',$pd['name'],$pa['name'],$plsinfo[$sp_pls]);
+			addnews($now,'sparklerevival',$pd['name'],$pa['name'],\erc_place_name($pd,$sp_pls));
 			return 0;
 		}
 
@@ -2716,6 +2723,7 @@ namespace revattr
 	function get_inf_rev(&$pa,$infnm,$type=0)
 	{
 		global $log;
+		if(\erc_bone_immune($pa)) return 0;
 		if(function_exists('elevator_has_skill') && elevator_has_skill($pa,803)) return 0;
 
 		if(strpos($pa['inf'],$infnm) === false)
@@ -2742,6 +2750,9 @@ namespace revattr
 	function heal_inf_rev(&$pa,$infnm)
 	{
 		global $log;
+		if($infnm=='u' && \severe_enabled() && ($pa['clbpara']['searing_until'] ?? 0)>($GLOBALS['now'] ?? 0) && diceroll(99)<50) return 0;
+		if($infnm=='p') unset($pa['clbpara']['blood_poison'],$pa['clbpara']['blood_poison_soft']);
+		if($infnm=='u') unset($pa['clbpara']['phosphorus_burn']);
 		if(strpos($pa['inf'],$infnm) !== false)
 		{
 			$pa['inf'] = str_replace($infnm,"",$pa['inf']);

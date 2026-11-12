@@ -1,0 +1,35 @@
+<div id="talent-panel" style="max-width:1100px;margin:24px auto;text-align:left">
+	<div class="subtitle">账户天赋树</div>
+	<p class="yellow">$talent_notice</p>
+	<!--{if $talent_available}-->
+	<p>成就所得 $talent_data[earned_points] 点，已购 $talent_data[bought_points] 点；已分配 <b>$talent_used / $talent_limit</b>，可用 <b>$talent_free</b> 点。切糕：$talent_user[credits2]。</p>
+	<p>小节点的当前投入在下次入场时生效，各树共享。头衔、专属技能和种族永久收集，洗点不会丢失；只有佩戴对应树的头衔入场，才会携带该树的专属技能。历史与独立玩法不使用本系统。</p>
+	<form method="post" action="user.php#talent-panel" style="display:inline">
+		<input type="hidden" name="mode" value="talent"><input type="hidden" name="talent_csrf" value="$talent_csrf"><input type="hidden" name="base" value="$talent_base"><input type="hidden" name="talent_action" value="buy">
+		<button type="submit">购买 1 点（$talent_buy_price 切糕）</button>
+	</form>
+	<form method="post" action="user.php#talent-panel" style="display:inline" onsubmit="return confirm('确认消耗切糕重置当前投入？已收集的头衔、技能与种族会保留。');">
+		<input type="hidden" name="mode" value="talent"><input type="hidden" name="talent_csrf" value="$talent_csrf"><input type="hidden" name="base" value="$talent_base"><input type="hidden" name="talent_action" value="reset">
+		<button type="submit">洗点（$talent_reset_price 切糕）</button>
+	</form>
+	<p>当前房间仍有存活角色时不能洗点。购买每 10 点进入下一价格档，洗点逐次进入下一价格档，最高档不再上涨。</p>
+	<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+	<!--{loop $talent_trees $treeid $tree}-->
+	<section style="border:1px solid #777;padding:12px">
+		<div style="text-align:center"><img src="img/talent/$treeid.png" alt="" width="64" height="64" onerror="this.style.display='none'"><h3>$tree[name] · $tree[title]</h3>
+		<!--{if $tree['group'] == 0}-->幻境动物团<!--{elseif $tree['group'] == 1}-->红杀教头<!--{else}-->幻境自主存在体<!--{/if}--></div>
+		<!--{loop $tree['nodes'] $nodeid $node}-->
+		<!--{eval $node_lit = in_array($nodeid,$talent_data['alloc'][$treeid] ?? array(),true); $node_ready = $nodeid == 0 || in_array($nodeid-1,$talent_data['alloc'][$treeid] ?? array(),true);}-->
+		<!--{if $nodeid}--><div style="height:16px;border-left:2px solid #777;margin-left:18px"></div><!--{/if}-->
+		<form method="post" action="user.php#talent-panel" style="border:1px solid #777;padding:8px;<!--{if $node_lit}-->background:rgba(100,180,140,.2)<!--{/if}-->">
+			<input type="hidden" name="mode" value="talent"><input type="hidden" name="talent_csrf" value="$talent_csrf"><input type="hidden" name="base" value="$talent_base"><input type="hidden" name="talent_action" value="learn"><input type="hidden" name="tree" value="$treeid"><input type="hidden" name="node" value="$nodeid">
+			<b>$node[name]</b>（$node[cost] 点）<br><span style="font-size:12px">$node[desc]</span><br>
+			<!--{if $node['kind'] == 'race'}--><span class="yellow">种族：$raceinfo[$node[value]]</span><br><!--{/if}-->
+			<button type="submit" <!--{if $node_lit || !$node_ready || $talent_free < $node['cost']}-->disabled<!--{/if}-->><!--{if $node_lit}-->已点亮<!--{else}-->点亮<!--{/if}--></button>
+		</form>
+		<!--{/loop}-->
+	</section>
+	<!--{/loop}-->
+	</div>
+	<!--{/if}-->
+</div>

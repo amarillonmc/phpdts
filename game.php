@@ -35,6 +35,8 @@ if($gamestate == 0) {
 	header("Location: end.php");exit();
 }
 
+$pdata = race_ai_resolve_active($pdata);
+
 //临时用
 $gametype = 0;
 
@@ -64,9 +66,11 @@ $pdata['artpara'] = get_itmpara($pdata['artpara']);
 
 extract($pdata,EXTR_REFS);
 init_playerdata();
+$log = '';
+if(ending_routes_enabled()) dissociation_tick($pdata);
+if(race_ai_reconnect($pdata)) { extract($pdata,EXTR_REFS); init_playerdata(); }
 init_profile();
 
-$log = '';
 if(wheelchair_entry_notice($pdata)) player_save($pdata);
 //读取聊天信息
 $chatdata = getchat(0,$teamID);

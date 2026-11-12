@@ -39,7 +39,7 @@ function quest_get_global_value($questcfg_global, $key, $default)
 // 检查任务是否可接取 / Check whether a quest can be accepted
 function quest_is_available($qid, $cfg, &$data, $check_requirements = true, $check_obbs = true)
 {
-	if (!empty($cfg['floor_board'])) return false;
+	if (!empty($cfg['floor_board']) || !empty($cfg['public_sendo'])) return false;
 	extract($data, EXTR_REFS);
 	quest_init_state($clbpara);
 
@@ -402,6 +402,7 @@ function quest_complete($qid, &$data, $reason = '')
 	$cfg = !empty($questcfg[$qid]) ? $questcfg[$qid] : array();
 
 	$clbpara['quest']['completed'][$qid] = array('time' => $now, 'reason' => $reason);
+	if(function_exists('severe_cure')) severe_cure($data,array('nightmare'));
 	unset($clbpara['quest']['active'][$qid]);
 
 	// 奖励道具 / Reward items

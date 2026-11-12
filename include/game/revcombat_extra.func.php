@@ -312,8 +312,9 @@ namespace revcombat
 			if($dice < $obbs)
 			{
 				$pa['askill_c20_sparkle'] = 2;
-				$plslist = get_safe_plslist(); 
+				$plslist = \erc_teleport_places($pd);
 				$sp_pls = $plslist[array_rand($plslist)];
+				$sp_name = \erc_place_name($pd,$sp_pls);
 				# 切换地图
 				$pd['pls'] = $sp_pls;
 				$pd['tp_by_sparkle'] = $sp_pls;
@@ -325,10 +326,10 @@ namespace revcombat
 				else 
 				{
 					$pd['action'] = 'tpmove';
-					$pd['logsave'] .= "<span class=\"grey\">{$pa['name']}点燃火花，将你传送到了{$plsinfo[$sp_pls]}！</span><br>";
+					$pd['logsave'] .= "<span class=\"grey\">{$pa['name']}点燃火花，将你传送到了{$sp_name}！</span><br>";
 				}
-				$log .= "<span class=\"yellow\">你点燃火花，将{$pd['nm']}送到了{$plsinfo[$sp_pls]}！祝他好运吧……</span><br>";
-				addnews($now,'sparklemove',$pa['name'],$pd['name'],$plsinfo[$sp_pls]);
+				$log .= "<span class=\"yellow\">你点燃火花，将{$pd['nm']}送到了{$sp_name}！祝他好运吧……</span><br>";
+				addnews($now,'sparklemove',$pa['name'],$pd['name'],$sp_name);
 				return;
 			}
 		}
