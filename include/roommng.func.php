@@ -74,6 +74,23 @@ function roommng_verify_db_game_structure()
 		echo "向game表中添加了字段groomownid<br>";
 	}
 
+	// 本局 winner 保留实际获胜机体名；AI 分体后缀可能超过旧的 15 字符。
+	$winner_column = $db->fetch_array($db->query("SHOW COLUMNS FROM {$gtablepre}game LIKE 'winner'"));
+	if($winner_column && preg_match('/^(?:var)?char\((\d+)\)$/i',$winner_column['Type'],$winner_width) && (int)$winner_width[1]<40)
+	{
+		$winner_lock = roommng_acquire_create_lock();
+		if($winner_lock === false) throw new RuntimeException('无法准备胜者记录字段。');
+		try
+		{
+			$winner_column = $db->fetch_array($db->query("SHOW COLUMNS FROM {$gtablepre}game LIKE 'winner'"));
+			if($winner_column && preg_match('/^(?:var)?char\((\d+)\)$/i',$winner_column['Type'],$winner_width) && (int)$winner_width[1]<40)
+			{
+				if(!$db->query("ALTER TABLE {$gtablepre}game MODIFY winner char(40) NOT NULL DEFAULT ''",'SILENT')) throw new RuntimeException('无法扩展胜者记录字段。');
+			}
+		}
+		finally { roommng_release_create_lock($winner_lock); }
+	}
+
 	$result = $db->query("DESCRIBE {$gtablepre}users u_templateid");
 	if(!$db->num_rows($result))
 	{

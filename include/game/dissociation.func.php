@@ -149,7 +149,10 @@ function dissociation_npc_dead(&$victim,&$killer)
 		if($extra) {
 			$rows=$db->query("SELECT pid FROM {$tablepre}players WHERE type=0 AND hp>0 AND pgroup=3 AND horizon=2");
 			while($row=$db->fetch_array($rows)) {
-				if((int)$row['pid']===(int)$killer['pid']) $p=&$killer; else $p=fetch_playerdata_by_pid($row['pid']);
+				if((int)$row['pid']===(int)$killer['pid']) $p=&$killer;
+				// 协战者可能代当前玩家击破目标；更新请求内存，避免指令末尾覆盖加时。
+				elseif(isset($GLOBALS['pdata']['pid']) && (int)$row['pid']===(int)$GLOBALS['pdata']['pid']) $p=&$GLOBALS['pdata'];
+				else $p=fetch_playerdata_by_pid($row['pid']);
 				if(!empty($p['clbpara']['dissociation_deadline'])) $p['clbpara']['dissociation_deadline']+=$extra;
 				player_save($p); unset($p);
 			}

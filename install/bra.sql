@@ -12,7 +12,7 @@ CREATE TABLE bra_game (
   `groomownid` char(15) NOT NULL DEFAULT '',
   `starttime` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `winmode` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
-  `winner` char(15) NOT NULL DEFAULT '',
+  `winner` char(40) NOT NULL DEFAULT '',
   `arealist` varchar(255) NOT NULL DEFAULT '',
   `areanum` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `areatime` int(10) UNSIGNED NOT NULL DEFAULT '0',

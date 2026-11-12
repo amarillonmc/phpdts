@@ -882,7 +882,8 @@
 				else $pa['lvlup_log'] = $lvlup_log;
 			}
 		} elseif ($pa['lvl'] >= 255) {
-			$pa['lvl'] = 255;
+			// 历史残响可以预设高于玩家上限的等级，不能在战斗经验结算时降级。
+			if(empty($pa['type'])) $pa['lvl'] = 255;
 			$pa['exp'] = $up_exp_temp;
 		}
 		$upexp = round(($pa['lvl']*$baseexp)+(($pa['lvl']+1)*$baseexp));

@@ -123,7 +123,11 @@ function erc_prepare_one(&$source,&$target)
 	if(erc_has($source,'npc_luck_charge')) {
 		$source['clbpara']['luck_charge'] = min(erc_config('luck_max',80),(int)($source['clbpara']['luck_charge'] ?? 0)+(!empty($source['type']) ? erc_config('luck_charge',20) : (erc_has($source,'npc_lucky_escape') ? 15 : 10)));
 	}
-	if(erc_has($source,'npc_afterimage') && !empty($source['type'])) $source['clbpara']['afterimage']=min(3,($source['clbpara']['afterimage'] ?? 0)+1);
+	if(erc_has($source,'npc_afterimage') && !empty($source['type'])) {
+		$position=(int)($source['pgroup'] ?? 0).':'.(int)$source['pls'];
+		if(isset($source['clbpara']['afterimage_position']) && $source['clbpara']['afterimage_position']!==$position) $source['clbpara']['afterimage']=min(3,($source['clbpara']['afterimage'] ?? 0)+1);
+		$source['clbpara']['afterimage_position']=$position;
+	}
 	if(erc_has($source,'npc_nightmare_domain') && !empty($source['type'])) {
 		$target['clbpara']['nightmare_layers']=min(10,($target['clbpara']['nightmare_layers'] ?? 0)+1);
 		if($target['clbpara']['nightmare_layers'] >= 10) { $target['erc_selfstrike']=1; $target['clbpara']['nightmare_layers']=0; }

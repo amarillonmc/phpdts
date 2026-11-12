@@ -3,6 +3,7 @@
 define('CURSCRIPT', 'valid');
 
 require './include/common.inc.php';
+require_once GAME_ROOT.'./include/game.func.php';
 require_once GAME_ROOT.'./include/talent.func.php';
 require_once GAME_ROOT.'./include/game/race.func.php';
 //require './include/user.func.php';

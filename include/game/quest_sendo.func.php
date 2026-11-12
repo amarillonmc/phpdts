@@ -204,7 +204,7 @@ function sendo_item(&$data,$itmn)
 
 function sendo_command(&$data,$command)
 {
-	global $log,$cmd,$mode,$gamevars,$now;
+	global $log,$cmd,$mode,$gamevars,$now,$plsinfo;
 	if(!ending_routes_enabled() || strpos($command,'sendo')!==0) return false;
 	$mode='command';
 	if($data['pgroup']!=0 || $data['pls']!=34 || empty($data['clbpara']['sendo'])) { $log.='请带着七封请柬，在代码洪流进入动物大排档。<br>'; return true; }
@@ -266,7 +266,7 @@ function sendo_command(&$data,$command)
 	} elseif($command==='sendo_ticket') {
 		if(count($s['done'])===7 && empty($s['ticket'])) { $s['ticket']=1; ending_routes_give($data,array('itm'=>'【湾城通票】','itmk'=>'ticket')); $log.='七封送行已落幕。动物团将湾城通票交给了你。<br>'; }
 	}
-	$sendo_view=sendo_cfg(); $sendo_state=$s; $sendo_world=$gamevars['sendo'];
+	$sendo_view=sendo_cfg(); $sendo_state=$s; $sendo_world=$gamevars['sendo']; $pdata=$data;
 	include template('quest_sendo'); $cmd=ob_get_contents(); ob_clean();
 	return true;
 }

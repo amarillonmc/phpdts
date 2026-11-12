@@ -68,9 +68,15 @@ $a=c24_player(101); $a['wepk']='WD'; $b=c24_player(102); $b['type']=39; $b['clbp
 $db->maptrap=array(); \revcombat\rev_combat_prepare($a,$b,1,'',0);
 c24_assert(count($db->maptrap)>=1 && !empty(get_itmpara($db->maptrap[0]['itmpara'])['phosphorus']),'烬锤实际受击产生带灼伤参数的高热雷');
 
-$a=c24_player(101); $a['wepk']='WD'; $b=c24_player(102); $b['type']=39; $b['clbpara']['skill']=array('npc_afterimage'); $before=$a['weps'];
+$a=c24_player(101); $a['wepk']='WD'; $b=c24_player(102); $b['type']=39; $b['clbpara']['skill']=array('npc_afterimage'); $b['clbpara']['afterimage']=1; $before=$a['weps'];
 \revcombat\rev_combat_prepare($a,$b,1,'',0);
 c24_assert($b['hp']===2000 && $a['weps']===$before-1,'残影使真实攻击落空且照常消耗弹药');
+$b['clbpara']=get_clbpara($b['clbpara']); $b['clbpara']['afterimage']=0;
+\revcombat\rev_combat_prepare($a,$b,1,'',0);
+c24_assert($b['hp']===1900,'原地未出手的瞬刃耗尽残影后，下一次真实交锋不凭空再生残影');
+$b['clbpara']=get_clbpara($b['clbpara']); $b['clbpara']['afterimage']=0; $b['pls']++;
+\revcombat\rev_combat_prepare($a,$b,1,'',0);
+c24_assert($b['hp']===1900,'瞬刃实际移动地点后重新获得一层残影');
 
 $a=c24_player(101); $a['sp']=500; $a['clbpara']['animal_debuff'][1]=5;
 c24_item($a,1,'体力补给','HS',1000,1,''); item_recovery_stamina(1,$a);
@@ -144,5 +150,12 @@ $summoned=addnpc(40,1,1); $kanna=$db->players[$summoned[0]]; $kanna_para=get_clb
 c24_assert($kanna['hp']===303303 && $kanna['sp']===200 && $kanna['money']===55000 && $kanna['rage']===0 && $kanna['pose']===0 && $kanna['tactic']===0 && $kanna['gd']==='f' && $kanna['wk']===100,'神奈经真实 addnpc 保留原版体力、金钱、战术及六系熟练');
 c24_assert($kanna['wep']==='翼人的羽毛' && $kanna['wepk']==='WK' && $kanna['wepe']===500 && $kanna['weps']===500 && $kanna['wepsk']==='' && $kanna['arbe']===50 && $kanna['arbs']===100 && $kanna['arhe']===25 && $kanna['arhs']===100 && $kanna['arae']===25 && $kanna['aras']===100 && $kanna['arfe']===25 && $kanna['arfs']===100 && $kanna['artk']==='AD' && $kanna['arte']===20 && $kanna['arts']===10,'神奈经真实 addnpc 保留原版全身装备和空武器属性');
 c24_assert($kanna['pgroup']===3 && $kanna['horizon']===2 && $kanna_para['er_sub']===1 && in_array('npc_retro_barrier',$kanna_para['skill'],true) && $kanna['icon']==='ending_routes/type40_1.jpg' && $kanna['itm1']==='贯穿型长枪','神奈更换原版数值后保留新路线位置、时光锚定、头像与阶段掉落');
+$kanna['clbpara']=$kanna_para; $target=c24_player(120); $target['pgroup']=3; $target['horizon']=2;
+$test_fixed_damage=100; $test_dice=1;
+\revcombat\rev_combat_prepare($kanna,$target,1,'',0);
+c24_assert($kanna['lvl']===1303 && (int)$db->players[$kanna['pid']]['lvl']===1303,'神奈1303级经过真实攻击经验结算和保存后不降回255');
+$capped=c24_player(121); $capped['lvl']=255; $capped['exp']=99999;
+lvlup_rev($capped,$target,1);
+c24_assert($capped['lvl']===255,'保留神奈原版等级不提高玩家255级上限');
 
 echo "All ending battle integration tests passed.\n";

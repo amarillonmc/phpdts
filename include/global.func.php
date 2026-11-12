@@ -314,10 +314,22 @@ function save_gameinfo()
 
 	if($gamestate > 10)
 	{
-		$result = $db->query("SELECT pid FROM {$tablepre}players WHERE type=0");
-		$validnum = $db->num_rows($result);
-		$result = $db->query("SELECT pid FROM {$tablepre}players WHERE hp>0 AND type=0");
-		$alivenum = $db->num_rows($result);
+		if(function_exists('ending_routes_enabled') && ending_routes_enabled()) {
+			// AI 分体是独立战斗单位，参战人数与存活人数仍按主账号计。
+			$validnum = $alivenum = 0;
+			$result = $db->query("SELECT hp,clbpara FROM {$tablepre}players WHERE type=0");
+			while($row = $db->fetch_array($result)) {
+				$para = get_clbpara($row['clbpara']);
+				if(!empty($para['ai_master'])) continue;
+				$validnum++;
+				if($row['hp']>0) $alivenum++;
+			}
+		} else {
+			$result = $db->query("SELECT pid FROM {$tablepre}players WHERE type=0");
+			$validnum = $db->num_rows($result);
+			$result = $db->query("SELECT pid FROM {$tablepre}players WHERE hp>0 AND type=0");
+			$alivenum = $db->num_rows($result);
+		}
 		$result = $db->query("SELECT pid FROM {$tablepre}players WHERE hp<=0 OR state>=10");
 		$deathnum = $db->num_rows($result);
 		// RuleSet钩子：修正规则集专属单位是否计入全局死亡数。

@@ -21,6 +21,11 @@ function ending_routes_give(&$data,$item) {
 function destory_single_item(&$data,$slot) { foreach(array('itm','itmk','itmsk','itmpara') as $key) $data[$key.$slot]=''; $data['itme'.$slot]=$data['itms'.$slot]=0; }
 function save_gameinfo() { $GLOBALS['saved_talent_gamevars']=json_decode(json_encode($GLOBALS['gamevars'] ?? array()),true); }
 function addnews() {}
+function ruleset_end_achievement_hook($who,$mode,$data) {
+	if(empty($GLOBALS['db']->archive_mode)) return false;
+	$GLOBALS['talent_archive_achievement']=$data;
+	return ending_routes_check_end_achievement($who,$mode,$data);
+}
 
 class TalentRaceResult {
 	public $rows,$index=0;
@@ -29,9 +34,29 @@ class TalentRaceResult {
 class TalentRaceArchiveStop extends RuntimeException {}
 class TalentRaceDb {
 	public $players=array(),$users=array(),$affected=0,$lastid=0,$queries=array(),$account_updates=array(),$end_calls=0;
+	public $archive_mode=false,$archives=array(),$achievement_writes=0;
 	function query($sql,$type='') {
 		$this->queries[]=$sql; $this->affected=0;
-		if(strpos($sql,'SELECT gid FROM')===0) { $this->end_calls++; throw new TalentRaceArchiveStop('Stop before archive writes'); }
+		if(strpos($sql,'SELECT gid FROM')===0) {
+			$this->end_calls++;
+			if($this->archive_mode) return new TalentRaceResult(array());
+			throw new TalentRaceArchiveStop('Stop before archive writes');
+		}
+		if($this->archive_mode && strpos($sql,'SELECT name,type,clbpara FROM')===0) throw new TalentRaceArchiveStop('Stop after archive and ending achievement');
+		if($this->archive_mode && preg_match('/^INSERT INTO .*winners \((.*?)\) VALUES \((.*)\)$/s',$sql,$m)) {
+			$fields=explode(',',str_replace('`','',$m[1])); $values=str_getcsv($m[2],',',"'");
+			$row=array_combine($fields,$values);
+			if(strlen($row['name'])>15) throw new RuntimeException('Winner account does not fit the installed char(15) column');
+			$this->archives[]=$row; return true;
+		}
+		if(preg_match("/^SELECT (motto|achrev) FROM .*users WHERE username=X'([a-f0-9]*)'/",$sql,$m)) {
+			foreach($this->users as $user) if($user['username']===hex2bin($m[2])) return new TalentRaceResult(array(array($m[1]=>$user[$m[1]])));
+			return new TalentRaceResult(array());
+		}
+		if(preg_match("/^UPDATE .*users SET achrev=X'([a-f0-9]*)' WHERE username=X'([a-f0-9]*)'.*=X'([a-f0-9]*)'/",$sql,$m)) {
+			foreach($this->users as &$user) if($user['username']===hex2bin($m[2]) && $user['achrev']===hex2bin($m[3])) { $user['achrev']=hex2bin($m[1]); $this->affected=1; $this->achievement_writes++; }
+			return true;
+		}
 		if(preg_match("/UPDATE .*players SET state='5' where pid='(\d+)'/",$sql,$m)) { $this->players[$m[1]]['state']=5; return true; }
 		if(strpos($sql,'RIGHT JOIN')!==false) {
 			$rows=array();
@@ -60,6 +85,7 @@ class TalentRaceDb {
 		if(strpos($sql,'players')!==false && strpos($sql,'SELECT')===0) {
 			$rows=array_values($this->players);
 			if(preg_match("/name=X'([a-f0-9]*)'/",$sql,$m)) $rows=array_filter($rows,function($row) use($m) { return $row['name']===hex2bin($m[1]); });
+			if(preg_match("/name='([^']*)'/",$sql,$m)) $rows=array_filter($rows,function($row) use($m) { return $row['name']===$m[1]; });
 			if(strpos($sql,'race=5')!==false) $rows=array_filter($rows,function($row) { return $row['race']===5; });
 			if(strpos($sql,'hp>0')!==false) $rows=array_filter($rows,function($row) { return $row['hp']>0; });
 			if(strpos($sql,'pgroup=3')!==false) $rows=array_filter($rows,function($row) { return $row['pgroup']==3; });
@@ -226,4 +252,22 @@ try {
 	talent_test_assert(strpos($rendered,'race_ai_switch')!==false && strpos($rendered,'race_ai_deploy')!==false,'ＡＩ面板包含切换与部署指令');
 	restore_error_handler();
 } finally { foreach($compiled as $file) if(is_file($file)) unlink($file); }
+// 跑过真实 gameover 的优胜 INSERT 和成就挂点，随后停止，避免写测试局新闻文件。
+$db=new TalentRaceDb(); $db->archive_mode=true;
+$archive_owner='LongOwner123'; $archive_body=$archive_owner.'#AI1';
+preg_match_all('/^\s*`?([a-z_][a-z_0-9]*)`?\s+(?:int|tinyint|smallint|mediumint|bigint|char|varchar|text|float|double)/mi',file_get_contents(GAME_ROOT.'./gamedata/sql/players.sql'),$columns);
+$archive_defaults=array_fill_keys($columns[1],0);
+foreach(array(1=>$archive_owner,2=>$archive_body,3=>$archive_owner.'#AI2') as $id=>$bodyname) {
+	$db->players[$id]=array_merge($archive_defaults,array('pid'=>$id,'name'=>$bodyname,'race'=>'5','hp'=>'100','mhp'=>'100','type'=>'0','pgroup'=>'0','lvl'=>'10','teamID'=>'','clbpara'=>$id===1 ? array('ai_active_pid'=>2) : array('ai_master'=>$archive_owner)));
+}
+$db->players[2]['wep']='body-only-snapshot';
+$db->users[1]=array('uid'=>1,'username'=>$archive_owner,'password'=>'test','groupid'=>1,'credits'=>0,'credits2'=>0,'wingames'=>0,'validgames'=>0,'achrev'=>'','motto'=>'test','talentdata'=>'','nicksrev'=>'');
+$gamenum='talent_race_test_no_records'; $gamestate=40; $validnum=1; $hdamage=0; $hplayer=''; $gamevars=array('ending_subroute'=>'jieli_true');
+try { gameover($now,'end7',$archive_body); } catch(TalentRaceArchiveStop $e) {}
+talent_test_assert(strlen($archive_owner)===12 && strlen($archive_body)>15 && count($db->archives)===1 && $db->archives[0]['name']===$archive_owner,'12字节用户名的分体胜者按账号归档，适配char(15)且不截断');
+talent_test_assert($db->archives[0]['wep']==='body-only-snapshot' && $winner===$archive_body && $talent_archive_achievement['name']===$archive_body && $talent_archive_achievement['clbpara']['ai_master']===$archive_owner,'档案保留胜者机体装备，本局winner与结局成就挂点仍收到原机体');
+ending_routes_check_end_achievement($archive_body,7,$talent_archive_achievement);
+talent_test_assert($db->achievement_writes===1 && json_decode($db->users[1]['achrev'],true)[633]['l']===1,'分体结局成就只保存到所属账户一次');
+$pdata=$db->players[2]; $gamblingon=false; set_credits();
+talent_test_assert(count($db->account_updates)===1 && isset($db->account_updates[$archive_owner]) && $db->users[1]['wingames']===1 && $db->users[1]['validgames']===1 && $db->users[1]['credits']>=10000,'多个机体仍只给所属账户一次胜场、参战场与胜者积分');
 echo "Talent/race regression complete.\n";

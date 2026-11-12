@@ -53,3 +53,16 @@ vm.runInContext('String.prototype.parseJSON = function () { return JSON.parse(St
 assert.ok(elements.cmd.innerHTML.includes('战力 520'));
 assert.strictEqual(elements.log.innerHTML, '【整备】补给完成');
 console.log('PASS: 现有 AJAX 刷新实际更新战力面板、指令区和日志');
+
+for (const theme of ['default', 'nouveau']) {
+    delete context.CURSCRIPT;
+    context.document.body = {style: {}};
+    const page = fs.readFileSync(path.join(root, 'templates', theme, 'game.htm'), 'utf8');
+    const boot = Array.from(page.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)).map(match => match[1]).find(script => script.includes('CURSCRIPT'));
+    vm.runInContext(boot || '', context);
+    context.responseBody = JSON.stringify({innerHTML: {cmd: '七封送行', pls: '动物大排档'}, locationId: 34});
+    assert.strictEqual(vm.runInContext('showData(responseBody);', context), true);
+    assert.strictEqual(elements.cmd.innerHTML, '七封送行');
+    assert.strictEqual(context.document.body.style.backgroundImage, "url('img/location/34.jpg')");
+    console.log('PASS: ' + theme + ' 页面初始化后可完整处理地点与指令 AJAX 响应');
+}

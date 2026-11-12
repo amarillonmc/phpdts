@@ -1,4 +1,7 @@
 {template header}
+<script type="text/javascript">
+    var CURSCRIPT = 'game';
+</script>
 <!--{eval $nouveau_map_danger = (!empty($arealist) && isset($areanum)) ? array_slice($arealist, 0, $areanum + 1) : array(); $nouveau_map_warn = (!empty($arealist) && isset($areanum) && isset($areaadd)) ? array_slice($arealist, $areanum + 1, $areaadd) : array();}-->
 <div class="nv-game-workspace" id="nv-game-workspace">
     <div id="notice"></div>

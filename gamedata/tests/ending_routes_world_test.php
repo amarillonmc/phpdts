@@ -211,4 +211,21 @@ world_assert(!empty($runner['clbpara']['sendo']['gentle']['QD3']) && $runner['cl
 $runner['pls']=34; world_command($runner,'sendo_tool_lantern');
 world_assert($runner['clbpara']['sendo']['tools']['lantern']===$gamevars['sendo']['cycle'] && !array_diff($runner['clbpara']['sendo']['lantern_route'],array(7,8,34)),'下周期重领灯会改用当前安全地点，旧路线封闭不会锁死任务');
 
+// cover 指令中击杀者是另取的协战行，当前请求 pdata 仍会在 command.php 末尾保存。
+$db=new WorldDb(); $world_config=array('stage_time_target'=>100,'stage_time_ratio'=>.5); $now=50;
+$gamevars=array('dissociation'=>array('true'=>array('stage'=>0,'stage_at'=>0,'dead'=>array())));
+$pdata=world_player(31); $cover_killer=world_player(32); $observer=world_player(33);
+foreach(array(&$pdata,&$cover_killer,&$observer) as &$participant) {
+	$participant['pid']=(string)$participant['pid']; $participant['pgroup']='3'; $participant['horizon']='2';
+	$participant['clbpara']['dissociation_deadline']=1000; $participant['clbpara']['dissociation_route']='true'; player_save($participant);
+} unset($participant);
+$pdata['money']=399; $pdata['clbpara']['pending_command']=1;
+$extra=world_player(34); $extra['type']='40'; $extra['hp']=0; $extra['clbpara']['dissociation_route']='true'; player_save($extra);
+dissociation_npc_dead($extra,$cover_killer);
+player_save($cover_killer); player_save($pdata);
+world_assert(fetch_playerdata_by_pid(31)['clbpara']['dissociation_deadline']===1025 && fetch_playerdata_by_pid(32)['clbpara']['dissociation_deadline']===1025 && fetch_playerdata_by_pid(33)['clbpara']['dissociation_deadline']===1025,'协战击破Extra后，指令末尾保存不会覆盖请求者、击杀者或旁观入城者的加时');
+world_assert(fetch_playerdata_by_pid(31)['money']===399 && !empty(fetch_playerdata_by_pid(31)['clbpara']['pending_command']),'阶段加时保留当前请求尚未保存的钱财和状态');
+dissociation_npc_dead($extra,$cover_killer); player_save($pdata);
+world_assert(fetch_playerdata_by_pid(31)['clbpara']['dissociation_deadline']===1025,'协战死亡回调重放不会重复加时');
+unset($pdata);
 echo "Ending route world regression complete.\n";
