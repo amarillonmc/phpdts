@@ -10,24 +10,6 @@ function ending_routes_enabled()
 	return true;
 }
 
-function ending_routes_setup()
-{
-	global $plsinfo,$hplsinfo,$areainfo,$horizoninfo,$typeinfo,$stateinfo,$dinfo;
-	if(!ending_routes_enabled()) return;
-	$plsinfo[34] = '代码洪流';
-	$areainfo[34] = '光流在脚边交错，动物大排档的灯火映在奔流的代码里。';
-	$hplsinfo[3] = array(120=>'中央旧城区',121=>'新金融核心区',122=>'西部山区',123=>'港口工业区',124=>'玄武数据公园',125=>'天青大桥',126=>'「下层」地下商业街',127=>'岚江口生态再造区',128=>'寂山书院',129=>'东洲岛');
-	$hplsinfo[4] = array(134=>'英灵殿');
-	$areainfo[134] = '长廊尽头，旧日的武神仍守着那道门。';
-	foreach($hplsinfo[3] as $place=>$label) $areainfo[$place] = $label.'的灯光在投影中摇曳。时空锚定只会维持七十五分钟。';
-	$horizoninfo[2] = '模式ＥＸ';
-	foreach(array(34=>'红杀教头',35=>'善恶投影',36=>'动物团',37=>'动物团投影',38=>'送行事件',39=>'旧红杀教头',40=>'历史残响',41=>'终局守望者',42=>'蒸汽羊') as $key=>$value) $typeinfo[$key]=$value;
-	$stateinfo[61] = '头部破坏致死';
-	$stateinfo[62] = '湾城投影消散';
-	$dinfo[61] = '世界在一瞬间倒转过来。你看见自己的身体倒下，看见自己的视野滚落在地。<br>最后的念头停在半空：啊……原来是我。';
-	$dinfo[62] = '75 分钟的时空锚定归零。湾城的街道在噪波中剥落，你伸出指尖，已化作飞散的代码。<br>黑暗里有人叹息：「看来……你没能走到最后。」';
-}
-
 // 给物品时直接找空槽，满包则放脚下；不能覆盖待拾取物品或漏掉 para。
 function ending_routes_give(&$data,$item)
 {

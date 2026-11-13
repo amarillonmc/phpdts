@@ -132,7 +132,7 @@ class EndingBattleDb extends C24Db {
 }
 $db=new EndingBattleDb(); $anpcinfo=array(); require config('ending_npc');
 require GAME_ROOT.'include/game/ending_routes.func.php';
-$current_ruleset_config=array(); ending_routes_setup();
+$current_ruleset_config=array(); include config('resources');
 $test_fixed_damage=100; $test_dice=1;
 $a=c24_player(101); $a['wepk']='WD'; $b=c24_player(102); $b['type']=34; $b['name']='白凰'; $b['clbpara']['er_sub']=6; $b['hp']=$b['mhp']=10000;
 for($i=0;$i<5;$i++) \revcombat\rev_combat_prepare($a,$b,1,'',0);

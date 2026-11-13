@@ -52,6 +52,7 @@
 ## 配置和 RuleSet
 
 - **`gamedata/cache/` 中有受版本控制的正式配置与资源，不是可随意清空的生成目录。** 某些 `.php` 实际是带访问保护头的逗号分隔资源，由 `openfile()` 等读取；按原有列顺序和格式编辑。
+- 新增 NPC、地图组、视界、死法等内容时，必须同步在实际加载的 `resources_1.php` 注册相关资源；公共内容登记在 `gamedata/cache/resources_1.php`，模式专属内容登记在对应 RuleSet 的资源文件。逐项核对 `$typeinfo`、`$killmsginfo`、`$lwinfo`（含按实际 NPC 名称索引的遗言）、所需 `$npcchat`、`$plsinfo`／`$hplsinfo`／`$areainfo`、`$horizoninfo`、`$stateinfo`／`$dinfo`。不能只在玩法函数或请求初始化中临时追加；应验证资源单独重读后仍完整，功能开关关闭和旧 RuleSet 的原有资源不受影响。
 - `config($file, $cfg)` 在 `include/global.func.php` 中：先找当前 RuleSet 的 `cache/{$file}_{$cfg}.php`，再找该 RuleSet 的版本 1，最后回退公共 `gamedata/cache/` 的对应版本或版本 1。没有自动继承另一个 RuleSet 的机制。
 - 任务等非 `cache` 资源另走 `include/resources.func.php` 的 `get_ruleset_plain_resource_file()` 等读取函数。根目录资源、公共 cache 和 RuleSet 下可能有同名文件，先确认本次实际加载哪份，不批量同步所有副本。
 - RuleSet 注册在 `gamedata/ruleset/ruleset_config.php`；模式逻辑优先从该模式的 `include/ruleset.func.php` 加载，兼容旧 `include/ruleset_functions.php`。沿用现有钩子，遵守参数、返回值和调用时机；只有缺少必要接点时才补公共钩子。

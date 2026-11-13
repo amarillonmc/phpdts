@@ -143,6 +143,11 @@ if(!empty($groomid))
 $tablepre = !empty($groomid) ? $tablepre.'s'.$groomid.'_' : $tablepre;
 
 // 现在$groomid已经设置，可以正确加载RuleSet资源文件
+require config('gamecfg',$gamecfg);
+// 资源中的新路线登记需要先取得当前房间的开关，重读资源时也沿用同一判断。
+include_once GAME_ROOT.'./include/ruleset_override.func.php';
+init_ruleset_override();
+require_once GAME_ROOT.'./include/game/ending_routes.func.php';
 require config('resources',$gamecfg);
 // 幻想世界定制NPC独立使用95号，避免触发已有剧情NPC的专属行为。
 if((int)$groomid === 0) {
@@ -150,7 +155,6 @@ if((int)$groomid === 0) {
 	$killmsginfo[95] = '这也是幻想的一种可能。';
 	$lwinfo[95] = '下次再在梦中相见吧。';
 }
-require config('gamecfg',$gamecfg);
 require config('combatcfg',$gamecfg);
 require config('clubskills',$gamecfg);
 require config('dialogue',$gamecfg);
@@ -164,9 +168,6 @@ require GAME_ROOT.'./gamedata/cache/wheelchair.php';
 if(!isset($titles_list[9302])) require GAME_ROOT.'./gamedata/cache/mianhuping.php';
 require_once GAME_ROOT.'./include/game/wheelchair.func.php';
 
-// 初始化RuleSet覆盖系统
-include_once GAME_ROOT.'./include/ruleset_override.func.php';
-init_ruleset_override();
 // 旧模式与 AN:OTHER 的关闭设置不因共用商城登记而重新启用种火能力。
 if($current_ruleset_config && ($current_ruleset_config['title_system'] ?? 2)<2) {
 	foreach(array(9101,9102,9103,9104,9105,9106) as $fcg_disabled_title) unset($title_valid[$fcg_disabled_title]);
@@ -177,13 +178,11 @@ if($current_ruleset_config && ($current_ruleset_config['title_system'] ?? 2)<2) 
 // 加载RuleSet覆盖函数
 load_ruleset_override_functions();
 
-require_once GAME_ROOT.'./include/game/ending_routes.func.php';
 require_once GAME_ROOT.'./include/game/ending_combat.func.php';
 require_once GAME_ROOT.'./include/game/dissociation.func.php';
 require_once GAME_ROOT.'./include/game/quest_sendo.func.php';
 require_once GAME_ROOT.'./include/talent.func.php';
 require_once GAME_ROOT.'./include/game/race.func.php';
-ending_routes_setup();
 
 // 现在加载system.func.php
 require GAME_ROOT.'./include/system.func.php';

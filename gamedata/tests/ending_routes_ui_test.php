@@ -23,8 +23,7 @@ try {
 	foreach(array('command','profile','quest_sendo','ending_routes_status','ending_routes_story','ending_story','sp_shop','user_talent') as $file) token_get_all(file_get_contents(template($file)),TOKEN_PARSE);
 	foreach(array('command','profile') as $file) token_get_all(file_get_contents(template($file,0,'templates/nouveau')),TOKEN_PARSE);
 	ui_check(true,'默认与 nouveau 的十个相关模板通过真实编译器');
-	$plsinfo=array(); foreach(range(0,34) as $i) $plsinfo[$i]='地点'.$i;
-	$hplsinfo=$areainfo=$horizoninfo=$typeinfo=$dinfo=array(); ending_routes_setup();
+	include GAME_ROOT.'gamedata/cache/resources_1.php';
 	include GAME_ROOT.'gamedata/questcfg_1.php';
 	$sendo_view=array_intersect_key($questcfg,array_flip(array('QD1','QD2','QD3','QD4','QD5','QD6','QD7')));
 	$sendo_state=array('done'=>array('QD6'=>1),'gentle'=>array(),'batteries'=>1,'lantern_route'=>array(1,2,3,34),'lantern_step'=>1);
