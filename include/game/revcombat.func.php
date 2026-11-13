@@ -728,7 +728,12 @@ namespace revcombat
 		//怒气结算
 		rgup_rev($pa,$pd,$active);
 		//计算武器损耗
-		if(!empty($pa['wep_imp_times'])) weapon_loss($pa,$pa['wep_imp_times']);
+		if(!empty($pa['wep_imp_times'])) {
+			$loss = $pa['wep_imp_times'];
+			$care = function_exists('talent_bonus') ? \talent_bonus($pa,'weapon_care') : 0;
+			if($care && $pa['weps'] !== $nosta && diceroll(99)<$care) $loss=max(0,$loss-1);
+			weapon_loss($pa,$loss);
+		}
 		if(function_exists('check_swordmaster_rp')) check_swordmaster_rp($pa);
 		//发出声音
 		addnoise ( $pa['wep_kind'], $pa['wepsk'], $now, $pa['pls'], $pa['pid'], $pd['pid'], $pa['wep_kind'] );

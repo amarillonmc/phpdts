@@ -158,4 +158,106 @@ $capped=c24_player(121); $capped['lvl']=255; $capped['exp']=99999;
 lvlup_rev($capped,$target,1);
 c24_assert($capped['lvl']===255,'保留神奈原版等级不提高玩家255级上限');
 
+// 天赋小节点：沿用真实入场、行动、恢复、攻击和尸体结算函数。
+$gamevars=array(); $current_ruleset_config=array(); $ending_routes_v2=1; $club_skills=1;
+$talent=talent_load(''); $talent['bought_points']=80;
+foreach(talent_catalog() as $tree=>$definition) for($node=0;$node<4;$node++) talent_change($talent,'learn',$tree,$node);
+$a=c24_player(201); c24_item($a,1,'面包','HH',120,15,''); c24_item($a,2,'矿泉水','HS',140,15,'');
+$a['itmpara1']=array('entry_marker'=>1);
+talent_entry($a,array('talentdata'=>$talent),0);
+c24_assert(talent_cost($talent)===80 && talent_bonus($a,'action_sp')===3 && talent_bonus($a,'weapon_care')===30 && talent_bonus($a,'kill_sp')===9 && talent_bonus($a,'corpse_money')===20 && talent_bonus($a,'rest_recovery')===30,'16 树中段按原成本投入，各类小天赋加法叠加且不要求佩戴头衔');
+c24_assert($a['itms1']===30 && $a['itms2']===30 && $a['itme1']===120 && $a['itmpara1']===array('entry_marker'=>1),'备粮叠加入场食物与饮料各15份，不改效果或参数');
+player_save($a); $a=fetch_playerdata_by_pid(201);
+c24_assert(talent_bonus($a,'rest_recovery')===30 && $a['itms1']===30,'补给数量和当前天赋快照保存、重读后保留');
+$b=c24_player(202); talent_entry($b,array('talentdata'=>$talent),0);
+c24_assert($b['itm1']==='面包' && $b['itms1']===15 && $b['itm2']==='矿泉水' && $b['itms2']===15,'特殊入场没有原补给时补普通面包与水');
+$c=c24_player(203); for($i=1;$i<=6;$i++) c24_item($c,$i);
+$db->mapitem=array(); talent_entry($c,array('talentdata'=>$talent),0);
+c24_assert(count($db->mapitem)===2 && $c['itm1']==='测试装备' && $db->mapitem[0]['itms']===15,'特殊满包入场按已有给物规则放脚下，不覆盖其他物品');
+$unlimited=c24_player(204); c24_item($unlimited,1,'面包','HH',120,$nosta,''); c24_item($unlimited,2,'矿泉水','HS',140,$nosta,'');
+talent_entry($unlimited,array('talentdata'=>$talent),0);
+c24_assert($unlimited['itms1']===$nosta && $unlimited['itms2']===$nosta,'无限数量补给保持无限，不转换为整数');
+talent_change($talent,'reset'); $b=c24_player(202); talent_entry($b,array('talentdata'=>$talent),0);
+c24_assert(talent_bonus($b,'rest_recovery')===0 && !$b['itms1'] && count($talent['unlocked_skills'])===16,'洗点后的入场不再发小节点收益，永久技能照常保留');
+
+$movesp=15; $movehp=2; $inf_move_sp=array();
+foreach(array('move','search') as $act) {
+	$a=c24_player(201); $a['clbpara']['talent_bonus']=array('action_sp'=>1);
+	calc_move_search_sp_cost($a,$act);
+	c24_assert($a['sp']===986,'轻装单节点使实际'.$act.'从15体力降为14');
+	$a=c24_player(201); $a['clbpara']['talent_bonus']=array('action_sp'=>3); calc_move_search_sp_cost($a,$act);
+	c24_assert($a['sp']===988,'轻装三树叠加后实际'.$act.'消耗12体力');
+}
+$a=c24_player(201,6); $a['lvl']=20; $a['clbpara']['talent_bonus']=array('action_sp'=>3); calc_move_search_sp_cost($a,'search');
+c24_assert($a['sp']===999,'轻装与宛如疾风叠加仍至少消耗1体力');
+$a=c24_player(201); $a['clbpara']['talent_bonus']=array('action_sp'=>3); severe_apply($a,'lower'); calc_move_search_sp_cost($a,'move');
+c24_assert($a['sp']===200,'轻装不能降低下肢破坏的八成固定体力支出');
+
+$heal_time=6; $sleep_time=3; $rage_time=6;
+$a=c24_player(201); $a['pose']=0; $a['clbpara']['talent_bonus']=array('rest_recovery'=>15);
+c24_assert(calculate_rest_uphp(60,$a)===230.0 && calculate_rest_upsp(60,$a)===230.0 && $heal_time===6 && $sleep_time===3,'调息每时间单位恢复量增加15%，不改两个恢复周期');
+$a['clbpara']['talent_bonus']['rest_recovery']=30;
+c24_assert(calculate_rest_uphp(60,$a)===260.0 && calculate_rest_upsp(60,$a)===260.0,'两棵调息加法叠加为30%');
+$heal_time=$sleep_time=1;
+c24_assert(calculate_rest_uphp(1,$a)===26.0 && calculate_rest_upsp(1,$a)===13.0,'恢复周期已是1秒时调息仍增加实际恢复量');
+c24_assert(talent_rest_required($a,180)===180,'调息不改变恶伤、诅咒的自然静养时限');
+$a['hp']=100; $a['sp']=100; $a['state']=3; $a['endtime']=$now-10;
+rest('rest',$a); c24_assert($a['hp']===360.0 && $a['sp']===230.0,'静养实际恢复生命、体力且使用当前投入快照');
+$before_rest=array($a['hp'],$a['sp']); rest('rest',$a);
+c24_assert(array($a['hp'],$a['sp'])===$before_rest,'同一时间重复刷新静养不重复恢复');
+$a['hp']=$a['mhp']-1; $a['sp']=$a['msp']-1; $a['endtime']=$now-10; rest('rest',$a);
+c24_assert($a['hp']===$a['mhp'] && $a['sp']===$a['msp'],'调息结算仍受生命、体力上限约束');
+
+$test_fixed_damage=100;
+foreach(array(9=>30,10=>29) as $roll=>$ammo) {
+	$test_dice=$roll; $a=c24_player(201); $a['clbpara']['talent_bonus']=array('weapon_care'=>10); $b=c24_player(202); $b['type']=38;
+	\revcombat\rev_combat_prepare($a,$b,1,'',0);
+	c24_assert($a['weps']===$ammo,'养护真实普通攻击在骰值'.$roll.'时'.($roll===9 ? '节省' : '正常消耗').'一发弹药');
+}
+$test_dice=9; $a=c24_player(201); $a['clbpara']['talent_bonus']=array('weapon_care'=>30); $a['wepk']='WK'; $a['weps']=$nosta; $b=c24_player(202); $b['type']=38;
+\revcombat\rev_combat_prepare($a,$b,1,'',0);
+c24_assert($a['wepe']<80,'无限耐久武器照常损耗攻击力，不受养护减免');
+$a=c24_player(201); $a['wep_kind']='G'; $a['clbpara']['talent_bonus']=array('weapon_care'=>30); weapon_loss($a,2);
+c24_assert($a['weps']===28,'直接损坏武器的效果不走普通攻击养护');
+
+$test_dice=1; $a=c24_player(201); $a['sp']=500; $a['clbpara']['talent_bonus']=array('kill_sp'=>3); $b=c24_player(202); $b['type']=38; $b['hp']=50;
+\revcombat\rev_combat_prepare($a,$b,1,'',0);
+c24_assert($b['hp']<=0 && $a['sp']===530,'真实击破NPC后续战恢复3%体力上限');
+player_save($a); $a=fetch_playerdata_by_pid(201); $b=fetch_playerdata_by_pid(202); erc_final_death($a,$b);
+c24_assert($a['sp']===530,'保存重读后重复死亡回调不重复触发续战');
+$a=c24_player(201); $a['sp']=500; $a['clbpara']['talent_bonus']=array('kill_sp'=>9); $b=c24_player(202); $b['type']=38; $b['hp']=0; erc_final_death($a,$b);
+c24_assert($a['sp']===590,'续战三树叠加恢复9%体力上限');
+$a['sp']=990; $b=c24_player(202); $b['type']=38; $b['hp']=0; erc_final_death($a,$b);
+c24_assert($a['sp']===1000,'续战不能超过体力上限');
+$a['sp']=950; $a['clbpara']['animal_debuff'][1]=2; $b=c24_player(202); $b['type']=38; $b['hp']=0; erc_final_death($a,$b);
+c24_assert($a['sp']===920,'续战保留熬战的有效体力上限');
+$a=c24_player(201); $a['sp']=500; $a['clbpara']['talent_bonus']=array('kill_sp'=>3); $b=c24_player(202); $b['hp']=0; erc_final_death($a,$b);
+c24_assert($a['sp']===500,'击破玩家不触发续战');
+$a['hp']=0; $b=c24_player(202); $b['type']=38; $b['hp']=0; erc_final_death($a,$b);
+c24_assert($a['sp']===500,'击杀者已经死亡时不触发续战');
+$a=c24_player(201); $a['sp']=500; $a['clbpara']['talent_bonus']=array('kill_sp'=>3); $b=c24_player(202); $b['type']=38; $b['hp']=50; $test_revival=true;
+\revcombat\rev_combat_prepare($a,$b,1,'',0); $test_revival=false;
+c24_assert($b['hp']>0 && $a['sp']===500,'NPC复活成功不能触发续战');
+
+$a=c24_player(201); $a['money']=0; $a['action']='corpse'; $a['bid']=202; $a['clbpara']['talent_bonus']=array('corpse_money'=>10);
+$b=c24_player(202); $b['hp']=0; $b['type']=38; $b['money']=99; player_save($b); getcorpse('money',$a); player_save($a);
+c24_assert($a['money']===108 && fetch_playerdata_by_pid(202)['money']===0,'盘缠在实际NPC尸体拾钱时额外获得10%，小数向下取整并清空尸体金钱');
+$a=fetch_playerdata_by_pid(201); $a['action']='corpse'; $a['bid']=202; getcorpse('money',$a);
+c24_assert($a['money']===108,'重读后再次搜同一尸体不重复获得盘缠');
+$a['action']='corpse'; $a['bid']=202; $a['clbpara']['talent_bonus']['corpse_money']=20; $b['money']=100; player_save($b); getcorpse('money',$a);
+c24_assert($a['money']===228,'两树盘缠叠加为20%');
+$a['action']='corpse'; $a['bid']=202; $b['type']=0; $b['money']=100; player_save($b); getcorpse('money',$a);
+c24_assert($a['money']===328,'玩家尸体只获得原有金钱');
+
+$ending_routes_v2=0; $a=c24_player(201); $a['clbpara']['talent_bonus']=array('rest_recovery'=>30,'action_sp'=>3,'weapon_care'=>30,'corpse_money'=>20,'kill_sp'=>9); $a['pose']=0;
+c24_assert(calculate_rest_uphp(1,$a)===20.0 && calculate_rest_upsp(1,$a)===10.0,'功能关闭后旧快照不改变恢复量');
+calc_move_search_sp_cost($a,'search'); c24_assert($a['sp']===985,'功能关闭后旧快照不改变探索消耗');
+$a['action']='corpse'; $a['bid']=202; $a['money']=0; $b['type']=38; $b['money']=100; player_save($b); getcorpse('money',$a);
+c24_assert($a['money']===100,'功能关闭后旧快照不增加尸体金钱');
+$a=c24_player(201); $a['clbpara']['talent_bonus']=array('weapon_care'=>30,'kill_sp'=>9); $a['sp']=500; $b=c24_player(202); $b['type']=38; $b['hp']=50;
+\revcombat\rev_combat_prepare($a,$b,1,'',0);
+c24_assert($a['weps']===29 && $a['sp']===500,'功能关闭后旧快照不触发养护与续战');
+$ending_routes_v2=1; $a['type']=38;
+c24_assert(talent_bonus($a,'weapon_care')===0 && talent_bonus($a,'kill_sp')===0,'NPC不享受玩家小天赋');
+
 echo "All ending battle integration tests passed.\n";

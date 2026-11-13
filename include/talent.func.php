@@ -7,6 +7,13 @@ function talent_enabled()
 	return function_exists('ending_routes_enabled') && ending_routes_enabled() && (!isset($club_skills) || $club_skills != 0);
 }
 
+function talent_bonus($data,$key)
+{
+	if(!talent_enabled() || !empty($data['type'])) return 0;
+	$para = get_clbpara($data['clbpara'] ?? '');
+	return max(0,(int)($para['talent_bonus'][$key] ?? 0));
+}
+
 function talent_catalog()
 {
 	static $trees;
@@ -166,6 +173,17 @@ function talent_entry(&$data,$account,$race)
 	// 只补本次增加的容量，保留其他头衔刻意设置的残血入场状态。
 	$data['hp'] = min($data['mhp'],$data['hp']+($bonus['mhp'] ?? 0));
 	$data['sp'] = min($data['msp'],$data['sp']+($bonus['msp'] ?? 0));
+	// 先叠加入场已有的食物、饮料，保留其效果与附加信息；没有对应补给时补普通面包或水。
+	foreach(array('supply_food'=>'HH','supply_drink'=>'HS') as $key=>$kind) {
+		$amount = (int)($bonus[$key] ?? 0);
+		if($amount<=0) continue;
+		$found = false;
+		for($i=1;$i<=6;$i++) if(($data['itmk'.$i] ?? '')===$kind && !empty($data['itms'.$i])) {
+			if($data['itms'.$i] !== $GLOBALS['nosta']) $data['itms'.$i] += $amount;
+			$found = true; break;
+		}
+		if(!$found) ending_routes_give($data,array('itm'=>$kind==='HH' ? '面包' : '矿泉水','itmk'=>$kind,'itme'=>$kind==='HH' ? 120 : 140,'itms'=>$amount));
+	}
 	if($race === 2) {
 		$elements = array('炎','霜','雷','鸣','毒');
 		$data['arb'] = '妖精羽翼·'.$elements[array_rand($elements)]; $data['arbk'] = 'DB'; $data['arbe'] = 50; $data['arbs'] = '∞'; $data['arbsk'] = ''; $data['arbpara'] = '';

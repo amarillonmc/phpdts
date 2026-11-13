@@ -352,6 +352,8 @@ if($mode == 'enter') {
 		else $ndata[$key] = '';
 	}
 
+	// 天赋备粮先加入入场物品，随后需要寄存的头衔将连同这部分补给一起寄存。
+	talent_entry($ndata,$udata,$selected_race);
 	# 初始化套装信息
 	$wheelchair_depot_items = wheelchair_entry($ndata,$llm_assist);
 	$wheelchair_entry_text = $ndata['clbpara']['wheelchair']['entry_notice'] ?? '';
@@ -363,7 +365,6 @@ if($mode == 'enter') {
 	# 初始化称号技能
 	if($ndata['club']) updateskill($ndata);
 	fcg_skills_initialize($ndata,$udata);
-	talent_entry($ndata,$udata,$selected_race);
 
 	$ndata = player_format_with_db_structure($ndata);
 	if(!empty($ndata)) {

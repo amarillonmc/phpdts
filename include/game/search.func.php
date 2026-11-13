@@ -285,6 +285,7 @@ function calc_move_search_sp_cost(&$data,$act)
 	$flag = 0;
 	# 移动&探索的消耗基数
 	$costsp = $movesp;
+	if(function_exists('talent_bonus') && talent_bonus($data,'action_sp')) $costsp=max(1,$costsp-talent_bonus($data,'action_sp'));
 	# 代偿移动&探索的消耗系数
 	$costspr = $movehp;
 

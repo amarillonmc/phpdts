@@ -1100,7 +1100,8 @@
 
 		# 治疗姿态下恢复速率变为3倍
 		if($pa['pose'] == 5) $rtime *= 3;
-		$upsp = round ($pa['msp'] * $rtime / $sleep_time / 100 );
+		$recovery_bonus = function_exists('talent_bonus') ? talent_bonus($pa,'rest_recovery') : 0;
+		$upsp = round ($pa['msp'] * $rtime / $sleep_time / 100 * (1+$recovery_bonus/100) );
 
 		# 灵子视界下，恢复速率受种火数量加成
 		if($pa['horizon']==1 && $pa['sp'] < $pa['msp'])
@@ -1121,7 +1122,8 @@
 		if(function_exists('dissociation_rest_bonus')) $rtime+=dissociation_rest_bonus($pa,$rtime);
 		# 治疗姿态下恢复速率变为3倍
 		if($pa['pose'] == 5) $rtime *= 3;
-		$uphp = round ($pa['mhp'] * $rtime / $heal_time / 100 );
+		$recovery_bonus = function_exists('talent_bonus') ? talent_bonus($pa,'rest_recovery') : 0;
+		$uphp = round ($pa['mhp'] * $rtime / $heal_time / 100 * (1+$recovery_bonus/100) );
 
 		# 灵子视界下，恢复速率受种火数量加成
 		if($pa['horizon']==1 && $pa['hp'] < $pa['mhp'])

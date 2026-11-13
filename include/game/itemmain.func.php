@@ -1609,8 +1609,11 @@ function getcorpse($item,&$data=NULL)
 		$edata['itm'.$itmn] = $edata['itmk'.$itmn] = $edata['itmsk'.$itmn] = $edata['itmpara'.$itmn] = '';
 		$edata['itme'.$itmn] = $edata['itms'.$itmn] = 0;
 	} elseif($item == 'money') {
-		$money += $edata['money'];
-		$log .= '获得了金钱 <span class="yellow">'.$edata['money'].'</span>。<br>';
+		$loot_money = $edata['money'];
+		$extra_money = !empty($edata['type']) && function_exists('talent_bonus') ? (int)floor($loot_money*talent_bonus($data,'corpse_money')/100) : 0;
+		$money += $loot_money+$extra_money;
+		$log .= '获得了金钱 <span class="yellow">'.$loot_money.'</span>。<br>';
+		if($extra_money>0) $log .= '<span class="lime">「盘缠」额外获得了 '.$extra_money.' 金钱。</span><br>';
 		$edata['money'] = 0;
 		player_save($edata);
 		$action = ''; $bid = 0;

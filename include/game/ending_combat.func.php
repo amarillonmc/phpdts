@@ -661,6 +661,14 @@ function erc_final_death(&$killer,&$victim)
 		}
 	}
 	if(erc_has($victim,'npc_dimension_theft')) erc_return_stolen($victim,$killer);
+	// 最终死亡标记拦住重复结算；复活、玩家死亡和死亡的击杀者都不触发续战。
+	$kill_sp = function_exists('talent_bonus') ? talent_bonus($killer,'kill_sp') : 0;
+	if($kill_sp && !empty($victim['type']) && $killer['hp']>0) {
+		$before_sp = $killer['sp'];
+		$killer['sp'] = min($killer['msp'],$killer['sp']+(int)round($killer['msp']*$kill_sp/100));
+		erc_cap_sp($killer);
+		if($killer['sp']>$before_sp) $GLOBALS['log'].='<span class="lime">「续战」恢复了 '.($killer['sp']-$before_sp).' 点体力。</span><br>';
+	}
 	if(empty($killer['type']) && erc_has($killer,'npc_dimension_theft') && erc_pay($killer,40,35)) {
 		$empty=''; for($i=1;$i<=6;$i++) if(empty($killer['itms'.$i])) { $empty='itm'.$i; break; }
 		$slots=array();
