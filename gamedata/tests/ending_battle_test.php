@@ -260,4 +260,16 @@ c24_assert($a['weps']===29 && $a['sp']===500,'功能关闭后旧快照不触发�
 $ending_routes_v2=1; $a['type']=38;
 c24_assert(talent_bonus($a,'weapon_care')===0 && talent_bonus($a,'kill_sp')===0,'NPC不享受玩家小天赋');
 
+$a=c24_player(101); $b=c24_player(102); $a['pls']=$b['pls']=34; $b['type']=36;
+c24_assert(!ending_routes_encounter_allowed($a,$b),'代码洪流探索不能遇到普通动物团');
+$before_a=$a; $before_b=$b;
+\revcombat\rev_combat_prepare($a,$b,1,'',0);
+\revcombat\rev_combat_prepare($b,$a,1,'',0);
+c24_assert($a===$before_a && $b===$before_b,'直接进入战斗也不能让普通动物团攻击或受击');
+$b['type']=37;
+c24_assert(ending_routes_encounter_allowed($a,$b),'战斗版动物团仍可正常遇敌');
+$ending_routes_v2=0; $b['type']=36;
+c24_assert(ending_routes_encounter_allowed($a,$b),'关闭新路线时不增加动物团遇敌限制');
+$ending_routes_v2=1;
+
 echo "All ending battle integration tests passed.\n";

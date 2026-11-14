@@ -28,7 +28,52 @@ function sendo_spawn($sub,$qid,$place,$extra=array())
 	return addnpc(38,$sub,1,0,$extra);
 }
 
-function sendo_start_cycle()
+// 复用开局的七名成员。个人完成不撤走其他参与者仍需要的保护对象。
+function sendo_sync_hubs($current=NULL,$finish=false)
+{
+	global $db,$tablepre,$gamevars,$now;
+	$w=&$gamevars['sendo']; $needed=array(); $bait=false;
+	if(!$finish) {
+		$players=array();
+		$res=$db->query("SELECT pid,clbpara FROM {$tablepre}players WHERE type=0 AND hp>0");
+		while($row=$db->fetch_array($res)) if(!$current || (int)$row['pid']!==(int)$current['pid']) $players[]=get_clbpara($row['clbpara']);
+		if($current && $current['hp']>0) $players[]=get_clbpara($current['clbpara']);
+		foreach($players as $para) {
+			$s=$para['sendo'] ?? array();
+			if(!$s) continue;
+			foreach(array('QD2','QD4','QD7') as $qid) if(empty($s['done'][$qid]) && ($s['reset_cycle'][$qid] ?? 0)<$w['cycle']) {
+				$needed[$qid]=true;
+				if($qid==='QD4' && !empty($s['bait'])) $bait=true;
+			}
+		}
+	}
+	$hunter_alive=false;
+	if($bait) {
+		$res=$db->query("SELECT clbpara FROM {$tablepre}players WHERE type=38 AND hp>0");
+		while($row=$db->fetch_array($res)) {
+			$p=get_clbpara($row['clbpara']);
+			if(($p['sendo_qid'] ?? '')==='QD4' && ($p['sendo_cycle'] ?? 0)===$w['cycle']) $hunter_alive=true;
+		}
+	}
+	$res=$db->query("SELECT pid FROM {$tablepre}players WHERE type=36");
+	while($row=$db->fetch_array($res)) {
+		$npc=fetch_playerdata_by_pid($row['pid']); $sub=(int)($npc['clbpara']['er_sub'] ?? -1); $place=34; $on_task=false;
+		if($sub===1) {
+			$w['dante']=(int)$npc['pid'];
+			if(!empty($needed['QD2']) && empty($w['dante_lost'])) { $place=$w['points'][1]; $on_task=true; }
+		} elseif($sub===3 && $hunter_alive) { $place=$w['points'][3]; $on_task=true; }
+		elseif($sub===6 && !empty($needed['QD7']) && $now<$w['bye_end']) { $place=$w['bye']; $on_task=true; }
+		if((int)$npc['pls']===(int)$place && $npc['hp']>0 && ($on_task || ((int)$npc['hp']===(int)$npc['mhp'] && empty($npc['state'])))) continue;
+		$npc['pls']=$place; $npc['pgroup']=0; $npc['bid']=0; $npc['action']='';
+		if(!$on_task) {
+			$npc['hp']=$npc['mhp']; $npc['sp']=$npc['msp']; $npc['state']=0;
+			$npc['pose']=7; $npc['rage']=0; $npc['inf']='';
+		}
+		player_save($npc);
+	}
+}
+
+function sendo_start_cycle($current=NULL)
 {
 	global $gamevars,$now,$db,$tablepre,$arealist,$areanum,$areatime,$areaadd;
 	$safe=array_values(array_diff(array_slice($arealist,$areanum+1),array(0,32,33,34)));
@@ -47,11 +92,7 @@ function sendo_start_cycle()
 	sendo_spawn(2,'QD3',$points[2]);
 	sendo_spawn(3,'QD4',$points[3],array('clbpara'=>array('sendo_hidden'=>60)));
 	for($i=0;$i<3;$i++) sendo_spawn(4,'QD5',$points[4]);
-	for($i=0;$i<7;$i++) {
-		$place=$i===1 ? $points[1] : ($i===6 ? $bye : 34);
-		$ids=addnpc(36,$i,1,0,array('pls'=>$place,'pgroup'=>0,'clbpara'=>array('sendo_hub'=>1,'er_sub'=>$i,'sendo_cycle'=>$cycle)));
-		if($i===1) $w['dante']=$ids[0] ?? 0;
-	}
+	sendo_sync_hubs($current);
 	foreach($safe as $place) $db->array_insert($tablepre.'mapitem',array('itm'=>'备用电池','itmk'=>'B','itme'=>1,'itms'=>1,'itmsk'=>'','itmpara'=>'','pls'=>$place));
 	save_gameinfo();
 }
@@ -60,20 +101,22 @@ function sendo_tick(&$current=NULL)
 {
 	global $gamevars,$now,$db,$tablepre,$log;
 	if(!ending_routes_enabled() || empty($gamevars['sendo_open'])) return;
-	if(empty($gamevars['sendo'])) sendo_start_cycle();
+	if(empty($gamevars['sendo'])) sendo_start_cycle($current);
 	$w=&$gamevars['sendo'];
 	$steps=min(6,(int)floor((min($now,$w['end'])-($w['threat_at'] ?? $now))/30));
 	if($steps>0) {
 		$w['threat_at']+=30*$steps;
 		foreach(array('QD1','QD2') as $qid) {
+			if($qid==='QD2' && !empty($w['dante_lost'])) continue;
 			$place=(int)$w['points'][$qid==='QD1'?0:1];
 			$targets=$qid==='QD1' ? $w['geese'] : array($w['dante']);
 			$enemies=$db->query("SELECT pid FROM {$tablepre}players WHERE type=38 AND hp>0 AND pls=$place");
 			$pressure=0;
 			while($row=$db->fetch_array($enemies)) { $enemy=fetch_playerdata_by_pid($row['pid']); if(($enemy['clbpara']['sendo_qid'] ?? '')===$qid && ($enemy['clbpara']['sendo_role'] ?? '')!=='goose') $pressure++; }
 			if($pressure) foreach($targets as $target) {
-				$npc=fetch_playerdata_by_pid($target); if(!$npc || $npc['hp']<=0) continue;
+				$npc=fetch_playerdata_by_pid($target); if(!$npc || $npc['hp']<=0 || (int)$npc['pls']!==$place) continue;
 				$npc['hp']=max(0,$npc['hp']-$steps*$pressure*150); if(!$npc['hp']) { $npc['state']=13; if($qid==='QD1') $w['goose_lost']=1; }
+				if(!$npc['hp'] && $qid==='QD2') $w['dante_lost']=1;
 				player_save($npc);
 			}
 		}
@@ -90,7 +133,7 @@ function sendo_tick(&$current=NULL)
 				$personal=&$p['clbpara']['sendo'];
 				if(($personal['guard_cycle'] ?? 0)===$w['cycle']) {
 					$dante=fetch_playerdata_by_pid($w['dante']);
-					$gentle=$dante && $dante['hp']>0 && ($personal['guard_kills'] ?? 0)>=2 && (int)$p['pgroup']===0 && (int)$p['pls']===(int)$w['points'][1] && $w['end']-($personal['guard_start'] ?? $w['end'])>=150;
+					$gentle=empty($personal['done']['QD2']) && empty($w['dante_lost']) && $dante && $dante['hp']>0 && (int)$dante['pls']===(int)$w['points'][1] && ($personal['guard_kills'] ?? 0)>=2 && (int)$p['pgroup']===0 && (int)$p['pls']===(int)$w['points'][1] && $w['end']-($personal['guard_start'] ?? $w['end'])>=150;
 					if($gentle) sendo_complete($p,'QD2',true);
 				}
 				if(empty($personal['done']['QD7']) && $now>=$w['bye_end']) sendo_complete($p,'QD7',false);
@@ -98,8 +141,8 @@ function sendo_tick(&$current=NULL)
 			if(!$is_current) { player_save($p); $log=$oldlog; }
 			unset($p,$personal);
 		}
-		$db->query("DELETE FROM {$tablepre}players WHERE type=36");
-		sendo_start_cycle();
+		sendo_sync_hubs($current,true);
+		sendo_start_cycle($current);
 	}
 	$wave=min(3,1+(int)floor(($now-$w['start'])/45));
 	while($w['wave']<$wave) {
@@ -110,6 +153,7 @@ function sendo_tick(&$current=NULL)
 		}
 		save_gameinfo();
 	}
+	sendo_sync_hubs($current);
 }
 
 function sendo_action(&$data,$act)
@@ -133,10 +177,11 @@ function sendo_action(&$data,$act)
 			if($next+1===count($s['lantern_route'])) sendo_complete($data,'QD5',empty($s['lantern_broken']));
 		}
 	}
-	if($act==='search' && (int)$data['pls']===(int)$w['bye'] && $now<$w['bye_end'] && empty($s['gentle']['QD7'])) {
+	if($act==='search' && (int)$data['pls']===(int)$w['bye'] && $now<$w['bye_end'] && empty($s['done']['QD7'])) {
 		$data['clbpara']['dialogue']='sendo_goodbye';
 		sendo_complete($data,'QD7',true);
 	}
+	sendo_sync_hubs($data);
 }
 
 function sendo_npc_dead(&$victim,&$killer)
@@ -266,7 +311,39 @@ function sendo_command(&$data,$command)
 	} elseif($command==='sendo_ticket') {
 		if(count($s['done'])===7 && empty($s['ticket'])) { $s['ticket']=1; ending_routes_give($data,array('itm'=>'【湾城通票】','itmk'=>'ticket')); $log.='七封送行已落幕。动物团将湾城通票交给了你。<br>'; }
 	}
+	sendo_sync_hubs($data);
 	$sendo_view=sendo_cfg(); $sendo_state=$s; $sendo_world=$gamevars['sendo']; $pdata=$data;
 	include template('quest_sendo'); $cmd=ob_get_contents(); ob_clean();
 	return true;
+}
+
+// 只为页面派生追踪信息，不把公共任务复制进私人 quest.active 或持久化显示文本。
+function sendo_tracking($data)
+{
+	global $gamevars,$now,$plsinfo;
+	$s=$data['clbpara']['sendo'] ?? array(); $w=$gamevars['sendo'] ?? array();
+	if(!ending_routes_enabled() || !$s || !$w) return array();
+	$tasks=array();
+	foreach(sendo_cfg() as $qid=>$cfg) {
+		$status=!empty($s['gentle'][$qid]) ? '温柔完成' : (!empty($s['done'][$qid]) ? '普通完成' : '进行中');
+		$waiting=($s['reset_cycle'][$qid] ?? 0)>=$w['cycle'];
+		if($waiting) $status='下轮重做';
+		$desc=$cfg['desc']; $progress='';
+		$index=(int)substr($qid,2)-1;
+		if($index<5) $desc.=' 本轮地点：'.($plsinfo[$w['points'][$index]] ?? '未知地点').'。';
+		if($qid==='QD2') {
+			$same_cycle=($s['guard_cycle'] ?? 0)===$w['cycle'] && !$waiting;
+			$seconds=$same_cycle && isset($s['guard_start']) ? max(0,min($now,$w['end'])-$s['guard_start']) : 0;
+			$progress='驻守 '.min(150,$seconds).'/150 秒；击破 '.($same_cycle ? (int)($s['guard_kills'] ?? 0) : 0).'/2';
+			if(!empty($w['dante_lost'])) $desc.=' Dante 已退回大排档，温柔送行须等下轮。';
+		} elseif($qid==='QD4') $progress=!empty($s['bait']) ? '已选择诱饵' : (!empty($s['located']) ? '已定位猎手' : '尚未定位猎手');
+		elseif($qid==='QD5' && !empty($s['lantern_route'])) {
+			$step=(int)($s['lantern_step'] ?? 0); $progress='护送 '.$step.'/'.count($s['lantern_route']);
+			if(isset($s['lantern_route'][$step])) $desc.=' 下一检查点：'.($plsinfo[$s['lantern_route'][$step]] ?? '未知地点').'。';
+			if(!empty($s['lantern_broken'])) $desc.=' 引路灯已损坏或未装备，温柔送行须重做。';
+		} elseif($qid==='QD6') $progress=!empty($s['batteries']) ? '电池 3/3；'.(!empty($s['gentle'][$qid]) ? '已捐装备' : '尚未捐装备') : '电池 0/3';
+		elseif($qid==='QD7') $desc.=' 告别地点：'.($plsinfo[$w['bye']] ?? '未知地点').'；剩余 '.max(0,$w['bye_end']-$now).' 秒，请前往探索。';
+		$tasks[$qid]=array('title'=>$cfg['title'],'status'=>$status,'step_desc'=>$desc,'progress'=>$progress);
+	}
+	return $tasks;
 }

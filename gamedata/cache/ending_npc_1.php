@@ -1,7 +1,7 @@
 <?php
 if(!defined('IN_GAME')) exit('Access Denied');
 
-// 与现役 addnpc 相同的数据格式；新角色不进入开局常驻 NPC 清单。
+// 与现役 addnpc 相同的数据格式；只有 type36 大排档成员进入开局常驻清单。
 $er_base = array('mode'=>1,'num'=>1,'pass'=>'bra','club'=>0,'bid'=>0,'inf'=>'','state'=>1,'rage'=>160,'pose'=>1,'tactic'=>3,'killnum'=>0,'rp'=>400,'gd'=>'f','pls'=>99,'msp'=>800,'lvl'=>110,'skill'=>1500,'money'=>5000,'weps'=>65535,'arb'=>'教头护甲','arbk'=>'DB','arbe'=>400,'arbs'=>600,'arh'=>'护额','arhk'=>'DH','arhe'=>200,'arhs'=>400,'ara'=>'护手','arak'=>'DA','arae'=>200,'aras'=>400,'arf'=>'战靴','arfk'=>'DF','arfe'=>200,'arfs'=>400,'art'=>'棋子徽章','artk'=>'A','arte'=>1,'arts'=>1);
 $er_new = array(
 	array('铁城','m',60000,6500,5000,'钨钢指虎','WP',900,'n',array('npc_rook_chase','npc_rook_lock'),'车'),

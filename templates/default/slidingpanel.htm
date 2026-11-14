@@ -1,4 +1,4 @@
-<!--{eval echo "<script>var clbpara_data = ".json_encode($clbpara).";</script>";}-->
+<!--{eval $panel_clbpara=$clbpara; if(function_exists('sendo_tracking')) $panel_clbpara['sendo_tasks']=sendo_tracking($pdata); echo "<script>var clbpara_data = ".json_encode($panel_clbpara).";</script>";}-->
 <!--{eval echo "<script>var iteminfo = ".json_encode($iteminfo).";</script>";}-->
 <!--{eval echo "<script>var itemspkinfo = ".json_encode($itemspkinfo).";</script>";}-->
 
@@ -1348,6 +1348,19 @@
                 html += '    <span class="progress-value">' + escapeTaskHtml(progressText || statusText) + '</span>';
                 html += '  </div>';
                 html += '  <div class="quest-item">' + escapeTaskHtml(stepDesc) + '</div>';
+                html += '</div>';
+            });
+        }
+
+        if (clbpara && clbpara.sendo_tasks) {
+            Object.keys(clbpara.sendo_tasks).forEach(function(qid) {
+                const task = clbpara.sendo_tasks[qid];
+                hasTasks = true;
+                html += '<div class="progress-item sendo-task-item">';
+                html += '<div class="progress-label"><span>' + escapeTaskHtml(task.title) + '</span>';
+                html += '<span class="progress-value">' + escapeTaskHtml(task.status) + '</span></div>';
+                html += '<div class="quest-item">' + escapeTaskHtml(task.step_desc) + '</div>';
+                if (task.progress) html += '<div class="quest-item">' + escapeTaskHtml(task.progress) + '</div>';
                 html += '</div>';
             });
         }

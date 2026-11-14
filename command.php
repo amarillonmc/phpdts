@@ -1249,6 +1249,10 @@ $log .= "<!-- DEBUG: 最终的 log 变量长度: " . strlen($log) . " -->";
 $gamedata['innerHTML']['log'] = $log;
 if(isset($error)){$gamedata['innerHTML']['error'] = $error;}
 $gamedata['clbpara'] = $clbpara;
+if(ending_routes_enabled() && !empty($gamevars['sendo'])) {
+	sendo_sync_hubs($pdata);
+	$gamedata['clbpara']['sendo_tasks']=sendo_tracking($pdata);
+}
 // 同一面板用于default/nouveau；每次操作后刷新地面实物，不跟踪携带者位置。
 $gamedata['display']['c25-tab-button'] = $club == 25 ? '' : 'none';
 include_once GAME_ROOT.'./include/game/song.inc.php';

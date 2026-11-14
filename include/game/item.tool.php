@@ -179,10 +179,5 @@ function item_tool($itmn, &$data) {
         ob_clean();
         // 不设置 $mode，交由框架根据 $cmd 渲染表单
         return;
-    } elseif ($itm == '游戏解除钥匙') {
-        $state = 6;
-        $url = 'end.php';
-        include_once GAME_ROOT . './include/system.func.php';
-        gameover($now, 'end3', $name);
     }
 }

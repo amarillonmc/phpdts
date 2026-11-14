@@ -270,4 +270,22 @@ ending_routes_check_end_achievement($archive_body,7,$talent_archive_achievement)
 talent_test_assert($db->achievement_writes===1 && json_decode($db->users[1]['achrev'],true)[633]['l']===1,'分体结局成就只保存到所属账户一次');
 $pdata=$db->players[2]; $gamblingon=false; set_credits();
 talent_test_assert(count($db->account_updates)===1 && isset($db->account_updates[$archive_owner]) && $db->users[1]['wingames']===1 && $db->users[1]['validgames']===1 && $db->users[1]['credits']>=10000,'多个机体仍只给所属账户一次胜场、参战场与胜者积分');
+
+// 按 Y/Z 物品的真实先后顺序经过工具分支，确保它不能抢在路线判定前结束游戏。
+require GAME_ROOT.'./include/game/item.tool.php';
+foreach(array(array('v',false,'jiejin_v',630),array('Zv',false,'jiejin_Zv',631),array('Zv',true,'jiejin_v',630)) as $case) {
+	$db=new TalentRaceDb(); $db->archive_mode=true;
+	$keyuser='KeyTester'; $key=array_merge($archive_defaults,array('pid'=>1,'name'=>$keyuser,'race'=>0,'hp'=>100,'mhp'=>100,'type'=>0,'teamID'=>'','clbpara'=>array(),'itm1'=>'游戏解除钥匙','itmk1'=>'Y','itme1'=>1,'itms1'=>1,'itmsk1'=>$case[0],'itmpara1'=>''));
+	if($case[1]) $key['clbpara']['wheelchair']['learned']['wc_appraise']=1;
+	$db->players[1]=$key;
+	$db->users[1]=array('username'=>$keyuser,'achrev'=>'','motto'=>'test');
+	$gamestate=40; $gamevars=array(); $url='';
+	try { item_tool(1,$key); item_ending(1,$key); } catch(TalentRaceArchiveStop $e) {}
+	$ach=json_decode($db->users[1]['achrev'],true);
+	talent_test_assert(count($db->archives)===1 && $db->end_calls===1 && $gamevars['ending_subroute']===$case[2] && !empty($ach[$case[3]]['l']),'工具分支之后正确归档并发放成就：'.$case[2].($case[1]?'（轮椅分流）':''));
+	talent_test_assert($db->players[1]['state']===6 && !$db->players[1]['itms1'] && $db->players[1]['clbpara']['ending_subroute']===$case[2],'钥匙消耗、玩家状态及路线在归档之前已经保存');
+	if($case[1]) talent_test_assert(empty($ach[631]),'轮椅分流不能获得真解禁成就');
+	item_tool(1,$key); item_ending(1,$key);
+	talent_test_assert($db->end_calls===1 && $db->achievement_writes===1,'同一把已消费钥匙不能再次归档或发奖');
+}
 echo "Talent/race regression complete.\n";

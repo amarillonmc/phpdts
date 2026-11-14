@@ -120,6 +120,8 @@ function ending_routes_sanbu(&$data)
 function ending_routes_encounter_allowed($data,$enemy)
 {
 	if(!ending_routes_enabled()) return true;
+	// 大排档成员只参与任务互动，不进入搜索遇敌或尸体拾取。
+	if((int)$enemy['type']===36) return false;
 	if((int)$data['pgroup']!==(int)$enemy['pgroup']) return false;
 	$p=get_clbpara($enemy['clbpara']);
 	if(!empty($p['sendo_captured'])) return false;

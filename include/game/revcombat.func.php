@@ -25,6 +25,10 @@ namespace revcombat
 	function rev_combat_prepare(&$pa,&$pd,$active,$wep_kind='',$log_print=1) 
 	{
 		global $db,$tablepre,$log,$mode,$main,$cmd,$battle_title;
+		if(function_exists('ending_routes_enabled') && \ending_routes_enabled() && ((int)$pa['type']===36 || (int)$pd['type']===36)) {
+			$log .= '动物团成员正在忙于送行，不能与他们交战。<br>';
+			return;
+		}
 		if(function_exists('ruleset_combat_allowed_hook') && !ruleset_combat_allowed_hook($pa,$pd)) {
 			$log .= '这个目标现在无法交战。<br>';
 			return;

@@ -38,6 +38,14 @@ function addnpc($type,$sub,$number=1,$mode=0,$extra=array()) {
 class WorldResult { public $rows,$index=0; function __construct($rows) { $this->rows=array_values($rows); } }
 class WorldDb {
 	public $players=array(),$mapitem=array(),$nextid=100;
+	function __construct() {
+		// 开局常驻成员；任务调度只可以移动这些行，不再负责生成它们。
+		for($sub=0;$sub<7;$sub++) {
+			$p=world_player(++$this->nextid);
+			$p['type']=36; $p['hp']=$p['mhp']=25000; $p['pose']=7;
+			$p['clbpara']=json_encode(array('er_sub'=>$sub)); $this->players[$p['pid']]=$p;
+		}
+	}
 	function query($sql) {
 		if(preg_match('/^DELETE FROM .*players WHERE type=(\d+)/',$sql,$m)) { foreach($this->players as $id=>$row) if($row['type']==$m[1]) unset($this->players[$id]); return true; }
 		if(strpos($sql,'SELECT')===0 && strpos($sql,'players')!==false) {
@@ -195,10 +203,12 @@ world_assert(!empty($runner['clbpara']['sendo']['gentle']['QD5']),'已保存的�
 $db=new WorldDb(); $gamevars=array('sendo_open'=>1); $now=8000; $arealist=range(0,34); $areatime=9000;
 $runner=world_player(23); $runner['clbpara']['sendo']=array('done'=>array(),'gentle'=>array()); player_save($runner);
 world_command($runner,'sendo_tool_rope'); world_command($runner,'sendo_tool_glasses'); world_command($runner,'sendo_tool_lantern');
-$old_ids=array_keys(array_filter($db->players,function($p) { return in_array($p['type'],array(36,38),true); }));
+$hub_ids=array_keys(array_filter($db->players,function($p) { return $p['type']===36; }));
+$old_ids=array_keys(array_filter($db->players,function($p) { return $p['type']===38; }));
 $old_cycle=$gamevars['sendo']['cycle']; $arealist=array(0,7,8,34); $now=$gamevars['sendo']['end']; sendo_tick($runner); player_save($runner);
-$new_ids=array_keys(array_filter($db->players,function($p) { return in_array($p['type'],array(36,38),true); }));
-world_assert($gamevars['sendo']['cycle']===$old_cycle+1 && !array_intersect($old_ids,$new_ids) && count($new_ids)===count($old_ids),'公共周期清理旧实体并一次性补齐新周期全部事件');
+$new_ids=array_keys(array_filter($db->players,function($p) { return $p['type']===38; }));
+world_assert($gamevars['sendo']['cycle']===$old_cycle+1 && !array_intersect($old_ids,$new_ids) && count($new_ids)===count($old_ids),'公共周期只更换type38事件怪');
+world_assert($hub_ids===array_keys(array_filter($db->players,function($p) { return $p['type']===36; })) && count($hub_ids)===7,'跨周期保留七名开局成员的原PID');
 $count=count($spawn_calls); sendo_tick($runner); world_assert(count($spawn_calls)===$count,'同一新周期重复调度不再次补刷公共NPC');
 foreach($db->players as $id=>$row) {
 	$para=get_clbpara($row['clbpara']);
@@ -228,4 +238,41 @@ world_assert(fetch_playerdata_by_pid(31)['money']===399 && !empty(fetch_playerda
 dissociation_npc_dead($extra,$cover_killer); player_save($pdata);
 world_assert(fetch_playerdata_by_pid(31)['clbpara']['dissociation_deadline']===1025,'协战死亡回调重放不会重复加时');
 unset($pdata);
+
+// 常驻成员移动、归位和多人共享；失败归位不能把本轮保护失败洗掉。
+$db=new WorldDb(); $gamevars=array('sendo_open'=>1); $now=10000; $arealist=range(0,34); $areatime=11000;
+$first=world_player(40); $first['clbpara']['sendo']=array('done'=>array(),'gentle'=>array()); player_save($first);
+$second=world_player(41); $second['clbpara']['sendo']=$first['clbpara']['sendo']; player_save($second);
+$hub_ids=array_keys($db->players); $before_spawns=count($spawn_calls); sendo_tick($first);
+$w=$gamevars['sendo']; $dante=$w['dante']; $holly=104; $kiko=107;
+world_assert(fetch_playerdata_by_pid($dante)['pls']===$w['points'][1] && fetch_playerdata_by_pid($kiko)['pls']===$w['bye'],'激活任务直接移动原Dante与Kiko');
+world_command($first,'sendo_bait');
+world_assert(fetch_playerdata_by_pid($holly)['pls']===$w['points'][3],'选择诱饵后移动原Holly到猎手地点');
+$second['pls']=$w['bye']; sendo_action($second,'search'); player_save($second);
+world_assert(fetch_playerdata_by_pid($kiko)['pls']===$w['bye'],'一人告别后仍为其他参与者保留Kiko');
+$first['pls']=$w['bye']; sendo_action($first,'search'); player_save($first);
+world_assert(fetch_playerdata_by_pid($kiko)['pls']===34,'所有参与者告别后Kiko静默归位');
+$first['clbpara']['sendo']['done']['QD4']=1; player_save($first); sendo_sync_hubs($first);
+world_assert(fetch_playerdata_by_pid($holly)['pls']===34,'诱饵参与者完成后Holly归位，不影响其他人的眼镜路线');
+$npc=fetch_playerdata_by_pid($dante); $npc['hp']=1; player_save($npc); $now+=30; sendo_tick($first);
+world_assert(!empty($gamevars['sendo']['dante_lost']) && fetch_playerdata_by_pid($dante)['pls']===34 && fetch_playerdata_by_pid($dante)['hp']===25000,'保护失败后Dante恢复并归位，保留本轮失败标记');
+$first['pls']=$w['points'][1]; $first['clbpara']['sendo']+=array('guard_cycle'=>$w['cycle'],'guard_start'=>$w['start'],'guard_kills'=>2); player_save($first);
+$now=$w['end']; sendo_tick($first);
+world_assert(empty($first['clbpara']['sendo']['gentle']['QD2']),'失败后的恢复不会误判为温柔保护成功');
+world_assert(!array_filter(array_slice($spawn_calls,$before_spawns),function($call) { return $call[0]===36; }),'激活、完成、失败和换周期均不再调用addnpc生成普通动物团');
+$plsinfo=array_combine(range(0,34),array_map(function($id) { return '地点'.$id; },range(0,34)));
+$first['clbpara']['sendo']['reset_cycle']['QD3']=$gamevars['sendo']['cycle'];
+$track=sendo_tracking($first);
+world_assert(count($track)===7 && $track['QD7']['status']==='温柔完成' && $track['QD4']['status']==='普通完成' && $track['QD3']['status']==='下轮重做','追踪包含七项并区别温柔、普通和重做状态');
+world_assert(strpos($track['QD2']['step_desc'],$plsinfo[$gamevars['sendo']['points'][1]])!==false && strpos($track['QD2']['progress'],'击破 0/2')!==false,'追踪采用当前轮地点与进度，不沿用上一轮击破数');
+world_assert(!isset($first['clbpara']['sendo_tasks']),'追踪信息不写回玩家持久化参数');
+
+// 安全地点耗尽时，34 也可能是保护现场，不能因地点与大排档相同而每次同步都治疗。
+$db=new WorldDb(); $gamevars=array('sendo_open'=>1); $now=12000; $arealist=array(0,34); $areatime=13000;
+$guard=world_player(42); $guard['clbpara']['sendo']=array('done'=>array(),'gentle'=>array()); player_save($guard); sendo_tick($guard);
+$now+=30; sendo_tick($guard); $dante=$gamevars['sendo']['dante']; $hurt=fetch_playerdata_by_pid($dante)['hp'];
+sendo_sync_hubs($guard);
+world_assert($hurt>0 && $hurt<25000 && fetch_playerdata_by_pid($dante)['hp']===$hurt,'代码洪流作为保护现场时不通过归位逻辑自动回血');
+$guard['clbpara']['sendo']['done']['QD2']=1; sendo_sync_hubs($guard);
+world_assert(fetch_playerdata_by_pid($dante)['hp']===25000,'同地点保护任务结束后才恢复常驻成员状态');
 echo "Ending route world regression complete.\n";
