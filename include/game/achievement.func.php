@@ -1301,9 +1301,10 @@ function check_battle_achievement_rev($pa,$pd)
 	//31. ReturnToSender成就
 	if (!$is_npc)
 	{
-		$result = $db->query("SELECT nicks FROM {$gtablepre}users WHERE username = '$killname'");
-		$ns = $db->result($result, 0);
-		if ((strpos($ns,"KEY男")!==false)&&($wp=='【KEY系催泪弹】')){
+		// 头衔已迁到 nicksrev：105为KEY男，117为LOOP；旧 nicks 不再随授奖更新。
+		$result = $db->query("SELECT nicksrev FROM {$gtablepre}users WHERE username = '$killname'");
+		$ns = get_clbpara($db->result($result, 0));
+		if (in_array(105,$ns['nicks'] ?? Array())&&($wp=='【KEY系催泪弹】')){
 			update_achievement_rev(31,$nn,((int)fetch_achievement_rev(31,$nn))+1);
 			if ((int)fetch_achievement_rev(31,$nn)>=1 && (check_achievement_rev(31,$nn)<999)) {
 				done_achievement_rev(31,999,$nn);
@@ -1316,11 +1317,11 @@ function check_battle_achievement_rev($pa,$pd)
 	//32. 呵呵
 	if (!$is_npc)
 	{
-		$result = $db->query("SELECT nicks FROM {$gtablepre}users WHERE username = '$killname'");
-		$ns1 = $db->result($result, 0);
-		$result = $db->query("SELECT nicks FROM {$gtablepre}users WHERE username = '$nn'");
-		$ns2 = $db->result($result, 0);
-		if ((strpos($ns2,"LOOP")!==false)||(strpos($ns1,"LOOP")!==false)){
+		$result = $db->query("SELECT nicksrev FROM {$gtablepre}users WHERE username = '$killname'");
+		$ns1 = get_clbpara($db->result($result, 0));
+		$result = $db->query("SELECT nicksrev FROM {$gtablepre}users WHERE username = '$nn'");
+		$ns2 = get_clbpara($db->result($result, 0));
+		if (in_array(117,$ns2['nicks'] ?? Array())||in_array(117,$ns1['nicks'] ?? Array())){
 			if (check_achievement_rev(32,$nn)<999) done_achievement_rev(32,999,$nn);
 			if (check_achievement_rev(32,$killname)<999) done_achievement_rev(32,999,$killname);
 			

@@ -1,0 +1,31 @@
+Return to Sender 与 kernel on chessboard 漏发修复
+
+玩家表现与原因：
+持有“KEY男”的玩家被【KEY系催泪弹】击杀，或双方之一持有“LOOP”时，相关成就可能不触发。
+当前授予头衔的 get_title/titles_get_new 已将持有记录写入 users.nicksrev 的编号列表，
+但当前击杀成就入口 check_battle_achievement_rev 仍读取旧 users.nicks 并搜索头衔文字。
+因此新字段中确实持有头衔、旧字段为空的账户无法触发；保留旧字段文字的老账户仍可能成功。
+
+对照结果：
+- 两个成就分支均没有使用 is_tplayer（双方IP不同）条件，问题不在这个检查。
+- 【汪？】读取对方本局 clbpara.achvars.gacha_sr/ssr，且实际要求IP不同，不读取持有头衔。
+- 当前实际触发点是 final_kill_events → check_battle_achievement_rev 的击杀结算。
+
+改动：
+include/game/achievement.func.php 的当前击杀成就分支改读 nicksrev，用已有 get_clbpara 解码，
+按105（KEY男）与117（LOOP）检查持有情况，不要求佩戴。
+保留RTS使用指定武器、双方纪念头衔、LOOP向双方传播、排除NPC及原来的完成次数逻辑。
+不新增身份/IP限制，不调整成就资源，不迁移账户数据，不改未被当前入口调用的旧版成就函数。
+
+验证（PHP 7.4.33，short_open_tag=1）：
+在已有 club24_test.php 的账户/头衔/成就回归中补用例，并让内存数据库区分旧、新头衔字段。
+通过真实 get_title 授予头衔、final_kill_events 执行击杀；新增用例修复前失败、修复后通过。
+覆盖RTS、LOOP持有者为击杀方/被击杀方、同时持有两种头衔、同IP/不同IP、保存重读再达成、
+无头衔、武器不符、NPC、仅残留旧字段等情况；核对成就、双方头衔及不重复追加头衔。
+【汪？】的SR记录与不同IP条件也已对照验证。
+club24_test.php、ai93_test.php 均通过；两个改动PHP文件语法检查及 git diff --check 通过。
+回归命令：
+php -d short_open_tag=1 -r "define('IN_GAME', true); require 'gamedata/tests/club24_test.php';"
+php -d short_open_tag=1 -r "define('IN_GAME', true); require 'gamedata/tests/ai93_test.php';"
+
+限制：使用内存数据库，未做真实站点联调；不自动追补此前漏发的成就。

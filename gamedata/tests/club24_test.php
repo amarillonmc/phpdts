@@ -80,8 +80,8 @@ class C24Db {
 	public $players = Array(), $users = Array(), $shopitem = Array(), $chat = Array(), $mapitem = Array(), $queries = Array();
 	function query($sql) {
 		$this->queries[] = $sql;
-		if(preg_match("/^SELECT (achrev|nicksrev|\*) FROM test_users WHERE username\s*=\s*'([^']+)'/",$sql,$m)) {
-			$row = $this->users[$m[2]] ?? Array('achrev'=>'','nicksrev'=>'');
+		if(preg_match("/^SELECT (achrev|nicks|nicksrev|\*) FROM test_users WHERE username\s*=\s*'([^']+)'/",$sql,$m)) {
+			$row = $this->users[$m[2]] ?? Array('achrev'=>'','nicks'=>'','nicksrev'=>'');
 			return new C24Result(Array($m[1] === '*' ? $row : Array($m[1]=>$row[$m[1]])));
 		}
 		if(preg_match("/^UPDATE test_users SET (achrev|nicksrev)='(.*)' WHERE username='([^']+)'/",$sql,$m)) {
@@ -371,4 +371,57 @@ $p=c24_player(13); $p['clbpara']['BGMBrand']='rixolamal'; c24_item($p,6,'「神�
 $db->users[$p['name']]=Array('achrev'=>'','nicksrev'=>'','credits'=>0,'credits2'=>0); $killer=c24_player(14);
 check_death_events($killer,$p,1);
 c24_assert(check_achievement_rev(209,$p['name'])===999 && !$p['itms6'],'真实死亡事件解锁隐藏成就并销毁绑定ZB');
-echo "All club24 tests passed.\n";
+// 沿用上面的账户、真实头衔与成就函数，回归击杀持有指定头衔的玩家。
+foreach(Array('rts','loop-killer','loop-victim','both') as $case) {
+	foreach(Array(false,true) as $different_ip) {
+		$db = new C24Db(); $a=c24_player(1); $b=c24_player(2);
+		foreach(Array($a,$b) as $player) $db->users[$player['name']]=Array('achrev'=>'','nicks'=>'','nicksrev'=>'','credits'=>0,'credits2'=>0);
+		if($different_ip) $b['ip']='127.0.0.2';
+		$a['wep_name']='【KEY系催泪弹】'; // 致死后武器可能已用尽，判定沿用战斗中记录的名称。
+		if($case === 'rts' || $case === 'both') get_title('KEY男',$b['name']);
+		if($case !== 'rts') get_title('LOOP',$case === 'loop-killer' ? $a['name'] : $b['name']);
+		final_kill_events($a,$b,1);
+		$rts=$case === 'rts' || $case === 'both'; $loop=$case !== 'rts';
+		c24_assert(check_achievement_rev(31,$a['name']) === ($rts ? 999 : 0)
+			&& check_achievement_rev(32,$a['name']) === ($loop ? 999 : 0)
+			&& check_achievement_rev(32,$b['name']) === ($loop ? 999 : 0),
+			'真实击杀按已持有而未佩戴的头衔解锁RTS/LOOP：'.$case.'，不同IP='.(int)$different_ip);
+		$killer_titles=json_decode($db->users[$a['name']]['nicksrev'],true)['nicks'];
+		$victim_titles=json_decode($db->users[$b['name']]['nicksrev'],true)['nicks'];
+		c24_assert((!$rts || (in_array(99,$killer_titles) && in_array(122,$victim_titles)))
+			&& (!$loop || (in_array(117,$killer_titles) && in_array(117,$victim_titles)))
+			&& $db->users[$a['name']]['nicks'] === '' && $db->users[$b['name']]['nicks'] === '',
+			'RTS双方纪念头衔与LOOP传播写入当前头衔字段，旧字段保持为空');
+		player_save($a); $a=fetch_playerdata_by_pid(1); $b=fetch_playerdata_by_pid(2);
+		$a['wep']='【KEY系催泪弹】';
+		check_battle_achievement_rev($a,$b);
+		c24_assert(json_decode($db->users[$a['name']]['nicksrev'],true)['nicks'] === $killer_titles
+			&& json_decode($db->users[$b['name']]['nicksrev'],true)['nicks'] === $victim_titles
+			&& (!$rts || fetch_achievement_rev(31,$a['name']) === 2)
+			&& $db->users[$a['name']]['credits'] === 0 && $db->users[$b['name']]['credits'] === 0,
+			'保存重读后再次达成条件，RTS计数继续累加而头衔不重复、无额外积分');
+	}
+}
+foreach(Array('no-title','wrong-weapon','npc','legacy-only') as $case) {
+	$db = new C24Db(); $a=c24_player(1); $b=c24_player(2);
+	foreach(Array($a,$b) as $player) $db->users[$player['name']]=Array('achrev'=>'','nicks'=>'','nicksrev'=>'','credits'=>0,'credits2'=>0);
+	$a['wep_name']='【KEY系催泪弹】';
+	if($case === 'wrong-weapon' || $case === 'npc') get_title('KEY男',$b['name']);
+	if($case === 'wrong-weapon') $a['wep_name']='普通武器';
+	if($case === 'npc') { $b['type']=1; get_title('LOOP',$b['name']); }
+	if($case === 'legacy-only') $db->users[$b['name']]['nicks']='KEY男/LOOP';
+	check_battle_achievement_rev($a,$b);
+	c24_assert(!check_achievement_rev(31,$a['name']) && !check_achievement_rev(32,$a['name'])
+		&& !check_achievement_rev(32,$b['name']), '不满足当前头衔击杀条件不授奖：'.$case);
+}
+// 对照【汪？】：使用本局开出SR的记录，当前规则实际还要求双方IP不同。
+foreach(Array(false,true) as $different_ip) {
+	$db = new C24Db(); $a=c24_player(1); $b=c24_player(2);
+	foreach(Array($a,$b) as $player) $db->users[$player['name']]=Array('achrev'=>'','nicks'=>'','nicksrev'=>'','credits'=>0,'credits2'=>0);
+	if($different_ip) $b['ip']='127.0.0.2';
+	$b['clbpara']['achvars']['gacha_sr']=1;
+	check_battle_achievement_rev($a,$b);
+	c24_assert(check_achievement_rev(69,$a['name']) === ($different_ip ? 1 : 0), '汪？仍按本局SR记录及不同IP判定：'.(int)$different_ip);
+}
+
+echo "All club24 and title achievement tests passed.\n";
