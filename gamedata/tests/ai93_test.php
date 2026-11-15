@@ -1065,6 +1065,35 @@ $pdata['art']=''; $pdata['artk']=''; $pdata['arts']=0;
 ai93_test_assert(!song_sis_panel_visible($pdata) && !isset(song_list($pdata)['Sun Is Shining']),'卸下【Sun Is Shining】后副面板隐藏且不可无卡演唱');
 $pdata['art']='【Sun Is Shining】'; $pdata['artk']='ss'; $pdata['arts']=1; $pdata['arte']=80;
 
+// 元素大师先扣纸条耐久，再传入 already_consumed；包括最后1张刚好扣到0的情况。
+foreach(array(0,1) as $slot) {
+	foreach(array(0,1,$nosta) as $remaining) {
+		$slip_player=$pdata; $slip_player['club']=20;
+		ai93_test_item($slip_player,'提示纸条A','Y',1,$remaining,$slot);
+		ai93_test_assert(song_sis_use_slip_item($slot,$slip_player,true)
+			&& $slip_player['itms'.$slot] === $remaining
+			&& count($slip_player['clbpara']['sis']['segments']) === 1
+			&& $slip_player['clbpara']['sis']['used_shop'] === array('A'),
+			'元素大师已消耗的纸条仍解锁歌词且不重复扣耐久：槽位'.$slot.'，剩余'.$remaining);
+		player_save($slip_player); $slip_player=fetch_playerdata_by_pid(1);
+		ai93_test_assert(count($slip_player['clbpara']['sis']['segments']) === 1
+			&& !song_sis_use_slip_item($slot,$slip_player,true)
+			&& $slip_player['itms'.$slot] === $remaining
+			&& count($slip_player['clbpara']['sis']['segments']) === 1,
+			'元素大师歌词与商店纸条记录保存重读后仍生效，重复A不再加进度：槽位'.$slot.'，剩余'.$remaining);
+	}
+}
+$slip_player=$pdata;
+ai93_test_item($slip_player,'提示纸条E','Y',1,0,1);
+ai93_test_assert(!song_sis_use_slip_item(1,$slip_player) && empty($slip_player['clbpara']['sis']['segments']),
+	'没有已消耗标记的零耐久纸条不能解锁歌词');
+$slip_player['arts']=0;
+ai93_test_assert(!song_sis_use_slip_item(1,$slip_player,true) && empty($slip_player['clbpara']['sis']['segments']),
+	'已消耗纸条也不能绕过歌词卡佩戴要求');
+$slip_player['arts']=1; unset($slip_player['clbpara']['sis']);
+ai93_test_assert(!song_sis_use_slip_item(1,$slip_player,true) && empty($slip_player['clbpara']['sis']),
+	'已消耗纸条也不能在首唱前开启歌词收集');
+
 // 商店纸条ABCD每种限用一次，野外纸条E~U不限重复；集齐8段主歌后继续消费追加最多6段尾奏。
 include_once GAME_ROOT.'include/game/item.test.php';
 ai93_test_item($pdata,'提示纸条A','Y',1,2,1);

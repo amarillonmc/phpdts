@@ -288,7 +288,8 @@ function song_sis_use_slip_item($itmn,&$data,$already_consumed=false)
 	$itme = &$data['itme'.$itmn];
 	$itms = &$data['itms'.$itmn];
 	$itmsk = &$data['itmsk'.$itmn];
-	if(empty($itms) || strpos((string)$itmk,'Y') !== 0 || strpos((string)$itm,'提示纸条') !== 0) return false;
+	// 元素大师可能刚吃完最后一张纸条；已消耗时仍应解锁歌词，空槽继续由 itemuse 拦截。
+	if((!$already_consumed && empty($itms)) || strpos((string)$itmk,'Y') !== 0 || strpos((string)$itm,'提示纸条') !== 0) return false;
 	if(!song_sis_panel_visible($data) || !song_sis_consume_slip($itm,$data)) return false;
 	if(!$already_consumed && $itms != $nosta) {
 		$itms--;
