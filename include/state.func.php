@@ -848,7 +848,8 @@
 				$pa['exp'] = $up_exp_temp;
 			}
 			$pa['upexp'] = $up_exp_temp;
-			$pa['hp'] += $lvuphp;
+			// 反弹可能先登记死亡，随后升级时不能给死者回血。
+			$pa['hp'] = $pa['hp'] > 0 ? $pa['hp'] + $lvuphp : 0;
 			$pa['mhp'] += $lvuphp;
 			$pa['sp'] += $lvupsp;
 			$pa['msp'] += $lvupsp;
@@ -876,6 +877,7 @@
 			$lvlup_log = "<span class=\"yellow\">{$pa['nm']}升了{$lvup}级！生命上限+{$lvuphp}，体力上限+{$lvupsp}，攻击+{$lvupatt}，防御+{$lvupdef}";
 			if(isset($sklog)) $lvlup_log .= $sklog;
 			$lvlup_log .= "，体力恢复了{$lvupspref}，获得了{$lvup}点技能点！</span><br>";
+			if($pa['hp'] <= 0) $lvlup_log .= "<span class=\"grey\">等级可以追授，复活不在升级套餐里。</span><br>";
 			if(!$pa['type'])
 			{
 				if($pa['nm'] == '你') $log.= $lvlup_log;

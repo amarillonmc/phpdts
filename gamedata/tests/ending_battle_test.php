@@ -158,6 +158,20 @@ $capped=c24_player(121); $capped['lvl']=255; $capped['exp']=99999;
 lvlup_rev($capped,$target,1);
 c24_assert($capped['lvl']===255,'保留神奈原版等级不提高玩家255级上限');
 
+// 反弹死亡后仍可能结算升级；升级保留属性收益，但不能给死者回血。
+foreach(array(0,12) as $level_club) foreach(array(0,1,50) as $start_hp) {
+	$levelled=c24_player(122,$level_club); $levelled['nm']='你'; $levelled['hp']=$start_hp;
+	$levelled['state']=$start_hp>0 ? 0 : 50; $levelled['deathtime']=$start_hp>0 ? 0 : $now;
+	$levelled['exp']=(2*$levelled['lvl']+1)*$baseexp+2*$baseexp; $before_level=$levelled; $log='';
+	lvlup_rev($levelled,$target,1);
+	$hp_gain=$levelled['mhp']-$before_level['mhp'];
+	c24_assert($levelled['lvl']==$before_level['lvl']+2 && $hp_gain>0 && $levelled['skillpoint']==$before_level['skillpoint']+2,'连续升级保留等级、生命上限和技能点：称号'.$level_club.'，HP='.$start_hp);
+	c24_assert($start_hp>0 ? $levelled['hp']===$start_hp+$hp_gain : $levelled['hp']===0,'升级只为存活角色恢复新增生命：称号'.$level_club.'，HP='.$start_hp);
+	c24_assert((strpos($log,'等级可以追授，复活不在升级套餐里。')!==false)===($start_hp===0),'死亡升级才显示追授提示');
+	player_save($levelled); $levelled=fetch_playerdata_by_pid(122);
+	c24_assert($levelled['state']===$before_level['state'] && $levelled['deathtime']===$before_level['deathtime'] && ($start_hp>0 || $levelled['hp']===0),'升级保存重读不改变死亡登记');
+}
+
 // 天赋小节点：沿用真实入场、行动、恢复、攻击和尸体结算函数。
 $gamevars=array(); $current_ruleset_config=array(); $ending_routes_v2=1; $club_skills=1;
 $talent=talent_load(''); $talent['bought_points']=80;
