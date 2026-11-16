@@ -9,7 +9,7 @@ require './include/game/special.func.php';
 
 if(!isset($alivemode) || $alivemode == 'last'){
 	//$result = $db->query("SELECT * FROM {$gtablepre}users RIGHT JOIN {$tablepre}players ON {$tablepre}players.name={$gtablepre}users.username WHERE {$tablepre}players.type=0 AND {$tablepre}players.hp>0 ORDER BY {$tablepre}players.money DESC, {$tablepre}players.killnum DESC LIMIT $alivelimit");
-	$result = $db->query("SELECT * FROM {$tablepre}players WHERE {$tablepre}players.type=0 AND {$tablepre}players.hp>0 ORDER BY {$tablepre}players.money DESC, {$tablepre}players.killnum DESC LIMIT $alivelimit");
+	$result = $db->query("SELECT * FROM {$tablepre}players WHERE {$tablepre}players.type=0 AND {$tablepre}players.hp>0 ORDER BY {$tablepre}players.money DESC, {$tablepre}players.killnum DESC");
 }elseif($alivemode == 'all'){
 	//$result = $db->query("SELECT * FROM {$gtablepre}users RIGHT JOIN {$tablepre}players ON {$tablepre}players.name={$gtablepre}users.username WHERE {$tablepre}players.type=0 AND {$tablepre}players.hp>0 ORDER BY {$tablepre}players.money DESC, {$tablepre}players.killnum DESC");
 	$result = $db->query("SELECT * FROM {$tablepre}players WHERE {$tablepre}players.type=0 AND {$tablepre}players.hp>0 ORDER BY {$tablepre}players.money DESC, {$tablepre}players.killnum DESC");
@@ -20,8 +20,13 @@ if(!isset($alivemode) || $alivemode == 'last'){
 $alivedata = $apdata = Array();
 while($apdata = $db->fetch_array($result)) 
 {
+	$apara = get_clbpara($apdata['clbpara']);
+	if(!empty($apara['ai_master'])) continue;
+	// 分体不占名单名额，筛选后再限制显示人数。
+	if((!isset($alivemode) || $alivemode == 'last') && count($alivedata) >= $alivelimit) break;
 	$uresult = $db->query("SELECT * FROM {$gtablepre}users WHERE username = '{$apdata['name']}'");
 	$urdata = $db->fetch_array($uresult);
+	if(!$urdata) $urdata = Array('wingames'=>0,'validgames'=>0,'motto'=>'');
 	$apdata = array_merge($urdata,$apdata);
 	unset($uresult); unset($urdata);
 	$apdata['iconImg'] = "{$apdata['gd']}_{$apdata['icon']}.gif";
@@ -116,6 +121,12 @@ if($gamblingon){
 						if($bdata['type'] >=1) 
 						{
 							$gbinfo .= '选择的对象不是玩家！'; 
+							goto gb_result;
+						}
+						$bpara = get_clbpara($bdata['clbpara']);
+						if(!empty($bpara['ai_master']))
+						{
+							$gbinfo .= '请选择玩家本体进行下注或赞助。';
 							goto gb_result;
 						}
 						$bet = (int)$bet;
