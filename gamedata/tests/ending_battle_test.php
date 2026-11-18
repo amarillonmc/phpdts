@@ -286,4 +286,30 @@ $ending_routes_v2=0; $b['type']=36;
 c24_assert(ending_routes_encounter_allowed($a,$b),'关闭新路线时不增加动物团遇敌限制');
 $ending_routes_v2=1;
 
+// 搜索者先记下对手编号。一次没有追击的交手结束时，只清理存活 AI 机体自己的编号。
+$test_fixed_damage=100; $test_dice=1;
+foreach(array(0,1) as $initiative) {
+	$body=c24_player(301); $body['race']=5; $body['bid']=302;
+	$other=c24_player(302); $other['race']=0; $other['bid']=301;
+	if($initiative) \revcombat\rev_combat_prepare($body,$other,1,'',0);
+	else \revcombat\rev_combat_prepare($other,$body,0,'',0);
+	$body=fetch_playerdata_by_pid(301); $other=fetch_playerdata_by_pid(302);
+	c24_assert($body['hp']>0 && $body['action']==='' && $body['bid']===0 && $other['bid']===301,'普通交手只清理 AI 机体，保存重读后仍正确，先制='.$initiative);
+}
+$body=c24_player(301); $body['race']=5; $npc=c24_player(302); $npc['type']=34; $npc['clbpara']['skill']=array('npc_rook_chase');
+\revcombat\rev_combat_prepare($npc,$body,0,'',0);
+c24_assert($db->players[301]['action']==='pchase' && $db->players[301]['bid']===302,'AI 机体真正被追击时保留对手');
+$body=c24_player(301); $body['race']=5; $body['clbpara']['ai_master']='待机测试'; $body['tactic']=0;
+$other=c24_player(302); $other['hp']=5;
+\revcombat\rev_combat_prepare($other,$body,1,'',0);
+c24_assert($db->players[301]['action']==='pacorpse' && $db->players[301]['bid']===302 && $db->players[302]['hp']===0 && $db->players[302]['bid']===301,'待机 AI 反杀保留尸体编号及死者的击杀来源');
+$body=c24_player(301); $body['race']=5; $body['hp']=5; $other=c24_player(302);
+\revcombat\rev_combat_prepare($other,$body,1,'',0);
+c24_assert($db->players[301]['hp']===0 && $db->players[301]['bid']===302 && $db->players[302]['action']==='corpse' && $db->players[302]['bid']===301,'AI 机体死亡保留击杀者，普通玩家仍获得尸体');
+$ending_routes_v2=0;
+$body=c24_player(301); $body['race']=5; $body['bid']=302;
+$other=c24_player(302); $other['type']=1; $other['bid']=301;
+\revcombat\rev_combat_prepare($other,$body,0,'',0);
+c24_assert($db->players[301]['bid']===302 && $db->players[302]['bid']===301,'关闭种族玩法的旧模式保留玩家和 NPC 原有战后编号');
+
 echo "All ending battle integration tests passed.\n";

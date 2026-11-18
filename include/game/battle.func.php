@@ -31,7 +31,7 @@ function findteam(&$w_pdata)
 	return;
 }
 
-function findcorpse(&$w_pdata)
+function findcorpse(&$w_pdata, $redisplay=false)
 {
 	global $log,$mode,$main,$battle_title,$cmd,$iteminfo,$itemspkinfo;
 	global $allow_destory_corpse,$no_destory_corpse_type;
@@ -94,8 +94,11 @@ function findcorpse(&$w_pdata)
 	$pickpocket_flag = 0;
 	if(!check_skill_unlock('tl_pickpocket',$pdata) && !check_skill_cost('tl_pickpocket',$pdata)) $pickpocket_flag = 1;
 
-	// 保存发现过女主尸体的记录
-	if($w_pdata['type'] == 14) $clbpara['achvars']['corpse_n14'] += 1;
+	// 切回机体时可能首次看见待机反杀的尸体，重绘同一面板不重复累计。
+	if($w_type == 14) {
+		$seen = $clbpara['achvars']['corpse_n14'] ?? 0;
+		$clbpara['achvars']['corpse_n14'] = $redisplay ? max(1,$seen) : $seen + 1;
+	}
 
 	include template('corpse');
 	$cmd = ob_get_contents();

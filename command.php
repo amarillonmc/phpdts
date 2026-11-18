@@ -180,8 +180,19 @@ if($hp > 0){
 			elseif($command==='projection_off') { include_once GAME_ROOT.'./include/game/item.platform.php'; restorePlayerOriginalData($pdata); }
 			elseif($command==='legacy_hall') ending_routes_legacy_enter($pdata);
 			elseif($command==='legacy_leave' && $pgroup==4) { $pgroup=0; $pls=34; lost_searchmemory('all',$pdata); }
-			elseif($command==='race_ai_deploy') race_ai_create_body($pdata);
-			elseif($command==='race_ai_switch') { race_ai_switch($pdata,$_POST['body'] ?? ''); extract($pdata,EXTR_REFS); }
+			elseif($command==='race_ai_deploy' || $command==='race_ai_switch') {
+				if($command==='race_ai_deploy') race_ai_create_body($pdata);
+				elseif(race_ai_switch($pdata,$_POST['body'] ?? '')) extract($pdata,EXTR_REFS);
+				if(race_ai_is($pdata) && in_array($action,array('corpse','pacorpse'),true)) {
+					$corpse = $bid && ($action==='corpse' || $gamestate<40) ? fetch_playerdata_by_pid($bid) : null;
+					if(!$corpse || $corpse['hp']>0 || $corpse['pgroup']!=$pgroup || ($corpse['pls']!=$pls && !club24_remote_npc($pdata,$corpse,true))) {
+						$action=''; $bid=0;
+					} elseif(!$itms0) {
+						include_once GAME_ROOT.'./include/game/battle.func.php';
+						findcorpse($corpse, true);
+					}
+				}
+			}
 			elseif($command==='race_sell') race_sell($pdata,$_POST['sell_slot'] ?? '');
 			elseif($command==='ending_struggle') erc_struggle($pdata);
 			elseif($command==='ending_talisman') erc_active_skill($pdata,'npc_talisman');

@@ -57,12 +57,18 @@ function race_ai_resolve_active($master)
 	return $master;
 }
 
+function race_ai_body_busy($data)
+{
+	// 空动作可能留有旧的对手编号；搜尸时则要保留编号供拾取使用。
+	return !empty($data['action']) && !in_array($data['action'],array('corpse','pacorpse'),true);
+}
+
 function race_ai_create_body(&$active,$free=false)
 {
 	global $db,$tablepre,$now,$nosta,$log,$club_skillslist;
 	if(!race_ai_is($active) || $active['hp']<=0) return false;
 	$active['clbpara'] = get_clbpara($active['clbpara']);
-	if(!$free && (!empty($active['action']) || !empty($active['bid']))) { $log .= '交战中不能部署分体。<br>'; return false; }
+	if(!$free && race_ai_body_busy($active)) { $log .= '交战中不能部署分体。<br>'; return false; }
 	$rules = race_rules(); $cost = $free ? 0 : $rules['ai_cost'];
 	if((int)($active['skillpoint'] ?? 0)<$cost) { $log .= '部署分体需要 '.$cost.' 点技能点。<br>'; return false; }
 	$family = race_ai_family($active); $owner = race_account_name($active); $master = null;
@@ -109,7 +115,7 @@ function race_ai_switch(&$active,$target)
 	if(!race_ai_is($active) || $active['hp']<=0 || !ctype_digit((string)$target)) return false;
 	$family = race_ai_family($active); $target=(int)$target;
 	if(!isset($family[$target]) || $family[$target]['hp']<=0 || $target===(int)$active['pid']) { $log .= '请选择仍然完好的另一台机体。<br>'; return false; }
-	if(!empty($active['action']) || !empty($active['bid']) || !empty($family[$target]['action']) || !empty($family[$target]['bid'])) { $log .= '交战中的机体无法切换。<br>'; return false; }
+	if(race_ai_body_busy($active) || race_ai_body_busy($family[$target])) { $log .= '交战中的机体无法切换。<br>'; return false; }
 	$owner=race_account_name($active); $master=null;
 	foreach($family as $row) if($row['name']===$owner) $master=$row;
 	if(!$master || $master['hp']<=0) return false;

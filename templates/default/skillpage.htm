@@ -32,7 +32,7 @@
 <!--{/if}-->
     {template fcg_skillpanel}
     <!--{if race_ai_is($pdata)}-->
-    <input type="button" class="cmdbutton" value="部署分体（20 技能点）" onclick="if(confirm('消耗 20 技能点部署分体？')){closeDialog($('skillpage'));$('mode').value='command';$('command').value='race_ai_deploy';postCmd('gamecmd','command.php');this.disabled=true;}">
+    <input type="button" class="cmdbutton" value="部署分体（20 技能点）" onclick="if(confirm('消耗 20 技能点部署分体？') && postCmd('gamecmd','command.php',{data:{mode:'command',command:'race_ai_deploy'}})){closeDialog($('skillpage'));this.disabled=true;}">
     <!--{/if}-->
     <br>提示：点击技能界面外任意位置或按ESC键即可返回主界面<br>
 </p>

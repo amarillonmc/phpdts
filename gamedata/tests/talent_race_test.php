@@ -153,8 +153,10 @@ $live_name=&$active['name']; player_save($active); $id=race_ai_create_body($acti
 talent_test_assert($id===2 && $active['name']==='tester' && $live_name==='tester','部署机体不会通过 EXTR_REFS 覆盖主机体名字');
 talent_test_assert($db->players[2]['name']==='tester#AI1' && $db->players[2]['money']===0 && $db->players[2]['wep']==='拳头' && $db->players[2]['wp']===80,'分体独立行、不复制金钱物品、不重复发放社团白值');
 talent_test_assert(race_ai_create_body($active,true)===false && count($db->players)===2,'初始分体只创建一次');
-$paid=race_ai_create_body($active); talent_test_assert($paid===3 && $active['skillpoint']===30,'部署新分体消耗 20 技能点');
-race_ai_switch($active,'2'); talent_test_assert($active['pid']===2 && $db->players[1]['clbpara']['ai_active_pid']===2 && $db->players[1]['clbpara']['ai_active']===0 && $db->players[2]['clbpara']['ai_active']===1,'切换激活标记与主行指针一起保存');
+$active['bid']=90; player_save($active); $active=fetch_playerdata_by_pid(1);
+$paid=race_ai_create_body($active); talent_test_assert($paid===3 && $active['skillpoint']===30,'旧局残留对手编号时仍可花 20 技能点部署分体');
+$db->players[2]['bid']=91;
+race_ai_switch($active,'2'); talent_test_assert($active['pid']===2 && $db->players[1]['clbpara']['ai_active_pid']===2 && $db->players[1]['clbpara']['ai_active']===0 && $db->players[2]['clbpara']['ai_active']===1,'两台机体只残留对手编号时可以切换，激活标记与主行指针一起保存');
 talent_test_assert(in_array('START TRANSACTION',$db->queries,true) && in_array('COMMIT',$db->queries,true),'机体切换使用数据库事务');
 talent_test_assert(race_ai_resolve_active($db->players[1])['pid']===2,'重新加载主行可解析活动分体');
 $db->players[1]['clbpara']['wheelchair']['learned']['wc_hunt']=1;
@@ -170,7 +172,19 @@ unset($db->players[3]['clbpara']['wheelchair']);
 $db->players[1]['endtime']=0;
 talent_test_assert(race_ai_recent_activity($db->players[1],900),'正在操纵分体时，待机主机不会被误判挂机');
 talent_test_assert(race_ai_switch($active,'3')===false && $active['pid']===2,'切换冷却期间禁止再次切换');
-$now+=31; $active['action']='enemy'; talent_test_assert(race_ai_switch($active,'3')===false,'战斗中禁止切换'); $active['action']='';
+$now+=31;
+$active['skillpoint']=20;
+foreach(array('enemy','chase','pchase','dfight','cover') as $battle_action) {
+	$active['action']=$battle_action;
+	talent_test_assert(!race_ai_switch($active,'3') && !race_ai_create_body($active) && $active['skillpoint']===20 && count($db->players)===3,'当前机体处于 '.$battle_action.' 时拦截切换和部署，保留技能点');
+	$active['action']=''; $db->players[3]['action']=$battle_action;
+	talent_test_assert(!race_ai_switch($active,'3') && $active['pid']===2,'目标机体处于 '.$battle_action.' 时仍拦截切换');
+}
+$db->players[3]['action']='';
+$db->players[1]['action']='pacorpse'; $db->players[1]['bid']=90;
+talent_test_assert(race_ai_switch($active,'1') && $active['action']==='pacorpse' && $active['bid']===90,'待机主机反杀后可以切入，保留尸体编号');
+$now+=30; $active['action']='corpse';
+talent_test_assert(race_ai_switch($active,'2') && $db->players[1]['action']==='corpse' && $db->players[1]['bid']===90,'离开搜尸机体后仍保存该机体自己的尸体');
 race_ai_enter_city($active,'true',6000); player_save($active);
 foreach($db->players as $body) talent_test_assert($body['pgroup']===3 && $body['clbpara']['dissociation_deadline']===6000,'机体 '.$body['pid'].' 同时进入湾城并共享截止时间');
 talent_test_assert(race_alive_accounts()===1,'三个机体只算一个存活账户');
@@ -236,18 +250,18 @@ function template($file) { return GAME_ROOT.'./gamedata/templates/talent_test_'.
 require GAME_ROOT.'./include/template.func.php';
 $compiled=array();
 try {
-	foreach(array('user_talent','race_equip','race_command','valid','user','itemfind','skillpage') as $file) {
+	foreach(array('user_talent','race_equip','race_command','race_ai_command','valid','user','itemfind','corpse','skillpage') as $file) {
 		parse_template($file,'talent_test','templates/default'); $compiled[]=template($file);
 		token_get_all(file_get_contents(template($file)),TOKEN_PARSE);
 	}
-	talent_test_assert(true,'7 个受影响模板经真实编译器生成合法 PHP');
+	talent_test_assert(true,'种族面板及相关页面经真实编译器生成合法 PHP');
 	$talent_available=true; $talent_notice=''; $talent_data=$talent; $talent_base='test'; $talent_csrf='test'; $talent_used=0; $talent_limit=80; $talent_free=80; $talent_buy_price=100; $talent_reset_price=100;
 	$talent_user=array('credits2'=>999); $talent_trees=talent_catalog(); $raceinfo=array(0=>'人类',1=>'兽人',2=>'妖精',3=>'龙',4=>'鱼人',5=>'ＡＩ');
 	set_error_handler(function($severity,$message,$file,$line) { throw new ErrorException($message,0,$severity,$file,$line); });
 	ob_start(); include template('user_talent'); $rendered=ob_get_clean();
 	talent_test_assert(substr_count($rendered,'name="talent_action" value="learn"')===96,'天赋面板渲染 16 棵树的 96 个真实提交节点');
 	$pdata=$dragon; $pid=1; ob_start(); include template('race_command'); $rendered=ob_get_clean();
-	talent_test_assert(strpos($rendered,'race_sell')!==false,'龙面板包含实际变现指令');
+	talent_test_assert(strpos($rendered,'race_sell')!==false && strpos($rendered,'race_ai_switch')===false && strpos($rendered,'race_ai_deploy')===false,'龙面板保留变现指令，只显示本种族操作');
 	$pdata=$db->players[1]; $pdata['hp']=100; $pid=1; ob_start(); include template('race_command'); $rendered=ob_get_clean();
 	talent_test_assert(strpos($rendered,'race_ai_switch')!==false && strpos($rendered,'race_ai_deploy')!==false,'ＡＩ面板包含切换与部署指令');
 	restore_error_handler();

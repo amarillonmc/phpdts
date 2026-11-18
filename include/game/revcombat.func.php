@@ -340,6 +340,9 @@ namespace revcombat
 			}
 		}
 		if(function_exists('ruleset_battle_finish_hook')) ruleset_battle_finish_hook($pa,$pd);
+		// 只在存活的 AI 机体结束交手时清理旧对手，死者和后续动作仍需使用 bid。
+		if(!empty($pa['bid']) && $pa['hp']>0 && empty($pa['action']) && \race_ai_is($pa)) $pa['bid'] = 0;
+		if(!empty($pd['bid']) && $pd['hp']>0 && empty($pd['action']) && \race_ai_is($pd)) $pd['bid'] = 0;
 		# 保存双方状态
 		if ($active)
 		{
