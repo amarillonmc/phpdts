@@ -1,4 +1,6 @@
+<!--{eval $no_skill_input = 1;}-->
 <!--{loop $club_skillslist $clb $vars}-->
+<!--{if isset($clubinfo[$clb])}-->
 <dialog id="skillhelp-c{$clb}" style="width: 568px; max-width: 90%;max-height: 80%;">
 
 <p style="margin-left:0px; margin-top:0px; margin-right:0px; margin-bottom:0px;">
@@ -26,4 +28,5 @@
 </p>
 <img class="dialog-background" src="img/profile.gif" onclick="closeDialog($('skillhelp-c{$clb}'));this.disabled=true;">
 </dialog>
+<!--{/if}-->
 <!--{/loop}-->

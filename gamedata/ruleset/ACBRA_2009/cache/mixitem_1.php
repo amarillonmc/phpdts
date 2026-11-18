@@ -17,7 +17,7 @@ $mixinfo = array
 	array('stuff' => array('杂炊','松茸'),'result' => array('松茸御饭','HS',150,3,),),
 	array('stuff' => array('咖喱','面包'),'result' => array('咖喱面包','HH',80,2,),),
 	array('stuff' => array('牛奶','立顿茶包','糯米丸子'),'result' => array('珍珠奶茶','HB',150,4,),),
-	array('stuff' => array('《小黄的草帽》','《小黄的钓鱼竿》','《小黄的行军靴》'),'result' => array('《小黄的精灵球》','WC',222,∞,),),
+	array('stuff' => array('《小黄的草帽》','《小黄的钓鱼竿》','《小黄的行军靴》'),'result' => array('《小黄的精灵球》','WC',222,'∞',),),
 	array('stuff' => array('桔黄色的果酱','面包'),'result' => array('味觉凶器之不甜的果酱面包','WC',80,50,),),
 	array('stuff' => array('味觉凶器之不甜的果酱面包','早苗面包'),'result' => array('真味觉凶器之一击必杀无双不甜面包','WD',80,12,),),
 	array('stuff' => array('月宫 亚由的半身像','神尾 观铃的半身像','古河 渚的半身像'),'result' => array('KEY系催泪弹','WD',1500,1,),),

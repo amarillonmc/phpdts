@@ -217,7 +217,7 @@ function get_npc_helpinfo($nlist,$tooltip=1)
 	{
 		if(!empty($npcs))
 		{
-			foreach(Array('sub','asub','esub') as $tsub)
+			foreach(Array('sub','asub','esub','asub_ibis','asub_classic') as $tsub)
 			{
 				if(!empty($npcs[$tsub]))
 				{
@@ -225,7 +225,7 @@ function get_npc_helpinfo($nlist,$tooltip=1)
 					{
 						$snpc = array_merge($npcs,$npc);
 						$snpc = array_merge($npcinit,$snpc);
-						unset($snpc['sub']);unset($snpc['asub']);unset($snpc['esub']);
+						unset($snpc['sub'],$snpc['asub'],$snpc['esub'],$snpc['asub_ibis'],$snpc['asub_classic']);
 						foreach(Array('p','k','g','c','d','f') as $val)
 						{
 							if(!empty($snpc['w'.$val]))
@@ -266,15 +266,19 @@ function get_npc_helpinfo($nlist,$tooltip=1)
 								{
 									$snpc['pls'] = '原地';
 								}
+								elseif(function_exists('ending_routes_enabled') && ending_routes_enabled() && in_array($i,Array(20,21,22,24,26)) && $snpc['pls']==34 && isset($hplsinfo[4][134]))
+								{
+									$snpc['pls'] = $hplsinfo[4][134];
+								}
 								else
 								{
-									$snpc['pls'] = $snpc['pls']==99 ? '随机' : $plsinfo[$snpc['pls']];
+									$snpc['pls'] = $snpc['pls']==99 ? '随机' : (isset($plsinfo[$snpc['pls']]) ? $plsinfo[$snpc['pls']] : '');
 								}
 							}
 						}
 						if(isset($snpc['pose']))$snpc['poseinfo'] = "<span tooltip=\"{$posetips[$snpc['pose']]}\">".$poseinfo[$snpc['pose']]."</span>";
 						if(isset($snpc['tactic']))$snpc['tacinfo'] = "<span tooltip=\"{$tactips[$snpc['tactic']]}\">".$tacinfo[$snpc['tactic']]."</span>";
-						if(isset($snpc['club'])) $snpc['club'] = $snpc['club']==99 ? '第一形态' : $clubinfo[$snpc['club']];
+						if(isset($snpc['club'])) $snpc['club'] = $snpc['club']==99 ? '第一形态' : (isset($clubinfo[$snpc['club']]) ? $clubinfo[$snpc['club']] : '');
 						//格式化装备、道具名
 						foreach (Array('wep','arb','arh','ara','arf','art','itm0','itm1','itm2','itm3','itm4','itm5','itm6') as $value)
 						{
@@ -449,26 +453,48 @@ function get_item_place($which)
 
 function get_item_npcdrop($which)
 {
-	include config('npc',1);
-	include config('addnpc',1);
-	include config('evonpc',1);
+	global $gamecfg;
+	static $cached_npclist = array();
+	$npcfile = config('npc',$gamecfg);
+	$addnpcfile = config('addnpc',$gamecfg);
+	$evonpcfile = config('evonpc',$gamecfg);
+	$cache_key = $npcfile.'|'.$addnpcfile.'|'.$evonpcfile.'|'.(function_exists('ending_routes_enabled') && ending_routes_enabled() ? '1' : '0');
+
+	if(!isset($cached_npclist[$cache_key]))
+	{
+		$npcinfo = $anpcinfo = $enpcinfo = array();
+		if(file_exists($npcfile)) include $npcfile;
+		if(file_exists($addnpcfile)) include $addnpcfile;
+		if(file_exists($evonpcfile)) include $evonpcfile;
+
+		$nownpclist = $npcinfo;
+		foreach($anpcinfo as $akey => $anpcs)
+		{
+			if(!isset($nownpclist[$akey]))
+			{
+				$nownpclist[$akey] = $anpcs;
+				unset($nownpclist[$akey]['sub']);
+			}
+			if(!empty($anpcs['sub']))
+			{
+				foreach($anpcs['sub'] as $aid => $anpc)
+				{
+					$nownpclist[$akey]['sub']['a'.$aid] = $anpc;
+				}
+			}
+		}
+		foreach($enpcinfo as $ekey => $enpcs)
+		{
+			foreach($enpcs as $sname => $enpc)
+			{
+				$nownpclist[$ekey]['sub'][$sname] = $enpc;
+			}
+		}
+		$cached_npclist[$cache_key] = $nownpclist;
+	}
+	$nownpclist = $cached_npclist[$cache_key];
 
 	$result = '';
-	$nownpclist = $npcinfo;
-	foreach($enpcinfo as $ekey => $enpcs)
-	{
-		foreach($enpcs as $sname => $enpc)
-		{
-			$nownpclist[$ekey]['sub'][$sname] = $enpc;
-		}
-	}
-	foreach($anpcinfo as $akey => $anpcs)
-	{
-		foreach($anpcs['sub'] as $aid => $anpc)
-		{
-			$nownpclist[$akey]['sub']['a'.$aid] = $anpc;
-		}
-	}
 	foreach($nownpclist as $ntype => $npcs)
 	{
 		foreach(array('wep','arb','arh','ara','arf','art','itm1','itm2','itm3','itm4','itm5','itm6') as $nipval)

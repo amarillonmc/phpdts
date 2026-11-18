@@ -5,7 +5,7 @@ $mixinfo = array
 	( 
 	array('stuff' => array('轻油','肥料'),'result' => array('火药','X',1,1,),),
 	array('stuff' => array('水','地雷'),'result' => array('水鸳鸯','WD',32,32,'d'),),
-	array('stuff' => array('灯油','钉'),'result' => array('☆仙女棒☆','WD',60,60,d),),
+	array('stuff' => array('灯油','钉'),'result' => array('☆仙女棒☆','WD',60,60,'d'),),
 	array('stuff' => array('探测器电池','打火机'),'result' => array('☆自爆电池☆','WD',140,28,'d'),),
 	array('stuff' => array('汽油','空瓶'),'result' => array('☆火焰瓶☆','WC',60,24,'ud'),),
 	array('stuff' => array('信管','火药'),'result' => array('★炸药★','WD',105,60,'d'),),

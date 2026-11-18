@@ -3,8 +3,11 @@
 <!--{else}-->
 	<!--{eval $ksub='sub';}-->
 <!--{/if}-->
+<!--{if !empty($npcinfo[$kind][$ksub])}-->
 <!--{loop $npcinfo[$kind][$ksub] $key $value}-->
-<!--{if isset($npcdescription[$kind]['sub'][$key]['description']) }-->
+<!--{if isset($npcdescription[$kind][$ksub][$key]['description']) }-->
+	<!--{eval $description = $npcdescription[$kind][$ksub][$key]['description'];}-->
+<!--{elseif isset($npcdescription[$kind]['sub'][$key]['description']) }-->
 	<!--{eval $description = $npcdescription[$kind]['sub'][$key]['description'];}-->
 <!--{elseif isset($npcinfo[$kind][$ksub][$key]['description'])}-->
 	<!--{eval $description = $npcinfo[$kind][$ksub][$key]['description'];}-->
@@ -25,9 +28,9 @@
 							<!--{else}-->
 								<!--{eval $npc_icon = file_exists('img/'.$npc_icon_id) ? 'img/'.$npc_icon_id : 'img/n_'.$npc_icon_id.'.gif';}-->
 							<!--{/if}-->
-							<!--{eval $aicon = str_replace('.','a.',$npc_icon)}-->
+							<!--{eval $aicon = preg_replace('/(\.[^.\/]+)$/', 'a$1', $npc_icon);}-->
 							<IMG width=140px src="$npc_icon" border="0" valign="middle"/>
-							<!--{if file_exists($aicon)}-->
+							<!--{if $aicon !== $npc_icon && file_exists($aicon)}-->
 								<div class="icona">
 									<IMG class="aicon" width=140px src="$aicon">
 								</div>
@@ -41,7 +44,7 @@
 									NPC类别
 								</td>
 								<td width=100px align="center" class="b3">
-									$typeinfo[$kind]
+									<!--{if isset($typeinfo[$kind])}-->$typeinfo[$kind]<!--{/if}-->
 								</td>
 								<td width=100px align="center" class="b1">
 									数目
@@ -49,6 +52,8 @@
 								<td width=100px align="center" class="b3">
 									<!--{if !empty($npcdescription[$kind][$ksub][$key]['count'])}-->
 										$npcdescription[$kind][$ksub][$key]['count']
+									<!--{elseif !empty($npcdescription[$kind]['sub'][$key]['count'])}-->
+										$npcdescription[$kind]['sub'][$key]['count']
 									<!--{else}-->
 										-
 									<!--{/if}-->
@@ -57,7 +62,9 @@
 									所处地点
 								</td>
 								<td width=100px align="center" class="b3">
-								<!--{if $npcinfo[$kind][$ksub][$key]['horizon']}-->
+								<!--{if !empty($npcinfo[$kind][$ksub][$key]['horizon']) && $npcinfo[$kind][$ksub][$key]['horizon'] == 2}-->
+									<span class="ltcrimson" tooltip="处于模式ＥＸ中">
+								<!--{elseif !empty($npcinfo[$kind][$ksub][$key]['horizon'])}-->
 									<span class="darkviolet" tooltip="处于灵子视界中">
 								<!--{else}-->
 									<span class="yellow" tooltip="处于标准视界中">
@@ -170,7 +177,11 @@
 									武器名称
 								</td>
 								<td width=505px align="center" class="b3">
+									<!--{if !empty($npcinfo[$kind][$ksub][$key]['wep'])}-->
 									$npcinfo[$kind][$ksub][$key]['wep']/$npcinfo[$kind][$ksub][$key]['wepk']/$npcinfo[$kind][$ksub][$key]['wepe']/$npcinfo[$kind][$ksub][$key]['weps']<!--{if isset($npcinfo[$kind][$ksub][$key]['wepsk_words'])}-->/$npcinfo[$kind][$ksub][$key]['wepsk_words']<!--{/if}-->
+									<!--{else}-->
+									-/-/-
+									<!--{/if}-->
 								</td>
 							</tr>
 							<tr>
@@ -178,7 +189,11 @@
 									身体装备
 								</td>
 								<td width=505px align="center" class="b3">
+									<!--{if !empty($npcinfo[$kind][$ksub][$key]['arb'])}-->
 									$npcinfo[$kind][$ksub][$key]['arb']/$npcinfo[$kind][$ksub][$key]['arbe']/$npcinfo[$kind][$ksub][$key]['arbs']<!--{if isset($npcinfo[$kind][$ksub][$key]['arbsk_words'])}-->/$npcinfo[$kind][$ksub][$key]['arbsk_words']<!--{/if}-->
+									<!--{else}-->
+									-/-/-
+									<!--{/if}-->
 								</td>
 							</tr>
 							<tr>
@@ -186,7 +201,11 @@
 									头部装备
 								</td>
 								<td width=505px align="center" class="b3">
+									<!--{if !empty($npcinfo[$kind][$ksub][$key]['arh'])}-->
 									$npcinfo[$kind][$ksub][$key]['arh']/$npcinfo[$kind][$ksub][$key]['arhe']/$npcinfo[$kind][$ksub][$key]['arhs']<!--{if isset($npcinfo[$kind][$ksub][$key]['arhsk_words'])}-->/$npcinfo[$kind][$ksub][$key]['arhsk_words']<!--{/if}-->
+									<!--{else}-->
+									-/-/-
+									<!--{/if}-->
 								</td>
 							</tr>
 							<tr>
@@ -206,7 +225,11 @@
 									腿部装备
 								</td>
 								<td width=505px align="center" class="b3">
+									<!--{if !empty($npcinfo[$kind][$ksub][$key]['arf'])}-->
 									$npcinfo[$kind][$ksub][$key]['arf']/$npcinfo[$kind][$ksub][$key]['arfe']/$npcinfo[$kind][$ksub][$key]['arfs']<!--{if isset($npcinfo[$kind][$ksub][$key]['arfsk_words'])}-->/$npcinfo[$kind][$ksub][$key]['arfsk_words']<!--{/if}-->
+									<!--{else}-->
+									-/-/-
+									<!--{/if}-->
 								</td>
 							</tr>
 							<tr>
@@ -243,3 +266,4 @@
 <br>
 <!--{/if}-->
 <!--{/loop}-->
+<!--{/if}-->

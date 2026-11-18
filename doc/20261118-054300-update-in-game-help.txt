@@ -1,0 +1,24 @@
+更新游戏内帮助与多模式（RuleSet）图鉴隔离
+
+游戏内帮助（help.php、itemhelp.php 及对应模板）原停留在 TORONTO 至 YELLOWKNIFE 时期，未反映大房间现行四条结局路线及近期新增系统，且在异色房间或时光重现房间打开帮助时会直接改写公共静态模板文件，造成跨房间缓存污染。
+
+本次改动内容：
+1. 重写 templates/default/help.htm 与 templates/default/npchelp.htm：
+   - 按当前大房间规则更新基础机制、四条结局路线（伪·解禁、真·解禁「冰炎合璧」、伪·解离「沙盘一梦」、真·解离「真实解离」）及轮椅辅助分流说明；保留入口条件、关键引导物与枢纽 NPC 指引，不剧透隐藏合成公式、解谜答案、湾城投影敌人具体面板与后台设定。
+   - 更新体力灼烧、50 体力包扎、10 人上限队伍、3 格视野记忆、安全箱与右侧副面板、三种战术视界（标准/灵子/模式EX）、恶性受伤与九种诅咒、全部内定与上级社团（至崩坏心核、神骰叛军、可怜猫）、16 棵账户天赋树与六大种族、歌簿与「Sun Is Shining」阳光圣域、周期任务（QUEST）、光玉雨天气、周边系统（头衔、轮椅、饼来、种火商店、激活码与入场赐福、纸娃娃、幻影造物与万象投影）及单机安装向导说明。
+   - 新增第 23 节「房间系统与 RuleSet 模式指南」，补齐全部 6 种异色房间（FCG、AN:OTHER、FLASH、ELEVATOR、莱卡的进击、RAID：暴走笼中鸟）与 5 种时光重现房间（YELLOWKNIFE、ACBRA 2009、ACDTS 2011、ACDTS 298SP4、ACDTS298 ALL RANDOM）的规则说明；将原版直召路线、初代三执行官与表侧英灵殿等内容归档至 YELLOWKNIFE 与历史模式部分。
+2. 修复 help.php、itemhelp.php、include/game/itemplace.func.php 及模板的多模式兼容与样式问题：
+   - 合成表与掉落表按模式键分别缓存至 gamedata/templates/mixhelp_*.htm 与 itemhelp_*.htm，不再覆写受版本控制的 templates/default/mixhelp.htm 与 itemhelp.htm，消除跨 RuleSet 缓存污染；get_item_npcdrop() 改为按当前 $gamecfg 读取并按模式缓存合并后的 NPC 列表。
+   - help.php 显式设置 $no_skill_input = 1 并按当前模式开关与 $clubinfo 过滤 $club_skillslist，避免称号技能弹窗渲染局内升级按钮或在禁用技能树的旧模式中引用缺失社团；补齐旧版合成表缺省分类与属性位以及旧版天气表缺省修正值的判空保护。
+   - 修正 NPC 图鉴合并顺序（先合并追加 NPC 再合并进化形态，保留外层模板属性），拆分初代/朱鹮执行官分组，新增新红杀八教头（排除白凰的符灵幻象）与代码洪流动物大排档弹窗，恢复电掣第二形态入口，并在启用新结局路线时将旧英灵殿 NPC 所在地正确显示为「英灵殿」而非「代码洪流」。
+   - 修复 npcinfohelp.htm 大立绘后缀替换破坏前导 ./ 路径的问题，补充模式EX视界标记与箭矢弹药分类解析；补齐 templates/nouveau/css.htm 缺失的颜色类、大立绘悬浮样式与 dialog 背景层级，避免 help.php 内联样式覆盖 nouveau-ui。
+   - 修复 gamedata/ruleset/ACBRA_2009/cache/mixitem_1.php 与 ACDTS_2011/cache/mixitem_1.php 中两处未加引号的字面常量（∞、d），防止在 PHP 8.x 下打开对应模式帮助页时致命报错。
+
+验证与限制：
+- 使用本机 PHP 7.4.33（short_open_tag=1）对全部改动 PHP 文件及编译后的 7 份 .tpl.php 模板执行语法检查通过。
+- 通过 CLI 隔离渲染脚本验证大房间（默认与 nouveau 两套模板）及全部 11 个 RuleSet 下的 help.php 与 itemhelp.php 渲染输出、缓存隔离及无新增运行时警告/未定义索引。
+- 运行回归脚本 quest_q6_test.php、raid_ruleset_test.php 全部通过（laika_ruleset_test.php 仅既有非本次改动范围内的 dialogue-container 顺序断言未过）。
+- 本次验证基于 CLI 与桩数据库完成，未连接真实 MySQL 站点做浏览器实机点击联调。
+
+Summary (EN):
+Updated in-game help (help.php, itemhelp.php, help.htm, npchelp.htm) to reflect the current main room rules, the four ending routes, talents/races, severe injuries/curses, clubs up to 25, singing/quests, peripheral features, and dedicated guides for all 11 RuleSets while archiving YELLOWKNIFE legacy mainlines/NPCs. Isolated generated mixhelp/itemhelp caches per RuleSet under gamedata/templates/, fixed NPC merge/location/avatar bugs and Nouveau dialog/color styles, and guarded legacy RuleSet configs for PHP 7.4/8.x compatibility. Verified via PHP 7.4.33 lint, multi-RuleSet CLI render checks, and existing regression scripts.

@@ -6,6 +6,19 @@ require './include/common.inc.php';
 require './include/game.func.php';
 include_once GAME_ROOT.'./include/game/itemplace.func.php';
 
+$no_skill_input = 1;
+$help_ruleset_id = function_exists('get_current_ruleset_id') ? get_current_ruleset_id() : '';
+$help_ending_v2 = function_exists('ending_routes_enabled') && ending_routes_enabled();
+$help_ruleset_cfg = (!empty($help_ruleset_id) && function_exists('get_ruleset_config')) ? get_ruleset_config($help_ruleset_id) : false;
+$help_ruleset_name = ($help_ruleset_cfg && !empty($help_ruleset_cfg['name'])) ? $help_ruleset_cfg['name'] : $help_ruleset_id;
+if($help_ruleset_cfg && isset($help_ruleset_cfg['club_skills']) && empty($help_ruleset_cfg['club_skills'])) {
+	$club_skillslist = array();
+} elseif(!empty($club_skillslist) && is_array($club_skillslist)) {
+	foreach(array_keys($club_skillslist) as $clb_k) {
+		if(!isset($clubinfo[$clb_k])) unset($club_skillslist[$clb_k]);
+	}
+}
+
 $mixfile = config('mixitem',$gamecfg);
 $shopfile = config('shopitem',$gamecfg);
 $mapitemfile = config('mapitem',$gamecfg);
@@ -14,69 +27,112 @@ $ovlfile = config('overlay',$gamecfg);
 $presentfile = config('present',$gamecfg);
 $boxfile = config('box',$gamecfg);
 $vnmixfile = config('vnmixitem',$gamecfg);
-include $mixfile;
-include $vnmixfile;
-$writefile = GAME_ROOT.TPLDIR.'/mixhelp.htm';
+$npcfile = config('npc',$gamecfg);
+$addnpcfile = config('addnpc',$gamecfg);
+$evonpcfile = config('evonpc',$gamecfg);
 
-include config('npc',$gamecfg);
-include config('addnpc',$gamecfg);
-include config('evonpc',$gamecfg);
-$help_ruleset_id = function_exists('get_current_ruleset_id') ? get_current_ruleset_id() : '';
-//for ($i=0; $i<=20; $i++) $p[$i]=$i; //？？？
+$mixinfo = $vn_mixinfo = array();
+if(file_exists($mixfile)) include $mixfile;
+if(file_exists($vnmixfile)) include $vnmixfile;
+
+$mix_cache_key = !empty($help_ruleset_id) ? preg_replace('/[^A-Za-z0-9_]/', '', $help_ruleset_id) : ($help_ending_v2 ? 'default' : 'legacy');
+$help_cache_dir = GAME_ROOT.'./gamedata/templates';
+if(!is_dir($help_cache_dir)) @mkdir($help_cache_dir, 0777, true);
+$writefile = $help_cache_dir.'/mixhelp_'.$mix_cache_key.'.htm';
+
+$npcinfo = $anpcinfo = $enpcinfo = array();
+if(file_exists($npcfile)) include $npcfile;
+if(file_exists($addnpcfile)) include $addnpcfile;
+if(file_exists($evonpcfile)) include $evonpcfile;
+
 for ($i=1; $i<=6; $i++) $itemlst[$i]=$i;
 
-# 将evonpc加入npc队列
-foreach($enpcinfo as $ekey => $enpcs)
-{
-	# evonpc在npcinfo中一定会有大类 所以只加入子类别
-	foreach($enpcs as $sname => $enpc) $npcinfo[$ekey]['esub'][$sname] = $enpc;
-}
-# 将addnpc加入npc队列
+# 先将addnpc加入npc队列，确保无主类的类别（如type 89、12）继承addnpc外层默认属性
 foreach($anpcinfo as $akey => $anpcs)
 {
-	# 如果npc队列中没有该addnpc大类，则先加入大类
-	if(!isset($npcinfo[$akey])) $npcinfo[$akey] = $anpcs;
-	# 之后遍历每个子类addnpc，依次加入
-	foreach($anpcs['sub'] as $aid => $anpc) $npcinfo[$akey]['asub'][$aid] = $anpc;
+	if(!isset($npcinfo[$akey]))
+	{
+		$npcinfo[$akey] = $anpcs;
+		unset($npcinfo[$akey]['sub']);
+	}
+	if(!empty($anpcs['sub']))
+	{
+		foreach($anpcs['sub'] as $aid => $anpc) $npcinfo[$akey]['asub'][$aid] = $anpc;
+	}
 }
+# 再将evonpc加入npc队列
+foreach($enpcinfo as $ekey => $enpcs)
+{
+	if(!isset($npcinfo[$ekey])) $npcinfo[$ekey] = array();
+	foreach($enpcs as $sname => $enpc) $npcinfo[$ekey]['esub'][$sname] = $enpc;
+}
+# 拆分幻影执行官（旧版三执行官 0..2 与朱鹮执行官 3..5），并排除白凰的临时符灵幻象子项
+if(!empty($npcinfo[7]['asub']))
+{
+	foreach($npcinfo[7]['asub'] as $aid => $anpc)
+	{
+		if($aid >= 3) $npcinfo[7]['asub_ibis'][$aid] = $anpc;
+		else $npcinfo[7]['asub_classic'][$aid] = $anpc;
+	}
+}
+if(isset($npcinfo[34]['asub'][8])) unset($npcinfo[34]['asub'][8]);
+
 # RuleSet可收束帮助页中的兼容子类型，并补充本地说明。
 # A RuleSet may collapse compatibility-only help variants and add local descriptions.
 if(function_exists('ruleset_npc_help_filter_hook')) ruleset_npc_help_filter_hook($npcinfo,$npcdescription);
 $npcinfo = get_npc_helpinfo($npcinfo);
-//print_r($npcinfo[14]['esub']);
 
-$ty1[1]=1; $ty1[2]=88; 
-$ty2[1]=Array(5,'asub'); $ty2[2]=Array(6,'asub'); 
-$ty2a[1]=Array(19,'asub'); #真红蓝
-$ty3[1]=Array(11,'asub');
-$ty4[1]=90; $ty4[2]=92;
-//$ty5[1]=2; 
-$ty5[1] = Array(2,'asub');
-$ty6[1]=14; $ty6[2]=4; 
-$ty6e[1]=Array(14,'esub'); #女主第二形态情报
-$ty7[1]=Array(13,'asub'); 
-$ty8[1]=Array(15,'asub'); 
-$ty9[1]=22;
-$ty10[1]=21;
-$ty11[1]=Array(89,'asub'); 
-$ty11e[1]=Array(89,'esub'); #电掣NPC第二形态情报
-$ty12[1]=24;
-$ty13[1]=Array(93,'asub'); #可召唤小兵
-$ty25a[1] = Array(25,'asub'); #佣兵NPC
+$ty1 = Array(1=>1, 2=>88);
+$ty2 = Array(1=>Array(5,'asub'), 2=>Array(6,'asub'), 3=>Array(9,'asub'));
+$ty2a = Array(1=>Array(19,'asub')); #真红蓝
+$ty7_ibis = Array(1=>Array(7,'asub_ibis')); #朱鹮执行官
+$ty7_classic = Array(1=>Array(7,'asub_classic')); #旧版三执行官
+$ty34 = Array(1=>Array(34,'asub')); #新红杀八大教头
+$ty36 = Array(1=>36); #代码洪流·动物大排档成员
+$ty3 = Array(1=>Array(11,'asub'));
+$ty4 = Array(1=>90, 2=>92);
+$ty5 = Array(1=>Array(2,'asub'));
+$ty6 = Array(1=>14, 2=>4);
+$ty6e = Array(1=>Array(14,'esub')); #女主第二形态情报
+$ty7 = Array(1=>Array(13,'asub'));
+$ty8 = Array(1=>Array(15,'asub'));
+$ty9 = Array(1=>22);
+$ty10 = Array(1=>21);
+$ty11 = Array(1=>Array(89,'asub'));
+$ty11e = Array(1=>Array(89,'esub')); #电掣NPC第二形态情报
+$ty12 = Array(1=>24);
+$ty13 = Array(1=>Array(93,'asub')); #可召唤/自然入场高级小兵
+$ty25a = Array(1=>Array(25,'asub')); #佣兵NPC
 
-if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemtime($writefile) || filemtime($shopfile) > filemtime($writefile) || filemtime($mapitemfile) > filemtime($writefile) || filemtime($synfile) > filemtime($writefile) || filemtime($ovlfile) > filemtime($writefile) || filemtime($presentfile) > filemtime($writefile) || filemtime($boxfile) > filemtime($writefile)){
-	$mixitem = array();
-	foreach($mixinfo as $mix){
-		if($mix['class'] !== 'hidden')
+$mix_need_rebuild = !file_exists($writefile);
+if(!$mix_need_rebuild)
+{
+	$write_mtime = filemtime($writefile);
+	foreach(array($vnmixfile,$mixfile,$shopfile,$mapitemfile,$synfile,$ovlfile,$presentfile,$boxfile,$npcfile,$addnpcfile,$evonpcfile) as $srcfile)
+	{
+		if($srcfile && file_exists($srcfile) && filemtime($srcfile) > $write_mtime)
 		{
-			//名字
-			$mix['result'][0] = parse_nameinfo_desc($mix['result'][0]);
-			//属性
-			$mixitmsk = empty($mix['result'][4]) ? '' : parse_skinfo_desc($mix['result'][4],$mix['result'][1]);
-			//类别
-			$mixitmk = parse_kinfo_desc($mix['result'][1],$mix['result'][4]);
+			$mix_need_rebuild = true;
+			break;
+		}
+	}
+}
 
-			$mixitem[$mix['class']][] = array('stuff' => $mix['stuff'], 'result' => array($mix['result'][0],$mixitmk,$mix['result'][2],$mix['result'][3],$mixitmsk));
+if($mix_need_rebuild){
+	$mixitem = array();
+	$vmixitem = array();
+	if(!empty($mixinfo) && is_array($mixinfo)){
+		foreach($mixinfo as $mix){
+			$mclass = isset($mix['class']) ? $mix['class'] : 'item';
+			if($mclass !== 'hidden')
+			{
+				$mix['result'][0] = parse_nameinfo_desc($mix['result'][0]);
+				$raw_sk = isset($mix['result'][4]) ? $mix['result'][4] : '';
+				$mixitmsk = empty($raw_sk) ? '' : parse_skinfo_desc($raw_sk,$mix['result'][1]);
+				$mixitmk = parse_kinfo_desc($mix['result'][1],$raw_sk);
+
+				$mixitem[$mclass][] = array('stuff' => $mix['stuff'], 'result' => array($mix['result'][0],$mixitmk,$mix['result'][2],$mix['result'][3],$mixitmsk));
+			}
 		}
 	}
 	
@@ -100,8 +156,8 @@ if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemti
 		);
 	$mixhelpinfo = '';
 	foreach($mixitem as $class => $list){
-		$classname = $mixclass[$class][0];
-		$classcolor = $mixclass[$class][1];
+		$classname = isset($mixclass[$class][0]) ? $mixclass[$class][0] : $class;
+		$classcolor = isset($mixclass[$class][1]) ? $mixclass[$class][1] : 'yellow';
 		$mixhelpinfo .= "<p><span class=\"$classcolor\">{$classname}合成表</span>：</p>\n";
 		$mixhelpinfo .= 
 		"<table>
@@ -119,9 +175,9 @@ if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemti
 		foreach($list as $val){
 			if(!empty($val['result'][4])){$itmskword = '/'.$val['result'][4];}
 			else{$itmskword = '';}
-			if(!isset($val['stuff'][2])){$val['stuff'][2] = '-';}
-			if(!isset($val['stuff'][3])){$val['stuff'][3] = '-';}
-			if(!isset($val['stuff'][4])){$val['stuff'][4] = '-';}
+			for($si=0;$si<=4;$si++){
+				if(!isset($val['stuff'][$si])){$val['stuff'][$si] = '-';}
+			}
 			$mixhelpinfo .= "<tr>";
 			for ($i=0; $i<=4; $i++)
 			{
@@ -133,11 +189,7 @@ if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemti
 					if(!empty($tooltipinfo)) $mixhelpinfo .= "><span tooltip=\"".$tooltipinfo."\" ";
 				}
 				$mixhelpinfo .= ">{$val['stuff'][$i]}</span></td>";
-				//修复加入悬浮提示后出现的问题。
 			}
-//			$mixhelpinfo .= "<td class=\"b3\">→</td>
-//					<td class=\"b3\" title=\"{$val['result'][1]}/{$val['result'][2]}/{$val['result'][3]}{$itmskword}\"><span>{$val['result'][0]}</span></td>
-//					<td class=\"b3\"><span>{$val['result'][1]}/{$val['result'][2]}/{$val['result'][3]}{$itmskword}</span></td>
 			$mixhelpinfo .= "<td class=\"b3\">→</td>
 			<td class=\"b3\"><span>{$val['result'][0]}</span></td>
 			<td class=\"b3\"><span>{$val['result'][1]}/{$val['result'][2]}/{$val['result'][3]}{$itmskword}</span></td>
@@ -146,88 +198,95 @@ if(filemtime($vnmixfile) > filemtime($writefile) ||filemtime($mixfile) > filemti
 		}
 		$mixhelpinfo .= "</table>\n";
 	}
-
-	$mixhelpinfo .= "\r <br><span class='evergreen'>此外，游戏中还包含由玩家提交的原创合成：</span><br> \r";
 
 	# 玩家原创合成部分
-	foreach($vn_mixinfo as $mix)
+	if(!empty($vn_mixinfo) && is_array($vn_mixinfo))
 	{
-		if($mix['class'] !== 'hidden')
+		foreach($vn_mixinfo as $mix)
 		{
-			//名字
-			$mix['result'][0] = parse_nameinfo_desc($mix['result'][0]);
-			//属性
-			$mixitmsk = empty($mix['result'][4]) ? '' : parse_skinfo_desc($mix['result'][4],$mix['result'][1]);
-			//类别
-			$mixitmk = parse_kinfo_desc($mix['result'][1],$mix['result'][4]);
-			
-			$vmixitem[$mix['class']][] = array('name' => $mix['name'], 'stuff' => $mix['stuff'], 'result' => array($mix['result'][0],$mixitmk,$mix['result'][2],$mix['result'][3],$mixitmsk));
+			$mclass = isset($mix['class']) ? $mix['class'] : 'item';
+			if($mclass !== 'hidden')
+			{
+				$mix['result'][0] = parse_nameinfo_desc($mix['result'][0]);
+				$raw_sk = isset($mix['result'][4]) ? $mix['result'][4] : '';
+				$mixitmsk = empty($raw_sk) ? '' : parse_skinfo_desc($raw_sk,$mix['result'][1]);
+				$mixitmk = parse_kinfo_desc($mix['result'][1],$raw_sk);
+
+				$vmixitem[$mclass][] = array('name' => $mix['name'], 'stuff' => $mix['stuff'], 'result' => array($mix['result'][0],$mixitmk,$mix['result'][2],$mix['result'][3],$mixitmsk));
+			}
 		}
 	}
-	
-	foreach($vmixitem as $class => $list){
-		$classname = $mixclass[$class][0];
-		$classcolor = $mixclass[$class][1];
-		$mixhelpinfo .= "<p><span class=\"$classcolor\">{$classname}合成表 - 玩家原创</span>：</p>\n";
-		$mixhelpinfo .= 
-		"<table>
-			<tr>
-				<td class=\"b1\" width=100px><span>配方作者</span></td>
-				<td class=\"b1\" height=20px><span>合成材料一</span></td>
-				<td class=\"b1\"><span>合成材料二</span></td>
-				<td class=\"b1\"><span>合成材料三</span></td>
-				<td class=\"b1\"><span>合成材料四</span></td>
-				<td class=\"b1\"><span>合成材料五</span></td>
-				<td class=\"b1\"></td>
-				<td class=\"b1\"><span>合成结果</span></td>
-				<td class=\"b1\"><span>物品属性</span></td>
-			</tr>
-			";
-		foreach($list as $val){
-			if(!empty($val['result'][4])){$itmskword = '/'.$val['result'][4];}
-			else{$itmskword = '';}
-			if(!isset($val['stuff'][2])){$val['stuff'][2] = '-';}
-			if(!isset($val['stuff'][3])){$val['stuff'][3] = '-';}
-			if(!isset($val['stuff'][4])){$val['stuff'][4] = '-';}
-			$mixhelpinfo .= "<tr><td class=\"b3\">{$val['name']}</td>";
-			for ($i=0; $i<=4; $i++)
-			{
-				$mixhelpinfo .= "<td class=\"b3\" ";
-				if ($i==0)  $mixhelpinfo .= "height=20px";
-				if ($val['stuff'][$i]!='-')
-				{
-					$tooltipinfo = get_item_place($val['stuff'][$i]);
-					if(!empty($tooltipinfo)) $mixhelpinfo .= "><span tooltip=\"".$tooltipinfo."\" ";
-				}
-				$mixhelpinfo .= ">{$val['stuff'][$i]}</span></td>";
-			}
-			$mixhelpinfo .= "<td class=\"b3\">→</td>
-			<td class=\"b3\"><span>{$val['result'][0]}</span></td>
-			<td class=\"b3\"><span>{$val['result'][1]}/{$val['result'][2]}/{$val['result'][3]}{$itmskword}</span></td>
+
+	if(!empty($vmixitem))
+	{
+		$mixhelpinfo .= "\r <br><span class='evergreen'>此外，游戏中还包含由玩家提交的原创合成：</span><br> \r";
+		foreach($vmixitem as $class => $list){
+			$classname = isset($mixclass[$class][0]) ? $mixclass[$class][0] : $class;
+			$classcolor = isset($mixclass[$class][1]) ? $mixclass[$class][1] : 'yellow';
+			$mixhelpinfo .= "<p><span class=\"$classcolor\">{$classname}合成表 - 玩家原创</span>：</p>\n";
+			$mixhelpinfo .=
+			"<table>
+				<tr>
+					<td class=\"b1\" width=100px><span>配方作者</span></td>
+					<td class=\"b1\" height=20px><span>合成材料一</span></td>
+					<td class=\"b1\"><span>合成材料二</span></td>
+					<td class=\"b1\"><span>合成材料三</span></td>
+					<td class=\"b1\"><span>合成材料四</span></td>
+					<td class=\"b1\"><span>合成材料五</span></td>
+					<td class=\"b1\"></td>
+					<td class=\"b1\"><span>合成结果</span></td>
+					<td class=\"b1\"><span>物品属性</span></td>
 				</tr>
 				";
+			foreach($list as $val){
+				if(!empty($val['result'][4])){$itmskword = '/'.$val['result'][4];}
+				else{$itmskword = '';}
+				for($si=0;$si<=4;$si++){
+					if(!isset($val['stuff'][$si])){$val['stuff'][$si] = '-';}
+				}
+				$mixhelpinfo .= "<tr><td class=\"b3\">{$val['name']}</td>";
+				for ($i=0; $i<=4; $i++)
+				{
+					$mixhelpinfo .= "<td class=\"b3\" ";
+					if ($i==0)  $mixhelpinfo .= "height=20px";
+					if ($val['stuff'][$i]!='-')
+					{
+						$tooltipinfo = get_item_place($val['stuff'][$i]);
+						if(!empty($tooltipinfo)) $mixhelpinfo .= "><span tooltip=\"".$tooltipinfo."\" ";
+					}
+					$mixhelpinfo .= ">{$val['stuff'][$i]}</span></td>";
+				}
+				$mixhelpinfo .= "<td class=\"b3\">→</td>
+				<td class=\"b3\"><span>{$val['result'][0]}</span></td>
+				<td class=\"b3\"><span>{$val['result'][1]}/{$val['result'][2]}/{$val['result'][3]}{$itmskword}</span></td>
+					</tr>
+					";
+			}
+			$mixhelpinfo .= "</table>\n";
 		}
-		$mixhelpinfo .= "</table>\n";
 	}
 	
 	writeover($writefile,$mixhelpinfo);
+} else {
+	$mixhelpinfo = file_get_contents($writefile);
 }
 
 $extrahead = <<<EOT
 <STYLE type=text/css>
-BODY {
+BODY:not(.nouveau-ui) {
 	FONT-SIZE: 10pt;MARGIN: 0; color:#eee; FONT-FAMILY: "Trebuchet MS","Gill Sans","Microsoft Sans Serif",sans-serif;
 }
-A {
+BODY:not(.nouveau-ui) A {
 	COLOR: #eee
 }
-A:visited {
+BODY:not(.nouveau-ui) A:visited {
 	COLOR: #eee
 }
-A:active {
+BODY:not(.nouveau-ui) A:active {
 	color: #98fb98;text-decoration:underline
 }
-P{ line-height:16px
+DIV.help-body P {
+	line-height: 18px;
 }
 
 DIV.help {
@@ -239,20 +298,18 @@ DIV.help {
 }
 
 DIV.FAQ {
-	PADDING-LEFT: 1em; line-height:16px
+	PADDING-LEFT: 1em; line-height:18px
 }
 DIV.FAQ DT {
-	COLOR: #98fb98
+	COLOR: #98fb98; margin-top: 6px;
 }
 DIV.FAQ DD {
-	
+	margin-bottom: 6px;
 }
 
 </STYLE>
 EOT;
 
 include template('help');
-
-
 
 ?>
