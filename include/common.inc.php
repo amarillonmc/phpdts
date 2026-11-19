@@ -83,39 +83,9 @@ while($roominfo = $db->fetch_array($result))
 
 if($cuser) $udata = fetch_userdata_by_username($cuser);
 
-// 在用户数据加载后重新设置模板
-if(isset($udata) && $udata && isset($udata['u_templateid'])) {
-    $user_templateid = intval($udata['u_templateid']);
-
-    // 由于PHP常量不能重新定义，我们需要使用全局变量来覆盖
-    global $TEMPLATEID_OVERRIDE, $TPLDIR_OVERRIDE;
-
-    switch($user_templateid) {
-        case 1:
-            // LULUXIA模板（未实装）
-            $TEMPLATEID_OVERRIDE = 1;
-            $TPLDIR_OVERRIDE = './templates/luluxia';
-            // 如果模板目录不存在，fallback到默认模板
-            if(!file_exists(GAME_ROOT.'./templates/luluxia')) {
-                $TPLDIR_OVERRIDE = './templates/default';
-            }
-            break;
-        case 2:
-            // NOUVEAU模板
-            $TEMPLATEID_OVERRIDE = 2;
-            $TPLDIR_OVERRIDE = './templates/nouveau';
-            // 如果模板目录不存在，fallback到默认模板
-            if(!file_exists(GAME_ROOT.'./templates/nouveau')) {
-                $TPLDIR_OVERRIDE = './templates/default';
-            }
-            break;
-        default:
-            // 默认模板 - 使用已定义的常量
-            $TEMPLATEID_OVERRIDE = null;
-            $TPLDIR_OVERRIDE = null;
-            break;
-    }
-}
+// 根据移动设备识别、手机版/原版切换Cookie及用户设置解析当前模板
+global $TEMPLATEID_OVERRIDE, $TPLDIR_OVERRIDE;
+list($TEMPLATEID_OVERRIDE, $TPLDIR_OVERRIDE) = dts_resolve_ui_template(isset($udata) ? $udata : null);
 
 $groomid = isset($udata['roomid']) ? $udata['roomid'] : 0;
 

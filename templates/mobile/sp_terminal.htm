@@ -1,0 +1,63 @@
+<dialog id="terminal">
+    <div class="mb-dialog-head">
+        <span class="yellow">战术子面板 · TERMINAL</span>
+        <button type="button" class="mb-icon-close" onclick="closeDialog($('terminal'));" aria-label="关闭">×</button>
+    </div>
+
+    <div class="mb-terminal-bgm">
+        <div class="mb-terminal-bgm__now">
+            <!--{if !isset($bgmname)}-->
+                <!--{eval $nowbgmid = isset($_COOKIE["nowbgmid"]) ? filter_var($_COOKIE["nowbgmid"],FILTER_VALIDATE_INT) : 0; $bgmname = $bgmlist[$nowbgmid]['name'] ?? '';}-->
+            <!--{/if}-->
+            <span class="grey">BGM：～ <span id="bgmname">$bgmname</span> ～</span>
+        </div>
+        <div class="mb-terminal-bgm__controls">
+            <span class="eicon" onclick="changeBGM(-1);" title="上一曲">⏮️</span>
+            <span class="eicon" onclick="if($('gamebgm'))$('gamebgm').play();" title="播放">▶️</span>
+            <span class="eicon" onclick="if($('gamebgm'))$('gamebgm').pause();" title="暂停">⏸️</span>
+            <span class="eicon" onclick="changeBGM(1);" title="下一曲">⏭️</span>
+            <span class="eicon" onclick="changeVolume(-0.05);" title="减小音量">⏬</span>
+            <span id="volume_num" class="mb-vol-readout"><!--{eval $volume = isset($_COOKIE["volume"]) ? filter_var($_COOKIE["volume"],FILTER_VALIDATE_FLOAT)*100 : 20; $v = isset($volume) ? round($volume).'%' : '20%';}-->$v</span>
+            <span class="eicon" onclick="changeVolume(0.05);" title="增大音量">⏫</span>
+        </div>
+    </div>
+
+    <!--{if isset($clbpara['console'])}-->
+    <div class="mb-terminal-console">
+        <div class="mb-terminal-console__head">
+            <span>中枢控制台</span>
+            <span>可用信道：<strong class="<!--{if $gamevars['api'] == 0}-->red<!--{else}-->lime<!--{/if}-->">$gamevars['api']/$gamevars['apis']</strong></span>
+        </div>
+        <div class="mb-terminal-console__grid">
+            <label class="mb-console-field">
+                <span>天气控制</span>
+                <select id="cwth" name="cwth" onchange="closeDialog($('terminal'));$('mode').value='command';$('command').value='consle_wthchange';postCmd('gamecmd','command.php');">
+                    <!--{loop $wthinfo $n $wth}-->
+                    <!--{if $n != 18}-->
+                    <option value="$n" <!--{if $weather == $n}-->selected<!--{/if}-->>$wth</option>
+                    <!--{/if}-->
+                    <!--{/loop}-->
+                </select>
+            </label>
+            <div class="mb-console-btns">
+                <input type="button" class="cmdbutton" value="数据检索" onclick="closeDialog($('terminal'));showModalDialog($('consle_search'));">
+                <input type="button" class="cmdbutton" value="生命探测" onclick="closeDialog($('terminal'));$('command').value='consle_radar';postCmd('gamecmd','command.php');this.disabled=true;">
+                <input type="button" class="cmdbutton" value="增设禁区" onclick="closeDialog($('terminal'));$('command').value='consle_areactrl1';postCmd('gamecmd','command.php');this.disabled=true;">
+                <input type="button" class="cmdbutton" value="解除禁区" onclick="closeDialog($('terminal'));$('command').value='consle_areactrl0';postCmd('gamecmd','command.php');this.disabled=true;">
+            </div>
+        </div>
+        <div class="mb-console-danger">
+            <!--{if !isset($clbpara['nobutton'])}-->
+            <div class="dangerbutton" onclick="closeDialog($('terminal'));$('command').value='consle_dbutton';postCmd('gamecmd','command.php');this.disabled=true;">DON'T PUSH<br>危险勿触</div>
+            <!--{else}-->
+            <div class="lockmap" style="padding:10px;"><img src="img/lock.png" alt="locked"></div>
+            <!--{/if}-->
+        </div>
+    </div>
+    <!--{/if}-->
+
+    <div class="mb-terminal-map-wrap">
+        <!--{eval $mapdata = init_mapdata();}-->
+        $mapdata
+    </div>
+</dialog>

@@ -12,7 +12,11 @@ function language($file,$id=0,$dir='') { return GAME_ROOT.'templates/default/tem
 function template($file,$id=0,$dir='') {
 	global $ui_id,$ui_compiled;
 	$dir=$dir ?: 'templates/default';
-	$tag=$ui_id.'_'.(strpos($dir,'nouveau')!==false ? 'nouveau' : 'default');
+	$theme=strpos($dir,'nouveau')!==false ? 'nouveau' : (strpos($dir,'mobile')!==false ? 'mobile' : 'default');
+	if(!is_file(GAME_ROOT.$dir.'/'.$file.'.htm') && $dir!=='templates/default') {
+		$dir='templates/default'; $theme='default';
+	}
+	$tag=$ui_id.'_'.$theme;
 	$path=GAME_ROOT.'gamedata/templates/'.$tag.'_'.$file.'.tpl.php';
 	parse_template($file,$tag,$dir); $ui_compiled[$path]=true; return $path;
 }
@@ -22,7 +26,8 @@ function ui_render($file,$vars) { extract($vars,EXTR_SKIP); ob_start(); try { in
 try {
 	foreach(array('command','profile','quest_sendo','ending_routes_status','ending_routes_story','ending_story','sp_shop','user_talent') as $file) token_get_all(file_get_contents(template($file)),TOKEN_PARSE);
 	foreach(array('command','profile') as $file) token_get_all(file_get_contents(template($file,0,'templates/nouveau')),TOKEN_PARSE);
-	ui_check(true,'默认与 nouveau 的十个相关模板通过真实编译器');
+	foreach(array('header','footer','css','index','game','profile','battle_rev','battle','command','sp_terminal','slidingpanel','chat','rest','death','usergdicon') as $file) token_get_all(file_get_contents(template($file,0,'templates/mobile')),TOKEN_PARSE);
+	ui_check(true,'默认、nouveau 与 mobile 的相关模板通过真实编译器');
 	include GAME_ROOT.'gamedata/cache/resources_1.php';
 	include GAME_ROOT.'gamedata/questcfg_1.php';
 	$sendo_view=array_intersect_key($questcfg,array_flip(array('QD1','QD2','QD3','QD4','QD5','QD6','QD7')));

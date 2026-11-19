@@ -1,0 +1,28 @@
+# 新增移动平台专属模板（templates/mobile · Dark Aero）
+
+## 改动原因
+为使用手机与平板游玩的玩家提供专用的移动版界面（`TEMPLATEID = 3`，`./templates/mobile`），在保持 Dark Aero 视觉风格与 Nouveau 一致的前提下解决桌面宽表格在触屏设备上的缩放、滚动与误触问题，支持完整站点导航、绝大多数局内操作与大房间全部 PvE 结局流程，并提供便捷的「手机版 ↔ 原版界面」切换机制。
+
+## 具体改动
+1. **移动设备识别与手机版／原版界面切换（`include/global.func.php`、`include/common.inc.php`、`include/common.js`、`user.php`、`templates/default/usergdicon.htm`、`templates/default/header.htm`、`templates/default/assets/classic.js`、`templates/nouveau/header.htm`、`templates/nouveau/assets/js/nouveau.js`）**
+   - 新增 `dts_is_mobile_client()` 与 `dts_resolve_ui_template()`：手机与平板（含未登录游客、Android/iOS/iPadOS/HarmonyOS 及 `Sec-CH-UA-Mobile: ?1`）访问站点时默认进入 `./templates/mobile`；支持 iPadOS 13+ 桌面 UA 触屏首次访问自动切入移动版（`sessionStorage` 防循环保护）。
+   - 通过 `dts_ui_mode` Cookie 与 `?ui_mode=mobile|desktop`／`dtsSwitchUiMode()` 实现一键在手机版与原版界面（按账户 `u_templateid` 恢复经典或 Nouveau 桌面模板）之间无损切换，不覆盖数据库中的桌面模板设置；同时在 `user.php` 开放 `u_templateid = 3`（`MOBILE（移动专版）`）。
+2. **Dark Aero 移动与平板界面（`templates/mobile/`）**
+   - **全局壳层与完整导航（`header.htm`、`footer.htm`、`css.htm`、`assets/css/mobile.css`）**：顶部悬浮毛玻璃导航栏（抽屉菜单、快速进入游戏／配色、一键切回原版界面）、覆盖全站入口的分栏触控导航抽屉（首页、游戏、邮件、资料、账户设置、地图、战况、幸存、优胜、排行、帮助、种火商店、幻想世界三入口、录像与后台）、6 套 Dark Aero 预设与自定义配色面板，以及邮件、成就、帮助、故事分镜（`opening`／`ending`）等回退页的自适应排版。
+   - **战场主界面（`game.htm`、`profile.htm`、`battle_rev.htm`、`battle.htm`、`command.htm`、`sp_terminal.htm`、`slidingpanel.htm`、`chat.htm`、`rest.htm`、`death.htm`、`mobile_helpers.inc.php`、`assets/css/game-mobile.css`、`assets/js/mobile.js`）**：
+     - 顶部常驻战场 HUD：实时显示地点、禁区／预警／特殊区域状态、天气、幸存数、HP／SP／怒气／歌魂凝胶进度条、部位伤口一键包扎胶囊按钮，以及技能表、任务副面板、战术终端快捷入口。
+     - 手机端（`< 900px`）采用底部四栏拇指坞（`行动`、`状态·装备`、`地图`、`通讯`），遭遇战（`battle_rev`／`battle`）、尸体拾取、生命探测雷达自动在 `行动` 视图顶部展开；平板端（`>= 900px`）自动切换为左右双栏分屏工作区。
+     - 完整支持大房间 PvE 路线所需操作：开局称号选择、姿态／策略／视界（`#horizon`）切换、主副武器切换与全槽位一键卸下、背包点选使用／合成／元素口袋／整理／丢弃、点选地图直接移动（含 `pgroup=3` 湾城投影与 `pgroup=4` 英灵殿等隐藏地图组动态同步）、中枢控制台（天气、检索、探测、禁区增删、危险按钮）、七日送行与任务副面板、对白分支及触屏 `<dialog>` 关闭头与遮罩点击关闭。
+3. **回归测试（`gamedata/tests/mobile_template_test.php`、`gamedata/tests/ending_routes_ui_test.php`、`gamedata/tests/account_rewards_ui_test.php`）**
+   - 新增 `mobile_template_test.php` 并补充现有 UI 回归脚本，覆盖移动 UA 识别、手机版／原版双向切换、全部 15 个移动模板真实编译与严格模式渲染、隐藏 PvE 地图组状态生成及前端交互脚本行为。
+
+## 验证情况
+- PHP 语法检查：`include/global.func.php`、`include/common.inc.php`、`user.php`、`templates/mobile/templates.lang.php`、`templates/mobile/mobile_helpers.inc.php` 全部 `php -d short_open_tag=1 -l` 通过（PHP 7.4.33）。
+- JS 语法与行为检查：`include/common.js`、`classic.js`、`nouveau.js`、`templates/mobile/assets/js/*.js` 全部 `node --check` 通过，并在 Node VM 中验证 `dtsSwitchUiMode`、配色切换、背包使用与地图移动逻辑通过。
+- 回归脚本：`mobile_template_test.php`、`ending_routes_ui_test.php`、`account_rewards_ui_test.php`、`quest_q6_test.php`、`raid_ruleset_test.php`、`paperdoll_test.php` 全部通过（注：`laika_ruleset_test.php` 中检查 `templates/nouveau/game.htm` 是否含 `id="dialogue-container"` 的既有断言在改动前已为失败，属 Nouveau 既有旁支问题，`templates/mobile/game.htm` 已按规范置于 `#log` 之前）。
+
+## 已知限制
+- 当前验证已完成模板真实编译、严格模式渲染与前后端脚本回归，尚未连接真实数据库在实体手机／平板浏览器上进行整局联调，后续可交由移动端玩家实际游玩反馈微调触控细节。
+
+## English Summary
+Added a dedicated Dark Aero mobile and tablet template (`templates/mobile`, `TEMPLATEID = 3`) with automatic mobile/tablet client detection, seamless round-trip switching between Mobile UI and Desktop/Original UI (`?ui_mode=mobile|desktop` and `dts_ui_mode` cookie), a sticky live HUD + 4-tab thumb dock on phones and a 2-column split workspace on tablets, touch-friendly controls across combat/corpse/shop/synthesis/console/dialogs, and full support for all site navigation and main-room PvE ending routes.

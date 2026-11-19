@@ -1,0 +1,95 @@
+<div class="mb-battle-view" data-mb-main-kind="battle_rev">
+    <!--{eval include_once GAME_ROOT.'./templates/mobile/mobile_helpers.inc.php'; $mb_state_json = mobile_build_live_state(get_defined_vars());}-->
+    <script type="application/json" id="mb-live-state">$mb_state_json</script>
+
+    <section class="mb-card mb-card--battle">
+        <div class="mb-card__head mb-card__head--battle">
+            <span class="mb-battle-banner">$battle_title</span>
+            <div class="mb-card__tools">
+                <!--{if isset($sdata['clbpara']['battle_turns'])}-->
+                <span class="mb-turn-pill">回合 {$sdata['clbpara']['battle_turns']}</span>
+                <!--{/if}-->
+                <!--{if !empty($tdata['clbpara']['skill'])}-->
+                <button type="button" class="mb-chip-btn" onclick="showModalDialog($('enemy_skillpage'));">敌方技能</button>
+                <!--{/if}-->
+            </div>
+        </div>
+        <div class="mb-card__body">
+            <div class="mb-combatant mb-combatant--enemy">
+                <div class="mb-combatant__avatar">
+                    <img src="$tdata['iconImg']" alt="enemy" data-fallback="avatar" <!--{if $tdata['hp']==0}-->style="filter:grayscale(100%)"<!--{/if}-->>
+                </div>
+                <div class="mb-combatant__info">
+                    <div class="mb-combatant__title">
+                        <strong>$tdata['nameinfo']<!--{if !empty($tdata['clbpara']['PlatformName'])}--> （$tdata['clbpara']['PlatformName']）<!--{/if}--></strong>
+                        <span class="mb-combatant__tag">{$tdata['typeinfo']}{$tdata['sNoinfo']} · $tdata['lvlinfo']</span>
+                        <!--{if $sdata['club']==19}--><span class="lime">报应：$tdata['rp']</span><!--{/if}-->
+                    </div>
+                    <div class="mb-combatant__stats">
+                        <span>{lang hp}：<strong>$tdata['hpstate']</strong></span>
+                        <span>{lang sp}：<strong>$tdata['spstate']</strong></span>
+                        <span>{lang rage}：<strong>$tdata['ragestate']</strong></span>
+                    </div>
+                    <div class="mb-combatant__stats">
+                        <span>{lang wep}：<strong>$tdata['wep_words']</strong> (<!--{if $tdata['wepk'] != ''}-->$tdata['wepk_words']<!--{else}-->？？？<!--{/if}--> / $tdata['wepestate'])</span>
+                    </div>
+                    <div class="mb-combatant__stats mb-combatant__stats--sub">
+                        <span>{lang pose}：$tdata['poseinfo']</span>
+                        <span>{lang tactic}：$tdata['tacinfo']</span>
+                        <span>{lang inf}：$tdata['infdata']</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-vs-divider"><span>VS · 我方状态</span></div>
+
+            <div class="mb-combatant mb-combatant--self">
+                <div class="mb-combatant__avatar">
+                    <img src="$sdata['iconImg']" alt="self" data-fallback="avatar" <!--{if $sdata['hp']==0}-->style="filter:grayscale(100%)"<!--{/if}-->>
+                </div>
+                <div class="mb-combatant__info">
+                    <div class="mb-combatant__title">
+                        <strong>$sdata['nameinfo']<!--{if !empty($sdata['clbpara']['PlatformName'])}--> （$sdata['clbpara']['PlatformName']）<!--{/if}--></strong>
+                        <span class="mb-combatant__tag">Lv.$sdata['lvl'] · {$sexinfo[$sdata['gd']]}{$sdata['sNo']}号</span>
+                    </div>
+                    <div class="mb-combatant__stats">
+                        <span>{lang hp}：<strong class="$hpcolor"><!--{if isset($sdata['shield_info'])}-->{$sdata['shield_info']}<!--{/if}-->$sdata['hp']/$sdata['mhp']</strong></span>
+                        <span>{lang sp}：<strong>$sdata['sp']/$sdata['msp']</strong></span>
+                        <span>{lang rage}：<strong class="<!--{if $sdata['rage'] >= 30}-->yellow<!--{/if}-->">$sdata['rage']</strong></span>
+                    </div>
+                    <div class="mb-combatant__stats mb-combatant__stats--sub">
+                        <span>{lang wep}：<strong>$sdata['wep_words']</strong> ($sdata['wepk_words'] / $sdata['wepe'])</span>
+                        <span>{lang inf}：$sdata['infdata']</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!--{if !empty($tdata['clbpara']['skill'])}-->
+    <dialog id="enemy_skillpage">
+        <div class="mb-dialog-head">
+            <span class="yellow">{$typeinfo[$tdata['type']]} $tdata['name'] 的技能列表</span>
+            <button type="button" class="mb-icon-close" onclick="closeDialog($('enemy_skillpage'));" aria-label="关闭">×</button>
+        </div>
+        <div class="mb-dialog-sub">请注意描述中的 <span class="yellow">“你”</span> 指代该对象。</div>
+        <table class="skilltable">
+            <tr>
+                <td class="b1" width="64"><span>名称</span></td>
+                <td class="b1"><span>技能详情</span></td>
+            </tr>
+            <!--{eval $uidata = $tdata; $no_skill_input = 1;}-->
+            <!--{loop $uidata['clbpara']['skill'] $sknm}-->
+                <!--{if !get_skilltags($sknm,'player')}-->
+                <!--{eval $skdata = init_clubskillsdata($sknm,$uidata);}-->
+                    <!--{if is_array($skdata)}-->
+                        <!--{eval include template($skdata[0]);}-->
+                    <!--{elseif !empty($skdata)}-->
+                        <!--{eval $skid = $skdata;include template('skill_temp');}-->
+                    <!--{/if}-->
+                <!--{/if}-->
+            <!--{/loop}-->
+        </table>
+    </dialog>
+    <!--{/if}-->
+</div>

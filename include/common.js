@@ -88,6 +88,24 @@ Cookie.getCookie=function(name){
 	return cookie_start == -1 ? '' : unescape(document.cookie.substring(cookie_start + name.length + 1, (cookie_end > cookie_start ? cookie_end : document.cookie.length)));
 }
 Cookie.deleteCookie=function(name){
-	this.setCookie(name,'',{expireHours:-1});
+	this.setCookie(name,'',{expireHours:-1,path:'/'});
+}
+
+function dtsSwitchUiMode(mode) {
+	if(mode !== 'mobile' && mode !== 'desktop') mode = 'auto';
+	if(mode === 'auto') {
+		Cookie.deleteCookie('dts_ui_mode');
+	} else {
+		Cookie.setCookie('dts_ui_mode', mode, {expireHours: 24 * 365, path: '/'});
+	}
+	var url = window.location.pathname || 'index.php';
+	var search = window.location.search || '';
+	if(search) {
+		search = search.replace(/([?&])ui_mode=[^&]*(&|$)/g, function(_, p1, p2) {
+			return p1 === '?' && p2 === '&' ? '?' : (p2 === '&' ? '&' : '');
+		}).replace(/[?&]$/, '');
+	}
+	window.location.href = url + search + (window.location.hash || '');
+	return false;
 }
 

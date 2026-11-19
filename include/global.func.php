@@ -97,7 +97,7 @@ function template($file, $templateid = 0, $tpldir = '') {
 	$tplfile = GAME_ROOT.'./'.$tpldir.'/'.$file.'.htm';
 	$objfile = GAME_ROOT.'./gamedata/templates/'.$templateid.'_'.$file.'.tpl.php';
 
-	// 改进的fallback机制，支持nouveau模板
+	// 改进的fallback机制，支持nouveau与mobile等扩展模板
 	if(!file_exists($tplfile)) {
 		// 如果当前模板文件不存在，尝试fallback到默认模板
 		if($tpldir != './templates/default') {
@@ -115,6 +115,79 @@ function template($file, $templateid = 0, $tpldir = '') {
 		}
 	}
 	return $objfile;
+}
+
+function dts_is_mobile_client($server = null) {
+	if($server === null) $server = $_SERVER ?? array();
+	if(isset($server['HTTP_SEC_CH_UA_MOBILE']) && $server['HTTP_SEC_CH_UA_MOBILE'] === '?1') {
+		return true;
+	}
+	$ua = isset($server['HTTP_USER_AGENT']) ? (string)$server['HTTP_USER_AGENT'] : '';
+	if($ua === '') return false;
+	return (bool)preg_match('/Android|iPhone|iPad|iPod|Windows Phone|Mobile|Tablet|HarmonyOS|ArkWeb|Kindle|Silk\/|PlayBook|BB10|BlackBerry|Opera Mini|Opera Mobi|UCBrowser|MQQBrowser|MicroMessenger/i', $ua);
+}
+
+function dts_set_ui_mode_cookie($mode) {
+	if(PHP_SAPI === 'cli' || headers_sent()) return;
+	$secure = isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443;
+	if($mode === 'mobile' || $mode === 'desktop') {
+		setcookie('dts_ui_mode', $mode, time() + 86400 * 365, '/', '', $secure);
+	} else {
+		setcookie('dts_ui_mode', '', time() - 86400, '/', '', $secure);
+	}
+}
+
+function dts_resolve_ui_template($udata = null, $server = null, $get = null, $cookie = null) {
+	if($server === null) $server = $_SERVER ?? array();
+	if($get === null) $get = $_GET ?? array();
+	if($cookie === null) $cookie = $_COOKIE ?? array();
+
+	$ui_mode = isset($cookie['dts_ui_mode']) ? (string)$cookie['dts_ui_mode'] : '';
+	if(isset($get['ui_mode']) && is_string($get['ui_mode'])) {
+		$req_mode = $get['ui_mode'];
+		if($req_mode === 'mobile' || $req_mode === 'desktop') {
+			$ui_mode = $req_mode;
+			$_COOKIE['dts_ui_mode'] = $req_mode;
+			dts_set_ui_mode_cookie($req_mode);
+		} elseif($req_mode === 'auto') {
+			$ui_mode = '';
+			unset($_COOKIE['dts_ui_mode']);
+			dts_set_ui_mode_cookie('auto');
+		}
+	}
+
+	$user_templateid = (is_array($udata) && isset($udata['u_templateid'])) ? intval($udata['u_templateid']) : 0;
+
+	if($ui_mode === 'mobile') {
+		$target_id = 3;
+	} elseif($ui_mode === 'desktop') {
+		// 切换回原版界面时，若账户原先选的是移动专版则回退经典界面，否则保留账户选择的桌面模板。
+		$target_id = ($user_templateid === 3) ? 0 : $user_templateid;
+	} elseif(dts_is_mobile_client($server)) {
+		$target_id = 3;
+	} else {
+		$target_id = $user_templateid;
+	}
+
+	switch($target_id) {
+		case 1:
+			if(file_exists(GAME_ROOT.'./templates/luluxia')) {
+				return array(1, './templates/luluxia');
+			}
+			return array(1, './templates/default');
+		case 2:
+			if(file_exists(GAME_ROOT.'./templates/nouveau')) {
+				return array(2, './templates/nouveau');
+			}
+			return array(1, './templates/default');
+		case 3:
+			if(file_exists(GAME_ROOT.'./templates/mobile')) {
+				return array(3, './templates/mobile');
+			}
+			return array(1, './templates/default');
+		default:
+			return array(null, null);
+	}
 }
 
 function content($file = '') {

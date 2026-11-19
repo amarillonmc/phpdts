@@ -180,9 +180,10 @@ if($mode == 'redeem') {
 	$volume = round($volume/100,2); $volume = round(min(1,max(0,$volume)),2);
 	gsetcookie('volume',$volume,86400*30,0);
 	# 切换用户界面
+	$templateid = isset($templateid) ? intval($templateid) : 0;
 	if(!empty($templateid))
 	{
-		// 支持的模板ID: 0=默认, 1=LULUXIA(未开放), 2=NOUVEAU
+		// 支持的模板ID: 0=默认, 1=LULUXIA(未开放), 2=NOUVEAU, 3=MOBILE(移动专版)
 		if($templateid == 1) {
 			# LULUXIA模板暂时只允许管理员账户切换
 			if($udata['groupid'] < 9)
@@ -194,10 +195,19 @@ if($mode == 'redeem') {
 			# NOUVEAU模板对所有用户开放
 			$gamedata['innerHTML']['info'] .= 'NOUVEAU界面尚在施工中。有问题欢迎去官方论坛报告。<br>';
 			$templateid = 2;
+		} elseif($templateid == 3) {
+			# MOBILE移动平台模板对所有用户开放
+			$gamedata['innerHTML']['info'] .= '已切换为MOBILE移动专版界面（刷新页面生效）。<br>';
+			$templateid = 3;
 		} else {
 			# 其他值默认为经典界面
 			$templateid = 0;
 		}
+	}
+	if($templateid == 3) {
+		dts_set_ui_mode_cookie('mobile');
+	} elseif($templateid != intval($udata['u_templateid'])) {
+		dts_set_ui_mode_cookie('desktop');
 	}
 	$db->query("UPDATE {$gtablepre}users SET gender='$gender', icon='$icon',{$passqry}motto='$motto',  killmsg='$killmsg', lastword='$lastword', nick='$nick', u_templateid='$templateid' WHERE username='$cuser'");
 	if($db->affected_rows()){

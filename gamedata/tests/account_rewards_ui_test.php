@@ -23,7 +23,7 @@ try {
 	$payload = array();
 	$reward = account_reward_validate(array('credits'=>30,'credits2'=>5,'titles'=>array(1),'achievements'=>array(0=>1),'boon'=>array('name'=>'<测试赐福>','stats'=>array('att'=>10))));
 	$raw = array(7=>array('timestamp'=>1800000000,'rd'=>0,'checked'=>0,'title'=>'测试邮件','content'=>'正文','enclosure'=>account_reward_encode($reward)));
-	foreach(array('default','nouveau') as $theme) {
+	foreach(array('default','nouveau','mobile') as $theme) {
 		$ui_theme = $theme; $messages = message_disp($raw);
 		$payload[$theme]['messages'] = ui_render('message_page',array('mode'=>'show','info'=>array(),'message_csrf'=>'mail-csrf','messages'=>$messages));
 		$deleted = $raw; $deleted[7]['dtimestamp'] = 1800000010;

@@ -1,0 +1,115 @@
+{template header}
+<div class="mb-lobby">
+    <section class="mb-card mb-card--hero" aria-label="战场总览与进入游戏">
+        <div class="mb-card__head">
+            <span class="mb-card__title">战场总览 · OVERVIEW</span>
+            <span class="mb-card__meta">{lang gamedate}</span>
+        </div>
+        <div class="mb-card__body">
+            <div class="mb-lobby-round">
+                <div class="mb-lobby-round__main">
+                    <span class="evergreen2">{lang numinfo}</span>
+                    <span class="mb-status-pill">$gstate[$gamestate]</span>
+                </div>
+                <div class="mb-lobby-timing">
+                    <!--{if $gamestate > 10 }-->
+                    本局已进行 <span id="timing" class="yellow"></span><script type="text/javascript">updateTime($timing,1);</script>
+                    <!--{elseif $starttime > $now}-->
+                    下局开始于 <span id="timing" class="yellow"></span><script type="text/javascript">updateTime($timing,0);</script> 后
+                    <!--{else}-->
+                    下局开始时间 <span id="timing"></span>未定
+                    <!--{/if}-->
+                </div>
+            </div>
+
+            <div class="mb-lobby-counters">
+                <div class="mb-counter-box">
+                    <span>激活人数</span>
+                    <strong id="alivenum">$validnum</strong>
+                </div>
+                <div class="mb-counter-box">
+                    <span>生存人数</span>
+                    <strong class="lime">$alivenum</strong>
+                </div>
+                <div class="mb-counter-box">
+                    <span>死亡总数</span>
+                    <strong class="red">$deathnum</strong>
+                </div>
+            </div>
+
+            <div class="mb-lobby-auth">
+                <!--{if $cuser}-->
+                <div class="mb-user-welcome">
+                    <span class="mb-user-welcome__text">{lang welcome}</span>
+                    <!--{if $groomid}-->
+                    <span class="mb-room-pill">当前房间：{$groomid} 号</span>
+                    <!--{/if}-->
+                </div>
+                <div class="mb-lobby-cta-grid">
+                    <form method="post" name="togame" action="game.php" class="mb-block-form">
+                        <input type="hidden" name="mode" value="main">
+                        <input type="submit" name="enter" class="cmdbutton mb-btn-hero" value="{lang enter}">
+                    </form>
+                    <button type="button" class="cmdbutton mb-btn-secondary" onclick="showModalDialog($('roomlist'));">房间列表 / 切换模式</button>
+                    <form method="post" name="quitgame" action="game.php" class="mb-block-form">
+                        <input type="hidden" name="mode" value="quit">
+                        <input type="submit" name="quit" class="cmdbutton" value="{lang quit}">
+                    </form>
+                </div>
+                <!--{else}-->
+                <form method="post" name="login" action="login.php" class="mb-login-form">
+                    <input type="hidden" name="mode" value="main">
+                    <label class="mb-field">
+                        <span>{lang username}</span>
+                        <input type="text" name="username" maxlength="20" value="$cuser" autocomplete="username">
+                    </label>
+                    <label class="mb-field">
+                        <span>{lang password}</span>
+                        <input type="password" name="password" maxlength="24" value="$cpass" autocomplete="current-password">
+                    </label>
+                    <div class="mb-login-actions">
+                        <input type="submit" name="enter" class="cmdbutton mb-btn-hero" value="{lang login}">
+                        <a href="register.php" class="cmdbutton mb-btn-link">{lang register}</a>
+                    </div>
+                </form>
+                <div class="mb-guest-room-row">
+                    <button type="button" class="cmdbutton mb-btn-secondary" onclick="showModalDialog($('roomlist'));">查看当前房间列表</button>
+                </div>
+                <!--{/if}-->
+            </div>
+
+            <div class="mb-lobby-facts">
+                <!--{if $systemmsg}-->
+                <div><span class="yellow">{lang systemmsg}：</span><span class="evergreen">$systemmsg</span></div>
+                <!--{/if}-->
+                <!--{if $hplayer}-->
+                <div><!--{if $gamestate > 10}-->当前最高伤害<!--{else}-->上局最高伤害<!--{/if}-->：<span class="clan">$hplayer ($hdamage)</span></div>
+                <!--{/if}-->
+                <!--{if !$groomid}-->
+                <div>上局结果：<span id="lastwin">$gwin[$winmode]</span><!--{if $winner}-->，优胜者：<span id="lastwinner" class="yellow">$winner</span><!--{/if}--></div>
+                <!--{/if}-->
+                <div>禁区间隔：<strong>$areahour</strong> 分钟（每次 +<strong>$areaadd</strong>，当前 <strong>$areanum</strong>，<strong>$arealimit</strong> 禁停激）</div>
+                <div>自动避禁：<!--{if $areaesc && $gamestate < 40}--><span class="yellow">开放</span><!--{else}--><span class="red">关闭</span><!--{/if}--> <span class="grey">（连斗后自动关闭）</span></div>
+            </div>
+
+            <div class="mb-lobby-help">
+                初次游玩请先阅读 <a href="help.php" class="clit">【{lang help}】</a> · 需切回桌面排布可点右上角 <a href="?ui_mode=desktop" onclick="return typeof dtsSwitchUiMode === 'function' ? dtsSwitchUiMode('desktop') : true;" class="cyan">【原版界面】</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-card mb-card--announce" aria-label="站长留言与房间列表">
+        <div class="mb-card__head">
+            <span class="mb-card__title">{lang adminmsg}</span>
+            <button type="button" class="mb-chip-btn" onclick="showModalDialog($('roomlist'));">房间列表</button>
+        </div>
+        <div class="mb-card__body">
+            <div id="adminmsg" class="mb-adminmsg evergreen">
+                $adminmsg
+            </div>
+        </div>
+    </section>
+
+    {template roomlist}
+</div>
+{template footer}

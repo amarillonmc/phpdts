@@ -1,0 +1,288 @@
+<div class="mb-profile" data-mb-main-kind="profile">
+    {template club23_status}
+    {template paperdoll_state}
+    {template ending_routes_status}
+    <!--{eval include_once GAME_ROOT.'./templates/mobile/mobile_helpers.inc.php'; $mb_state_json = mobile_build_live_state(get_defined_vars()); $nickinfo = titles_get_desc($nick,1); $fcg_name_class = in_array((int)$nick,array(9111,9112,9113)) ? 'fcg-title fcg-title-'.(int)$nick : ''; $mb_hp_pct = $mhp > 0 ? max(0, min(100, round($hp / $mhp * 100))) : 0; $mb_sp_pct = $msp > 0 ? max(0, min(100, round($sp / $msp * 100))) : 0; $mb_ss_pct = $mss > 0 ? max(0, min(100, round($ss / $mss * 100))) : 0;}-->
+    <script type="application/json" id="mb-live-state">$mb_state_json</script>
+    <span id="weather" style="display:none">$wthinfo[$weather]</span>
+
+    <section class="mb-card mb-card--stances">
+        <div class="mb-card__head">
+            <span class="mb-card__title">姿态·策略·视界 · TACTICS</span>
+            <!--{if CURSCRIPT == 'game'}-->
+            <button type="button" class="mb-chip-btn" onclick="if(window.MobileUI)window.MobileUI.openDialogSafe('skillpage');">技能表<!--{if $skillpoint > 0}--> ($skillpoint)<!--{/if}--></button>
+            <!--{/if}-->
+        </div>
+        <div class="mb-card__body">
+            <div class="mb-stance-grid">
+                <div class="mb-stance-field">
+                    <label for="clubsel">{lang club}</label>
+                    <!--{if $club != 0}-->
+                    <div class="mb-stance-static"><!--{if $club == 24 && !empty($Testingma)}-->$Testingma<!--{elseif isset($clubinfo[$club])}-->$clubinfo[$club]<!--{else}-->#$club<!--{/if}--></div>
+                    <!--{elseif function_exists('valid_getclublist_t1') && function_exists('valid_getclublist_t2')}-->
+                    <!--{eval $t1_list = valid_getclublist_t1($udata); $t2_list = valid_getclublist_t2($udata);}-->
+                    <select id="clubsel" name="clubsel" onchange="if(this.value)postCmd('gamecmd','command.php',{data:{mode:'special',command:this.value}});return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
+                        <option value="">■ 选择称号 ■</option>
+                        <optgroup label="普通称号">
+                            <!--{loop $t2_list $key}-->
+                            <option value="clubsel$key">$clubinfo[$key]</option>
+                            <!--{/loop}-->
+                        </optgroup>
+                        <optgroup label="特殊称号">
+                            <!--{loop $t1_list $key}-->
+                            <option value="clubsel$key">$clubinfo[$key]</option>
+                            <!--{/loop}-->
+                        </optgroup>
+                    </select>
+                    <!--{else}-->
+                    <div class="mb-stance-static">$clubinfo[$club]</div>
+                    <!--{/if}-->
+                </div>
+
+                <div class="mb-stance-field">
+                    <label for="horizon">战术界面 / 视界</label>
+                    <select id="horizon" name="horizon" onchange="postCmd('gamecmd','command.php',{data:{mode:'special',command:this.value}});return false;" <!--{if !empty($clbpara['ex_lock']) || (function_exists('severe_can_horizon') && !severe_can_horizon($pdata)) || CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
+                        <!--{loop $horizoninfo $key $value}-->
+                        <!--{if $key!=2 || $horizon==2}-->
+                        <option value="hor$key" <!--{if $horizon == $key}-->selected<!--{/if}-->>$value</option>
+                        <!--{/if}-->
+                        <!--{/loop}-->
+                    </select>
+                </div>
+
+                <div class="mb-stance-field">
+                    <label for="pose">{lang pose}</label>
+                    <select id="pose" name="pose" onchange="postCmd('gamecmd','command.php',{data:{mode:'special',command:this.value}});return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
+                        <!--{loop $apose $key}-->
+                        <option value="pose$key" <!--{if $pose == $key}-->selected<!--{/if}-->>$poseinfo[$key]</option>
+                        <!--{/loop}-->
+                    </select>
+                    <!--{if !empty($posetips[$pose])}--><small class="mb-stance-tip">$posetips[$pose]</small><!--{/if}-->
+                </div>
+
+                <div class="mb-stance-field">
+                    <label for="tactic">{lang tactic}</label>
+                    <select id="tactic" name="tactic" onchange="postCmd('gamecmd','command.php',{data:{mode:'special',command:this.value}});return false;" <!--{if CURSCRIPT != 'game' || $mode != 'command'}-->disabled<!--{/if}-->>
+                        <!--{loop $atac $key}-->
+                        <option value="tac$key" <!--{if $tactic == $key}-->selected<!--{/if}-->>$tacinfo[$key]</option>
+                        <!--{/loop}-->
+                    </select>
+                    <!--{if !empty($tactips[$tactic])}--><small class="mb-stance-tip">$tactips[$tactic]</small><!--{/if}-->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-card mb-card--gear">
+        <div class="mb-card__head">
+            <span class="mb-card__title">装备与背包 · GEAR &amp; BAG</span>
+            <!--{if CURSCRIPT == 'game' && $mode == 'command'}-->
+            <div class="mb-card__tools">
+                <!--{if $club == 20}-->
+                <button type="button" class="mb-chip-btn" onclick="if(window.MobileUI)window.MobileUI.runSubcmd('itemmain','itemcmd','elementmix');">元素口袋</button>
+                <!--{else}-->
+                <button type="button" class="mb-chip-btn" onclick="if(window.MobileUI)window.MobileUI.runSubcmd('itemmain','itemcmd','itemmix');">合成</button>
+                <!--{/if}-->
+                <button type="button" class="mb-chip-btn" onclick="if(window.MobileUI)window.MobileUI.runSubcmd('itemmain','itemcmd','itemmerge');">整理</button>
+                <button type="button" class="mb-chip-btn" onclick="if(window.MobileUI)window.MobileUI.runSubcmd('itemmain','itemcmd','itemdrop');">丢弃</button>
+            </div>
+            <!--{/if}-->
+        </div>
+        <div class="mb-card__body">
+            <div class="mb-subhead">已装备 · EQUIPPED</div>
+            <div class="mb-slot-grid">
+                <div class="mb-slot">
+                    <div class="mb-slot__top">
+                        <span class="mb-slot__kind"><!--{if $wepk_words}-->$wepk_words<!--{else}-->武器<!--{/if}--></span>
+                        <!--{if CURSCRIPT == 'game' && $mode == 'command'}-->
+                        <span class="mb-slot__btns">
+                            <!--{if !empty($wep2c) || !empty($wep2s) || $wepe}-->
+                            <button type="button" class="mb-mini-btn" onclick="if(window.MobileUI)window.MobileUI.actAndShow('itemmain','changewep');">切副武</button>
+                            <!--{/if}-->
+                            <!--{if $wepe}-->
+                            <button type="button" class="mb-mini-btn" onclick="if(window.MobileUI)window.MobileUI.actAndShow('itemmain','offwep');">卸下</button>
+                            <!--{/if}-->
+                        </span>
+                        <!--{/if}-->
+                    </div>
+                    <strong class="mb-slot__name"><!--{if $weps}-->$wep_words<!--{else}-->$nowep<!--{/if}--></strong>
+                    <small class="mb-slot__meta"><!--{if $wepsk_words}--><em class="cyan">$wepsk_words</em> · <!--{/if}-->效 $wepe / 耐 $weps</small>
+                    <!--{if !empty($wep2c) || !empty($wep2e)}-->
+                    <small class="mb-slot__sub lime">副武：$wep2 ($wep2e/$wep2s)</small>
+                    <!--{/if}-->
+                </div>
+
+                <div class="mb-slot">
+                    <div class="mb-slot__top">
+                        <span class="mb-slot__kind"><!--{if $arbs}-->$arbk_words<!--{else}-->身体防具<!--{/if}--></span>
+                        <!--{if CURSCRIPT == 'game' && $mode == 'command' && $arbe}-->
+                        <button type="button" class="mb-mini-btn" onclick="if(window.MobileUI)window.MobileUI.actAndShow('itemmain','offarb');">卸下</button>
+                        <!--{/if}-->
+                    </div>
+                    <strong class="mb-slot__name"><!--{if $arbs}-->$arb_words<!--{else}-->$noarb<!--{/if}--></strong>
+                    <small class="mb-slot__meta"><!--{if $arbs && $arbsk_words}--><em class="cyan">$arbsk_words</em> · <!--{/if}-->效 $arbe / 耐 $arbs</small>
+                </div>
+
+                <div class="mb-slot">
+                    <div class="mb-slot__top">
+                        <span class="mb-slot__kind"><!--{if $arhs}-->$arhk_words<!--{else}-->头部防具<!--{/if}--></span>
+                        <!--{if CURSCRIPT == 'game' && $mode == 'command' && $arhs}-->
+                        <button type="button" class="mb-mini-btn" onclick="if(window.MobileUI)window.MobileUI.actAndShow('itemmain','offarh');">卸下</button>
+                        <!--{/if}-->
+                    </div>
+                    <strong class="mb-slot__name"><!--{if $arhs}-->$arh_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="mb-slot__meta"><!--{if $arhs && $arhsk_words}--><em class="cyan">$arhsk_words</em> · <!--{/if}-->效 $arhe / 耐 $arhs</small>
+                </div>
+
+                <div class="mb-slot">
+                    <div class="mb-slot__top">
+                        <span class="mb-slot__kind"><!--{if $aras}-->$arak_words<!--{else}-->腕部防具<!--{/if}--></span>
+                        <!--{if CURSCRIPT == 'game' && $mode == 'command' && $aras}-->
+                        <button type="button" class="mb-mini-btn" onclick="if(window.MobileUI)window.MobileUI.actAndShow('itemmain','offara');">卸下</button>
+                        <!--{/if}-->
+                    </div>
+                    <strong class="mb-slot__name"><!--{if $aras}-->$ara_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="mb-slot__meta"><!--{if $aras && $arask_words}--><em class="cyan">$arask_words</em> · <!--{/if}-->效 $arae / 耐 $aras</small>
+                </div>
+
+                <div class="mb-slot">
+                    <div class="mb-slot__top">
+                        <span class="mb-slot__kind"><!--{if $arfs}-->$arfk_words<!--{else}-->足部防具<!--{/if}--></span>
+                        <!--{if CURSCRIPT == 'game' && $mode == 'command' && $arfs}-->
+                        <button type="button" class="mb-mini-btn" onclick="if(window.MobileUI)window.MobileUI.actAndShow('itemmain','offarf');">卸下</button>
+                        <!--{/if}-->
+                    </div>
+                    <strong class="mb-slot__name"><!--{if $arfs}-->$arf_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="mb-slot__meta"><!--{if $arfs && $arfsk_words}--><em class="cyan">$arfsk_words</em> · <!--{/if}-->效 $arfe / 耐 $arfs</small>
+                </div>
+
+                <div class="mb-slot">
+                    <div class="mb-slot__top">
+                        <span class="mb-slot__kind"><!--{if $arts}-->$artk_words<!--{else}-->饰品<!--{/if}--></span>
+                        <!--{if CURSCRIPT == 'game' && $mode == 'command' && $arts}-->
+                        <button type="button" class="mb-mini-btn" onclick="if(window.MobileUI)window.MobileUI.actAndShow('itemmain','offart');">卸下</button>
+                        <!--{/if}-->
+                    </div>
+                    <strong class="mb-slot__name"><!--{if $arts}-->$art_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="mb-slot__meta"><!--{if $arts && $artsk_words}--><em class="cyan">$artsk_words</em> · <!--{/if}-->效 $arte / 耐 $arts</small>
+                </div>
+            </div>
+
+            <div class="mb-subhead mb-subhead--bag">背包栏位 · BAG [1-6] <span class="grey">（点选直接使用/装备）</span></div>
+            <div class="mb-slot-grid">
+                <div class="mb-slot<!--{if !$itms1}--> is-empty<!--{elseif CURSCRIPT == 'game' && $mode == 'command'}--> is-usable<!--{/if}-->" <!--{if $itms1 && CURSCRIPT == 'game' && $mode == 'command'}-->onclick="<!--{if $itmk1 == 'ZB' && $itme1 == 24}-->useClub24Card(1);return false;<!--{else}-->if(window.MobileUI)window.MobileUI.useBagItem(1);return false;<!--{/if}-->"<!--{/if}-->>
+                    <div class="mb-slot__top"><span class="mb-slot__kind">[1] <!--{if $itms1}-->$itmk1_words<!--{else}-->空栏位<!--{/if}--></span></div>
+                    <strong class="mb-slot__name"><!--{if $itms1}-->$itm1_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="mb-slot__meta"><!--{if $itms1}--><!--{if $itmsk1_words}--><em class="cyan">$itmsk1_words</em> · <!--{/if}-->效 $itme1 / 耐 $itms1<!--{else}-->-<!--{/if}--></small>
+                </div>
+
+                <div class="mb-slot<!--{if !$itms2}--> is-empty<!--{elseif CURSCRIPT == 'game' && $mode == 'command'}--> is-usable<!--{/if}-->" <!--{if $itms2 && CURSCRIPT == 'game' && $mode == 'command'}-->onclick="<!--{if $itmk2 == 'ZB' && $itme2 == 24}-->useClub24Card(2);return false;<!--{else}-->if(window.MobileUI)window.MobileUI.useBagItem(2);return false;<!--{/if}-->"<!--{/if}-->>
+                    <div class="mb-slot__top"><span class="mb-slot__kind">[2] <!--{if $itms2}-->$itmk2_words<!--{else}-->空栏位<!--{/if}--></span></div>
+                    <strong class="mb-slot__name"><!--{if $itms2}-->$itm2_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="mb-slot__meta"><!--{if $itms2}--><!--{if $itmsk2_words}--><em class="cyan">$itmsk2_words</em> · <!--{/if}-->效 $itme2 / 耐 $itms2<!--{else}-->-<!--{/if}--></small>
+                </div>
+
+                <div class="mb-slot<!--{if !$itms3}--> is-empty<!--{elseif CURSCRIPT == 'game' && $mode == 'command'}--> is-usable<!--{/if}-->" <!--{if $itms3 && CURSCRIPT == 'game' && $mode == 'command'}-->onclick="<!--{if $itmk3 == 'ZB' && $itme3 == 24}-->useClub24Card(3);return false;<!--{else}-->if(window.MobileUI)window.MobileUI.useBagItem(3);return false;<!--{/if}-->"<!--{/if}-->>
+                    <div class="mb-slot__top"><span class="mb-slot__kind">[3] <!--{if $itms3}-->$itmk3_words<!--{else}-->空栏位<!--{/if}--></span></div>
+                    <strong class="mb-slot__name"><!--{if $itms3}-->$itm3_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="mb-slot__meta"><!--{if $itms3}--><!--{if $itmsk3_words}--><em class="cyan">$itmsk3_words</em> · <!--{/if}-->效 $itme3 / 耐 $itms3<!--{else}-->-<!--{/if}--></small>
+                </div>
+
+                <div class="mb-slot<!--{if !$itms4}--> is-empty<!--{elseif CURSCRIPT == 'game' && $mode == 'command'}--> is-usable<!--{/if}-->" <!--{if $itms4 && CURSCRIPT == 'game' && $mode == 'command'}-->onclick="<!--{if $itmk4 == 'ZB' && $itme4 == 24}-->useClub24Card(4);return false;<!--{else}-->if(window.MobileUI)window.MobileUI.useBagItem(4);return false;<!--{/if}-->"<!--{/if}-->>
+                    <div class="mb-slot__top"><span class="mb-slot__kind">[4] <!--{if $itms4}-->$itmk4_words<!--{else}-->空栏位<!--{/if}--></span></div>
+                    <strong class="mb-slot__name"><!--{if $itms4}-->$itm4_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="mb-slot__meta"><!--{if $itms4}--><!--{if $itmsk4_words}--><em class="cyan">$itmsk4_words</em> · <!--{/if}-->效 $itme4 / 耐 $itms4<!--{else}-->-<!--{/if}--></small>
+                </div>
+
+                <div class="mb-slot<!--{if !$itms5}--> is-empty<!--{elseif CURSCRIPT == 'game' && $mode == 'command'}--> is-usable<!--{/if}-->" <!--{if $itms5 && CURSCRIPT == 'game' && $mode == 'command'}-->onclick="<!--{if $itmk5 == 'ZB' && $itme5 == 24}-->useClub24Card(5);return false;<!--{else}-->if(window.MobileUI)window.MobileUI.useBagItem(5);return false;<!--{/if}-->"<!--{/if}-->>
+                    <div class="mb-slot__top"><span class="mb-slot__kind">[5] <!--{if $itms5}-->$itmk5_words<!--{else}-->空栏位<!--{/if}--></span></div>
+                    <strong class="mb-slot__name"><!--{if $itms5}-->$itm5_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="mb-slot__meta"><!--{if $itms5}--><!--{if $itmsk5_words}--><em class="cyan">$itmsk5_words</em> · <!--{/if}-->效 $itme5 / 耐 $itms5<!--{else}-->-<!--{/if}--></small>
+                </div>
+
+                <div class="mb-slot<!--{if !$itms6}--> is-empty<!--{elseif CURSCRIPT == 'game' && $mode == 'command'}--> is-usable<!--{/if}-->" <!--{if $itms6 && CURSCRIPT == 'game' && $mode == 'command'}-->onclick="<!--{if $itmk6 == 'ZB' && $itme6 == 24}-->useClub24Card(6);return false;<!--{else}-->if(window.MobileUI)window.MobileUI.useBagItem(6);return false;<!--{/if}-->"<!--{/if}-->>
+                    <div class="mb-slot__top"><span class="mb-slot__kind">[6] <!--{if $itms6}-->$itmk6_words<!--{else}-->空栏位<!--{/if}--></span></div>
+                    <strong class="mb-slot__name"><!--{if $itms6}-->$itm6_words<!--{else}-->无<!--{/if}--></strong>
+                    <small class="mb-slot__meta"><!--{if $itms6}--><!--{if $itmsk6_words}--><em class="cyan">$itmsk6_words</em> · <!--{/if}-->效 $itme6 / 耐 $itms6<!--{else}-->-<!--{/if}--></small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-card mb-card--vitals">
+        <div class="mb-card__head">
+            <span class="mb-card__title">角色数值与熟练 · STATUS</span>
+            <span class="mb-card__meta">Lv.$lvl ($exp/$upexp)</span>
+        </div>
+        <div class="mb-card__body">
+            <div class="mb-stat-grid">
+                <div><span>{lang hp}</span><strong class="$hpgroup"><!--{if isset($shield_info)}-->{$shield_info} <!--{/if}--><!--{if !empty($clbpara['kimi_no_hp'])}--><em class="grey">已废除（{$clbpara['kimi_charge']}/{$clbpara['kimi_recorded_mss']}）</em><!--{else}-->$hp / $mhp<!--{/if}--></strong></div>
+                <div><span>{lang sp}</span><strong class="$spgroup">$sp / $msp</strong></div>
+                <div><span>{lang att}</span><strong>$atkinfo</strong></div>
+                <div><span>{lang def}</span><strong>$definfo</strong></div>
+                <div><span>{lang money}</span><strong class="yellow">$money {lang moneyunit}</strong></div>
+                <div><span>{lang rage} / 击杀</span><strong><em class="yellow"><!--{if $rage}-->$rage<!--{else}-->0<!--{/if}--></em> / $killnum</strong></div>
+                <div><span>{lang team}</span><strong><!--{if $teamID && $gamestate < 40}-->$teamID<!--{else}-->无<!--{/if}--></strong></div>
+                <div><span>技能点 / {lang ss}</span><strong><!--{if $skillpoint > 0}--><em class="lime">$skillpoint</em><!--{else}-->0<!--{/if}--> / <!--{if !empty($clbpara['kimi_no_ss'])}--><em class="grey">废除</em><!--{else}-->$ss/$mss<!--{/if}--></strong></div>
+            </div>
+
+            <div class="mb-prof-row" aria-label="六系熟练度">
+                <span class="<!--{if $wp >= 100}-->is-high<!--{/if}-->">{lang wp} <strong>$wp</strong></span>
+                <span class="<!--{if $wk >= 100}-->is-high<!--{/if}-->">{lang wk} <strong>$wk</strong></span>
+                <span class="<!--{if $wg >= 100}-->is-high<!--{/if}-->">{lang wg} <strong>$wg</strong></span>
+                <span class="<!--{if $wc >= 100}-->is-high<!--{/if}-->">{lang wc} <strong>$wc</strong></span>
+                <span class="<!--{if $wd >= 100}-->is-high<!--{/if}-->">{lang wd} <strong>$wd</strong></span>
+                <span class="<!--{if $wf >= 100}-->is-high<!--{/if}-->">{lang wf} <strong>$wf</strong></span>
+            </div>
+
+            <div class="mb-inf-block">
+                <div class="mb-inf-line">
+                    <span class="mb-inf-label">{lang inf}：</span>
+                    <!--{eval $mb_has_wound = false;}-->
+                    <!--{loop array('h'=>'头部','b'=>'胸部','a'=>'腕部','f'=>'足部') $mb_wk $mb_wname}-->
+                    <!--{if strpos($inf, $mb_wk) !== false}-->
+                    <!--{eval $mb_has_wound = true;}-->
+                    <!--{if CURSCRIPT == 'game' && $mode == 'command'}-->
+                    <button type="button" class="mb-inf-pill is-wound" onclick="postCmd('gamecmd','command.php',{data:{mode:'special',command:'inf{$mb_wk}'}});return false;">{$mb_wname}受伤 [包扎]</button>
+                    <!--{else}-->
+                    <span class="mb-inf-pill is-wound">{$mb_wname}受伤</span>
+                    <!--{/if}-->
+                    <!--{/if}-->
+                    <!--{/loop}-->
+                    <!--{if !$mb_has_wound}--><span class="mb-inf-pill is-ok">无负伤</span><!--{/if}-->
+                </div>
+                <div class="mb-inf-line">
+                    <span class="mb-inf-label">异常：</span>
+                    <!--{eval $mb_has_ail = false;}-->
+                    <!--{loop array('p','u','i','e','w') $mb_ak}-->
+                    <!--{if strpos($inf, $mb_ak) !== false}-->
+                    <!--{eval $mb_has_ail = true;}-->
+                    <!--{if CURSCRIPT == 'game' && $mode == 'command' && $club == 16}-->
+                    <button type="button" class="mb-inf-pill is-ailment" onclick="postCmd('gamecmd','command.php',{data:{mode:'special',command:'inf{$mb_ak}'}});return false;">{$infinfo[$mb_ak]} [处理]</button>
+                    <!--{else}-->
+                    <span class="mb-inf-pill is-ailment">{$infinfo[$mb_ak]}</span>
+                    <!--{/if}-->
+                    <!--{/if}-->
+                    <!--{/loop}-->
+                    <!--{if !$mb_has_ail}--><span class="mb-inf-pill is-ok">正常</span><!--{/if}-->
+                </div>
+            </div>
+
+            <div class="mb-agent-footer">
+                <div class="mb-agent-id">
+                    <img src="img/$iconImg" alt="$name" class="mb-agent-avatar" data-fallback="avatar">
+                    <div>
+                        <div class="mb-agent-name"><span class="{$fcg_name_class}"><!--{if !empty($nickinfo)}-->$nickinfo <!--{/if}-->$name<!--{if !empty($clbpara['PlatformName'])}--> （$clbpara['PlatformName']）<!--{/if}--></span></div>
+                        <div class="mb-agent-sub">$sexinfo[$gd] · {$sNo}号 · 第 $gamenum 回<!--{if $gamestate == 40}--> · <span class="yellow">{lang combo}</span><!--{/if}--><!--{if $gamestate == 50}--> · <span class="red">{lang duel}</span><!--{/if}--></div>
+                    </div>
+                </div>
+                <!--{if CURSCRIPT == 'game'}-->
+                <div class="mb-paperdoll-box">
+                    <!--{eval $pd_mode = 'normal'; $pd_width = 120; $pd_height = 168; $pd_draw_height = 160; $pd_fill = 0;}-->
+                    {template paperdoll_profile}
+                </div>
+                <!--{/if}-->
+            </div>
+        </div>
+    </section>
+</div>

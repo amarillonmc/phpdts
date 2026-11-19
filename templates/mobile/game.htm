@@ -1,0 +1,218 @@
+{template header}
+{template elevator}
+{template flash_companion}
+<div id="dialogue-container">
+    <!--{if isset($dialogue_id)}-->
+    {template dialogue}
+    <!--{/if}-->
+</div>
+<div id="ingamebgm" style="display:none">
+    <!--{eval $bgm = init_bgm(1);}-->
+    $bgm
+</div>
+<div id="hidden-model">
+    <!--{if !empty($clbpara['noskip_dialogue']) && $clbpara['noskip_dialogue'] == 'opening'}-->
+    {template opening}
+    <!--{/if}-->
+</div>
+<script type="text/javascript">
+    var CURSCRIPT = 'game';
+</script>
+<!--{eval include_once GAME_ROOT.'./templates/mobile/mobile_helpers.inc.php'; $mb_init_map = mobile_build_map_nodes(get_defined_vars()); $mb_hp_pct = $mhp > 0 ? max(0, min(100, round($hp / $mhp * 100))) : 0; $mb_sp_pct = $msp > 0 ? max(0, min(100, round($sp / $msp * 100))) : 0; $mb_ss_pct = $mss > 0 ? max(0, min(100, round($ss / $mss * 100))) : 0; $mb_rage_pct = max(0, min(100, (int)$rage));}-->
+
+<div class="mb-hud" id="mb-hud">
+    <div class="mb-hud__top">
+        <button type="button" class="mb-hud__loc" id="mb-hud-loc-btn" onclick="if(window.MobileUI)window.MobileUI.switchTab('map');" title="点击查看地图并快速移动">
+            <span class="mb-hud__loc-pin" aria-hidden="true">📍</span>
+            <!--{if !isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup])}-->
+            <strong id="pls">$hplsinfo[$pgroup][$pls]</strong>
+            <!--{else}-->
+            <strong id="pls">$plsinfo[$pls]</strong>
+            <!--{/if}-->
+            <span class="mb-hud__zone-flag" id="mb-hud-zone-flag" hidden></span>
+            <span class="mb-hud__weather" data-mb-weather>$wthinfo[$weather]</span>
+        </button>
+
+        <div class="mb-hud__quick">
+            <span class="mb-hud__alive">幸存 <strong id="anum">$alivenum</strong></span>
+            <button type="button" class="mb-hud__qbtn" onclick="if(window.MobileUI)window.MobileUI.openDialogSafe('skillpage');">技能<!--{if $skillpoint > 0}--><em class="mb-qbtn-dot" id="mb-hud-sp-dot">$skillpoint</em><!--{else}--><em class="mb-qbtn-dot" id="mb-hud-sp-dot" hidden>0</em><!--{/if}--></button>
+            <button type="button" class="mb-hud__qbtn" onclick="if(typeof togglePanel === 'function')togglePanel();">任务</button>
+            <button type="button" class="mb-hud__qbtn" onclick="if(window.MobileUI)window.MobileUI.openDialogSafe('terminal');">终端</button>
+        </div>
+    </div>
+
+    <div class="mb-hud__bars">
+        <div class="mb-vital">
+            <div class="mb-vital__head"><span>HP</span><strong data-mb-hp-text>$hp/$mhp</strong></div>
+            <div class="mb-vital__track"><div class="mb-vital__fill is-hp" data-mb-hp-fill style="width:{$mb_hp_pct}%"></div></div>
+        </div>
+        <div class="mb-vital">
+            <div class="mb-vital__head"><span>SP</span><strong data-mb-sp-text>$sp/$msp</strong></div>
+            <div class="mb-vital__track"><div class="mb-vital__fill is-sp" data-mb-sp-fill style="width:{$mb_sp_pct}%"></div></div>
+        </div>
+        <div class="mb-vital mb-vital--compact">
+            <div class="mb-vital__head"><span>怒</span><strong class="yellow" data-mb-rage-text><!--{if $rage}-->$rage<!--{else}-->0<!--{/if}--></strong></div>
+            <div class="mb-vital__track"><div class="mb-vital__fill is-rage" data-mb-rage-fill style="width:{$mb_rage_pct}%"></div></div>
+        </div>
+        <div class="mb-vital mb-vital--compact" id="mb-hud-ss-wrap" <!--{if !$mss && !$ss}-->hidden<!--{/if}-->>
+            <div class="mb-vital__head"><span>歌</span><strong class="cyan" data-mb-ss-text>$ss/$mss</strong></div>
+            <div class="mb-vital__track"><div class="mb-vital__fill is-ss" data-mb-ss-fill style="width:{$mb_ss_pct}%"></div></div>
+        </div>
+    </div>
+
+    <div class="mb-hud__wounds" id="mb-hud-wounds" hidden></div>
+</div>
+
+<div id="notice" class="mb-notice"></div>
+
+<div class="mb-workspace" id="mb-workspace" data-mb-active-tab="action" data-mb-tablet-left="profile" data-mb-has-special-main="<!--{if !empty($main)}-->1<!--{else}-->0<!--{/if}-->">
+    <div class="mb-tablet-switcher" id="mb-tablet-switcher" aria-label="平板左栏切换">
+        <button type="button" class="mb-tablet-tab is-active" data-mb-tablet-btn="profile" onclick="if(window.MobileUI)window.MobileUI.switchTabletLeft('profile');">状态与装备</button>
+        <button type="button" class="mb-tablet-tab" data-mb-tablet-btn="map" onclick="if(window.MobileUI)window.MobileUI.switchTabletLeft('map');">地区态势</button>
+        <button type="button" class="mb-tablet-tab" data-mb-tablet-btn="chat" onclick="if(window.MobileUI)window.MobileUI.switchTabletLeft('chat');">战场通讯</button>
+    </div>
+
+    <div id="main" class="mb-main-host">
+        <!--{if $main=='battle'}-->
+            {template battle}
+        <!--{elseif $main=='battle_rev'}-->
+            {template battle_rev}
+        <!--{elseif $main=='itemmix_tips'}-->
+            {template itemmix_tips}
+        <!--{elseif $main}-->
+            <!--{eval include template($main);}-->
+        <!--{else}-->
+            {template profile}
+        <!--{/if}-->
+    </div>
+
+    <section class="mb-pane mb-pane--action" id="mb-pane-action" aria-label="行动与指令">
+        <!--{if $club == 0 && function_exists('valid_getclublist_t1') && function_exists('valid_getclublist_t2')}-->
+        <!--{eval $mb_t1_list = valid_getclublist_t1($udata); $mb_t2_list = valid_getclublist_t2($udata);}-->
+        <div class="mb-club-banner" id="mb-club-quick">
+            <label for="mb-clubsel-quick" class="yellow">尚未选择内定称号：</label>
+            <select id="mb-clubsel-quick" onchange="if(this.value){postCmd('gamecmd','command.php',{data:{mode:'special',command:this.value}});}">
+                <option value="">■ 点击选择内定称号 ■</option>
+                <optgroup label="普通称号">
+                    <!--{loop $mb_t2_list $key}-->
+                    <option value="clubsel$key">$clubinfo[$key]</option>
+                    <!--{/loop}-->
+                </optgroup>
+                <optgroup label="特殊称号">
+                    <!--{loop $mb_t1_list $key}-->
+                    <option value="clubsel$key">$clubinfo[$key]</option>
+                    <!--{/loop}-->
+                </optgroup>
+            </select>
+        </div>
+        <!--{/if}-->
+
+        <div class="mb-card mb-card--log">
+            <div class="mb-card__head">
+                <span class="mb-card__title">行动记录 · LOG</span>
+                <span class="mb-card__meta" data-mb-pls-mirror><!--{if !isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup])}-->$hplsinfo[$pgroup][$pls]<!--{else}-->$plsinfo[$pls]<!--{/if}--></span>
+            </div>
+            <div class="mb-card__body mb-log-body">
+                <div id="log">$log</div>
+            </div>
+        </div>
+
+        <div class="mb-card mb-card--cmd">
+            <div class="mb-card__head">
+                <span class="mb-card__title">指令终端 · ACTION</span>
+                <button type="button" class="mb-chip-btn" onclick="if(window.MobileUI)window.MobileUI.switchTab('profile');">装备 / 姿态</button>
+            </div>
+            <div class="mb-card__body">
+                <form method="post" id="gamecmd" name="gamecmd" style="margin: 0px">
+                    <div id="cmd">
+                        $wheelchair_panel
+                        <!--{if $hp <= 0}-->
+                        {template death}
+                        <!--{elseif !empty($clbpara['flash'])}-->
+                        $cmd
+                        <!--{elseif $state >=1 && $state <= 3}-->
+                        {template rest}
+                        <!--{elseif $itms0}-->
+                        {template itemfind}
+                        <!--{elseif $cmd}-->
+                        $cmd
+                        <!--{else}-->
+                        {template command}
+                        <!--{/if}-->
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-pane mb-pane--map" id="mb-pane-map" aria-label="地区态势与快速移动">
+        <div class="mb-card">
+            <div class="mb-card__head">
+                <span class="mb-card__title">地区态势 · <strong data-mb-pls-mirror><!--{if !isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup])}-->$hplsinfo[$pgroup][$pls]<!--{else}-->$plsinfo[$pls]<!--{/if}--></strong></span>
+                <div class="mb-card__tools">
+                    <button type="button" class="mb-chip-btn" onclick="if(window.MobileUI)window.MobileUI.openDialogSafe('terminal');">控制台 / BGM</button>
+                    <button type="button" class="mb-chip-btn" onclick="if(typeof togglePanel === 'function')togglePanel();">任务面板</button>
+                </div>
+            </div>
+            <div class="mb-card__body">
+                <div class="mb-loc-banner">
+                    <img src="img/location/{$pls}.jpg" alt="location" data-mb-location-img data-fallback="location">
+                    <div class="mb-loc-banner__meta">
+                        <strong data-mb-pls-mirror><!--{if !isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup])}-->$hplsinfo[$pgroup][$pls]<!--{else}-->$plsinfo[$pls]<!--{/if}--></strong>
+                        <span>{lang weather}：<em data-mb-weather>$wthinfo[$weather]</em></span>
+                    </div>
+                </div>
+                <div class="mb-map-legend">
+                    <span class="mb-legend-item is-current">当前位置</span>
+                    <span class="mb-legend-item is-warn">即将禁区</span>
+                    <span class="mb-legend-item is-danger">禁区</span>
+                    <span class="mb-legend-hint">点选地点直接移动</span>
+                </div>
+                <div class="mb-map-grid" id="mb-map-grid">
+                    <!--{loop $mb_init_map['nodes'] $mnode}-->
+                    <button type="button" class="mb-map-node<!--{if $mnode['current']}--> is-current<!--{/if}--><!--{if $mnode['danger']}--> is-danger<!--{elseif $mnode['warn']}--> is-warn<!--{/if}-->" data-pls-id="$mnode['id']" onclick="if(window.MobileUI)window.MobileUI.moveTo($mnode['id']);">
+                        <span class="mb-map-node__coord">$mnode['coord']</span>
+                        <span class="mb-map-node__name">$mnode['name']</span>
+                    </button>
+                    <!--{/loop}-->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-pane mb-pane--chat" id="mb-pane-chat" aria-label="战场通讯与进行状况">
+        <div class="mb-card">
+            <div class="mb-card__head">
+                <span class="mb-card__title">战场通讯 · COMMS</span>
+                <button type="button" class="mb-chip-btn" onclick="if(typeof togglePanel === 'function')togglePanel();">任务与副面板</button>
+            </div>
+            <div class="mb-card__body">
+                {template chat}
+            </div>
+        </div>
+    </section>
+</div>
+
+<nav class="mb-bottom-dock" id="mb-bottom-dock" aria-label="移动主操作栏">
+    <button type="button" class="mb-dock-btn is-active" data-mb-dock-btn="action" onclick="if(window.MobileUI)window.MobileUI.switchTab('action');">
+        <span class="mb-dock-btn__icon" aria-hidden="true">⚔️</span>
+        <span class="mb-dock-btn__label">行动</span>
+    </button>
+    <button type="button" class="mb-dock-btn" data-mb-dock-btn="profile" onclick="if(window.MobileUI)window.MobileUI.switchTab('profile');">
+        <span class="mb-dock-btn__icon" aria-hidden="true">🎒</span>
+        <span class="mb-dock-btn__label">状态·装备</span>
+        <span class="mb-dock-dot" id="mb-dock-profile-dot" <!--{if !$skillpoint && $club != 0}-->hidden<!--{/if}-->></span>
+    </button>
+    <button type="button" class="mb-dock-btn" data-mb-dock-btn="map" onclick="if(window.MobileUI)window.MobileUI.switchTab('map');">
+        <span class="mb-dock-btn__icon" aria-hidden="true">🗺️</span>
+        <span class="mb-dock-btn__label">地图</span>
+        <span class="mb-dock-dot is-warn" id="mb-dock-map-dot" hidden></span>
+    </button>
+    <button type="button" class="mb-dock-btn" data-mb-dock-btn="chat" onclick="if(window.MobileUI)window.MobileUI.switchTab('chat');">
+        <span class="mb-dock-btn__icon" aria-hidden="true">💬</span>
+        <span class="mb-dock-btn__label">通讯</span>
+    </button>
+</nav>
+
+{template slidingpanel}
+{template footer}

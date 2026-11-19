@@ -1,0 +1,78 @@
+</main>
+
+<div class="mb-drawer-backdrop" id="mb-theme-backdrop" hidden onclick="if(window.MobileUI)window.MobileUI.toggleThemePanel(false);"></div>
+<aside class="mb-theme-sheet" id="mb-theme-panel" hidden aria-label="界面配色设置">
+    <div class="mb-nav-drawer__head">
+        <span class="mb-nav-drawer__title">DARK AERO · 界面配色调整</span>
+        <button type="button" class="mb-icon-close" onclick="if(window.MobileUI)window.MobileUI.toggleThemePanel(false);" aria-label="关闭配色面板">×</button>
+    </div>
+    <div class="mb-theme-sheet__body">
+        <div class="mb-theme-label">预设主题 (Presets)</div>
+        <div class="mb-theme-presets" id="mb-theme-presets">
+            <button type="button" class="mb-theme-preset" data-mb-preset="aero-emerald">
+                <span class="mb-theme-swatch" style="background:linear-gradient(135deg,#3fe0a8,#35b8ff);"></span>
+                <span>翡翠流光</span>
+            </button>
+            <button type="button" class="mb-theme-preset" data-mb-preset="frutiger-aqua">
+                <span class="mb-theme-swatch" style="background:linear-gradient(135deg,#38d6ff,#5ce6b8);"></span>
+                <span>极光水蓝</span>
+            </button>
+            <button type="button" class="mb-theme-preset" data-mb-preset="cobalt-ego">
+                <span class="mb-theme-swatch" style="background:linear-gradient(135deg,#5a9bff,#8f7dff);"></span>
+                <span>深海钴晶</span>
+            </button>
+            <button type="button" class="mb-theme-preset" data-mb-preset="amethyst-glass">
+                <span class="mb-theme-swatch" style="background:linear-gradient(135deg,#c07cff,#52d1ff);"></span>
+                <span>紫晶幻夜</span>
+            </button>
+            <button type="button" class="mb-theme-preset" data-mb-preset="amber-pulse">
+                <span class="mb-theme-swatch" style="background:linear-gradient(135deg,#f5b942,#ff6b4a);"></span>
+                <span>琥珀金辉</span>
+            </button>
+            <button type="button" class="mb-theme-preset" data-mb-preset="crimson-core">
+                <span class="mb-theme-swatch" style="background:linear-gradient(135deg,#ff5c7c,#ffb347);"></span>
+                <span>绯红核心</span>
+            </button>
+        </div>
+
+        <div class="mb-theme-label">自定义色彩 (Custom Palette)</div>
+        <div class="mb-theme-custom-grid">
+            <label class="mb-theme-color-field">
+                <span>主强调色</span>
+                <input type="color" id="mb-color-accent" value="#3fe0a8">
+            </label>
+            <label class="mb-theme-color-field">
+                <span>副光晕色</span>
+                <input type="color" id="mb-color-accent2" value="#38c8ff">
+            </label>
+            <label class="mb-theme-color-field">
+                <span>面板底色</span>
+                <input type="color" id="mb-color-panel" value="#0c151d">
+            </label>
+        </div>
+
+        <div class="mb-theme-actions">
+            <button type="button" class="cmdbutton" onclick="if(window.MobileUI)window.MobileUI.resetTheme();">恢复默认配色</button>
+            <a href="?ui_mode=desktop" class="cmdbutton" onclick="return typeof dtsSwitchUiMode === 'function' ? dtsSwitchUiMode('desktop') : true;">切换至原版界面</a>
+        </div>
+    </div>
+</aside>
+
+<div class="mb-tooltip-toast" id="mb-tooltip-toast" hidden role="status" aria-live="polite">
+    <span id="mb-tooltip-text"></span>
+    <button type="button" class="mb-tooltip-toast__close" onclick="if(window.MobileUI)window.MobileUI.hideTooltip();" aria-label="关闭提示">×</button>
+</div>
+
+<footer class="mb-footer">
+    <div class="mb-footer__row">
+        <span>DTS $gameversion · Mobile Dark Aero</span>
+        <span class="mb-footer__actions">
+            <button type="button" class="mb-footer__link" onclick="if(window.MobileUI)window.MobileUI.toggleThemePanel();">界面配色</button>
+            <span>·</span>
+            <a href="?ui_mode=desktop" class="mb-footer__link" onclick="return typeof dtsSwitchUiMode === 'function' ? dtsSwitchUiMode('desktop') : true;">切换原版界面</a>
+        </span>
+    </div>
+    <div id="error" class="mb-footer__error">$error</div>
+</footer>
+</body>
+</html>

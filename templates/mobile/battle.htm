@@ -1,0 +1,12 @@
+<div class="mb-battle-view" data-mb-main-kind="battle">
+    <!--{eval include_once GAME_ROOT.'./templates/mobile/mobile_helpers.inc.php'; $mb_state_json = mobile_build_live_state(get_defined_vars());}-->
+    <script type="application/json" id="mb-live-state">$mb_state_json</script>
+    <section class="mb-card mb-card--battle">
+        <div class="mb-card__head mb-card__head--battle">
+            <span class="mb-battle-banner">$battle_title</span>
+        </div>
+        <div class="mb-card__body mb-compat">
+            $cmd
+        </div>
+    </section>
+</div>

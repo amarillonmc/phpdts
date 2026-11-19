@@ -121,6 +121,19 @@
         });
     }
 
+    // iPadOS 13+ 默认发送桌面端 Macintosh UA；首次访问且未手动选择原版时自动进入移动版。
+    try {
+        if (!/(?:^|;\s*)dts_ui_mode=/.test(document.cookie || '')
+            && navigator.maxTouchPoints > 1
+            && /Macintosh/.test(navigator.userAgent || '')
+            && !window.sessionStorage.getItem('dts_ipad_redirected')) {
+            window.sessionStorage.setItem('dts_ipad_redirected', '1');
+            document.cookie = 'dts_ui_mode=mobile; path=/; max-age=31536000';
+            window.location.reload();
+            return;
+        }
+    } catch (e) {}
+
     // 在页头读取设置，避免先闪出默认配色。
     apply();
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindControls);

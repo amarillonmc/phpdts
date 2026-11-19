@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=$charset">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{lang title} :: Mobile</title>
+<link rel="stylesheet" href="include/fcg/titles.css?v=20261024">
+<!--{if isset($extrahead)}-->$extrahead<!--{/if}-->
+<style type="text/css" id="css">{template css}</style>
+<link rel="stylesheet" type="text/css" href="templates/mobile/assets/css/mobile.css?v=20261119">
+<link rel="stylesheet" type="text/css" href="templates/mobile/assets/css/game-mobile.css?v=20261119">
+<!--{if (CURSCRIPT == 'messages')}-->
+<link rel="stylesheet" type="text/css" href="gamedata/cache/style_buttons.20180118.css">
+<link rel="stylesheet" type="text/css" href="gamedata/cache/style_messages.20180221.css">
+<!--{/if}-->
+<script type="text/javascript" src="include/javascript/jquery.min.js"></script>
+<script type="text/javascript" id="sourcecode">jQuery.noConflict();</script>
+<script type="text/javascript" src="include/common.js?v=20261119"></script>
+<script type="text/javascript" src="include/game20130526.js?v=20261106"></script>
+<!--{if CURSCRIPT == 'game' || CURSCRIPT == 'user'}-->
+<link rel="stylesheet" href="include/paperdoll.css?v=20261106">
+<script type="text/javascript" src="include/paperdoll.js?v=20261106" defer></script>
+<!--{/if}-->
+<script type="text/javascript" src="include/json.js"></script>
+<script type="text/javascript" src="include/pako.js"></script>
+<!--{if (CURSCRIPT == 'game')}-->
+<script type="text/javascript" src="include/dialogue.js?v=20261028"></script>
+<script type="text/javascript" src="include/record.js"></script>
+<!--{/if}-->
+<script type="text/javascript" src="templates/mobile/assets/js/image-fallback.js?v=20261119" defer></script>
+<script type="text/javascript" src="templates/mobile/assets/js/mobile.js?v=20261119" defer></script>
+</head>
+<body class="mobile-ui mb-page-{eval echo CURSCRIPT;}" data-mb-script="{eval echo CURSCRIPT;}" <!--{if CURSCRIPT == 'game' && $hotkeyon}-->onkeyup="hotkey(event);"<!--{/if}-->>
+<div class="mb-aero-bg" aria-hidden="true"></div>
+
+<header class="mb-topbar">
+    <div class="mb-topbar__left">
+        <button type="button" class="mb-topbar__btn" id="mb-nav-toggle" aria-expanded="false" aria-controls="mb-nav-drawer" onclick="if(window.MobileUI)window.MobileUI.toggleNav();">
+            <span aria-hidden="true">☰</span>
+            <span>导航</span>
+            <!--{if !empty($new_messages)}--><span class="mb-dot-badge" title="有新邮件"></span><!--{/if}-->
+        </button>
+    </div>
+    <div class="mb-topbar__brand">
+        <a href="index.php">{lang title}</a>
+    </div>
+    <div class="mb-topbar__right">
+        <!--{if CURSCRIPT != 'game'}-->
+        <a href="game.php" class="mb-topbar__btn mb-topbar__btn--accent">{lang game}</a>
+        <!--{else}-->
+        <button type="button" class="mb-topbar__btn" onclick="if(window.MobileUI)window.MobileUI.toggleThemePanel();" title="界面配色">配色</button>
+        <!--{/if}-->
+        <a href="?ui_mode=desktop" class="mb-topbar__btn mb-topbar__btn--switch" onclick="return typeof dtsSwitchUiMode === 'function' ? dtsSwitchUiMode('desktop') : true;" title="切换至电脑原版界面">原版</a>
+    </div>
+</header>
+
+<div class="mb-drawer-backdrop" id="mb-nav-backdrop" hidden onclick="if(window.MobileUI)window.MobileUI.toggleNav(false);"></div>
+<nav class="mb-nav-drawer" id="mb-nav-drawer" hidden aria-label="站点主导航">
+    <div class="mb-nav-drawer__head">
+        <span class="mb-nav-drawer__title">终端导航 · NAVIGATION</span>
+        <button type="button" class="mb-icon-close" onclick="if(window.MobileUI)window.MobileUI.toggleNav(false);" aria-label="关闭导航">×</button>
+    </div>
+    <div class="mb-nav-drawer__body">
+        <div class="mb-nav-group">
+            <div class="mb-nav-group__label">核心入口</div>
+            <div class="mb-nav-grid">
+                <a href="index.php" class="mb-nav-link">{lang index}</a>
+                <a href="game.php" class="mb-nav-link mb-nav-link--primary">{lang game}</a>
+                <!--{if isset($cuser) && isset($cpass)}-->
+                <a href="messages.php" class="mb-nav-link">{lang messages}<!--{if !empty($new_messages)}--> <span class="L5">NEW!</span><!--{/if}--></a>
+                <a href="user_profile.php" class="mb-nav-link">{lang user}</a>
+                <a href="user.php" class="mb-nav-link">账户设置</a>
+                <!--{else}-->
+                <a href="register.php" class="mb-nav-link">{lang register}</a>
+                <!--{/if}-->
+                <a href="help.php" class="mb-nav-link">{lang help}</a>
+            </div>
+        </div>
+
+        <div class="mb-nav-group">
+            <div class="mb-nav-group__label">战场情报与记录</div>
+            <div class="mb-nav-grid">
+                <a href="map.php" class="mb-nav-link">{lang map}</a>
+                <a href="news.php" class="mb-nav-link">{lang news}</a>
+                <a href="alive.php" class="mb-nav-link">{lang alive}</a>
+                <a href="winner.php" class="mb-nav-link">{lang winner}</a>
+                <a href="rank.php" class="mb-nav-link">{lang rank}</a>
+                <a href="record.php" class="mb-nav-link">回放录像</a>
+                <!--{if (CURSCRIPT == 'game')}-->
+                <a href="javascript:void(0)" class="mb-nav-link" onclick="if(window.MobileUI)window.MobileUI.toggleNav(false);stopRecording();">停止录像</a>
+                <!--{/if}-->
+            </div>
+        </div>
+
+        <div class="mb-nav-group">
+            <div class="mb-nav-group__label">种火与幻想世界</div>
+            <div class="mb-nav-grid">
+                <a href="fireseed_shop.php" class="mb-nav-link">种火商店</a>
+                <a href="vnworld.php" class="mb-nav-link">空想梦境</a>
+                <a href="vn_create.php?kind=npc" class="mb-nav-link">幻影造物</a>
+                <a href="vn_create.php?kind=item" class="mb-nav-link">万象投影</a>
+            </div>
+        </div>
+
+        <div class="mb-nav-group">
+            <div class="mb-nav-group__label">管理、社区与界面切换</div>
+            <div class="mb-nav-grid">
+                <a href="admin.php" class="mb-nav-link">{lang admin}</a>
+                <a href="https://bbs.brdts.online/" target="_blank" class="mb-nav-link">{lang report}</a>
+                <a href="https://bbs.brdts.online/?thread-2.htm" target="_blank" class="mb-nav-link">{lang donate}</a>
+                <button type="button" class="mb-nav-link" onclick="if(window.MobileUI){window.MobileUI.toggleNav(false);window.MobileUI.toggleThemePanel(true);}">界面配色</button>
+                <a href="?ui_mode=desktop" class="mb-nav-link mb-nav-link--switch" onclick="return typeof dtsSwitchUiMode === 'function' ? dtsSwitchUiMode('desktop') : true;">切换原版界面</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="mb-stage" id="mb-stage">
