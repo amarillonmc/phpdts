@@ -30,7 +30,8 @@
 - 当前没有 `composer.json`、`yii` 入口或完整 Yii 工程。README 中的 `composer install`、`yii serve`、`config/configuration.php`、`.merge-plan.php` 是历史说明；残留的 `autoload.php`、`rector.php` 不代表现在要走该流程。不要用 `composer dump-autoload` 刷新游戏配置或模板。
 - `Dockerfile` 使用 PHP 8.1 FPM，Compose 使用 MariaDB；这不等于所有部署版本。普通改动保持 PHP 7.4 可用语法，不主动提高最低版本；兼容性结论须说明实际测试版本。
 - `doc/modding_260707/` 可用于定位功能，`doc/nouveau_250609/`、`doc/etc/` 和旧提交可作背景；具体函数、参数、规则和路径仍要核对源码。
-- `doc/20260915-024212-elevator-ruleset-design-review.md` 和 `doc/20260915-031129-four-ending-routes-design-review.md` 是设计评审稿。其中新增的表、版本、实例、统一结算等是建议，不能当作已实装能力、作者已定需求或必须先完成的工程前置条件。
+- `doc/` 目录中可能会包含设计评审稿或者其存档。其中新增的表、版本、实例、统一结算等是建议，不能当作已实装内容或待实装内容，相关内容仍需要核对源码。
+- 如果你的工作区中额外包含有`dts-creative-consultation`，则涉及到虚构层必须先参照其中内容。
 
 ## 从哪里找实现
 
