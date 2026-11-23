@@ -19,6 +19,10 @@ function use_func_item($usemode,$item)
 	elseif ($usemode=="qianghua") {qianghua($item);}
 	elseif ($usemode=="nametag") {nametag($item);}
 	elseif ($usemode=="supernametag") {supernametag($item);}
+	elseif ($usemode=="xharmer_mod") {
+		include_once GAME_ROOT.'./include/game/item.xharmer_mod.php';
+		item_xharmer_mod_exec($item);
+	}
 }
 
 function poison($itmn = 0) {

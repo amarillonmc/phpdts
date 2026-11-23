@@ -55,8 +55,24 @@ function severe_apply_curse(&$data,$key)
 function severe_effective($data,$key)
 {
 	if(!severe_has($data,$key)) return false;
-	if($key == 'lower' && !empty($data['arfs']) && strpos($data['arf'] ?? '','义肢') !== false) return false;
-	if($key == 'upper' && !empty($data['arbs']) && strpos($data['arb'] ?? '','义肢') !== false) return false;
+	if($key == 'lower') {
+		if(!empty($data['arfs']) && strpos($data['arf'] ?? '','义肢') !== false) return false;
+		foreach(array('arf','ara') as $slot) {
+			if(!empty($data[$slot.'s'])) {
+				$spara = get_itmpara($data[$slot.'para'] ?? '');
+				if(!empty($spara['IgnoreLowerBreak'])) return false;
+			}
+		}
+	}
+	if($key == 'upper') {
+		if(!empty($data['arbs']) && strpos($data['arb'] ?? '','义肢') !== false) return false;
+		foreach(array('ara','arf') as $slot) {
+			if(!empty($data[$slot.'s'])) {
+				$spara = get_itmpara($data[$slot.'para'] ?? '');
+				if(!empty($spara['IgnoreUpperBreak'])) return false;
+			}
+		}
+	}
 	return true;
 }
 

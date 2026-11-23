@@ -257,8 +257,10 @@ quest_q6_test_assert(empty($player['clbpara']['quest']['active']['Q6'])
 quest_q6_test_assert($player['itms1'] === 0 && $player['itm1'] === '', '交付会消耗三颗糖果');
 quest_q6_test_assert($player['money'] === 120 && $player['exp'] === 50,
     'Q6数值奖励只发放一次');
-quest_q6_test_assert($player['itm0'] === '捉迷藏证明' && $player['itms0'] === 1,
-    'Q6交付后发放任务凭证');
+quest_q6_test_assert($player['itm0'] === '「X」式重装手足拘束具' && $player['itmk0'] === 'Y' && $player['itms0'] === 1 && $player['itmpara0'] === '',
+    'Q6交付后发放Xharmer手足拘束具且itmpara为空字符串以便叠加');
+quest_q6_test_assert(($player['clbpara']['dialogue'] ?? '') === 'xharmer_quest_gift',
+    '首次完成普通QUEST发放Xharmer改件时触发可跳过委托对白');
 
 echo "All Q6 quest tests passed.\n";
 

@@ -326,11 +326,13 @@ function quest_spawn_item($item_key, &$data, $itmpara_override = array())
 		$data = &$pdata;
 	}
 	$item = $questiteminfo[$item_key];
-	$itmpara = $item['itmpara'];
+	$itmpara = isset($item['itmpara']) ? $item['itmpara'] : array();
 	if (!empty($itmpara_override)) {
 		$itmpara = array_merge($itmpara, $itmpara_override);
 	}
-	$itmpara = json_encode($itmpara, JSON_UNESCAPED_UNICODE);
+	$is_quest_item = !empty($itmpara['IsQuestItem']);
+	$itmpara = empty($itmpara) ? '' : json_encode($itmpara, JSON_UNESCAPED_UNICODE);
+	$item_label = $is_quest_item ? 'QUEST道具' : '委托报酬';
 
 	// QUEST道具优先进入拾取栏，避免背包满时任务无法继续 / Put QUEST items into pickup slot first.
 	if (empty($data['itms0'])) {
@@ -340,7 +342,7 @@ function quest_spawn_item($item_key, &$data, $itmpara_override = array())
 		$data['itms0'] = $item['itms'];
 		$data['itmsk0'] = $item['itmsk'];
 		$data['itmpara0'] = $itmpara;
-		$log .= '获得了QUEST道具<span class="yellow">'.$item['itm'].'</span>。<br>';
+		$log .= '获得了'.$item_label.'<span class="yellow">'.$item['itm'].'</span>。<br>';
 		return true;
 	}
 
@@ -350,7 +352,7 @@ function quest_spawn_item($item_key, &$data, $itmpara_override = array())
 	if (function_exists('check_add_searchmemory')) {
 		check_add_searchmemory($iid, 'itm', $item['itm'], $data);
 	}
-	$log .= 'QUEST道具<span class="yellow">'.$item['itm'].'</span>出现在了附近。<br>';
+	$log .= $item_label.'<span class="yellow">'.$item['itm'].'</span>出现在了附近。<br>';
 	return true;
 }
 
@@ -406,10 +408,23 @@ function quest_complete($qid, &$data, $reason = '')
 	unset($clbpara['quest']['active'][$qid]);
 
 	// 奖励道具 / Reward items
-	// Q2 使用专用凭证提交，避免重复发放 / Q2 uses a turn-in token, skip auto reward items
-	if ($qid != 'Q2' && !empty($cfg['items']['reward'])) {
+	$questiteminfo = get_questiteminfo();
+	if (!empty($cfg['items']['reward'])) {
 		foreach ($cfg['items']['reward'] as $item_key) {
+			// 兼容仍把 q2_reward 当交付凭证的旧规则集，避免重复发放凭证
+			if ($qid == 'Q2' && !empty($questiteminfo[$item_key]['itmpara']['QuestAction'])
+				&& $questiteminfo[$item_key]['itmpara']['QuestAction'] == 'reward') {
+				continue;
+			}
 			quest_spawn_item($item_key, $data);
+			if (!empty($questiteminfo[$item_key]['itm']) && empty($questiteminfo[$item_key]['itmpara']['IsQuestItem'])) {
+				if (empty($clbpara['xharmer_qgift_seen']) && empty($clbpara['dialogue']) && empty($clbpara['noskip_dialogue'])) {
+					$clbpara['xharmer_qgift_seen'] = 1;
+					$clbpara['dialogue'] = 'xharmer_quest_gift';
+				} else {
+					$log .= '<span class="tmagenta">通风口探出一截心形箭尾晃了晃：「委托干得漂亮！本小姐搓的新试作改件，拿去随便造，概不退换哦！」</span><br>';
+				}
+			}
 		}
 	}
 

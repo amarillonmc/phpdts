@@ -115,12 +115,13 @@ function item_quest($itmn, &$data)
             $clbpara['quest']['active']['Q2']['step_desc'] = '目标存活，返回交付任务';
             // 变更为领奖道具 / Convert to reward item
             $reward = get_questiteminfo();
-            if (!empty($reward['q2_reward'])) {
-                $itm = $reward['q2_reward']['itm'];
-                $itmk = $reward['q2_reward']['itmk'];
-                $itme = $reward['q2_reward']['itme'];
-                $itmsk = $reward['q2_reward']['itmsk'];
-                $itmpara_raw = json_encode($reward['q2_reward']['itmpara'], JSON_UNESCAPED_UNICODE);
+            $q2_token_key = !empty($reward['q2_token']) ? 'q2_token' : 'q2_reward';
+            if (!empty($reward[$q2_token_key])) {
+                $itm = $reward[$q2_token_key]['itm'];
+                $itmk = $reward[$q2_token_key]['itmk'];
+                $itme = $reward[$q2_token_key]['itme'];
+                $itmsk = $reward[$q2_token_key]['itmsk'];
+                $itmpara_raw = json_encode($reward[$q2_token_key]['itmpara'], JSON_UNESCAPED_UNICODE);
             }
         }
         return true;
@@ -129,8 +130,12 @@ function item_quest($itmn, &$data)
     // Q2: reward
     if ($qid == 'Q2' && $action == 'reward') {
         if (!empty($clbpara['quest']['active']['Q2']) && !empty($clbpara['quest']['active']['Q2']['ready_to_claim'])) {
-            quest_complete('Q2', $data);
             if ($itms != $nosta) $itms--;
+            if ($itms <= 0 && $itms != $nosta) {
+                $itm = $itmk = $itmsk = $itmpara_raw = '';
+                $itme = $itms = 0;
+            }
+            quest_complete('Q2', $data);
         } else {
             $log .= '护送任务尚未完成。<br>';
         }
@@ -146,8 +151,12 @@ function item_quest($itmn, &$data)
         if (!empty($req['min_def']) && $def < $req['min_def']) $pass = false;
         if (!empty($req['min_ss']) && $ss < $req['min_ss']) $pass = false;
         if ($pass) {
-            quest_complete('Q3', $data);
             if ($itms != $nosta) $itms--;
+            if ($itms <= 0 && $itms != $nosta) {
+                $itm = $itmk = $itmsk = $itmpara_raw = '';
+                $itme = $itms = 0;
+            }
+            quest_complete('Q3', $data);
         } else {
             $log .= '检验未通过，尚需努力。<br>';
         }
@@ -206,8 +215,12 @@ function item_quest($itmn, &$data)
             list($questcfg,) = quest_get_config();
             $threshold = !empty($questcfg['Q5']['hp_threshold']) ? $questcfg['Q5']['hp_threshold'] : 20;
             if ($npcdata['hp'] <= round($npcdata['mhp'] * $threshold / 100)) {
-                quest_complete('Q5', $data);
                 if ($itms != $nosta) $itms--;
+                if ($itms <= 0 && $itms != $nosta) {
+                    $itm = $itmk = $itmsk = $itmpara_raw = '';
+                    $itme = $itms = 0;
+                }
+                quest_complete('Q5', $data);
                 return true;
             }
         }
@@ -272,12 +285,12 @@ function item_quest($itmn, &$data)
         list($questcfg,) = quest_get_config();
         $need = !empty($questcfg['Q6']['candy_need']) ? $questcfg['Q6']['candy_need'] : 3;
         if ($itms >= $need) {
-            $itms -= $need;
-            quest_complete('Q6', $data);
+            if ($itms != $nosta) $itms -= $need;
             if ($itms <= 0 && $itms != $nosta) {
                 $itm = $itmk = $itmsk = $itmpara_raw = '';
                 $itme = $itms = 0;
             }
+            quest_complete('Q6', $data);
         } else {
             $log .= '糖果数量不足。<br>';
         }

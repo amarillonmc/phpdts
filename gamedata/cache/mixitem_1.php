@@ -128,6 +128,7 @@ $mixinfo = array
 	array('class' => 'item', 'stuff' => array('乌黑的脸','乌黑的脸','乌黑的脸','乌黑的脸','乌黑的脸'),'result' => array('😂我太酷啦！😂','Y',1,1,'xX'),),
 	array('class' => 'item', 'stuff' => array('【我太帅啦！】','【我太棒啦！】','【我太牛啦！】','【我太强啦！】'),'result' => array('「我头四」','TNe',300,1,'eipuz'),),
 	array('class' => 'item', 'stuff' => array('【我太帅啦！】','【我太棒啦！】','【我太牛啦！】','【我太强啦！】','神秘条件'),'result' => array('破则战术「我头四」','TNd',1,1,'xX'),),
+	array('class' => 'item', 'stuff' => array('「X」印折翼偏折镀层','「X」印噬魔虹彩涂装','悲叹之种'),'result' => array('「X」印·魅魔的心核匣','Y',1,1,''),),
 	
 	array('class' => 'pokemon', 'stuff' => array('《小黄的草帽》','《小黄的钓鱼竿》','《小黄的行军靴》'),'result' => array('《小黄的精灵球》','WC',386,'∞',),),
 	array('class' => 'pokemon', 'stuff' => array('《小黄的精灵球》','《小黄的收服特训》'),'result' => array('《小黄的超级球》','WC',386,'∞','Zir'),),

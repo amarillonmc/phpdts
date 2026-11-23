@@ -312,5 +312,8 @@ function item_weapon_mod($itmn, &$data) {
                 $itme = $itms = 0;
             }
         }
+    } else {
+        include_once GAME_ROOT.'./include/game/item.xharmer_mod.php';
+        item_xharmer_mod($itmn, $data);
     }
 }

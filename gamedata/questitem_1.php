@@ -17,12 +17,12 @@ $questiteminfo = array(
         'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q1', 'QuestAction' => 'summon'),
     ),
     'q1_reward' => array(
-        'itm' => '猎杀徽记',
-        'itmk' => 'YQ',
+        'itm' => '「X」牌金属活性诱导膏',
+        'itmk' => 'Y',
         'itme' => 1,
         'itms' => 1,
         'itmsk' => '',
-        'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q1', 'QuestAction' => 'reward'),
+        'itmpara' => array(),
     ),
 
     // Q2
@@ -42,13 +42,21 @@ $questiteminfo = array(
         'itmsk' => '',
         'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q2', 'QuestAction' => 'guard'),
     ),
-    'q2_reward' => array(
+    'q2_token' => array(
         'itm' => '护送证明',
         'itmk' => 'YQ',
         'itme' => 1,
         'itms' => 1,
         'itmsk' => '',
         'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q2', 'QuestAction' => 'reward'),
+    ),
+    'q2_reward' => array(
+        'itm' => '「X」牌超韧记忆金属内衬',
+        'itmk' => 'Y',
+        'itme' => 1,
+        'itms' => 1,
+        'itmsk' => '',
+        'itmpara' => array(),
     ),
 
     // Q3
@@ -61,12 +69,12 @@ $questiteminfo = array(
         'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q3', 'QuestAction' => 'check'),
     ),
     'q3_reward' => array(
-        'itm' => '检验合格章',
-        'itmk' => 'YQ',
-        'itme' => 1,
-        'itms' => 1,
+        'itm' => '「X」印恶魔角铆钉组',
+        'itmk' => 'Y',
+        'itme' => 220,
+        'itms' => 2,
         'itmsk' => '',
-        'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q3', 'QuestAction' => 'reward'),
+        'itmpara' => array(),
     ),
 
     // Q4
@@ -87,12 +95,12 @@ $questiteminfo = array(
         'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q4', 'QuestAction' => 'comfort'),
     ),
     'q4_reward' => array(
-        'itm' => '遗言碎片',
-        'itmk' => 'YQ',
+        'itm' => '心尾烙印·契约回火钳',
+        'itmk' => 'Y',
         'itme' => 1,
         'itms' => 1,
         'itmsk' => '',
-        'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q4', 'QuestAction' => 'reward'),
+        'itmpara' => array(),
     ),
 
     // Q5
@@ -113,12 +121,12 @@ $questiteminfo = array(
         'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q5', 'QuestAction' => 'purify'),
     ),
     'q5_reward' => array(
-        'itm' => '清醒的证明',
-        'itmk' => 'YQ',
+        'itm' => '「X」牌超韧记忆金属内衬',
+        'itmk' => 'Y',
         'itme' => 1,
         'itms' => 1,
         'itmsk' => '',
-        'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q5', 'QuestAction' => 'reward'),
+        'itmpara' => array(),
     ),
 
     // Q6
@@ -139,12 +147,12 @@ $questiteminfo = array(
         'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q6', 'QuestAction' => 'candy'),
     ),
     'q6_reward' => array(
-        'itm' => '捉迷藏证明',
-        'itmk' => 'YQ',
+        'itm' => '「X」式重装手足拘束具',
+        'itmk' => 'Y',
         'itme' => 1,
         'itms' => 1,
         'itmsk' => '',
-        'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q6', 'QuestAction' => 'reward'),
+        'itmpara' => array(),
     ),
 
     // Q7
@@ -157,12 +165,12 @@ $questiteminfo = array(
         'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q7', 'QuestAction' => 'summon'),
     ),
     'q7_reward' => array(
-        'itm' => '握手会凭证',
-        'itmk' => 'YQ',
+        'itm' => '漫展淘来的「非法电弧谐振器」',
+        'itmk' => 'Y',
         'itme' => 1,
         'itms' => 1,
         'itmsk' => '',
-        'itmpara' => array('IsQuestItem' => 1, 'QuestID' => 'Q7', 'QuestAction' => 'reward'),
+        'itmpara' => array(),
     ),
 );
 

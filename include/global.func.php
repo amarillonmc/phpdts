@@ -678,7 +678,7 @@ function parse_nameinfo_desc($info, $subinfo='', $short='', $tiptype='', $itmpar
 	# 如果没有，过滤掉前缀
 	if(!isset($tps_name[$info]) && !isset($tps_names[$info]))
 	{
-		$tinfo = preg_replace('/锋利的|电气|毒性|\[\+.*\]|-改/', '', $info);
+		$tinfo = preg_replace('/贪食的|锋利的|电气|毒性|\[\+.*\]|-改/', '', $info);
 	}
 	else
 	{

@@ -354,6 +354,32 @@ $itmpara_tooltip = [
         }
     ],
 
+    // Xharmer 改造专有字段
+    'IgnoreUpperBreak' => [
+        'title' => '外骨骼代偿',
+        'format' => '穿戴期间无效「上肢破坏」负面效果',
+        'suffix' => '',
+        'condition' => function($item_type, $value) {
+            return $value == 1;
+        }
+    ],
+    'IgnoreLowerBreak' => [
+        'title' => '外骨骼代偿',
+        'format' => '穿戴期间无效「下肢破坏」负面效果',
+        'suffix' => '',
+        'condition' => function($item_type, $value) {
+            return $value == 1;
+        }
+    ],
+    'x_rivets' => [
+        'title' => '恶魔角铆接',
+        'format' => '已敲入 {value} 枚配重角',
+        'suffix' => '',
+        'condition' => function($item_type, $value) {
+            return (int)$value > 0;
+        }
+    ],
+
     // lore 特殊处理，直接显示内容
     'lore' => [
         'title' => '',

@@ -336,7 +336,7 @@ function check_valid_overlay_material($itm, $itmsk, $star)
 function itemmix_name_proc($n){
 	$n = trim($n);
 	if(strpos($n,'★幻影·')===0) $n=substr($n,strlen('★幻影·'));
-	$itmname_ignore = Array('/锋利的/si','/电气/si','/毒性/si','/-改/si');
+	$itmname_ignore = Array('/贪食的/si','/锋利的/si','/电气/si','/毒性/si','/-改/si');
 	foreach(Array($itmname_ignore) as $value){
 		$n = preg_replace($value,'',$n);
 	}
@@ -514,6 +514,11 @@ function itemmix_events(&$data=NULL)
 		$itm1 = $itmk1 = $itmsk1 = $itm2 = $itmk2 = $itmsk2 = $itm3 = $itmk3 = $itmsk3 = $itm4 = $itmk4 = $itmsk4 = $itm5 = $itmk5 = $itmsk5 = $itm6 = $itmk6 = $itmsk6 = '';
 		$itmpara1 = $itmpara2 = $itmpara3 = $itmpara4 = $itmpara5 = $itmpara6 = '';
 		$itme1 = $itms1 = $itme2 = $itms2 = $itme3 = $itms3 = $itme4 = $itms4 = $itme5 = $itms5 = $itme6 = $itms6 = 0;
+	}
+
+	if($itm0 == '「X」印·魅魔的心核匣'){
+		$log .= "<span class='spitem2'>折翼金属膜与噬魔虹彩漆将悲叹之种层层包裹，在你掌心蜷缩成一枚砰砰搏动的暗紫铁匣！<br>"
+			. "不知何处传来一声轻佻的口哨：「哟，居然真有人把这两件烧钱货捏一块儿了？想穿神衣的话，准备好交出一半身家性命吧～」</span><br>";
 	}
 	return;
 }

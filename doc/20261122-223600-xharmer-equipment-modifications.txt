@@ -1,0 +1,35 @@
+20261122-223600 Xharmer 视角武器·防具强化道具体系与普通 QUEST 报酬实装
+
+【改动概述 / Summary】
+新增 9 款 Xharmer 视角的武器·防具强化道具（6 款 5000～8000 元常规档 + 3 款上位双抹消契约档），填补原版非锐器/非棍棒武器强化、四部位防具强化、效耐定向转换、上下肢破坏代偿以及顶级「伤害抹消/属性抹消」改造的空白；同步对接普通 QUEST（Q1～Q7）奖励与 1 禁商店货架，并补齐完整 Tooltip、灵子视界文案、日志反馈与对白演出。
+Implemented 9 Xharmer-themed weapon & armor enhancement items (6 standard tier items for 1st-ban shop & Q1-Q7 QUEST rewards, plus 2 upper-tier nullification coatings and 1 synthesized dual-nullification core box), along with limb-break immunity hooks, tooltips, dialogues, and regression tests.
+
+【主要改动 / Changes】
+1. 道具核心逻辑：
+   - 新增 `include/game/item.xharmer_mod.php`，并在 `include/game/item.weapon_mod.php` 与 `include/game/item2.func.php`（`usemode = 'xharmer_mod'`）接入单步与二级菜单交互（兼容背包槽 `itm1`～`itm6` 与拾取槽 `itm0`）：
+     * 「X」牌金属活性诱导膏：吞噬包内 1 件武器/防具，吸收 85% 效果（上限+650）、60% 耐久（上限+150）及随机 1 个元素词条；绑定 `v`，扣当前 HP/SP 各 50%（每把限 1 次）。
+     * 「X」印恶魔角铆钉组（220效/2耐）：仅限物理系武器，可无限重复敲入；每枚 +220 效（射系 +330）、终伤加成 +8%（封顶 24%），第 1/2 枚递进赋予 `N`/`n`；抹 `Z`，每次耗 120 体力、腕伤并磨 15% 耐；第 3 枚起递增崩飞反咬率（扣 45% 当前生命+胸伤，不损武器）。
+     * 漫展淘来的「非法电弧谐振器」：仅限灵/爆/射/投，+420 效、最终固伤 +220，赋予 `y`+`e`（原带火/电升 `f`，原带冰升 `k`）；抹 `S` 与 `Z`，耗 280 当前体力并自挂麻痹+烧伤。
+     * 心尾烙印·契约回火钳：有限耐武器二选一——【燃尽契约】（削 80% 耐至多留 12、枪锁 `o`，换效果 ×1.75 上限+900、固伤+280 与 `c`，耗 250HP/200SP）或【永伴契约】（效果 -20%，换无限耐或枪弓 150 发并锁枪 `o`，当前 HP 抽至 1、当前 SP 归 0 并烧伤）。
+     * 「X」牌超韧记忆金属内衬：四部位防具通用，+550 防、+150 耐、终伤减免 +18%、随机 1 项元素抗性；附加 `V` 诅咒焊死并扣 200 当前 HP（保留妖精种族绑定羽翼原名）。
+     * 「X」式重装手足拘束具：手/足防具专用，+500 防、+120 耐、固减 +200；手臂赋予 `H` 并写入 `IgnoreUpperBreak`，腿部赋予 `mM` 并写入 `IgnoreLowerBreak`；附加 `v`，耗 250HP/250SP 及对应轻伤。
+     * 「X」印折翼偏折镀层（7A）与「X」印噬魔虹彩涂装（7B）：分别赋予 `B`（伤害抹消，身/头）与 `b`（属性抹消，手/足/身），禁止在已有 `B`/`b` 防具上叠加；防具效果减半、耐久压至 ≤35（无限耐变 25）并焊死 `V`；7A 永久扣 30% `$mhp`（保底 350），7B 永久扣 35% `$msp`（保底 220）与 20% `$att`。
+     * 「X」印·魅魔的心核匣（8）：仅由 `7A + 7B + 悲叹之种` 合成，赋予胸甲 `Bb` 双抹消并重铸为 80 耐；永久腰斩 50% `$mhp`、50% `$msp` 与 50% `$def`，胸甲面板归 1、焊死 `V` 并增加 666 报应。
+2. 状态与前缀兼容：
+   - `include/game/severe_status.func.php`：`severe_effective()` 支持读取已穿戴且有耐久手足防具上的 `IgnoreUpperBreak` / `IgnoreLowerBreak`，无效化上/下肢破坏的负面限制。
+   - `include/global.func.php`、`include/game/itemmix.func.php`：名称前缀忽略规则补充 `贪食的`，并在 `itemmix_events()` 补充心核匣合成演出文案。
+3. 商店、合成、QUEST 与资源文案：
+   - `gamedata/cache/shopitem_1.php`：杂物货架（`kind=12`）1 禁后上架常规 6 款及 7A、7B。
+   - `gamedata/cache/mixitem_1.php`：新增 `折翼偏折镀层 + 噬魔虹彩涂装 + 悲叹之种 → 魅魔的心核匣` 配方。
+   - `gamedata/questitem_1.php`、`include/game/quest.func.php`、`include/game/item.quest.php`：将标准房 `Q1`～`Q7` 奖励对接为 6 款常规 Xharmer 改件（保留 `q2_token` 护送证明交付闭环，兼容旧 RuleSet 隔离，修复在 `itm0` 直接提交任务物品时的拾取栏覆盖问题）。
+   - `gamedata/cache/tooltip_1.php`、`gamedata/cache/itmpara_tooltip.php`、`gamedata/cache/dialogue_1.php`：注册全套吐槽+效果 Tooltip、灵子视界文案、`IgnoreUpperBreak`/`IgnoreLowerBreak`/`x_rivets` 参数提示，以及首次 QUEST 发奖与上位契约四组可跳过对白（严格隔离里设定）。
+
+【验证方式 / Verification】
+- 运行环境：PHP 7.4.33 CLI（启用 `short_open_tag=1`）。
+- 全部涉及 PHP 文件通过 `php -d short_open_tag=1 -l` 语法检查。
+- 新增并运行独立行为回归测试 `gamedata/tests/xharmer_mod_test.php`（覆盖商店规格、Tooltip 渲染与里设定隔离、全 9 款道具正常/拦截/上限/反咬分支、上下肢破坏免疫、合成闭环、码语行人防拆、Q1～Q7 奖励与 Q2 `itm0` 交付），全部通过。
+- 运行现有回归脚本 `quest_q6_test.php`、`ending_routes_isolation_test.php`、`ending_combat_test.php`、`raid_ruleset_test.php`，全部通过。（注：`laika_ruleset_test.php` 中一处关于 `game.htm`/`dialogue.js` 的字符串检查在本改动前已有失败，与本次未触碰的模板/前端脚本相关。）
+
+【已知限制 / Known Limitations】
+- 商店商品表 `shopitem` 在新局初始化（`rs_game`）时从 `gamedata/cache/shopitem_1.php` 载入，进行中的旧局需在下一局开局后刷新出新上架改件。
+- 本次验证基于 PHP 7.4 CLI 语法与独立回归脚本，未连接在线 MySQL 数据库进行浏览器端实机点按联调。
