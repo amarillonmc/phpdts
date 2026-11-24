@@ -487,21 +487,6 @@ function fetch_playerdata_by_pid($id)
 
 	return $data;
 }
-//用于将指定player数据存回数据库
-function player_save($data){
-	global $db,$gtablepre,$tablepre;
-	$ndata = Array();
-	if(isset($data['pid'])){
-		$pid = $data['pid'];
-		//检查杂项成就
-		include_once GAME_ROOT.'./include/game/achievement.func.php';
-		check_misc_achievement_rev($data);
-		$ndata = player_format_with_db_structure($data);
-		unset($data);
-		$db->array_update("{$tablepre}players",$ndata,"pid='$pid'");
-	}
-	return;
-}
 
 function check_player_misc_states(&$data)
 {

@@ -829,19 +829,23 @@ function sing($sn){
 				♪旅立ちはいつだって窓の向こうから　真夜中の月明かり膝に落とす♪<br>
 				♪擦れ違った言葉でキズつけても　忘れられない瞳はまだ…♪<br>";
 
-		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','$plsinfo','♪Any time , stay beside me...♪')");
+		global $database;
+		$chat = Array('type'=>0,'time'=>$now,'send'=>htmlspecialchars($name,ENT_QUOTES,'UTF-8'),'recv'=>'','msg'=>'♪Any time , stay beside me...♪');
+		if($database === 'mysql') $chat['send'] = mysql_real_escape_string($chat['send']);
+		$db->array_insert($tablepre.'chat',$chat);
 
 		$clbpara['setsuna_mute'] = 3;
 		include_once GAME_ROOT.'./include/game/revclubskills.func.php';
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE pls='$pls' AND hp>0 AND type=0 AND pid!='$pid'");
 		$frozen_cnt = 0;
 		while ($tdata = $db->fetch_array($result)) {
+			$tdata['clbpara'] = get_clbpara($tdata['clbpara']);
 			if (strpos($tdata['inf'], 'i') === false) {
 				$tdata['inf'] .= 'i';
 			}
 			getclubskill('inf_dizzy', $tdata['clbpara']);
-			set_skill_Temp_status('inf_dizzy', 'starttimes', $now, $tdata['clbpara']);
-			set_skill_Temp_status('inf_dizzy', 'lasttimes', 5, $tdata['clbpara']);
+			set_starttimes('inf_dizzy', $tdata['clbpara']);
+			set_lasttimes('inf_dizzy', 5, $tdata['clbpara']);
 			player_save($tdata);
 			$frozen_cnt++;
 		}

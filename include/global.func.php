@@ -339,7 +339,8 @@ function addnews($t = 0, $n = '',$a='',$b='',$c = '', $d = '', $e = '') {
 	}
 	if(strpos($n,'death11') === 0  || strpos($n,'death32') === 0) {
 		$result = $db->query("SELECT lastword FROM {$gtablepre}users WHERE username = '$a'");
-		$e = $lastword = $db->result($result, 0);
+		// AI 分体没有独立账户，死亡新闻仍以分体名发布，遗言留空。
+		$e = $lastword = $db->fetch_array($result)['lastword'] ?? '';
 		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('3','$t','$a','$c','$lastword')");
 	}	elseif(strpos($n,'death15') === 0 || strpos($n,'death16') === 0) {
 		$result = $db->query("SELECT lastword FROM {$gtablepre}users WHERE username = '$a'");
@@ -661,6 +662,22 @@ function player_format_with_db_structure($data){
 	include_once GAME_ROOT.'./include/game/itemmain.func.php';
 	reload_equip_items($ndata);
     return $ndata;
+}
+
+// 公共初始化中的反挂机、禁区死亡与玩家指令共用这套保存逻辑。
+function player_save($data){
+	global $db,$gtablepre,$tablepre;
+	$ndata = Array();
+	if(isset($data['pid'])){
+		$pid = $data['pid'];
+		//检查杂项成就
+		include_once GAME_ROOT.'./include/game/achievement.func.php';
+		check_misc_achievement_rev($data);
+		$ndata = player_format_with_db_structure($data);
+		unset($data);
+		$db->array_update("{$tablepre}players",$ndata,"pid='$pid'");
+	}
+	return;
 }
 
 # 处理道具名的显示信息
